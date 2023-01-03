@@ -151,30 +151,6 @@
 	}
 	fclose($output);
 
-// Generate "genome.bed" :
-	fwrite($logOutput, "\tGenerating 'genome.bed' file.\n");
-	$max_length       = max($chr_lengths);
-	$outputName       = "../users/".$user."/genomes/".$genome."/genome.bed";
-	if (file_exists($outputName)) {
-		$fileContents = file_get_contents($outputName);
-		unlink($outputName);
-		$output       = fopen($outputName, 'w');
-		fwrite($output, $fileContents);
-	} else {
-		$output       = fopen($outputName, 'w');
-		fwrite($output, "# BED file to limit Abr2 to only indel-realigning used chromosomes.\n");
-		fwrite($output, "# [chr name]\t0\t[chr length]\n");
-		if ($chr_count != 0) {
-			for ($chr=0; $chr<$chr_count; $chr += 1) {
-				$chrID = $chr + 1;
-				if ($chr_draws[$chr] == 1) {
-					fwrite($output, $chr_names[$chr]."\t0\t".$chr_lengths[$chr]."\n");
-				}
-			}
-		}
-	}
-	fclose($output);
-
 // Generate "ploidy.txt" :
 	fwrite($logOutput, "\tGenerating 'ploidy.txt' file.\n");
 	$outputName       = "../users/".$user."/genomes/".$genome."/ploidy.txt";
