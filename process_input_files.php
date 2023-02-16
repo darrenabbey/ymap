@@ -234,7 +234,7 @@ if ($ext_new == "fastq") {
 	fclose($file_handle);
 
 	// Is this a tdt file with useful information?
-	$line_1_words = explode('\t',trim($line_1));
+	$line_1_words = $parts = preg_split('/\s+/', $line_1);
 	if ((strcmp($line_1_words[0],"Ca19-mtDNA") == 0) || (strcmp($line_1_words[0],"Ca21chr1_C_albicans_SC5314") == 0)
 	|| (strcmp($line_1_words[0],"Ca21chr2_C_albicans_SC5314") == 0) || (strcmp($line_1_words[0],"Ca21chr3_C_albicans_SC5314") == 0)
 	|| (strcmp($line_1_words[0],"Ca21chr4_C_albicans_SC5314") == 0) || (strcmp($line_1_words[0],"Ca21chr5_C_albicans_SC5314") == 0)
@@ -248,9 +248,10 @@ if ($ext_new == "fastq") {
 		fwrite($logOutput, "\t\t| TDT file format correct; BlueFuse array data.\n");
 		$ext_new = "tdt";
 	} else {
-		// format is wrong for a FASTQ file.
 		unlink($projectPath.$name_first);
 		fwrite($logOutput, "\t\t| TDT file format incorrect!!!\n");
+		fwrite($logOutput, "\t\t|\t".$line_1_words[0]."\n");
+		fwrite($logOutput, "\t\t|\t"."Ca19-mtDNA"."\n");
 		$ext_new = "none3";
 	}
 	$name_new    = $name;
