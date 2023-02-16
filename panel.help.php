@@ -10,13 +10,12 @@
 		margin-left:    1cm;
 	}
 </style>
-<font size='3'><b>User Manual</b></font><br>
+<font size='3'><b>User Manual</b></font>: 
 <font size="2">
-<br>
 <a href="YMAP_User_Manual.docx">A detailed description of the user interface and tools available in YMAP.</a><br>
 </font>
-<br><br>
-<font size='3'><b>Descriptions of datatypes and input file format requirements.</b></font><br>
+<br>
+<font size='3'><b>Data and file format requirements.</b></font><br>
 <font size="2">
 <p>
 	The Yeast Mapping Analysis Pipeline (YMAP) is intended to simplify the processing of whole genome array and sequence
@@ -38,6 +37,8 @@
 <p>
 	<b>1. SnpCgh microarray</b>
 	<ul>
+		<li>Only works for arrays custom designed for <i>Candida albicans</i> SC5314 derivatives.</li>
+			<div class="tab"><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3276171/">https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3276171/</a></div>
 		<li>Tab-delimited text (*.tdt) with the following format (standard output from BlueFuse for Microarrays v3.6):
 			<div class="tab"><font size='2'>
 				46 header rows, followed by data rows.<br>
@@ -54,6 +55,9 @@
 <p>
 	<b>2. WGseq</b> and <b>3. ddRADseq</b>
 	<ul>
+		<li>Works for any species for which a reference genome is installed.</li>
+			<div class="tab">New reference genomes in FASTA (*.fasta) format can be installed.<br>
+			Genomes much smaller or larger than the 16 Mbase <i>Candida albicans</i> may not work well. Please contact admin to discuss testing.</div>
 		<li>Single-end reads as one file in raw FASTQ (*.fastq) or compressed (*.zip; *.fastq.gz) format.</li>
 		<li>Paired-end reads as two files in raw FASTQ (*.fastq) or two compressed (*.zip; *.fastq.gz) format.</li>
 		<li>Sequence Alignment/Map file in raw (*.sam) or compressed (*.bam) format.</li>
@@ -74,14 +78,7 @@
 	</ul>
 </p>
 <p>
-	<b>3. New Genomes</b>
-	<ul>
-		<li>New reference genomes in FASTA (*.fasta) format can be installed to use YMAP with data from other species.</li>
-		<li>Genomes much smaller or larger than the 16 Mbase of Candida albicans may not work well. Please contact admin to discuss testing.</li>
-	</ul>
-</p>
-<p>
-	Uploaded files named with other file types will be discarded.
+	<b>Uploaded files named with other file types will be discarded.</b>
 	<ul>
 		<li>*.tdt</li>
 		<li>*.fasta</li>
@@ -99,7 +96,7 @@
 	position in the list will be updated.
 </p>
 <p>
-	Haplotype maps can be constructed starting from one heterozygous parent or two homozygous parent datasets. When starting from a single heterozygous parent, additional
-	child datasets with large-scale homozygoses are needed to construct the final map.
+	Haplotype maps can be constructed in YMAP, starting from one heterozygous parent or two homozygous parent datasets. When starting from a single heterozygous parent, additional
+	child datasets with large-scale homozygoses are needed to define the final map.
 </p>
 </font>
