@@ -270,6 +270,9 @@ end;
 %% ====================================================================
 % Process raw data file into structures containing CGH and SNP information (if not already done).
 %----------------------------------------------------------------------
+fprintf('\n*----------------------------------------------------*');
+fprintf('\n| [process_main.m] : calling data_file_load_online() |');
+fprintf('\n*----------------------------------------------------*\n');
 data_file_load_online(workingDir,raw_data_dir,raw_data_file, microarray_design, experiment_name);
 % load experimental values for all the probes.
 load([workingDir '/' experiment_name '.' microarray_design '.SNP_data.mat']);
@@ -281,7 +284,9 @@ CGH_probeset_length = length(probeset2);
 %% ====================================================================
 % Apply probe polarity assignment from calibration data to experimental data.
 %----------------------------------------------------------------------
-fprintf(['\nPhasing experimental SNP data from: ' strrep(raw_data_dir,'\','\\') '\n']);
+fprintf( '\n*------------------------------------------------------------*');
+fprintf(['\n| Phasing experimental SNP data from: ' strrep(raw_data_dir,'\','\\')]);
+fprintf( '\n*------------------------------------------------------------*');
 for i = 1:SNP_probeset_length
     if (no_calibration == 1)
         probeset1(i).probe_polarity = 0;

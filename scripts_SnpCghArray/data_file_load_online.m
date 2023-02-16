@@ -8,7 +8,10 @@
 function data_file_load_online(output_file_dir,file_dir,file_name,design,experiment_name)
 if (exist([output_file_dir '/' experiment_name '.' design '.CGH_data.mat'], 'file') == 0) && ...
    (exist([output_file_dir '/' experiment_name '.' design '.SNP_data.mat'], 'file') == 0)
-	fprintf('\n## Processing input data file into CGH and SNP data structures.\n');
+	fprintf('\n##');
+	fprintf('\n## Starting data_file_load_online()');
+	fprintf('\n##');
+	fprintf('\n## Processing input data file into CGH and SNP data structures.');
 
 	% control variables describing microarray analysis package output files.
 	header           = 46; % lines of header to be skipped before data lines.
@@ -41,7 +44,7 @@ if (exist([output_file_dir '/' experiment_name '.' design '.CGH_data.mat'], 'fil
 	%% load SNP probe list
 	fid  = fopen(input_file1, 'r');
 	% analyze SNP text file, line by line.
-	fprintf(['\nAnalyzing text file: \"' input_file1 '\"\n'])
+	fprintf(['\n## Analyzing text file: \"' input_file1 '\"'])
 	i = 0;
 	lines_analyzed = 0;
 	while not (feof(fid))
@@ -64,7 +67,7 @@ if (exist([output_file_dir '/' experiment_name '.' design '.CGH_data.mat'], 'fil
 	%% load CGH probe list
 	fid2 = fopen(input_file2, 'r');
 	% analyze CGH text file, line by line.
-	fprintf(['\nAnalyzing text file: \"' input_file2 '\"\n'])
+	fprintf(['\n## Analyzing text file: \"' input_file2 '\"'])
 	i = 0;
 	lines_analyzed = 0;
 	while not (feof(fid2))
@@ -98,52 +101,51 @@ if (exist([output_file_dir '/' experiment_name '.' design '.CGH_data.mat'], 'fil
 	% Load CGH and SNP information in one step... very slow.
 
 	% load SNP & CGH information.
-	fprintf('\n');
-	fprintf(['[data_file_load_online.m] : input file.\n']);
-	fprintf(['    ' file_dir '/' file_name '\n']);
+	fprintf(['## [data_file_load_online.m] : input file.\n']);
+	fprintf(['##     ' file_dir '/' file_name '\n']);
 
 	currentDir = pwd;
-	fprintf('\n');
-	fprintf(['[data_file_load_online.m] : current folder.\n']);
-	fprintf(['    ' currentDir '\n']);
-	fprintf('\n');
+	fprintf(['## [data_file_load_online.m] : current folder.\n']);
+	fprintf(['##     ' currentDir '\n']);
 
 	% analyze text file, line by line.
 	fprintf(['## Analyzing \"', file_name, '\" for CGH & SNP info.\n']);
 
 	%% Open pre-processed files for CGH data.
-	CGHfid = fopen([file_dir '/CGH_rows.xls'], 'r');
-	fprintf(['##\t' file_dir '/CGH_rows.xls\n##\tfid = ' num2str(CGHfid) '\n']);
+	CGHfid = fopen([file_dir '/CGH_rows.tdt'], 'r');
+	fprintf(['##\t' file_dir '/CGH_rows.tdt\n##\tfid = ' num2str(CGHfid) '\n']);
 
 	fprintf('## loading CGH subfile into [MATLAB] data structure.\n');
+
+	%% dragon: failing after here.
 	lines_analyzed = 0;
 	rawCghData     = [];
 	while not (feof(CGHfid))   % build data structure for raw CGH
 		lineData       = fgetl(CGHfid);
 		% take of interest data fields from each line.
-	    lines_analyzed = lines_analyzed+1;
-	    ProbeID    = sscanf(lineData, '%s',Name_column);         for k = 1:length(sscanf(lineData,'%s',Name_column-1));         ProbeID(1) = [];      end;
-	    ch1        = sscanf(lineData, '%s',Ch1_column);          for k = 1:length(sscanf(lineData,'%s',Ch1_column-1));          ch1(1) = [];          end;
-	    ch2        = sscanf(lineData, '%s',Ch2_column);          for k = 1:length(sscanf(lineData,'%s',Ch2_column-1));          ch2(1) = [];          end;
-	    Ratio      = sscanf(lineData, '%s',Ratio_column);        for k = 1:length(sscanf(lineData,'%s',Ratio_column-1));        Ratio(1) = [];        end;
-	    Log2Ratio  = sscanf(lineData, '%s',Log2Ratio_column);    for k = 1:length(sscanf(lineData,'%s',Log2Ratio_column-1));    Log2Ratio(1) = [];    end;
-	    rawCghData(lines_analyzed).ProbeID         = ProbeID;
-	    rawCghData(lines_analyzed).ch1             = str2num(ch1);
-	    rawCghData(lines_analyzed).ch2             = str2num(ch2);
-	    rawCghData(lines_analyzed).probe_Ratio     = str2num(Ratio);
-	    rawCghData(lines_analyzed).probe_Log2Ratio = str2num(Log2Ratio);
+		lines_analyzed = lines_analyzed+1;
+		ProbeID    = sscanf(lineData, '%s',Name_column);         for k = 1:length(sscanf(lineData,'%s',Name_column-1));         ProbeID(1) = [];      end;
+		ch1        = sscanf(lineData, '%s',Ch1_column);          for k = 1:length(sscanf(lineData,'%s',Ch1_column-1));          ch1(1) = [];          end;
+		ch2        = sscanf(lineData, '%s',Ch2_column);          for k = 1:length(sscanf(lineData,'%s',Ch2_column-1));          ch2(1) = [];          end;
+		Ratio      = sscanf(lineData, '%s',Ratio_column);        for k = 1:length(sscanf(lineData,'%s',Ratio_column-1));        Ratio(1) = [];        end;
+		Log2Ratio  = sscanf(lineData, '%s',Log2Ratio_column);    for k = 1:length(sscanf(lineData,'%s',Log2Ratio_column-1));    Log2Ratio(1) = [];    end;
+		rawCghData(lines_analyzed).ProbeID         = ProbeID;
+		rawCghData(lines_analyzed).ch1             = str2num(ch1);
+		rawCghData(lines_analyzed).ch2             = str2num(ch2);
+		rawCghData(lines_analyzed).probe_Ratio     = str2num(Ratio);
+		rawCghData(lines_analyzed).probe_Log2Ratio = str2num(Log2Ratio);
 	end;
 	fclose(CGHfid);
 
 	%% Open pre-processed files for SNP data.
-	SNPfid = fopen([file_dir '/SNP_rows.xls'], 'r');
-	fprintf(['##\t' file_dir '/SNP_rows.xls\n##\tfid = ' num2str(SNPfid) '\n']);
+	SNPfid = fopen([file_dir '/SNP_rows.tdt'], 'r');
+	fprintf(['##\t' file_dir '/SNP_rows.tdt\n##\tfid = ' num2str(SNPfid) '\n']);
 
 	fprintf('## loading SNP subfile into [MATLAB] data structure.\n');
 	lines_analyzed = 0;
 	rawSnpData     = [];
 	while not (feof(SNPfid))   % build data structure for raw SNP data.
-	    lineData       = fgetl(SNPfid);
+		lineData       = fgetl(SNPfid);
 		lines_analyzed = lines_analyzed+1;
 		ProbeID    = sscanf(lineData, '%s',Name_column);         for k = 1:length(sscanf(lineData,'%s',Name_column-1));         ProbeID(1) = [];      end;
 		ch1        = sscanf(lineData, '%s',Ch1_column);          for k = 1:length(sscanf(lineData,'%s',Ch1_column-1));          ch1(1) = [];          end;

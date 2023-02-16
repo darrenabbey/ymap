@@ -241,14 +241,16 @@ if ($ext_new == "fastq") {
 	|| (strcmp($line_1_words[0],"Ca21chr6_C_albicans_SC5314") == 0) || (strcmp($line_1_words[0],"Ca21chr7_C_albicans_SC5314") == 0)
 	|| (strcmp($line_1_words[0],"Ca21chrR_C_albicans_SC5314") == 0)) {
 		// is a TDT file, as defined in the paper.
+		fwrite($logOutput, "\t\t| TDT file format correct; custom filtered data.\n");
 		$ext_new = "tdt";
 	} elseif (strcmp($line_1_words[0],"Created") == 0) {
 		// is Tab-delimited-txt (TXT) file, as output from BlueFuse.
+		fwrite($logOutput, "\t\t| TDT file format correct; BlueFuse array data.\n");
 		$ext_new = "tdt";
 	} else {
 		// format is wrong for a FASTQ file.
 		unlink($projectPath.$name_first);
-		fwrite($logOutput, "\t\t| CSV/TDT/TXT file format incorrect!!!\n");
+		fwrite($logOutput, "\t\t| TDT file format incorrect!!!\n");
 		$ext_new = "none3";
 	}
 	$name_new    = $name;

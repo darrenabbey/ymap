@@ -46,16 +46,18 @@
 <title>Install project into pipeline.</title>
 </HEAD>
 <?php
+// Initialize 'process_log.txt' file.
+	$outputLogName   = $project_dir."/process_log.txt";
+	$outputLog       = fopen($outputLogName, 'w');
+	fwrite($outputLog, "| Process_log.txt initialized.\n");
+	fwrite($outputLog, "| Processing via: project.SnpCgh.install.php.\n");
+
 // Initialize 'condensed_log.txt' file.
 	$condensedLogOutputName = $project_dir."/condensed_log.txt";
 	$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
 	fwrite($condensedLogOutput, "Microarray data processing.\n");
 	fclose($condensedLogOutput);
-
-// Initialize 'process_log.txt' file.
-	$outputLogName   = $project_dir."/process_log.txt";
-	$outputLog       = fopen($outputLogName, 'w');
-	fwrite($outputLog, "Process_log.txt initialized.\n");
+	fwrite($outputLog, "| Condensedlog initialized.\n");
 
 // Generate 'working.txt' file to let pipeline know processing is started.
 	$outputName      = $project_dir."/working.txt";
@@ -64,7 +66,7 @@
 	fwrite($output, $startTimeString);
 	fclose($output);
 	chmod($outputName,0644);
-	fwrite($outputLog, "'working.txt' file generated.\n");
+	fwrite($outputLog, "| working.txt generated.\n");
 
 // Generate 'upload_size.txt' file to contain the size of the uploaded file (irrespective of format) for display in "Manage Datasets" tab.
 	$outputName      = $project_dir."/upload_size_1.txt";
@@ -73,7 +75,7 @@
 	fwrite($output, $fileSizeString);
 	fclose($output);
 	chmod($outputName,0644);
-	fwrite($outputLog, "\tGenerated 'upload_size_1.txt' file.\n");
+	fwrite($outputLog, "| Generated 'upload_size_1.txt' file.\n");
 
 // Generate 'datafile1.txt' file containing: name of first data file.
 	$outputName = $project_dir."/datafile1.txt";
@@ -81,7 +83,20 @@
 	fwrite($output, $fileName);
 	fclose($output);
 	chmod($outputName,0644);
-	fwrite($outputLog, "'datafile1.txt' file generated.\n");
+	fwrite($outputLog, "| datafile1.txt file generated.\n");
+
+// Adjust $fileName to match upload filename sanitization.
+	// Replace all "." in $name with "-" except the final one.
+	$fragments = explode(".",$fileName);
+	$count     = sizeof($fragments);
+	$name_new  = $fragments[0];
+	if ($count > 2) {
+		for ($i = 1; $i < $count-1; $i++) {
+			$name_new .= "-".$fragments[$i];
+		}
+	}
+	$name_new .= ".".$fragments[$count-1];
+	$fileName  = $name_new;
 
 // Call Matlab to process SnpCgh data file into final figure.
 	$designDefinition   = "design1";
@@ -136,7 +151,8 @@
 	fwrite($output, $outputString);
 	fclose($output);
 	chmod($outputName,0644);
-	fwrite($outputLog, "Matlab running script 'processing.m' generated.\n");
+	fwrite($outputLog, "| Matlab script generated: processing.m.\n");
+	fwrite($outputLog, $outputString."\n");
 
 	// Running pre-processing for Matlab script, because running it within Matlab doesn't work well:
 	// http://stackoverflow.com/questions/29451735/matlab-system-function-not-running-the-command-and-not-returning-any-values
@@ -154,12 +170,25 @@
 	*/
 	echo $inputFile."\n\n";
 
-	$cghRowsFile  = $workingDir . 'CGH_rows.xls';
-	$snpRowsFile  = $workingDir . 'SNP_rows.xls';
-	$mlstRowsFile = $workingDir . 'MLST_rows.xls';
-	system('grep "CGHv1_Ca_\|CGH_Ca_" ' . $inputFile . ' > ' . $cghRowsFile);
-	system('grep "SNPv1_Ca_\|SNP_Ca_" ' . $inputFile . ' > ' . $snpRowsFile);
-	system('grep "MLSTv1_" ' . $inputFile . ' > ' . $mlstRowsFile);
+	$cghRowsFile  = $workingDir . 'CGH_rows.tdt';
+	$snpRowsFile  = $workingDir . 'SNP_rows.tdt';
+	$mlstRowsFile = $workingDir . 'MLST_rows.tdt';
+
+	fwrite($outputLog, "| inputFile: ".$inputFile."\n");
+	fwrite($outputLog, "| Generate:  ".$cghRowsFile."\n");
+	$system_call_1 = 'grep "CGHv1_Ca_\|CGH_Ca_" ' . $inputFile . ' > ' . $cghRowsFile;
+	system($system_call_1);
+	fwrite($outputLog, "|\t".$system_call_1."\n");
+
+	fwrite($outputLog, "| Generate:  ".$snpRowsFile."\n");
+	$system_call_2 = 'grep "SNPv1_Ca_\|SNP_Ca_" ' . $inputFile . ' > ' . $snpRowsFile;
+	system($system_call_2);
+	fwrite($outputLog, "|\t".$system_call_2."\n");
+
+	fwrite($outputLog, "| Generate:  ".$mlstRowsFile."\n");
+	$system_call_3 = 'grep "MLSTv1_" ' . $inputFile . ' > ' . $mlstRowsFile;
+	system($system_call_3);
+	fwrite($outputLog, "|\t".$system_call_3."\n");
 
 	/*
 	Sort subfiles by probe name
@@ -175,11 +204,12 @@
 		system("mv $tmpFile $fileToProcess");
 	}
 
-	fwrite($outputLog, "Current Path = '".getcwd()."'\n");
-	fwrite($outputLog, "Calling Matlab :\n");
+	fwrite($outputLog, "| \n");
+	fwrite($outputLog, "| Current Path = '".getcwd()."'\n");
+	fwrite($outputLog, "| Calling Matlab :\n");
 
 	$system_call_string_2 = '. ../local_installed_programs.sh && $matlab_exec -nosplash -nodesktop -r \'run '.$project_dir.'/processing.m\' > /dev/null &';
-	fwrite($outputLog, "\t\"".$system_call_string_2."\"\n\n");
+	fwrite($outputLog, "|\t\"".$system_call_string_2."\"\n\n");
 	fclose($outputLog);
 	system($system_call_string_2);
 ?>
