@@ -19,6 +19,19 @@
 			sleep($delay);
 		}
 	}
+
+	// Delay before page reload.
+	if ($login_success == 0) {
+		$_SESSION['delay'] = 5;
+		echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
+		echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
+	} else {
+		$_SESSION['delay'] = 0;
+		echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
+		echo "var intervalID = window.setInterval(reload_page, 500);\n</script>\n";
+	}
+
+
 //=========================================================
 // Functions used to validate login credentials.
 //---------------------------------------------------------
@@ -56,10 +69,12 @@
 					echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 					$login_success = 1;
 				} else {
+					//password mismatch.
 					echo "<font color=\"red\"><b>ERROR: Input did not match a registered username & password combination.</b></font><br>\n";
 					echo "(Main page will reload shortly...)<br>\n";
 					echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 					echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
+					$login_success = 0;
 				}
 			}
 		} else {
@@ -68,18 +83,8 @@
 			echo "(Main page will reload shortly...)<br>\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
+			$login_success = 0;
 		}
 		return $login_success;
 	}
-
-// Delay before page reload.
-if ($login_success == 0) {
-	$_SESSION['delay'] = 5;
-	echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-	echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
-} else {
-	$_SESSION['delay'] = 0;
-	echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-	echo "var intervalID = window.setInterval(reload_page, 500);\n</script>\n";
-}
 ?>
