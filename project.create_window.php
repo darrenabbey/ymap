@@ -306,7 +306,7 @@
 			}
 			UpdateForm=function() {
 				// Manages hiding and displaying form sections during user interaction.
-				if (document.getElementById("dataFormat").value == 0) {			// SnpCgh Microarray.
+				if (document.getElementById("dataFormat").value == 0) { // SnpCgh Microarray.
 					document.getElementById("hiddenFormSection1").style.display  = 'none';
 					document.getElementById("hiddenFormSection2").style.display  = 'none';
 					document.getElementById("hiddenFormSection2a").style.display = 'none';
@@ -319,11 +319,9 @@
 					document.getElementById("hiddenFormSection9a").style.display = 'inline';
 					document.getElementById("hiddenFormSection9b").style.display = 'none';
 					document.getElementById("hiddenFormSection9c").style.display = 'none';
-					document.getElementById("hiddenFormSection9d").style.display = 'none';
-					document.getElementById("hiddenFormSection9e").style.display = 'none';
 					document.getElementById("hiddenFormSection10").style.display = 'none';
 					document.getElementById("hiddenFormSection11").style.display = 'none';
-				} else {														// WGseq or ddRADseq.
+				} else { // WGseq or ddRADseq.
 					document.getElementById("hiddenFormSection1").style.display  = 'inline';
 					document.getElementById("hiddenFormSection2").style.display  = 'inline';
 					document.getElementById("hiddenFormSection2a").style.display = 'inline';
@@ -339,14 +337,10 @@
 						document.getElementById("hiddenFormSection9a").style.display = 'none';
 						document.getElementById("hiddenFormSection9b").style.display = 'inline';
 						document.getElementById("hiddenFormSection9c").style.display = 'none';
-						document.getElementById("hiddenFormSection9d").style.display = 'none';
-						document.getElementById("hiddenFormSection9e").style.display = 'none';
 					} else if (document.getElementById("dataFormat").value == 2) { // ddRADseq
 						document.getElementById("hiddenFormSection9a").style.display = 'none';
 						document.getElementById("hiddenFormSection9b").style.display = 'none';
 						document.getElementById("hiddenFormSection9c").style.display = 'inline';
-						document.getElementById("hiddenFormSection9d").style.display = 'none';
-						document.getElementById("hiddenFormSection9e").style.display = 'none';
 						document.getElementById("hiddenFormSection10").style.display = 'inline';
 						document.getElementById("hiddenFormSection11").style.display = 'inline';
 					}
