@@ -57,7 +57,8 @@
 	<ul>
 		<li>Works for any species for which a reference genome is installed.</li>
 			<div class="tab">New reference genomes in FASTA (*.fasta) format can be installed.<br>
-			Genomes much smaller or larger than the 16 Mbase <i>Candida albicans</i> may not work well. Please contact admin to discuss testing.</div>
+			Genomes much smaller or larger than the 16 Mbase <i>Candida albicans</i> may not work well. Please contact admin to discuss testing.<br>
+			<a href="https://pubmed.ncbi.nlm.nih.gov/25505934/">https://pubmed.ncbi.nlm.nih.gov/25505934/</a></div>
 		<li>Single-end reads as one file in raw FASTQ (*.fastq) or compressed (*.zip; *.fastq.gz) format.</li>
 		<li>Paired-end reads as two files in raw FASTQ (*.fastq) or two compressed (*.zip; *.fastq.gz) format.</li>
 		<li>Sequence Alignment/Map file in raw (*.sam) or compressed (*.bam) format.</li>
