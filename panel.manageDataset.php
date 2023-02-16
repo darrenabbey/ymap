@@ -8,7 +8,7 @@
 	}
 </style>
 <font size='3'>
-	Install SNP/CGH microarray and next generation sequence datasets to, or delete datasets from, your user account.
+	Install or delete next generation sequence and SNP/CGH microarray datasets in your user account.
 	<font size='2'>
         <p>
             <b>IMPORTANT:</b>
@@ -16,16 +16,9 @@
                 <li>Filenames should only have alphanumeric characters (letters, numbers, underscores and dashes) in their names (no spaces or other special characters!).</li>
                 <li>.fq and .fq.gz file extensions are not supported - rename them to .fastq or .fastq.gz (respectively).</li>
                 <li>Use Chrome for uploads (this will allow resuming them if they are interrupted).</li>
+		<li>Is your upload stuck? To resume it: When all other uploads are finished, refresh the page and re-add the files for upload.</li>
             </ol>
         </p>
-		<p>
-			Is your upload stuck? To resume it, do the following:
-			<ol>
-				<li>When all other uploads are finished, refresh the page.</li>
-				<li>Add the exact same files as you have previously to the project that is stuck.</li>
-				<li>Press the "upload" button.</li>
-			</ol>
-		</p>
 	</font>
 </font>
 <?php
