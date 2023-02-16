@@ -47,8 +47,8 @@
 			chmod($dir."/projects/",0777);
 			chmod($dir."/genomes/", 0777);
 			writePassword($user, $pw);
-			$_SESSION['logged_on'] = 1;
-			$_SESSION['user']      = $user;
+			//$_SESSION['logged_on'] = 1;
+			//$_SESSION['user']      = $user;
 
 			// Generate lockfile into user account, pending admin approval.
 			$lockFile = "users/".$user."/locked.txt";
