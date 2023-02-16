@@ -34,22 +34,23 @@ Newly registered locked accounts, pending approval.
 		$userCount = count($userFolders);
 
 		echo "<table width='100%'>";
-		echo "<tr><td width='20%'><font size='2'><b>User Account</b></font></td><td><font size='2'><b>Approval Needed</b></font></td></tr>";
+		echo "<tr><td width='20%'><font size='2'><b>User Account</b></font></td>";
+		echo     "<td><font size='2'><b>Approval Needed</b></font></td>";
+		echo "</tr>\n";
 		foreach($userFolders as $key=>$user) {
-			echo "<tr><td><span id='project_label_".$key."' style='color:#000000;'>\n\t\t";
-			echo "<font size='2'>".($key+1).".";
-
-			echo "\n\t\t".$user."</font></span>\n\t\t";
-			echo "<span id='u2_".$user."_delete'></span><span id='u_".$user."_type'></span>\n\t\t";
-			echo "<br>\n\t\t";
-			echo "<div id='frameContainer.u1_".$key."'></div>";
-			echo "</td><td>";
+			echo "\t\t<tr><td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
+			echo "<font size='2'>".($key+1).". ".$user."</font></span>\n";
+			//echo "<span id='u2_".$user."_delete'></span><span id='u_".$user."_type'></span>\n\t\t";
+			//echo "<br>\n\t\t";
+			//echo "<div id='frameContainer.u1_".$key."'></div>";
+			echo "\t\t</td><td>\n";
 
 			if (file_exists("users/".$user."/locked.txt")) {
-				echo "\n<input type='button' value='Approve' onclick=\"key = '$key'; console.log(key); $.ajax({url:'admin.approve_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
+				echo "\t\t\t<input type='button' value='Approve' onclick=\"key = '$key'; $.ajax({url:'admin.approve_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
+				echo "\t\t\t<input type='button' value='Delete'  onclick=\"key = '$key'; $.ajax({url:'admin.delete_server.php' ,type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
 			}
 
-			echo "</td></tr>";
+			echo "\t\t</td></tr>\n";
 		}
 		echo "</table>";
 	} else {
