@@ -88,27 +88,29 @@
 					<script type="text/javascript">
 					var nextGenomeDataFormat_entries = [['next','genome','dataFormat']<?php
 					foreach ($projectFolders_raw as $key=>$folder) {
-						$handle2         = fopen($folder."/dataFormat.txt", "r");
-						$dataFormat_string = trim(fgets($handle2));
-						$dataFormat_string = explode(":",$dataFormat_string);
-						$dataFormat_string = $dataFormat_string[0];
-						fclose($handle2);
+						if (stristr($folder,"index.php") == false) {
+							$handle2         = fopen($folder."/dataFormat.txt", "r");
+							$dataFormat_string = trim(fgets($handle2));
+							$dataFormat_string = explode(":",$dataFormat_string);
+							$dataFormat_string = $dataFormat_string[0];
+							fclose($handle2);
 
-						// Exclude projects from unusable data types.
-						if ($dataFormat_string == '0') {
-							// 0 : array data is excluded from options.
-						} elseif ($dataFormat_string == '1') {
-							// 1 : WGseq data is usable.
-							$handle1         = fopen($folder."/genome.txt", "r");
-							$genome_string   = trim(fgets($handle1));
-							fclose($handle1);
+							// Exclude projects from unusable data types.
+							if ($dataFormat_string == '0') {
+								// 0 : array data is excluded from options.
+							} elseif ($dataFormat_string == '1') {
+								// 1 : WGseq data is usable.
+								$handle1         = fopen($folder."/genome.txt", "r");
+								$genome_string   = trim(fgets($handle1));
+								fclose($handle1);
 
-							$nextName        = $folder;
-							$nextName        = str_replace($projectsDir1,"",$nextName);
-							$nextName        = str_replace($projectsDir2,"",$nextName);
-							echo ",['{$nextName}','{$genome_string}',{$dataFormat_string}]";
-						} else {
-							// 2 : ddRADseq data is unusable.
+								$nextName        = $folder;
+								$nextName        = str_replace($projectsDir1,"",$nextName);
+								$nextName        = str_replace($projectsDir2,"",$nextName);
+								echo ",['{$nextName}','{$genome_string}',{$dataFormat_string}]";
+							} else {
+								// 2 : ddRADseq data is unusable.
+							}
 						}
 					}
 					?>];
