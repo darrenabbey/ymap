@@ -82,18 +82,18 @@
 		    and file:<a                     href="example_datasets/Fig10.FH2_reverse.fastq.zip"             >[ZIP compressed FASTQ]</a></li>
 		<li>FH3, file:<a                    href="example_datasets/Fig10.FH3_forward.fastq.zip"             >[ZIP compressed FASTQ]</a>
 		    and file:<a                     href="example_datasets/Fig10.FH3_reverse.fastq.zip"             >[ZIP compressed FASTQ]</a></li>
-		<li>FH4, file:<a                    href="example_datasets/Fig10.FH4_forward.fastq.gz"              >[ZIP compressed FASTQ]</a>
-		    and file:<a                     href="example_datasets/Fig10.FH4_reverse.fastq.gz"              >[ZIP compressed FASTQ]</a></li>
+		<li>FH4, file:<a                    href="example_datasets/Fig10.FH4_forward.fastq.gz"              >[GZ compressed FASTQ]</a>
+		    and file:<a                     href="example_datasets/Fig10.FH4_reverse.fastq.gz"              >[GZ compressed FASTQ]</a></li>
 		<li>FH5, file:<a                    href="example_datasets/Fig10.FH5_forward.fastq.zip"             >[ZIP compressed FASTQ]</a>
 		    and file:<a                     href="example_datasets/Fig10.FH5_reverse.fastq.zip"             >[ZIP compressed FASTQ]</a></li>
 		<li>FH6, file:<a                    href="example_datasets/Fig10.FH6_forward.fastq.zip"             >[ZIP compressed FASTQ]</a>
 		    and file:<a                     href="example_datasets/Fig10.FH6_reverse.fastq.zip"             >[ZIP compressed FASTQ]</a></li>
-		<li>FH7, file:<a                    href="example_datasets/Fig10.FH7_forward.fastq.gz"              >[ZIP compressed FASTQ]</a>
-		    and file:<a                     href="example_datasets/Fig10.FH7_reverse.fastq.gz"              >[ZIP compressed FASTQ]</a></li>
-		<li>FH8, file:<a                    href="example_datasets/Fig10.FH8_forward.fastq.gz"              >[ZIP compressed FASTQ]</a>
-		    and file:<a                     href="example_datasets/Fig10.FH8_reverse.fastq.gz"              >[ZIP compressed FASTQ]</a></li>
-		<li>FH9, file:<a                    href="example_datasets/Fig10.FH9_forward.fastq.gz"              >[ZIP compressed FASTQ]</a>
-		    and file:<a                     href="example_datasets/Fig10.FH9_reverse.fastq.gz"              >[ZIP compressed FASTQ]</a></li>
+		<li>FH7, file:<a                    href="example_datasets/Fig10.FH7_forward.fastq.gz"              >[GZ compressed FASTQ]</a>
+		    and file:<a                     href="example_datasets/Fig10.FH7_reverse.fastq.gz"              >[GZ compressed FASTQ]</a></li>
+		<li>FH8, file:<a                    href="example_datasets/Fig10.FH8_forward.fastq.gz"              >[GZ compressed FASTQ]</a>
+		    and file:<a                     href="example_datasets/Fig10.FH8_reverse.fastq.gz"              >[GZ compressed FASTQ]</a></li>
+		<li>FH9, file:<a                    href="example_datasets/Fig10.FH9_forward.fastq.gz"              >[GZ compressed FASTQ]</a>
+		    and file:<a                     href="example_datasets/Fig10.FH9_reverse.fastq.gz"              >[GZ compressed FASTQ]</a></li>
 	</ul>
 </p>
 </font>
