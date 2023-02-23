@@ -17,14 +17,14 @@ function sanitize_POST($POST_name) {
 	// remove whitespace.
 	$cleanString = preg_replace("/[\s]+/", "", $cleanString);
 	// remove everything but alphanumeric characters, underlines, dashes, and periods.
-	$cleanString = preg_replace("/[^\w-_.]+/", "", $cleanString);
+	$cleanString = preg_replace("/[^\w\-_.]+/", "", $cleanString);
 	return $cleanString;
 }
 function sanitizeProjectsShown_POST($POST_name) {   // for cleaning projectsShown descriptions strings in UI.
 	// strip out any html tags.
 	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_SANITIZE_STRING));
 	// remove everything but alphanumeric characters, underlines, dashes, periods, and spaces.
-	$cleanString = preg_replace("/[^\w-_.: ]+/", "", $cleanString);
+	$cleanString = preg_replace("/[^\w\-_.: ]+/", "", $cleanString);
         return $cleanString;
 }
 function sanitizeColor_POST($POST_name) {
@@ -41,7 +41,7 @@ function sanitizeHapmap_POST($POST_name) {   // for cleaning hapmap description 
 	// remove whitespace.
 	$cleanString = preg_replace("/[\s]+/", "", $cleanString);
 	// remove everything but alphanumeric characters, underlines, dashes, and periods.
-	$cleanString = preg_replace("/[^\w-_.\[\]\(\):;]+/", "", $cleanString);
+	$cleanString = preg_replace("/[^\w\-_.\[\]\(\):;]+/", "", $cleanString);
 	// convert any underlines to spaces.
 	$cleanString = str_replace("_"," ", $cleanString);
 	return $cleanString;
