@@ -17,7 +17,7 @@
 	// Sanitize input strings.
 	$project = sanitize_POST("project");
 	$key     = sanitize_POST("key");
-	$status  = sanitize_POST("status");
+	$status  = (int)sanitize_POST("status");
 
 	// Confirm if requested project exists.
 	$project_dir = "users/".$user."/projects/".$project;
