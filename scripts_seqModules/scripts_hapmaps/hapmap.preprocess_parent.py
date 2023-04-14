@@ -53,7 +53,7 @@ elif (runMode == 'LOH'):
 		myfile.write("\t\t|\trunMode = 'LOH'\n");
 		myfile.write("\t\t|\t    Comparing project '"+project+"' to parent project '"+hapmap+"'.\n");
 
-t0 = time.clock();
+t0 = time.process_time();
 
 
 #============================================================================================================
@@ -267,7 +267,7 @@ for line in data:
 print('### End of preprocessed parental SNP data.');
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tTime to process = " + str(time.clock()-t0) + "\n");
+	myfile.write("\t\t|\tTime to process = " + str(time.process_time()-t0) + "\n");
 	myfile.write("\t\t*------------------------------------------------------------------------------*\n");
 	myfile.write("\t\t| 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py' completed.  |\n");
 	myfile.write("\t\t*==============================================================================*\n");

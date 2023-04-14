@@ -55,7 +55,7 @@ elif (runMode == 'LOH'):
 
 childDatafile = main_dir+"users/"+projectUser+"/projects/"+project+"/SNP_CNV_v1.txt"
 
-t0 = time.clock()
+t0 = time.process_time()
 
 
 #============================================================================================================
@@ -140,8 +140,8 @@ numFragments = fragment_counter
 #============================================================================================================
 
 
-print("### " + str(time.clock()-t0) + "seconds to parse restriction fragments from digested genome.")
-t1 = time.clock()
+print("### " + str(time.process_time()-t0) + "seconds to parse restriction fragments from digested genome.")
+t1 = time.process_time()
 print("### Starting read count data processing.")
 
 
@@ -472,8 +472,8 @@ for line in data:
 		if P_position == fragments[current_fragment-1][2]:
 			fragment_found = 0
 
-print("### " + str(time.clock()-t1) + "seconds to parse project SNP data.")
-t2 = time.clock()
+print("### " + str(time.process_time()-t1) + "seconds to parse project SNP data.")
+t2 = time.process_time()
 print('### Number of fragments = ' + str(numFragments))
 print('### Data from each fragment: [chrNum, bpStart, bpEnd, Max, Ave, Length]')
 
@@ -525,11 +525,11 @@ for fragment in range(1,numFragments):
 # End of code section to output information about fragments. 
 #============================================================================================================
 
-print("### " + str(time.clock()-t1) + "seconds to output basic stats of each restriction fragment.")
-print("### " + str(time.clock()-t0) + "seconds to complete processing of fragment definitions.")
+print("### " + str(time.process_time()-t1) + "seconds to output basic stats of each restriction fragment.")
+print("### " + str(time.process_time()-t0) + "seconds to complete processing of fragment definitions.")
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tTime to process = " + str(time.clock()-t0) +"\n")
+	myfile.write("\t\t|\tTime to process = " + str(time.process_time()-t0) +"\n")
 	myfile.write("\t\t*--------------------------------------------------------------------------------------------------------*\n")
 	myfile.write("\t\t| 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py' completed.          |\n")
 	myfile.write("\t\t*========================================================================================================*\n")

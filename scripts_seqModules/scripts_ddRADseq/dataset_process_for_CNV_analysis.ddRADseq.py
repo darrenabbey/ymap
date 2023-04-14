@@ -32,7 +32,7 @@ restrictionEnzymes = sys.argv[6]
 logName            = sys.argv[7]
 inputFile          = main_dir+"users/"+user+"/projects/"+project+"/SNP_CNV_v1.txt"
 
-t0 = time.clock()
+t0 = time.process_time()
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t*========================================================================================================*\n")
@@ -119,8 +119,8 @@ numFragments = fragment_counter
 #============================================================================================================
 
 
-print("### " + str(time.clock()-t0) + "seconds to parse restriction fragments from digested genome.")
-t1 = time.clock()
+print("### " + str(time.process_time()-t0) + "seconds to parse restriction fragments from digested genome.")
+t1 = time.process_time()
 print("### Starting read count data processing.")
 
 
@@ -314,8 +314,8 @@ for fragment in range(1,numFragments):
 #============================================================================================================
 
 
-print("### " + str(time.clock()-t1) + "seconds to process the pileup file.")
-t2 = time.clock()
+print("### " + str(time.process_time()-t1) + "seconds to process the pileup file.")
+t2 = time.process_time()
 print('### Number of fragments = ' + str(numFragments))
 print('### Data from each fragment: [chrNum, bpStart, bpEnd, aveDepth]')
 
@@ -342,8 +342,8 @@ for fragment in range(1,numFragments):
 #============================================================================================================
 
 
-print("### " + str(time.clock()-t2) + "seconds to output basic stats of each restriction fragment.")
-print("### " + str(time.clock()-t0) + "seconds to complete processing of pileup file and fragment definitions.")
+print("### " + str(time.process_time()-t2) + "seconds to output basic stats of each restriction fragment.")
+print("### " + str(time.process_time()-t0) + "seconds to complete processing of pileup file and fragment definitions.")
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t*--------------------------------------------------------------------------------------------------------*\n");

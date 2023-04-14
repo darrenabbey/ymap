@@ -24,7 +24,7 @@ logName    = main_dir+"users/"+user+"/hapmaps/"+hapmap+"/process_log.txt";
 inputFile1 = main_dir+"users/"+user+"/hapmaps/"+hapmap+"/SNPdata_parent.txt";
 inputFile2 = main_dir+"users/"+user+"/hapmaps/"+hapmap+"/SNPdata_child."+entryNum+".txt";
 
-t0 = time.clock()
+t0 = time.process_time()
 
 with open(logName, "a") as myfile:
 	myfile.write("*=======================================================================*\n");
@@ -365,7 +365,7 @@ searchTarget.close();
 # Final log file output.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("|\tTime to process = " + str(time.clock()-t0) + "\n");
+	myfile.write("|\tTime to process = " + str(time.process_time()-t0) + "\n");
 	myfile.write("*-----------------------------------------------------------------------*\n");
 	myfile.write("| End of 'scripts_seqModules/scripts_hapmaps/hapmap.process_child.py'   |\n");
 	myfile.write("*=======================================================================*\n");

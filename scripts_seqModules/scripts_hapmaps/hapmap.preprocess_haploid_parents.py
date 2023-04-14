@@ -64,7 +64,7 @@ logName     = main_dir+"users/"+hapmapUser+"/hapmaps/"+hapmap+"/process_log.txt"
 inputFile1  = main_dir+"users/"+hapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent1.txt";
 inputFile2  = main_dir+"users/"+hapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent2.txt";
 
-t0 = time.clock();
+t0 = time.process_time();
 
 with open(logName, "a") as myfile:
 	myfile.write("*==============================================================================*\n");
@@ -355,7 +355,7 @@ while (error_endOfFile == False):
 print '### End of preprocessed parental SNP data.'
 
 with open(logName, "a") as myfile:
-	myfile.write("|\tTime to process = " + str(time.clock()-t0) + "\n")
+	myfile.write("|\tTime to process = " + str(time.process_time()-t0) + "\n")
 	myfile.write("*------------------------------------------------------------------------------*\n")
 	myfile.write("| 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py' completed.  |\n");
 	myfile.write("*==============================================================================*\n");
