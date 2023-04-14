@@ -7,7 +7,7 @@
 
 function stripHTML_POST($POST_name) {
 	// Pull string from input_post; clean up any leading/trailing whitespace.
-	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT));
+	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT) ?? '');
 	// strip out any HTML/XML/PHP tags.
 	$cleanString = strip_tags($cleanString);
 
@@ -15,7 +15,7 @@ function stripHTML_POST($POST_name) {
 }
 function sanitize_POST($POST_name) {
 	// Pull string from input_post; clean up any leading/trailing whitespace.
-	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT));
+	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT) ?? '');
 	// strip out any HTML/XML/PHP tags.
 	$cleanString = strip_tags($cleanString);
 
@@ -29,7 +29,7 @@ function sanitize_POST($POST_name) {
 }
 function sanitizeProjectsShown_POST($POST_name) {   // for cleaning projectsShown descriptions strings in UI.
 	// Pull string from input_post; clean up any leading/trailing whitespace.
-	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT));
+	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT) ?? '');
 	// strip out any HTML/XML/PHP tags.
 	$cleanString = strip_tags($cleanString);
 
@@ -45,7 +45,7 @@ function sanitizeColor_POST($POST_name) {
 }
 function sanitizeHapmap_POST($POST_name) {   // for cleaning hapmap description strings.
 	// Pull string from input_post; clean up any leading/trailing whitespace.
-	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT));
+	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT) ?? '');
 	// strip out any HTML/XML/PHP tags.
 	$cleanString = strip_tags($cleanString);
 
@@ -61,7 +61,7 @@ function sanitizeHapmap_POST($POST_name) {   // for cleaning hapmap description 
 }
 function sanitizeFile_POST($POST_name) {
 	// Pull string from input_post; clean up any leading/trailing whitespace.
-	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT));
+	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT) ?? '');
 	// strip out any HTML/XML/PHP tags.
 	$cleanString = strip_tags($cleanString);
 
@@ -73,7 +73,7 @@ function sanitizeFile_POST($POST_name) {
 }
 function sanitizeFloat_POST($POST_name) {
 	// Pull string from input_post; clean up any leading/trailing whitespace.
-	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT));
+	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT) ?? '');
 	// strip out any HTML/XML/PHP tags.
 	$cleanString = strip_tags($cleanString);
 
@@ -83,7 +83,7 @@ function sanitizeFloat_POST($POST_name) {
 }
 function sanitizeInt_POST($POST_name) {
 	// Pull string from input_post; clean up any leading/trailing whitespace.
-	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT));
+	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT) ?? '');
 	// strip out any HTML/XML/PHP tags.
 	$cleanString = strip_tags($cleanString);
 
@@ -93,7 +93,7 @@ function sanitizeInt_POST($POST_name) {
 }
 function sanitizeIntChar_POST($POST_name) {
 	// Pull string from input_post; clean up any leading/trailing whitespace.
-	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT));
+	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT) ?? '');
 	// strip out any HTML/XML/PHP tags.
 	$cleanString = strip_tags($cleanString);
 
@@ -105,7 +105,7 @@ function sanitizeIntChar_POST($POST_name) {
 }
 function sanitizeTabbed_POST($POST_name) {
 	// Pull string from input_post; clean up any leading/trailing whitespace.
-	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT));
+	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT) ?? '');
 	// strip out any HTML/XML/PHP tags.
 	$cleanString = strip_tags($cleanString);
 
@@ -115,7 +115,7 @@ function sanitizeTabbed_POST($POST_name) {
 }
 function sanitizeName_POST($POST_name) {
 	// Pull string from input_post; clean up any leading/trailing whitespace.
-	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT));
+	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT) ?? '');
 	// strip out any HTML/XML/PHP tags.
 	$cleanString = strip_tags($cleanString);
 
@@ -125,7 +125,7 @@ function sanitizeName_POST($POST_name) {
 }
 function sanitizeEmail_POST($POST_email) {
 	// Pull string from input_post; clean up any leading/trailing whitespace.
-	$emailString = trim(filter_input(INPUT_POST, $POST_email, FILTER_DEFAULT));
+	$emailString = trim(filter_input(INPUT_POST, $POST_email, FILTER_DEFAULT) ?? '');
 	// strip out any HTML/XML/PHP tags.
 	$emailString = strip_tags($emailString);
 
