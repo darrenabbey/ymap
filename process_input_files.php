@@ -22,7 +22,7 @@ $name      = $name_new;
 
 // If uploaded file is wrong file type, delete.
 $ext = strtolower($ext);
-if (($ext == "tdt") || ($ext == "sam") || ($ext == "bam") || ($ext == "fasta") || ($ext == "fastq") || ($ext == "zip") || ($ext == "gz")) {
+if (($ext == "tdt") || ($ext == "sam") || ($ext == "bam") || ($ext == "fasta") || ($ext == "fastq") || ($ext == "fq") || ($ext == "zip") || ($ext == "gz")) {
 } else {
 	unlink($projectPath.$name);
 	fwrite($logOutput, "\t\t| Incompatible file format uploaded!!!\n");
@@ -83,7 +83,12 @@ if ($ext == "zip") {
 	rename($projectPath.$oldName,$projectPath.$name_first);
 
 	// rename decompressed file.
-	$rename_target = "datafile_".$key.".".$ext_first;
+	if ($ext_first == "fq") {
+		// if short extension for fastq, fq is found, rename to fastq.
+		$rename_target = "datafile_".$key.".fastq";
+	} else {
+		$rename_target = "datafile_".$key.".".$ext_first;
+	}
 	rename($projectPath.$name_first,$projectPath.$rename_target);
 
 	fwrite($logOutput, "\t\t| currentDir    = '".$currentDir."'\n");
@@ -189,6 +194,10 @@ if ($ext == "zip") {
 		$ext_new  = "none1";
 		$name_new = "";
 	}
+} else if ($ext == "fq") {
+	// if short extension for fastq, fq is found, rename to fastq.
+	$ext_new  = "fastq";
+	$name_new = $name;
 } else {
 	// Not a compressed archive, hand off to next section.
 	$ext_new  = $ext;
