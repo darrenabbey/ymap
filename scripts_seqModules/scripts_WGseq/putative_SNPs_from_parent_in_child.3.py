@@ -73,7 +73,7 @@ logName            = main_dir+"users/"+projectChildUser+"/projects/"+projectChil
 inputFile_trimmedP = main_dir+"users/"+projectChildUser+"/projects/"+projectChild+"/trimmed_SNPs_v4.parent.txt";
 inputFile_C        = main_dir+"users/"+projectChildUser+"/projects/"+projectChild+"/SNP_CNV_v1.txt";
 
-t0 = time.clock()
+t0 = time.process_time()
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t*======================================================================================*\n")
@@ -249,7 +249,7 @@ for SNP in parent_SNPs:
 print '### End of preprocessed parental SNP, child SNP data.'
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tTime to process = " + str(time.clock()-t0) + "\n")
+	myfile.write("\t\t|\tTime to process = " + str(time.process_time()-t0) + "\n")
 	myfile.write("\t\t*--------------------------------------------------------------------------------------*\n")
 	myfile.write("\t\t| End of 'scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.3.py' |\n")
 	myfile.write("\t\t*======================================================================================*\n")

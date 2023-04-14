@@ -1,9 +1,9 @@
 # Input Arguments
-#   1) user       : 'darren'
-#   2) project    : 'test_Ca'
-#   3) genome     : 'Candida_albicans_SC5314_etc'
-#   4) genomeUser : ''
-#   5) main_dir   : '/home/bermanj/shared/links/'
+#	1) user       : 'darren'
+#	2) project    : 'test_Ca'
+#	3) genome     : 'Candida_albicans_SC5314_etc'
+#	4) genomeUser : ''
+#	5) main_dir   : '/home/darren/public_html/Ymap/'
 #	6) logName    :
 #
 # Process input files:
@@ -22,7 +22,7 @@
 #		Comment lines in output begin with '#'.
 #
 
-import string, sys, re, time
+import string, sys, re, time;
 user       = sys.argv[1]
 project    = sys.argv[2]
 genome     = sys.argv[3]
@@ -31,7 +31,7 @@ main_dir   = sys.argv[5]
 logName    = sys.argv[6]
 inputFile  = main_dir+"users/"+user+"/projects/"+project+"/SNP_CNV_v1.txt"
 
-t0 = time.clock()
+t0 = time.process_time();
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t*=======================================================================================================*\n")
@@ -120,8 +120,8 @@ numFragments = fragment_counter
 # End of code section to parse restriction fragments from genome.
 #============================================================================================================
 
-print("### " + str(time.clock()-t0) + "seconds to parse restriction fragments from digested genome.")
-t1 = time.clock()
+print("### " + str(time.process_time()-t0) + "seconds to parse restriction fragments from digested genome.")
+t1 = time.process_time()
 print("### Starting read count data processing.")
 
 #============================================================================================================
@@ -325,8 +325,8 @@ for fragment in range(1,numFragments):
 #============================================================================================================
 
 
-print("### "+ str(time.clock()-t1) + "seconds to process the pileup file.")
-t2 = time.clock()
+print("### "+ str(time.process_time()-t1) + "seconds to process the pileup file.")
+t2 = time.process_time()
 print('### Number of fragments = ' + str(numFragments))
 print('### Data from each fragment: [chrNum, bpStart, bpEnd, aveDepth]')
 
@@ -352,11 +352,11 @@ for fragment in range(1,numFragments):
 #============================================================================================================
 
 
-print("### " + str(time.clock()-t1) + "seconds to output basic stats of each restriction fragment.")
-print("### " + str(time.clock()-t0) + "seconds to complete processing of fragment definitions.")
+print("### " + str(time.process_time()-t1) + "seconds to output basic stats of each restriction fragment.")
+print("### " + str(time.process_time()-t0) + "seconds to complete processing of fragment definitions.")
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tTime to process = " + str(time.clock()-t0) +"\n")
+	myfile.write("\t\t|\tTime to process = " + str(time.process_time()-t0) +"\n")
 	myfile.write("\t\t*-------------------------------------------------------------------------------------------------------*\n")
 	myfile.write("\t\t| End of Log from 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'          |\n")
 	myfile.write("\t\t*=======================================================================================================*\n")
