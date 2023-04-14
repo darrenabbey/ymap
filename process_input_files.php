@@ -108,14 +108,13 @@ if ($ext == "zip") {
 	}
 } else if ($ext == "gz") {
 	fwrite($condensedLogOutput, "Decompressing GZ file : ".$name."\n");
-	fwrite($logOutput, "\t\t| This is a GZ archive of : \n");
+	fwrite($logOutput, "\t\t| This is a GZ archive of : ".$name."\n");
 
 	// What is the file count in the archive?
 	$fileCount          = shell_exec("tar -tzf ".$projectPath.$name." | wc -l");
-        fwrite($logOutput,"\t\t| Files in gz archive = ".$fileCount.".\n");
 
         // Extract archive.
-	if ($fileCount = 0) {
+	if ($fileCount == 0) {
 		// Is not a tar.gz, so decompress with gzip.
 		chdir($projectPath);                   // move to projectDirectory.
 		$null = shell_exec("gzip -d ".$name);  // decompress archive.
@@ -127,9 +126,11 @@ if ($ext == "zip") {
 		$name_final = str_replace("-fastq",".fastq",$name_new);
 		$name_final = str_replace("-FASTQ",".fastq",$name_final);
 
-		$name_first = $name_final;
-		$name_ext   = pathinfo($name_first, PATHINFO_EXTENSION);
+		$name_first = $name_new;
+		$name_ext   = pathinfo($name_final, PATHINFO_EXTENSION);
 	} else {
+		fwrite($logOutput,"\t\t| Files in tar.gz archive = ".$fileCount.".\n");
+
 		// multiple files found in archive, so is a tar.gz and needs different handling.
 		chdir($projectPath);                   // move to projectDirectory.
 		$file_list = shell_exec("tar xvzf ".$name);
@@ -164,6 +165,7 @@ if ($ext == "zip") {
 		$name_ext    = $fragments[$count-1];
 		rename($projectPath.$files[0],$projectPath.$name_first);
 	}
+	$oldName = $name_new;
 
 	// rename decompressed file.
 	$rename_target = "datafile_".$key.".".$name_ext;
