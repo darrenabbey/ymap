@@ -125,6 +125,8 @@ if ($ext == "zip") {
 		$name_new   = str_replace(".gz","", $name);
 		$name_final = str_replace("-fastq",".fastq",$name_new);
 		$name_final = str_replace("-FASTQ",".fastq",$name_final);
+		$name_final = str_replace("-fq",".fastq",$name_final);
+		$name_final = str_replace("-FQ",".fastq",$name_final);
 
 		$name_first = $name_new;
 		$name_ext   = pathinfo($name_final, PATHINFO_EXTENSION);
