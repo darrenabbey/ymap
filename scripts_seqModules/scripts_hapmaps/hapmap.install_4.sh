@@ -117,7 +117,7 @@ then
 		cd $main_dir;
 
 		# Process parent SNP file 'SNPdata_parent.txt' into condensed het SNP information.
-		$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" $genome $genomeUser $project1 $project1User $hapmap $hapmapUser $main_dir hapmap > $hapmapDirectory"SNPdata_parent.temp.txt"
+		$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" $genome $genomeUser $project1 $project1User $hapmap $hapmapUser $main_dir hapmap > $hapmapDirectory"SNPdata_parent.temp.txt" 2>> $logName;
 		rm $hapmapDirectory"SNPdata_parent.txt"
 		mv $hapmapDirectory"SNPdata_parent.temp.txt" $hapmapDirectory"SNPdata_parent.txt"
 	else
@@ -127,7 +127,7 @@ then
 	##==============================================================================
 	## Read in 'haplotypeMap.txt' and output fragment definition files.
 	##------------------------------------------------------------------------------
-	$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.expand_definitions.py" $user $hapmap $main_dir
+	$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.expand_definitions.py" $user $hapmap $main_dir 2>> $logName;
 
 	##==============================================================================
 	## Deal with installing and processing child/project2 datasets.
@@ -153,7 +153,7 @@ then
 	cd $main_dir
 
 	# Process child dataset vs parental SNPs and haplotype map definitions.
-	$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.process_child.py" $genome $genomeUser $project2 $user $hapmap $main_dir $childNum > $hapmapDirectory"SNPdata_parent.temp.txt"
+	$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.process_child.py" $genome $genomeUser $project2 $user $hapmap $main_dir $childNum > $hapmapDirectory"SNPdata_parent.temp.txt" 2>> $logName;
 
 	# Delete original 'SNPdata_parent.txt' file.
 	rm $hapmapDirectory"SNPdata_parent.txt";
@@ -188,7 +188,7 @@ else
 		cd $main_dir;
 
 		# Process parent SNP files 'SNPdata_parent1.txt' & 'SNPdata_parent2.txt' into condensed het SNP information.
-		$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_haploid_parents.py" $genome $genomeUser $project1 $project1User $project2 $project2User $hapmap $hapmapUser $main_dir hapmap > $hapmapDirectory"SNPdata_parent.temp.txt"
+		$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_haploid_parents.py" $genome $genomeUser $project1 $project1User $project2 $project2User $hapmap $hapmapUser $main_dir hapmap > $hapmapDirectory"SNPdata_parent.temp.txt" 2>> $logName;
 		mv $hapmapDirectory"SNPdata_parent.temp.txt" $hapmapDirectory"SNPdata_parent.txt"
 
 		# Delete original 'SNPdata_parent1.txt' and 'SNPdata_parent2.txt' file, no longer needed here.

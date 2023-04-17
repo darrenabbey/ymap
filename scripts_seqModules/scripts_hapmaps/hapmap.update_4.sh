@@ -112,7 +112,7 @@ then
 	cd $main_dir;
 
 	# Process parent SNP file 'SNPdata_parent.txt' into condensed het SNP information.
-	$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" $genome $genomeUser $project1 $project1User $hapmap $hapmapUser $main_dir hapmap > $hapmapDirectory"SNPdata_parent.temp.txt"
+	$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" $genome $genomeUser $project1 $project1User $hapmap $hapmapUser $main_dir hapmap > $hapmapDirectory"SNPdata_parent.temp.txt" 2>> $logName;
 	rm $hapmapDirectory"SNPdata_parent.txt"
 	mv $hapmapDirectory"SNPdata_parent.temp.txt" $hapmapDirectory"SNPdata_parent.txt"
 else
@@ -124,7 +124,7 @@ fi
 ## Read hapmap entries from 'haplotypeMap.txt' and output fragment definition files.
 ##------------------------------------------------------------------------------
 ## generate haplotypeFragments.#.txt files.
-$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.expand_definitions.py" $user $hapmap $main_dir
+$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.expand_definitions.py" $user $hapmap $main_dir 2>> $logName;
 
 
 ##==============================================================================
@@ -154,7 +154,7 @@ mv SNP_CNV_v1.txt "SNPdata_child."$childNum".txt";
 cd $main_dir
 
 # Process most recent child dataset vs parental SNPs and haplotype map definitions.
-$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.process_child.py" $genome $genomeUser $project2 $user $hapmap $main_dir $childNum > $hapmapDirectory"SNPdata_parent.temp.txt"
+$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.process_child.py" $genome $genomeUser $project2 $user $hapmap $main_dir $childNum > $hapmapDirectory"SNPdata_parent.temp.txt" 2>> $logName;
 
 ## Delete original 'SNPdata_parent.txt' file.
 rm $hapmapDirectory"SNPdata_parent.txt";

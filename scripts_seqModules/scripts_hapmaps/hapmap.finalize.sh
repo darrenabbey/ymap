@@ -40,5 +40,5 @@ echo "    hapmapDirectory   = '"$hapmapDirectory"'" >> $logName;
 ##============================================================================================================
 ## Read in 'SNPdata_parent.txt' file from Ymap-internal representation and output hapmap definition files.
 ##------------------------------------------------------------------------------------------------------------
-$python_exec $main_dir"/scripts_seqModules/scripts_hapmaps/process_hapmap.output_cleaned.py" $hapmapDirectory"SNPdata_parent.txt" > $hapmapDirectory"hapmap_final.txt";
-$python_exec $main_dir"/scripts_seqModules/scripts_hapmaps/process_hapmap.output_errors.py"  $hapmapDirectory"SNPdata_parent.txt" > $hapmapDirectory"hapmap_errors.txt";
+$python_exec $main_dir"/scripts_seqModules/scripts_hapmaps/process_hapmap.output_cleaned.py" $hapmapDirectory"SNPdata_parent.txt" > $hapmapDirectory"hapmap_final.txt" 2>> $logName;
+$python_exec $main_dir"/scripts_seqModules/scripts_hapmaps/process_hapmap.output_errors.py"  $hapmapDirectory"SNPdata_parent.txt" > $hapmapDirectory"hapmap_errors.txt" 2>> $logName;

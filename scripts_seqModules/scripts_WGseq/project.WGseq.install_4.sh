@@ -84,7 +84,7 @@ then
 	echo "\tCNV data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
 else
 	echo "\tPreprocessing CNV data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
-	$python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.txt";
+	$python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.txt" 2>> $logName;
 	echo "\tpre-processing complete." >> $logName;
 fi
 
@@ -107,7 +107,7 @@ echo "\t|\t    analyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$gen
 echo "\t|\tend" >> $logName;
 
 echo "\tCalling MATLAB." >> $logName;
-$matlab_exec -nosplash -r "run "$outputName"; exit;";
+$matlab_exec -nosplash -r "run "$outputName"; exit;" 2>> $logName;
 echo "\tMATLAB log from CNV analysis." >> $logName;
 sed 's/^/\t|/;' $projectDirectory"matlab.CNV_and_GCbias.log" >> $logName;
 
@@ -144,7 +144,7 @@ else
 	echo "================================================================================================";
 	echo "== ChARM analysis ==============================================================================";
 	echo "================================================================================================";
-	$matlab_exec -nosplash -r "run "$outputName"; exit;";
+	$matlab_exec -nosplash -r "run "$outputName"; exit;" 2>> $logName;
 	echo "\tMATLAB log from ChARM analysis." >> $logName;
 	sed 's/^/\t|/;' $projectDirectory"matlab.ChARM.log" >> $logName;
 fi
@@ -184,12 +184,12 @@ else
 	fi
 
 	# preprocess parent for comparison.
-	$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt";
+	$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt" 2>> $logName;
 
 	rm $projectDirectory"SNPdata_parent.txt";
 	mv $projectDirectory"SNPdata_parent.temp.txt" $projectDirectory"SNPdata_parent.txt";
 
-	$python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" $genome $genomeUser $projectParent $projectParentUser $project $user $main_dir $logName LOH > $projectDirectory"preprocessed_SNPs.txt";
+	$python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" $genome $genomeUser $projectParent $projectParentUser $project $user $main_dir $logName LOH > $projectDirectory"preprocessed_SNPs.txt" 2>> $logName;
 	echo "\tpre-processing complete." >> $logName;
 fi
 
@@ -214,7 +214,7 @@ echo "\tCalling MATLAB." >> $logName;
 echo "================================================================================================";
 echo "== SNP analysis ================================================================================";
 echo "================================================================================================";
-$matlab_exec -nosplash -r "run "$outputName"; exit;";
+$matlab_exec -nosplash -r "run "$outputName"; exit;" 2>> $logName;
 echo "\tMATLAB log from SNP analysis." >> $logName;
 sed 's/^/\t|/;' $projectDirectory"matlab.SNP_analysis.log" >> $logName;
 
@@ -247,7 +247,7 @@ echo "\tCalling MATLAB.   (Log will be appended here after completion.)" >> $log
 echo "================================================================================================";
 echo "== Final figures ===============================================================================";
 echo "================================================================================================";
-$matlab_exec -nosplash -r "run "$outputName"; exit;";
+$matlab_exec -nosplash -r "run "$outputName"; exit;" 2>> $logName;
 echo "\tMATLAB log from final figure generation." >> $logName;
 sed 's/^/\t|/;' $projectDirectory"matlab.final_figs.log" >> $logName;
 echo "finished all processing, moving to Cleaning up intermediate WGseq files" >> $condensedLog;

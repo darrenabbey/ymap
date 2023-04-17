@@ -127,6 +127,6 @@ echo "end" >> $outputName;
 echo "end" >> $logName;
 
 echo "\tCalling MATLAB." >> $logName;
-$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;";
+$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;" 2>> $logName;
 echo "\tMATLAB log from redo of visualization.." >> $logName;
 sed 's/^/\t\t|/;' $projectDirectory"matlab.rerun_visualization.log" >> $logName;

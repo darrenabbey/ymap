@@ -97,7 +97,7 @@ then
 	echo "\tCNV data already preprocessed with python script : 'py/dataset_process_for_CNV_analysis.ddRADseq.py'" >> $logName;
 else
 	echo "\tPreprocessing CNV data with python script : 'py/dataset_process_for_CNV_analysis.ddRADseq.py'" >> $logName;
-	$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/dataset_process_for_CNV_analysis.ddRADseq.py" $user $project $genome $genomeUser $main_dir $RestrctionEnzymes $logName  > $projectDirectory"preprocessed_CNVs.ddRADseq.txt";
+	$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/dataset_process_for_CNV_analysis.ddRADseq.py" $user $project $genome $genomeUser $main_dir $RestrctionEnzymes $logName  > $projectDirectory"preprocessed_CNVs.ddRADseq.txt" 2>> $logName;
 	echo "\tpre-processing complete." >> $logName;
 fi
 
@@ -125,13 +125,13 @@ else
 
 	# preprocess hapmap/parent SNP data.
 	echo "\tProcessing SNP data from parent or hapmap with python script : 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py'" >> $logName;
-	$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $parent $parentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt";
+	$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $parent $parentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt" 2>> $logName;
 	rm $projectDirectory"SNPdata_parent.txt";
 	mv $projectDirectory"SNPdata_parent.temp.txt" $projectDirectory"SNPdata_parent.txt";
 
 	# preprocess dataset SNP data.
 	echo "\tProcessing SNP data with python script: 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py'" >> $logName;
-	$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py" $genome $genomeUser $parent $parentUser $project $user $main_dir $RestrctionEnzymes $logName LOH > $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
+	$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py" $genome $genomeUser $parent $parentUser $project $user $main_dir $RestrctionEnzymes $logName LOH > $projectDirectory"preprocessed_SNPs.ddRADseq.txt" 2>> $logName;
 	chmod 0777 $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
 	echo "\tpre-processing complete." >> $logName;
 fi
@@ -168,7 +168,7 @@ else
 	echo "\t|\tend" >> $logName;
 
 	echo "\tCalling MATLAB." >> $logName;
-	$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;";
+	$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;" 2>> $logName;
 	echo "\tMATLAB log from CNV analysis." >> $logName;
 	sed 's/^/\t\t|/;' $projectDirectory"matlab.CNV_and_GCbias.log" >> $logName;
 fi
@@ -206,7 +206,7 @@ else
 	echo "================================================================================================";
 	echo "== ChARM analysis ==============================================================================";
 	echo "================================================================================================";
-	$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;";
+	$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;" 2>> $logName;
 	echo "\tMATLAB log from ChARM analysis." >> $logName;
 	sed 's/^/\t\t|/;' $projectDirectory"matlab.ChARM.log" >> $logName;
 fi
@@ -249,7 +249,7 @@ echo "\tCalling MATLAB." >> $logName;
 echo "================================================================================================";
 echo "== SNP analysis ================================================================================";
 echo "================================================================================================";
-$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;";
+$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;" 2>> $logName;
 echo "\tMATLAB log from SNP analysis." >> $logName;
 sed 's/^/\t\t|/;' $projectDirectory"matlab.SNP_analysis.log" >> $logName;
 
@@ -280,7 +280,7 @@ echo "\t|\t\tanalyze_CNV_SNPs_RADseq('$main_dir','$user','$genomeUser','$project
 echo "\t|\tend" >> $logName;
 
 echo "\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
-$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;";
+$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;" 2>> $logName;
 sed 's/^/\t\t|/;' $projectDirectory"matlab.final_figs.log" >> $logName;
 
 
