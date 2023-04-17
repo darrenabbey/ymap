@@ -11,7 +11,7 @@ genomeName  = sys.argv[2];
 main_dir    = sys.argv[3];
 logName     = sys.argv[4];
 
-t0 = time.clock();
+t0 = time.process_time();
 with open(logName, "a") as myfile:
 	myfile.write("\t\t\t*================================================================================*\n");
 	myfile.write("\t\t\t| Log of 'scripts_genomes/genome_process_for_RADseq.repetitiveness_2.py'         |\n");
@@ -87,8 +87,8 @@ ddRADseq_FASTA_data.close();
 #============================================================================================================
 
 
-print "###\t", time.clock() - t0, "seconds to parse restriction fragments from digested genome.";
-t1 = time.clock();
+print "###\t", time.process_time() - t0, "seconds to parse restriction fragments from digested genome.";
+t1 = time.process_time();
 print "### Starting read count data processing.";
 
 
@@ -173,7 +173,7 @@ for x in chrName:
 	repetData.append([]);
 # Load data from file.
 old_chr_name = '';
-t0 = time.clock();
+t0 = time.process_time();
 for line in data:
 	# example lines from repetitiveness file:
 	#     chromosome                    bpCoordinate    repetitivenessScore
@@ -191,10 +191,10 @@ for line in data:
 
 		if (chr_name <> old_chr_name):
 			with open(logName, "a") as myfile:
-				myfile.write("\n\t\t\t\t\tTime to process = " + str(time.clock() - t0) + " seconds.");
+				myfile.write("\n\t\t\t\t\tTime to process = " + str(time.process_time() - t0) + " seconds.");
 				myfile.write("\n\t\t\t\tLoading repetitiveness data for chr '" + str(chr_name) + "'");
 			print '### Loading repetitiveness data for chr "' + str(chr_name) + '"';
-			t0 = time.clock();
+			t0 = time.process_time();
 
 		# If chromosome string is being examined.
 		if chr_name in chrName:
@@ -240,10 +240,10 @@ for current_fragment in fragments:
 with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\t\tWriting time to complete process to output files.")
 
-print "### ", time.clock() - t0, "seconds to complete processing of pileup file and fragment definitions."
+print "### ", time.process_time() - t0, "seconds to complete processing of pileup file and fragment definitions."
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\t| Time to process = " + str(time.clock()-t0) + "\n")
+	myfile.write("\n\t\t\t| Time to process = " + str(time.process_time()-t0) + "\n")
 	myfile.write("\t\t\t*--------------------------------------------------------------------------------*\n");
 	myfile.write("\t\t\t| 'scripts_genomes/genome_process_for_RADseq.repetitiveness_2.py' completed      |\n");
 	myfile.write("\t\t\t*================================================================================*\n");

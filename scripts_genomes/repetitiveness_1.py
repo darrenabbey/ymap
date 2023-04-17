@@ -71,7 +71,7 @@ def rev_com(seq):
 
 
 # Initialize time counter and log file section.
-t0 = time.clock();
+t0 = time.process_time();
 
 
 #============================================================================================================
@@ -162,7 +162,7 @@ FASTA_file = workingDir + refFASTA;
 FASTA_data = open(FASTA_file,'r');
 
 # Reset timer.
-t0a = time.clock();
+t0a = time.process_time();
 t1  = t0a;
 with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\t| Start tallying nmers.\n");
@@ -188,8 +188,8 @@ while True:
 		# If the current chromosome is different than the last one, output log entry.
 		if (chr_name <> old_chr_name):
 			with open(logName, "a") as myfile:
-				myfile.write("\t\t\t|\t" + str(time.clock() - t1) + " seconds for this chr.\n");
-				t1 = time.clock();
+				myfile.write("\t\t\t|\t" + str(time.process_time() - t1) + " seconds for this chr.\n");
+				t1 = time.process_time();
 				if chr_name in chrName:
 					myfile.write("\t\t\t| Tallying nmers of: " + chr_name + "\n");
 				else:
@@ -220,11 +220,11 @@ FASTA_data.close();
 # Reset timer.
 with open(logName, "a") as myfile:
 	if old_chr_name in chrName:
-		myfile.write("\t\t\t|\t" + str(time.clock() - t1) + " seconds for this chr.\n");
+		myfile.write("\t\t\t|\t" + str(time.process_time() - t1) + " seconds for this chr.\n");
 	myfile.write("\t\t\t|\n");
-	myfile.write("\t\t\t| " + str(time.clock() - t0a) + " seconds to talley incidence of nmers across genome.\n");
+	myfile.write("\t\t\t| " + str(time.process_time() - t0a) + " seconds to talley incidence of nmers across genome.\n");
 	myfile.write("\t\t\t|\n");
-t0b = time.clock();
+t0b = time.process_time();
 t1  = t0b;
 with open(logName, "a") as myfile:
 	myfile.write("\t\t\t| Start generating repetitiveness score across genome.\n");
@@ -263,8 +263,8 @@ while True:
 		# If the current chromosome is different than the last one, output log entry.
 		if (chr_name <> old_chr_name):
 			with open(logName, "a") as myfile:
-				myfile.write("\t\t\t|\t" + str(time.clock() - t1) + " seconds for this chr.\n");
-			t1 = time.clock();
+				myfile.write("\t\t\t|\t" + str(time.process_time() - t1) + " seconds for this chr.\n");
+			t1 = time.process_time();
 			with open(logName, "a") as myfile:
 				myfile.write("\t\t\t| Outputing repetitiveness scores for: " + chr_name + "\n");
 
@@ -293,8 +293,8 @@ while True:
 # Conclude log outputs.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("\t\t\t|\t" + str(time.clock() - t1) + " seconds for this chr.\n");
-	myfile.write("\t\t\t| Total time for computation of genome repetitiveness = " + str(time.clock() - t0) + "\n");
+	myfile.write("\t\t\t|\t" + str(time.process_time() - t1) + " seconds for this chr.\n");
+	myfile.write("\t\t\t| Total time for computation of genome repetitiveness = " + str(time.process_time() - t0) + "\n");
 	myfile.write("\t\t\t*----------------------------------------------------------------*\n");
 	myfile.write("\t\t\t| 'scripts_genomes/repetitiveness_1.py' has completed            |\n");
 	myfile.write("\t\t\t*================================================================*\n");

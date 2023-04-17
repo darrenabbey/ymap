@@ -26,7 +26,7 @@ genomeName  = sys.argv[2];
 main_dir    = sys.argv[3];
 logName     = sys.argv[4];
 
-t0 = time.clock()
+t0 = time.process_time()
 with open(logName, "a") as myfile:
 	myfile.write("\t\t\t*================================================================*\n")
 	myfile.write("\t\t\t| Log of 'genome_process_for_standard_bins.GC_bias_1.py'         |\n")
@@ -116,8 +116,8 @@ numFragments = fragment_counter
 # End of code section to parse restriction fragments from genome.
 #============================================================================================================
 
-print "### ", time.clock() - t0, "seconds to parse restriction fragments from digested genome."
-t1 = time.clock()
+print "### ", time.process_time() - t0, "seconds to parse restriction fragments from digested genome."
+t1 = time.process_time()
 
 print '### numFragments = ' + str(numFragments);
 print '### Data from each fragment: [chrNum, bpStart, bpEnd, GC_ratio]'
@@ -146,9 +146,9 @@ for fragment in range(1,numFragments):
 # End of code section to output information about fragments. 
 #============================================================================================================
 
-print "### ", time.clock() - t1, "seconds to output basic stats of each restriction fragment."
-print "### ", time.clock() - t0, "seconds to complete processing of fragment definitions."
+print "### ", time.process_time() - t1, "seconds to output basic stats of each restriction fragment."
+print "### ", time.process_time() - t0, "seconds to complete processing of fragment definitions."
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\tTime to process = " + str(time.clock()-t0) )
+	myfile.write("\n\t\t\tTime to process = " + str(time.process_time()-t0) )
 	myfile.write("\n\t\t* 'py/genome_process_for_standard_bins.GC_bias_1.py' completed. *")

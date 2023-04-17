@@ -14,7 +14,7 @@ genome     = sys.argv[2]
 main_dir   = sys.argv[3]
 logName    = sys.argv[4]
 
-t0 = time.clock()
+t0 = time.process_time()
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t\t*================================================================*\n")

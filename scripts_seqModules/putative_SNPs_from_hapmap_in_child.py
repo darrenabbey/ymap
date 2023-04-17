@@ -73,7 +73,7 @@ logName            = main_dir+"users/"+projectChildUser+"/projects/"+projectChil
 inputFile_H        = main_dir+"users/"+HapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent.txt";
 inputFile_C        = main_dir+"users/"+projectChildUser+"/projects/"+projectChild+"/SNP_CNV_v1.txt";
 
-t0 = time.clock();
+t0 = time.process_time();
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t*====================================================================================*\n");
@@ -261,7 +261,7 @@ for SNP in hapmap_loci:
 print('### End of preprocessed hapmap loci vs. child SNP data.');
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tTime to process = " + str(time.clock()-t0) + "\n")
+	myfile.write("\t\t|\tTime to process = " + str(time.process_time()-t0) + "\n")
 	myfile.write("\t\t*------------------------------------------------------------------------------------*\n")
 	myfile.write("\t\t| End of 'scripts_seqModules/putative_SNPs_from_hapmap_in_child.py' |\n")
 	myfile.write("\t\t*====================================================================================*\n")

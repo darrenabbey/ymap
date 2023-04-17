@@ -16,7 +16,7 @@ logName     = sys.argv[4];
 
 
 # Initialize time counter and log file section.
-t0 = time.clock();
+t0 = time.process_time();
 with open(logName, "a") as myfile:
 	myfile.write("\t\t\t*================================================================*\n")
 	myfile.write("\t\t\t| Log of 'genome_process_for_RADseq_1.py'                        |\n")
@@ -101,7 +101,7 @@ chrCount = chrName_maxcount;
 
 
 # Reset timer.
-t0a = time.clock();
+t0a = time.process_time();
 t1  = t0a;
 with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\t#### Start genome fragmentation.\n");
@@ -142,8 +142,8 @@ while True:
 		# If the current chromosome is different than the last one, output log entry.
 		if (chr_name <> old_chr_name):
 			with open(logName, "a") as myfile:
-				myfile.write("\t\t\t####\t" + str(time.clock() - t1) + " seconds for this chr.\n");
-				t1 = time.clock();
+				myfile.write("\t\t\t####\t" + str(time.process_time() - t1) + " seconds for this chr.\n");
+				t1 = time.process_time();
 				if chr_name in chrName:
 					myfile.write("\t\t\t#### Fragmenting: " + chr_name + "\n");
 				else:
