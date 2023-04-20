@@ -30,21 +30,21 @@ if [ $debug -eq 1 ];
 then
 	echo "\tReached cleanup stage, but skipping it because the debug flag is on." >> $logName;
 	echo "\tCreating complete.txt, so that the front-end recognizes the completion." >> $logName;
-	
+
 	completeFile=$reflocation"complete.txt";
 	echo "complete" > $completeFile;
 	timestamp=$(date +%T);
 	echo $timestamp >> $completeFile;
 	echo "\tGenerated 'complete.txt' file." >> $logName;
 	chmod 0744 $completeFile;
-	
+
 	## changing working.txt to working_done.txt
 	if [ -f $reflocation"working.txt" ]
 	then
 		mv $reflocation"working.txt" $reflocation"working_done.txt";
 		echo "\t changed working.txt to working_done.txt" >> $logName;
 	fi
-	
+
 	exit 0;
 fi
 
