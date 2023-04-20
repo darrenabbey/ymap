@@ -230,7 +230,7 @@ if ($ext_new == "fastq") {
 		// It is a FASTQ file.
 	} else {
 		// format is wrong for a FASTQ file.
-		//unlink($projectPath.$name_first);
+		unlink($projectPath.$name_first);
 		fwrite($logOutput, "\t\t| FASTQ file format incorrect!!!\n");
 		$ext_new = "none2";
 	}
@@ -280,7 +280,7 @@ if ($ext_new == "fastq") {
 // Final processing of data files, error logging.
 //------------------------------------------------
 if ($ext_new == "fastq") {
-	fwrite($logOutput, "\t\t| This is an uncompressed FASTQ file, no further pre-processing is needed.\n");
+	fwrite($logOutput, "\t\t| This is a FASTQ file, no further pre-processing is needed.\n");
 	fwrite($output, $name_new."\n");
 	$paired = 0;
 } else if ($ext_new == "fasta") {
