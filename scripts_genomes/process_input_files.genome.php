@@ -216,7 +216,7 @@ if ($ext_new == "fasta") {
 	if ($fasta_valid == true) {
 		// file contents are consistent with FASTA format.
 	} else {
-		/ format is wrong for a FASTA file.
+		// format is wrong for a FASTA file.
 		unlink($genomePath.$name_first);
 		fwrite($logOutput, "\t\t| FASTA file format incorrect!!!\n");
 		$ext_new = "none2";
