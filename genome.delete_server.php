@@ -15,7 +15,7 @@
 	$user    = $_SESSION['user'];
 
 	// Sanitize input string.
-	$genome  = sanitize_POST("newGenomeName");
+	$genome  = sanitize_POST("genome");
 	$dir     = "users/".$user."/genomes/".$genome;
 
 	// Confirm if requested project exists.
