@@ -5,94 +5,22 @@
         $genome   = $_SESSION['genome'];
         $key      = $_SESSION['key'];
 
-	/*
-	 * The following constants stem from the fact that Ymap display up to 50 chromosomes and that php supports up to around 1000 variables that can be passed
-	 * between forms and in $_SESSION variables which limits the genome form to up to 300 entries
-	**/
-	$MAX_CHROM_SELECTION = 50;  // the maximum number of chromosomes that can be chosen for drawing
-	$MAX_CHROM_POOL      = 300; // the maximum number of chromosomes that will be displayed to the user to choose from the 50 to draw
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<HTML>
-<HEAD>
-	<style type="text/css">
-		body {font-family: arial;}
-		.upload {
-			width:          675px;      // 675px;
-			border:         0;
-			height:         40px;   // 40px;
-			vertical-align: middle;
-			align:          left;
-			margin:         0px;
-			overflow:       hidden;
-		}
-		html, body {
-			margin:         0px;
-			border:         0;
-			overflow:       hidden;
-		}
-	</style>
-<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
-<title>Install genome into pipeline.</title>
-</HEAD>
-<script>
-	// will return the number of checked draw check boxes
-	function getCheckedNumber(checkBoxes) {
-		// getting the checkboxes
-		var i = 0; // loop variable
-		var count = 0; // will count the number of checked checkboxes
-		for (i = 0; i < checkBoxes.length; i++) {
-			if (checkBoxes[i].checked) {
-				count += 1;
-			}
-		}
-		return count;
-	}
-	function chromosomCheck() {
-		// getting the checkboxes
-		var MAX_CHROM_SELECTION = <?php echo $MAX_CHROM_SELECTION; ?>; // the limit of chromosomes that can be displayed
-		var checkBoxes = document.getElementsByClassName("draw");
-		var count = getCheckedNumber(checkBoxes);
-		var i = 0; // loop variable
-		// disable all unchecked boxes if we have reached limit
-		if (count == MAX_CHROM_SELECTION) {
-			for (i = 0; i < checkBoxes.length; i++) {
-				if (!checkBoxes[i].checked) {
-					checkBoxes[i].disabled = true;
-				}
-			}
-		}
-		else { // enable checkboxes
-			for (var i = 0; i < checkBoxes.length; i++) {
-				checkBoxes[i].disabled = false;
-			}
-		}
-	}
-</script>
-<?php
 // current directory
 	require_once '../constants.php';
 	include_once 'process_input_files.genome.php';
 
-	// Attempt to sanitize inputs?
-	$fasta_name = $genome.".fasta";
-	if (($fileName == ".") || ($fileName == "..") || ($user == ".") || ($user == "..") || ($genome == ".") || ($genome == "..") || ($key == ".") || ($key == "..")) {
-		echo "Invalid input data";
-		exit;
-	}
-
 // Initialize log files.
 	$logOutputName = "../users/".$user."/genomes/".$genome."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'w');
-	fwrite($logOutput, "Log file initialized\n");
-	fwrite($logOutput, "#..............................................................................\n");
-	fwrite($logOutput, "Running 'scripts_genomes/genome.install_1.php'.\n");
+	fwrite($logOutput, "*========================================================================*\n");
+	fwrite($logOutput, "| Log file initalized in 'scripts_genomes/genome.install_1.php'.         |\n");
+	fwrite($logOutput, "*------------------------------------------------------------------------*\n");
 	fwrite($logOutput, "Variables passed :\n");
-	fwrite($logOutput, "\tfileName = '".$fileName."'\n");
 	fwrite($logOutput, "\tuser     = '".$user."'\n");
+	fwrite($logOutput, "\tfileName = '".$fileName."'\n");
 	fwrite($logOutput, "\tgenome   = '".$genome."'\n");
 	fwrite($logOutput, "\tkey      = '".$key."'\n");
-	fwrite($logOutput, "#============================================================================== 1\n");
+	fwrite($logOutput, "#----------------------------------------------------------------------- 1\n");
 
 	$condensedLogOutputName = "../users/".$user."/genomes/".$genome."/condensed_log.txt";
 	$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
@@ -100,19 +28,21 @@
 	fclose($condensedLogOutput);
 	chmod($condensedLogOutputName,0744);
 
-//	// Generate 'working.txt' file to let pipeline know processing is started.
-//	$outputName      = "../../users/".$user."/genomes/".$genome."/working.txt";
-//	$output          = fopen($outputName, 'w');
-//	$startTimeString = date("Y-m-d H:i:s");
-//	fwrite($output, $startTimeString);
-//	fclose($output);
-//	chmod($outputName,0755);
-//	fwrite($logOutput, "\tGenerated 'working.txt' file.\n");
+	// Generate 'working.txt' file to let pipeline know processing is started.
+	$outputName      = "../users/".$user."/genomes/".$genome."/working.txt";
+	$output          = fopen($outputName, 'w');
+	$startTimeString = date("Y-m-d H:i:s");
+	fwrite($output, $startTimeString);
+	fclose($output);
+	chmod($outputName,0755);
+	fwrite($logOutput, "\tGenerated 'working.txt' file.\n");
 
 	// Generate 'reference.txt' file containing:
 	//      one line; file name of reference FASTA file.
+	$fasta_name = $genome.".fasta";
 	fwrite($logOutput, "\tGenerating 'reference.txt' file.\n");
 	$outputName       = "../users/".$user."/genomes/".$genome."/reference.txt";
+	$output           = fopen($outputName, 'w');
 	if (file_exists($outputName)) {
 		$fileContents = file_get_contents($outputName);
 		unlink($outputName);
@@ -130,11 +60,12 @@
 	//	one line; name of genome.
 	fwrite($logOutput, "\tGenerating 'name.txt' file.\n");
 	$outputName       = "../users/".$user."/genomes/".$genome."/name.txt";
+	$output           = fopen($outputName, 'w');
 	if (file_exists($outputName)) {
 		$fileContents = file_get_contents($outputName);
 		unlink($outputName);
 		$output       = fopen($outputName, 'w');
-		fwrite($output, $fileContents);
+		fwrite($output, str_replace("_"," ",$genome));
 	} else {
 		$output       = fopen($outputName, 'w');
 		fwrite($output, str_replace("_"," ",$genome));
@@ -153,35 +84,29 @@
 	chmod($outputName,0755);
 	fwrite($logOutput, "\tGenerated 'upload_size_1.txt' file.\n");
 
-		// Process uploaded file.
-		$name        = str_replace("\\", ",", $fileName);
-		rename($genomePath.$name,$genomePath.strtolower($name));
-		$name        = strtolower($name);
-		$ext         = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-		$filename    = strtolower(pathinfo($name, PATHINFO_FILENAME));
-		fwrite($logOutput, "\tKey         : ".$key."\n");
-		fwrite($logOutput, "\tDatafile    : '".$name."'.\n");
-		fwrite($logOutput, "\tFilename    : '".$filename."'.\n");
-		fwrite($logOutput, "\tExtension   : '".$ext."'.\n");
-		fwrite($logOutput, "\tScript_path : '".getcwd()."'.\n");
-		fwrite($logOutput, "\tPath        : '".$genomePath."'.\n");
+	// Process uploaded file.
+	$name        = str_replace("\\", ",", $fileName);
+	rename($genomePath.$name,$genomePath.strtolower($name));
+	$name        = strtolower($name);
+	$ext         = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+	$filename    = strtolower(pathinfo($name, PATHINFO_FILENAME));
+	fwrite($logOutput, "\tKey         : ".$key."\n");
+	fwrite($logOutput, "\tDatafile    : '".$name."'.\n");
+	fwrite($logOutput, "\tFilename    : '".$filename."'.\n");
+	fwrite($logOutput, "\tExtension   : '".$ext."'.\n");
+	fwrite($logOutput, "\tScript_path : '".getcwd()."'.\n");
+	fwrite($logOutput, "\tPath        : '".$genomePath."'.\n");
 
-// duplicate block?
-//		// Generate 'upload_size.txt' file to contain the size of the uploaded file (irrespective of format) for display in "Manage Datasets" tab.
-//		$output2Name    = $genomePath."upload_size_1.txt";
-//		$output2        = fopen($output2Name, 'w');
-//		$fileSizeString = filesize($genomePath.$name);
-//		fwrite($output2, $fileSizeString);
-//		fclose($output2);
-//		chmod($output2Name,0755);
-//		fwrite($logOutput, "\tGenerated 'upload_size_1.txt' file.\n");
+	// Process the uploaded file into format usable by later steps.
+	$condensedLogOutput = fopen($condensedLogOutputName, 'w');
+	fwrite($condensedLogOutput, "Processing uploaded file.\n");
+	fclose($condensedLogOutput);
 
-		// Process the uploaded file into format usable by later steps.
-		process_input_files_genome($ext,$name,$genomePath,$key,$user,$genome,$output, $condensedLogOutput,$logOutput, $fasta_name);
-		$fileName = $fasta_name;
-
-
+	process_input_files_genome($ext,$name,$genomePath,$key,$user,$genome,$output, $condensedLogOutput,$logOutput, $fasta_name);
+	$fileName = $fasta_name;
 	$file_path  = "../users/".$user."/genomes/".$genome."/".$fileName;
+	fwrite($logOutput, "\n\tFile name & path: ".$file_path."\n");
+
 	// Process FASTA file for chromosome count, names, and lengths.
 	fwrite($logOutput, "\n\tReading chromosome count, names, and lengths from FASTA.\n");
 	$chr_count   = 0;
@@ -222,15 +147,16 @@
 		if ($chr_length > 0)
 		{
 			array_push($chr_lengths, $chr_length);
-			fwrite($logOutput, "\t" . 'finished processing chromosome ' . $chr_name . ' length: ' . $chr_length . PHP_EOL);
+			fwrite($logOutput, "\t" . 'finished processing chromosome "' . $chr_name . '" length: ' . $chr_length . PHP_EOL);
 		}
-		fclose($handle);
+		fclose($fileHandle);
 	}
-	unset($line);
-	unset($chr_length);
-	unset($line_parts);
-	unset($chr_name);
 	fwrite($logOutput, "\tnum chrs    : '$chr_count'.\n");
+
+	fwrite($logOutput, "\tGenome processed.\n");
+	$condensedLogOutput = fopen($condensedLogOutputName, 'w');
+	fwrite($condensedLogOutput, "Genome processed.\n");
+	fclose($condensedLogOutput);
 
 	// Store variables of interest into $_SESSION.
 	fwrite($logOutput, "\tStoring PHP session variables.\n");
@@ -255,13 +181,63 @@
 //------------------------------------------------------------------------------------------------------------
 // dragon
 ?>
-
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+<HEAD>
+	<style type="text/css">
+		body {font-family: arial;}
+		.upload {
+			width:          675px;      // 675px;
+			border:         0;
+			height:         40px;   // 40px;
+			vertical-align: middle;
+			align:          left;
+			margin:         0px;
+			overflow:       hidden;
+		}
+		html, body {
+			margin:         0px;
+			border:         0;
+			overflow:       hidden;
+		}
+	</style>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<title>Install genome into pipeline.</title>
+</HEAD>
+<script>
+	// will return the number of checked draw check boxes
+	function getCheckedNumber(checkBoxes) {
+		// getting the checkboxes
+		var i = 0; // loop variable
+		var count = 0; // will count the number of checked checkboxes
+		for (i = 0; i < checkBoxes.length; i++) {
+			if (checkBoxes[i].checked) {
+				count += 1;
+			}
+		}
+		return count;
+	}
+	function chromosomeCheck() {
+		// getting the checkboxes
+		var MAX_CHROM_SELECTION = <?php echo $MAX_CHROM_SELECTION; ?>; // the limit of chromosomes that can be displayed
+		var checkBoxes = document.getElementsByClassName("draw");
+		var count = getCheckedNumber(checkBoxes);
+		var i = 0; // loop variable
+		// disable all unchecked boxes if we have reached limit
+		if (count == MAX_CHROM_SELECTION) {
+			for (i = 0; i < checkBoxes.length; i++) {
+				if (!checkBoxes[i].checked) {
+					checkBoxes[i].disabled = true;
+				}
+			}
+		} else { // enable checkboxes
+			for (var i = 0; i < checkBoxes.length; i++) {
+				checkBoxes[i].disabled = false;
+			}
+		}
+	}
+</script>
 <BODY onload = "parent.parent.resize_genome('<?php echo $key; ?>', 150)<?php
-//	$genomePath      = "../users/".$user."/genomes/".$genome."/";
-//	$outputName      = $genomePath."upload_size_1.txt";
-//	$output          = fopen($outputName, 'w');
-//	$fileSizeString  = filesize($genomePath.$fileName);
-
 	$sizeFile_1   = "upload_size_1.txt";
 	$handle       = fopen($sizeFile_1,'r');
 	$sizeString_1 = trim(fgets($handle));
@@ -271,6 +247,8 @@
 	}
 ?>">
 <?php
+//`	echo "<input name=\"button_InstallNewGenome\"  type=\"button\" value=\"Install New Genome\"  onclick=\"parent.show_hidden('Hidden_InstallNewGenome')\"><br>\n\t\t\t\t";
+
 	echo "<font color=\"red\" size=\"2\">Fill in genome details:</font><br>";
 	echo "<font color=\"black\" size=\"2\">Label can be up to 6 characters</font><br>";
 	if ($chr_count > $MAX_CHROM_SELECTION && $chr_count <= $MAX_CHROM_POOL) {
@@ -324,12 +302,12 @@
 		else {
 			// checking only the $MAX_CHROM_SELECTION longest
 			if ($chr_lengths[$chr] >= $lowestSize && $countUsed >= 1) {
-				echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" name=\"draw_{$chrID}\" onchange=\"chromosomCheck()\" checked></td>\n";
+				echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" name=\"draw_{$chrID}\" onchange=\"chromosomeCheck()\" checked></td>\n";
 				// reduce the count of used to avoid checking more then $MAX_CHROM_SELECTION if multiple have the same size
 				$countUsed -= 1;
 			}
 			else {
-				echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" onchange=\"chromosomCheck()\" name=\"draw_{$chrID}\" disabled></td>\n";
+				echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" onchange=\"chromosomeCheck()\" name=\"draw_{$chrID}\" disabled></td>\n";
 			}
 		}
 		echo "\t\t\t<td><font size=\"2\">{$chr_names[$chr]}</font></td>\n";
