@@ -15,6 +15,11 @@
 	// hardcoded quota (used in case no globalquota.txt in users folder or no quota.txt exits in user folder)
 	$quota = 25;
 
+	// The following constants stem from the fact that Ymap display up to 50 chromosomes and that php supports up to around 1000 variables that can be passed
+	// between forms and in $_SESSION variables which limits the genome form to up to 300 entries
+	$MAX_CHROM_SELECTION = 50;  // the maximum number of chromosomes that can be chosen for drawing
+	$MAX_CHROM_POOL      = 300; // the maximum number of chromosomes that will be displayed to the user to choose from the 50 to draw
+
 	// Pepper string for password security.
 	include(".pepper.php");
 ?>
