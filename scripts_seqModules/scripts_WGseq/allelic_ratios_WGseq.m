@@ -363,18 +363,18 @@ max_val    = max(all_data(:));
 fprintf('\t|\tGenerate final chromosome figures.\n');
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
-	    figure(fig);
+		figure(fig);
 
-	    % make standard chr cartoons.
-	    left   = chr_posX(chr);
-	    bottom = chr_posY(chr);
-	    width  = chr_width(chr);
-	    height = chr_height(chr);
-	    subplot('Position',[left bottom width height]);
+		% make standard chr cartoons.
+		left   = chr_posX(chr);
+		bottom = chr_posY(chr);
+		width  = chr_width(chr);
+		height = chr_height(chr);
+		subplot('Position',[left bottom width height]);
 		hold on;
 
 		% standard : axes labels etc.
-	    xlim([0,chr_size(chr)/bases_per_bin]);
+		xlim([0,chr_size(chr)/bases_per_bin]);
 
 		%% standard : modify y axis limits to show annotation locations if any are provided.
 		if (length(annotations) > 0)
@@ -485,7 +485,7 @@ for chr = 1:num_chrs
 			      'Color',[0 0 0]);
 		end;
 		% standard : end show centromere.
-    
+
 		%% standard : show annotation locations
 		fprintf('\t|\t\t\tShow annotation locations.\n');
 		if (show_annotations) && (length(annotations) > 0)
@@ -518,7 +518,7 @@ for chr = 1:num_chrs
 			subplot('Position',[Linear_left Linear_base Linear_width Linear_height]);
 			hold on;
 			Linear_left = Linear_left + Linear_width + Linear_chr_gap;
-            
+
 			% linear : show segmental anueploidy breakpoints.
 			if (Linear_displayBREAKS == true) && (show_annotations == true)
 				fprintf('\t|\t\t\tShow ChARM breakpoints on linear figure.\n');
@@ -552,7 +552,7 @@ for chr = 1:num_chrs
 				c_ = [1.0 1.0 1.0];
 				% top left corner.
 				x_ = [leftEnd   leftEnd   leftEnd+dx];        y_ = [maxY-dy   maxY      maxY        ];    f = fill(x_,y_,c_);    set(f,'linestyle','none');
-				% bottom left corner.     
+				% bottom left corner.
 				x_ = [leftEnd   leftEnd   leftEnd+dx];        y_ = [dy        0         0           ];    f = fill(x_,y_,c_);    set(f,'linestyle','none');
 				% top right corner.
 				x_ = [rightEnd   rightEnd   rightEnd-dx];     y_ = [maxY-dy    maxY       maxY      ];    f = fill(x_,y_,c_);    set(f,'linestyle','none');

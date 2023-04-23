@@ -752,7 +752,7 @@ else
 						text(axisLabelPosition_horiz, maxY/4,     '4','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
 						text(axisLabelPosition_horiz, maxY/2,     '8','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
 						text(axisLabelPosition_horiz, maxY/4*3,  '12','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY,      '16,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY,      '16','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
 					end;
 				end;
 				set(gca,'FontSize',linear_gca_font_size);
