@@ -154,22 +154,25 @@ chrNames   = [];
 chrLabels  = [];
 chrShorts  = [];
 for line in figureDefinitionData:
-	line_parts = line.strip().split();
-	chr_num = line_parts[0];
-	if chr_num.isdigit():
-		chr_num                        = int(float(line_parts[0]));
-		chrNums.append(chr_num);
-		chr_use                        = int(float(line_parts[1]));
-		chr_label                      = line_parts[2];
-		chrLabels.append(chr_label);
-		chr_name                       = line_parts[3];
-		chrNames.append(chr_name);
-		chr_nameShort                  = chr_label;
-		chrShorts.append(chr_nameShort);
-		chrName[chrCounter] = chr_name;
-		with open(logName, "a") as myfile:
-			myfile.write("|\t\t" + str(chr_num) + " : " + chr_name + " = " + chr_nameShort + "\n");
-		chrCounter += 1;
+	if (len(line) > 0):
+		if (line[0] != "#"):
+			line_parts = line.strip().split()
+			if (len(line_parts) > 0):
+				chr_num = line_parts[0]
+				if chr_num.isdigit():
+					chr_num                        = int(float(line_parts[0]));
+					chrNums.append(chr_num);
+					chr_use                        = int(float(line_parts[1]));
+					chr_label                      = line_parts[2];
+					chrLabels.append(chr_label);
+					chr_name                       = line_parts[3];
+					chrNames.append(chr_name);
+					chr_nameShort                  = chr_label;
+					chrShorts.append(chr_nameShort);
+					chrName[chrCounter] = chr_name;
+					with open(logName, "a") as myfile:
+						myfile.write("|\t\t" + str(chr_num) + " : " + chr_name + " = " + chr_nameShort + "\n");
+					chrCounter += 1;
 figureDefinitionFile.close();
 # Put the chromosome count into a smaller name for later use.
 chrCount = chrName_maxcount;

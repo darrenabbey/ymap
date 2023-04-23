@@ -97,7 +97,7 @@ chrName_maxcount = 0
 for line in figureDefinitionData:
 	if (len(line) > 0):
 		if (line[0] != "#"):
-			line_parts = string.split(string.strip(line))
+			line_parts = line.strip().split()
 			if (len(line_parts) > 0):
 				chr_num = line_parts[0]
 				if chr_num.isdigit():
@@ -125,23 +125,26 @@ chrNames   = [];
 chrLabels  = [];
 chrShorts  = [];
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line))
-	chr_num = line_parts[0]
-	if chr_num.isdigit():
-		chr_num                        = int(float(line_parts[0]))
-		chrNums.append(chr_num);
-		chrCounter += chrCounter;
-		chr_use                        = int(float(line_parts[1]))
-		chr_label                      = line_parts[2]
-		chrLabels.append(chr_label);
-		chr_name                       = line_parts[3]
-		chrNames.append(chr_name);
-		chr_nameShort                  = chr_label
-		chrShorts.append(chr_nameShort);
-		if chr_num != 0:
-			chrName[int(float(chr_num))-1] = chr_name
-			with open(logName, "a") as myfile:
-				myfile.write("\t\t|\t\t" + str(chr_num) + " : " + chr_name + " = " + chr_nameShort + "\n")
+	if (len(line) > 0):
+		if (line[0] != "#"):
+			line_parts = line.strip().split()
+			if (len(line_parts) > 0):
+				chr_num = line_parts[0]
+				if chr_num.isdigit():
+					chr_num                        = int(float(line_parts[0]))
+					chrNums.append(chr_num);
+					chrCounter += chrCounter;
+					chr_use                        = int(float(line_parts[1]))
+					chr_label                      = line_parts[2]
+					chrLabels.append(chr_label);
+					chr_name                       = line_parts[3]
+					chrNames.append(chr_name);
+					chr_nameShort                  = chr_label
+					chrShorts.append(chr_nameShort);
+					if chr_num != 0:
+						chrName[int(float(chr_num))-1] = chr_name
+						with open(logName, "a") as myfile:
+							myfile.write("\t\t|\t\t" + str(chr_num) + " : " + chr_name + " = " + chr_nameShort + "\n")
 figureDefinitionFile.close()
 
 # Put the chromosome count into a smaller name for later use.
