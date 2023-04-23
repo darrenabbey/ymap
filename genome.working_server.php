@@ -17,7 +17,7 @@
 	// Sanitize input strings.
 	$genome = sanitize_POST("genome");
 	$key    = sanitize_POST("key");
-	$status = sanitize_POST("status");
+	$status = (int)sanitize_POST("status");
 
 	// Confirm if requested genome exists.
 	$genome_dir = "users/".$user."/genomes/".$genome;
@@ -73,7 +73,7 @@
 	if (file_exists($genome_dir."/complete.txt")) {
 		?>
 		<html>
-		<body onload = "parent.parent.update_genome_label_color('<?php echo $key; ?>','#00AA00'); parent.parent.update_genome_remove_iframe('<?php echo $key; ?>');">
+		<body onload = "parent.parent.update_genome_label_color('<?php echo $key; ?>','#00AA00'); parent.parent.resize_genome('<?php echo $key; ?>', 0); parent.parent.update_genome_remove_iframe('<?php echo $key; ?>'); ?>', '<?php echo htmlspecialchars(json_encode(scandir("users/$user/genomes/$genome"))); ?>');">
 		</body>
 		</html>
 		<?php

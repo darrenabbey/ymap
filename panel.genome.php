@@ -23,7 +23,7 @@
 		$currentSize = getUserUsageSize($user);
 		// getting user quota in Gigabytes
 		$quota = getUserQuota($user);
-		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear 
+		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear
 		$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
 		if ($exceededSpace)
 			echo "<span style='color:#FF0000; font-weight: bold;'>You have exceeded your quota (" . $quota . "G) please clear space and then reload to install new genome</span><br><br>";
@@ -107,8 +107,13 @@
 		$genomeNameString = trim($genomeNameString);
 		echo "<span id='g_label_".$key."' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
 		echo "<font size='2'>".($key+1).".";
-		echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('".$user."','".$genome."','".$key."')\">Delete</button>";
+		echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('".$genome."','".$key."');\">Delete</button>";
 		echo $genomeNameString;
+
+		// checks condensed log to see if initial processing is done.
+		if (file_exists("users/".$user."/genomes/".$genome."/working.txt")) {
+			echo "<button id='genome_finalize_".$key."' type='button' onclick=\"parent.show_hidden('Hidden_InstallNewGenome2');\">Finalize</button>";
+		}
 
 		// display total size of files only if the genome is finished processeing
 		if ($frameContainerIx == "1")
