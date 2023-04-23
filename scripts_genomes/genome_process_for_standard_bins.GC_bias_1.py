@@ -28,9 +28,9 @@ logName     = sys.argv[4];
 
 t0 = time.process_time()
 with open(logName, "a") as myfile:
-	myfile.write("\t\t\t*================================================================*\n")
-	myfile.write("\t\t\t| Log of 'genome_process_for_standard_bins.GC_bias_1.py'         |\n")
-	myfile.write("\t\t\t*----------------------------------------------------------------*\n")
+	myfile.write("\t\t*================================================================*\n")
+	myfile.write("\t\t| Log of 'genome_process_for_standard_bins.GC_bias_1.py'         |\n")
+	myfile.write("\t\t*----------------------------------------------------------------*\n")
 
 
 #============================================================================================================
@@ -41,7 +41,7 @@ with open(logName, "a") as myfile:
 # FASTA entries with header lines ending in '[*]' are usable.
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\tProcessing standard bin fragmented genome file.")
+	myfile.write("\n\t\tProcessing standard bin fragmented genome file.")
 
 # Find name of genome FASTA file for species being examined.
 #     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/reference.txt"
@@ -52,7 +52,8 @@ refFASTA       = refFile.read().strip()
 refFile.close()
 
 # Open standard-fragmented genome FASTQ file.
-standardBins_FASTA_file = workingDir + string.replace(refFASTA, '.fasta','.standard_bins.fasta')
+standardBins_FASTA_file = workingDir + refFASTA.replace('.fasta','.standard_bins.fasta');
+
 standardBins_FASTA_data = open(standardBins_FASTA_file,'r')
 
 #............................................................................................................
@@ -73,7 +74,7 @@ while True:
 	first_char = line1[:1];
 	if first_char == ">":
 		# Line is header to FASTQ entry.
-		line_parts             = string.split(string.strip(line1))
+		line_parts             = line1.strip().split();
 		chrGenomeAndNum_string = line_parts[0]
 		bp_coordinate_string   = line_parts[1]
 		fragment_size_string   = line_parts[2]
@@ -116,17 +117,17 @@ numFragments = fragment_counter
 # End of code section to parse restriction fragments from genome.
 #============================================================================================================
 
-print "### ", time.process_time() - t0, "seconds to parse restriction fragments from digested genome."
+print("### ", time.process_time() - t0, "seconds to parse restriction fragments from digested genome.")
 t1 = time.process_time()
 
-print '### numFragments = ' + str(numFragments);
-print '### Data from each fragment: [chrNum, bpStart, bpEnd, GC_ratio]'
+print('### numFragments = ' + str(numFragments));
+print('### Data from each fragment: [chrNum, bpStart, bpEnd, GC_ratio]')
 
 #============================================================================================================
 # Code section to output information about genome restriction fragments.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\tOutputting GC-ratios of standard-bin fragmented genome.")
+	myfile.write("\n\t\tOutputting GC-ratios of standard-bin fragmented genome.")
 for fragment in range(1,numFragments):
 	# Output a line for each fragment.
 	#     fragments[fragment-1] = [chr_num,bp_start,bp_end, GC_ratio]
@@ -140,15 +141,15 @@ for fragment in range(1,numFragments):
 	bp_end          = fragments[fragment-1][2]
 	GC_ratio        = fragments[fragment-1][3]
 
-	print str(chr_num) + '\t' + str(bp_start) + '\t' + str(bp_end) + '\t' + str(GC_ratio)
+	print(str(chr_num) + '\t' + str(bp_start) + '\t' + str(bp_end) + '\t' + str(GC_ratio))
 
 #------------------------------------------------------------------------------------------------------------
 # End of code section to output information about fragments. 
 #============================================================================================================
 
-print "### ", time.process_time() - t1, "seconds to output basic stats of each restriction fragment."
-print "### ", time.process_time() - t0, "seconds to complete processing of fragment definitions."
+print("### ", time.process_time() - t1, "seconds to output basic stats of each restriction fragment.")
+print("### ", time.process_time() - t0, "seconds to complete processing of fragment definitions.")
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\tTime to process = " + str(time.process_time()-t0) )
+	myfile.write("\n\t\tTime to process = " + str(time.process_time()-t0) )
 	myfile.write("\n\t\t* 'py/genome_process_for_standard_bins.GC_bias_1.py' completed. *")

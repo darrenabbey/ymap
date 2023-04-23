@@ -14,7 +14,7 @@
 	// Load user string from session.
 	$user   = $_SESSION['user'];
 
-	// Sanitize input strings.
+
 	$key    = sanitize_POST("key");
 
 	// Load strings from session.

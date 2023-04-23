@@ -145,34 +145,38 @@ discard                = fgetl(figInfo_fid);   clear discard; %discard header li
 lines_analyzed         = 0;
 while not (feof(figInfo_fid))
 	line           = fgetl(figInfo_fid);
-	figInfo_chr    = sscanf(line, '%s',1);
-	figInfo_chr    = str2num(figInfo_chr);
-	figInfo_useChr = sscanf(line, '%s',2);   for i = 1:size(sscanf(line,'%s',1),2);   figInfo_useChr(1) = [];   end;
-	figInfo_useChr = str2num(figInfo_useChr);
-	figInfo_label  = sscanf(line, '%s',3);   for i = 1:size(sscanf(line,'%s',2),2);   figInfo_label(1)  = [];   end;
+	if (strlength(line) > 0)
+		if (line(1) ~= '#')
+			figInfo_chr    = sscanf(line, '%s',1);
+			figInfo_chr    = str2num(figInfo_chr);
+			figInfo_useChr = sscanf(line, '%s',2);   for i = 1:size(sscanf(line,'%s',1),2);   figInfo_useChr(1) = [];   end;
+			figInfo_useChr = str2num(figInfo_useChr);
+			figInfo_label  = sscanf(line, '%s',3);   for i = 1:size(sscanf(line,'%s',2),2);   figInfo_label(1)  = [];   end;
 
-	run = 0;
-	if (figInfo_useChr >  0);                                             run = 1; end;
-	if ((figInfo_chr   == 0) && (strcmp(figInfo_label,'Ploidy') == 1));   run = 2; end;
+			run = 0;
+			if (figInfo_useChr >  0);                                             run = 1; end;
+			if ((figInfo_chr   == 0) && (strcmp(figInfo_label,'Ploidy') == 1));   run = 2; end;
 
-	if (run == 1)
-		lines_analyzed = lines_analyzed+1;
-		figInfo_name   = sscanf(line, '%s',4);   for i = 1:size(sscanf(line,'%s',3),2);   figInfo_name(1)   = [];   end;
-		figInfo_posX   = sscanf(line, '%s',5);   for i = 1:size(sscanf(line,'%s',4),2);   figInfo_posX(1)   = [];   end;
-		figInfo_posY   = sscanf(line, '%s',6);   for i = 1:size(sscanf(line,'%s',5),2);   figInfo_posY(1)   = [];   end;
-		figInfo_width  = sscanf(line, '%s',7);   for i = 1:size(sscanf(line,'%s',6),2);   figInfo_width(1)  = [];   end;
-		figInfo_height = sscanf(line, '%s',8);   for i = 1:size(sscanf(line,'%s',7),2);   figInfo_height(1) = [];   end;
-		figure_details(figInfo_chr).chr    = figInfo_chr;
-		figure_details(figInfo_chr).label  = figInfo_label;
-		figure_details(figInfo_chr).name   = figInfo_name;
-		figure_details(figInfo_chr).useChr = figInfo_useChr;
-		figure_details(figInfo_chr).posX   = str2double(figInfo_posX);
-		figure_details(figInfo_chr).posY   = str2double(figInfo_posY);
-		figure_details(figInfo_chr).width  = figInfo_width;
-		figure_details(figInfo_chr).height = str2double(figInfo_height);
-	elseif (run == 2)
-		figInfo_ploidy_default = sscanf(line, '%s',4);	for i = 1:size(sscanf(line,'%s',3),2);   figInfo_ploidy_default(1) = [];   end;
-		figInfo_ploidy_default = str2num(figInfo_ploidy_default);
+			if (run == 1)
+				lines_analyzed = lines_analyzed+1;
+				figInfo_name   = sscanf(line, '%s',4);   for i = 1:size(sscanf(line,'%s',3),2);   figInfo_name(1)   = [];   end;
+				figInfo_posX   = sscanf(line, '%s',5);   for i = 1:size(sscanf(line,'%s',4),2);   figInfo_posX(1)   = [];   end;
+				figInfo_posY   = sscanf(line, '%s',6);   for i = 1:size(sscanf(line,'%s',5),2);   figInfo_posY(1)   = [];   end;
+				figInfo_width  = sscanf(line, '%s',7);   for i = 1:size(sscanf(line,'%s',6),2);   figInfo_width(1)  = [];   end;
+				figInfo_height = sscanf(line, '%s',8);   for i = 1:size(sscanf(line,'%s',7),2);   figInfo_height(1) = [];   end;
+				figure_details(figInfo_chr).chr    = figInfo_chr;
+				figure_details(figInfo_chr).label  = figInfo_label;
+				figure_details(figInfo_chr).name   = figInfo_name;
+				figure_details(figInfo_chr).useChr = figInfo_useChr;
+				figure_details(figInfo_chr).posX   = str2double(figInfo_posX);
+				figure_details(figInfo_chr).posY   = str2double(figInfo_posY);
+				figure_details(figInfo_chr).width  = figInfo_width;
+				figure_details(figInfo_chr).height = str2double(figInfo_height);
+			elseif (run == 2)
+				figInfo_ploidy_default = sscanf(line, '%s',4);	for i = 1:size(sscanf(line,'%s',3),2);   figInfo_ploidy_default(1) = [];   end;
+				figInfo_ploidy_default = str2num(figInfo_ploidy_default);
+			end;
+		end;
 	end;
 end;
 if (length(figure_details) == 0)

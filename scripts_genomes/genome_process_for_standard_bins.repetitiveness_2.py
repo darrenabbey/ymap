@@ -16,9 +16,9 @@ logName     = sys.argv[4];
 
 t0 = time.process_time();
 with open(logName, "a") as myfile:
-	myfile.write("\t\t\t*================================================================================*\n");
-	myfile.write("\t\t\t| Log of 'scripts_genomes/genome_process_for_standard_bins.repetitiveness_2.py'  |\n");
-	myfile.write("\t\t\t*--------------------------------------------------------------------------------*\n");
+	myfile.write("\t\t*================================================================================*\n");
+	myfile.write("\t\t| Log of 'scripts_genomes/genome_process_for_standard_bins.repetitiveness_2.py'  |\n");
+	myfile.write("\t\t*--------------------------------------------------------------------------------*\n");
 
 
 #============================================================================================================
@@ -29,7 +29,7 @@ with open(logName, "a") as myfile:
 # Lines ending in '[*]' are usable.   Other lines aren't usable.
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\tProcessing restriction-digest fragmented genome file -> fragment coordinates.");
+	myfile.write("\n\t\tProcessing restriction-digest fragmented genome file -> fragment coordinates.");
 
 # Find name of genome FASTA file for species being examined.
 #     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/reference.txt"
@@ -40,7 +40,7 @@ refFASTA       = refFile.read().strip();
 refFile.close();
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\tReference FASTA : " + refFASTA);
+	myfile.write("\n\t\tReference FASTA : " + refFASTA);
 
 # Open restriction-digested genome FASTQ file.
 fragmentedGenome        = refFASTA.replace(".fasta",".standard_bins.fasta");
@@ -50,21 +50,21 @@ standardBins_FASTA_file = workingDir + fragmentedGenome;
 standardBins_FASTA_data = open(standardBins_FASTA_file,'r');
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\tStandard-bin fragmented reference FASTA : " + standardBins_FASTA_file);
+	myfile.write("\n\t\tStandard-bin fragmented reference FASTA : " + standardBins_FASTA_file);
 
 #............................................................................................................
 
 # Setup array and counter for tracking fragment definition data.
 fragments        = [];
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\tProcessing restriction-digested genome file -> fragment coordinates.");
+	myfile.write("\n\t\tProcessing restriction-digested genome file -> fragment coordinates.");
 
 # Process digested FASTQ genome file, line by line.
 for line in standardBins_FASTA_data:
 	first_char = line[:1];   # a '>' indicates a header line...
 	if first_char == ">":
 		# Line is header to FASTQ entry.
-		line_parts             = string.split(string.strip(line));
+		line_parts             = line.strip().split();
 		chrGenomeAndNum_string = line_parts[0];
 		bp_coordinate_string   = line_parts[1];
 		fragment_size_string   = line_parts[2];
@@ -90,9 +90,9 @@ standardBins_FASTA_data.close();
 #============================================================================================================
 
 
-print "###\t", time.process_time() - t0, "seconds to parse restriction fragments from digested genome.";
+print("###\t", time.process_time() - t0, "seconds to parse restriction fragments from digested genome.");
 t1 = time.process_time();
-print "### Starting read count data processing.";
+print("### Starting read count data processing.");
 
 
 #============================================================================================================
@@ -100,7 +100,7 @@ print "### Starting read count data processing.";
 #------------------------------------------------------------------------------------------------------------
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\tProcessing genome repetitiveness file -> max and average repetitiveness scores per fragment.");
+	myfile.write("\n\t\tProcessing genome repetitiveness file -> max and average repetitiveness scores per fragment.");
 
 # Look up chromosome name strings for genome in use.
 #     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/figure_definitions.txt"
@@ -115,21 +115,22 @@ figureDefinitionData   = figureDefinitionFile.readlines();
 #     0    0     Mito    Ca19-mtDNA                   0.0    0.0    0.0     0.0
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\t\tDetermining number of chromosomes of interest in genome.");
+	myfile.write("\n\t\t\tDetermining number of chromosomes of interest in genome.");
 
 # Determine the number of chromosomes of interest in genome.
 chrName_maxcount = 0;
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line));
-	chr_num = line_parts[0];
-	if chr_num.isdigit():
-		chr_num    = int(float(line_parts[0]));
-		chr_use    = int(float(line_parts[1]));
-		chr_label  = line_parts[2];
-		chr_name   = line_parts[3];
-		if chr_num > 0:
-			if chr_num > chrName_maxcount:
-				chrName_maxcount = chr_num;
+	if (len(line) > 0):
+		if (line[0] != "#"):
+			line_parts = line.strip().split();
+			chr_num = line_parts[0];
+			if chr_num.isdigit():
+				chr_num    = int(float(line_parts[0]));
+				chr_use    = int(float(line_parts[1]));
+				chr_label  = line_parts[2];
+				chr_name   = line_parts[3];
+				if chr_num > chrName_maxcount:
+					chrName_maxcount = chr_num;
 figureDefinitionFile.close();
 
 # Pre-allocate chrName_array
@@ -138,22 +139,22 @@ for x in range(0, chrName_maxcount):
 	chrName.append([]);
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\t\tGathering name strings for chromosomes.");
+	myfile.write("\n\t\t\tGathering name strings for chromosomes.");
 
 # Gather name strings for chromosomes, in order.
 figureDefinitionFile  = open(figureDefinition_file,'r');
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line));
+	line_parts = line.strip().split();
 	chr_num = line_parts[0];
 	if chr_num.isdigit():
 		chr_num    = int(float(line_parts[0]));
 		chr_use    = int(float(line_parts[1]));
 		chr_label  = line_parts[2];
 		chr_name   = line_parts[3];
-		if chr_num <> 0:
+		if (chr_num != 0):
 			chrName[int(float(chr_num))-1] = chr_name;
 			with open(logName, "a") as myfile:
-				myfile.write("\n\t\t\t\t\tChr" + str(chr_num) + " = " + chr_name);
+				myfile.write("\n\t\t\t\tChr" + str(chr_num) + " = " + chr_name);
 figureDefinitionFile.close();
 
 # Put the chromosome count into a smaller name for later use.
@@ -165,11 +166,11 @@ chrCount = chrName_maxcount;
 #------------------------------------------------------------------------------------------------------------
 # Open genome repetitiveness file.
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\t\tOpen genome repetitiveness file : '" + datafile + "'");
+	myfile.write("\n\t\t\tOpen genome repetitiveness file : '" + datafile + "'");
 data = open(datafile,'r');
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\t\tGethering repetitiveness data for each chromosome.");
+	myfile.write("\n\t\t\tGethering repetitiveness data for each chromosome.");
 # Make per chromosome repetitive score lists.
 repetData = [];
 for x in chrName:
@@ -183,20 +184,20 @@ for line in data:
 	#     Ca21chr1_C_albicans_SC5314    2388924         123
 	#     Ca21chr1_C_albicans_SC5314    2388925         135
 	if (line[0] == "#"):
-		print "### comment in repet file :'" + line.strip() + "'";
+		print("### comment in repet file :'" + line.strip() + "'");
 	elif (line.strip() == ''):
-		print "###";
+		print("###");
 	else:
-		line_parts = (line.strip()).split();
+		line_parts = line.strip().split();
 		chr_name   = line_parts[0];        # chr name of bp.
 		position   = int(line_parts[1]);   # chr position of bp.
 		repetScore = float(line_parts[2]);   # repetitiveness score at bp.
 
-		if (chr_name <> old_chr_name):
+		if (chr_name != old_chr_name):
 			with open(logName, "a") as myfile:
-				myfile.write("\n\t\t\t\t\tTime to process = " + str(time.process_time() - t0) + " seconds.");
-				myfile.write("\n\t\t\t\tLoading repetitiveness data for chr '" + str(chr_name) + "'");
-			print '### Loading repetitiveness data for chr "' + str(chr_name) + '"';
+				myfile.write("\n\t\t\t\tTime to process = " + str(time.process_time() - t0) + " seconds.");
+				myfile.write("\n\t\t\tLoading repetitiveness data for chr '" + str(chr_name) + "'");
+			print('### Loading repetitiveness data for chr "' + str(chr_name) + '"');
 			t0 = time.process_time();
 
 		# If chromosome string is being examined.
@@ -216,7 +217,7 @@ data.close();
 #------------------------------------------------------------------------------------------------------------
 # fragments = [chr_num, bp_start, bp_end, data_sum, data_max, data_ave];
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\tOutputting repetitiveness data of restriction fragment genome.");
+	myfile.write("\n\t\tOutputting repetitiveness data of restriction fragment genome.");
 for current_fragment in fragments:
 	chr_num         = current_fragment[0];
 	bp_start        = current_fragment[1];
@@ -228,25 +229,25 @@ for current_fragment in fragments:
 		fragment_length = bp_end - bp_start + 1;
 		repet_ave       = repet_sum/float(fragment_length);
 		# Output a line for each fragment: current_fragment = [chr_num, bp_start, bp_end]
-		print str(chr_num) + '\t' + str(bp_start) + '\t' + str(bp_end) + '\t' + str(repet_max) + '\t' + str(repet_ave) + '\t' + str(fragment_length);
+		print(str(chr_num) + '\t' + str(bp_start) + '\t' + str(bp_end) + '\t' + str(repet_max) + '\t' + str(repet_ave) + '\t' + str(fragment_length));
 	except:
 		repet_max       = [];
 		fragment_length = bp_end - bp_start + 1;
 		repet_ave       = repet_sum/float(fragment_length);
 		# Output a line for each fragment: current_fragment = [chr_num, bp_start, bp_end]
-		print str(chr_num) + '\t' + str(bp_start) + '\t' + str(bp_end) + '\t' + str(repet_max) + '\t' + str(repet_ave) + '\t' + str(fragment_length) + str(chr_repet_data[(bp_start-1):bp_end]);
+		print(str(chr_num) + '\t' + str(bp_start) + '\t' + str(bp_end) + '\t' + str(repet_max) + '\t' + str(repet_ave) + '\t' + str(fragment_length) + str(chr_repet_data[(bp_start-1):bp_end]));
 #------------------------------------------------------------------------------------------------------------
 # End of code section to output information about fragments. 
 #============================================================================================================
 
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\t\tWriting time to complete process to output files.")
+	myfile.write("\n\t\t\tWriting time to complete process to output files.")
 
-print "### ", time.process_time() - t0, "seconds to complete processing of pileup file and fragment definitions."
+print("### ", time.process_time() - t0, "seconds to complete processing of pileup file and fragment definitions.")
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\t| Time to process = " + str(time.process_time()-t0) + "\n");
-	myfile.write("\t\t\t*-----------------------------------------------------------------------------------*\n");
-	myfile.write("\t\t\t| 'scripts_genomes/genome_process_for_standard_bins.repetitiveness_2.py' completed. |\n");
-	myfile.write("\t\t\t*===================================================================================*\n");
+	myfile.write("\n\t\t| Time to process = " + str(time.process_time()-t0) + "\n");
+	myfile.write("\t\t*-----------------------------------------------------------------------------------*\n");
+	myfile.write("\t\t| 'scripts_genomes/genome_process_for_standard_bins.repetitiveness_2.py' completed. |\n");
+	myfile.write("\t\t*===================================================================================*\n");

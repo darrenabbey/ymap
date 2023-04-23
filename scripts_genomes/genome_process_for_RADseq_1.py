@@ -60,16 +60,17 @@ with open(logName, "a") as myfile:
 # Determine the number of chromosomes of interest in genome.
 chrName_maxcount = 0;
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line));
-	chr_num = line_parts[0];
-	if chr_num.isdigit():
-		chr_num    = int(float(line_parts[0]));
-		chr_use    = int(float(line_parts[1]));
-		chr_label  = line_parts[2];
-		chr_name   = line_parts[3];
-		if chr_num > 0:
-			if chr_num > chrName_maxcount:
-				chrName_maxcount = chr_num;
+	if (len(line) > 0):
+		if (line[0] != "#"):
+			line_parts = line.strip().split();
+			chr_num    = line_parts[0];
+			if chr_num.isdigit():
+				chr_num    = int(float(line_parts[0]));
+				chr_use    = int(float(line_parts[1]));
+				chr_label  = line_parts[2];
+				chr_name   = line_parts[3];
+				if chr_num > chrName_maxcount:
+					chrName_maxcount = chr_num;
 figureDefinitionFile.close();
 
 # Pre-allocate chrName_array
@@ -83,8 +84,8 @@ with open(logName, "a") as myfile:
 # Gather name strings for chromosomes, in order.
 figureDefinitionFile  = open(figureDefinition_file,'r');
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line));
-	chr_num = line_parts[0];
+	line_parts = line.strip().split();
+	chr_num    = line_parts[0];
 	if chr_num.isdigit():
 		chr_num    = int(float(line_parts[0]));
 		chr_use    = int(float(line_parts[1]));
@@ -135,12 +136,12 @@ while True:
 
 		# First line is header to FASTA entry, so file contents are formatted properly.
 		# Determine chromosome/contig name by isolating the first space-delimited string, then removing the header character ">".
-		line_parts = string.split(string.strip(line1));
+		line_parts = line1.strip().split();
 		chr_name   = line_parts[0];
 		chr_name   = chr_name.replace(">","");
 
 		# If the current chromosome is different than the last one, output log entry.
-		if (chr_name <> old_chr_name):
+		if (chr_name != old_chr_name):
 			with open(logName, "a") as myfile:
 				myfile.write("\t\t\t####\t" + str(time.process_time() - t1) + " seconds for this chr.\n");
 				t1 = time.process_time();
@@ -176,7 +177,7 @@ while True:
 			# Flatten the list of lists generated in previous for loop.
 			fragments2 = sum(fragments2_2d,[]);
 
-			# print line1.strip() + " : chr_num = " + str(chr_num) + " : " + chr_name + " : num fragments = " + str(len(fragments2)-1);
+			# print(line1.strip() + " : chr_num = " + str(chr_num) + " : " + chr_name + " : num fragments = " + str(len(fragments2)-1));
 
 			# Iterate through fragments to output new FASTA entries.
 			fragment_start = 1;
@@ -208,8 +209,8 @@ while True:
 					if ((test4 == 'C') and (test5 == 'AATTG') and (test6 =='GATC')):
 						output_bool = 1;
 				if (output_bool == 1):
-					print ">" + genomeName + ".chr" + str(chr_num) + " (" + str(fragment_start) + ".." + str(min(fragment_end,len(line2))) + ") (" + str(fragment_length) + "bp) [*]";
-					print fragment;
+					print(">" + genomeName + ".chr" + str(chr_num) + " (" + str(fragment_start) + ".." + str(min(fragment_end,len(line2))) + ") (" + str(fragment_length) + "bp) [*]");
+					print(fragment);
 				fragment_start  = fragment_end + 1;
 			# Last fragment on chromosome; nothing needs to be done.
 FASTA_data.close();

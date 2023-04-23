@@ -147,16 +147,17 @@ with open(logName, "a") as myfile:
 # Determine the number of chromosomes of interest in genome.
 chrName_maxcount = 0
 for line in figureDefinitionData:
-	line_parts = line.strip().split();
-	chr_num = line_parts[0]
-	if chr_num.isdigit():
-		chr_num    = int(float(line_parts[0]))
-		chr_use    = int(float(line_parts[1]))
-		chr_label  = line_parts[2]
-		chr_name   = line_parts[3]
-		if chr_num > 0:
-			if chr_num > chrName_maxcount:
-				chrName_maxcount = chr_num
+	if (len(line) > 0):
+		if (line[0] != "#"):
+			line_parts = line.strip().split();
+			chr_num = line_parts[0]
+			if chr_num.isdigit():
+				chr_num    = int(float(line_parts[0]))
+				chr_use    = int(float(line_parts[1]))
+				chr_label  = line_parts[2]
+				chr_name   = line_parts[3]
+				if chr_num > chrName_maxcount:
+					chrName_maxcount = chr_num
 figureDefinitionFile.close()
 
 # Pre-allocate chrName_array

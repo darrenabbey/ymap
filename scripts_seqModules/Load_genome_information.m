@@ -141,56 +141,60 @@ lines_analyzed         = 0;
 fprintf(['\t' genomeDir '/figure_definitions.txt\n']);
 while not (feof(figInfo_fid))
 	lineData       = fgetl(figInfo_fid);
-	figInfo_chr    = sscanf(lineData, '%s',1);
-	figInfo_useChr = sscanf(lineData, '%s',2);
-	for i = 1:size(sscanf(lineData,'%s',1),2);
-		figInfo_useChr(1) = [];
+	if (strlength(lineData) > 0)
+		if (lineData(1) ~= '#')
+			figInfo_chr    = sscanf(lineData, '%s',1);
+			figInfo_useChr = sscanf(lineData, '%s',2);
+			for i = 1:size(sscanf(lineData,'%s',1),2);
+				figInfo_useChr(1) = [];
+			end;
+			figInfo_label = sscanf(lineData, '%s',3);
+			for i = 1:size(sscanf(lineData,'%s',2),2);
+				figInfo_label(1) = [];
+			end;
+			if (str2num(figInfo_chr) > 0) || ...
+			   (str2num(figInfo_useChr) > 0) || ...
+			   ((str2num(figInfo_chr) == 0) && (strcmp(figInfo_label,'Key') == 1)) || ...
+			   ((str2num(figInfo_chr) == 0) && (strcmp(figInfo_label,'Mito') == 1))
+				lines_analyzed = lines_analyzed+1;
+				figInfo_name   = sscanf(lineData, '%s',4);
+				for i = 1:size(sscanf(lineData,'%s',3),2);
+					figInfo_name(1) = [];
+				end;
+				figInfo_posX   = sscanf(lineData, '%s',5);
+				for i = 1:size(sscanf(lineData,'%s',4),2);
+					figInfo_posX(1) = [];
+				end;
+				figInfo_posY   = sscanf(lineData, '%s',6);
+				for i = 1:size(sscanf(lineData,'%s',5),2);
+					figInfo_posY(1) = [];
+				end;
+				figInfo_width   = sscanf(lineData, '%s',7);
+				for i = 1:size(sscanf(lineData,'%s',6),2);
+					figInfo_width(1) = [];
+				end;
+				figInfo_height   = sscanf(lineData, '%s',8);
+				for i = 1:size(sscanf(lineData,'%s',7),2);
+					figInfo_height(1) = [];
+				end;
+				figure_details(lines_analyzed).chr    = str2double(figInfo_chr);
+				figure_details(lines_analyzed).label  = figInfo_label;
+				figure_details(lines_analyzed).name   = figInfo_name;
+				figure_details(lines_analyzed).useChr = figInfo_useChr;
+				figure_details(lines_analyzed).posX   = str2double(figInfo_posX);
+				figure_details(lines_analyzed).posY   = str2double(figInfo_posY);
+				figure_details(lines_analyzed).width  = figInfo_width;
+				figure_details(lines_analyzed).height = str2double(figInfo_height);
+		    	elseif ((str2num(figInfo_chr) == 0) && (strcmp(figInfo_label,'Ploidy') == 1))
+				figInfo_ploidy_default = sscanf(lineData, '%s',4);
+				for i = 1:size(sscanf(lineData,'%s',3),2);
+					figInfo_ploidy_default(1) = [];
+				end;
+				figInfo_ploidy_default = str2num(figInfo_ploidy_default);
+			end;
+			fprintf(['\t\t|' lineData '\n']);
+		end;
 	end;
-	figInfo_label = sscanf(lineData, '%s',3);
-	for i = 1:size(sscanf(lineData,'%s',2),2);
-		figInfo_label(1) = [];
-	end;
-	if (str2num(figInfo_chr) > 0) || ...
-	   (str2num(figInfo_useChr) > 0) || ...
-	   ((str2num(figInfo_chr) == 0) && (strcmp(figInfo_label,'Key') == 1)) || ...
-	   ((str2num(figInfo_chr) == 0) && (strcmp(figInfo_label,'Mito') == 1))
-		lines_analyzed = lines_analyzed+1;
-		figInfo_name   = sscanf(lineData, '%s',4);
-		for i = 1:size(sscanf(lineData,'%s',3),2);
-			figInfo_name(1) = [];
-		end;
-		figInfo_posX   = sscanf(lineData, '%s',5);
-		for i = 1:size(sscanf(lineData,'%s',4),2);
-			figInfo_posX(1) = [];
-		end;
-		figInfo_posY   = sscanf(lineData, '%s',6);
-		for i = 1:size(sscanf(lineData,'%s',5),2);
-			figInfo_posY(1) = [];
-		end;
-		figInfo_width   = sscanf(lineData, '%s',7);
-		for i = 1:size(sscanf(lineData,'%s',6),2);
-			figInfo_width(1) = [];
-		end;
-		figInfo_height   = sscanf(lineData, '%s',8);
-		for i = 1:size(sscanf(lineData,'%s',7),2);
-			figInfo_height(1) = [];
-		end;
-		figure_details(lines_analyzed).chr    = str2double(figInfo_chr);
-		figure_details(lines_analyzed).label  = figInfo_label;
-		figure_details(lines_analyzed).name   = figInfo_name;
-		figure_details(lines_analyzed).useChr = figInfo_useChr;
-		figure_details(lines_analyzed).posX   = str2double(figInfo_posX);
-		figure_details(lines_analyzed).posY   = str2double(figInfo_posY);
-		figure_details(lines_analyzed).width  = figInfo_width;
-		figure_details(lines_analyzed).height = str2double(figInfo_height);
-    	elseif ((str2num(figInfo_chr) == 0) && (strcmp(figInfo_label,'Ploidy') == 1))
-		figInfo_ploidy_default = sscanf(lineData, '%s',4);
-		for i = 1:size(sscanf(lineData,'%s',3),2);
-			figInfo_ploidy_default(1) = [];
-		end;
-		figInfo_ploidy_default = str2num(figInfo_ploidy_default);
-	end;
-	fprintf(['\t\t|' lineData '\n']);
 end;
 if (length(figure_details) == 0)
 	error('[analyze_CNVs]: Figure display definition file is missing.');

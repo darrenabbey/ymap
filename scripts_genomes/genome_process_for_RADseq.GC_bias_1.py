@@ -75,7 +75,7 @@ while True:
 	first_char = line1[:1];
 	if first_char == ">":
 		# Line is header to FASTQ entry.
-		line_parts             = string.split(string.strip(line1))
+		line_parts             = line1.strip().split();
 		chrGenomeAndNum_string = line_parts[0]
 		bp_coordinate_string   = line_parts[1]
 		fragment_size_string   = line_parts[2]
@@ -118,11 +118,11 @@ numFragments = fragment_counter
 # End of code section to parse restriction fragments from genome.
 #============================================================================================================
 
-print "### ", time.process_time() - t0, "seconds to parse restriction fragments from digested genome."
+print("### ", time.process_time() - t0, "seconds to parse restriction fragments from digested genome.")
 t1 = time.process_time()
 
-print '### numFragments = ' + str(numFragments);
-print '### Data from each fragment: [chrNum, bpStart, bpEnd, GC_ratio]'
+print('### numFragments = ' + str(numFragments));
+print('### Data from each fragment: [chrNum, bpStart, bpEnd, GC_ratio]')
 
 #============================================================================================================
 # Code section to output information about genome restriction fragments.
@@ -140,14 +140,14 @@ for fragment in range(1,numFragments):
 	bp_start        = fragments[fragment-1][1]
 	bp_end          = fragments[fragment-1][2]
 	GC_ratio        = fragments[fragment-1][3]
-	print str(chr_num) + '\t' + str(bp_start) + '\t' + str(bp_end) + '\t' + str(GC_ratio)
+	print(str(chr_num) + '\t' + str(bp_start) + '\t' + str(bp_end) + '\t' + str(GC_ratio))
 
 #------------------------------------------------------------------------------------------------------------
 # End of code section to output information about fragments. 
 #============================================================================================================
 
-print "### ", time.process_time() - t1, "seconds to output basic stats of each restriction fragment."
-print "### ", time.process_time() - t0, "seconds to complete processing of fragment definitions."
+print("### ", time.process_time() - t1, "seconds to output basic stats of each restriction fragment.")
+print("### ", time.process_time() - t0, "seconds to complete processing of fragment definitions.")
 
 with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\tTime to process = " + str(time.process_time()-t0) )

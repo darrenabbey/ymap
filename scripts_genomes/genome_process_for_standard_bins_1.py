@@ -60,16 +60,17 @@ with open(logName, "a") as myfile:
 # Determine the number of chromosomes of interest in genome.
 chrName_maxcount = 0;
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line));
-	chr_num = line_parts[0];
-	if chr_num.isdigit():
-		chr_num    = int(float(line_parts[0]));
-		chr_use    = int(float(line_parts[1]));
-		chr_label  = line_parts[2];
-		chr_name   = line_parts[3];
-		if chr_num > 0:
-			if chr_num > chrName_maxcount:
-				chrName_maxcount = chr_num;
+	if (len(line) > 0):
+		if (line[0] != "#"):
+			line_parts = line.strip().split();
+			chr_num    = line_parts[0];
+			if chr_num.isdigit():
+				chr_num    = int(float(line_parts[0]));
+				chr_use    = int(float(line_parts[1]));
+				chr_label  = line_parts[2];
+				chr_name   = line_parts[3];
+				if chr_num > chrName_maxcount:
+					chrName_maxcount = chr_num;
 figureDefinitionFile.close();
 
 # Pre-allocate chrName_array
@@ -83,8 +84,8 @@ with open(logName, "a") as myfile:
 # Gather name strings for chromosomes, in order.
 figureDefinitionFile  = open(figureDefinition_file,'r');
 for line in figureDefinitionData:
-	line_parts = string.split(string.strip(line));
-	chr_num = line_parts[0];
+	line_parts = line.strip().split();
+	chr_num    = line_parts[0];
 	if chr_num.isdigit():
 		chr_num    = int(float(line_parts[0]));
 		chr_use    = int(float(line_parts[1]));
@@ -127,7 +128,7 @@ while True:
 	if first_char == ">":
 		# First line is header to FASTA entry, so file contents are formatted properly.
 		# Determine chromosome/contig name by isolating the first space-delimited string, then removing the header character ">".
-		line_parts = string.split(string.strip(line1));
+		line_parts = line1.strip().split();
 		chr_name   = line_parts[0];
 		chr_name   = chr_name.replace(">","");
 		# If the current chromosome is one of those in use...
@@ -172,12 +173,12 @@ while True:
 
 		# First line is header to FASTA entry, so file contents are formatted properly.
 		# Determine chromosome/contig name by isolating the first space-delimited string, then removing the header character ">".
-		line_parts = string.split(string.strip(line1));
+		line_parts = line1.strip().split();
 		chr_name   = line_parts[0];
 		chr_name   = chr_name.replace(">","");
 
 		# If the current chromosome is different than the last one, output log entry.
-		if (chr_name <> old_chr_name):
+		if (chr_name != old_chr_name):
 			with open(logName, "a") as myfile:
 				myfile.write("\t\t\t####\t" + str(time.process_time() - t1) + " seconds for this chr.\n");
 				t1 = time.process_time();
@@ -193,8 +194,8 @@ while True:
 			while fragment_start < len(line2):
 				fragment_string = line2[(fragment_start-1):(min(fragment_end,len(line2))-1)];
 				fragment_length = min(fragment_end,len(line2)) - fragment_start + 1;
-				print ">" + genomeName + ".chr" + str(chr_num) + " (" + str(fragment_start) + ".." + str(min(fragment_end,len(line2))) + ") (" + str(fragment_length) + "bp) [*]";
-				print fragment_string;
+				print(">" + genomeName + ".chr" + str(chr_num) + " (" + str(fragment_start) + ".." + str(min(fragment_end,len(line2))) + ") (" + str(fragment_length) + "bp) [*]");
+				print(fragment_string);
 				fragment_start += bases_per_bin;
 				fragment_end   += bases_per_bin;
 FASTA_data.close();
