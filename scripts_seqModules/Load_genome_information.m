@@ -141,7 +141,7 @@ lines_analyzed         = 0;
 fprintf(['\t' genomeDir '/figure_definitions.txt\n']);
 while not (feof(figInfo_fid))
 	lineData       = fgetl(figInfo_fid);
-	if (strlength(lineData) > 0)
+	if (~isempty(lineData))
 		if (lineData(1) ~= '#')
 			figInfo_chr    = sscanf(lineData, '%s',1);
 			figInfo_useChr = sscanf(lineData, '%s',2);
@@ -196,7 +196,7 @@ while not (feof(figInfo_fid))
 		end;
 	end;
 end;
-if (length(figure_details) == 0)
+if (isempty(figure_details))
 	error('[analyze_CNVs]: Figure display definition file is missing.');
 end;
 
