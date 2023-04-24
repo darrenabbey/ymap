@@ -139,7 +139,7 @@ largestChr = largestChr(1);
 if (Linear_display == true)
 	Linear_fig           = figure();
 	Linear_genome_size   = sum(chr_size);
-    Linear_TickSize      = -0.01;              % negative for outside, percentage of longest chr figure.
+	Linear_TickSize      = -0.01;              % negative for outside, percentage of longest chr figure.
 	maxY                 = ploidyBase*2;       % maximum y-axis of chromosome cartoons.
 	maxY_highTop         = ploidyBase*2*3;     % maximum y-axis of region above chromosome cartoons.
 	Linear_left          = Linear_left_start;  % used to track left end of current chromosome.
@@ -182,7 +182,7 @@ for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
 		%% Linear figure draw section.
 		if (Linear_display == true)
-			figure(Linear_fig);
+			%figure(Linear_fig);
 			Linear_width = Linear_Chr_max_width*chr_size(chr)/Linear_genome_size;
 			subplot('Position',[Linear_left Linear_base Linear_width Linear_height]);
 			Linear_left = Linear_left + Linear_width + Linear_chr_gap;
