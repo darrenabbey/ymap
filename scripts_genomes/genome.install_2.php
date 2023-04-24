@@ -57,6 +57,15 @@
 		echo "\n</script>\n";
 	}
 
+// Generate 'working2.txt' file to let pipeline know genome has been finalized and processing is moving forward.
+	$outputName      = "../users/".$user."/genomes/".$genome."/working2.txt";
+	$output          = fopen($outputName, 'w');
+	$startTimeString = date("Y-m-d H:i:s");
+	fwrite($output, $startTimeString);
+	fclose($output);
+	chmod($outputName,0755);
+	fwrite($logOutput, "\tGenerated 'working2.txt' file.\n");
+
 // process POST data.
 	fwrite($logOutput, "\tProcessing POST data containing genome specific information.\n");
 	$rDNA_start         = sanitizeInt_POST("rDNAstart");
