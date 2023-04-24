@@ -84,10 +84,14 @@
 	chmod($outputName,0755);
 	fwrite($logOutput, "\tGenerated 'upload_size_1.txt' file.\n");
 
+	// Rename uploaded file to lower-case, accounting for file name change by uploader script.
+	$name  = str_replace("\\", ",", $fileName);
+	$name1 = str_replace(".","-",pathinfo($name, PATHINFO_FILENAME)).".".pathinfo($name, PATHINFO_EXTENSION);
+	$name2 = strtolower($name1);
+	rename(getcwd()."/".$genomePath.$name1,getcwd()."/".$genomePath.$name2);
+
 	// Process uploaded file.
-	$name        = str_replace("\\", ",", $fileName);
-	rename($genomePath.$name,$genomePath.strtolower($name));
-	$name        = strtolower($name);
+	$name        = $name2;
 	$ext         = strtolower(pathinfo($name, PATHINFO_EXTENSION));
 	$filename    = strtolower(pathinfo($name, PATHINFO_FILENAME));
 	fwrite($logOutput, "\tKey         : ".$key."\n");

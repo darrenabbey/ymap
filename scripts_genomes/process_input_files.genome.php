@@ -178,8 +178,8 @@ if (strcmp($ext,"zip") == 0) {
 	// rename file.
 	$rename_target = $genome.".fasta";
 	rename($genomePath.$name,$genomePath.$rename_target);
-	fwrite($logOutput, "\toldName    = '".$name."'\n");
-	fwrite($logOutput, "\trename     = '".$rename_target."'\n");
+	fwrite($logOutput, "\toldName     = '".$name."'\n");
+	fwrite($logOutput, "\trename      = '".$rename_target."'\n");
 
 	$name_new = $rename_target;
 } else {
@@ -215,7 +215,7 @@ if ($ext_new == "fasta") {
 				// chromosome header line.
 			} else {
 				// check if line is composed only of ATCGN characters.
-				if (preg_match('/[^ATCGN]/', trim($line))) {
+				if (preg_match('/[^aAtTcCgGN]/', trim($line))) {
 					// line contains characters other than ATCGN: not expected.
 					$fasta_valid = false;
 					fwrite($logOutput, "\terror: ".trim($line)."\n");
