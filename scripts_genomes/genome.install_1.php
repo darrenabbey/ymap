@@ -173,13 +173,6 @@
 	file_put_contents("../users/".$user."/genomes/".$genome."/chr_names.json",json_encode($chr_names));
 	file_put_contents("../users/".$user."/genomes/".$genome."/chr_lengths.json",json_encode($chr_lengths));
 
-//// Debugging output of all variables.
-//	print_r($_SESSION);
-//	print_r($GLOBALS);
-
-	// The following section defines a form for collecting the information needed to build the last of the genome setup files.
-	fwrite($logOutput, "\n\tGenerating form to request centromere location and other genome specific data from the user.\n");
-
 //============================================================================================================
 // The following section should be loaded into iframe ID="Hidden_InstallNewGenome_Frame" defined in index.php
 //------------------------------------------------------------------------------------------------------------
@@ -241,15 +234,15 @@
 		}
 	}
 </script>
-<BODY onload = "parent.parent.resize_genome('<?php echo $key; ?>', 150)<?php
-	$sizeFile_1   = "upload_size_1.txt";
+<BODY onload = "parent.parent.resize_genome('<?php echo $key; ?>', 150); <?php
+	$sizeFile_1   = "../users/".$user."/genomes/".$genome."/upload_size_1.txt";
 	$handle       = fopen($sizeFile_1,'r');
 	$sizeString_1 = trim(fgets($handle));
 	fclose($handle);
 	if ($sizeString_1 !== "") {
-		echo "; parent.parent.update_genome_file_size('".$key."','".$sizeString_1."');";
+		echo "parent.parent.update_genome_file_size('".$key."','".$sizeString_1."');";
 	}
-?>">
+?> top.frames.location.href = top.frames.location.href;">
 </BODY>
 </HTML>
 <?php
