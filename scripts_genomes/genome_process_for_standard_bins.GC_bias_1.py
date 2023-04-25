@@ -78,6 +78,12 @@ while True:
 		chrGenomeAndNum_string = line_parts[0]
 		bp_coordinate_string   = line_parts[1]
 		fragment_size_string   = line_parts[2]
+
+		# >Candida_auris_LOM_clade3_GCA_005234155.1_ASM523415v1.chr1
+		# (1..6139)
+		# (6139bp)
+		# [*]
+
 		if len(line_parts) > 3:
 			fragment_usable_string = line_parts[3]
 			if fragment_usable_string[1] == "*":
@@ -88,8 +94,9 @@ while True:
 
 				# split the chr string by '.' character, then trim off the first three characters ('chr') from the second substring.
 				#	string has format of : ">Ca_a.chr1"
-				genomeName_string,chrNum_string = chrGenomeAndNum_string.split(".")
-				chr_num                         = int(float(chrNum_string.replace("chr","")))
+				string_fragments = chrGenomeAndNum_string.split(".")
+				chrNum_string    = string_fragments[len(string_fragments)-1]
+				chr_num          = int(float(chrNum_string.replace("chr","")))
 
 				#	string has format of : "(9638..10115)"
 				coordinates = bp_coordinate_string.replace('(','').replace(')','').replace('..',' ').split()
