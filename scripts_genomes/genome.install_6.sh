@@ -196,7 +196,7 @@ then
 	else
 		echo "Calculating repetitiveness of genome standard-bin fragments." >> $condensedLog;
 		## Calculating repetitiveness of standard bin fragments.
-		echo "\n\tCalculating repetitiveness per each digestion fragment." >> $logName;
+		echo "\n\t\tCalculating repetitiveness per each digestion fragment." >> $logName;
 		inputFile=$reflocation$FASTAname".repetitiveness.txt";
 		echo "" > $outputFile;
 		$python_exec $main_dir"scripts_genomes/genome_process_for_standard_bins.repetitiveness_2.py" $user $genome $main_dir $logName >> $outputFile 2>> $logName;
@@ -233,7 +233,7 @@ then
 	else
 		echo "Calculating repetitiveness for digested genome fragments." >> $condensedLog;
 		## Calculating repetitiveness of ddRADseq (MfeI & MboI) fragments.
-		echo "\n\n\tCalculating repetitiveness per each digestion fragment." >> $logName;
+		echo "\n\n\t\tCalculating repetitiveness per each digestion fragment." >> $logName;
 		echo "" > $outputFile;
 		$python_exec $main_dir"scripts_genomes/genome_process_for_RADseq.repetitiveness_2.py" $user $genome $main_dir $logName >> $outputFile 2>> $logName;
 	fi
