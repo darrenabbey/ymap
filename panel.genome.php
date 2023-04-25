@@ -112,7 +112,9 @@
 
 		// checks condensed log to see if initial processing is done.
 		if (file_exists("users/".$user."/genomes/".$genome."/working.txt")) {
-			echo "<button id='genome_finalize_".$key."' type='button' onclick=\"parent.show_hidden('Hidden_InstallNewGenome2');\">Finalize</button>";
+			if (file_exists("users/".$user."/genomes/".$genome."/working2.txt") == false) {
+				echo "<button id='genome_finalize_".$key."' type='button' onclick=\"parent.show_hidden('Hidden_InstallNewGenome2'); getElementById('genome_finalize_".$key."').style.display = 'none';;\">Finalize</button>";
+			}
 		}
 
 		// display total size of files only if the genome is finished processeing

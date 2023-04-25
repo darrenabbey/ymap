@@ -96,6 +96,7 @@
 
 // Genome interface functions.
 	function update_genome_remove_iframe(genome_key) {
+		// Used to hide genome install process part of user interface once install has completed.
 		console.log("$$ genome_key = '"+genome_key+"'");
 		genome_key                           = genome_key.replace('g_','');
 		var show_button_element              = document.getElementById('1panel_genome_iframe').contentDocument.getElementById('show_'+genome_key);
@@ -119,7 +120,7 @@
 		}
 	}
 	function resize_genome(genome_key, pixels) {
-		// Not clear what this is doing.
+		// Allow page in iframe to resize the display area it is using.
 		document.getElementById('panel_genome_iframe').contentDocument.getElementById(genome_key).style.height = pixels+"px";
 	}
 

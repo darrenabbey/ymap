@@ -73,7 +73,7 @@
 	if (file_exists($genome_dir."/complete.txt")) {
 		?>
 		<html>
-		<body onload = "parent.parent.update_genome_label_color('<?php echo $key; ?>','#00AA00'); parent.parent.resize_genome('<?php echo $key; ?>', 0); parent.parent.update_genome_remove_iframe('<?php echo $key; ?>'); ?>', '<?php echo htmlspecialchars(json_encode(scandir("users/$user/genomes/$genome"))); ?>');">
+		<body onload = "parent.parent.update_genome_label_color('<?php echo $key; ?>','#00AA00'); parent.parent.update_genome_remove_iframe('<?php echo $key; ?>');">
 		</body>
 		</html>
 		<?php

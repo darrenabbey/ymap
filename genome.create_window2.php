@@ -107,7 +107,7 @@
 		echo "Select <input type=\"checkbox\" name=\"expression_regions\"> if a tab-delimited-text file listing ORF coordinates is available.<br>";
 		echo "</font>";
 		echo "<br>";
-		echo "<input type=\"submit\" value=\"Save genome details...\" onclick=\"parent.show_hidden('Hidden_InstallNewGenome2')\">";
+		echo "<input type=\"submit\" value=\"Save genome details...\" onclick=\"parent.hide_hidden('Hidden_InstallNewGenome2')\">";
 		echo "<input type=\"hidden\" id=\"key\" name=\"key\" value=\"".  $key . "\">";
 		echo "</form>";
 	}
