@@ -157,9 +157,9 @@
 	}
 	fwrite($logOutput, "\tnum chrs    : '$chr_count'.\n");
 
-	fwrite($logOutput, "\tGenome processed.\n");
+	fwrite($logOutput, "\tGenome uploaded.\n");
 	$condensedLogOutput = fopen($condensedLogOutputName, 'w');
-	fwrite($condensedLogOutput, "Genome processed.\n");
+	fwrite($condensedLogOutput, "Genome uploaded.\n");
 	fclose($condensedLogOutput);
 
 	// Store variables of interest into $_SESSION.
