@@ -105,11 +105,13 @@
 		document.getElementById("g_".genome_key).style.height = "0px";
 	}
 	function update_genome_label_color(genome_key,label_color) {
+		// Updates genome font color depending on install status.
 		genome_key               = genome_key.replace('g_','');
 		var genome_label         = document.getElementById('panel_genome_iframe').contentDocument.getElementById('g_label_'+genome_key);
 		genome_label.style.color = label_color;
 	}
 	function update_genome_file_size(genome_key,sizeString_1) {
+		// Updates the "currently using" string for user installed genomes.
 		genome_key                  = genome_key.replace('g_','');
 		var genome_size1_span       = document.getElementById('panel_genome_iframe').contentDocument.getElementById('g_size1_'+genome_key);
 		if (sizeString_1 != "") {
@@ -117,6 +119,7 @@
 		}
 	}
 	function resize_genome(genome_key, pixels) {
+		// Not clear what this is doing.
 		document.getElementById('panel_genome_iframe').contentDocument.getElementById(genome_key).style.height = pixels+"px";
 	}
 
