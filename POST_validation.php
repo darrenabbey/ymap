@@ -67,8 +67,8 @@ function sanitizeFile_POST($POST_name) {
 
 	// convert any spaces to underlines.
 	$cleanString = str_replace(" ","_", $cleanString);
-	// remove everything but alphanumeric characters, underlines, periods, and commas (for multiple file strings).
-	$cleanString = preg_replace("/[^\w.,]+/", "", $cleanString);
+	// remove everything but alphanumeric characters, underlines, dashes, periods, and commas (for multiple file strings).
+	$cleanString = preg_replace("/[^\w.,\-]+/", "", $cleanString);
 	return $cleanString;
 }
 function sanitizeFloat_POST($POST_name) {
