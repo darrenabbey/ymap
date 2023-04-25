@@ -89,8 +89,9 @@ while True:
 
 				# split the chr string by '.' character, then trim off the first three characters ('chr') from the second substring.
 				#   string has format of : ">Ca_a.chr1"
-				genomeName_string,chrNum_string = chrGenomeAndNum_string.split(".")
-				chr_num                         = int(float(chrNum_string.replace("chr","")))
+				string_fragments = chrGenomeAndNum_string.split(".")
+				chrNum_string    = string_fragments[len(string_fragments)-1]
+				chr_num          = int(float(chrNum_string.replace("chr","")))
 
 				#   string has format of : "(9638..10115)"
 				coordinates = bp_coordinate_string.replace('(','').replace(')','').replace('..',' ').split()
