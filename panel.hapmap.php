@@ -173,20 +173,24 @@ if (isset($_SESSION['user']) != 0) {
 	// Sort directories by date, newest first.
 	array_multisort(array_map('filemtime', $hapmapFolders), SORT_DESC, $hapmapFolders);
 	// Trim path from each folder string.
-	foreach ($hapmapFolders as $key=>$folder) {   $hapmapFolders[$key] = str_replace($hapmapsDir,"",$folder);   }
+	foreach ($hapmapFolders as $key=>$folder) {
+		$hapmapFolders[$key] = str_replace($hapmapsDir,"",$folder);
+	}
 	foreach ($hapmapFolders as $key=>$hapmap) {
-		$filename = "users/".$user."/hapmaps/".$hapmap."/colors.txt";
-		if (!file_exists($filename)) {
-			continue;
+		if ($hapmap != "index.php") {
+			$filename = "users/".$user."/hapmaps/".$hapmap."/colors.txt";
+			if (!file_exists($filename)) {
+				continue;
+			}
+			$handle       = fopen($filename, 'r');
+			$colorString1 = trim(fgets($handle));
+			$colorString2 = trim(fgets($handle));
+			fclose($handle);
+			echo "\t\tshowColors('".$colorString1."','userHapmapA_".$key."','a');\n";
+			echo "\t\tshowColors('grey','userHapmapHET_".$key."','ab');\n";
+			echo "\t\tshowColors('".$colorString2."','userHapmapB_".$key."','b');\n";
+			echo "\t\tshowColors('red','userHapmapHOM_".$key."','hom');\n\n";
 		}
-		$handle       = fopen($filename, 'r');
-		$colorString1 = trim(fgets($handle));
-		$colorString2 = trim(fgets($handle));
-		fclose($handle);
-		echo "\t\t\t\t\tshowColors('".$colorString1."','userHapmapA_".$key."','a');\n";
-		echo "\t\t\t\t\tshowColors('".$colorString2."','userHapmapB_".$key."','b');\n";
-		echo "\t\t\t\t\tshowColors('red','userHapmapHOM_".$key."','hom');\n";
-		echo "\t\t\t\t\tshowColors('grey','userHapmapHET_".$key."','ab');\n\n";
 	}
 }
 $hapmapsDir          = "users/default/hapmaps/";
@@ -194,16 +198,20 @@ $systemHapmapFolders = array_diff(glob($hapmapsDir."*"), array('..', '.'));
 // Sort directories by date, newest first.
 array_multisort(array_map('filemtime', $systemHapmapFolders), SORT_DESC, $systemHapmapFolders);
 // Trim path from each folder string.
-foreach ($systemHapmapFolders as $key=>$folder) {   $systemHapmapFolders[$key] = str_replace($hapmapsDir,"",$folder);   }
+foreach ($systemHapmapFolders as $key=>$folder) {
+	$systemHapmapFolders[$key] = str_replace($hapmapsDir,"",$folder);
+}
 foreach ($systemHapmapFolders as $key=>$hapmap) {
-	$handle       = fopen("users/default/hapmaps/".$hapmap."/colors.txt",'r');
-	$colorString1 = trim(fgets($handle));
-	$colorString2 = trim(fgets($handle));
-	fclose($handle);
-	echo "\t\t\t\t\tshowColors('".$colorString1."','defaultHapmapA_".$key."','a');\n";
-	echo "\t\t\t\t\tshowColors('".$colorString2."','defaultHapmapB_".$key."','b');\n";
-	echo "\t\t\t\t\tshowColors('red','defaultHapmapHOM_".$key."','hom');\n";
-	echo "\t\t\t\t\tshowColors('grey','defaultHapmapHET_".$key."','ab');\n\n";
+	if ($hapmap != "index.php") {
+		$handle       = fopen("users/default/hapmaps/".$hapmap."/colors.txt",'r');
+		$colorString1 = trim(fgets($handle));
+		$colorString2 = trim(fgets($handle));
+		fclose($handle);
+		echo "\t\tshowColors('".$colorString1."','defaultHapmapA_".$key."','a');\n";
+		echo "\t\tshowColors('grey','defaultHapmapHET_".$key."','ab');\n";
+		echo "\t\tshowColors('".$colorString2."','defaultHapmapB_".$key."','b');\n";
+		echo "\t\tshowColors('red','defaultHapmapHOM_".$key."','hom');\n\n";
+	}
 }
 ?>
 </script>
