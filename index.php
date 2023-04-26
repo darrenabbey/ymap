@@ -176,9 +176,9 @@
 <td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_visualizeDataset"
 	onclick="tabWindow('visualizeDataset');">Visualize Datasets</td>
 <td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_genome"
-	onclick="tabWindow('genome');"          >Reference Genome</td>
+	onclick="tabWindow('genome');"          >Reference Genomes</td>
 <td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_hapmap"
-	onclick="tabWindow('hapmap');"          >Hapmap</td>
+	onclick="tabWindow('hapmap');"          >Hapmaps</td>
 <td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_bugs"
 	onclick="tabWindow('bugs');"            >Bug Reporting</td>
 <td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_help"
