@@ -87,7 +87,7 @@ while True:
 				#   fragment start bp.
 				#   fragment end bp.
 
-				# split the chr string by '.' character, then trim off the first three characters ('chr') from the second substring.
+				# split the chr string by '.' character, then trim off the first three characters ('chr') from the final substring.
 				#   string has format of : ">Ca_a.chr1"
 				string_fragments = chrGenomeAndNum_string.split(".")
 				chrNum_string    = string_fragments[len(string_fragments)-1]

@@ -70,11 +70,14 @@ while True:
 		bp_coordinate_string   = line_parts[1];
 		fragment_size_string   = line_parts[2];
 		homologID              = line_parts[4];
+
 		# Fragment is usable, so the details should be placed into fragments structure.
-		# split the chr string by '.' character, then trim off the first three characters ('chr') from the second substring.
+		# split the chr string by '.' character, then trim off the first three characters ('chr') from the final substring.
 		#   string has format of : ">Ca_a.chr1"
-		genomeName_string,chrNum_string = chrGenomeAndNum_string.split(".");
-		chr_num                         = int(float(chrNum_string.replace("chr","")));
+		line_parts         = chrGenomeAndNum_string.split(".");
+		chrNum_string      = line_parts[len(line_parts)-1];
+		chr_num            = int(float(chrNum_string.replace("chr","")));
+
 		#   string has format of : "(9638..10115)"
 		coordinates  = bp_coordinate_string.replace('(','').replace(')','').replace('..',' ').split();
 		bp_start     = int(float(coordinates[0]));

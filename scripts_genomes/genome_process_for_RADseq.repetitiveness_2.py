@@ -70,7 +70,7 @@ for line in ddRADseq_FASTA_data:
 			if fragment_usable_string[1] == "*":   # the second character of the final substring is '*' for useful fragments.
 				# Fragment is usable, so the details should be placed into fragments structure.
 
-				# split the chr string by '.' character, then trim off the first three characters ('chr') from the second substring.
+				# split the chr string by '.' character, then trim off the first three characters ('chr') from the final substring.
 				#   string has format of : ">Ca_a.chr1"
 				string_fragments = chrGenomeAndNum_string.split(".")
 				chrNum_string    = string_fragments[len(string_fragments)-1]
