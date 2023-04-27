@@ -60,8 +60,8 @@ if (strcmp($ext,"zip") == 0) {
 	rename($genomePath.$oldName,$genomePath.$name_first);
 
 	// rename decompressed file.
-	if ($ext_first == "fa") {
-		// if short extension for fasta, fq is found, rename to fasta.
+	if (($ext_first == "fna") || ($ext_first == "ffn") || ($ext_first == "faa") || ($ext_first == "frn") || ($ext_first == "fa")) {
+		// if alternate extension for fasta is found, rename to fasta.
 		$rename_target = "datafile_".$key.".fasta";
 	} else {
 		$rename_target = "datafile_".$key.".".$ext_first;
@@ -152,8 +152,14 @@ if (strcmp($ext,"zip") == 0) {
 	$oldName = $name_new;
 
 	// rename decompressed file.
-	$rename_target = "datafile_".$key.".".$name_ext;
+	if (($name_ext == "fna") || ($name_ext == "ffn") || ($name_ext == "faa") || ($name_ext == "frn") || ($name_ext == "fa")) {
+		// if alternate extension for fasta is found, rename to fasta.
+		$rename_target = "datafile_".$key.".fasta";
+	} else {
+		$rename_target = "datafile_".$key.".".$name_ext;
+	}
 	rename($genomePath.$name_first,$genomePath.$rename_target);
+
 	fwrite($logOutput, "\toldName = '".$oldName."'\n");
 	fwrite($logOutput, "\trename  = '".$rename_target."'\n");
 
@@ -171,7 +177,7 @@ if (strcmp($ext,"zip") == 0) {
 		$ext_new  = "none1";
 		$name_new = "";
 	}
-} elseif (($ext == "fa") || ($ext == "fasta")) {
+} elseif (($ext == "fasta") || ($ext == "fna") || ($ext == "ffn") || ($ext == "faa") || ($ext == "frn") || ($ext == "fa")) {
 	// if short extension for fasta, fa is found, rename to fasta.
 	$ext_new  = "fasta";
 
