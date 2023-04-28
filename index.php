@@ -399,9 +399,9 @@ function blank_and_content_tab() {
 					string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_linear_manual+"eps\")'>";
 				}
 				string1 = string1 + ")";
-				if ((file_list.indexOf(fig_linear_CNV+"png") != -1) || (file_list.indexOf(fig_linear_SNP+"png") != -1)) {
-					string1 = string1 + " ";
-				}
+				//if ((file_list.indexOf(fig_linear_CNV+"png") != -1) || (file_list.indexOf(fig_linear_SNP+"png") != -1)) {
+				//	string1 = string1 + " ";
+				//}
 			}
 			if (file_list.indexOf(fig_linear_CNV_SNP_RedGreen+"png") != -1) {
 				string1 = string1 + "; alternate colors (lin. ";
