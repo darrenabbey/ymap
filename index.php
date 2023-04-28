@@ -336,6 +336,7 @@ function blank_and_content_tab() {
 			var fig_linear_CNV_SNP               = file_prefix + "fig.CNV-SNP-map.2.";
 			var fig_linear_CNV_SNP_RedGreen      = file_prefix + "fig.CNV-SNP-map.RedGreen.2.";
 			var fig_standard_CNV_SNP             = file_prefix + "fig.CNV-SNP-map.1.";
+			var fig_standard_CNV_SNP_RedGreen    = file_prefix + "fig.CNV-SNP-map.RedGreen.1.";
 			var fig_linear_CNV                   = file_prefix + "fig.CNV-map.2.";
 			var fig_linear_CNV_highTop           = file_prefix + "fig.CNV-map.highTop.2.";
 			var fig_standard_CNV                 = file_prefix + "fig.CNV-map.1.";
@@ -389,11 +390,6 @@ function blank_and_content_tab() {
 				string1 = string1 + "<b>CNV and SNP/LOH</b> (linear ";
 				string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_SNP+"png\",\"100\")'> ";
 				string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_linear_CNV_SNP+"eps\")'>";
-				if (file_list.indexOf(fig_linear_CNV_SNP_RedGreen+"png") != -1) {
-					string1 = string1 + " or alternate colors ";
-					string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_SNP_RedGreen+"png\",\"100\")'> ";
-					string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_linear_CNV_SNP_RedGreen+"eps\")'>";
-				}
 				string1 = string1 + " or standard ";
 				string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_CNV_SNP+"png\",\"50\")'> ";
 				string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_standard_CNV_SNP+"eps\")'>";
@@ -402,6 +398,18 @@ function blank_and_content_tab() {
 					string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_manual+"png\",\"100\")'> ";
 					string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_linear_manual+"eps\")'>";
 				}
+				string1 = string1 + ")";
+				if ((file_list.indexOf(fig_linear_CNV+"png") != -1) || (file_list.indexOf(fig_linear_SNP+"png") != -1)) {
+					string1 = string1 + " ";
+				}
+			}
+			if (file_list.indexOf(fig_linear_CNV_SNP_RedGreen+"png") != -1) {
+				string1 = string1 + "; alternate colors (lin. ";
+				string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_SNP_RedGreen+"png\",\"100\")'> ";
+				string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_linear_CNV_SNP_RedGreen+"eps\")'>";
+				string1 = string1 + " or sta. ";
+				string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_CNV_SNP_RedGreen+"png\",\"50\")'> ";
+				string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_standard_CNV_SNP_RedGreen+"eps\")'>";
 				string1 = string1 + ")";
 				if ((file_list.indexOf(fig_linear_CNV+"png") != -1) || (file_list.indexOf(fig_linear_SNP+"png") != -1)) {
 					string1 = string1 + " ";
