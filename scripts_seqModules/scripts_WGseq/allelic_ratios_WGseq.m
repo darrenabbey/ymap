@@ -618,15 +618,15 @@ for chr = 1:num_chrs
 			% linear : end final reformatting.
 			% adding title in the middle of the cartoon
 			% note: adding title is done in the end since if placed upper
-			% in the code somehow the plot function changes the title position			
+			% in the code somehow the plot function changes the title position
 			if (rotate == 0 && chr_size(chr) ~= 0 )
 				title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
 			else
-				text((chr_size(chr)/bases_per_bin)/2,maxY+0.5,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+				text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
 			end;
 
 			hold off;
-	        
+
 			% shift back to main figure generation.
 			figure(fig);
 			first_chr = false;

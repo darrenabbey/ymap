@@ -1242,9 +1242,9 @@ for chr = 1:num_chrs
 			% in the code somehow the plot function changes the title position
 			% location
 			if (rotate == 0 && chr_size(chr) ~= 0 )
-			title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+				title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
 			else
-			text((chr_size(chr)/bases_per_bin)/2,maxY+0.5,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+				text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
 			end;
 
 			% shift back to main figure generation.

@@ -803,6 +803,8 @@ for chr = 1:num_chrs
 		set(gca,'YTickLabel',[]);
 		set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 		set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
+
+		% chromosome cartoon titles for standard figure.
 		text(-50000/5000/2*3, maxY/2, chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
 
 		% This section sets the Y-axis labelling.
@@ -918,7 +920,7 @@ for chr = 1:num_chrs
 			plot([leftEnd   leftEnd   rightEnd   rightEnd   leftEnd], [0   maxY   maxY   0   0], 'Color',[0 0 0]);
 		end;
 		%end show centromere.
-    
+
 		%show annotation locations
 		if (show_annotations) && (length(annotations) > 0)
 			plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
@@ -1019,7 +1021,7 @@ for chr = 1:num_chrs
 				end;
 			end;
 		end;
-    
+
 		% places chr copy number to the right of the main chr cartoons.
 		if (ChrNum == true)
 			% subplot to show chr copy number value.
@@ -1234,13 +1236,12 @@ for chr = 1:num_chrs
 			end;
 			set(gca,'FontSize',linear_gca_font_size);
 			%end final reformatting.
-			% adding title in the middle of the cartoon
-			% note: adding title is done in the end since if placed upper
-			% in the code somehow the plot function changes the title position
+			% Adding title in the middle of the chromosome cartoons.
+			% note: adding title is done in the end since if placed earlier in the code somehow the plot function changes the title position.
 			if (rotate == 0 && chr_size(chr) ~= 0 )
 				title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
 			else
-				text((chr_size(chr)/bases_per_bin)/2,maxY+0.5,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+				text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
 			end;
 			% shift back to main figure generation.
 			figure(Standard_fig);
@@ -1248,9 +1249,9 @@ for chr = 1:num_chrs
 
 			first_chr = false;
 		end;
-	end; 
+	end;
 end;
-	
+
 % Save primary genome figure.
 set(Standard_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
 saveas(Standard_fig, [projectDir 'fig.CNV-map.1.eps'], 'epsc');
