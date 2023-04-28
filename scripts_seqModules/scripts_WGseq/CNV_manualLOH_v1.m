@@ -24,8 +24,8 @@ else
 	show_annotations            = true;
 	Yscale_nearest_even_ploidy  = true;
 	AnglePlot                   = true;   % Show histogram of alleleic fraction at the left end of standard figure chromosomes.
-		FillColors              = true;   %     Fill histogram using colors.
-		show_uncalibrated       = false;  %     Fill with single color instead of ratio call colors.
+	FillColors                  = true;   % Fill histogram using colors.
+	show_uncalibrated           = false;  % Fill with single color instead of ratio call colors.
 	HistPlot                    = true;   % Show histogram of CNV at the right end of standard figure chromosomes.
 	ChrNum                      = true;   % Show numerical etimates of copy number to the right of standard figure chromosomes.
 	Linear_display              = true;   % Figure version with chromosomes laid out horizontally.
@@ -222,12 +222,11 @@ else
 	% Setup for figure generation.
 	%-------------------------------------------------------------------------------------------
 	% load size definitions
-    [linear_fig_height,linear_fig_width,Linear_left_start,Linear_chr_gap,Linear_Chr_max_width,Linear_height...
-        ,Linear_base,rotate,linear_chr_font_size,linear_axis_font_size,linear_gca_font_size,stacked_fig_height,...
-        stacked_fig_width,stacked_chr_font_size,stacked_title_size,stacked_axis_font_size,...
-        gca_stacked_font_size,stacked_copy_font_size,max_chrom_label_size] = Load_size_info(chr_in_use,num_chrs,chr_label,chr_size);
-
-    fig = figure(1);
+	[linear_fig_height,linear_fig_width,Linear_left_start,Linear_chr_gap,Linear_Chr_max_width,Linear_height,...
+	    Linear_base,rotate,linear_chr_font_size,linear_axis_font_size,linear_gca_font_size,stacked_fig_height,...
+	    stacked_fig_width,stacked_chr_font_size,stacked_title_size,stacked_axis_font_size,...
+	    gca_stacked_font_size,stacked_copy_font_size,max_chrom_label_size] = Load_size_info(chr_in_use,num_chrs,chr_label,chr_size);
+	fig = figure(1);
 
 
 	%% =========================================================================================
