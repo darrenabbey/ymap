@@ -249,12 +249,14 @@ if ($ext_new == "fasta") {
 //------------------------------------------------
 if ($ext_new == "fasta") {
 	fwrite($logOutput, "\tThis is a FASTA file, no further pre-processing is needed.\n");
+	log_stuff("../",$user,"","",$genome,$genomePath.$name_new.".".$ext_new,"UPLOAD success: FASTA passed validatin.");
 } elseif ($ext_new == "none1") {
 	fwrite($logOutput, "\tThis archive did not contain a FASTA.\n");
 	$errorFile = fopen("users/".$user."/genomes/".$genome."/error.txt", 'w');
 	fwrite($errorFile, "Error : Archive did not contain FASTA file.");
 	fclose($errorFile);
 	chmod($errorFileName,0755);
+	log_stuff("../",$user,"","",$genome,$genomePath.$name_new.".".$ext_new,"UPLOAD fail: No fasta present.");
 	exit;
 } elseif ($ext_new == "none2") {
 	fwrite($logOutput, "\tThe FASTA file was not formated properly.\n");
@@ -262,6 +264,7 @@ if ($ext_new == "fasta") {
 	fwrite($errorFile, "Error : FASTA file formatting improperly.");
 	fclose($errorFile);
 	chmod($errorFileName,0755);
+	log_stuff("../",$user,"","",$genome,$genomePath.$name_new.".".$ext_new,"UPLOAD fail: FASTA with wrong formatting.");
 	exit;
 } else {
 	fwrite($logOutput, "\tThis is an unknown file type.\n");
@@ -269,6 +272,7 @@ if ($ext_new == "fasta") {
 	fwrite($errorFile, "Error : Unknown file type as input.\nSee help tab for details of valid file types.");
 	fclose($errorFile);
 	chmod($errorFileName,0755);
+	log_stuff("../",$user,"","",$genome,$genomePath.$name_new.".".$ext_new,"UPLOAD fail: unknown file type.");
 	exit;
 }
 
