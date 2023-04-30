@@ -17,7 +17,7 @@
 	// Sanitize input strings.
 	$hapmap = sanitize_POST("hapmap");
 	$key    = sanitize_POST("key");
-	$status = sanitize_POST("status");
+	$status = (int)sanitize_POST("status");
 
 	// Confirm if requested genome exists.
 	$hapmap_dir = "users/".$user."/hapmaps/".$hapmap;
