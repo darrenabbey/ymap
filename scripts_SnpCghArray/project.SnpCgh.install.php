@@ -18,6 +18,8 @@
 	$key      = $_SESSION['key'];
 
 	$project_dir = "../users/".$user."/projects/".$project;
+
+	include_once '../process_input_files.php';
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
@@ -77,13 +79,57 @@
 	chmod($outputName,0644);
 	fwrite($outputLog, "| Generated 'upload_size_1.txt' file.\n");
 
-// Generate 'datafile1.txt' file containing: name of first data file.
+//// Generate 'datafile1.txt' file containing: name of first data file.
+//	$outputName = $project_dir."/datafile1.txt";
+//	$output     = fopen($outputName, 'w');
+//	fwrite($output, $fileName);
+//	fclose($output);
+//	chmod($outputName,0644);
+//	fwrite($outputLog, "| datafile1.txt file generated.\n");
+
+// Generate 'datafiles.txt' file containing: name of all data files.
+// Identify format of uploaded file and decompress as needed (*.ZIP; *.GZ).
 	$outputName = $project_dir."/datafile1.txt";
 	$output     = fopen($outputName, 'w');
-	fwrite($output, $fileName);
+	$fileNames = explode(",", $fileName);
+	fwrite($outputLog, "\tGenerate 'datafile1.txt' and decompress uploaded archives.\n");
+	foreach ($fileNames as $key=>$name) {
+		$projectPath = $project_dir;
+		$name        = str_replace("\\", ",", $name);
+		$ext         = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+		$filename    = strtolower(pathinfo($name, PATHINFO_FILENAME));
+		fwrite($outputLog, "\tFile ".$key."\n");
+		fwrite($outputLog, "\t\tDatafile   : '$name'.\n");
+		fwrite($outputLog, "\t\tFilename   : '$filename.'.\n");
+		fwrite($outputLog, "\t\tExtension  : '$ext'.\n");
+		fwrite($outputLog, "\t\tPath       : '$projectPath'.\n");
+
+		// Generate 'upload_size.txt' file to contain the size of the uploaded file (irrespective of format) for display in "Manage Datasets" tab.
+		$fileNumber     = $key+1;
+		$output2Name    = $projectPath."upload_size_".$fileNumber.".txt";
+		$output2        = fopen($output2Name, 'w');
+		$fileSizeString = filesize($projectPath.$name);
+		fwrite($output2, $fileSizeString);
+		fclose($output2);
+		chmod($output2Name,0755);
+		fwrite($outputLog, "\tGenerated 'upload_size".$fileNumber.".txt' file.\n");
+
+		// Process the uploaded file.
+		$paired = process_input_files($ext,$name,$projectPath,$key,$user,$project,$output, $condensedLogOutput,$outputLog);
+
+		// formatting.
+		if ($key < count($fileNames)-1) {
+			fwrite($output,"\n");
+		}
+	}
 	fclose($output);
-	chmod($outputName,0644);
-	fwrite($outputLog, "| datafile1.txt file generated.\n");
+	chmod($outputName,0755);
+
+
+
+
+
+
 
 // Adjust $fileName to match upload filename sanitization.
 	// Replace all "." in $name with "-" except the final one.
