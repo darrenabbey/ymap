@@ -11,6 +11,8 @@
                 header('Location: .');
         }
 	$user = $_SESSION['user'];
+
+	// mini page loaded into frame when two files are to be uploaded.
 ?>
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
