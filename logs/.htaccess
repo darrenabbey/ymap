@@ -1,0 +1,7 @@
+#================================================================
+# Files that should never be accessible in logs directory.
+#----------------------------------------------------------------
+<FilesMatch "\.(php|phtml|pht|js|sh|m|py|txt|log)$">
+Order allow,deny
+Deny from all
+</FilesMatch>
