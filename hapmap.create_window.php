@@ -1,8 +1,10 @@
 <?php
 	session_start();
-	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
+	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php }
 	require_once 'constants.php';
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
+
+	$user = $_SESSION['user'];
 ?>
 <html lang="en">
 	<HEAD>
@@ -61,23 +63,25 @@ $projectFolders_raw = array_merge($projectFolders1,$projectFolders2);
 <script type="text/javascript">
 var projectGenomeDataFormat_entries = [['project','genome','dataFormat']<?php
 foreach ($projectFolders_raw as $key=>$folder) {
-	$genome_filename = $folder."/genome.txt";
-	$genome_string = "";
-	if (file_exists($genome_filename)) {
-		// Some datasets don't have a reference genome (e.g., SnpCgh arrays).
-		$handle1         = fopen($genome_filename, "r");
-		$genome_string   = trim(fgets($handle1));
-		fclose($handle1);
+	if (!str_contains($folder, "index.php")) {
+		$genome_filename = $folder."/genome.txt";
+		$genome_string = "";
+		if (file_exists($genome_filename)) {
+			// Some datasets don't have a reference genome (e.g., SnpCgh arrays).
+			$handle1         = fopen($genome_filename, "r");
+			$genome_string   = trim(fgets($handle1));
+			fclose($handle1);
+		}
+		$handle2         = fopen($folder."/dataFormat.txt", "r");
+		$dataFormat_string = trim(fgets($handle2));
+		$dataFormat_string = explode(":",$dataFormat_string);
+		$dataFormat_string = $dataFormat_string[0];
+		fclose($handle2);
+		$projectName     = $folder;
+		$projectName     = str_replace($projectsDir1,"",$projectName);
+		$projectName     = str_replace($projectsDir2,"",$projectName);
+		echo ",['{$projectName}','{$genome_string}',{$dataFormat_string}]";
 	}
-	$handle2         = fopen($folder."/dataFormat.txt", "r");
-	$dataFormat_string = trim(fgets($handle2));
-	$dataFormat_string = explode(":",$dataFormat_string);
-	$dataFormat_string = $dataFormat_string[0];
-	fclose($handle2);
-	$projectName     = $folder;
-	$projectName     = str_replace($projectsDir1,"",$projectName);
-	$projectName     = str_replace($projectsDir2,"",$projectName);
-	echo ",['{$projectName}','{$genome_string}',{$dataFormat_string}]";
 }
 ?>];
 
