@@ -24,9 +24,9 @@
 	include(".pepper.php");
 
 	// YMAP logging function.
-	function log_stuff($user,$project,$hapmap,$genome,$filename,$message) {
+	function log_stuff($where,$user,$project,$hapmap,$genome,$filename,$message) {
 		// define log file.
-		$log_file = "logs/activity.log";
+		$log_file = $where."logs/activity.log";
 
 		// check if log file exists, create if not.
 		if (!file_exists($log_file)) {

@@ -57,6 +57,8 @@
 		// Hapmap directory already exists, so exit.
 		//--------------------------------------------
 		echo "Hapmap '".$hapmap."' directory already exists.";
+
+		log_stuff($user,"",$hapmap,"","","H:CREATE failure");
 ?>
         <html>
         <body>
@@ -152,6 +154,8 @@
 		// Pass control over to a shell script ('scripts_seqModules/scripts_hapmaps/hapmap.install_4.sh') to continue processing and link with matlab.
 		$system_call_string = "sh hapmap.install_4.sh ".$user." ".$referencePloidy." ".$project1." ".$project2." ".$hapmap." > /dev/null &";
 		system($system_call_string);
+
+		log_stuff("../../",$user,"",$hapmap,"","","H:CREATE success");
 ?>
 <script type="text/javascript">
 	var el3 = parent.document.getElementById('Hidden_GenerateNewHapmap');
