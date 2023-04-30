@@ -26,7 +26,7 @@
 	// YMAP logging function.
 	function log_stuff($where,$user,$project,$hapmap,$genome,$filename,$message) {
 		// define log file.
-		$log_file = $where."logs/activity.log";
+		$log_file = $where."logs/".date('Y-m-d')."_activity.log";
 
 		// check if log file exists, create if not.
 		if (!file_exists($log_file)) {
