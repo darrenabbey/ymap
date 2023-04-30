@@ -23,6 +23,7 @@
 	if ($genome != "") {
 		$genome_dir  = "../../users/".$user."/genomes/".$genome;
 		if (!is_dir($genome_dir)) {
+			log_stuff("../../",$user,"","",$genome,$genome_dir,"UPLOAD fail: user attempted to upload to non-existent genome!");
 			// Genome doesn't exist, should never happen: Force logout.
 			session_destroy();
 			header('Location: ../');
@@ -31,6 +32,7 @@
 	} else if ($project != "") {
 		$project_dir = "../../users/".$user."/projects/".$project;
 		if (!is_dir($project_dir)) {
+			log_stuff("../../",$user,$project,"","",$project_dir,"UPLOAD fail: user attempted to upload to non-existent project!");
 			// Project doesn't exist, should never happen: Force logout.
 			session_destroy();
 			header('Location: ../');
