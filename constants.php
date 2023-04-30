@@ -22,4 +22,15 @@
 
 	// Pepper string for password security.
 	include(".pepper.php");
+
+	// YMAP logging function.
+	function log_stuff($user,$project,$hapmap,$genome,$filename,$message) {
+		$line = date('Y-m-d H:i:s')." - ".$_SERVER[REMOTE_ADDR]." (".$_SERVER[REMOTE_HOST].") : ".$user.";
+		if ~empty($project) {	$line = $line." - p:".$project;		}
+		if ~empty($hapmap) {	$line = $line." - h:".$hapmap;		}
+		if ~empty($genome) {	$line = $line." - g:".$genome;		}
+		if ~empty($filename) {	$line = $line." - ".$filename;		}
+		if ~empty($message) {	$line = $line." - \"".$message."\"";	}
+		file_put_contents('logs/activity.log', $line . PHP_EOL, FILE_APPEND);
+	}
 ?>
