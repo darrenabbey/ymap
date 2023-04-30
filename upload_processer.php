@@ -22,27 +22,49 @@
 	$project    = sanitize_POST("project");
 	$key        = sanitize_POST("key");
 
+
 	if ($project != "") {
 		// Confirm if requested project exists.
 		$project_dir = "users/".$user."/projects/".$project;
 		if (!is_dir($project_dir)) {
-			// Project doesn't exist, should never happen: Force logout.
+			log_stuff("",$user,$project,"","",$project_dir,"UPLOAD fail: user attempted to upload to non-existent project!");
+			// Should never happen: Force logout.
+			session_destroy();
+			parent.location.reload();
+		}
+
+		// Confirm if requested file exists in project.
+		if (!file_exists($project_dir."/".$fileName)) {
+			log_stuff("",$user,$project,"","",$project_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file!");
+			// Should never happen: Force logout.
 			session_destroy();
 			parent.location.reload();
 		}
 	} else if ($genome != "") {
-		// Confirm if requested project exists.
-		$project_dir = "users/".$user."/projects/".$project;
-		if (!is_dir($project_dir)) {
-			// Project doesn't exist, should never happen: Force logout.
+		// Confirm if requested genome exists.
+		$genome_dir = "users/".$user."/genomes/".$genome;
+		if (!is_dir($genome_dir)) {
+			log_stuff("",$user,"","",$genome,$genome_dir,"UPLOAD fail: user attempted to upload to non-existent genome!");
+			// Should never happen: Force logout.
+			session_destroy();
+			parent.location.reload();
+		}
+
+		// Confirm if requested file exists in genome.
+		if (!file_exists($genome_dir."/".$fileName)) {
+			log_stuff("",$user,"","",$genome,$genome_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file!");
+			// Should never happen: Force logout.
 			session_destroy();
 			parent.location.reload();
 		}
 	} else {
+		log_stuff("../../",$user,"","","","","UPLOAD fail: user forced null genome & project strings!");
 		// No genome or project, should never happen: Force logout.
 		session_destroy();
 		parent.location.reload();
 	}
+
+	log_stuff("",$user,$project,"",$genome,$project_dir.$genome_dir."/".$fileName,"UPLOAD success: initial file location checks pass.");
 
 	// set session variables.
 	$_SESSION['dataFormat'] = $dataFormat;
