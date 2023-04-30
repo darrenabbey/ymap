@@ -152,6 +152,8 @@
 		echo "\tautoSubmitForm.submit();\n";
 		echo "</script>";
 	}
+
+	log_stuff($user,"",$hapmap,"","","H:CREATE success");
 ?>
 </BODY>
 </HTML>

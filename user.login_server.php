@@ -22,10 +22,14 @@
 
 	// Delay before page reload.
 	if ($login_success == 0) {
+		// login failed.
+		log_stuff($user,"","","","","LOGIN failure");
 		$_SESSION['delay'] = 5;
 		echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 		echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 	} else {
+		// login succeded.
+		log_stuff($user,"","","","","LOGIN success");
 		$_SESSION['delay'] = 0;
 		echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 		echo "var intervalID = window.setInterval(reload_page, 500);\n</script>\n";

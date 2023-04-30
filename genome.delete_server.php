@@ -23,9 +23,11 @@
 		// Requested project dir does exist for logged in user: Delete installed project.
 		rrmdir($dir);
 		echo "COMPLETE";
+		log_stuff($user,"","",$genome,"","G:DELETE success");
 	} else {
-		// Project doesn't exist, should never happen. 
+		// Project doesn't exist, should never happen.
 		echo "ERROR:".$user." doesn't own project.";
+		log_stuff($user,"","",$genome,"","G:DELETE failure");
 	}
 
 	// Function for recursive rmdir, to clean out full genome directory.

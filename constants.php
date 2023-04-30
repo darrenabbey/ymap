@@ -25,12 +25,24 @@
 
 	// YMAP logging function.
 	function log_stuff($user,$project,$hapmap,$genome,$filename,$message) {
-		$line = date('Y-m-d H:i:s')." - ".$_SERVER[REMOTE_ADDR]." (".$_SERVER[REMOTE_HOST].") : ".$user.";
-		if ~empty($project) {	$line = $line." - p:".$project;		}
-		if ~empty($hapmap) {	$line = $line." - h:".$hapmap;		}
-		if ~empty($genome) {	$line = $line." - g:".$genome;		}
-		if ~empty($filename) {	$line = $line." - ".$filename;		}
-		if ~empty($message) {	$line = $line." - \"".$message."\"";	}
-		file_put_contents('logs/activity.log', $line . PHP_EOL, FILE_APPEND);
+		// define log file.
+		$log_file = "logs/activity.log";
+
+		// check if log file exists, create if not.
+		if (!file_exists($log_file)) {
+			$myfile = fopen($log_file, "w");
+			fwrite($myfile, "Initiate log file: ".date('Y-m-d H:i:s')."\n");
+			fclose($myfile);
+		}
+
+		// add comment to log file.
+		$line = date('Y-m-d H:i:s').' - '.session_id();
+		if (!empty($user)) {		$line = $line.' - u:'.$user;		}
+		if (!empty($project)) {		$line = $line.' - p:'.$project;		}
+		if (!empty($hapmap)) {		$line = $line.' - h:'.$hapmap;		}
+		if (!empty($genome)) {		$line = $line.' - g:'.$genome;		}
+		if (!empty($filename)) {	$line = $line.' - '.$filename;		}
+		if (!empty($message)) {		$line = $line.' - "'.$message.'"';	}
+		file_put_contents($log_file, $line . PHP_EOL, FILE_APPEND);
 	}
 ?>

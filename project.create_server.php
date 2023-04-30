@@ -87,6 +87,8 @@
 		// Project directory already exists, so exit.
 		//--------------------------------------------
 		echo "Project '".$project."' directory already exists.";
+
+		log_stuff($user,$project,"","","","P:CREATE failure");
 ?>
 	<html>
 	<body>
@@ -236,6 +238,8 @@
 			fclose($file);
 			chmod($fileName,0644);
 		}
+
+		log_stuff($user,$project,"","","","P:CREATE success");
 ?>
 	<html>
 	<body>

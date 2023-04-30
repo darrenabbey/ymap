@@ -34,6 +34,8 @@
 	if (file_exists($dir2) || file_exists($dir3)) {
 		// Directory already exists
 		echo "Genome '".$genome."' directory already exists.";
+
+		log_stuff($user,"","",$genome,"","G:CREATE failure");
 ?>
 	<html>
 	<body>
@@ -63,6 +65,8 @@
 		fclose($output);
 
 		$_SESSION['pending_install_genome_count'] += 1;
+
+		log_stuff($user,"","",$genome,"","G:CREATE success");
 ?>
 	<html>
 	<body>
