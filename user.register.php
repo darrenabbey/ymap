@@ -32,6 +32,21 @@
 			<label for="pw2">Retype Password: </label>                                  <input type="password" id="pwCopy"                    name="pwCopy"><br>
 			<input type="submit" value="Register User">
 			<input type="button" value="Cancel" onclick="location.replace('panel.user.php');">
+			<div class='tab' style='font-size:10pt'>
+			User name must be between 6 and 24 alphanumeric characters only.<br>
+			Password must meet the following criteria:<br>
+			<div class='tab' style='font-size:10pt'>
+			* Length between 8 and 64.<br>
+			* Must include characters in at least three of the following categories:<br>
+			<div class='tab' style='font-size:10pt'>
+			1. Uppercase letters of European languages.<br>
+			2. Lowercase letters of European languages.<br>
+			3. Base 10 digis.<br>
+			4. Non-alphanumeri characters: ~!@#$%^&*_-+=`|\(){}[]:;"'<>,.?/<br>
+			</div>
+			*  Must not include the user name or email.<br>
+			</div>
+			</div>
 		</form>
 		</div>
 	</body>
