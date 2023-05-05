@@ -220,8 +220,8 @@ if ($ext_new == "fasta") {
 			if ($line[0] == '>') {
 				// chromosome header line.
 			} else {
-				// check if line is composed only of ATCGN characters.
-				if (preg_match('/[^aAtTcCgGN]/', trim($line))) {
+				// check if line is composed only of ATCGNKWRYHMS characters.
+				if (preg_match('/[^aAtTcCgGnNkKwWrRyYhHmMsSdDvVbB]/', trim($line))) {
 					// line contains characters other than ATCGN: not expected.
 					$fasta_valid = false;
 					fwrite($logOutput, "\terror: ".trim($line)."\n");
