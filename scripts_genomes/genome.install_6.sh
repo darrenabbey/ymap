@@ -16,8 +16,8 @@ reflocation=$main_dir"users/"$user"/genomes/"$genome"/";				# Directory where FA
 FASTA=`sed -n 1,1'p' $reflocation"reference.txt"`;					# Name of FASTA file.
 FASTAname=$(echo $FASTA | sed 's/\.fasta//g');						# Name of genome file, without file type.
 FASTA2=$(echo $FASTA | sed 's/\.fasta/\.2\.fasta/g');					# Name of reformatted genome file, to single-line entries.
-repetgenome=$reflocation$FASTAname".repetitiveness.txt";				# Name of repetitiveness profile for genome.
-repetgenome_smoothed=$reflocation$FASTAname".repetitiveness_smoothed.txt";		# Name of Gaussian smoothed repetitiveness profile for genome.
+#repetgenome=$reflocation$FASTAname".repetitiveness.txt";				# Name of repetitiveness profile for genome.
+#repetgenome_smoothed=$reflocation$FASTAname".repetitiveness_smoothed.txt";		# Name of Gaussian smoothed repetitiveness profile for genome.
 standard_bin_FASTA=$reflocation$FASTAname".standard_bins.fasta";			# Name of reference genome broken up into standard bins.
 ddRADseq_FASTA=$reflocation$FASTAname".MfeI_MboI.fasta";				# Name of digested reference for ddRADseq analysis.
 logName=$reflocation"process_log.txt";
@@ -106,21 +106,21 @@ sh $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $reflocation$FASTA2;
 
 echo "\n\t============================================================================================== 5" >> $logName;
 
-## Check if repetitiveness analysis has been done for genome.
-if [ -e $repetgenome ]
-then
-	echo "\tRepetitiveness file for genome '$genome' found." >> $logName;
-else
-	echo "Calculating repetitiveness of FASTA file for genome." >> $condensedLog;
-	echo "\tRepetitiveness file not found for genome '$genome': Regenerating using Python script." >> $logName;
-
-	## Perform repetitiveness analysis on reference file for genome, then smooth the profile.
-	echo "" > $repetgenome;
-        $python_exec $main_dir"scripts_genomes/repetitiveness_1.py"      $user $genome $main_dir $logName     >> $repetgenome  2>> $logName;
-	echo "" > $repetgenome_smoothed;
-	$python_numpy_exec $main_dir"scripts_genomes/repetitiveness_smooth.py" $user $genome $main_dir $logName 128 >> $repetgenome_smoothed 2>> $logName;
-	mv $repetgenome_smoothed $repetgenome;
-fi
+### Check if repetitiveness analysis has been done for genome.
+#if [ -e $repetgenome ]
+#then
+#	echo "\tRepetitiveness file for genome '$genome' found." >> $logName;
+#else
+#	echo "Calculating repetitiveness of FASTA file for genome." >> $condensedLog;
+#	echo "\tRepetitiveness file not found for genome '$genome': Regenerating using Python script." >> $logName;
+#
+#	## Perform repetitiveness analysis on reference file for genome, then smooth the profile.
+#	echo "" > $repetgenome;
+ #       $python_exec $main_dir"scripts_genomes/repetitiveness_1.py"      $user $genome $main_dir $logName     >> $repetgenome  2>> $logName;
+#	echo "" > $repetgenome_smoothed;
+#	$python_numpy_exec $main_dir"scripts_genomes/repetitiveness_smooth.py" $user $genome $main_dir $logName 128 >> $repetgenome_smoothed 2>> $logName;
+#	mv $repetgenome_smoothed $repetgenome;
+#fi
 
 echo "\n\t============================================================================================== 6" >> $logName;
 
@@ -186,22 +186,22 @@ else
 	$python_exec $main_dir"scripts_genomes/genome_process_for_standard_bins.GC_bias_1.py" $user $genome $main_dir $logName >> $outputFile 2>> $logName;
 fi
 
-if [ -e $repetgenome ]
-then
-	# This depends on whole genome repetitiveness analysis done previously.
-	outputFile=$reflocation$FASTAname".repetitiveness.standard_bins.txt";
-	if [ -e $outputFile ]
-	then
-		echo "\n\trepetitiveness per standard-bin fragment has been calculated." >> $logName
-	else
-		echo "Calculating repetitiveness of genome standard-bin fragments." >> $condensedLog;
-		## Calculating repetitiveness of standard bin fragments.
-		echo "\n\t\tCalculating repetitiveness per each digestion fragment." >> $logName;
-		inputFile=$reflocation$FASTAname".repetitiveness.txt";
-		echo "" > $outputFile;
-		$python_exec $main_dir"scripts_genomes/genome_process_for_standard_bins.repetitiveness_2.py" $user $genome $main_dir $logName >> $outputFile 2>> $logName;
-	fi
-fi
+#if [ -e $repetgenome ]
+#then
+#	# This depends on whole genome repetitiveness analysis done previously.
+#	outputFile=$reflocation$FASTAname".repetitiveness.standard_bins.txt";
+#	if [ -e $outputFile ]
+#	then
+#		echo "\n\trepetitiveness per standard-bin fragment has been calculated." >> $logName
+#	else
+#		echo "Calculating repetitiveness of genome standard-bin fragments." >> $condensedLog;
+#		## Calculating repetitiveness of standard bin fragments.
+#		echo "\n\t\tCalculating repetitiveness per each digestion fragment." >> $logName;
+#		inputFile=$reflocation$FASTAname".repetitiveness.txt";
+#		echo "" > $outputFile;
+#		$python_exec $main_dir"scripts_genomes/genome_process_for_standard_bins.repetitiveness_2.py" $user $genome $main_dir $logName >> $outputFile 2>> $logName;
+#	fi
+#fi
 
 echo "\n\t----------------------------------------------------------------------------------------------" >> $logName;
 
@@ -223,21 +223,21 @@ else
 	$python_exec $main_dir"scripts_genomes/genome_process_for_RADseq.GC_bias_1.py" $user $genome $main_dir $logName >> $outputFile 2>> $logName;
 fi
 
-if [ -e $repetgenome ]
-then
-	# This depends on whole genome repetitiveness analysis done previously.
-	outputFile=$reflocation$FASTAname".repetitiveness.MfeI_MboI.txt";
-	if [ -e $outputFile ]
-	then
-		echo "\n\tRepetitiveness per digestion fragment has been calculated." >> $logName
-	else
-		echo "Calculating repetitiveness for digested genome fragments." >> $condensedLog;
-		## Calculating repetitiveness of ddRADseq (MfeI & MboI) fragments.
-		echo "\n\n\t\tCalculating repetitiveness per each digestion fragment." >> $logName;
-		echo "" > $outputFile;
-		$python_exec $main_dir"scripts_genomes/genome_process_for_RADseq.repetitiveness_2.py" $user $genome $main_dir $logName >> $outputFile 2>> $logName;
-	fi
-fi
+#if [ -e $repetgenome ]
+#then
+#	# This depends on whole genome repetitiveness analysis done previously.
+#	outputFile=$reflocation$FASTAname".repetitiveness.MfeI_MboI.txt";
+#	if [ -e $outputFile ]
+#	then
+#		echo "\n\tRepetitiveness per digestion fragment has been calculated." >> $logName
+#	else
+#		echo "Calculating repetitiveness for digested genome fragments." >> $condensedLog;
+#		## Calculating repetitiveness of ddRADseq (MfeI & MboI) fragments.
+#		echo "\n\n\t\tCalculating repetitiveness per each digestion fragment." >> $logName;
+#		echo "" > $outputFile;
+#		$python_exec $main_dir"scripts_genomes/genome_process_for_RADseq.repetitiveness_2.py" $user $genome $main_dir $logName >> $outputFile 2>> $logName;
+#	fi
+#fi
 
 echo "\n\t============================================================================================== 8" >> $logName;
 
