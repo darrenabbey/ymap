@@ -203,7 +203,7 @@ datafile = [projectDir 'dataBiases.txt'];
 if (exist(datafile,'file') == 0)
 	performLengthbiasCorrection = true;
 	performGCbiasCorrection     = true;
-	performRepetbiasCorrection  = true;
+	performRepetbiasCorrection  = false;
 	performEndbiasCorrection    = true;
 else
 	biases_fid = fopen(datafile, 'r');
@@ -213,17 +213,28 @@ else
 	bias4      = fgetl(biases_fid);
 	fclose(biases_fid);
 
-	if (strcmp(bias1,'True') == 1)  performLengthbiasCorrection = true;
-	else                                                    performLengthbiasCorrection = false;
+	if (strcmp(bias1,'True') == 1)
+		performLengthbiasCorrection = true;
+	else
+		performLengthbiasCorrection = false;
 	end;
-	if (strcmp(bias2,'True') == 1)  performGCbiasCorrection     = true;
-	else                                                    performGCbiasCorrection     = false;
+
+	if (strcmp(bias2,'True') == 1)
+		performGCbiasCorrection     = true;
+	else
+		performGCbiasCorrection     = false;
 	end;
-	if (strcmp(bias3,'True') == 1)  performRepetbiasCorrection  = true;
-	else                                                    performRepetbiasCorrection  = false;
+
+	if (strcmp(bias3,'True') == 1)
+		performRepetbiasCorrection  = false;
+	else
+		performRepetbiasCorrection  = false;
 	end;
-	if (strcmp(bias4,'True') == 1)  performEndbiasCorrection    = true;
-	else                                                    performEndbiasCorrection    = false;
+
+	if (strcmp(bias4,'True') == 1)
+		performEndbiasCorrection    = true;
+	else
+		performEndbiasCorrection    = false;
 	end;
 end;
 fprintf(['Length_flag = ' num2str(performLengthbiasCorrection) '; GC_flag = ' num2str(performGCbiasCorrection) '; Repet_flag = ' num2str(performRepetbiasCorrection) '; End_flag = ' num2str(performEndbiasCorrection) '.\n']);
@@ -257,25 +268,27 @@ if (exist([main_dir 'users/' user '/projects/' project '/corrected_CNV.project.m
 	%%================================================================================================
 	% Load pre-processed ddRADseq fragment repetitiveness data for genome.
 	%-------------------------------------------------------------------------------------------------
-	fprintf(['ddRADseq_bins_repetitiveness_file :\n\t' main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.repetitiveness.MfeI_MboI.txt\n']);
-	repetitiveness_fid = fopen([main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.repetitiveness.MfeI_MboI.txt'], 'r');
-	fprintf(['\t' num2str(repetitiveness_fid) '\n']);
-	fragID = 0;
-	while not (feof(repetitiveness_fid))
-		dataLine = fgetl(repetitiveness_fid);
-		if (length(dataLine) > 0)
-			if (dataLine(1) ~= '#')
-				% The number of valid lines found so far...  the number of usable restriction fragments with data so far.
-				fragID                     = fragID + 1;
-				chr                        = str2num(sscanf(dataLine, '%s',1));
-				fragment_start             = sscanf(dataLine, '%s',2);  for i = 1:size(sscanf(dataLine,'%s',1),2);      fragment_start(1) = []; end;    fragment_start = str2num(fragment_start);
-				fragment_end               = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1)   = []; end;    fragment_end   = str2num(fragment_end);
-				repetitiveness             = sscanf(dataLine, '%s',4);  for i = 1:size(sscanf(dataLine,'%s',3),2);      repetitiveness(1) = []; end;    repetitiveness = str2num(repetitiveness);
-				repetitivenessData(fragID) = repetitiveness;
+	if (performRepetbiasCorrection)
+		fprintf(['ddRADseq_bins_repetitiveness_file :\n\t' main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.repetitiveness.MfeI_MboI.txt\n']);
+		repetitiveness_fid = fopen([main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.repetitiveness.MfeI_MboI.txt'], 'r');
+		fprintf(['\t' num2str(repetitiveness_fid) '\n']);
+		fragID = 0;
+		while not (feof(repetitiveness_fid))
+			dataLine = fgetl(repetitiveness_fid);
+			if (length(dataLine) > 0)
+				if (dataLine(1) ~= '#')
+					% The number of valid lines found so far...  the number of usable restriction fragments with data so far.
+					fragID                     = fragID + 1;
+					chr                        = str2num(sscanf(dataLine, '%s',1));
+					fragment_start             = sscanf(dataLine, '%s',2);  for i = 1:size(sscanf(dataLine,'%s',1),2);      fragment_start(1) = []; end;    fragment_start = str2num(fragment_start);
+					fragment_end               = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1)   = []; end;    fragment_end   = str2num(fragment_end);
+					repetitiveness             = sscanf(dataLine, '%s',4);  for i = 1:size(sscanf(dataLine,'%s',3),2);      repetitiveness(1) = []; end;    repetitiveness = str2num(repetitiveness);
+					repetitivenessData(fragID) = repetitiveness;
+				end;
 			end;
 		end;
+		fclose(repetitiveness_fid);
 	end;
-	fclose(repetitiveness_fid);
 
 
 	%%================================================================================================
