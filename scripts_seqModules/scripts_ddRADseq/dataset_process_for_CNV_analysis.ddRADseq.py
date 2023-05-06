@@ -296,7 +296,7 @@ for line in data:
 				with open(logName, "a") as myfile:
 					myfile.write(".")
 
-			# Adds current coordinate repetitiveness score to fragment total count : fragments[frag-1] = [chr_num,bp_start,bp_end,readSum,readMax,readAve]
+			# Adds current coordinate read count fragment total count : fragments[frag-1] = [chr_num,bp_start,bp_end,readSum,readMax,readAve]
 			fragments[current_fragment-1][3] += data_point
 
 			# If current coordinate read count is highest so far for fragment, update max : fragments[frag-1] = [chr_num,bp_start,bp_end,readSum,readMax,readAve]
