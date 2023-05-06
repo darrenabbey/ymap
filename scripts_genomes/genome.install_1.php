@@ -234,7 +234,7 @@
 		}
 	}
 </script>
-<BODY onload = "parent.parent.resize_genome('<?php echo $key; ?>', 150); <?php
+<BODY onload = "parent.parent.resize_genome('<?php echo $key; ?>', 0); <?php
 	$sizeFile_1   = "../users/".$user."/genomes/".$genome."/upload_size_1.txt";
 	$handle       = fopen($sizeFile_1,'r');
 	$sizeString_1 = trim(fgets($handle));
