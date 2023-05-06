@@ -296,7 +296,8 @@ for line in data:
 			# If (fragment_found == 0), look to see if current coordinate matches any defined fragments.
 			if fragment_found == 0:
 				for frag in range(current_fragment,numFragments):
-					# Check if current coordinate is consistent with this fragment : fragments[frag-1] = [chr_num,bp_start,bp_end, data_count,data_max,ave_read_count, repetDataCount,repetMax,repetAve]
+					# Check if current coordinate is consistent with this fragment :
+					# fragments[frag-1] = [chr_num,bp_start,bp_end, phasedData,unphasedData,phasedCoordinate,unphasedCoordinate,phasedAllele,unphasedAllele]
 					if P_chr == fragments[frag-1][0] and P_position >= fragments[frag-1][1] and P_position <= fragments[frag-1][2]:
 						fragment_found   = 1
 						current_fragment = frag
