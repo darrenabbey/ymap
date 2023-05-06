@@ -149,7 +149,7 @@ end;
 datafile = [projectDir 'dataBiases.txt'];
 if (exist(datafile,'file') == 0)
 	performGCbiasCorrection    = true;
-	performRepetbiasCorrection = true;
+	performRepetbiasCorrection = false;
 	performEndbiasCorrection   = true;
 else
 	biases_fid = fopen(datafile, 'r');
@@ -160,18 +160,24 @@ else
 	fclose(biases_fid);
 
 	% performLengthbiasCorrection is meaningless for this data format.
-	if (strcmp(bias2,'True') == 1)  performGCbiasCorrection    = true;
-	else                            performGCbiasCorrection    = false;
+	if (strcmp(bias2,'True') == 1)
+		performGCbiasCorrection    = true;
+	else
+		performGCbiasCorrection    = false;
 	end;
-	if (strcmp(bias3,'True') == 1)  
-        performRepetbiasCorrection = true;
-        performGCbiasCorrection    = true; % needed since repet bias use gc data
-	else                            performRepetbiasCorrection = false;
+
+	if (strcmp(bias3,'True') == 1)
+		performRepetbiasCorrection = false;
+		performGCbiasCorrection    = true; % needed since repet bias use gc data
+	else
+		performRepetbiasCorrection = false;
 	end;
-	if (strcmp(bias4,'True') == 1)  
-        performEndbiasCorrection   = true;
-        performGCbiasCorrection    = true; % needed since end bias use gc data
-	else                            performEndbiasCorrection   = false;
+
+	if (strcmp(bias4,'True') == 1)
+		performEndbiasCorrection   = true;
+		performGCbiasCorrection    = true; % needed since end bias use gc data
+	else
+		performEndbiasCorrection   = false;
 	end;
 end;
 
