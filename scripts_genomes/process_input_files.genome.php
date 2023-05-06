@@ -249,7 +249,7 @@ if ($ext_new == "fasta") {
 //------------------------------------------------
 if ($ext_new == "fasta") {
 	fwrite($logOutput, "\tThis is a FASTA file, no further pre-processing is needed.\n");
-	log_stuff("../",$user,"","",$genome,$genomePath.$name_new.".".$ext_new,"UPLOAD success: FASTA passed validatin.");
+	log_stuff("../",$user,"","",$genome,$genomePath.$name_new.".".$ext_new,"UPLOAD success: FASTA passed validation.");
 } elseif ($ext_new == "none1") {
 	fwrite($logOutput, "\tThis archive did not contain a FASTA.\n");
 	$errorFile = fopen("users/".$user."/genomes/".$genome."/error.txt", 'w');
