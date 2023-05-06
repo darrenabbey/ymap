@@ -35,7 +35,7 @@
 			log_stuff("",$user,$project,"","",$project_dir,"UPLOAD fail: user attempted to upload to non-existent project!");
 			// Should never happen: Force logout.
 			session_destroy();
-			parent.location.reload();
+			header('Location: .');
 		}
 
 		// Confirm if requested file exists in project.
@@ -43,7 +43,7 @@
 			log_stuff("",$user,$project,"","",$project_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file!");
 			// Should never happen: Force logout.
 			session_destroy();
-			parent.location.reload();
+			header('Location: .');
 		}
 	} else if ($genome != "") {
 		// Confirm if requested genome exists.
@@ -52,7 +52,7 @@
 			log_stuff("",$user,"","",$genome,$genome_dir,"UPLOAD fail: user attempted to upload to non-existent genome!");
 			// Should never happen: Force logout.
 			session_destroy();
-			parent.location.reload();
+			header('Location: .');
 		}
 
 		// Confirm if requested file exists in genome.
@@ -60,13 +60,13 @@
 			log_stuff("",$user,"","",$genome,$genome_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file!");
 			// Should never happen: Force logout.
 			session_destroy();
-			parent.location.reload();
+			header('Location: .');
 		}
 	} else {
 		log_stuff("../../",$user,"","","","","UPLOAD fail: user forced null genome & project strings!");
 		// No genome or project, should never happen: Force logout.
 		session_destroy();
-		parent.location.reload();
+		header('Location: .');
 	}
 
 	log_stuff("",$user,$project,"",$genome,$project_dir.$genome_dir."/".$fileName,"UPLOAD success: initial file location checks pass.");
