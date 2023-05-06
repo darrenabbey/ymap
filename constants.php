@@ -40,7 +40,7 @@
 		if (!empty($user)) {		$line = $line.' - user:'.$user;		}
 		if (!empty($project)) {		$line = $line.' - project:'.$project;	}
 		if (!empty($hapmap)) {		$line = $line.' - hapmap:'.$hapmap;	}
-		if (!empty($genome)) {		$line = $line.' - enomeg:'.$genome;	}
+		if (!empty($genome)) {		$line = $line.' - genome:'.$genome;	}
 		if (!empty($filename)) {	$line = $line.' - '.$filename;		}
 		if (!empty($message)) {		$line = $line.' - "'.$message.'"';	}
 		file_put_contents($log_file, $line . PHP_EOL, FILE_APPEND);
