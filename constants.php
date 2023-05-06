@@ -36,11 +36,11 @@
 		}
 
 		// add comment to log file.
-		$line = date('Y-m-d H:i:s').' - '.session_id();
-		if (!empty($user)) {		$line = $line.' - u:'.$user;		}
-		if (!empty($project)) {		$line = $line.' - p:'.$project;		}
-		if (!empty($hapmap)) {		$line = $line.' - h:'.$hapmap;		}
-		if (!empty($genome)) {		$line = $line.' - g:'.$genome;		}
+		$line = date('Y-m-d H:i:s').' - SessionID:'.session_id().' - IP:'.$_SERVER["REMOTE_ADDR"];
+		if (!empty($user)) {		$line = $line.' - user:'.$user;		}
+		if (!empty($project)) {		$line = $line.' - project:'.$project;	}
+		if (!empty($hapmap)) {		$line = $line.' - hapmap:'.$hapmap;	}
+		if (!empty($genome)) {		$line = $line.' - enomeg:'.$genome;	}
 		if (!empty($filename)) {	$line = $line.' - '.$filename;		}
 		if (!empty($message)) {		$line = $line.' - "'.$message.'"';	}
 		file_put_contents($log_file, $line . PHP_EOL, FILE_APPEND);
