@@ -22,6 +22,11 @@
 	$project    = sanitize_POST("project");
 	$key        = sanitize_POST("key");
 
+	// fix file names:
+	$fileName_ = pathinfo($fileName, PATHINFO_FILENAME);
+	$fileType_ = pathinfo($fileName, PATHINFO_EXTENSION);
+	$fileName  = str_replace(".","-",$fileName_).".".$fileType_;
+
 
 	if ($project != "") {
 		// Confirm if requested project exists.
