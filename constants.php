@@ -36,7 +36,7 @@
 		}
 
 		// add comment to log file.
-		$line = date('Y-m-d H:i:s').' - SessionID:'.session_id().' - IP:'.$_SERVER["REMOTE_ADDR"];
+		$line = date('Y-m-d H:i:s').' - IP:'.$_SERVER["REMOTE_ADDR"].' - SessionID:'.session_id();
 		if (!empty($user)) {		$line = $line.' - user:'.$user;		}
 		if (!empty($project)) {		$line = $line.' - project:'.$project;	}
 		if (!empty($hapmap)) {		$line = $line.' - hapmap:'.$hapmap;	}
