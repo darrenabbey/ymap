@@ -11,6 +11,17 @@
                 header('Location: .');
         }
 
+	// Ensure admin user is logged in.
+	$user = $_SESSION['user'];
+	$super_user_flag_file = "users/".$user."/super.txt";
+	if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
+		$admin_logged_in = "true";
+	} else {
+		$admin_logged_in = "false";
+		session_destroy();
+		header('Location: .');
+	}
+
 	// Load user string from session.
 	$user     = $_SESSION['user'];
 	$user_key = sanitizeInt_POST('key');
