@@ -19,6 +19,7 @@
 	} else {
 		$admin_logged_in = "false";
 		session_destroy();
+		log_stuff("",$user,"","","","","CREDENTIAL fail: user attempted to use admin function to lock user!");
 		header('Location: .');
 	}
 

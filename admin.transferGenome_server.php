@@ -19,7 +19,7 @@
 	} else {
 		$admin_logged_in = "false";
 		session_destroy();
-		log_stuff("",$user,"","","","","CREDENTIAL fail: user attempted to use admin function to approve new user!");
+		log_stuff("",$user,"","","","","CREDENTIAL fail: user attempted to use admin function to copy genome to default!");
 		header('Location: .');
 	}
 
@@ -30,8 +30,10 @@
 	// Determine user account associated with key.
 	$userDir      = "users/";
 	$userFolders  = array_diff(glob($userDir."*\/"), array('..', '.'));
+
 	// Sort directories by date, newest first.
 	array_multisort($userFolders, SORT_ASC, $userFolders);
+
 	// Trim path from each folder string.
 	foreach($userFolders as $key=>$folder) { $userFolders[$key] = str_replace($userDir,"",$folder); }
 	$user_target = $userFolders[$user_key];
@@ -39,9 +41,12 @@
 	// Confirm if requested user exists.
 	$dir     = "users/".$user_target;
 	if (is_dir($dir)) {
-		// Requested user does exist: Delete locked.txt file for user.
+		// Requested user does exist: Generate new locked.txt file for user.
 		$lockFile = $dir."locked.txt";
-		unlink($lockFile);
+
+		$myfile = fopen($lockFile, "w") or die("Unable to open file!");
+		fwrite($myfile, "");
+		fclose($myfile);
 		echo "COMPLETE\n";
 	} else {
 		// User doesn't exist, should never happen.
