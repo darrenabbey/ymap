@@ -93,34 +93,25 @@ Copy genomes to default account.
 	//| Admin account genomes |
 	//'-----------------------'
 	if (($admin_logged_in == "true") and isset($_SESSION['logged_on'])) {
-		$genomeDir      = "<br>users/".$_SESSION['user']."/genomes";
-		$userFolders  = array_diff(glob($genomeDir."*\/"), array('..', '.'));
-		echo $genomeDir;
+		$genomeDir     = "users/".$_SESSION['user']."/genomes/";
+		$genomeFolders = array_diff(glob($genomeDir."*\/"), array('..', '.'));
 
 		// Sort directories by date, newest first.
 		array_multisort($genomeFolders, SORT_ASC, $genomeFolders);
 		// Trim path from each folder string.
-		foreach($genomeFolders as $key=>$folder) {   $genomeFolders[$key] = str_replace($genomeDir,"",$folder);   }
+		foreach($genomeFolders as $key=>$folder) {
+			$genomeFolders[$key] = str_replace($genomeDir,"",$folder);
+		}
 		$genomeCount = count($genomeFolders);
 
-		echo $genomeDir;
-//		echo "<table width='100%'>";
-//		echo "<tr><td width='20%'><font size='2'><b>Admin Installed Genomes</b></font></td>";
-//		echo "</tr>\n";
-		foreach($userFolders as $key=>$user) {
+		echo "<table width='100%'>";
+		echo "<tr><td width='30%'><font size='2'><b>Installed Genomes</b></font></td>";
+		echo "</tr>\n";
+		foreach($genomeFolders as $key=>$genome) {
 			echo "\t\t<tr><td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
-			echo "<font size='2'>".($key+1).". ".$user."</font></span>\n";
+			echo "<font size='2'>".($key+1).". ".$genome."</font></span>\n";
 			echo "\t\t</td><td>\n";
-
-			if (file_exists("users/".$user."/locked.txt")) {
-				echo "\t\t\t<input type='button' value='Approve' onclick=\"key = '$key'; $.ajax({url:'admin.approve_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
-				echo "\t\t\t<input type='button' value='Delete'  onclick=\"key = '$key'; $.ajax({url:'admin.delete_server.php' ,type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
-                        } else {
-                                if ($user != "default/") {
-				echo "\t\t\t<input type='button' value='Lock user' onclick=\"key = '$key'; $.ajax({url:'admin.lockUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
-				}
-			}
-
+			echo "\t\t\t<input type='button' value='Copy genome' onclick=\"key = '$key'; $.ajax({url:'admin.copyGenome_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
 			echo "\t\t</td></tr>\n";
 		}
 		echo "</table>";

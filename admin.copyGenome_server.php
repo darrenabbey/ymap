@@ -28,28 +28,27 @@
 	$user_key = sanitizeInt_POST('key');
 
 	// Determine user account associated with key.
-	$userDir      = "users/";
-	$userFolders  = array_diff(glob($userDir."*\/"), array('..', '.'));
+	$genomeDir      = "users/".$_SESSION['user']."/genomes/";
+	$genomeFolders  = array_diff(glob($genomeDir."*\/"), array('..', '.'));
 
 	// Sort directories by date, newest first.
-	array_multisort($userFolders, SORT_ASC, $userFolders);
+	array_multisort($genomeFolders, SORT_ASC, $genomeFolders);
 
 	// Trim path from each folder string.
-	foreach($userFolders as $key=>$folder) { $userFolders[$key] = str_replace($userDir,"",$folder); }
-	$user_target = $userFolders[$user_key];
+	foreach($genomeFolders as $key=>$folder) {
+		$genomeFolders[$key] = str_replace($genomeDir,"",$folder);
+	}
+	$genome_to_copy = $genomeFolders[$user_key];
 
-	// Confirm if requested user exists.
-	$dir     = "users/".$user_target;
-	if (is_dir($dir)) {
-		// Requested user does exist: Generate new locked.txt file for user.
-		$lockFile = $dir."locked.txt";
+	$src  = $genomeDir.$genome_to_copy;
+	$dest = "users/default/genomes/".$genome_to_copy;
 
-		$myfile = fopen($lockFile, "w") or die("Unable to open file!");
-		fwrite($myfile, "");
-		fclose($myfile);
-		echo "COMPLETE\n";
-	} else {
-		// User doesn't exist, should never happen.
-		echo "ERROR:".$user_target." doesn't exist.";
+	// Copy from source genome directory to destination genome directory.
+	if (!file_exists($dest)) {
+		mkdir($dest, 0777, true);
+		foreach (scandir($src) as $file) {
+			if (!is_readable($src . '/' . $file)) continue;
+                        copy($src . '/' . $file, $dest . '/' . $file);
+		}
 	}
 ?>
