@@ -46,7 +46,9 @@
 			$fileName1      = $fileNames[0];
 			$fileName2      = $fileNames[1];
 			$fileExtension2 = pathinfo($fileName2, PATHINFO_EXTENSION);
+			// assumes both files have the same extension. Will fail later if they don't.
 			$fileName1      = str_replace("-".$fileExtension2, ".".$fileExtension2, $fileName1);
+			// rebuilt corrected filename string.
 			$fileName       = $fileName1.",".$fileName2;
 			if (!file_exists($project_dir."/".$fileName1) or !file_exists($project_dir."/".$fileName2)) {
 				log_stuff("",$user,$project,"","",$project_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file[2]!");
