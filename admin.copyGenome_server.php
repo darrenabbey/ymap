@@ -44,7 +44,10 @@
 	$dest = "users/default/genomes/".$genome_to_copy;
 
 	// Copy from source genome directory to destination genome directory.
-	if (!file_exists($dest)) {
+	if (file_exists($dest)) {
+		log_stuff("",$user,"","",$genome_to_copy,"","ADMIN fail: attempted to copy genome to default user when genome name is already in use.");
+	} else {
+		log_stuff("",$user,"","",$genome_to_copy,"","ADMIN success: copied genome to default user.");
 		mkdir($dest, 0777, true);
 		foreach (scandir($src) as $file) {
 			if (!is_readable($src . '/' . $file)) continue;
