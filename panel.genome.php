@@ -58,10 +58,14 @@
 	if (isset($_SESSION['logged_on'])) {
 		$genomesDir    = "users/".$user."/genomes/";
 		$genomeFolders = array_diff(glob($genomesDir."*"), array('..', '.'));
+
 		// Sort directories by date, newest first.
 		array_multisort(array_map('filemtime', $genomeFolders), SORT_DESC, $genomeFolders);
+
 		// Trim path from each folder string.
 		foreach($genomeFolders as $key=>$folder) {   $genomeFolders[$key] = str_replace($genomesDir,"",$folder);   }
+
+
 		// Split genome list into ready/working/starting lists for sequential display.
 		$genomeFolders_complete = array();
 		$genomeFolders_working  = array();
@@ -154,8 +158,13 @@
 	//'----------------'
 	$genomesDir          = "users/default/genomes/";
 	$systemGenomeFolders = array_diff(glob($genomesDir."*"), array('..', '.'));
+
 	// Sort directories by date, newest first.
-	array_multisort(array_map('filemtime', $systemGenomeFolders), SORT_DESC, $systemGenomeFolders);
+	//array_multisort(array_map('filemtime', $systemGenomeFolders), SORT_DESC, $systemGenomeFolders);
+
+	// Sort directories by name.
+	sort($systemGenomeFolders);
+
 	// Trim path from each folder string.
 	foreach($systemGenomeFolders as $key=>$folder) {   $systemGenomeFolders[$key] = str_replace($genomesDir,"",$folder);   }
 	$systemGenomeCount = count($systemGenomeFolders);
