@@ -39,26 +39,25 @@ fprintf('using %d dpi\n',system_dpi);
 %% linear figure
 fprintf('-----------------------------------Linear Figure -----------------------------------------------\n');
 % setting size for linear figure
-linear_fig_plot_height = 130; % the height of each chromosom in the figure in px (including y-axis)
-linear_fig_charc_height = 20; % the size to be allocated in px for each character in the label 
+linear_fig_plot_height   = 130; % the height of each chromosom in the figure in px (including y-axis)
+linear_fig_charc_height  = 20; % the size to be allocated in px for each character in the label 
 
-linear_fig_height_px = linear_fig_plot_height + linear_fig_charc_height*max_chrom_label_size; % the total height of the linear figure in px
+linear_fig_height_px     = linear_fig_plot_height + linear_fig_charc_height*max_chrom_label_size; % the total height of the linear figure in px
 % normalize height according to dpi
-linear_fig_height = linear_fig_height_px / system_dpi;
+linear_fig_height        = linear_fig_height_px / system_dpi;
 
-linear_fig_width_px = 2400;
-linear_fig_width = linear_fig_width_px / system_dpi;
+linear_fig_width_px      = 2400;
+linear_fig_width         = linear_fig_width_px / system_dpi;
 
-% base value in matlab (the scaling here is from 0 to 1 and represent
-% relative position
-linear_left_padding    = 0.02;               % left margin
-linear_right_padding   = 0.02;               % right margin
-linear_total_gap     = 0.07;               % the size in precentage for total gap accross all figure
+% base value in matlab (the scaling here is from 0 to 1 and represent relative position
+linear_left_padding      = 0.02;               % left margin
+linear_right_padding     = 0.02;               % right margin
+linear_total_gap         = 0.07;               % the size in precentage for total gap accross all figure
 linear_cartoon_height_px = 111;            % the size of the chromosome cartoon in pixles (without y-axis) for proper scaling
-linear_chr_gap  = linear_total_gap/(num_chrs-1);  % gaps between chr subfigures.
-linear_chr_max_width = 1 - linear_total_gap - linear_left_padding - linear_right_padding;  % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
-linear_height        = linear_cartoon_height_px/ linear_fig_height_px; % the size 
-linear_base          = 0.1;
+linear_chr_gap           = linear_total_gap/(num_chrs-1);  % gaps between chr subfigures.
+linear_chr_max_width     = 1 - linear_total_gap - linear_left_padding - linear_right_padding;  % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
+linear_height            = linear_cartoon_height_px/ linear_fig_height_px; % the size 
+linear_base              = 0.1;
 
 % setting rotation
 % if there are more than5 charcters in label 90 degrees rotation, else
