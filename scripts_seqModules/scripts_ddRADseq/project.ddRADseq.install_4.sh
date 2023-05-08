@@ -271,3 +271,10 @@ sed 's/^/\t\t|/;' $projectDirectory"matlab.final_figs.log" >> $logName;
 ##------------------------------------------------------------------------------
 echo "running: " $main_dir"scripts_seqModules/scripts_ddRADseq/cleaning_ddRADseq.sh" $user $project >> $logName;
 sh $main_dir"scripts_seqModules/scripts_ddRADseq/cleaning_ddRADseq.sh" $user $project 2>> $logName;
+
+
+##==============================================================================
+## Adjust permissions of output png/eps files so apache2 can serve them.
+##------------------------------------------------------------------------------
+chmod o+r $main_dir"users/"$user"/projects/"$project"/*.png";
+chmod o+r $main_dir"users/"$user"/projects/"$project"/*.eps";
