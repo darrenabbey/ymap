@@ -104,12 +104,23 @@
 	// Process the uploaded file into format usable by later steps.
 	$condensedLogOutput = fopen($condensedLogOutputName, 'w');
 	fwrite($condensedLogOutput, "Processing uploaded file.\n");
-	fclose($condensedLogOutput);
 
+	fwrite($logOutput, "Variables passing to function:\n");
+	fwrite($logOutput, "\text                : ".$ext."\n");
+	fwrite($logOutput, "\tname               : ".$name."\n");
+	fwrite($logOutput, "\tgenomePath         : ".$genomePath."\n");
+	fwrite($logOutput, "\tkey                : ".$key."\n");
+	fwrite($logOutput, "\tuser               : ".$user."\n");
+	fwrite($logOutput, "\tgenome             : ".$genome."\n");
+	fwrite($logOutput, "\toutput             : ".$output."\n");
+	fwrite($logOutput, "\tcondensedLogOutput : ".$coundensedLogOutput."\n");
+	fwrite($logOutput, "\tlogOutput          : ".$logOutput."\n");
+	fwrite($logOutput, "\tfasta_name         : ".$fasta_name."\n");
 	process_input_files_genome($ext,$name,$genomePath,$key,$user,$genome,$output, $condensedLogOutput,$logOutput, $fasta_name);
 	$fileName = $fasta_name;
 	$file_path  = "../users/".$user."/genomes/".$genome."/".$fileName;
 	fwrite($logOutput, "\n\tFile name & path: ".$file_path."\n");
+	fclose($condensedLogOutput);
 
 	// Process FASTA file for chromosome count, names, and lengths.
 	fwrite($logOutput, "\n\tReading chromosome count, names, and lengths from FASTA.\n");
