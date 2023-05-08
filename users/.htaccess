@@ -1,7 +1,8 @@
 #================================================================
-# Files that should never be accessible in user directories.
+# Only allow serving of output files from user directories.
+# This will prevent any malicious files that somehow got placed here to be served.
 #----------------------------------------------------------------
-<FilesMatch "\.(php|phtml|pht|js|sh|m|py)$">
-Order allow,deny
-Deny from all
-</FilesMatch>
+order allow,deny
+<Files ~ "\.(png|eps)$">
+allow from all
+</Files>
