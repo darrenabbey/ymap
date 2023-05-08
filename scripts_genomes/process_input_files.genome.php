@@ -1,5 +1,20 @@
 <?php
 function process_input_files_genome($ext,$name,$genomePath,$key,$user,$genome,$output, $condensedLogOutput,$logOutput, $output_fileName) {
+
+//$ext				= "zip";
+//$name				= "c_albicans_sc5314_version_a21-s02-m09-r10_chromosomes-fasta.zip";
+//$genomePath			= "../users/darren2/genomes/test/";
+//$key				= "g_0";
+//$user				= "darren2";
+//$genome			= "test";
+//$output			= "Resource id #13";
+//$fasta_name			= "test.fasta";
+//$logOutputName		= "../users/".$user."/genomes/".$genome."/process_log.txt";
+//$logOutput			= fopen($logOutputName, 'w');
+//$condensedLogOutputName	= "../users/".$user."/genomes/".$genome."/condensed_log.txt";
+//$condensedLogOutput		= fopen($condensedLogOutputName, 'w');
+
+
 fwrite($logOutput, "*========================================================================*\n");
 fwrite($logOutput, "| 'scripts_genomes/process_input_files.genome.php' has initiated.        |\n");
 fwrite($logOutput, "*------------------------------------------------------------------------*\n");

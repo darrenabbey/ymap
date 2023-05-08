@@ -39,7 +39,7 @@
 
 	// Generate 'reference.txt' file containing:
 	//      one line; file name of reference FASTA file.
-	$fasta_name = $genome.".fasta";
+	$fasta_name = "datafile_".$key.".fasta";
 	fwrite($logOutput, "\tGenerating 'reference.txt' file.\n");
 	$outputName       = "../users/".$user."/genomes/".$genome."/reference.txt";
 	$output           = fopen($outputName, 'w');
@@ -116,9 +116,8 @@
 	fwrite($logOutput, "\tcondensedLogOutput : ".$coundensedLogOutput."\n");
 	fwrite($logOutput, "\tlogOutput          : ".$logOutput."\n");
 	fwrite($logOutput, "\tfasta_name         : ".$fasta_name."\n");
-	process_input_files_genome($ext,$name,$genomePath,$key,$user,$genome,$output, $condensedLogOutput,$logOutput, $fasta_name);
-	$fileName = $fasta_name;
-	$file_path  = "../users/".$user."/genomes/".$genome."/".$fileName;
+	$fileName  = process_input_files_genome($ext,$name,$genomePath,$key,$user,$genome,$output, $condensedLogOutput,$logOutput, $fasta_name);
+	$file_path = "../users/".$user."/genomes/".$genome."/".$fileName;
 	fwrite($logOutput, "\n\tFile name & path: ".$file_path."\n");
 	fclose($condensedLogOutput);
 
