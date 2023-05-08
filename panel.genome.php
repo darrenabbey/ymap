@@ -31,7 +31,7 @@
 	}
 ?>
 <table width="100%" cellpadding="0"><tr>
-<td width="50%">
+<td width="50%" valign="top">
 	<?php
 	// .-----------------.
 	// | Make new genome |
