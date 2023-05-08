@@ -1,5 +1,5 @@
 #================================================================
-# Deny access to filenames starting with dot(.); .htaccess, .pepper.php, etc.
+# Deny access to filenames starting with ".": .htaccess, .pepper.php, etc.
 #----------------------------------------------------------------
 <FilesMatch "^\.">
 Order allow,deny
