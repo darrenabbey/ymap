@@ -1072,6 +1072,7 @@ for chr = 1:num_chrs
 		if (Linear_display == true)
 			figure(Linear_fig);
 			Linear_width = Linear_Chr_max_width*chr_size(chr)/Linear_genome_size;
+
 			subplot('Position',[Linear_left Linear_base Linear_width Linear_height]);
 			Linear_left = Linear_left + Linear_width + Linear_chr_gap;
 			hold on;
@@ -1237,6 +1238,7 @@ for chr = 1:num_chrs
 			end;
 			set(gca,'FontSize',linear_gca_font_size);
 			%end final reformatting.
+
 			% adding title in the middle of the cartoon
 			% note: adding title is done in the end since if placed upper
 			% in the code somehow the plot function changes the title position
