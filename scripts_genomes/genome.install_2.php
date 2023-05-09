@@ -40,6 +40,7 @@
 	$chr_shortNames   = array();
 	$chr_cenStarts    = array();
 	$chr_cenEnds      = array();
+	$chr_position     = array();
 	$chr_count_used   = 0;
 
 // Open 'process_log.txt' file.
@@ -86,10 +87,12 @@
 			$chr_shortName        = sanitize_POST("short_".$chrID);
 			$chr_cenStart         = sanitizeInt_POST("cenStart_".$chrID);
 			$chr_cenEnd           = sanitizeInt_POST("cenEnd_".$chrID);
+			$chr_figOrder         = sanitizeInt_POST("chrFigOrder_".$chrID);
 			$chr_draws[$chr]      = $chr_draw;
 			$chr_shortNames[$chr] = $chr_shortName;
 			$chr_cenStarts[$chr]  = $chr_cenStart;
 			$chr_cenEnds[$chr]    = $chr_cenEnd;
+			$chr_figOrders[$chr]  = $chr_figOrder;
 		}
 	}
 	if (isset($_POST['rDNAchr']) && !empty($_POST['rDNAchr'])) {
@@ -138,7 +141,7 @@
 	}
 	fclose($output);
 
-// Generate 'figure_definitions.txt' :
+// Generate 'figure_definitions.txt' for defining arrangement of standard figure.
 	fwrite($logOutput, "\tGenerating 'figure_definitions.txt' file.\n");
 	$max_length       = max($chr_lengths);
 	$outputName       = $genome_dir."/figure_definitions.txt";
@@ -149,7 +152,7 @@
 		fwrite($output, $fileContents);
 	} else {
 		$output       = fopen($outputName, 'w');
-		fwrite($output, "# Chr\tUse\tLabel\tName\tposX\tposY\twidth\theight\n");
+		fwrite($output, "# Chr\tUse\tLabel\tName\tposX\tposY\twidth\theight\tfigOrder\n");
 		if ($chr_count != 0) {
 			$usedChrID = 0; // used to count the number of used chromosomes that will be drawn for positioning of the stacked figure
 			// setting figure height to be the same for all figures making them ocuppy 50 precent of the maximum height (50 precent for gap)
@@ -157,20 +160,22 @@
 			for ($chr=0; $chr<$chr_count; $chr += 1) {
 				$chrID = $chr + 1;
 				if ($chr_draws[$chr] == 1) {// if this chromosome should be drawn incrementing
-				  $usedChrID += 1;
+					$usedChrID += 1;
 				}
+				// standard chr cartoons placed at 0.15 from left side.
 				$fig_posX   = 0.15;
 				// title gets 0.03 of the space, and figures share the rest (+0.5 to avoid cutting in the end)
-				$fig_posY   = 0.97-(0.97/($chr_count_used + 0.5))*$usedChrID;
+				$fig_order  = $chr_figOrders[$chr];
+				$fig_posY   = 0.97-(0.97/($chr_count_used + 0.5))*$fig_order;
 				if ($chr_lengths[$chr] == $max_length) {
 					$fig_width = "0.8";
 				} else {
 					$fig_width = "*";
 				}
 				if ($chr_draws[$chr] == 1) {
-					fwrite($output, $chrID."\t1\t".$chr_shortNames[$chr]."\t".$chr_names[$chr]."\t".$fig_posX."\t".$fig_posY."\t".$fig_width."\t".$fig_height."\n");
+					fwrite($output, $chrID."\t1\t".$chr_shortNames[$chr]."\t".$chr_names[$chr]."\t".$fig_posX."\t".$fig_posY."\t".$fig_width."\t".$fig_height."\t".$fig_order."\n");
 				} else {
-					fwrite($output, "0\t0\t".$chr_shortNames[$chr]."\t".$chr_names[$chr]."\t0\t0\t0\t0\n");
+					fwrite($output, "0\t0\t".$chr_shortNames[$chr]."\t".$chr_names[$chr]."\t0\t0\t0\t0\t0\n");
 				}
 			}
 		}
