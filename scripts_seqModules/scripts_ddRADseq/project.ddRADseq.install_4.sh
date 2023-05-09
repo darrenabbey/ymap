@@ -276,5 +276,5 @@ sh $main_dir"scripts_seqModules/scripts_ddRADseq/cleaning_ddRADseq.sh" $user $pr
 ##==============================================================================
 ## Adjust permissions of output png/eps files so apache2 can serve them.
 ##------------------------------------------------------------------------------
-chmod o+r $main_dir"users/"$user"/projects/"$project"/*.png";
-chmod o+r $main_dir"users/"$user"/projects/"$project"/*.eps";
+#chmod o+r $main_dir"users/"$user"/projects/"$project"/*.png";
+#chmod o+r $main_dir"users/"$user"/projects/"$project"/*.eps";

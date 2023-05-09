@@ -263,5 +263,5 @@ sh $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project 
 ##==============================================================================
 ## Adjust permissions of output png/eps files so apache2 can serve them.
 ##------------------------------------------------------------------------------
-chmod o+r $main_dir"users/"$user"/projects/"$project"/*.png";
-chmod o+r $main_dir"users/"$user"/projects/"$project"/*.eps";
+#chmod o+r $main_dir"users/"$user"/projects/"$project"/*.png";
+#chmod o+r $main_dir"users/"$user"/projects/"$project"/*.eps";
