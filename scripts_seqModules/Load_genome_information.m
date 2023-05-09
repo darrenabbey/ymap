@@ -126,13 +126,14 @@ fclose(annotations_fid);
 
 % Load figure definition file.
 % This is text file containing one header line and seven columns.
-%    Chr #      : Numerical designations of chromosomes.   (0 is used for line defining figure key.)
-%    Chr label  : The label to use for identifying the chromosome in the figure.
-%    Chr name   : The full name of the chromosome.
-%    Chr posX   : The X-position in % from left to right.
-%    Chr posY   : The Y-position in % from bottom to top.
-%    Chr width  : The width in %.
-%    Chr height : The height in %.
+%    Chr #        : Numerical designations of chromosomes.   (0 is used for line defining figure key.)
+%    Chr label    : The label to use for identifying the chromosome in the figure.
+%    Chr name     : The full name of the chromosome.
+%    Chr posX     : The X-position in % from left to right.
+%    Chr posY     : The Y-position in % from bottom to top.
+%    Chr width    : The width in %.
+%    Chr height   : The height in %.
+%    Chr figOrder : The ordering of the chromosomes used during figure generation.
 figInfo_ploidy_default = 2.0;
 figure_details         = [];
 figInfo_fid            = fopen([genomeDir '/figure_definitions.txt'], 'r');
@@ -177,14 +178,20 @@ while not (feof(figInfo_fid))
 				for i = 1:size(sscanf(lineData,'%s',7),2);
 					figInfo_height(1) = [];
 				end;
-				figure_details(lines_analyzed).chr    = str2double(figInfo_chr);
-				figure_details(lines_analyzed).label  = figInfo_label;
-				figure_details(lines_analyzed).name   = figInfo_name;
-				figure_details(lines_analyzed).useChr = figInfo_useChr;
-				figure_details(lines_analyzed).posX   = str2double(figInfo_posX);
-				figure_details(lines_analyzed).posY   = str2double(figInfo_posY);
-				figure_details(lines_analyzed).width  = figInfo_width;
-				figure_details(lines_analyzed).height = str2double(figInfo_height);
+				figInfo_figOrder = sscanf(lineData, '%s',9);
+				for i = 1:size(sscanf(lineData,'%s',8),2);
+					figInfo_figOrder(1) = [];
+				end;
+
+				figure_details(lines_analyzed).chr      = str2double(figInfo_chr);
+				figure_details(lines_analyzed).label    = figInfo_label;
+				figure_details(lines_analyzed).name     = figInfo_name;
+				figure_details(lines_analyzed).useChr   = figInfo_useChr;
+				figure_details(lines_analyzed).posX     = str2double(figInfo_posX);
+				figure_details(lines_analyzed).posY     = str2double(figInfo_posY);
+				figure_details(lines_analyzed).width    = figInfo_width;
+				figure_details(lines_analyzed).height   = str2double(figInfo_height);
+				figure_details(lines_analyzed).figOrder = figInfo_figOrder;
 		    	elseif ((str2num(figInfo_chr) == 0) && (strcmp(figInfo_label,'Ploidy') == 1))
 				figInfo_ploidy_default = sscanf(lineData, '%s',4);
 				for i = 1:size(sscanf(lineData,'%s',3),2);
