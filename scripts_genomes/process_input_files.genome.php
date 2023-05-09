@@ -120,10 +120,20 @@ if (strcmp($ext,"zip") == 0) {
 		// Figure out filename contained in gz archive.
 		// If one file, then filename is same as archive, without gz.
 		$name_new   = str_replace(".gz","", $name);
+
+		// Standardize fasta file extensions to ".fasta"
 		$name_final = str_replace("-fasta",".fasta",$name_new);
 		$name_final = str_replace("-FASTA",".fasta",$name_final);
-		$name_final = str_replace("-fa",".fasta",$name_final);
-		$name_final = str_replace("-FA",".fasta",$name_final);
+		$name_final = str_replace("-fna",  ".fasta",$name_final);
+		$name_final = str_replace("-FNA",  ".fasta",$name_final);
+		$name_final = str_replace("-ffn",  ".fasta",$name_final);
+		$name_final = str_replace("-FFN",  ".fasta",$name_final);
+		$name_final = str_replace("-faa",  ".fasta",$name_final);
+		$name_final = str_replace("-FAA",  ".fasta",$name_final);
+		$name_final = str_replace("-frn",  ".fasta",$name_final);
+		$name_final = str_replace("-FRN",  ".fasta",$name_final);
+		$name_final = str_replace("-fa",   ".fasta",$name_final);
+		$name_final = str_replace("-FA",   ".fasta",$name_final);
 
 		$name_first = $name_new;
 		$name_ext   = pathinfo($name_final, PATHINFO_EXTENSION);
