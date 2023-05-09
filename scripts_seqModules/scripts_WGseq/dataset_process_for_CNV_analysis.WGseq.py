@@ -116,6 +116,7 @@ with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tThe standard bin fragmented genome FASTA file has been loaded.\n\t\t|")
 
 # Put fragment counter into a general use variable.
+# numFragments = number of bins to be displayed across entire genome.
 numFragments = fragment_counter
 #------------------------------------------------------------------------------------------------------------
 # End of code section to parse restriction fragments from genome.
@@ -228,7 +229,7 @@ for x in range(0,chrCount):
 	if (chrNums[x] != 0):
 		print('### \t' + str(x+1) + ' : ' + str(chrName[x]))
 
-print("###" + str(numFragments))
+print("### Number of bins across figure: " + str(numFragments))
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tGathering read coverage data for each fragment.\n\t\t|")
@@ -236,23 +237,23 @@ with open(logName, "a") as myfile:
 # Process 'SNP_CNV_v1.txt' file, line by line.
 for line in data:
 	# example lines from CNV pileup file:
-	#     chromosomeNam                 pos             totalReads        0
-	#     Ca21chr1_C_albicans_SC5314    2388924         123               0
-	#     Ca21chr1_C_albicans_SC5314    2388925         135               0
+	#     chromosomeName			pos	totalReads	Call	A	T	G	C
+	#     Supercontig_3.1_C_tropical	1	1		A	1	0	0	0
+	#     Supercontig_3.1_C_tropical	2	2		A	2	0	0	0
 	count += 1
 	line_parts = line.strip().split()
 	chr_name   = line_parts[0]   # chr name of bp.		: Ca21chrR_C_albicans_SC5314
 	position   = line_parts[1]   # chr position of bp.	: 2286371
 	readCount  = line_parts[2]   # read count at bp.	: 12
 
-	# Attempt to match up current data line with pre-determined restriction fragments.
+	## Attempt to match up current data line with pre-determined restriction/standard fragments.
 	found = 0
 
-	# Identify which chromosome this data point corresponds to.
+	# Identify which chromosome this data line corresponds to.
 	chr = 0
 	for x in range(0,chrCount):
 		#if (chrNums[x] != 0):
-			#	print(str(chrName[x]))
+		#	print(str(chrName[x]))
 		if (chrNums[x] != 0):
 			if chrName[x] == chr_name:
 				chr = x+1
@@ -261,14 +262,16 @@ for line in data:
 	pos_point  = int(position)
 	data_point = float(readCount)
 
+	# show per chromosome status header to log.
 	if old_chr != chr:
-		print('### chr change : ' + str(old_chr) + ' -> ' + str(chr))
+		print('### chr change : ' + str(old_chr) + ' -> ' + str(chr) + " = " + chr_name);
 		with open(logName, "a") as myfile:
 			myfile.write("\n\t\t|\n\t\t|\t" + str(old_chr) + " -> " + str(chr) + " = " + chr_name + "\n")
 			myfile.write("\t\t|\t1........01........01........01........01........01........01........01........01........01........0\n")
 
 	if chr!=0:
-		# Reset for each new chromosome examined.
+		# Writes whitespace to log for each new chromosome to start status dots at next horizontal position.
+		# Resets counters for each chromosome.
 		if old_chr != chr:
 			if log_offset != 0:
 				log_offset_string = " "*((log_offset)%100)
