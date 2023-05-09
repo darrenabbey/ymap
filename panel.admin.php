@@ -25,7 +25,7 @@ if ($admin_logged_in == "true") {
 	echo "Your account has been provided with administrator priviledges.<br><br>";
 } else {
 	echo "Your account has not been provided with administrator priviledges.<br><br>";
-	log_stuff("",$user,"","","","","CREDENTIAL fail: user attempted to access admin panel!");
+	log_stuff("",$user,"","","","","CREDENTIAL fail: user attempted to access admin panel?");
 }
 ?>
 This "Admin" tab will have system troubleshooting tools and/or notes for administrators, but cannot be seen by normal user accounts.
