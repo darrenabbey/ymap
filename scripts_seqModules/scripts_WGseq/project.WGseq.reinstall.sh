@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# project.WGseq.install_4.sh
+# Script to call project.WGseq.install_4.sh from commandline.
 #
 user="darren1";
 project="test_WGseq_single";
