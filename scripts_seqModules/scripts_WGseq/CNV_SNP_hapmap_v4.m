@@ -84,7 +84,9 @@ fprintf(['project = "' project '"\n']);
 fprintf(['parent  = "' parent  '"\n']);
 
 
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir); [Aneuploidy] = Load_dataset_information(projectDir);
+[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
+[Aneuploidy] = Load_dataset_information(projectDir);
+
 num_chrs = length(chr_sizes);
 for i = 1:length(chr_sizes)
 	chr_size(i)  = 0;
