@@ -1,7 +1,7 @@
 <?php
 	session_start();
+	if(!isset($_SESSION['logged_on'])){ session_destroy(); ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
 	require_once 'constants.php';
-	if (isset($_SESSION['logged_on'])) { $user = $_SESSION['user']; }
 ?>
 <html style="background: #FFDDDD;">
 <style type="text/css">
@@ -22,17 +22,16 @@
 <font size='3'>
 <?php
 if ($admin_logged_in == "true") {
-	echo "Your account has been provided with administrator priviledges.<br><br>";
+	echo "Your account has been provided with administrator priviledges.";
 } else {
-	echo "Your account has not been provided with administrator priviledges.<br><br>";
+	echo "Your account has not been provided with administrator priviledges.<br>";
 	log_stuff("",$user,"","","","","CREDENTIAL fail: user attempted to access admin panel?");
 }
 ?>
-This "Admin" tab will have system troubleshooting tools and/or notes for administrators, but cannot be seen by normal user accounts.<br>
 </font>
 
 <hr width="100%">
-Newly registered locked accounts, pending approval.
+User account maintenance.
 <table width="100%" cellpadding="0"><tr>
 <td width="65%" valign="top">
 <script type="text/javascript" src="js/jquery-3.6.3.js"></script>
@@ -97,11 +96,11 @@ Newly registered locked accounts, pending approval.
 </td></tr></table>
 
 <hr width="100%">
-Copy genomes to default account.
+Copy genomes/projects to default user account.
 <table width="100%" cellpadding="0"><tr>
 <td width="65%" valign="top">
-<script type="text/javascript" src="js/jquery-3.6.3.js"></script>
-<script type="text/javascript" src="js/jquery.form.js"></script>
+	<script type="text/javascript" src="js/jquery-3.6.3.js"></script>
+	<script type="text/javascript" src="js/jquery.form.js"></script>
 	<?php
 	//.-----------------------.
 	//| Admin account genomes |
@@ -119,18 +118,44 @@ Copy genomes to default account.
 		$genomeCount = count($genomeFolders);
 
 		echo "<table width='100%'>";
-		echo "<tr><td width='30%'><font size='2'><b>Installed Genomes</b></font></td>";
+		echo "<tr><td width='30%'><font size='2'><b>Genomes</b></font></td>";
 		echo "</tr>\n";
 		foreach($genomeFolders as $key=>$genome) {
-			echo "\t\t<tr><td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
+			echo "\t\t<tr><td>\n\t\t\t<span id='genome_label_".$key."' style='color:#000000;'>";
 			echo "<font size='2'>".($key+1).". ".$genome."</font></span>\n";
 			echo "\t\t</td><td>\n";
 			echo "\t\t\t<input type='button' value='Copy genome' onclick=\"key = '$key'; $.ajax({url:'admin.copyGenome_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
 			echo "\t\t</td></tr>\n";
 		}
 		echo "</table>";
-	} else {
-		$userCount = 0;
+	}
+
+	//.-----------------------.
+	//| Admin account projects |
+	//'-----------------------'
+	if (($admin_logged_in == "true") and isset($_SESSION['logged_on'])) {
+		$projectDir     = "users/".$_SESSION['user']."/projects/";
+		$projectFolders = array_diff(glob($projectDir."*\/"), array('..', '.'));
+
+		// Sort directories by date, newest first.
+		array_multisort($projectFolders, SORT_ASC, $projectFolders);
+		// Trim path from each folder string.
+		foreach($projectFolders as $key=>$folder) {
+			$projectFolders[$key] = str_replace($projectDir,"",$folder);
+		}
+		$projectCount = count($projectFolders);
+
+		echo "<table width='100%'>";
+		echo "<tr><td width='30%'><font size='2'><b>Projects</b></font></td>";
+		echo "</tr>\n";
+		foreach($projectFolders as $key=>$project) {
+			echo "\t\t<tr><td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
+			echo "<font size='2'>".($key+1).". ".$project."</font></span>\n";
+			echo "\t\t</td><td>\n";
+			echo "\t\t\t<input type='button' value='Copy project' onclick=\"key = '$key'; $.ajax({url:'admin.copyProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(>
+			echo "\t\t</td></tr>\n";
+		}
+		echo "</table>";
 	}
 	?>
 </td><td width="35%" valign="top">
