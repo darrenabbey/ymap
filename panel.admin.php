@@ -165,9 +165,13 @@ Copy genomes/projects to default user account.
 			echo "\t\t<tr><td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
 			echo "<font size='2'>".($key+1).". ".$project."</font></span>\n";
 			echo "\t\t</td><td>\n";
-			echo "\t\t\t<input type='button' value='Prep to copy to default.' onclick=\"key = '$key'; $.ajax({url:'admin.cleanProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
+			if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
+				echo "\t\t\t<input type='button' value='Prep to copy to default.' onclick=\"key = '$key'; $.ajax({url:'admin.cleanProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
+			}
 			echo "\t\t</td><td>\n";
-			echo "\t\t\t<input type='button' value='Copy project to default.' onclick=\"key = '$key'; $.ajax({url:'admin.copyProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
+			if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
+				echo "\t\t\t<input type='button' value='Copy project to default.' onclick=\"key = '$key'; $.ajax({url:'admin.copyProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
+			}
 			echo "\t\t</td><td>\n";
 			$nameFile          = "users/".$user."/projects/".$project."name.txt";
 			$projectNameString = file_get_contents($nameFile);
