@@ -268,7 +268,7 @@ for chr_to_draw  = 1:length(chr_order)
 		end;
 		x2 = chr_size(chr)/bases_per_bin;
 		plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-        
+
 		%% standard : draw lines across plots for easier interpretation of CNV regions.
 		switch ploidyBase
 			case 1
@@ -330,7 +330,7 @@ for chr_to_draw  = 1:length(chr_order)
 		if (chr_figReversed(chr) == 0)
 			text(-50000/5000/2*3, maxY/2,chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
 		else
-			text(-50000/5000/2*3, maxY/2,[chr_label{chr} '{\fontsize{stacked_chr_font_size/2}(reversed)}'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
+			text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
 		end;
 		set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 		set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
@@ -404,7 +404,7 @@ for chr_to_draw  = 1:length(chr_order)
 			% Minimal outline for examining very small sequence regions, such as C.albicans MTL locus.
 			plot([leftEnd   leftEnd   rightEnd   rightEnd   leftEnd], [0   maxY   maxY   0   0], 'Color',[0 0 0]);
 		end;
-		% standard : end show centromere.  
+		% standard : end show centromere.
 
 		% standard : show annotation locations
 		if (show_annotations) && (length(annotations) > 0)
@@ -430,7 +430,7 @@ for chr_to_draw  = 1:length(chr_order)
 			hold off;
 		end;
 		%end show annotation locations.
-         
+
 		% standard : make CGH histograms to the right of the main chr cartoons.
 		if (HistPlot == true)
 			width     = 0.020;
@@ -503,7 +503,7 @@ for chr_to_draw  = 1:length(chr_order)
 				end;
 			end;
 		end;
-            
+
 		% standard : places chr copy number to the right of the main chr cartoons.
 		if (ChrNum == true)
 			% subplot to show chr copy number value.
@@ -582,7 +582,7 @@ for chr_to_draw  = 1:length(chr_order)
 					line([0 x2], [maxY/6*4   maxY/6*4  ],'Color',[0.85 0.85 0.85]);
 					line([0 x2], [maxY/6*5   maxY/6*5  ],'Color',[0.85 0.85 0.85]);
 				case 4
-					line([0 x2], [maxY/8*1   maxY/8*1  ],'Color',[0.85 0.85 0.85]); 
+					line([0 x2], [maxY/8*1   maxY/8*1  ],'Color',[0.85 0.85 0.85]);
 					line([0 x2], [maxY/8*2   maxY/8*2  ],'Color',[0.85 0.85 0.85]);
 					line([0 x2], [maxY/8*3   maxY/8*3  ],'Color',[0.85 0.85 0.85]);
 					line([0 x2], [maxY/8*5   maxY/8*5  ],'Color',[0.85 0.85 0.85]);
@@ -653,12 +653,12 @@ for chr_to_draw  = 1:length(chr_order)
 			elseif (Centromere_format == 1)
 				leftEnd  = 0;
 				rightEnd = chr_size(chr)/bases_per_bin;
-        
+
 				% Minimal outline for examining very small sequence regions, such as C.albicans MTL locus.
 				plot([leftEnd   leftEnd   rightEnd   rightEnd   leftEnd], [0   maxY   maxY   0   0], 'Color',[0 0 0]);
 			end;
 			% Linear : end show centromere.
-        
+
 			% Linear : show annotation locations
 			if (show_annotations) && (length(annotations) > 0)
 				plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);

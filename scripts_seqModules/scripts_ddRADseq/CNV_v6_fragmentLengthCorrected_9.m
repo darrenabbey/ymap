@@ -1811,7 +1811,7 @@ for chr_to_draw  = 1:length(chr_order)
 		if (chr_figReversed(chr) == 0)
 			text(-50000/5000/2*3, maxY/2,chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
 		else
-			text(-50000/5000/2*3, maxY/2,[chr_label{chr} '{\fontsize{stacked_chr_font_size/2}(reversed)}'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+			text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
 		end;
 		set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 		set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
@@ -1958,7 +1958,7 @@ for chr_to_draw  = 1:length(chr_order)
 				for i = 1:15
 					plot([20*i;  20*i],[0; 1],'color',[0.75 0.75 0.75]);
 				end;
-			
+
 				% draw histogram.
 				area(smoothed{segment},'FaceColor',[0 0 0]);
 
@@ -1986,7 +1986,6 @@ for chr_to_draw  = 1:length(chr_order)
 			end;
 		end;
 
-            
 		%% places chr copy number to the right of the main chr cartoons.
 		if (ChrNum == true)
 			% subplot to show chr copy number value.
@@ -2018,12 +2017,12 @@ for chr_to_draw  = 1:length(chr_order)
 
 		%% Linear figure draw section
 		if (Linear_display == true)
-			figure(Linear_fig);  
+			figure(Linear_fig);
 			Linear_width = Linear_Chr_max_width*chr_size(chr)/Linear_genome_size;
 			subplot('Position',[Linear_left Linear_base Linear_width Linear_height]);
 			Linear_left = Linear_left + Linear_width + Linear_chr_gap;
 			hold on;
-            
+
 			% linear : cgh plot section.
 			c_ = [0 0 0];
 			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
@@ -2200,12 +2199,21 @@ for chr_to_draw  = 1:length(chr_order)
 			set(gca,'FontSize',linear_gca_font_size);
 			% linear : end final reformatting.
 			% adding title in the middle of the cartoon
+
 			% note: adding title is done in the end since if placed upper
 			% in the code somehow the plot function changes the title position
 			if (rotate == 0 && chr_size(chr) ~= 0 )
-				title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+				if (chr_figReversed(chr) == 0)
+					title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+				else
+					title([chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
+				end;
 			else
-				text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+				if (chr_figReversed(chr) == 0)
+					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+				else
+					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
+				end;
 			end;
 
 			% shift back to main figure generation.
