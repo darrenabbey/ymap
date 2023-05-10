@@ -23,13 +23,19 @@
 	// Delay before page reload.
 	if ($login_success == 0) {
 		// login failed.
-		log_stuff("",$user,"","","","","LOGIN failure");
+		log_stuff("",$user,"","","","","LOGIN failure, password not validated.");
 		$_SESSION['delay'] = 5;
 		echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 		echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 	} else {
 		// login succeded.
-		log_stuff("",$user,"","","","","LOGIN success");
+
+		// check if user is active before logging stuff.
+		if (file_exists($users_dir.$user."locked.txt") {
+			log_stuff("",$user,"","","","","LOGIN failure, locked account.");
+		} else {
+			log_stuff("",$user,"","","","","LOGIN success");
+		}
 		$_SESSION['delay'] = 0;
 		echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 		echo "var intervalID = window.setInterval(reload_page, 500);\n</script>\n";
