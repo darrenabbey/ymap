@@ -402,7 +402,11 @@ else
 			set(gca,'YTick',[]);
 			set(gca,'YTickLabel',[]);
 			set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
-			text(-50000/bases_per_bin/2*3, maxY/2,     chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+			if (chr_figReversed(chr) == 0)
+				text(-50000/bases_per_bin/2*3, maxY/2,chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+			else
+				text(-50000/bases_per_bin/2*3, maxY/2,[chr_label{chr} '{\fontsize{stacked_chr_font_size/2}(reversed)}'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+			end;
 			set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 			set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
 
@@ -772,9 +776,17 @@ else
 				% note: adding title is done in the end since if placed upper
 				% in the code somehow the plot function changes the title position
 				if (rotate == 0 && chr_size(chr) ~= 0 )
-					title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+					if (chr_figReversed(chr) == 0)
+						title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+					else
+						title([chr_label{chr} '{\fontsize{linear_chr_font_size/2}(reversed)}'],'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+					end;
 				else
-					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+					if (chr_figReversed(chr) == 0)
+						text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+					else
+						text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '{\fontsize{linear_chr_font_size/2}(reversed)}'],'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+					end;
 				end;
 
 				% shift back to main figure generation.

@@ -313,11 +313,11 @@ for chr_to_draw  = 1:length(chr_order)
 				line([0 x2], [maxY/16*14 maxY/16*14],'Color',[0.85 0.85 0.85]);
 		end;
 		%% standard : end cgh plot section.
-                    
+
 		% standard : axes labels etc.
-		hold off;   
+		hold off;
 		xlim([0,chr_size(chr)/bases_per_bin]);
-            
+
 		%% modify y axis limits to show annotation locations if any are provided.
 		if (length(annotations) > 0)
 			ylim([-maxY/10*1.5,maxY]);
@@ -327,10 +327,14 @@ for chr_to_draw  = 1:length(chr_order)
 		set(gca,'YTick',[]);
 		set(gca,'YTickLabel',[]);
 		set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
-		text(-50000/5000/2*3, maxY/2,     chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
+		if (chr_figReversed(chr) == 0)
+			text(-50000/5000/2*3, maxY/2,chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
+		else
+			text(-50000/5000/2*3, maxY/2,[chr_label{chr} '{\fontsize{stacked_chr_font_size/2}(reversed)}'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
+		end;
 		set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 		set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
-        
+
 		% standard : This section sets the Y-axis labelling.
 		switch ploidyBase
 			case 1
@@ -355,7 +359,7 @@ for chr_to_draw  = 1:length(chr_order)
 		if (chr == find(chr_posY == max(chr_posY)))
 			title([ project ' CNV map'],'Interpreter','none','FontSize',24);
 		end;
-    
+
 		hold on;
 		%end axes labels etc.
 
@@ -367,7 +371,7 @@ for chr_to_draw  = 1:length(chr_order)
                                         plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
                                 end;
                         end;
-    
+
 		% standard : show centromere.
 		if (chr_size(chr) < 100000)
 			Centromere_format = 1;
@@ -524,16 +528,16 @@ for chr_to_draw  = 1:length(chr_order)
 			text(0.1,0.5, chr_string,'HorizontalAlignment','left','VerticalAlignment','middle','FontSize',24);
 		end;
 
-        
+
 		%% Linear : figure draw section
 		if (Linear_display == true)
-			figure(Linear_fig);  
+			figure(Linear_fig);
 			Linear_width = Linear_Chr_max_width*chr_size(chr)/Linear_genome_size;
 			subplot('Position',[Linear_left Linear_base Linear_width Linear_height]);
 			Linear_left = Linear_left + Linear_width + Linear_left_chr_gap;
 			hold on;
 			title(chr_label{chr},'Interpreter','none','FontSize',20);
-        
+
 			% Linear : cgh plot section.
 			c_ = [0 0 0];
 			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
