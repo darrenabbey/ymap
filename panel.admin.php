@@ -52,7 +52,14 @@ User account maintenance.
 		echo "<table width='100%'>";
 		echo "<tr><td width='20%'><font size='2'><b>User Account</b></font></td>";
 		echo     "<td style='text-align:center'><font size='2'><b>Approval Needed</b></font></td>";
-		echo     "<td style='text-align:center'><font size='2'><b>Account size</b></font></td>";
+		echo     "<td style='text-align:center'><font size='2'><b>Account size</b>";
+
+		// calculating user account size.
+		$userSizeStr = trim(shell_exec("du -sh " . "users/ | cut -f1"));
+		// printing total size.
+		echo " (".$userSizeStr." total)";
+
+		echo     "</font></td>";
 		echo     "<td><font size='2'><b>User Name</b></font></td>";
 		echo     "<td><font size='2'><b>Email Address</b></font></td>";
 		echo "</tr>\n";
