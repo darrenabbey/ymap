@@ -63,15 +63,15 @@ User account maintenance.
 		echo     "<td><font size='2'><b>User Name</b></font></td>";
 		echo     "<td><font size='2'><b>Email Address</b></font></td>";
 		echo "</tr>\n";
-		foreach($userFolders as $key=>$user) {
+		foreach($userFolders as $key=>$userFolder) {
 			echo "\t\t<tr><td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
-			echo "<font size='2'>".($key+1).". ".$user."</font></span>\n";
+			echo "<font size='2'>".($key+1).". ".$userFolder."</font></span>\n";
 			echo "\t\t</td><td style='text-align:center'>\n";
-			if (!file_exists("users/".$user."/super.txt")) {
-				if (file_exists("users/".$user."/locked.txt")) {
+			if (!file_exists("users/".$userFolder."/super.txt")) {
+				if (file_exists("users/".$userFolder."/locked.txt")) {
 					echo "\t\t\t<input type='button' value='Approve' onclick=\"key = '$key'; $.ajax({url:'admin.approve_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
 					echo "\t\t\t<input type='button' value='Delete'  onclick=\"key = '$key'; $.ajax({url:'admin.delete_server.php' ,type:'post',data:{key:key},success:function(answer){console.log(answer);}});setTimeout(()=> {location.replace('panel.admin.php')},1000);\">\n";
-				} else if ($user != "default/") {
+				} else if ($userFolder != "default/") {
 					echo "\t\t\t<input type='button' value='Lock user' onclick=\"key = '$key'; $.ajax({url:'admin.lockUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
 				}
 			} else {
@@ -80,13 +80,13 @@ User account maintenance.
 			echo "\t\t</td>\n";
 
 			// calculating user account size.
-			$userSizeStr = trim(shell_exec("du -sh " . "users/".$user."/ | cut -f1"));
+			$userSizeStr = trim(shell_exec("du -sh " . "users/".$userFolder."/ | cut -f1"));
                         // printing total size.
 			echo "\t\t<td style='text-align:center'><font size='2'>".$userSizeStr."</font></td>\n";
 
 			echo "\t\t</td>\n";
-			if (file_exists("users/".$user."/info.txt")) {
-				$info_array = explode("\n", file_get_contents("users/".$user."/info.txt"));
+			if (file_exists("users/".$userFolder."/info.txt")) {
+				$info_array = explode("\n", file_get_contents("users/".$userFolder."/info.txt"));
 				echo "\t\t<td><font size='2'>";
 				echo str_replace("Primary Investigator Name: ","",$info_array[1]);
 				echo "\t\t</font></td>";
@@ -157,14 +157,23 @@ Copy genomes/projects to default user account.
 
 		echo "<table width='100%'>";
 		echo "<tr><td width='30%'><font size='2'><b>Projects</b></font></td>";
+		echo "<td><font size='2'><b>Cleanup</b></font></td>";
+		echo "<td><font size='2'><b>Copy</b></font></td>";
+		echo "<td><font size='2'><b>Project Name</b></font></td>";
 		echo "</tr>\n";
 		foreach($projectFolders as $key=>$project) {
 			echo "\t\t<tr><td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
 			echo "<font size='2'>".($key+1).". ".$project."</font></span>\n";
 			echo "\t\t</td><td>\n";
-			echo "\t\t\t<input type='button' value='Cleanup project in prep to copy to default.' onclick=\"key = '$key'; $.ajax({url:'admin.cleanProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
+			echo "\t\t\t<input type='button' value='Prep to copy to default.' onclick=\"key = '$key'; $.ajax({url:'admin.cleanProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
 			echo "\t\t</td><td>\n";
 			echo "\t\t\t<input type='button' value='Copy project to default.' onclick=\"key = '$key'; $.ajax({url:'admin.copyProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
+			echo "\t\t</td><td>\n";
+			$nameFile          = "users/".$user."/projects/".$project."name.txt";
+			$projectNameString = file_get_contents($nameFile);
+			$projectNameString = trim($projectNameString);
+			echo "<font size='2'>".$projectNameString."</font>";
+
 			echo "\t\t</td></tr>\n";
 		}
 		echo "</table>";
