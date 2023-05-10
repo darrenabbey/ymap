@@ -28,8 +28,7 @@ if ($admin_logged_in == "true") {
 	log_stuff("",$user,"","","","","CREDENTIAL fail: user attempted to access admin panel?");
 }
 ?>
-This "Admin" tab will have system troubleshooting tools and/or notes for administrators, but cannot be seen by normal user accounts.
-It may be helpful for you to make a second account to view the site as a normal user.<br>
+This "Admin" tab will have system troubleshooting tools and/or notes for administrators, but cannot be seen by normal user accounts.<br>
 </font>
 
 <hr width="100%">
