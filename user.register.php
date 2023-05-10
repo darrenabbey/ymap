@@ -24,7 +24,9 @@
 			<label for="primaryInvestigator_name">Contact name: </label>                <input type="text"     id="primaryInvestigator_name"  name="primaryInvestigator_name"><br>
 			<label for="researchInstitution">Institution: </label>                      <input type="text"     id="researchInstitution"       name="researchInstitution"><br>
 			<div class='tab' style='font-size:10pt'>
-			This information will only be used for system administration tasks, such as resetting passwords.<br>
+			Contact information here should be sufficient for admins to validate your existence.<br>
+			User accounts registered without sufficient information will be deleted.<br>
+			This information will only be used for system administration tasks.<br>
 			</div>
 			<br>
 			<label for="user">Username: </label>                                        <input type="text"     id="user"                      name="user"><br>

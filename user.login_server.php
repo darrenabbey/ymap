@@ -23,7 +23,6 @@
 	// Delay before page reload.
 	if ($login_success == 0) {
 		// login failed.
-		log_stuff("",$user,"","","","","LOGIN failure, password not validated.");
 		$_SESSION['delay'] = 5;
 		echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 		echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
@@ -32,13 +31,14 @@
 
 		// check if user is active before logging stuff.
 		if (file_exists($users_dir.$user."locked.txt")) {
-			log_stuff("",$user,"","","","","LOGIN failure, locked account.");
+			$_SESSION['delay'] = 5;
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 		} else {
-			log_stuff("",$user,"","","","","LOGIN success");
+			$_SESSION['delay'] = 0;
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 		}
-		$_SESSION['delay'] = 0;
-		echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
-		echo "var intervalID = window.setInterval(reload_page, 500);\n</script>\n";
 	}
 
 
@@ -52,6 +52,8 @@
 
 			// Check if user account is locked.
 			if (file_exists("users/".$user."/locked.txt")) {
+				log_stuff("",$user,"","","","","LOGIN fail: locked account.");
+
 				// Account is locked pending admin approval.
 				echo "<font color=\"red\"><b>ERROR: Account is temporarily locked pending admin approval.</b></font><br>\n";
 				echo "This may happen because account was newly registered or other issues.</br>\n";
@@ -71,6 +73,7 @@
 				// Compare peppered input password to stored hash.
 				$checked = password_verify($pw_in.$pepper, $pw_stored_hash);
 				if ($checked) {
+					log_stuff("",$user,"","","","","LOGIN success: logged in.");
 					$_SESSION['logged_on'] = 1;
 					$_SESSION['user']      = $user;
 					echo "<font color=\"green\"><b>SUCCESS: User is now logged in.</b></font><br>\n";
@@ -79,6 +82,7 @@
 					echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 					$login_success = 1;
 				} else {
+					log_stuff("",$user,"","","","","LOGIN fail: wrong password.");
 					//password mismatch.
 					echo "<font color=\"red\"><b>ERROR: Input did not match a registered username & password combination.</b></font><br>\n";
 					echo "(Main page will reload shortly...)<br>\n";
@@ -88,6 +92,7 @@
 				}
 			}
 		} else {
+			log_stuff("",$user,"","","","","LOGIN fail: unregistered user.");
 			//User doesn't exist
 			echo "<font color=\"red\"><b>ERROR: Input did not match a registered username & password combination.</b></font><br>\n";
 			echo "(Main page will reload shortly...)<br>\n";
