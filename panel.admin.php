@@ -64,13 +64,15 @@ Newly registered locked accounts, pending approval.
 			//echo "<div id='frameContainer.u1_".$key."'></div>";
 			echo "\t\t</td><td>\n";
 
-			if (file_exists("users/".$user."/locked.txt")) {
-				echo "\t\t\t<input type='button' value='Approve' onclick=\"key = '$key'; $.ajax({url:'admin.approve_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
-				echo "\t\t\t<input type='button' value='Delete'  onclick=\"key = '$key'; $.ajax({url:'admin.delete_server.php' ,type:'post',data:{key:key},success:function(answer){console.log(answer);}});setTimeout(()=> {location.replace('panel.admin.php')},1000);\">\n";
-			} else {
-				if ($user != "default/") {
+			if (!file_exists("users/".$user."/super.txt")) {
+				if (file_exists("users/".$user."/locked.txt")) {
+					echo "\t\t\t<input type='button' value='Approve' onclick=\"key = '$key'; $.ajax({url:'admin.approve_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
+					echo "\t\t\t<input type='button' value='Delete'  onclick=\"key = '$key'; $.ajax({url:'admin.delete_server.php' ,type:'post',data:{key:key},success:function(answer){console.log(answer);}});setTimeout(()=> {location.replace('panel.admin.php')},1000);\">\n";
+				} else if ($user != "default/") {
 					echo "\t\t\t<input type='button' value='Lock user' onclick=\"key = '$key'; $.ajax({url:'admin.lockUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
 				}
+			} else {
+				echo "\t\t\t[Admin]\n";
 			}
 
 			echo "\t\t</td>\n";
