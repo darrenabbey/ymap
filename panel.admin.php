@@ -51,18 +51,15 @@ User account maintenance.
 
 		echo "<table width='100%'>";
 		echo "<tr><td width='20%'><font size='2'><b>User Account</b></font></td>";
-		echo     "<td><font size='2'><b>Approval Needed</b></font></td>";
+		echo     "<td style='text-align:center'><font size='2'><b>Approval Needed</b></font></td>";
+		echo     "<td style='text-align:center'><font size='2'><b>Account size</b></font></td>";
 		echo     "<td><font size='2'><b>User Name</b></font></td>";
 		echo     "<td><font size='2'><b>Email Address</b></font></td>";
 		echo "</tr>\n";
 		foreach($userFolders as $key=>$user) {
 			echo "\t\t<tr><td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
 			echo "<font size='2'>".($key+1).". ".$user."</font></span>\n";
-			//echo "<span id='u2_".$user."_delete'></span><span id='u_".$user."_type'></span>\n\t\t";
-			//echo "<br>\n\t\t";
-			//echo "<div id='frameContainer.u1_".$key."'></div>";
-			echo "\t\t</td><td>\n";
-
+			echo "\t\t</td><td style='text-align:center'>\n";
 			if (!file_exists("users/".$user."/super.txt")) {
 				if (file_exists("users/".$user."/locked.txt")) {
 					echo "\t\t\t<input type='button' value='Approve' onclick=\"key = '$key'; $.ajax({url:'admin.approve_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
@@ -71,19 +68,25 @@ User account maintenance.
 					echo "\t\t\t<input type='button' value='Lock user' onclick=\"key = '$key'; $.ajax({url:'admin.lockUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
 				}
 			} else {
-				echo "\t\t\t[Admin]\n";
+				echo "\t\t\t<font size='2'>[Admin]</font>\n";
 			}
+			echo "\t\t</td>\n";
+
+			// calculating user account size.
+			$userSizeStr = trim(shell_exec("du -sh " . "users/".$user."/ | cut -f1"));
+                        // printing total size.
+			echo "\t\t<td style='text-align:center'><font size='2'>".$userSizeStr."</font></td>\n";
 
 			echo "\t\t</td>\n";
 			if (file_exists("users/".$user."/info.txt")) {
 				$info_array = explode("\n", file_get_contents("users/".$user."/info.txt"));
-				echo "\t\t<td>";
+				echo "\t\t<td><font size='2'>";
 				echo str_replace("Primary Investigator Name: ","",$info_array[1]);
-				echo "\t\t</td>";
+				echo "\t\t</font></td>";
 
-				echo "\t\t<td>";
+				echo "\t\t<td><font size='2'>";
 				echo str_replace("Primary Investigator Email: ","",$info_array[2]);
-				echo "\t\t</td>";
+				echo "\t\t</font></td>";
 			}
 			echo "\t\t</tr>\n";
 		}
