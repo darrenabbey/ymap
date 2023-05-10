@@ -53,6 +53,8 @@ Newly registered locked accounts, pending approval.
 		echo "<table width='100%'>";
 		echo "<tr><td width='20%'><font size='2'><b>User Account</b></font></td>";
 		echo     "<td><font size='2'><b>Approval Needed</b></font></td>";
+		echo     "<td><font size='2'><b>User Name</b></font></td>";
+		echo     "<td><font size='2'><b>Email Address</b></font></td>";
 		echo "</tr>\n";
 		foreach($userFolders as $key=>$user) {
 			echo "\t\t<tr><td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
@@ -71,7 +73,18 @@ Newly registered locked accounts, pending approval.
 				}
 			}
 
-			echo "\t\t</td></tr>\n";
+			echo "\t\t</td>\n";
+			if (file_exists("users/".$user."/info.txt")) {
+				$info_array = explode("\n", file_get_contents("users/".$user."/info.txt"));
+				echo "\t\t<td>";
+				echo str_replace("Primary Investigator Name: ","",$info_array[1]);
+				echo "\t\t</td>";
+
+				echo "\t\t<td>";
+				echo str_replace("Primary Investigator Email: ","",$info_array[2]);
+				echo "\t\t</td>";
+			}
+			echo "\t\t</tr>\n";
 		}
 		echo "</table>";
 	} else {
