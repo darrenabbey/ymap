@@ -25,10 +25,14 @@
 	</style>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<title>Y-MAP</title>
+
 <!-- Used by secondary pages to update page on completion of processing. --!>
 	<script type="text/javascript">
-// Project/Dataset interface functions.
+	//=====================================
+	// Project/Dataset interface functions.
+	//-------------------------------------
 	function showColors(colorName,targetToChange,contentString) {
+		// Places a small color-key beside project in interface.
 		if (document.getElementById(targetToChange)) {
 			var select       = document.getElementById(targetToChange);
 			select.innerHTML = '';
@@ -63,6 +67,7 @@
 		document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById("p_".project_key).style.height = "0px";
 	}
 	function update_project_label_color(project_key,label_color) {
+		// Changes color of project label in user interface.
 		project_key                 = project_key.replace('p_','');
 		var project_label1          = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('p_label_'+project_key);
 		var project_label2          = document.getElementById('panel_visualizeDataset_iframe').contentDocument.getElementById('p_label_'+project_key);
@@ -70,6 +75,7 @@
 		project_label2.style.color  = label_color;
 	}
 	function update_project_file_size(project_key,sizeString_1,sizeString_2) {
+		// Checks cumulative disk space used by project, then updates user interface.
 		project_key                  = project_key.replace('p_','');
 		var project_size1_span       = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('p_size1_'+project_key);
 		var project_size2_span       = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('p_size2_'+project_key);
@@ -81,10 +87,13 @@
 		}
 	}
 	function resize_project(project_key, pixels) {
+		// Changes size of iframe shown for the project.
 		document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById(project_key).style.height = pixels+"px";
 	}
 
-// Hapmap interface functions.
+	//============================
+	// Hapmap interface functions.
+	//----------------------------
 	function update_hapmap_label_color(hapmap_key,label_color) {
 		hapmap_key               = hapmap_key.replace('h_','');
 		var hapmap_label         = document.getElementById('panel_hapmap_iframe').contentDocument.getElementById('h_label_'+hapmap_key);
@@ -94,7 +103,9 @@
 		document.getElementById('panel_hapmap_iframe').contentDocument.getElementById(hapmap_key).style.height = pixels+"px";
 	}
 
-// Genome interface functions.
+	//============================
+	// Genome interface functions.
+	//----------------------------
 	function update_genome_remove_iframe(genome_key) {
 		// Used to hide genome install process part of user interface once install has completed.
 		console.log("$$ genome_key = '"+genome_key+"'");
