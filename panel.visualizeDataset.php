@@ -229,7 +229,11 @@
 		$key = $key_ + $userProjectCount_starting + $userProjectCount_working + $userProjectCount_complete;
 		echo "<font size='2'>".($key+1).".";
 		echo "<input  id='show_".$key."_sys' type='checkbox' onclick=\"parent.openProject('default','".$project."','".$key."_sys','".$colorString1."','".$colorString2."','".$parentString."');\" data-file-list='".$json_file_list. "'>";
-		echo $project."</font>";
+
+		$projectNameString = file_get_contents("users/default/projects/".$project."/name.txt");
+		$projectNameString = trim($projectNameString);
+
+		echo $projectNameString."</font>";
 		echo "<br>\n\t\t";
 	}
 	?>
