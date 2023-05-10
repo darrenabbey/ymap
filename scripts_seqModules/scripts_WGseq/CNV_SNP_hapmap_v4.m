@@ -120,14 +120,15 @@ for i = 1:length(figure_details)
 			key_height = figure_details(i).height;
 		end;
 	else
-		chr_id    (figure_details(i).chr) = figure_details(i).chr;
-		chr_label {figure_details(i).chr} = figure_details(i).label;
-		chr_name  {figure_details(i).chr} = figure_details(i).name;
-		chr_posX  (figure_details(i).chr) = figure_details(i).posX;
-		chr_posY  (figure_details(i).chr) = figure_details(i).posY;
-		chr_width (figure_details(i).chr) = figure_details(i).width;
-		chr_height(figure_details(i).chr) = figure_details(i).height;
-		chr_in_use(figure_details(i).chr) = str2num(figure_details(i).useChr);
+		chr_id      (figure_details(i).chr) = figure_details(i).chr;
+		chr_label   {figure_details(i).chr} = figure_details(i).label;
+		chr_name    {figure_details(i).chr} = figure_details(i).name;
+		chr_posX    (figure_details(i).chr) = figure_details(i).posX;
+		chr_posY    (figure_details(i).chr) = figure_details(i).posY;
+		chr_width   (figure_details(i).chr) = figure_details(i).width;
+		chr_height  (figure_details(i).chr) = figure_details(i).height;
+		chr_in_use  (figure_details(i).chr) = str2num(figure_details(i).useChr);
+		chr_figOrder(figure_details(i).chr) = str2num(figure_details(i).figOrder);
 	end;
 end;
 num_chrs = length(chr_size);
@@ -750,7 +751,17 @@ axisLabelPosition_vert = 0.01125;
 % Make figures
 %-------------------------------------------------------------------------------------------
 first_chr = true;
-for chr = 1:num_chrs
+
+% Determine order to draw chromosome cartoons in.
+chr_order = [];
+for test_chr = 1:num_chrs
+	chr_pos = find(chr_figOrder==test_chr);
+	chr_order = [chr_order chr_pos];
+end;
+
+% Draw chromosomes in order defined in figure_definitions.txt file.
+for chr_to_draw  = 1:length(chr_order)
+	chr = chr_order(chr_to_draw);
 	if (chr_in_use(chr) == 1)
 		figure(fig);
 		% make standard chr cartoons.

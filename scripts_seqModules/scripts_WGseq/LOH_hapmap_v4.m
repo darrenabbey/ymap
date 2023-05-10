@@ -834,7 +834,17 @@ axisLabelPosition_vert = 0.01125;
 %-------------------------------------------------------------------------------------------------
 fprintf('\t|\tDraw figures.\n');
 first_chr = true;
-for chr = 1:num_chrs
+
+% Determine order to draw chromosome cartoons in.
+chr_order = [];
+for test_chr = 1:num_chrs
+	chr_pos = find(chr_figOrder==test_chr);
+	chr_order = [chr_order chr_pos];
+end;
+
+% Draw chromosomes in order defined in figure_definitions.txt file.
+for chr_to_draw  = 1:length(chr_order)
+	chr = chr_order(chr_to_draw);
 	if (chr_in_use(chr) == 1)
 		figure(fig);
 		% make standard chr cartoons.

@@ -324,7 +324,17 @@ fprintf('\t|\tDetermine statistics of data density for chromosomes.\n');
 all_data        = [];
 chr_mean        = zeros(1,num_chrs);
 chr_mean_scaler = zeros(1,num_chrs);
-for chr = 1:num_chrs
+
+% Determine order to draw chromosome cartoons in.
+chr_order = [];
+for test_chr = 1:num_chrs
+	chr_pos = find(chr_figOrder==test_chr);
+	chr_order = [chr_order chr_pos];
+end;
+
+% Draw chromosomes in order defined in figure_definitions.txt file.
+for chr_to_draw  = 1:length(chr_order)
+	chr = chr_order(chr_to_draw);
 	if (chr_in_use(chr) == 1)
 		chr_length          = ceil(chr_size(chr)/bases_per_bin);
 		dataX               = ceil(chr_SNP_data_positions{chr}/bases_per_bin)';

@@ -269,7 +269,17 @@ axisLabelPosition_vert = 0.01125;
 % Make figures
 %-------------------------------------------------------------------------------------------
 first_chr = true;
-for chr = 1:num_chrs
+
+% Determine order to draw chromosome cartoons in.
+chr_order = [];
+for test_chr = 1:num_chrs
+	chr_pos = find(chr_figOrder==test_chr);
+	chr_order = [chr_order chr_pos];
+end;
+
+% Draw chromosomes in order defined in figure_definitions.txt file.
+for chr_to_draw  = 1:length(chr_order)
+	chr = chr_order(chr_to_draw);
 	if (chr_in_use(chr) == 1)
 		figure(fig);
 		% make standard chr cartoons.
@@ -283,7 +293,7 @@ for chr = 1:num_chrs
 
 		% standard : axes labels etc.
 		xlim([0,chr_size(chr)/bases_per_bin]);
-    
+
 		%% standard : modify y axis limits to show annotation locations if any are provided.
 		if (length(annotations) > 0)
 			ylim([-maxY/10*1.5,maxY]);

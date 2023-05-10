@@ -233,16 +233,16 @@ end;
 %-----------------------------------------------------------------------------------------------------
 fprintf('\nGenerate figures for different stages of the ChARM algorithm.\n');
 if (temp_figures == true)
-    %% Assigning raw and filtered data to convenient names for later use.
-    data1 = CNVplot2;
-    for chr = 1:num_chrs
+	%% Assigning raw and filtered data to convenient names for later use.
+	data1 = CNVplot2;
+	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			data2{chr} = CNV_median{chr};
 			data3{chr} = CNV_median_smoothed{chr};
 			data4{chr} = CNV_differentiated_smoothed{chr};
 		end;
 	end;
-    maxY = 2;
+	maxY = 2;
 
 	fig = figure(1);    dataShow = data1;
 	set(gcf, 'Position', [0 70 1024 600]);
