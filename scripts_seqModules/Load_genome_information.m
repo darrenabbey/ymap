@@ -182,16 +182,21 @@ while not (feof(figInfo_fid))
 				for i = 1:size(sscanf(lineData,'%s',8),2);
 					figInfo_figOrder(1) = [];
 				end;
+				figInfo_figReversed = sscanf(lineData, '%s',10);
+				for i = 1:size(sscanf(lineData,'%s',9),2);
+					figInfo_figReversed(1) = [];
+				end;
 
-				figure_details(lines_analyzed).chr      = str2double(figInfo_chr);
-				figure_details(lines_analyzed).label    = figInfo_label;
-				figure_details(lines_analyzed).name     = figInfo_name;
-				figure_details(lines_analyzed).useChr   = figInfo_useChr;
-				figure_details(lines_analyzed).posX     = str2double(figInfo_posX);
-				figure_details(lines_analyzed).posY     = str2double(figInfo_posY);
-				figure_details(lines_analyzed).width    = figInfo_width;
-				figure_details(lines_analyzed).height   = str2double(figInfo_height);
-				figure_details(lines_analyzed).figOrder = figInfo_figOrder;
+				figure_details(lines_analyzed).chr         = str2double(figInfo_chr);
+				figure_details(lines_analyzed).label       = figInfo_label;
+				figure_details(lines_analyzed).name        = figInfo_name;
+				figure_details(lines_analyzed).useChr      = figInfo_useChr;
+				figure_details(lines_analyzed).posX        = str2double(figInfo_posX);
+				figure_details(lines_analyzed).posY        = str2double(figInfo_posY);
+				figure_details(lines_analyzed).width       = figInfo_width;
+				figure_details(lines_analyzed).height      = str2double(figInfo_height);
+				figure_details(lines_analyzed).figOrder    = figInfo_figOrder;
+				figure_details(lines_analyzed).figReversed = figInfo_figReversed;
 		    	elseif ((str2num(figInfo_chr) == 0) && (strcmp(figInfo_label,'Ploidy') == 1))
 				figInfo_ploidy_default = sscanf(lineData, '%s',4);
 				for i = 1:size(sscanf(lineData,'%s',3),2);

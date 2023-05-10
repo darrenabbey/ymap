@@ -33,9 +33,9 @@ fprintf('#################################\n');
 %-------------------------------------------------------------------------------------------------
 userReference    = [main_dir 'users/' user '/genomes/' genome '/reference.txt'];
 defaultReference = [main_dir 'users/default/genomes/' genome '/reference.txt'];
-if (exist(userReference,'file') == 0)   
+if (exist(userReference,'file') == 0)
 	FASTA_string = strtrim(fileread(defaultReference));
-else                    
+else
 	FASTA_string = strtrim(fileread(userReference));
 end;
 [FastaPath,FastaName,FastaExt] = fileparts(FASTA_string);
@@ -111,14 +111,16 @@ for detailID = 1:length(figure_details)
 			key_height = figure_details(detailID).height;
 		end;
 	else
-		chr_id    (figure_details(detailID).chr) = figure_details(detailID).chr;
-		chr_label {figure_details(detailID).chr} = figure_details(detailID).label;
-		chr_name  {figure_details(detailID).chr} = figure_details(detailID).name;
-		chr_posX  (figure_details(detailID).chr) = figure_details(detailID).posX;
-		chr_posY  (figure_details(detailID).chr) = figure_details(detailID).posY;
-		chr_width (figure_details(detailID).chr) = figure_details(detailID).width;
-		chr_height(figure_details(detailID).chr) = figure_details(detailID).height;
-		chr_in_use(figure_details(detailID).chr) = str2num(figure_details(detailID).useChr);
+		chr_id         (figure_details(detailID).chr) = figure_details(detailID).chr;
+		chr_label      {figure_details(detailID).chr} = figure_details(detailID).label;
+		chr_name       {figure_details(detailID).chr} = figure_details(detailID).name;
+		chr_posX       (figure_details(detailID).chr) = figure_details(detailID).posX;
+		chr_posY       (figure_details(detailID).chr) = figure_details(detailID).posY;
+		chr_width      (figure_details(detailID).chr) = figure_details(detailID).width;
+		chr_height     (figure_details(detailID).chr) = figure_details(detailID).height;
+		chr_in_use     (figure_details(detailID).chr) = str2num(figure_details(detailID).useChr);
+		chr_figOrder   (figure_details(detailID).chr) = str2num(figure_details(i).figOrder);
+		chr_figReversed(figure_details(detailID).chr) = str2num(figure_details(i).figReversed);
 	end;
 end;
 num_chrs = length(chr_size);

@@ -71,14 +71,16 @@ for i = 1:length(figure_details)
 			key_height = figure_details(i).height;
 		end;
 	else
-		chr_id    (figure_details(i).chr) = figure_details(i).chr;
-		chr_label {figure_details(i).chr} = figure_details(i).label;
-		chr_name  {figure_details(i).chr} = figure_details(i).name;
-		chr_posX  (figure_details(i).chr) = figure_details(i).posX;
-		chr_posY  (figure_details(i).chr) = figure_details(i).posY;
-		chr_width (figure_details(i).chr) = figure_details(i).width;
-		chr_height(figure_details(i).chr) = figure_details(i).height;
-		chr_in_use(figure_details(i).chr) = str2num(figure_details(i).useChr);
+		chr_id         (figure_details(i).chr) = figure_details(i).chr;
+		chr_label      {figure_details(i).chr} = figure_details(i).label;
+		chr_name       {figure_details(i).chr} = figure_details(i).name;
+		chr_posX       (figure_details(i).chr) = figure_details(i).posX;
+		chr_posY       (figure_details(i).chr) = figure_details(i).posY;
+		chr_width      (figure_details(i).chr) = figure_details(i).width;
+		chr_height     (figure_details(i).chr) = figure_details(i).height;
+		chr_in_use     (figure_details(i).chr) = str2num(figure_details(i).useChr);
+		chr_figOrder   (figure_details(i).chr) = str2num(figure_details(i).figOrder);
+		chr_figReversed(figure_details(i).chr) = str2num(figure_details(i).figReversed);
 	end;
 end;
 

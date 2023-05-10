@@ -49,7 +49,8 @@
 				echo "<th colspan=\"2\"><font size=\"2\">Centromere</font></th>";
 				echo "<th rowspan=\"2\"><font size=\"2\">rDNA</font></th>";
 				echo "<th rowspan=\"2\"><font size=\"2\">Size(BP)</font></th>";
-				echo "<th rowspan=\"2\"><font size=\"2\">Figure Order</font></th>";
+				echo "<th rowspan=\"2\"><font size=\"2\">Fig Order</font></th>";
+				echo "<th rowspan=\"2\"><font size=\"2\">Reversed</font></th>";
 			echo "</tr>";
 			echo "<tr>";
 				echo "<th><font size=\"2\">start bp</font></th>";
@@ -98,6 +99,7 @@
 			echo "\t\t\t<td align=\"middle\" ><input type=\"radio\"    name=\"rDNAchr\"      value=\"{$chrID}\"></td>\n";
 			echo "\t\t\t<td><font size=\"2\">{$chr_lengths[$chr]}</font></td>\n";
 			echo "\t\t\t<td><input type=\"text\"     name=\"chrFigOrder_{$chrID}\"   value=\"{$chrID}\"      size=\"4\"></td>\n";
+			echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" name=\"reversed_{$chrID}\" unchecked></td>\n";
 			echo "\t\t</tr>\n";
 		}
 
