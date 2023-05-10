@@ -20,7 +20,7 @@
 		// not an admin account, redirect to login page.
 		$admin_logged_in = "false";
 		session_destroy();
-		log_stuff("",$user,"","","","","CREDENTIAL fail: user attempted to use admin function to copy genome to default!");
+		log_stuff("",$user,"","","","","CREDENTIAL fail: user attempted to use admin function to copy project to default!");
 		header('Location: .');
 	}
 
@@ -29,26 +29,26 @@
 	$user_key = sanitizeInt_POST('key');
 
 	// Determine user account associated with key.
-	$genomeDir      = "users/".$user."/genomes/";
-	$genomeFolders  = array_diff(glob($genomeDir."*\/"), array('..', '.'));
+	$projectDir      = "users/".$user."/projects/";
+	$projectFolders  = array_diff(glob($projectDir."*\/"), array('..', '.'));
 
 	// Sort directories by date, newest first.
-	array_multisort($genomeFolders, SORT_ASC, $genomeFolders);
+	array_multisort($projectFolders, SORT_ASC, $projectFolders);
 
 	// Trim path from each folder string.
-	foreach($genomeFolders as $key=>$folder) {
-		$genomeFolders[$key] = str_replace($genomeDir,"",$folder);
+	foreach($projectFolders as $key=>$folder) {
+		$projectFolders[$key] = str_replace($projectDir,"",$folder);
 	}
-	$genome_to_copy = $genomeFolders[$user_key];
+	$project_to_copy = $projectFolders[$user_key];
 
-	$src  = $genomeDir.$genome_to_copy;
-	$dest = "users/default/genomes/".$genome_to_copy;
+	$src  = $projectDir.$project_to_copy;
+	$dest = "users/default/projects/".$project_to_copy;
 
-	// Copy from source genome directory to destination genome directory.
+	// Copy from source project directory to destination project directory.
 	if (file_exists($dest)) {
-		log_stuff("",$user,"","",$genome_to_copy,"","ADMIN fail: attempted to copy genome to default user, but genome name is already in use.");
+		log_stuff("",$user,"","",$project_to_copy,"","ADMIN fail: attempted to copy project to default user, but project name is already in use.");
 	} else {
-		log_stuff("",$user,"","",$genome_to_copy,"","ADMIN success: copied genome to default user.");
+		log_stuff("",$user,"","",$project_to_copy,"","ADMIN success: copied project to default user.");
 		mkdir($dest, 0777, true);
 		foreach (scandir($src) as $file) {
 			if (!is_readable($src . '/' . $file)) continue;
