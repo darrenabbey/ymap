@@ -122,19 +122,14 @@
 		}
 
 		// display total size of files only if the genome is finished processeing
-		if ($frameContainerIx == "1")
-		{
+		if ($frameContainerIx == "1") {
 			$totalSizeFile = "users/".$user."/genomes/". $genome ."/totalSize.txt";
-			// display total genome size
-			// first checking if size already calculated and is stored in totalSize.txt
-			if (file_exists($totalSizeFile))
-			{
+			// display total genome size: first checking if size already calculated and is stored in totalSize.txt
+			if (file_exists($totalSizeFile)) {
 				$handle       = fopen($totalSizeFile,'r');
 				$genomeSizeStr = trim(fgets($handle));
 				fclose($handle);
-			}
-			else // calculate size and store in totalSize.txt to avoid calculating again
-			{
+			} else { // calculate size and store in totalSize.txt to avoid calculating again
 				// calculating size
 				$genomeSizeStr = trim(shell_exec("du -sh " . "users/".$user."/genomes/". $genome . "/ | cut -f1"));
 				// saving to file

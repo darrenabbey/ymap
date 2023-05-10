@@ -204,14 +204,11 @@
 			// display total project size
 			$totalSizeFile = "users/".$user."/projects/".$project. "/totalSize.txt";
 			// first checking if size already calculated and is stored in totalSize.txt
-			if (file_exists($totalSizeFile))
-			{
+			if (file_exists($totalSizeFile)) {
 				$handle       = fopen($totalSizeFile,'r');
 				$projectSizeStr = trim(fgets($handle));
 				fclose($handle);
-			}
-			else // calculate size and store in totalSize.txt to avoid calculating again
-			{
+			} else { // calculate size and store in totalSize.txt to avoid calculating again
 				// calculating size
 				$projectSizeStr = trim(shell_exec("du -sh " . "users/".$user."/projects/".$project. "/ | cut -f1"));
 				// saving to file
