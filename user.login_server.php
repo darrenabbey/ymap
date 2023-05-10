@@ -98,6 +98,11 @@
 			} else {
 				// error state.
 				log_stuff("",$user,"","","","","LOGIN fail: user account missing lock.txt and active.txt files.");
+				//password mismatch.
+				echo "<font color=\"red\"><b>ERROR: Input did not match a registered username & password combination.</b></font><br>\n";
+				echo "(Main page will reload shortly...)<br>\n";
+				echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
+				echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 				$login_success = 0;
 			}
 		} else {
