@@ -773,6 +773,11 @@ for chr_to_draw  = 1:length(chr_order)
 		fprintf(['chr' num2str(chr) ': figposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\t']);
 		hold on;
 
+		% reverse order of color bins if chromosome is indicated as reversed in figure_definitions.txt file.
+		if (chr_figReversed(chr) == 1)
+			CNVplot2{chr} = fliplr(CNVplot2{chr});
+		end;
+
 		%% cgh plot section.
 		c_ = [0 0 0];
 		fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
@@ -781,7 +786,7 @@ for chr_to_draw  = 1:length(chr_order)
 			CNVhistValue = CNVplot2{chr}(i);
 
 			% The CNV-histogram values were normalized to a median value of 1.
-			% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the 
+			% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the
 			% median line.
 			startY = maxY/2;
 			if (Low_quality_ploidy_estimate == true)
@@ -825,7 +830,7 @@ for chr_to_draw  = 1:length(chr_order)
 		if (chr_figReversed(chr) == 0)
 			text(-50000/5000/2*3, maxY/2,chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
 		else
-			text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+			text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
 		end;
 
 		% This section sets the Y-axis labelling.
@@ -1263,13 +1268,13 @@ for chr_to_draw  = 1:length(chr_order)
 				if (chr_figReversed(chr) == 0)
 					title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
 				else
-					title([chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
+					title([chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
 				end;
 			else
 				if (chr_figReversed(chr) == 0)
 					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
 				else
-					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
+					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
 				end;
 			end;
 			% shift back to main figure generation.

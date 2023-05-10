@@ -346,14 +346,14 @@ calculate_allelic_ratio_cutoffs;
 % Process SNP/LOH data.
 %-------------------------------------------------------------------------------------------------
 if (useHapmap)
-    alleleRatiosFid = openAlleleRatiosTrack(projectDir, project);
-    
+	alleleRatiosFid = openAlleleRatiosTrack(projectDir, project);
+
 	%% =========================================================================================
 	% Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
 	%-------------------------------------------------------------------------------------------
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
-            chrName = chr_name{chr};
+			chrName = chr_name{chr};
 			if (length(C_chr_count{chr}) > 1)
 				%
 				% Determining colors for each SNP coordinate from calculated cutoffs.
@@ -688,7 +688,7 @@ if (useHapmap)
 					chr_SNPdata_colorsC{chr,2}(chr_bin) = chr_SNPdata_colorsC{chr,2}(chr_bin) + colorList(2);
 					chr_SNPdata_colorsC{chr,3}(chr_bin) = chr_SNPdata_colorsC{chr,3}(chr_bin) + colorList(3);
 					chr_SNPdata_countC{ chr  }(chr_bin) = chr_SNPdata_countC{ chr  }(chr_bin) + 1;
-                    
+
                     if (~all(colorList == colorNoData))
 						writeAlleleRatioLine(alleleRatiosFid, chrName, coordinate, ...
 							homologA, homologB, ...
@@ -898,7 +898,7 @@ for chr_to_draw  = 1:length(chr_order)
 		if (chr_figReversed(chr) == 0)
 			text(-50000/5000/2*3, maxY/2,chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
 		else
-			text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+			text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
 		end;
 		set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 		set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
@@ -911,6 +911,18 @@ for chr_to_draw  = 1:length(chr_order)
 			title([ project ' allelic fraction map'],'Interpreter','none','FontSize',stacked_title_size);
 		end;
 		% standard : end axes labels etc.
+
+
+		% reverse order of color bins if chromosome is indicated as reversed in figure_definitions.txt file.
+		if (chr_figReversed(chr) == 1)
+			chr_SNPdata_colorsC{chr,1} = fliplr(chr_SNPdata_colorsC{chr,1});
+			chr_SNPdata_colorsC{chr,2} = fliplr(chr_SNPdata_colorsC{chr,2});
+			chr_SNPdata_colorsC{chr,3} = fliplr(chr_SNPdata_colorsC{chr,3});
+			chr_SNPdata{chr,1}         = fliplr(chr_SNPdata{chr,1});
+			chr_SNPdata{chr,2}         = fliplr(chr_SNPdata{chr,2});
+			chr_SNPdata{chr,3}         = fliplr(chr_SNPdata{chr,3});
+			chr_SNPdata{chr,4}         = fliplr(chr_SNPdata{chr,4});
+		end;
 
 
 		% standard : draw colorbars.
@@ -1030,7 +1042,7 @@ for chr_to_draw  = 1:length(chr_order)
 			     'Color',[0 0 0]);
 		end;
 		% standard : end show centromere.
-    
+
 		% standard : show annotation locations
 		if (show_annotations) && (length(annotations) > 0)
 			plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
@@ -1156,7 +1168,7 @@ for chr_to_draw  = 1:length(chr_order)
 				c_ = [1.0 1.0 1.0];
 				% top left corner.
 				x_ = [leftEnd   leftEnd   leftEnd+dx];        y_ = [maxY-dy   maxY      maxY        ];    f = fill(x_,y_,c_);    set(f,'linestyle','none');
-				% bottom left corner.     
+				% bottom left corner.
 				x_ = [leftEnd   leftEnd   leftEnd+dx];        y_ = [dy        0         0           ];    f = fill(x_,y_,c_);    set(f,'linestyle','none');
 				% top right corner.
 				x_ = [rightEnd   rightEnd   rightEnd-dx];     y_ = [maxY-dy    maxY       maxY      ];    f = fill(x_,y_,c_);    set(f,'linestyle','none');
@@ -1219,13 +1231,13 @@ for chr_to_draw  = 1:length(chr_order)
 				if (chr_figReversed(chr) == 0)
 					title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
 				else
-					title([chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
+					title([chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
 				end;
 			else
 				if (chr_figReversed(chr) == 0)
 					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
 				else
-					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
+					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
 				end;
 			end;
 

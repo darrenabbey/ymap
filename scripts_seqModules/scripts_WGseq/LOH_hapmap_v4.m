@@ -864,7 +864,6 @@ for chr_to_draw  = 1:length(chr_order)
 		infill = zeros(1,length(phased_plot2{chr}));
 		colors = [];
 
-
 		%% standard : determine color of each bin.
 		for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
 			c_tot_post = SNPs_to_fullData_ratio{chr}(chr_bin)+SNPs_to_fullData_ratio{chr}(chr_bin);
@@ -886,6 +885,10 @@ for chr_to_draw  = 1:length(chr_order)
 		end;
 		% standard : end determine color of each bin.
 
+		% reverse order of color bins if chromosome is indicated as reversed in figure_definitions.txt file.
+		if (chr_figReversed(chr) == 1)
+			colors        = flipud(colors);
+		end;
 
 		%% standard : draw colorbars.
 		for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
@@ -926,7 +929,7 @@ for chr_to_draw  = 1:length(chr_order)
 		if (chr_figReversed(chr) == 0)
 			text(-50000/5000/2*3, maxY/2,chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
 		else
-			text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+			text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
 		end;
 
 		set(gca,'FontSize',gca_stacked_font_size);
@@ -986,14 +989,14 @@ for chr_to_draw  = 1:length(chr_order)
 		        y_ = [0       dy   dy   0    ];
 		        f = fill(x_,y_,c_);
 	        	set(f,'linestyle','none');
-        
+
 			% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
 			plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
 			     [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy     ],...
 			     'Color',[0 0 0]);
 		end;
 		%end show centromere.
-    
+
 		%show annotation locations
 		if (show_annotations) && (length(annotations) > 0)
 			plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
@@ -1085,14 +1088,14 @@ for chr_to_draw  = 1:length(chr_order)
 				y_ = [maxY-dy   maxY      maxY      ];
 				f = fill(x_,y_,c_);
 				set(f,'linestyle','none');
-				% bottom left corner.     
+				% bottom left corner.
 				x_ = [leftEnd   leftEnd   leftEnd+dx];
 				y_ = [dy        0         0         ];
 				f = fill(x_,y_,c_);
 				set(f,'linestyle','none');
 				% top right corner.
-				x_ = [rightEnd   rightEnd   rightEnd-dx];   
-				y_ = [maxY-dy    maxY       maxY      ];  
+				x_ = [rightEnd   rightEnd   rightEnd-dx];
+				y_ = [maxY-dy    maxY       maxY      ];
 				f = fill(x_,y_,c_);
 				set(f,'linestyle','none');
 				% bottom right corner.
@@ -1166,13 +1169,13 @@ for chr_to_draw  = 1:length(chr_order)
 				if (chr_figReversed(chr) == 0)
 					title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
 				else
-					title([chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
+					title([chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
 				end;
 			else
 				if (chr_figReversed(chr) == 0)
 					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
 				else
-					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
+					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
 				end;
 			end;
 

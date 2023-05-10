@@ -152,9 +152,6 @@ fprintf('\nLoading "Common_CNV" data file for ddRADseq project.');
 load([main_dir 'users/' user '/projects/' project '/Common_CNV.mat']);   % 'CNVplot2', 'genome_CNV'
 
 
-%% -----------------------------------------------------------------------------------------
-% Make figures
-%-------------------------------------------------------------------------------------------
 Main_fig = figure(4);
 set(gcf, 'Position', [0 70 1024 600]);
 
@@ -238,6 +235,11 @@ for chr_to_draw  = 1:length(chr_order)
 		subplot('Position',[left bottom width height]);
 		fprintf(['figposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\t']);
 		hold on;
+
+		% reverse order of color bins if chromosome is indicated as reversed in figure_definitions.txt file.
+		if (chr_figReversed(chr) == 1)
+			CNVplot2{chr} = fliplr(CNVplot2{chr});
+		end;
 
 		%% standard : cgh plot section.
 		c_ = [0 0 0];
@@ -330,7 +332,7 @@ for chr_to_draw  = 1:length(chr_order)
 		if (chr_figReversed(chr) == 0)
 			text(-50000/5000/2*3, maxY/2,chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
 		else
-			text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
+			text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',20);
 		end;
 		set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 		set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});

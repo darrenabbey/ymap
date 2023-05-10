@@ -553,67 +553,72 @@ end;
 for chr_to_draw  = 1:length(chr_order)
 	chr = chr_order(chr_to_draw);
 	if (chr_in_use(chr) == 1)
-	    figure(fig);
-	    % make standard chr cartoons.
-	    left   = chr_posX(chr);
-	    bottom = chr_posY(chr);
-	    width  = chr_width(chr);
-	    height = chr_height(chr);
-	    subplot('Position',[left bottom width height]);
-	    fprintf(['\tfigposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
-	    hold on;
+		figure(fig);
+		% make standard chr cartoons.
+		left   = chr_posX(chr);
+		bottom = chr_posY(chr);
+		width  = chr_width(chr);
+		height = chr_height(chr);
+		subplot('Position',[left bottom width height]);
+		fprintf(['\tfigposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
+		hold on;
 
-	    c_prev = colorInit;
-	    c_post = colorInit;
-	    c_     = c_prev;
-	    infill = zeros(1,length(HETplot2{chr}));
-	    colors = [];
+		c_prev = colorInit;
+		c_post = colorInit;
+		c_     = c_prev;
+		infill = zeros(1,length(HETplot2{chr}));
+		colors = [];
 
-	    % determines the color of each bin.
-	    for i = 1:length(SNPs_to_fullData_ratio{chr})+1;
-	        if (i-1 < length(SNPs_to_fullData_ratio{chr}))
-	            c_tot_post = SNPs_to_fullData_ratio{chr}(i)+SNPs_to_fullData_ratio{chr}(i);
-	            if (c_tot_post == 0)
-	                c_post = colorNoData;
-	            else
+		% determines the color of each bin.
+		for i = 1:length(SNPs_to_fullData_ratio{chr})+1;
+			if (i-1 < length(SNPs_to_fullData_ratio{chr}))
+				c_tot_post = SNPs_to_fullData_ratio{chr}(i)+SNPs_to_fullData_ratio{chr}(i);
+				if (c_tot_post == 0)
+					c_post = colorNoData;
+				else
 					% darren
 					colorMix = colorHET   *   HETplot2{chr}(i)/SNPs_to_fullData_ratio{chr}(i) + ...
 					           colorHOM   *   HOMplot2{chr}(i)/SNPs_to_fullData_ratio{chr}(i);
 					c_post =   colorMix   *   min(1,SNPs_to_fullData_ratio{chr}(i)) + ...
 					           colorNoData*(1-min(1,SNPs_to_fullData_ratio{chr}(i)));
-	            end;
-	        else
-	            c_post = colorInit;
-	        end;
-	        colors(i,1) = c_post(1);
-	        colors(i,2) = c_post(2);
-	        colors(i,3) = c_post(3);
-	    end;
+				end;
+			else
+				c_post = colorInit;
+			end;
+			colors(i,1) = c_post(1);
+			colors(i,2) = c_post(2);
+			colors(i,3) = c_post(3);
+		end;
 
-	    % standard : draw colorbars.
-	    for i = 1:length(HETplot2{chr})+1;
-	        x_ = [i i i-1 i-1];
-	        y_ = [0 maxY maxY 0];
-	        c_post(1) = colors(i,1);
-	        c_post(2) = colors(i,2);
-	        c_post(3) = colors(i,3);
-	        % makes a colorBar for each bin, using local smoothing
-	        if (c_(1) > 1); c_(1) = 1; end;
-	        if (c_(2) > 1); c_(2) = 1; end;
-	        if (c_(3) > 1); c_(3) = 1; end;
-	        if (blendColorBars == false)
-	            f = fill(x_,y_,c_);
-	        else
-	            f = fill(x_,y_,c_/2+c_prev/4+c_post/4);
-	        end;
-	        c_prev = c_;
-	        c_     = c_post;
-	        set(f,'linestyle','none');
-	    end;
+		% reverse order of color bins if chromosome is indicated as reversed in figure_definitions.txt file.
+		if (chr_figReversed(chr) == 1)
+			colors        = flipud(colors);
+		end;
 
-	    % axes labels etc.
-	    hold off;
-	    xlim([0,chr_size(chr)/bases_per_bin]);
+		% standard : draw colorbars.
+		for i = 1:length(HETplot2{chr})+1;
+			x_ = [i i i-1 i-1];
+			y_ = [0 maxY maxY 0];
+			c_post(1) = colors(i,1);
+			c_post(2) = colors(i,2);
+			c_post(3) = colors(i,3);
+			% makes a colorBar for each bin, using local smoothing
+			if (c_(1) > 1); c_(1) = 1; end;
+			if (c_(2) > 1); c_(2) = 1; end;
+			if (c_(3) > 1); c_(3) = 1; end;
+			if (blendColorBars == false)
+				f = fill(x_,y_,c_);
+			else
+				f = fill(x_,y_,c_/2+c_prev/4+c_post/4);
+			end;
+			c_prev = c_;
+			c_     = c_post;
+			set(f,'linestyle','none');
+		end;
+
+		% axes labels etc.
+		hold off;
+		xlim([0,chr_size(chr)/bases_per_bin]);
 
 		%% modify y axis limits to show annotation locations if any are provided.
 		if (length(annotations) > 0)
@@ -627,7 +632,7 @@ for chr_to_draw  = 1:length(chr_order)
 		if (chr_figReversed(chr) == 0)
 			text(-50000/5000/2*3, maxY/2,chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
 		else
-			text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+			text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
 		end;
 		set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 		set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
@@ -667,79 +672,79 @@ for chr_to_draw  = 1:length(chr_order)
                                 end;
                         end;
 
-	    %show centromere outlines and horizontal marks.
-	    x1 = cen_start(chr)/bases_per_bin;
-	    x2 = cen_end(chr)/bases_per_bin;
-	    leftEnd  = 0.5*5000/bases_per_bin;
-	    rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
-	    if (Centromere_format == 0)
-	        % standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
-	        dx = cen_tel_Xindent; %5*5000/bases_per_bin;
-	        dy = cen_tel_Yindent; %maxY/10;
-	        % draw white triangles at corners and centromere locations.
-	        % top left corner.
-	        c_ = [1.0 1.0 1.0];
-	        x_ = [leftEnd   leftEnd   leftEnd+dx];
-	        y_ = [maxY-dy   maxY      maxY      ];
-	        f = fill(x_,y_,c_);
-	        set(f,'linestyle','none');
-	        % bottom left corner.
-	        x_ = [leftEnd   leftEnd   leftEnd+dx];
-	        y_ = [dy        0         0         ];
-	        f = fill(x_,y_,c_);
-	        set(f,'linestyle','none');
-	        % top right corner.
-	        x_ = [rightEnd   rightEnd   rightEnd-dx];
-	        y_ = [maxY-dy    maxY       maxY      ];
-	        f = fill(x_,y_,c_);
-	        set(f,'linestyle','none');
-	        % bottom right corner.
-	        x_ = [rightEnd   rightEnd   rightEnd-dx];
-	        y_ = [dy         0          0         ];
-	        f = fill(x_,y_,c_);
-	        set(f,'linestyle','none');
-	        % top centromere.
-	        x_ = [x1-dx   x1        x2        x2+dx];
-	        y_ = [maxY    maxY-dy   maxY-dy   maxY];
-	        f = fill(x_,y_,c_);
-	        set(f,'linestyle','none');
-	        % bottom centromere.
-	        x_ = [x1-dx   x1   x2   x2+dx];
-	        y_ = [0       dy   dy   0    ];
-	        f = fill(x_,y_,c_);
-	        set(f,'linestyle','none');
-        
-	        % draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
-	        plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
-	             [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy     ],...
-	            'Color',[0 0 0]);
-	    end;
-	    %end show centromere.
-    
-	    %show annotation locations
-	    if (show_annotations) && (length(annotations) > 0)
-	        plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
-	        hold on;
-	        annotation_location = (annotation_start+annotation_end)./2;
-	        for i = 1:length(annotation_location)
-	            if (annotation_chr(i) == chr)
-	                annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-	                if (strcmp(annotation_type{i},'dot') == 1)
-	                    plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
-	                                                          'MarkerFaceColor',annotation_fillcolor{i}, ...
-	                                                          'MarkerSize',     annotation_size(i));
-	                elseif (strcmp(annotation_type{i},'block') == 1)
-	                    fill([annotationStart annotationStart annotationEnd annotationEnd], ...
-	                         [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
-	                         annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
-	                end;
-	            end;
-	        end;
-	        hold off;
-	    end;
-	    %end show annotation locations.
+		%show centromere outlines and horizontal marks.
+		x1 = cen_start(chr)/bases_per_bin;
+		x2 = cen_end(chr)/bases_per_bin;
+		leftEnd  = 0.5*5000/bases_per_bin;
+		rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
+		if (Centromere_format == 0)
+			% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
+			dx = cen_tel_Xindent; %5*5000/bases_per_bin;
+			dy = cen_tel_Yindent; %maxY/10;
+			% draw white triangles at corners and centromere locations.
+			% top left corner.
+			c_ = [1.0 1.0 1.0];
+			x_ = [leftEnd   leftEnd   leftEnd+dx];
+			y_ = [maxY-dy   maxY      maxY      ];
+			f = fill(x_,y_,c_);
+			set(f,'linestyle','none');
+			% bottom left corner.
+			x_ = [leftEnd   leftEnd   leftEnd+dx];
+			y_ = [dy        0         0         ];
+			f = fill(x_,y_,c_);
+			set(f,'linestyle','none');
+			% top right corner.
+			x_ = [rightEnd   rightEnd   rightEnd-dx];
+			y_ = [maxY-dy    maxY       maxY      ];
+			f = fill(x_,y_,c_);
+			set(f,'linestyle','none');
+			% bottom right corner.
+			x_ = [rightEnd   rightEnd   rightEnd-dx];
+			y_ = [dy         0          0         ];
+			f = fill(x_,y_,c_);
+			set(f,'linestyle','none');
+			% top centromere.
+			x_ = [x1-dx   x1        x2        x2+dx];
+			y_ = [maxY    maxY-dy   maxY-dy   maxY];
+			f = fill(x_,y_,c_);
+			set(f,'linestyle','none');
+			% bottom centromere.
+			x_ = [x1-dx   x1   x2   x2+dx];
+			y_ = [0       dy   dy   0    ];
+			f = fill(x_,y_,c_);
+			set(f,'linestyle','none');
+
+			% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
+			plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
+				[dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy     ],...
+				'Color',[0 0 0]);
+		end;
+		%end show centromere.
+
+		%show annotation locations
+		if (show_annotations) && (length(annotations) > 0)
+			plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
+			hold on;
+			annotation_location = (annotation_start+annotation_end)./2;
+			for i = 1:length(annotation_location)
+				if (annotation_chr(i) == chr)
+					annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+					annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+					annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+					if (strcmp(annotation_type{i},'dot') == 1)
+						plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
+							'MarkerFaceColor',annotation_fillcolor{i}, ...
+							'MarkerSize',     annotation_size(i));
+					elseif (strcmp(annotation_type{i},'block') == 1)
+						fill([annotationStart annotationStart annotationEnd annotationEnd], ...
+							[-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
+							annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
+					end;
+				end;
+			end;
+			hold off;
+		end;
+		%end show annotation locations.
 
 	    %% Linear figure draw section
 	    if (Linear_display == true)
@@ -898,13 +903,13 @@ for chr_to_draw  = 1:length(chr_order)
 				if (chr_figReversed(chr) == 0)
 					title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
 				else
-					title([chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
+					title([chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
 				end;
 			else
 				if (chr_figReversed(chr) == 0)
 					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
 				else
-					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
+					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
 				end;
 			end;
 
