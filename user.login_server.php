@@ -40,6 +40,9 @@
 			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 		} else {
 			// Error state.
+			$_SESSION['delay'] = 5;
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 		}
 	}
 
@@ -94,6 +97,8 @@
 				}
 			} else {
 				// error state.
+				log_stuff("",$user,"","","","","LOGIN fail: user account missing lock.txt and active.txt files.");
+				$login_success = 0;
 			}
 		} else {
 			log_stuff("",$user,"","","","","LOGIN fail: unregistered user.");
