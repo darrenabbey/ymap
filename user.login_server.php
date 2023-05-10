@@ -31,7 +31,7 @@
 		// login succeded.
 
 		// check if user is active before logging stuff.
-		if (file_exists($users_dir.$user."locked.txt") {
+		if (file_exists($users_dir.$user."locked.txt")) {
 			log_stuff("",$user,"","","","","LOGIN failure, locked account.");
 		} else {
 			log_stuff("",$user,"","","","","LOGIN success");
