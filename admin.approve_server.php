@@ -42,6 +42,12 @@
 		// Requested user does exist: Delete locked.txt file for user.
 		$lockFile = $dir."locked.txt";
 		unlink($lockFile);
+
+		// Generate lockfile into user account, pending admin approval.
+		$activeFile = $dir."/active.txt";
+		$active     = fopen($activeFile, 'w');
+		fclose($active);
+
 		echo "COMPLETE\n";
 	} else {
 		// User doesn't exist, should never happen.

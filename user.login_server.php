@@ -34,10 +34,12 @@
 			$_SESSION['delay'] = 5;
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
-		} else {
+		} else if (file_exists($users_dir.$user."active.txt")) {
 			$_SESSION['delay'] = 0;
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
+		} else {
+			// Error state.
 		}
 	}
 
@@ -63,7 +65,7 @@
 
 				// Set login_success to 1 to prevent password failure delay.
 				$login_success = 1;
-			} else {
+			} else if (file_exists("users/".$user."/active.txt")) {
 				// Account is active.
 
 				// Load stored password hash.
@@ -90,6 +92,8 @@
 					echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
 					$login_success = 0;
 				}
+			} else {
+				// error state.
 			}
 		} else {
 			log_stuff("",$user,"","","","","LOGIN fail: unregistered user.");

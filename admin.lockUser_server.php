@@ -43,10 +43,14 @@
 	if (is_dir($dir)) {
 		// Requested user does exist: Generate new locked.txt file for user.
 		$lockFile = $dir."locked.txt";
+		$lock = fopen($lockFile, "w");
+		fwrite($lock, "");
+		fclose($lock);
 
-		$myfile = fopen($lockFile, "w") or die("Unable to open file!");
-		fwrite($myfile, "");
-		fclose($myfile);
+		// Requested user does exist: Delete active.txt file for user.
+		$activeFile = $dir."active.txt";
+		unlink($activeFile);
+
 		echo "COMPLETE\n";
 	} else {
 		// User doesn't exist, should never happen.
