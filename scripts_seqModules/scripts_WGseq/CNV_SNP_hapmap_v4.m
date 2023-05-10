@@ -1265,7 +1265,7 @@ for chr_to_draw  = 1:length(chr_order)
 				if (chr_figReversed(chr) == 0)
 					title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
 				else
-					title([chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}(reversed)'],'Interpreter','tex',',FontSize',linear_chr_font_size,'Rotation',rotate);
+					title([chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
 				end;
 			else
 				if (chr_figReversed(chr) == 0)
@@ -1290,7 +1290,7 @@ end;
 %==========================================================================
 
 fprintf('\n###\n### Saving main figure.\n###\n');
-set(   fig,        'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]); 
+set(   fig,        'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
 saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.eps'], 'epsc');
 saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.png'], 'png' );
 delete(fig);
