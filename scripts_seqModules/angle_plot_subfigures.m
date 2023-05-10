@@ -129,7 +129,7 @@ if (AnglePlot == true)
 						end;
 						if (segment == 1)
 							set(gca,'XTick',0:40:200);
-							set(gca,'XTickLabel',{'a', '4:!', '3:2', '2:3', '1:4' 'b'});
+							set(gca,'XTickLabel',{'a', '4:1', '3:2', '2:3', '1:4' 'b'});
 						end;
 					elseif (copynum == 6) %hexasomy
 						if (apply_phasing == true)
