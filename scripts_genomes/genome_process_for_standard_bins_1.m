@@ -17,12 +17,12 @@ inUse      = zeros(1,length(figure_details));
 allNames   = {};
 for i = 1:length(figure_details)
 	allNames{i}  = figure_details(i).name;
-    if (figure_details(i).chr ~= 0)
+	if (figure_details(i).chr ~= 0)
 		inUse(i) = 1;
-        num_chrs = num_chrs+1;
-        chr_names{figure_details(i).chr}  = figure_details(i).name;
-        length_nts(figure_details(i).chr) = chr_sizes(figure_details(i).chr).size;
-    end;
+		num_chrs = num_chrs+1;
+		chr_names{figure_details(i).chr}  = figure_details(i).name;
+		length_nts(figure_details(i).chr) = chr_sizes(figure_details(i).chr).size;
+	end;
 end;
 testVar = inUse
 
