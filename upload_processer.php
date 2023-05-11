@@ -85,13 +85,17 @@
 			header('Location: .');
 		}
 	} else {
-		log_stuff("../../",$user,"","","","","UPLOAD fail: user forced null genome & project strings!");
+		log_stuff("../../",$user,"","","","","UPLOAD fail: null genome & project strings!");
 		// No genome or project, should never happen: Force logout.
 		session_destroy();
 		header('Location: .');
 	}
 
-	log_stuff("",$user,$project,"",$genome,$project_dir.$genome_dir."/".$fileName,"UPLOAD success: initial file location checks pass.");
+	if ($project != "") {
+		log_stuff("",$user,$project,"",$project_dir"/".$fileName,"UPLOAD success: initial project file location checks pass.");
+	} else if ($genome != "") {
+		log_stuff("",$user,"","",$genome,$genome_dir."/".$fileName,"UPLOAD success: initial genome file location checks pass.");
+	}
 
 	// set session variables.
 	$_SESSION['dataFormat'] = $dataFormat;
