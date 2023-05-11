@@ -207,7 +207,7 @@ if (strcmp($ext,"zip") == 0) {
 	$ext_new  = "fasta";
 
 	// rename file.
-	$rename_target = $genome.".fasta";
+	$rename_target = "datafile_".$key.".".$ext_new;
 	rename($genomePath.$name,$genomePath.$rename_target);
 	fwrite($logOutput, "\toldName     = '".$name."'\n");
 	fwrite($logOutput, "\trename      = '".$rename_target."'\n");
