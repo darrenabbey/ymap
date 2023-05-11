@@ -62,8 +62,9 @@
 			}
 
 			// getting project name
-			$nameFile = "users/".$user."/projects/".$project."/name.txt";
-			if (file_exists($nameFile)) {
+			$nameFile        = "users/".$user."/projects/".$project."/name.txt";
+			$parent_file     = "users/".$user."/projects/".$project."/parent.txt";
+			if (file_exists($nameFile) and file_exists($parent_file)) {
 				$projectNameString = file_get_contents($nameFile);
 				$projectNameString = trim($projectNameString);
 
@@ -80,7 +81,6 @@
 					$colorString2 = "magenta";
 				}
 
-				$parent_file          = "users/".$user."/projects/".$project."/parent.txt";
 				$handle               = fopen($parent_file,'r');
 				$parentString         = trim(fgets($handle));
 				fclose($handle);
@@ -117,9 +117,9 @@
 				$colorString2 = 'null';
 			}
 
-			// getting project name
-			$nameFile = "users/".$user."/projects/".$project."/name.txt";
-			if (file_exists($nameFile)) {
+			$nameFile        = "users/".$user."/projects/".$project."/name.txt";
+			$parent_file     = "users/".$user."/projects/".$project."/parent.txt";
+			if (file_exists($nameFile) and file_exists($parent_file)) {
 				$projectNameString = file_get_contents($nameFile);
 				$projectNameString = trim($projectNameString);
 
@@ -136,7 +136,6 @@
 					$colorString2 = "magenta";
 				}
 
-				$parent_file          = "users/".$user."/projects/".$project."/parent.txt";
 				$handle               = fopen($parent_file,'r');
 				$parentString         = trim(fgets($handle));
 				fclose($handle);
@@ -173,9 +172,9 @@
 				$colorString2 = 'null';
 			}
 
-			// getting project name
-			$nameFile = "users/".$user."/projects/".$project."/name.txt";
-			if (file_exists($nameFile)) {
+			$nameFile        = "users/".$user."/projects/".$project."/name.txt";
+			$parent_file     = "users/".$user."/projects/".$project."/parent.txt";
+			if (file_exists($nameFile) and file_exists($parent_file)) {
 				$projectNameString = file_get_contents($nameFile);
 				$projectNameString = trim($projectNameString);
 
@@ -194,7 +193,6 @@
 
 				$json_file_list       = json_encode(scandir("users/$user/projects/$project"));
 				$JSONproject          = json_encode("$project");
-				$parent_file          = "users/".$user."/projects/".$project."/parent.txt";
 				$handle               = fopen($parent_file,'r');
 				$parentString         = trim(fgets($handle));
 				fclose($handle);

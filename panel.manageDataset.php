@@ -112,13 +112,15 @@
 				$colorString1 = 'null';
 				$colorString2 = 'null';
 			}
-			$parentFile   = "users/".$user."/projects/".$project."/parent.txt";
-			if (file_exists($parentFile)) {
+			$parentFile      = "users/".$user."/projects/".$project."/parent.txt";
+			$projectNameFile = "users/".$user."/projects/".$project."/name.txt";
+			if (file_exists($parentFile) and file_exists($projectNameFile)) {
 				$handle       = fopen($parentFile,'r');
 				$parentString = trim(fgets($handle));
 				fclose($handle);
 				// getting project name
-				$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
+
+				$projectNameString = file_get_contents($projectNameFile);
 				$projectNameString = trim($projectNameString);
 
 				$key = $key_;
@@ -157,13 +159,14 @@
 				$colorString1 = 'null';
 				$colorString2 = 'null';
 			}
-			$parentFile   = "users/".$user."/projects/".$project."/parent.txt";
-			if (file_exists($parentFile)) {
+			$parentFile      = "users/".$user."/projects/".$project."/parent.txt";
+			$projectNameFile = "users/".$user."/projects/".$project."/name.txt";
+			if (file_exists($parentFile) and file_exists($projectNameFile)) {
 				$handle       = fopen($parentFile,'r');
 				$parentString = trim(fgets($handle));
 				fclose($handle);
-				// getting project name
-				$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
+
+				$projectNameString = file_get_contents($projectNameFile);
 				$projectNameString = trim($projectNameString);
 
 				$key = $key_ + $userProjectCount_starting;
@@ -214,42 +217,58 @@
 				$colorString1 = 'null';
 				$colorString2 = 'null';
 			}
-			$parentFile   = "users/".$user."/projects/".$project."/parent.txt";
-			$handle       = fopen($parentFile,'r');
-			$parentString = trim(fgets($handle));
-			fclose($handle);
-			// getting project name
-			$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
-			$projectNameString = trim($projectNameString);
 
-			$key = $key_ + $userProjectCount_starting + $userProjectCount_working;
-			echo "\n\t\t\t\t<!-- project '{$project}', #{$key}. --!>\n\t\t\t\t";
-			echo "<span id='p_label_".$key."' style='color:#00AA00;'>\n\t\t\t\t";
-			echo "<font size='2'>".($key+1).". ";
-			echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
-			echo $projectNameString."</font>";
-
-			// display total project size
-			$totalSizeFile = "users/".$user."/projects/".$project. "/totalSize.txt";
-			// first checking if size already calculated and is stored in totalSize.txt
-			if (file_exists($totalSizeFile)) {
-				$handle       = fopen($totalSizeFile,'r');
-				$projectSizeStr = trim(fgets($handle));
+			$parentFile      = "users/".$user."/projects/".$project."/parent.txt";
+			$projectNameFile = "users/".$user."/projects/".$project."/name.txt";
+			if (file_exists($parentFile) and file_exists($projectNameFile)) {
+				$handle       = fopen($parentFile,'r');
+				$parentString = trim(fgets($handle));
 				fclose($handle);
-			} else { // calculate size and store in totalSize.txt to avoid calculating again
-				// calculating size
-				$projectSizeStr = trim(shell_exec("du -sh " . "users/".$user."/projects/".$project. "/ | cut -f1"));
-				// saving to file
-				$output       = fopen($totalSizeFile, 'w');
-				fwrite($output, $projectSizeStr);
-				fclose($output);
-			}
-			// printing total size
-			echo " <font color='black' size='1'>(". $projectSizeStr .")</font>";
 
-			echo "</span>";
-			echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
-			echo "<div id='frameContainer.p1_".$key."'></div>\n";
+				$projectNameString = file_get_contents($projectNameFile);
+				$projectNameString = trim($projectNameString);
+
+				$key = $key_ + $userProjectCount_starting + $userProjectCount_working;
+				echo "\n\t\t\t\t<!-- project '{$project}', #{$key}. --!>\n\t\t\t\t";
+				echo "<span id='p_label_".$key."' style='color:#00AA00;'>\n\t\t\t\t";
+				echo "<font size='2'>".($key+1).". ";
+				echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
+				echo $projectNameString."</font>";
+
+				// display total project size
+				$totalSizeFile = "users/".$user."/projects/".$project. "/totalSize.txt";
+				// first checking if size already calculated and is stored in totalSize.txt
+				if (file_exists($totalSizeFile)) {
+					$handle       = fopen($totalSizeFile,'r');
+					$projectSizeStr = trim(fgets($handle));
+					fclose($handle);
+				} else { // calculate size and store in totalSize.txt to avoid calculating again
+					// calculating size
+					$projectSizeStr = trim(shell_exec("du -sh " . "users/".$user."/projects/".$project. "/ | cut -f1"));
+					// saving to file
+					$output       = fopen($totalSizeFile, 'w');
+					fwrite($output, $projectSizeStr);
+					fclose($output);
+				}
+				// printing total size
+				echo " <font color='black' size='1'>(". $projectSizeStr .")</font>";
+				echo "</span>";
+
+				echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
+				echo "<div id='frameContainer.p1_".$key."'></div>\n";
+			} else {
+				// an error has happened.
+				$key = $key_ + $userProjectCount_starting;
+				echo "\n\t\t\t\t<!-- project '{$project}', #{$key}. --!>\n\t\t\t\t";
+				echo "<span id='p_label_".$key."' style='color:#888888;'>\n\t\t\t\t";
+				echo "<font size='2'>".($key+1).".";
+				echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
+
+				echo $project;
+				echo "</font></span>\n\t\t\t\t";
+				echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
+				echo "<div id='frameContainer.p3_".$key."'></div>\n";
+			}
 		}
 	}
 	?>
