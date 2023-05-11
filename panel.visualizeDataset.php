@@ -62,14 +62,14 @@
 			}
 
 			// getting project name
-			$nameFile = 'users/".$user."/projects/".$project."/name.txt";
+			$nameFile = "users/".$user."/projects/".$project."/name.txt";
 			if (file_exists($nameFile)) {
 				$projectNameString = file_get_contents($nameFile);
 				$projectNameString = trim($projectNameString);
 
 				$dataFormat_file        = "users/".$user."/projects/".$project."/dataFormat.txt";
 				if (file_exists($dataFormat_file)) {
-					$handle       = fopen($dataFormat_file,'r');
+					$handle         = fopen($dataFormat_file,'r');
 					$dataFormat     = trim(fgets($handle));
 					fclose($handle);
 				} else {
@@ -118,7 +118,7 @@
 			}
 
 			// getting project name
-			$nameFile = 'users/".$user."/projects/".$project."/name.txt";
+			$nameFile = "users/".$user."/projects/".$project."/name.txt";
 			if (file_exists($nameFile)) {
 				$projectNameString = file_get_contents($nameFile);
 				$projectNameString = trim($projectNameString);
@@ -174,7 +174,7 @@
 			}
 
 			// getting project name
-			$nameFile = 'users/".$user."/projects/".$project."/name.txt";
+			$nameFile = "users/".$user."/projects/".$project."/name.txt";
 			if (file_exists($nameFile)) {
 				$projectNameString = file_get_contents($nameFile);
 				$projectNameString = trim($projectNameString);
