@@ -326,7 +326,7 @@ function blank_and_content_tab() {
 		newImg.document.write("<script type='text/javascript'> document.oncontextmenu = new Function('return false') </script>")
 		newImg.document.close();
 	}
-	function openProject(user,project,key,color1,color2,parent) {
+	function openProject(user,project,projectNameString,key,color1,color2,parent) {
 		var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
 		var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
 		closeProject_viewOnly(key);
@@ -380,7 +380,7 @@ function blank_and_content_tab() {
 			var visible_list                     = document.getElementById("visible_list");
 			var string1 = "<div id='figure_"+key+"'><table border='0' align='center' width='100%'><tr><td width='35%' align='left'>";
 			string1     = string1 + "<table><tr><td valign='top'>";
-			string1     = string1 + project+" ";
+			string1     = string1 + projectNameString+" ";
 			string1     = string1 + "</td><td valign='bottom'>";
 			string1     = string1 + "<div id='userProjectA_"+key+"'   style='display:inline'></div>";
 			string1     = string1 + "<div id='userProjectHET_"+key+"' style='display:inline'></div>";
@@ -532,7 +532,6 @@ function blank_and_content_tab() {
 				}
 			}
 			var projectsShown = localStorage.getItem("projectsShown");
-			//console.log("'"+projectsShown+"'");
 			if (projectsShown != null) {
 				projectsShown = projectsShown.replace(user+":"+project+":"+key);
 			} else {
@@ -794,7 +793,7 @@ function restore_shown_figures() {
 					// Open projects previously shown.
 					//console.log('#:5 entry to show = "'+currentProject+'"');
 					var entry_parts    = currentProject.split(':');
-					openProject(entry_parts[0], entry_parts[1], entry_parts[2], 'null', 'null', 'null');
+					openProject(entry_parts[0], entry_parts[1], entry_parts[2], entry_parts[3], 'null', 'null', 'null');
 				}
 			}
 		}
