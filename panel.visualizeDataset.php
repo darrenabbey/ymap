@@ -98,7 +98,7 @@
 				echo "<span id='p_label_".$key."' style='color:#888888;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
 				echo "<input id='show_".$key."' type='checkbox'>";
-				echo "\n\t\tName not found</font></span>\n\t\t";
+				echo "\n\t\t".$project."</font></span>\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
 				echo "<div id='frameContainer.p2_".$key."'></div>";
