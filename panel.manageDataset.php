@@ -136,7 +136,7 @@
 				$key = $key_;
 				echo "\n\t\t\t\t<!-- project '{$project}', #{$key}. --!>\n\t\t\t\t";
 				echo "<span id='p_label_".$key."' style='color:#888888;'>\n\t\t\t\t";
-				echo "<font size='2'>".($key+1).".";
+				echo "<font size='2'>".($key+1).". ";
 				echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
 
 				echo "Name not found";
@@ -171,8 +171,8 @@
 				echo "<span id='p_label_".$key."' style='color:#BB9900;'>\n\t\t\t\t";
 				echo "<font size='2'>".($key+1).".";
 				echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
-				echo "Name not found";
 
+				echo $projectNameString;
 				echo "</font></span>\n\t\t\t\t";
 				echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
 				echo "<div id='frameContainer.p2_".$key."'></div>\n";
