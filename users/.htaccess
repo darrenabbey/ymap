@@ -3,6 +3,6 @@
 # This will prevent any malicious files that somehow got placed here to be served.
 #----------------------------------------------------------------
 order allow,deny
-<Files ~ "\.(png|eps|bed)$">
+<Files ~ "\.(png|eps|bed|gff3)$">
 allow from all
 </Files>
