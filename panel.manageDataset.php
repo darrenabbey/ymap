@@ -135,9 +135,14 @@
 				// an error has happened.
 				$key = $key_;
 				echo "\n\t\t\t\t<!-- project '{$project}', #{$key}. --!>\n\t\t\t\t";
-				echo "<span id='p_label_".$key."' style='color:#333333;'>\n\t\t\t\t";
+				echo "<span id='p_label_".$key."' style='color:#888888;'>\n\t\t\t\t";
 				echo "<font size='2'>".($key+1).".";
 				echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
+
+				echo "Name not found";
+				echo "</font></span>\n\t\t\t\t";
+				echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
+				echo "<div id='frameContainer.p3_".$key."'></div>\n";
 			}
 		}
 		foreach($projectFolders_working as $key_=>$project) {
@@ -152,8 +157,8 @@
 				$colorString1 = 'null';
 				$colorString2 = 'null';
 			}
+			$parentFile   = "users/".$user."/projects/".$project."/parent.txt";
 			if (file_exists($parentFile)) {
-				$parentFile   = "users/".$user."/projects/".$project."/parent.txt";
 				$handle       = fopen($parentFile,'r');
 				$parentString = trim(fgets($handle));
 				fclose($handle);
@@ -166,13 +171,23 @@
 				echo "<span id='p_label_".$key."' style='color:#BB9900;'>\n\t\t\t\t";
 				echo "<font size='2'>".($key+1).".";
 				echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
-				echo $projectNameString;
+				echo "Name not found";
 
 				echo "</font></span>\n\t\t\t\t";
 				echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
 				echo "<div id='frameContainer.p2_".$key."'></div>\n";
 			} else {
 				// an error has happened.
+				$key = $key_ + $userProjectCount_starting;
+				echo "\n\t\t\t\t<!-- project '{$project}', #{$key}. --!>\n\t\t\t\t";
+				echo "<span id='p_label_".$key."' style='color:#888888;'>\n\t\t\t\t";
+				echo "<font size='2'>".($key+1).".";
+				echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
+
+				echo "Name not found";
+				echo "</font></span>\n\t\t\t\t";
+				echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
+				echo "<div id='frameContainer.p3_".$key."'></div>\n";
 			}
 		}
 ?>

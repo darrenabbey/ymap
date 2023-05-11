@@ -62,34 +62,47 @@
 			}
 
 			// getting project name
-			$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
-			$projectNameString = trim($projectNameString);
+			$nameFile = 'users/".$user."/projects/".$project."/name.txt";
+			if (file_exists($nameFile)) {
+				$projectNameString = file_get_contents($nameFile);
+				$projectNameString = trim($projectNameString);
 
-			$dataFormat_file        = "users/".$user."/projects/".$project."/dataFormat.txt";
-			if (file_exists($dataFormat_file)) {
-				$handle       = fopen($dataFormat_file,'r');
-				$dataFormat     = trim(fgets($handle));
+				$dataFormat_file        = "users/".$user."/projects/".$project."/dataFormat.txt";
+				if (file_exists($dataFormat_file)) {
+					$handle       = fopen($dataFormat_file,'r');
+					$dataFormat     = trim(fgets($handle));
+					fclose($handle);
+				} else {
+					$dataFormat     = 'null';
+				}
+				if (strcmp($dataFormat,"0") == 0) {
+					$colorString1 = "cyan";
+					$colorString2 = "magenta";
+				}
+
+				$parent_file          = "users/".$user."/projects/".$project."/parent.txt";
+				$handle               = fopen($parent_file,'r');
+				$parentString         = trim(fgets($handle));
 				fclose($handle);
+				$key = $key_;
+				echo "<span id='p_label_".$key."' style='color:#CC0000;'>\n\t\t";
+				echo "<font size='2'>".($key+1).".";
+				echo "<input id='show_".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$projectNameString."','".$key."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
+				echo "\n\t\t".$projectNameString."</font></span>\n\t\t";
+				echo "<span id='p_".$project."_type'></span>\n\t\t";
+				echo "<br>\n\t\t";
+				echo "<div id='frameContainer.p2_".$key."'></div>";
 			} else {
-				$dataFormat     = 'null';
+				// an error has happened.
+				$key = $key_;
+				echo "<span id='p_label_".$key."' style='color:#888888;'>\n\t\t";
+				echo "<font size='2'>".($key+1).".";
+				echo "<input id='show_".$key."' type='checkbox'>";
+				echo "\n\t\tName not found</font></span>\n\t\t";
+				echo "<span id='p_".$project."_type'></span>\n\t\t";
+				echo "<br>\n\t\t";
+				echo "<div id='frameContainer.p2_".$key."'></div>";
 			}
-			if (strcmp($dataFormat,"0") == 0) {
-				$colorString1 = "cyan";
-				$colorString2 = "magenta";
-			}
-
-			$parent_file          = "users/".$user."/projects/".$project."/parent.txt";
-			$handle               = fopen($parent_file,'r');
-			$parentString         = trim(fgets($handle));
-			fclose($handle);
-			$key = $key_;
-			echo "<span id='p_label_".$key."' style='color:#CC0000;'>\n\t\t";
-			echo "<font size='2'>".($key+1).".";
-			echo "<input id='show_".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
-			echo "\n\t\t".$projectNameString."</font></span>\n\t\t";
-			echo "<span id='p_".$project."_type'></span>\n\t\t";
-			echo "<br>\n\t\t";
-			echo "<div id='frameContainer.p2_".$key."'></div>";
 		}
 		foreach($projectFolders_working as $key_=>$project) {
 			// Load colors for project.
@@ -105,34 +118,47 @@
 			}
 
 			// getting project name
-			$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
-			$projectNameString = trim($projectNameString);
+			$nameFile = 'users/".$user."/projects/".$project."/name.txt";
+			if (file_exists($nameFile)) {
+				$projectNameString = file_get_contents($nameFile);
+				$projectNameString = trim($projectNameString);
 
-			$dataFormat_file        = "users/".$user."/projects/".$project."/dataFormat.txt";
-			if (file_exists($dataFormat_file)) {
-				$handle       = fopen($dataFormat_file,'r');
-				$dataFormat     = trim(fgets($handle));
+				$dataFormat_file        = "users/".$user."/projects/".$project."/dataFormat.txt";
+				if (file_exists($dataFormat_file)) {
+					$handle       = fopen($dataFormat_file,'r');
+					$dataFormat     = trim(fgets($handle));
+					fclose($handle);
+				} else {
+					$dataFormat     = 'null';
+				}
+				if (strcmp($dataFormat,"0") == 0) {
+					$colorString1 = "cyan";
+					$colorString2 = "magenta";
+				}
+
+				$parent_file          = "users/".$user."/projects/".$project."/parent.txt";
+				$handle               = fopen($parent_file,'r');
+				$parentString         = trim(fgets($handle));
 				fclose($handle);
+				$key = $key_ + $userProjectCount_starting;
+				echo "<span id='p_label_".$key."' style='color:#BB9900;'>\n\t\t";
+				echo "<font size='2'>".($key+1).".";
+				echo "<input  id='show_".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$projectNameString."','".$key."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
+				echo "\n\t\t".$projectNameString."</font></span>\n\t\t";
+				echo "<span id='p_".$project."_type'></span>\n\t\t";
+				echo "<br>\n\t\t";
+				echo "<div id='frameContainer.p2_".$key."'></div>";
 			} else {
-				$dataFormat     = 'null';
+				// an error has happend.
+				$key = $key_ + $userProjectCount_starting;
+				echo "<span id='p_label_".$key."' style='color:#888888;'>\n\t\t";
+				echo "<font size='2'>".($key+1).".";
+				echo "<input  id='show_".$key."' type='checkbox'>";
+				echo "\n\t\tName not found</font></span>\n\t\t";
+				echo "<span id='p_".$project."_type'></span>\n\t\t";
+				echo "<br>\n\t\t";
+				echo "<div id='frameContainer.p2_".$key."'></div>";
 			}
-			if (strcmp($dataFormat,"0") == 0) {
-				$colorString1 = "cyan";
-				$colorString2 = "magenta";
-			}
-
-			$parent_file          = "users/".$user."/projects/".$project."/parent.txt";
-			$handle               = fopen($parent_file,'r');
-			$parentString         = trim(fgets($handle));
-			fclose($handle);
-			$key = $key_ + $userProjectCount_starting;
-			echo "<span id='p_label_".$key."' style='color:#BB9900;'>\n\t\t";
-			echo "<font size='2'>".($key+1).".";
-			echo "<input  id='show_".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
-			echo "\n\t\t".$projectNameString."</font></span>\n\t\t";
-			echo "<span id='p_".$project."_type'></span>\n\t\t";
-			echo "<br>\n\t\t";
-			echo "<div id='frameContainer.p2_".$key."'></div>";
 		}
 		foreach($projectFolders_complete as $key_=>$project) {
 			// Load colors for project.
@@ -148,36 +174,49 @@
 			}
 
 			// getting project name
-			$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
-			$projectNameString = trim($projectNameString);
+			$nameFile = 'users/".$user."/projects/".$project."/name.txt";
+			if (file_exists($nameFile)) {
+				$projectNameString = file_get_contents($nameFile);
+				$projectNameString = trim($projectNameString);
 
-			$dataFormat_file        = "users/".$user."/projects/".$project."/dataFormat.txt";
-			if (file_exists($dataFormat_file)) {
-				$handle       = fopen($dataFormat_file,'r');
-				$dataFormat     = trim(fgets($handle));
+				$dataFormat_file        = "users/".$user."/projects/".$project."/dataFormat.txt";
+				if (file_exists($dataFormat_file)) {
+					$handle       = fopen($dataFormat_file,'r');
+					$dataFormat     = trim(fgets($handle));
+					fclose($handle);
+				} else {
+					$dataFormat     = 'null';
+				}
+				if (strcmp($dataFormat,"0") == 0) {
+					$colorString1 = "cyan";
+					$colorString2 = "magenta";
+				}
+
+				$json_file_list       = json_encode(scandir("users/$user/projects/$project"));
+				$JSONproject          = json_encode("$project");
+				$parent_file          = "users/".$user."/projects/".$project."/parent.txt";
+				$handle               = fopen($parent_file,'r');
+				$parentString         = trim(fgets($handle));
 				fclose($handle);
+				$key = $key_ + $userProjectCount_starting + $userProjectCount_working;
+				echo "<span id='project_label_".$key."' style='color:#00AA00;'>\n\t\t";
+				echo "<font size='2'>".($key+1).".";
+				echo "<input  id='show_$key' type='checkbox' onclick=\"parent.openProject('$user','$project','$projectNameString','$key','$colorString1','$colorString2','$parentString'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
+				echo "\n\t\t".$projectNameString."</font></span>\n\t\t";
+				echo "<span id='p2_".$project."_delete'></span><span id='p_".$project."_type'></span>\n\t\t";
+				echo "<br>\n\t\t";
+				echo "<div id='frameContainer.p1_".$key."'></div>";
 			} else {
-				$dataFormat     = 'null';
+				// an error has happened;
+				$key = $key_ + $userProjectCount_starting;
+				echo "<span id='p_label_".$key."' style='color:#888888;'>\n\t\t";
+				echo "<font size='2'>".($key+1).".";
+				echo "<input  id='show_".$key."' type='checkbox'>";
+				echo "\n\t\tName not found</font></span>\n\t\t";
+				echo "<span id='p_".$project."_type'></span>\n\t\t";
+				echo "<br>\n\t\t";
+				echo "<div id='frameContainer.p2_".$key."'></div>";
 			}
-			if (strcmp($dataFormat,"0") == 0) {
-				$colorString1 = "cyan";
-				$colorString2 = "magenta";
-			}
-
-			$json_file_list       = json_encode(scandir("users/$user/projects/$project"));
-			$JSONproject          = json_encode("$project");
-			$parent_file          = "users/".$user."/projects/".$project."/parent.txt";
-			$handle               = fopen($parent_file,'r');
-			$parentString         = trim(fgets($handle));
-			fclose($handle);
-			$key = $key_ + $userProjectCount_starting + $userProjectCount_working;
-			echo "<span id='project_label_".$key."' style='color:#00AA00;'>\n\t\t";
-			echo "<font size='2'>".($key+1).".";
-			echo "<input  id='show_$key' type='checkbox' onclick=\"parent.openProject('$user','$project','$key','$colorString1','$colorString2','$parentString'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
-			echo "\n\t\t".$projectNameString."</font></span>\n\t\t";
-			echo "<span id='p2_".$project."_delete'></span><span id='p_".$project."_type'></span>\n\t\t";
-			echo "<br>\n\t\t";
-			echo "<div id='frameContainer.p1_".$key."'></div>";
 		}
 	} else {
 		$userProjectCount_starting = 0;
@@ -228,7 +267,7 @@
 
 		$key = $key_ + $userProjectCount_starting + $userProjectCount_working + $userProjectCount_complete;
 		echo "<font size='2'>".($key+1).".";
-		echo "<input  id='show_".$key."_sys' type='checkbox' onclick=\"parent.openProject('default','".$project."','".$key."_sys','".$colorString1."','".$colorString2."','".$parentString."');\" data-file-list='".$json_file_list. "'>";
+		echo "<input  id='show_".$key."_sys' type='checkbox' onclick=\"parent.openProject('default','".$project."','".$projectNameString."','".$key."_sys','".$colorString1."','".$colorString2."','".$parentString."');\" data-file-list='".$json_file_list. "'>";
 
 		$projectNameString = file_get_contents("users/default/projects/".$project."/name.txt");
 		$projectNameString = trim($projectNameString);
@@ -252,7 +291,7 @@ if(localStorage.getItem("projectsShown")){
 //				$new_key = $key+$userProjectCount; // offset example datasets by number of user projects.
 //				echo "\tvar show_button_element = document.getElementById('show_".$key."_sys');\n";
 //				echo "\tshow_button_element.checked = true;\n";
-//				echo "\tparent.openProject('default','".$project."','".$new_key."_sys','null','null','null');\n";
+//				echo "\tparent.openProject('default','".$project."','".$projectNameString."','".$new_key."_sys','null','null','null');\n";
 //			}
 //		}
 //	}
