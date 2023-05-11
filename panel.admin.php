@@ -97,7 +97,7 @@ User account maintenance.
 				echo "\t\t</font></td>";
 
 				echo "\t\t<td><font size='2'>";
-				echo str_replace("Institution: ","",$info_array[3]);
+				echo str_replace("Research Institution: ","",$info_array[3]);
 				echo "\t\t</font></td>";
 			}
 			echo "\t\t</tr>\n";
