@@ -70,10 +70,10 @@ User account maintenance.
 			echo "\t\t</td><td style='text-align:center'>\n";
 			if (!file_exists("users/".$userFolder."/super.txt")) {
 				if (file_exists("users/".$userFolder."/locked.txt")) {
-					echo "\t\t\t<input type='button' value='Approve' onclick=\"key = '$key'; $.ajax({url:'admin.approve_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
+					echo "\t\t\t<input type='button' value='Approve' onclick=\"key = '$key'; $.ajax({url:'admin.approve_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});setTimeout(()=> {location.replace('panel.admin.php')},1000);\">\n";
 					echo "\t\t\t<input type='button' value='Delete'  onclick=\"key = '$key'; $.ajax({url:'admin.delete_server.php' ,type:'post',data:{key:key},success:function(answer){console.log(answer);}});setTimeout(()=> {location.replace('panel.admin.php')},1000);\">\n";
 				} else if (file_exists("users/".$userFolder."/active.txt") and ($userFolder != "default/")) {
-					echo "\t\t\t<input type='button' value='Lock user' onclick=\"key = '$key'; $.ajax({url:'admin.lockUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
+					echo "\t\t\t<input type='button' value='Lock user' onclick=\"key = '$key'; $.ajax({url:'admin.lockUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}})setTimeout(()=> {location.replace('panel.admin.php')},1000);\">\n";
 				}
 			} else {
 				echo "\t\t\t<font size='2'>[Admin]</font>\n";
