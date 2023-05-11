@@ -92,7 +92,7 @@
 	}
 
 	if ($project != "") {
-		log_stuff("",$user,$project,"",$project_dir"/".$fileName,"UPLOAD success: initial project file location checks pass.");
+		log_stuff("",$user,$project,"",$project_dir."/".$fileName,"UPLOAD success: initial project file location checks pass.");
 	} else if ($genome != "") {
 		log_stuff("",$user,"","",$genome,$genome_dir."/".$fileName,"UPLOAD success: initial genome file location checks pass.");
 	}
