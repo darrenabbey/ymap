@@ -26,7 +26,8 @@
 			<div class='tab' style='font-size:10pt'>
 			Contact information here should be sufficient for admins to validate your existence.<br>
 			User accounts registered without sufficient information will be deleted.<br>
-			This information will only be used for system administration tasks.<br>
+			This information will only be used for system administration tasks.<br><br>
+			You will receive an email confirmation once the account has been approved.<br>
 			</div>
 			<br>
 			<label for="user">Username: </label>                                        <input type="text"     id="user"                      name="user"><br>
