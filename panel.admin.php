@@ -62,6 +62,7 @@ User account maintenance.
 		echo     "</font></td>";
 		echo     "<td><font size='2'><b>User Name</b></font></td>";
 		echo     "<td><font size='2'><b>Email Address</b></font></td>";
+		echo     "<td><font size='2'><b>Institution</b></font></td>";
 		echo "</tr>\n";
 		foreach($userFolders as $key=>$userFolder) {
 			echo "\t\t<tr><td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
@@ -93,6 +94,10 @@ User account maintenance.
 
 				echo "\t\t<td><font size='2'>";
 				echo str_replace("Primary Investigator Email: ","",$info_array[2]);
+				echo "\t\t</font></td>";
+
+				echo "\t\t<td><font size='2'>";
+				echo str_replace("Institution: ","",$info_array[3]);
 				echo "\t\t</font></td>";
 			}
 			echo "\t\t</tr>\n";
