@@ -139,7 +139,7 @@
 				echo "<font size='2'>".($key+1).". ";
 				echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
 
-				echo "Name not found";
+				echo $project;
 				echo "</font></span>\n\t\t\t\t";
 				echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
 				echo "<div id='frameContainer.p3_".$key."'></div>\n";
@@ -184,7 +184,7 @@
 				echo "<font size='2'>".($key+1).".";
 				echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
 
-				echo "Name not found";
+				echo $project;
 				echo "</font></span>\n\t\t\t\t";
 				echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
 				echo "<div id='frameContainer.p3_".$key."'></div>\n";
