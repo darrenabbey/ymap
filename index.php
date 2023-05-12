@@ -326,15 +326,14 @@ function blank_and_content_tab() {
 		newImg.document.write("<script type='text/javascript'> document.oncontextmenu = new Function('return false') </script>")
 		newImg.document.close();
 	}
-	function openProject(user,project,projectNameString,key,color1,color2,parent) {
+	function openProject(user,project,key,projectName,color1,color2,parent) {
 		var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
 		var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
 		closeProject_viewOnly(key);
-		console.log('#     parent.openProject : "'+user+':'+project+':'+key+'"');
-		//console.log(show_button_element);
+		console.log('#     parent.openProject : "'+user+':'+project+':'+key+':'+projectName+'"');
 
 		if (show_button_element.checked == false) {
-			closeProject(user,project,key,color1,color2,parent);
+			closeProject(user,project,key,projectName,color1,color2,parent);
 		} else {
 			var file_list   = JSON.parse(show_button_element.getAttribute('data-file-list'));
 			var file_prefix = "users/"+user+"/projects/"+project+"/";
@@ -380,7 +379,7 @@ function blank_and_content_tab() {
 			var visible_list                     = document.getElementById("visible_list");
 			var string1 = "<div id='figure_"+key+"'><table border='0' align='center' width='100%'><tr><td width='35%' align='left'>";
 			string1     = string1 + "<table><tr><td valign='top'>";
-			string1     = string1 + projectNameString+" ";
+			string1     = string1 + projectName+" ";
 			string1     = string1 + "</td><td valign='bottom'>";
 			string1     = string1 + "<div id='userProjectA_"+key+"'   style='display:inline'></div>";
 			string1     = string1 + "<div id='userProjectHET_"+key+"' style='display:inline'></div>";
@@ -506,14 +505,13 @@ function blank_and_content_tab() {
 				CGD_tracks_present = true;
 			}
 
-			if (CGD_tracks_present)
-			{
+			if (CGD_tracks_present)	{
 				string1 += "<br><a href=\"https://github.com/berman-lab/ymap/wiki/How-to-import-Ymap-generated-tracks-into-CGD's-GBrowse\">(help on importing tracks into GBrowse)</a>";
 			}
 
 			string1 = string1 + "</font>";
 
-			var string2 = "</td><td width='5%' align='right'><div onclick=\'closeProject(\""+user+"\",\""+project+"\",\""+key+"\",\""+color1+"\",\""+color2+"\",\""+parent+"\");' style='display:inline-block;'><b>[X]</b></div></td></tr>";
+			var string2 = "</td><td width='5%' align='right'><div onclick=\'closeProject(\""+user+"\",\""+project+"\",\""+key+"\",\""+projectName+"\",\""+color1+"\",\""+color2+"\",\""+parent+"\");' style='display:inline-block;'><b>[X]</b></div></td></tr>";
 			var string3 = "<tr><td align='center' colspan='3'>";
 			var string4 = "<div id='fig_"+key+"'><img src='"+mainFigure1+"png' width='100%'></div>";
 			string4 = string4 + "</td></tr></table>"+"<hr></div>";
@@ -531,22 +529,23 @@ function blank_and_content_tab() {
 					showColors('grey','userProjectHET_'+key,'ab');
 				}
 			}
+
 			var projectsShown = localStorage.getItem("projectsShown");
 			if (projectsShown != null) {
-				projectsShown = projectsShown.replace(user+":"+project+":"+key);
+				projectsShown = projectsShown.replace(user+":"+project+":"+key+":"+projectName);
 			} else {
 				projectsShown = "";
 			}
-			projectsShown = projectsShown+" "+user+":"+project+":"+key;
+			projectsShown = projectsShown+user+":"+project+":"+key+":"+projectName+";";
 			projectsShown = projectsShown.replace("  "," ");   // remove duplicate " " characters.
 			while (projectsShown.charAt(0) == " ")
-				projectsShown = projectsShown.slice( 1 );      // remove leading " " character.
+				projectsShown = projectsShown.slice(1);      // remove leading " " character.
 			localStorage.setItem("projectsShown", projectsShown);
-			console.log('#     Add to projectsShown : "'+user+':'+project+':'+key+'"');
+			console.log('#     Add to projectsShown : "'+user+':'+project+':'+key+':'+projectName+'"');
 			console.log('#         projectsShown = "'+projectsShown+'"');
 		}
 	}
-	function closeProject(user,project,key,color1,color2,parent) {
+	function closeProject(user,project,key,projectName,color1,color2,parent) {
 		var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
         var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
 		if (show_button_element) {
@@ -557,12 +556,12 @@ function blank_and_content_tab() {
 			figure_element.remove();
 		}
 		var projectsShown = localStorage.getItem("projectsShown");
-		projectsShown = projectsShown.replace(user+":"+project+":"+key,"");
+		projectsShown = projectsShown.replace(user+":"+project+":"+key+":"+projectName+";","");
 		projectsShown = projectsShown.replace("  "," ");  // remove duplicate " " characters.
 		while (projectsShown.charAt(0) == " ")
 			projectsShown = projectsShown.slice( 1 );     // remove leading " " characater.
 		localStorage.setItem("projectsShown", projectsShown);
-		console.log('#     Remove from projectsShown : "'+user+':'+project+':'+key+'"');
+		console.log('#     Remove from projectsShown : "'+user+':'+project+':'+key+':'+projectName+'"');
 		console.log('#         projectsShown = "'+projectsShown+'"');
 	}
 	function closeProject_viewOnly(key) {
@@ -692,7 +691,7 @@ function update_interface_after_logout() {
 function update_projectsShown_after_new_project() {
 	projectsShown = localStorage.getItem("projectsShown");
 	console.log('## before projectsShown = "'+projectsShown+'"');
-	var projectsShown_entries = projectsShown.split(' ');
+	var projectsShown_entries = projectsShown.split('; ');
 	var new_projectsShown = "";
 	localStorage.setItem("projectsShown","");
 	for (var i=0;i<projectsShown_entries.length; i++) {
@@ -718,7 +717,7 @@ function update_projectsShown_after_project_delete(deletedProjectKey) {
 	    deletedProjectID = deletedProjectID.replace("_delete","");
 	    deletedProjectID = Number(deletedProjectID);
 	// adjust projectsShown string to reflect new positions of projects.
-	var projectsShown_entries = projectsShown.split(' ');
+	var projectsShown_entries = projectsShown.split('; ');
 	var new_projectsShown = "";
 	localStorage.setItem("projectsShown","");
 	for (var i=0;i<projectsShown_entries.length; i++) {
@@ -770,7 +769,8 @@ console.log('#: projectsShown = "'+projectsShown+'"');
 function restore_shown_figures() {
 	// function is called at the end of page loading.
 	if (projectsShown) {
-		var projectsShown_entries = projectsShown.split(' ');
+		projectsShown = projectsShown.substring(0,projectsShown.length-1);
+		var projectsShown_entries = projectsShown.split(';');
 		localStorage.setItem("projectsShown","");
 
 		var visualize_iframe = document.getElementById('panel_visualizeDataset_iframe');
@@ -783,17 +783,16 @@ function restore_shown_figures() {
 					var entry_parts    = currentProject.split(':');
 
 					// select checkBoxes for previously viewed datasets.
-					key = entry_parts[2];
-					//console.log('#:    4 elementID = show_'+key);
+					userName        = entry_parts[0];
+					projectName     = entry_parts[1];
+					key             = entry_parts[2];
+					projectNameText = entry_parts[3];
 
 					var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
-					//console.log(show_button_element);
 					show_button_element.checked = true;
 
 					// Open projects previously shown.
-					//console.log('#:5 entry to show = "'+currentProject+'"');
-					var entry_parts    = currentProject.split(':');
-					openProject(entry_parts[0], entry_parts[1], entry_parts[2], entry_parts[3], 'null', 'null', 'null');
+					openProject(userName,projectName,key,projectNameText, 'null', 'null', 'null');
 				}
 			}
 		}

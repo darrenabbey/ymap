@@ -87,7 +87,7 @@
 				$key = $key_;
 				echo "<span id='p_label_".$key."' style='color:#CC0000;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
-				echo "<input id='show_".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$projectNameString."','".$key."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
+				echo "<input id='show_".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
 				echo "\n\t\t".$projectNameString."</font></span>\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
@@ -142,7 +142,7 @@
 				$key = $key_ + $userProjectCount_starting;
 				echo "<span id='p_label_".$key."' style='color:#BB9900;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
-				echo "<input  id='show_".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$projectNameString."','".$key."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
+				echo "<input  id='show_".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
 				echo "\n\t\t".$projectNameString."</font></span>\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
@@ -199,7 +199,7 @@
 				$key = $key_ + $userProjectCount_starting + $userProjectCount_working;
 				echo "<span id='project_label_".$key."' style='color:#00AA00;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
-				echo "<input  id='show_$key' type='checkbox' onclick=\"parent.openProject('$user','$project','$projectNameString','$key','$colorString1','$colorString2','$parentString'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
+				echo "<input  id='show_$key' type='checkbox' onclick=\"parent.openProject('$user','$project','$key','$projectNameString','$colorString1','$colorString2','$parentString'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
 				echo "\n\t\t".$projectNameString."</font></span>\n\t\t";
 				echo "<span id='p2_".$project."_delete'></span><span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
@@ -258,17 +258,22 @@
 			$colorString2 = 'null';
 		}
 		$json_file_list = json_encode(scandir("users/default/projects/$project"));
-		$parent_file  = "users/default/projects/".$project."/parent.txt";
-		$handle       = fopen($parent_file,'r');
-		$parentString = trim(fgets($handle));
+		$parent_file    = "users/default/projects/".$project."/parent.txt";
+		$handle         = fopen($parent_file,'r');
+		$parentString   = trim(fgets($handle));
 		fclose($handle);
+
+		$nameFile       = "users/default/projects/".$project."/name.txt";
+		if (file_exists($nameFile)) {
+			$projectNameString = file_get_contents($nameFile);
+			$projectNameString = trim($projectNameString);
+		} else {
+			$projectNameString = $project;
+		}
 
 		$key = $key_ + $userProjectCount_starting + $userProjectCount_working + $userProjectCount_complete;
 		echo "<font size='2'>".($key+1).".";
-		echo "<input  id='show_".$key."_sys' type='checkbox' onclick=\"parent.openProject('default','".$project."','".$projectNameString."','".$key."_sys','".$colorString1."','".$colorString2."','".$parentString."');\" data-file-list='".$json_file_list. "'>";
-
-		$projectNameString = file_get_contents("users/default/projects/".$project."/name.txt");
-		$projectNameString = trim($projectNameString);
+		echo "<input  id='show_".$key."_sys' type='checkbox' onclick=\"parent.openProject('default','".$project."','".$key."_sys','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."');\" data-file-list='".$json_file_list. "'>";
 
 		echo $projectNameString."</font>";
 		echo "<br>\n\t\t";
