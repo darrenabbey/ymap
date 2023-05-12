@@ -15,6 +15,7 @@
 
 		// Sanitize input strings.
 		$projectsShown = sanitizeProjectsShown_POST("projectsShown");
+		$projectsShown = substr($projectsShown, 0, -1);
 
 		// auxillary functions
 		// sets image background to white and init default image parameters
@@ -32,8 +33,11 @@
 		// general variables
 		$linearCartoonHeight = 139; //139 the height in px of the cartoon without labels 136 valid so + 4px.
 
+
+		echo "<script type='text/javascript'> console.log('Combine images from: [".$projectsShown."]'); </script>";
+
 		// break projectsShown string into individual strings per project.
-		$projectsShown_entries = explode(" ",$projectsShown);
+		$projectsShown_entries = explode(";",$projectsShown);
 
 		// process first project string;
 		$initial_entry = $projectsShown_entries[0];
@@ -41,6 +45,7 @@
 		$fig_user      = $entry_parts[0];
 		$fig_project   = $entry_parts[1];
 		$fig_key       = $entry_parts[2];
+
 
 		//================================================================
 		// Validate sub-strings received from first projectsShown string.
@@ -50,14 +55,14 @@
 		if (!is_dir($user_dir)) {
 			// user doesn't exist, should never happen: Force logout.
 			session_destroy();
-			?><script type="text/javascript"> parent.location.reload(); </script><?php
+			echo "<script type='text/javascript'> parent.location.reload(); </script>";
 		}
 		// Confirm requested project exists.
 		$project_dir = "users/".$fig_user."/projects/".$fig_project;
 		if (!is_dir($project_dir)) {
 			// project doesn't exist, should never happen: Force logout.
 			session_destroy();
-			?><script type="text/javascript"> parent.location.reload(); </script><?php
+			echo "<script type='text/javascript'> parent.location.reload(); </script>";
 		}
 
 		// Determine initial figure strings.
@@ -108,6 +113,8 @@
 			$fig_project = $entry_parts[1];
 			$fig_key     = $entry_parts[2];
 
+			echo "<script type='text/javascript'> console.log('Combine images from: ".$fig_user.":".$fig_project.":".$fig_key."'); </script>";
+
 			//================================================================
 			// Validate sub-strings received from projectsShown string.
 			//----------------------------------------------------------------
@@ -116,14 +123,15 @@
 			if (!is_dir($user_dir)) {
 				// user doesn't exist, should never happen: Force logout.
 				session_destroy();
-				?><script type="text/javascript"> parent.location.reload(); </script><?php
+				echo "<script type='text/javascript'> parent.location.reload(); </script>";
 			}
 			// Confirm requested project exists.
 			$project_dir = "users/".$fig_user."/projects/".$fig_project;
 			if (!is_dir($project_dir)) {
+				// dragon
 				// project doesn't exist, should never happen: Force logout.
 				session_destroy();
-				?><script type="text/javascript"> parent.location.reload(); </script><?php
+				echo "<script type='text/javascript'> parent.location.reload(); </script>";
 			}
 
 			// Determine figure strings.

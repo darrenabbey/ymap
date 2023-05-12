@@ -155,16 +155,10 @@
 	For support, please contact us at <a href="mailto:ymapsupport@tauex.tau.ac.il">ymapsupport@tauex.tau.ac.il</a><br/><br/>
 	<button onclick="Generate_combined_figure(); document.getElementById('combined_fig_options').style.display = 'inline';">Combine figures viewed below.</button><br>
 <?php
+	// Defines the filenames for combined figures.
 	$cfig_CNV_SNP = "users/".$user."/combined_figure.1.png";
 	$cfig_CNV     = "users/".$user."/combined_figure.2.png";
 	$cfig_SNP     = "users/".$user."/combined_figure.3.png";
-
-	$super_user_flag_file = "users/".$user."/super.txt";
-	if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
-		$admin = "true";
-	} else {
-		$admin = "false";
-	}
 ?>
 	<div id='combined_fig_options' style='display:none;'>
 		CNV-SNP/LOH <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadExternal("<?php echo $cfig_CNV_SNP; ?>")'>
@@ -197,6 +191,15 @@
 <td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_examples"
 	onclick="tabWindow('examples');"        >Example Datasets</td>
 <?php
+// Check if logged in user has admin rights.
+$super_user_flag_file = "users/".$user."/super.txt";
+if (file_exists($super_user_flag_file)) {
+	$admin = "true";
+} else {
+	$admin = "false";
+}
+
+// If user is admin, show the "Admin" tab in the user interface.
 if ($admin == "true") {
 	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin" ';
 	echo 'onclick="tabWindow(\'admin\');"           >Admin</td>';
