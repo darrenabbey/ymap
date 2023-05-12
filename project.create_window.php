@@ -72,7 +72,7 @@
                                         </div>
 				</td><td>
 					<div id="hiddenFormSection2b" style="display:none">
-						Enable if you're going to be examining specific SNPs later. Disable otherwise.<br>
+						Enable only if required. Try running data without it first to see if it meets your needs.<br>
 						Disabled resulted in 1% spurious SNPs in test case, with no visual impact, but shortened analysis by ~3 hours.
 					</div>
 				</td></tr>
