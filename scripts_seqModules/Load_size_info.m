@@ -9,7 +9,7 @@ fprintf('\n---------------------------------Load_size_info.m started------------
 num_chrs_used = 0;
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
-        num_chrs_used = num_chrs_used + 1;
+		num_chrs_used = num_chrs_used + 1;
 	end;
 end;
 fprintf('num_chrs_used - %d\n',num_chrs_used);
@@ -17,22 +17,22 @@ fprintf('num_chrs_used - %d\n',num_chrs_used);
 % calculating the maximum length of chromosome label size for the height of linear figure
 max_chrom_label_size = 1;
 for chr = 1:num_chrs
-    if (chr_in_use(chr) == 1)
-        if (numel(chr_label{chr}) > max_chrom_label_size)
-            max_chrom_label_size = numel(chr_label{chr});
-        end;
-    end;
+	if (chr_in_use(chr) == 1)
+		if (numel(chr_label{chr}) > max_chrom_label_size)
+			max_chrom_label_size = numel(chr_label{chr});
+		end;
+	end;
 end;
 fprintf('max_chrom_label_size - %d\n',max_chrom_label_size);
 
 %% global definitions
 % the default dpi used by the system, in matlab no screen mode before 2014 it's 72dpi, and in later versions 150dpi
 if verLessThan('matlab','8.4')
-    % -- Code to run in MATLAB R2014a and earlier here --
-    system_dpi = 72; 
+	% -- Code to run in MATLAB R2014a and earlier here --
+	system_dpi = 72;
 else
-    % -- Code to run in MATLAB R2014b and later here --
-    system_dpi = 150; 
+	% -- Code to run in MATLAB R2014b and later here --
+	system_dpi = 150;
 end;
 fprintf('using %d dpi\n',system_dpi);
 
@@ -60,22 +60,26 @@ linear_height            = linear_cartoon_height_px/ linear_fig_height_px; % the
 linear_base              = 0.1;
 
 % setting rotation
-% if there are more than5 charcters in label 90 degrees rotation, else
-% rotating accroding to lowest chromosome size
-% 45 degrees boundries 
+% if there are more than 5 characters in label 90 degrees rotation, else
+% rotating accroding to lowest chromosome size.
+
+% 45 degrees boundries
 lower_boundary = 0.10;
 upper_boundary = 0.25;
+
 % removing zero enteries in chromosom sizes
 chr_size_cleaned = chr_size(chr_size ~= 0);
+
 % calculate ration between smallest chromosome size to highest
 ratio = min(chr_size_cleaned)/max(chr_size_cleaned);
 rotate = 0;
 if (max_chrom_label_size > 5)
-    rotate = 90;
+	rotate = 90;
 elseif (lower_boundary <= ratio && ratio <= upper_boundary)
-    rotate = 45;
+	% set rotate to 45 here to use.
+	rotate = 90;
 elseif(ratio < lower_boundary)
-    rotate = 90;
+	rotate = 90;
 end;
 
 % font definitions
@@ -100,31 +104,30 @@ stacked_fig_width = stacked_fig_width_px / system_dpi;
 
 % if the matlab version is less then 2016a then use scaling since the font doesn't scale well
 if verLessThan('matlab','9.0')
-    % -- Code to run in MATLAB R2016a and earlier here --
-    % the size of the stacked title normalized to 8 chromosomes (that appear
-    % right), 8 is what appeared correct in candida albicans, just increasing size makes figure look not good
-    stacked_title_size = 18*(8/num_chrs_used);
-    % the size of axis values in stacked figure
-    stacked_axis_font_size = 10*(8/num_chrs_used);
-    % the size of gca font in stacked mode
-    gca_stacked_font_size = 12*(8/num_chrs_used);
-    % the size of chromosome text in stacked figure
-    stacked_chr_font_size = 16*(8/num_chrs_used);
-    % the size of the copy beside figure in stacked
-    stacked_copy_font_size = 20*(8/num_chrs_used);
+	% -- Code to run in MATLAB R2016a and earlier here --
+	% the size of the stacked title normalized to 8 chromosomes (that appear
+	% right), 8 is what appeared correct in candida albicans, just increasing size makes figure look not good
+	stacked_title_size = 18*(8/num_chrs_used);
+	% the size of axis values in stacked figure
+	stacked_axis_font_size = 10*(8/num_chrs_used);
+	% the size of gca font in stacked mode
+	gca_stacked_font_size = 12*(8/num_chrs_used);
+	% the size of chromosome text in stacked figure
+	stacked_chr_font_size = 16*(8/num_chrs_used);
+	% the size of the copy beside figure in stacked
+	stacked_copy_font_size = 20*(8/num_chrs_used);
 else
-    % -- Code to run in MATLAB R2016a and later here --
-    stacked_title_size = 18;
-    % the size of axis values in stacked figure
-    stacked_axis_font_size = 10;
-    % the size of gca font in stacked mode
-    gca_stacked_font_size = 12;
-    % the size of chromosome text in stacked figure
-    stacked_chr_font_size = 16;
-    % the size of the copy beside figure in stacked
-    stacked_copy_font_size = 20;
+	% -- Code to run in MATLAB R2016a and later here --
+	stacked_title_size = 18;
+	% the size of axis values in stacked figure
+	stacked_axis_font_size = 10;
+	% the size of gca font in stacked mode
+	gca_stacked_font_size = 12;
+	% the size of chromosome text in stacked figure
+	stacked_chr_font_size = 16;
+	% the size of the copy beside figure in stacked
+	stacked_copy_font_size = 20;
 end;
-
 
 
 fprintf('stacked figure paramters:\n');
