@@ -1,6 +1,6 @@
 <?php
 	session_start();
-	if(!isset($_SESSION['logged_on'])){ session_destroy(); ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
+	if(!isset($_SESSION['logged_on'])){?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
 ?>
 <style type="text/css">
 html * {
@@ -22,10 +22,12 @@ if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
 
 <font size='3'>Log into a preexisting user account or create a new user account.</font><br>
 <?php
-if ((isset($_SESSION['delay'])) && !(isset($_SESSION['logged_on']))) {
+
+if (!isset($_SESSION['logged_on'])) {
 	$delay = $_SESSION['delay'];
+	if (isset($_SESSION['error'])) { echo $_SESSION['error']; }
 	if ($delay != 0) {
-		echo "<font size='2' color='Red'>(There will be a short delay afer hitting 'Log In' button due to prior log in failure.)</font><br><br>";
+		echo "<font size='2' color='Red'>(There will be a short delay after hitting 'Log In' button due to prior log in failure.)</font><br>";
 	}
 }
 echo "<br>";
