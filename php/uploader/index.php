@@ -48,23 +48,20 @@
 	$currentSize = getUserUsageSize($user);
 	// getting user quota in Gigabytes
 	$quota_ = getUserQuota($user);
-	if ($quota_ > $quota) {   $quota = $quota_;   }
-	// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear
+	if ($quota_ > $quota) { $quota = $quota_; }
+	// Setting boolean variable that will indicate whether the user has exceeded it's allocated space.
 	$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
 	if ($exceededSpace) {
 		echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tnparent.update_interface();\n}\n";
 		echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
-	}
-
-
-	//============================================================================
-	// HTML5Uploader ::  Adam Filkor : http://filkor.org
-	// Licensed under the MIT license : http://www.opensource.org/licenses/MIT
-	//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// non-MySQL version.
-	//----------------------------------------------------------------------------
-	// Only allow uploading to proceed if user quota is not exceeded.
-	if (!$exceededSpace) {
+	} else {
+		//============================================================================
+		// HTML5Uploader ::  Adam Filkor : http://filkor.org
+		// Licensed under the MIT license : http://www.opensource.org/licenses/MIT
+		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		// non-MySQL version.
+		//----------------------------------------------------------------------------
+		// Only allow uploading to proceed if user quota is not exceeded.
 		require('UploadHandler.php');
 		$upload_handler = new UploadHandler($target_dir);
 	}
