@@ -32,7 +32,7 @@ if ($admin_logged_in == "true") {
 </font>
 
 <hr width="100%">
-User account maintenance.
+User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQuota($user); echo $quota; ?>GB.)</font>
 <table width="100%" cellpadding="0"><tr>
 <td width="65%" valign="top">
 <script type="text/javascript" src="js/jquery-3.6.3.js"></script>
