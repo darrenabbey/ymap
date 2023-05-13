@@ -1,6 +1,8 @@
 <?php
 	session_start();
-	if(!isset($_SESSION['logged_on'])){ session_destroy(); ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
+	if(!isset($_SESSION['logged_on'])){?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
+	require_once 'constants.php';
+	require_once 'sharedFunctions.php';
 ?>
 <style type="text/css">
 	html * {
@@ -16,18 +18,17 @@
     </ol>
 </font></p>
 <?php
-	if(isset($_SESSION['logged_on']))
-	{
-		require_once 'sharedFunctions.php';
+	if(isset($_SESSION['logged_on'])) {
 		// getting the current size of the user folder in Gigabytes
 		$currentSize = getUserUsageSize($user);
 		// getting user quota in Gigabytes
-		$quota = getUserQuota($user);
+		$quota_ = getUserQuota($user);
+		if ($quota_ > $quota) {   $quota = $quota_;   }
 		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear
 		$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
-		if ($exceededSpace)
+		if ($exceededSpace) {
 			echo "<span style='color:#FF0000; font-weight: bold;'>You have exceeded your quota (" . $quota . "G) please clear space and then reload to install new genome</span><br><br>";
-
+		}
 	}
 ?>
 <table width="100%" cellpadding="0"><tr>
@@ -38,8 +39,13 @@
 	// '-----------------'
 	if (isset($_SESSION['logged_on'])) {
 		// show Install new genome button only if user has space
-		if (!$exceededSpace)
-			echo "<input name=\"button_InstallNewGenome\"  type=\"button\" value=\"Install New Genome\"  onclick=\"parent.show_hidden('Hidden_InstallNewGenome')\"><br>\n\t\t\t\t";
+		if (!$exceededSpace) {
+			echo "<input name='button_InstallNewGenome'  type='button' value='Install New Genome' onclick='";
+				echo "parent.document.getElementById(\"Hidden_InstallNewGenome_Frame\").contentWindow.location.reload(); ";
+				echo "parent.show_hidden(\"Hidden_InstallNewGenome\"); ";
+				echo "parent.update_interface();";
+			echo "'><br>\n\t\t\t\t";
+		}
 
 		$_SESSION['pending_install_genome_count'] = 0;
 		?>
@@ -65,7 +71,6 @@
 		// Trim path from each folder string.
 		foreach($genomeFolders as $key=>$folder) {   $genomeFolders[$key] = str_replace($genomesDir,"",$folder);   }
 
-
 		// Split genome list into ready/working/starting lists for sequential display.
 		$genomeFolders_complete = array();
 		$genomeFolders_working  = array();
@@ -90,13 +95,18 @@
 		$genomeFolders   = array_merge($genomeFolders_starting, $genomeFolders_working, $genomeFolders_complete);
 		$userGenomeCount = count($genomeFolders);
 		// displaying size if it's bigger then 0
-		if ($currentSize > 0 )
-			echo "<b><font size='2'>User Installed Genomes: (currently using " . $currentSize . "G of " . $quota . "G)</font></b>\n\t\t\t\t";
-		else
+		if ($currentSize > 0) {
+			echo "<b><font size='2'>User Installed Genomes: (currently using ".$currentSize."G of ".$quota."G)</font></b>\n\t\t\t\t";
+		} else {
 			echo "<b><font size='2'>User Installed Genomes:</font></b>\n\t\t\t\t";
+		}
 		echo "<br>\n\t\t\t\t";
 		foreach($genomeFolders_starting as $key_=>$genome) {
-			printGenomeInfo("3", $key_, "CC0000", $user, $genome);
+			if (!$exceededSpace) {
+				printGenomeInfo("3", $key_, "CC0000", $user, $genome);
+			} else {
+				printGenomeInfo("4", $key_, "888888", $user, $genome);
+			}
 		}
 		foreach($genomeFolders_working as $key_=>$genome) {
 			printGenomeInfo("2", $key_ + $userGenomeCount_starting, "BB9900", $user, $genome);
@@ -117,7 +127,9 @@
 		// checks condensed log to see if initial processing is done.
 		if (file_exists("users/".$user."/genomes/".$genome."/working.txt")) {
 			if (file_exists("users/".$user."/genomes/".$genome."/working2.txt") == false) {
-				echo "<button id='genome_finalize_".$key."' type='button' onclick=\"parent.show_hidden('Hidden_InstallNewGenome2'); getElementById('genome_finalize_".$key."').style.display = 'none';;\">Finalize</button>";
+				if (!$exceededSpace) {
+					echo "<button id='genome_finalize_".$key."' type='button' onclick=\"parent.show_hidden('Hidden_InstallNewGenome2'); getElementById('genome_finalize_".$key."').style.display = 'none';;\">Finalize</button>";
+				}
 			}
 		}
 

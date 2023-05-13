@@ -1,6 +1,8 @@
 <?php
 	session_start();
-	if(!isset($_SESSION['logged_on'])){ session_destroy(); ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
+	if(!isset($_SESSION['logged_on'])){?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
+	require_once 'constants.php';
+	require_once 'sharedFunctions.php';
 ?>
 <style type="text/css">
 	html * {
@@ -34,17 +36,16 @@ function showColors(colorName,targetToChange,contentString) {
 }
 </script>
 <?php
-	if (isset($_SESSION['logged_on']))
-	{
-		require_once 'sharedFunctions.php';
+	if (isset($_SESSION['logged_on'])) {
 		// getting the current size of the user folder in Gigabytes
 		$currentSize = getUserUsageSize($user);
 		// getting user quota in Gigabytes
 		$quota = getUserQuota($user);
 		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear
 		$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
-		if ($exceededSpace)
+		if ($exceededSpace) {
 			echo "<span style='color:#FF0000; font-weight: bold;'>You have exceeded your quota (" . $quota . "G) please clear space and then reload to generate new hapmap</span><br><br>";
+		}
 	}
 ?>
 <table width="100%" cellpadding="0"><tr valign="top">
@@ -63,11 +64,11 @@ function showColors(colorName,targetToChange,contentString) {
 		else
 			echo "<div class='hapmap'><b><font size='2' >User generated hapmaps:</font></b><br>\n\t\t";
 		// show generate new hapmap button only if user has space
-		if (!$exceededSpace)
-		{
+		if (!$exceededSpace) {
 			echo "<input name='button_GenerateNewHapmap' type='button' value='Generate New Hapmap' onclick='";
-			echo     "parent.show_hidden(\"Hidden_GenerateNewHapmap\"); ";
-			echo     "parent.reload_hidden(\"Hidden_GenerateNewHapmap\",\"hapmap.create_window.php\"); ";
+				echo "parent.document.getElementById(\"Hidden_GenerateNewHapmap_Frame\").contentWindow.location.reload(); ";
+				echo "parent.show_hidden(\"Hidden_GenerateNewHapmap\"); ";
+				echo "parent.update_interface();";
 			echo "'>\n\t\t";
 		}
 

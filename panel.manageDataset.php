@@ -1,6 +1,8 @@
 <?php
 	session_start();
-	if(!isset($_SESSION['logged_on'])){ session_destroy(); ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
+	if(!isset($_SESSION['logged_on'])){?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
+	require_once 'constants.php';
+	require_once 'sharedFunctions.php';
 ?>
 <style type="text/css">
 	html * {
@@ -22,18 +24,17 @@
 	</font>
 </font>
 <?php
-	if (isset($_SESSION['logged_on']))
-	{
-		require_once 'sharedFunctions.php';
+	if (isset($_SESSION['logged_on'])) {
 		// getting the current size of the user folder in Gigabytes
 		$currentSize = getUserUsageSize($user);
 		// getting user quota in Gigabytes
-		$quota = getUserQuota($user);
+		$quota_ = getUserQuota($user);
+		if ($quota_ > $quota) {   $quota = $quota_;   }
 		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear
 		$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
-		if ($exceededSpace)
+		if ($exceededSpace) {
 			echo "<span style='color:#FF0000; font-weight: bold;'>You have exceeded your quota (" . $quota . "G) please clear space and then reload to add new dataset</span><br><br>";
-
+		}
 	}
 ?>
 <table width="100%" cellpadding="0"><tr>
@@ -44,8 +45,13 @@
 	// '------------------'
 	if (isset($_SESSION['logged_on'])) {
 		// show Install new dataset button only if user has space
-		if(!$exceededSpace)
-			echo "<input name='button_InstallNewDataset' type='button' value='Install New Dataset' onclick='parent.show_hidden(\"Hidden_InstallNewDataset\")'><br>";
+		if(!$exceededSpace) {
+			echo "<input name='button_InstallNewDataset' type='button' value='Install New Dataset' onclick='";
+				echo "parent.document.getElementById(\"Hidden_InstallNewDataset_Frame\").contentWindow.location.reload(); ";
+				echo "parent.show_hidden(\"Hidden_InstallNewDataset\"); ";
+				echo "parent.update_interface();";
+			echo "'><br>";
+		}
 
 		$_SESSION['pending_install_project_count'] = 0;
 		?>
@@ -67,10 +73,13 @@
 	if (isset($_SESSION['logged_on'])) {
 		$projectsDir      = "users/".$user."/projects/";
 		$projectFolders   = array_diff(glob($projectsDir."*"), array('..', '.'));
+
 		// Sort directories by date, newest first.
 		array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
+
 		// Trim path from each folder string.
 		foreach($projectFolders as $key=>$folder) {   $projectFolders[$key] = str_replace($projectsDir,"",$folder);   }
+
 		// Split project list into ready/working/starting lists for sequential display.
 		$projectFolders_complete = array();
 		$projectFolders_working  = array();
@@ -95,104 +104,28 @@
 		$projectFolders   = array_merge($projectFolders_starting, $projectFolders_working, $projectFolders_complete);
 		$userProjectCount = count($projectFolders);
 		// displaying size if it's bigger then 0
-		if ($currentSize > 0)
+		if ($currentSize > 0) {
 			echo "<b><font size='2'>User installed datasets: (currently using " . $currentSize . "G of " . $quota . "G)</font></b>\n\t\t\t\t";
-		else
+		} else {
 			echo "<b><font size='2'>User installed datasets:</font></b>\n\t\t\t\t";
+		}
 		echo "<br>\n\t\t\t\t";
+
+
 		foreach($projectFolders_starting as $key_=>$project) {
-			// Load colors for project.
-			$colorFile        = "users/".$user."/projects/".$project."/colors.txt";
-			if (file_exists($colorFile)) {
-				$handle       = fopen($colorFile,'r');
-				$colorString1 = trim(fgets($handle));
-				$colorString2 = trim(fgets($handle));
-				fclose($handle);
+			if (!$exceededSpace) {
+				printprojectInfo("3", $key_, "CC0000", $user, $project);
 			} else {
-				$colorString1 = 'null';
-				$colorString2 = 'null';
-			}
-			$parentFile      = "users/".$user."/projects/".$project."/parent.txt";
-			$projectNameFile = "users/".$user."/projects/".$project."/name.txt";
-			if (file_exists($parentFile) and file_exists($projectNameFile)) {
-				$handle       = fopen($parentFile,'r');
-				$parentString = trim(fgets($handle));
-				fclose($handle);
-				// getting project name
-
-				$projectNameString = file_get_contents($projectNameFile);
-				$projectNameString = trim($projectNameString);
-
-				$key = $key_;
-				echo "\n\t\t\t\t<!-- project '{$project}', #{$key}. --!>\n\t\t\t\t";
-				echo "<span id='p_label_".$key."' style='color:#CC0000;'>\n\t\t\t\t";
-				echo "<font size='2'>".($key+1).".";
-				echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
-
-				echo $projectNameString;
-				echo "</font></span>\n\t\t\t\t";
-				echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
-				echo "<div id='frameContainer.p3_".$key."'></div>\n";
-			} else {
-				// an error has happened.
-				$key = $key_;
-				echo "\n\t\t\t\t<!-- project '{$project}', #{$key}. --!>\n\t\t\t\t";
-				echo "<span id='p_label_".$key."' style='color:#888888;'>\n\t\t\t\t";
-				echo "<font size='2'>".($key+1).". ";
-				echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
-
-				echo $project;
-				echo "</font></span>\n\t\t\t\t";
-				echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
-				echo "<div id='frameContainer.p3_".$key."'></div>\n";
+				printprojectInfo("4", $key_, "888888", $user, $project);
 			}
 		}
 		foreach($projectFolders_working as $key_=>$project) {
-			// Load colors for project.
-			$colorFile        = "users/".$user."/projects/".$project."/colors.txt";
-			if (file_exists($colorFile)) {
-				$handle       = fopen($colorFile,'r');
-				$colorString1 = trim(fgets($handle));
-				$colorString2 = trim(fgets($handle));
-				fclose($handle);
-			} else {
-				$colorString1 = 'null';
-				$colorString2 = 'null';
-			}
-			$parentFile      = "users/".$user."/projects/".$project."/parent.txt";
-			$projectNameFile = "users/".$user."/projects/".$project."/name.txt";
-			if (file_exists($parentFile) and file_exists($projectNameFile)) {
-				$handle       = fopen($parentFile,'r');
-				$parentString = trim(fgets($handle));
-				fclose($handle);
-
-				$projectNameString = file_get_contents($projectNameFile);
-				$projectNameString = trim($projectNameString);
-
-				$key = $key_ + $userProjectCount_starting;
-				echo "\n\t\t\t\t<!-- project '{$project}', #{$key}. --!>\n\t\t\t\t";
-				echo "<span id='p_label_".$key."' style='color:#BB9900;'>\n\t\t\t\t";
-				echo "<font size='2'>".($key+1).".";
-				echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
-
-				echo $projectNameString;
-				echo "</font></span>\n\t\t\t\t";
-				echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
-				echo "<div id='frameContainer.p2_".$key."'></div>\n";
-			} else {
-				// an error has happened.
-				$key = $key_ + $userProjectCount_starting;
-				echo "\n\t\t\t\t<!-- project '{$project}', #{$key}. --!>\n\t\t\t\t";
-				echo "<span id='p_label_".$key."' style='color:#888888;'>\n\t\t\t\t";
-				echo "<font size='2'>".($key+1).".";
-				echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
-
-				echo $project;
-				echo "</font></span>\n\t\t\t\t";
-				echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
-				echo "<div id='frameContainer.p3_".$key."'></div>\n";
-			}
+			printprojectInfo("2", $key_ + $userprojectCount_starting, "BB9900", $user, $project);
 		}
+		foreach($projectFolders_complete as $key_=>$project) {
+			printprojectInfo("1", $key_ + $userprojectCount_starting + $userprojectCount_working, "00AA00", $user, $project);
+		}
+
 ?>
 <script type='text/javascript'>
 	function loadExternal(imageUrl) {
@@ -200,81 +133,56 @@
 	}
 </script>
 <?php
-		foreach($projectFolders_complete as $key_=>$project) {
-			// Load data type for project.
-			$handle     = fopen("users/".$user."/projects/".$project."/dataFormat.txt", "r");
-			$dataFormat = fgets($handle);
-			fclose($handle);
+	}
 
-			// Load colors for project.
-			$colorFile        = "users/".$user."/projects/".$project."/colors.txt";
-			if (file_exists($colorFile)) {
-				$handle       = fopen($colorFile,'r');
-				$colorString1 = trim(fgets($handle));
-				$colorString2 = trim(fgets($handle));
-				fclose($handle);
-			} else {
-				$colorString1 = 'null';
-				$colorString2 = 'null';
-			}
+	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $user, $project) {
+		$projectNameFile = "users/".$user."/projects/".$project."/name.txt";
+		$projectNameString = file_get_contents($projectNameFile);
+		$projectNameString = trim($projectNameString);
 
-			$parentFile      = "users/".$user."/projects/".$project."/parent.txt";
-			$projectNameFile = "users/".$user."/projects/".$project."/name.txt";
-			if (file_exists($parentFile) and file_exists($projectNameFile)) {
-				$handle       = fopen($parentFile,'r');
-				$parentString = trim(fgets($handle));
-				fclose($handle);
+		$projectyNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
+		$projectNameString  = trim($projectNameString);
+		echo "<span id='p_label_".$key."' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
+		echo "<font size='2'>".($key+1).".";
+		echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$project."','".$key."');\">Delete</button>";
+		echo $projectNameString;
 
-				$projectNameString = file_get_contents($projectNameFile);
-				$projectNameString = trim($projectNameString);
-
-				$key = $key_ + $userProjectCount_starting + $userProjectCount_working;
-				echo "\n\t\t\t\t<!-- project '{$project}', #{$key}. --!>\n\t\t\t\t";
-				echo "<span id='p_label_".$key."' style='color:#00AA00;'>\n\t\t\t\t";
-				echo "<font size='2'>".($key+1).". ";
-				echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
-				echo $projectNameString."</font>";
-
-				// display total project size
-				$totalSizeFile = "users/".$user."/projects/".$project. "/totalSize.txt";
-				// first checking if size already calculated and is stored in totalSize.txt
-				if (file_exists($totalSizeFile)) {
-					$handle       = fopen($totalSizeFile,'r');
-					$projectSizeStr = trim(fgets($handle));
-					fclose($handle);
-				} else { // calculate size and store in totalSize.txt to avoid calculating again
-					// calculating size
-					$projectSizeStr = trim(shell_exec("du -sh " . "users/".$user."/projects/".$project. "/ | cut -f1"));
-					// saving to file
-					$output       = fopen($totalSizeFile, 'w');
-					fwrite($output, $projectSizeStr);
-					fclose($output);
+		// checks condensed log to see if initial processing is done.
+		if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
+			if (file_exists("users/".$user."/projects/".$project."/working2.txt") == false) {
+				if ($exceededSpace) {
+					echo "<button id='project_finalize_".$key."' type='button' onclick=\"parent.show_hidden('Hidden_InstallNewproject2'); getElementById('project_finalize_".$key."').style.display = 'none';;\">Finalize</button>";
 				}
-				// printing total size
-				echo " <font color='black' size='1'>(". $projectSizeStr .")</font>";
-				echo "</span>";
-
-				echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
-				echo "<div id='frameContainer.p1_".$key."'></div>\n";
-			} else {
-				// an error has happened.
-				$key = $key_ + $userProjectCount_starting;
-				echo "\n\t\t\t\t<!-- project '{$project}', #{$key}. --!>\n\t\t\t\t";
-				echo "<span id='p_label_".$key."' style='color:#888888;'>\n\t\t\t\t";
-				echo "<font size='2'>".($key+1).".";
-				echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$user."','".$project."','".$key."')\">Delete</button>";
-
-				echo $project;
-				echo "</font></span>\n\t\t\t\t";
-				echo "<span id='p_delete_".$key."'></span><br>\n\t\t\t\t";
-				echo "<div id='frameContainer.p3_".$key."'></div>\n";
 			}
 		}
-	}
-	?>
-</td>
-</tr></table>
 
+		// display total size of files only if the project is finished processeing
+		if ($frameContainerIx == "1") {
+			$totalSizeFile = "users/".$user."/projects/". $project ."/totalSize.txt";
+			// display total project size: first checking if size already calculated and is stored in totalSize.txt
+			if (file_exists($totalSizeFile)) {
+				$handle       = fopen($totalSizeFile,'r');
+				$projectSizeStr = trim(fgets($handle));
+				fclose($handle);
+			} else { // calculate size and store in totalSize.txt to avoid calculating again
+				// calculating size
+				$projectSizeStr = trim(shell_exec("du -sh " . "users/".$user."/projects/". $project . "/ | cut -f1"));
+				// saving to file
+				$output       = fopen($totalSizeFile, 'w');
+				fwrite($output, $projectSizeStr);
+				fclose($output);
+			}
+			// printing total size
+			echo " <font color='black' size='1'>(". $projectSizeStr .")</font>";
+		}
+		echo "</font></span>\n\t\t\t\t";
+		echo "<span id='p_delete_".$key."'></span>\n\t\t";
+		echo "\n\t\t\t\t";
+		echo "<div id='frameContainer.p".$frameContainerIx."_".$key."'></div>";
+	}
+
+	?>
+</td></tr></table>
 <?php
 	//.-----------------.
 	//| System projects |

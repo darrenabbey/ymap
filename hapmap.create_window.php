@@ -2,9 +2,22 @@
 	session_start();
 	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php }
 	require_once 'constants.php';
+	require_once 'sharedFunctions.php';
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 
-	$user = $_SESSION['user'];
+	if (isset($_SESSION['logged_on'])) {
+		$user = $_SESSION['user'];
+		// getting the current size of the user folder in Gigabytes
+		$currentSize = getUserUsageSize($user);
+		// getting user quota in Gigabytes
+		$quota_ = getUserQuota($user);
+		if ($quota_ > $quota) {   $quota = $quota_;   }
+		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear
+		$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
+		if ($exceededSpace) {
+			echo "<span style='color:#FF0000; font-weight: bold;'>You have exceeded your quota (".$quota."G) please clear space and then reload to build new hapmap.</span><br><br>";
+		}
+	}
 ?>
 <html lang="en">
 	<HEAD>
@@ -169,7 +182,11 @@ UpdateProjectList=function() {
 						This strain will form haplotype 'b'.
 					</div<
 				</td></tr></table><br>
-				<input type="submit" value="Create new hapmap">
+				<?php
+				if (!$exceededSpace) {
+					echo "<input type='submit' value='Create New Hapmap'>";
+				}
+				?>
 			</form>
 		</p></div>
 	</body>

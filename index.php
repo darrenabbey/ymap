@@ -1,6 +1,7 @@
 <?php
 	session_start();
 	require_once 'constants.php';
+	require_once 'sharedFunctions.php';
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
@@ -665,6 +666,15 @@ function reload_hidden(hidden_panel,source) {
 
 // =====================================================================
 
+function update_interface() {
+	document.getElementById('panel_manageDataset_iframe'   ).contentWindow.location.reload();
+	document.getElementById('panel_visualizeDataset_iframe').contentWindow.location.reload();
+	document.getElementById('panel_genome_iframe'          ).contentWindow.location.reload();
+	document.getElementById('panel_hapmap_iframe'          ).contentWindow.location.reload();
+	document.getElementById('panel_bugs_iframe'            ).contentWindow.location.reload();
+	document.getElementById('panel_help_iframe'            ).contentWindow.location.reload();
+	document.getElementById('panel_examples_iframe'        ).contentWindow.location.reload();
+}
 function update_interface_after_login() {
 	document.getElementById('panel_manageDataset_iframe'   ).contentWindow.location.reload();
 	document.getElementById('panel_visualizeDataset_iframe').contentWindow.location.reload();
