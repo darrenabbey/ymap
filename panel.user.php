@@ -1,6 +1,8 @@
 <?php
 	session_start();
 	if(!isset($_SESSION['logged_on'])){?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
+	require_once 'constants.php';
+	require_once 'sharedFunctions.php';
 ?>
 <style type="text/css">
 html * {

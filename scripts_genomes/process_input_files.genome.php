@@ -1,5 +1,7 @@
 <?php
 function process_input_files_genome($ext,$name,$genomePath,$key,$user,$genome,$output, $condensedLogOutput,$logOutput, $output_fileName) {
+require_once '../constants.php';
+require_once '../sharedFunctions.php';
 
 //$ext				= "zip";
 //$name				= "c_albicans_sc5314_version_a21-s02-m09-r10_chromosomes-fasta.zip";
