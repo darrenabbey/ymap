@@ -2,6 +2,7 @@
 	session_start();
 	if(!isset($_SESSION['logged_on'])) { echo "<script type=\"text/javascript\"> parent.reload(); </script>"; } else { $user = $_SESSION['user']; }
 	require_once 'constants.php';
+	require_once 'sharedFunctions.php';
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 ?>
 <html lang="en">

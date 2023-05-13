@@ -1,6 +1,7 @@
 <?php
 	session_start();
 	require_once 'constants.php';
+	require_once 'sharedFunctions.php';
 
 	if(isset($_SESSION['logged_on'])) {
 		$user == $_SESSION['user'];
