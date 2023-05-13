@@ -91,7 +91,7 @@
 				} else {
 					log_stuff("",$user,"","","","","LOGIN fail: wrong password.");
 					//password mismatch.
-					$_SESSION['error'] = "<font color=\"red\" size=\"2\"><b>ERROR: Input did not match a registered username & password combination.1</b></font><br>\n";
+					$_SESSION['error'] = "<font color=\"red\" size=\"2\"><b>ERROR: Input did not match a registered username & password combination.</b></font><br>\n";
 					$_SESSION['delay'] = 5;
 					echo "<font color=\"red\"><b>ERROR: Input did not match a registered username & password combination.</b></font><br>\n";
 					echo "(Main page will reload shortly...)<br>\n";
@@ -103,7 +103,7 @@
 				// error state.
 				log_stuff("",$user,"","","","","LOGIN fail: user account missing both locked.txt and active.txt files.");
 				//password mismatch.
-				$_SESSION['error'] = "<font color=\"red\" size=\"2\"><b>ERROR: Input did not match a registered username & password combination.2</b></font><br>\n";
+				$_SESSION['error'] = "<font color=\"red\" size=\"2\"><b>ERROR: Input did not match a registered username & password combination.</b></font><br>\n";
 				$_SESSION['delay'] = 5;
 				echo "<font color=\"red\"><b>ERROR: Input did not match a registered username & password combination.</b></font><br>\n";
 				echo "(Main page will reload shortly...)<br>\n";
@@ -114,7 +114,7 @@
 		} else {
 			log_stuff("",$user,"","","","","LOGIN fail: unregistered user.");
 			//User doesn't exist
-			$_SESSION['error'] = "<font color=\"red\" size=\"2\"><b>ERROR: Input did not match a registered username & password combination</b></font><br>\n";
+			$_SESSION['error'] = "<font color=\"red\" size=\"2\"><b>ERROR: Input did not match a registered username & password combination.</b></font><br>\n";
 			$_SESSION['delay'] = 5;
 			echo "<font color=\"red\"><b>ERROR: Input did not match a registered username & password combination.</b></font><br>\n";
 			echo "(Main page will reload shortly...)<br>\n";
