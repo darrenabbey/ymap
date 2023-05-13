@@ -51,9 +51,9 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 		$userCount = count($userFolders);
 
 		echo "<table width='100%'>";
-		echo "<tr><td width='20%'><font size='2'><b>User Account</b></font></td>";
-		echo     "<td style='text-align:center'><font size='2'><b>Approval Needed</b></font></td>";
-		echo     "<td style='text-align:center'><font size='2'><b>Account size</b>";
+		echo "<tr><td width='16%'><font size='2'><b>User Account</b></font></td>";
+		echo     "<td width='16%' style='text-align:center'><font size='2'><b>Approval Needed</b></font></td>";
+		echo     "<td width='16%' style='text-align:center'><font size='2'><b>Account size</b><br>";
 
 		// calculating user account size.
 		$userSizeStr = trim(shell_exec("du -sh " . "users/ | cut -f1"));
@@ -61,9 +61,9 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 		echo " (".$userSizeStr." total)";
 
 		echo     "</font></td>";
-		echo     "<td><font size='2'><b>User Name</b></font></td>";
-		echo     "<td><font size='2'><b>Email Address</b></font></td>";
-		echo     "<td><font size='2'><b>Institution</b></font></td>";
+		echo     "<td width='16%'><font size='2'><b>User Name</b></font></td>";
+		echo     "<td width='16%'><font size='2'><b>Email Address</b></font></td>";
+		echo     "<td width='16%'><font size='2'><b>Institution</b></font></td>";
 		echo "</tr>\n";
 		foreach($userFolders as $key=>$userFolder) {
 			echo "\t\t<tr><td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
@@ -71,10 +71,10 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 			echo "\t\t</td><td style='text-align:center'>\n";
 			if (!file_exists("users/".$userFolder."/super.txt")) {
 				if (file_exists("users/".$userFolder."/locked.txt")) {
-					echo "\t\t\t<input type='button' value='Approve' onclick=\"key = '$key'; $.ajax({url:'admin.approve_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});setTimeout(()=> {location.replace('panel.admin.php')},1000);\">\n";
-					echo "\t\t\t<input type='button' value='Delete'  onclick=\"key = '$key'; $.ajax({url:'admin.delete_server.php' ,type:'post',data:{key:key},success:function(answer){console.log(answer);}});setTimeout(()=> {location.replace('panel.admin.php')},1000);\">\n";
+					echo "\t\t\t<input type='button' value='Approve' onclick=\"key = '$key'; $.ajax({url:'admin.approve_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin.php')},500);\">\n";
+					echo "\t\t\t<input type='button' value='Delete'  onclick=\"key = '$key'; $.ajax({url:'admin.delete_server.php' ,type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin.php')},500);\">\n";
 				} else if (file_exists("users/".$userFolder."/active.txt") and ($userFolder != "default/")) {
-					echo "\t\t\t<input type='button' value='Lock user' onclick=\"key = '$key'; $.ajax({url:'admin.lockUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}})setTimeout(()=> {location.replace('panel.admin.php')},1000);\">\n";
+					echo "\t\t\t<input type='button' value='Lock user' onclick=\"key = '$key'; $.ajax({url:'admin.lockUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin.php')},500);\">\n";
 				}
 			} else {
 				echo "\t\t\t<font size='2'>[Admin]</font>\n";
