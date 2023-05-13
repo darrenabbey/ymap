@@ -54,6 +54,7 @@
 
 	// Only allow uploading to proceed if user quota is not exceeded.
 	if ($exceededSpace) {
+		// Attempts to force reload of user interface, but doesn't seem to work right.
 		echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tnparent.parent.update_interface();\n}\n";
 		echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 	} else {
