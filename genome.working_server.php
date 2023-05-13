@@ -98,7 +98,6 @@
 			$condensedLogEntry = $condensedLog[count($condensedLog)-1];
 			?>
 			<script type="text/javascript">
-			var user    = "<?php echo $user; ?>";
 			var genome  = "<?php echo $genome; ?>";
 			var key     = "<?php echo $key; ?>";
 			var status  = "<?php echo $status; ?>";
@@ -112,11 +111,6 @@
 				echo "\t\tinput2.setAttribute('type','hidden');\n";
 				echo "\t\tinput2.setAttribute('name','key');\n";
 				echo "\t\tinput2.setAttribute('value',key);\n";
-				echo "\t\tautoSubmitForm.appendChild(input2);\n";
-				echo "\tvar input2 = document.createElement('input');\n";
-				echo "\t\tinput2.setAttribute('type','hidden');\n";
-				echo "\t\tinput2.setAttribute('name','user');\n";
-				echo "\t\tinput2.setAttribute('value',user);\n";
 				echo "\t\tautoSubmitForm.appendChild(input2);\n";
 				echo "\tvar input3 = document.createElement('input');\n";
 				echo "\t\tinput3.setAttribute('type','hidden');\n";
