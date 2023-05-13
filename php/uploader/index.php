@@ -51,8 +51,10 @@
 	if ($quota_ > $quota) { $quota = $quota_; }
 	// Setting boolean variable that will indicate whether the user has exceeded it's allocated space.
 	$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
+
+	// Only allow uploading to proceed if user quota is not exceeded.
 	if ($exceededSpace) {
-		echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tnparent.update_interface();\n}\n";
+		echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tnparent.parent.update_interface();\n}\n";
 		echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 	} else {
 		//============================================================================
@@ -61,7 +63,6 @@
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// non-MySQL version.
 		//----------------------------------------------------------------------------
-		// Only allow uploading to proceed if user quota is not exceeded.
 		require('UploadHandler.php');
 		$upload_handler = new UploadHandler($target_dir);
 	}
