@@ -52,6 +52,11 @@
 	// Setting boolean variable that will indicate whether the user has exceeded it's allocated space.
 	$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
 
+	//troubleshooting log output:
+	$myfile = "../../users/".$user."/projects/".$project."/newfile.txt";
+	$txt    = "[currentSize = ".$currentSize."]\n"."[quota = ".$quota."]\n"."[exceededSpace = ".$exceededSpace."]\n";
+	file_put_contents($myfile, $txt);
+
 	// Only allow uploading to proceed if user quota is not exceeded.
 	if ($exceededSpace) {
 		// Attempts to force reload of user interface, but doesn't seem to work right.

@@ -1,5 +1,6 @@
 <?php
 	// Pipeline componant location constants.
+	$ymap_root    = getcwd()."/";
 	$users_dir    = "users/";
 	$hapmapGenome = "C_albicans_SC5314_version_A21-s02-m03-r03";
 
