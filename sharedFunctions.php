@@ -1,6 +1,7 @@
 <?php
 // return the current size in GB of the user folder
 function getUserUsageSize($userName) {
+	$ymap_root    = getcwd()."/";
 	// Gets total volume of completed projects and genomes...?
 //	// get all finished folders concatenated in one line in order to call du
 //	$finishedFolders = shell_exec("find "."users/".$userName."/  -type f -iname 'complete.txt' | sed -e \"s/complete.txt//g\" | tr '\n' ' ' ");
@@ -16,6 +17,7 @@ function getUserUsageSize($userName) {
 
 // return the size of the user quota in GB
 function getUserQuota($userName) {
+	$ymap_root    = getcwd()."/";
 	// load hardcoded quota from constants
 	require('constants.php');
 	// check if user has a personal quota if so overriding quota
@@ -29,6 +31,7 @@ function getUserQuota($userName) {
 
 // YMAP logging function.
 function log_stuff($where,$user,$project,$hapmap,$genome,$filename,$message) {
+	$ymap_root    = getcwd()."/";
 	// define log file.
 	$log_file = $ymap_root."logs/".date('Y-m-d')."_activity.log";
 
