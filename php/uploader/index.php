@@ -45,21 +45,22 @@
 	// Check if user has exceeded quota.
 	//----------------------------------
 	// getting the current size of the user folder in Gigabytes
-	$currentSize = getUserUsageSize($user);
+	$currentSize = shell_exec("du -scm ../../users/".$user."/ | awk 'END{print $1}'") / (1000);
 	// getting user quota in Gigabytes
 	$quota_ = getUserQuota($user);
 	if ($quota_ > $quota) { $quota = $quota_; }
 	// Setting boolean variable that will indicate whether the user has exceeded it's allocated space.
 	$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
 
-	//troubleshooting log output:
-	$myfile = "../../users/".$user."/projects/".$project."/newfile.txt";
-	$txt    = "[currentSize = ".$currentSize."]\n"."[quota = ".$quota."]\n"."[exceededSpace = ".$exceededSpace."]\n";
-	file_put_contents($myfile, $txt);
+//	//troubleshooting log output:
+//	$myfile = "../../users/".$user."/projects/".$project."/newfile.txt";
+//	$txt    = "[currentSize = ".$currentSize."]\n"."[quota = ".$quota."]\n"."[exceededSpace = ".$exceededSpace."]\n";
+//	file_put_contents($myfile, $txt);
 
 	// Only allow uploading to proceed if user quota is not exceeded.
 	if ($exceededSpace) {
-		// Attempts to force reload of user interface, but doesn't seem to work right.
+		// Successfully interrupts file upload when quota space is exceeded.
+		// Attempts to force reload of user interface, but doesn't work right.
 		echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tnparent.parent.update_interface();\n}\n";
 		echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 	} else {
