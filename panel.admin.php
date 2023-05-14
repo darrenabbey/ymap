@@ -42,7 +42,7 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 	//'---------------'
 	if (($admin_logged_in == "true") and isset($_SESSION['logged_on'])) {
 		$userDir      = "users/";
-		$userFolders  = array_diff(glob($userDir."*\/"), array('..', '.'));
+		$userFolders  = array_diff(glob($userDir."*\/"), array('..', '.', 'users/default/'));
 		// Sort directories by date, newest first.
 		array_multisort($userFolders, SORT_ASC, $userFolders);
 		// Trim path from each folder string.
