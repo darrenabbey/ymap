@@ -21,7 +21,7 @@
 		// not an admin account, redirect to login page.
 		$admin_logged_in = "false";
 		session_destroy();
-		log_stuff("",$user,"","","","","CREDENTIAL fail: user attempted to use admin function to copy project to default!");
+		log_stuff($user,"","","","","CREDENTIAL fail: user attempted to use admin function to copy project to default!");
 		header('Location: .');
 	}
 
@@ -47,9 +47,9 @@
 
 	// Copy from source project directory to destination project directory.
 	if (file_exists($dest)) {
-		log_stuff("",$user,"","",$project_to_copy,"","ADMIN fail: attempted to copy project to default user, but project name is already in use.");
+		log_stuff($user,"","",$project_to_copy,"","ADMIN fail: attempted to copy project to default user, but project name is already in use.");
 	} else {
-		log_stuff("",$user,"","",$project_to_copy,"","ADMIN success: copied project to default user.");
+		log_stuff($user,"","",$project_to_copy,"","ADMIN success: copied project to default user.");
 		mkdir($dest, 0777, true);
 		foreach (scandir($src) as $file) {
 			if (!is_readable($src . '/' . $file)) continue;

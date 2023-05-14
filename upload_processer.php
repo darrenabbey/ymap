@@ -33,7 +33,7 @@
 		// Confirm if requested project exists.
 		$project_dir = "users/".$user."/projects/".$project;
 		if (!is_dir($project_dir)) {
-			log_stuff("",$user,$project,"","",$project_dir,"UPLOAD fail: user attempted to upload to non-existent project!");
+			log_stuff($user,$project,"","",$project_dir,"UPLOAD fail: user attempted to upload to non-existent project!");
 			// Should never happen: Force logout.
 			session_destroy();
 			header('Location: .');
@@ -52,9 +52,9 @@
 			// rebuilt corrected filename string.
 			$fileName       = $fileName1.",".$fileName2;
 			if (!file_exists($project_dir."/".$fileName1) or !file_exists($project_dir."/".$fileName2)) {
-				log_stuff("",$user,$project,"","",$project_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file[2]!");
-				log_stuff("",$user,$project,"","","","1: ".$fileName1);
-				log_stuff("",$user,$project,"","","","2: ".$fileName2);
+				log_stuff($user,$project,"","",$project_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file[2]!");
+				log_stuff($user,$project,"","","","1: ".$fileName1);
+				log_stuff($user,$project,"","","","2: ".$fileName2);
 				// Should never happen: Force logout.
 				session_destroy();
 				header('Location: .');
@@ -62,7 +62,7 @@
 		} else {
 			// One filename.
 			if (!file_exists($project_dir."/".$fileName)) {
-				log_stuff("",$user,$project,"","",$project_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file!");
+				log_stuff($user,$project,"","",$project_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file!");
 				// Should never happen: Force logout.
 				session_destroy();
 				header('Location: .');
@@ -72,7 +72,7 @@
 		// Confirm if requested genome exists.
 		$genome_dir = "users/".$user."/genomes/".$genome;
 		if (!is_dir($genome_dir)) {
-			log_stuff("",$user,"","",$genome,$genome_dir,"UPLOAD fail: user attempted to upload to non-existent genome!");
+			log_stuff($user,"","",$genome,$genome_dir,"UPLOAD fail: user attempted to upload to non-existent genome!");
 			// Should never happen: Force logout.
 			session_destroy();
 			header('Location: .');
@@ -80,22 +80,22 @@
 
 		// Confirm if requested file exists in genome.
 		if (!file_exists($genome_dir."/".$fileName)) {
-			log_stuff("",$user,"","",$genome,$genome_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file!");
+			log_stuff($user,"","",$genome,$genome_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file!");
 			// Should never happen: Force logout.
 			session_destroy();
 			header('Location: .');
 		}
 	} else {
-		log_stuff("../../",$user,"","","","","UPLOAD fail: null genome & project strings!");
+		log_stuff($user,"","","","","UPLOAD fail: null genome & project strings!");
 		// No genome or project, should never happen: Force logout.
 		session_destroy();
 		header('Location: .');
 	}
 
 	if ($project != "") {
-		log_stuff("",$user,$project,"","",$project_dir."/".$fileName,"UPLOAD success: initial project file location checks pass.");
+		log_stuff($user,$project,"","",$project_dir."/".$fileName,"UPLOAD success: initial project file location checks pass.");
 	} else if ($genome != "") {
-		log_stuff("",$user,"","",$genome,$genome_dir."/".$fileName,"UPLOAD success: initial genome file location checks pass.");
+		log_stuff($user,"","",$genome,$genome_dir."/".$fileName,"UPLOAD success: initial genome file location checks pass.");
 	}
 
 	// set session variables.

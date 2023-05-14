@@ -26,7 +26,6 @@ if ($admin_logged_in == "true") {
 	echo "Your account has been provided with administrator priviledges.";
 } else {
 	echo "Your account has not been provided with administrator priviledges.<br>";
-	log_stuff("",$user,"","","","","CREDENTIAL fail: user attempted to access admin panel?");
 }
 ?>
 </font>

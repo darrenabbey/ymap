@@ -21,7 +21,7 @@
 		// not an admin account, redirect to login page.
 		$admin_logged_in = "false";
 		session_destroy();
-		log_stuff("",$user,"","","","","CREDENTIAL fail: user attempted to use admin function to clean project!");
+		log_stuff($user,"","","","","CREDENTIAL fail: user attempted to use admin function to clean project!");
 		header('Location: .');
 	}
 

@@ -155,7 +155,7 @@
 		$system_call_string = "sh hapmap.install_4.sh ".$user." ".$referencePloidy." ".$project1." ".$project2." ".$hapmap." > /dev/null &";
 		system($system_call_string);
 
-		log_stuff("../../",$user,"",$hapmap,"","","H:CREATE success");
+		log_stuff($user,"",$hapmap,"","","H:CREATE success");
 ?>
 <script type="text/javascript">
 	var el3 = parent.document.getElementById('Hidden_GenerateNewHapmap');

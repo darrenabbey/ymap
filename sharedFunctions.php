@@ -30,7 +30,7 @@ function getUserQuota($userName) {
 }
 
 // YMAP logging function.
-function log_stuff($where,$user,$project,$hapmap,$genome,$filename,$message) {
+function log_stuff($user,$project,$hapmap,$genome,$filename,$message) {
 	$ymap_root    = getcwd()."/";
 	// define log file.
 	$log_file = $ymap_root."logs/".date('Y-m-d')."_activity.log";

@@ -58,7 +58,7 @@
 
 			// Check if user account is locked.
 			if (file_exists("users/".$user."/locked.txt")) {
-				log_stuff("",$user,"","","","","LOGIN fail: locked account.");
+				log_stuff($user,"","","","","LOGIN fail: locked account.");
 				// Account is locked pending admin approval.
 				$_SESSION['error'] = "<font color=\"red\"><b>ERROR: Account is temporarily locked pending admin approval.</b></font><br>\n";
 				$_SESSION['delay'] = 5;
@@ -80,7 +80,7 @@
 				// Compare peppered input password to stored hash.
 				$checked = password_verify($pw_in.$pepper, $pw_stored_hash);
 				if ($checked) {
-					log_stuff("",$user,"","","","","LOGIN success: logged in.");
+					log_stuff($user,"","","","","LOGIN success: logged in.");
 					$_SESSION['logged_on'] = 1;
 					$_SESSION['user']      = $user;
 					echo "<font color=\"green\"><b>SUCCESS: User is now logged in.</b></font><br>\n";
@@ -89,7 +89,7 @@
 					echo "var intervalID = window.setInterval(reload_page, ".$delay_interval.");\n</script>\n";
 					$login_success = 1;
 				} else {
-					log_stuff("",$user,"","","","","LOGIN fail: wrong password.");
+					log_stuff($user,"","","","","LOGIN fail: wrong password.");
 					//password mismatch.
 					$_SESSION['error'] = "<font color=\"red\" size=\"2\"><b>ERROR: Input did not match a registered username & password combination.</b></font><br>\n";
 					$_SESSION['delay'] = 5;
@@ -101,7 +101,7 @@
 				}
 			} else {
 				// error state.
-				log_stuff("",$user,"","","","","LOGIN fail: user account missing both locked.txt and active.txt files.");
+				log_stuff($user,"","","","","LOGIN fail: user account missing both locked.txt and active.txt files.");
 				//password mismatch.
 				$_SESSION['error'] = "<font color=\"red\" size=\"2\"><b>ERROR: Input did not match a registered username & password combination.</b></font><br>\n";
 				$_SESSION['delay'] = 5;
@@ -112,7 +112,7 @@
 				$login_success = 0;
 			}
 		} else {
-			log_stuff("",$user,"","","","","LOGIN fail: unregistered user.");
+			log_stuff($user,"","","","","LOGIN fail: unregistered user.");
 			//User doesn't exist
 			$_SESSION['error'] = "<font color=\"red\" size=\"2\"><b>ERROR: Input did not match a registered username & password combination.</b></font><br>\n";
 			$_SESSION['delay'] = 5;

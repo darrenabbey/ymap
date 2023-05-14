@@ -36,7 +36,7 @@
 		// Directory already exists
 		echo "Genome '".$genome."' directory already exists.";
 
-		log_stuff("",$user,"","",$genome,"","genome:CREATE failure");
+		log_stuff($user,"","",$genome,"","genome:CREATE failure");
 ?>
 	<html>
 	<body>
@@ -67,7 +67,7 @@
 
 		$_SESSION['pending_install_genome_count'] += 1;
 
-		log_stuff("",$user,"","",$genome,"","genome:CREATE success");
+		log_stuff($user,"","",$genome,"","genome:CREATE success");
 ?>
 	<html>
 	<body>

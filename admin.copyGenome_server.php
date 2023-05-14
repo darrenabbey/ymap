@@ -21,7 +21,7 @@
 		// not an admin account, redirect to login page.
 		$admin_logged_in = "false";
 		session_destroy();
-		log_stuff("",$user,"","","","","CREDENTIAL fail: user attempted to use admin function to copy genome to default!");
+		log_stuff($user,"","","","","CREDENTIAL fail: user attempted to use admin function to copy genome to default!");
 		header('Location: .');
 	}
 
@@ -47,9 +47,9 @@
 
 	// Copy from source genome directory to destination genome directory.
 	if (file_exists($dest)) {
-		log_stuff("",$user,"","",$genome_to_copy,"","ADMIN fail: attempted to copy genome to default user, but genome name is already in use.");
+		log_stuff($user,"","",$genome_to_copy,"","ADMIN fail: attempted to copy genome to default user, but genome name is already in use.");
 	} else {
-		log_stuff("",$user,"","",$genome_to_copy,"","ADMIN success: copied genome to default user.");
+		log_stuff($user,"","",$genome_to_copy,"","ADMIN success: copied genome to default user.");
 		mkdir($dest, 0777, true);
 		foreach (scandir($src) as $file) {
 			if (!is_readable($src . '/' . $file)) continue;

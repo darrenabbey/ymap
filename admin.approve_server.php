@@ -20,7 +20,7 @@
 	} else {
 		$admin_logged_in = "false";
 		session_destroy();
-		log_stuff("",$user,"","","","","CREDENTIAL fail: user attempted to use admin function to approve new user!");
+		log_stuff($user,"","","","","CREDENTIAL fail: user attempted to use admin function to approve new user!");
 		header('Location: .');
 	}
 

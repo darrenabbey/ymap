@@ -290,7 +290,7 @@ if ($ext_new == "fastq") {
 	fwrite($errorFile, "Error : FASTA file uploaded as input. Upload FASTQ, or ZIP or GZ archives.");
 	fclose($errorFile);
 	chmod($errorFileName,0755);
-	log_stuff("../",$user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTA file not accepted.");
+	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTA file not accepted.");
 	exit;
 } else if (($ext_new == "sam") || ($ext_new == "bam")) {
 	fwrite($logOutput, "\t\t| This is a SAM/BAM file.\n");
@@ -342,7 +342,7 @@ if ($ext_new == "fastq") {
 	fwrite($errorFile, "Error : Archive did not contain FASTQ file.");
 	fclose($errorFile);
 	chmod($errorFileName,0755);
-	log_stuff("../",$user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTQ not found in archive.");
+	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTQ not found in archive.");
 	exit;
 } elseif ($ext_new == "none2") {
         fwrite($logOutput, "\t\t| The FASTQ file was not formated properly.\n");
@@ -350,7 +350,7 @@ if ($ext_new == "fastq") {
         fwrite($errorFile, "Error : FASTQ file formatting improperly.");
         fclose($errorFile);
         chmod($errorFileName,0755);
-	log_stuff("../",$user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTQ file format errors.");
+	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTQ file format errors.");
         exit;
 } elseif ($ext_new == "none3") {
 	fwrite($logOutput, "\t\t| The contents of this TDT file did not match expectations.\n");
@@ -358,7 +358,7 @@ if ($ext_new == "fastq") {
 	fwrite($errorFile, "Error : TDT file contents did not match expectations.");
 	fclose($errorFile);
 	chmod($errorFileName,0755);
-	log_stuff("../",$user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: TDT file format errors.");
+	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: TDT file format errors.");
 	exit;
 } else {
 	fwrite($logOutput, "\t\t| This is an unknown file type.\n");
@@ -366,7 +366,7 @@ if ($ext_new == "fastq") {
 	fwrite($errorFile, "Error : Unknown file type as input.\nSee help tab for details of valid file types.");
 	fclose($errorFile);
 	chmod($errorFileName,0755);
-	log_stuff("../",$user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: Unknown file format.");
+	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: Unknown file format.");
 	exit;
 }
 

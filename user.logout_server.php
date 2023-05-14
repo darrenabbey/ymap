@@ -4,7 +4,7 @@ require_once 'constants.php';
 require_once 'sharedFunctions.php';
 
 $user = $_SESSION['user'];
-log_stuff("",$user,"","","","","LOGOUT success");
+log_stuff($user,"","","","","LOGOUT success");
 
 session_destroy();
 ?>
