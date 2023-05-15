@@ -30,7 +30,7 @@
 
 	// Determine user account associated with key.
 	$userDir      = "users/";
-	$userFolders  = array_diff(glob($userDir."*\/"), array('..', '.'));
+	$userFolders  = array_diff(glob($userDir."*\/"), array('..', '.', 'users/default/'));
 	// Sort directories by date, newest first.
 	array_multisort($userFolders, SORT_ASC, $userFolders);
 	// Trim path from each folder string.
