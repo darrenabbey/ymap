@@ -7,7 +7,7 @@
         ini_set('display_errors', 1);
 
         // If the user is not logged on, redirect to login page.
-        if(!isset($_SESSION['logged_on'])){
+        if(!isset($_SESSION['logged_on'])) {
 		session_destroy();
                 header('Location: .');
         }
@@ -31,7 +31,7 @@
 
 	// Determine user account associated with key.
 	$genomeDir      = "users/".$user."/genomes/";
-	$genomeFolders  = array_diff(glob($genomeDir."*\/"), array('..', '.'));
+	$genomeFolders  = array_diff(glob($genomeDir."*\/"), array('..', '.', 'users/default/'));
 
 	// Sort directories by date, newest first.
 	array_multisort($genomeFolders, SORT_ASC, $genomeFolders);
