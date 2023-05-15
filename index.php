@@ -202,10 +202,16 @@ if (file_exists($super_user_flag_file)) {
 
 // If user is admin, show the "Admin" tab in the user interface.
 if ($admin == "true") {
-	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin" ';
-	echo 'onclick="tabWindow(\'admin\');"           >Admin</td>';
+	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin1" ';
+	echo 'onclick="tabWindow(\'admin1\');"          >Admin1</td>';
+	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin2" ';
+	echo 'onclick="tabWindow(\'admin2\');"          >Admin2</td>';
+	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin3" ';
+	echo 'onclick="tabWindow(\'admin3\');"          >Admin3</td>';
 } else {
-	echo '<div id="tab_admin" style="visibility:hidden;"></div>';
+	echo '<div id="tab_admin1" style="visibility:hidden;"></div>';
+	echo '<div id="tab_admin2" style="visibility:hidden;"></div>';
+	echo '<div id="tab_admin3" style="visibility:hidden;"></div>';
 }
 ?>
 
@@ -214,7 +220,7 @@ if ($admin == "true") {
 <tr>
 	<?php
 		// $number_cols in the next line should be the number of tabs+1.
-		$number_cols = 9;
+		$number_cols = 12;
 		// If admin user, then one further column will be displayed.
 		if ($admin == "true") {
 			$number_cols += 1;
@@ -229,7 +235,9 @@ if ($admin == "true") {
 	<div id="panel_bugs"             name="panel_bugs"             style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
 	<div id="panel_help"             name="panel_help"             style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
 	<div id="panel_examples"         name="panel_examples"         style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
-	<div id="panel_admin"            name="panel_admin"            style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
+	<div id="panel_admin1"           name="panel_admin1"           style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
+	<div id="panel_admin2"           name="panel_admin2"           style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
+	<div id="panel_admin3"           name="panel_admin3"           style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
 	</td>
 </tr></table>
 <!--                                               --!>
@@ -246,7 +254,9 @@ p_hapmap                     = document.getElementById('panel_hapmap');
 p_bugs                       = document.getElementById('panel_bugs');
 p_help                       = document.getElementById('panel_help');
 p_examples                   = document.getElementById('panel_examples');
-p_admin                      = document.getElementById('panel_admin');
+p_admin1                     = document.getElementById('panel_admin1');
+p_admin2                     = document.getElementById('panel_admin2');
+p_admin3                     = document.getElementById('panel_admin3');
 p_user.innerHTML             = '<iframe id="panel_user_iframe"             src="panel.user.php"             style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
 p_manageDataset.innerHTML    = '<iframe id="panel_manageDataset_iframe"    src="panel.manageDataset.php"    style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
 p_visualizeDataset.innerHTML = '<iframe id="panel_visualizeDataset_iframe" src="panel.visualizeDataset.php" style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
@@ -255,16 +265,18 @@ p_hapmap.innerHTML           = '<iframe id="panel_hapmap_iframe"           src="
 p_bugs.innerHTML             = '<iframe id="panel_bugs_iframe"             src="panel.bugs.php"             style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
 p_help.innerHTML             = '<iframe id="panel_help_iframe"             src="panel.help.php"             style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
 p_examples.innerHTML         = '<iframe id="panel_examples_iframe"         src="panel.examples.php"         style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
-p_admin.innerHTML            = '<iframe id="panel_admin_iframe"            src="panel.admin.php"            style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>;">';
+p_admin1.innerHTML           = '<iframe id="panel_admin1_iframe"           src="panel.admin1.php"           style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
+p_admin2.innerHTML           = '<iframe id="panel_admin2_iframe"           src="panel.admin2.php"           style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
+p_admin3.innerHTML           = '<iframe id="panel_admin3_iframe"           src="panel.admin3.php"           style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>;">';
 
 function deselect_tab(name) {
 	//console.log( '\tdeselect_tab("'+name+'")' );
 	var current_tab = document.getElementById("tab_"+name);
 	current_tab.style.border="1px solid #000000";
-	if (name != "admin") {
-		current_tab.style.backgroundColor="#DDDDDD";
-	} else {
+	if ((name == "admin1") || (name == "admin2") || (name == "admin3")) {
 		current_tab.style.backgroundColor="#DDBBBB";
+	} else {
+		current_tab.style.backgroundColor="#DDDDDD";
 	}
 	if (name != "user") {
 		current_tab.style.borderLeft="none";
@@ -281,17 +293,19 @@ function deselect_all_tabs() {
 	deselect_tab("bugs");
 	deselect_tab("help");
 	deselect_tab("examples");
-	deselect_tab("admin");
+	deselect_tab("admin1");
+	deselect_tab("admin2");
+	deselect_tab("admin3");
 }
 function select_tab(name) {
 	//console.log ( 'select_tab("'+name+'")' );
 	var current_tab = document.getElementById("tab_"+name);
 	current_tab.style.border="1px solid #000000";
 	current_tab.style.borderBottom="none";
-	if (name != "admin") {
-		current_tab.style.backgroundColor="#FFFFFF";
-	} else {
+	if ((name == "admin1") || (name == "admin2") || (name == "admin3")) {
 		current_tab.style.backgroundColor="#FFDDDD";
+	} else {
+		current_tab.style.backgroundColor="#FFFFFF";
 	}
 	if (name != "user") {
 		current_tab.style.borderLeft="none";
@@ -331,12 +345,14 @@ function blank_and_content_tab() {
 		newImg.document.close();
 	}
 	function openProject(user,project,key,projectName,color1,color2,parent) {
-		var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
-		var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
+		var visualize_iframe          = document.getElementById('panel_visualizeDataset_iframe');
+		var admin_visualize_iframe    = document.getElementById('panel_admin3_iframe');
+		var show_button_element       = visualize_iframe.contentDocument.getElementById("show_"+key);
+		var admin_show_button_element = admin_visualize_iframe.contentDocument.getElementById("admin_show_"+key);
 		closeProject_viewOnly(key);
 		console.log('#     parent.openProject : "'+user+':'+project+':'+key+':'+projectName+'"');
 
-		if (show_button_element.checked == false) {
+		if ((show_button_element.checked == false) && (admin_show_button_element.checked == false)) {
 			closeProject(user,project,key,projectName,color1,color2,parent);
 		} else {
 			var file_list   = JSON.parse(show_button_element.getAttribute('data-file-list'));
@@ -550,8 +566,10 @@ function blank_and_content_tab() {
 		}
 	}
 	function closeProject(user,project,key,projectName,color1,color2,parent) {
-		var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
-        var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
+		var visualize_iframe          = document.getElementById('panel_visualizeDataset_iframe');
+		var admin_visualize_iframe    = document.getElementById('panel_admin3_iframe');
+		var show_button_element       = visualize_iframe.contentDocument.getElementById("show_"+key);
+		var admin_show_button_element = visualize_iframe.contentDocument.getElementById("admin_show_"+key);
 		if (show_button_element) {
 			show_button_element.checked = false;
 		}
@@ -791,7 +809,7 @@ function restore_shown_figures() {
 			console.log("#: Opening projects shown before page reload.");
 			for (var i=0;i<projectsShown_entries.length; i++) {
 				var currentProject = projectsShown_entries[i];
-				console.log('#:    currentProject = '+currentProject);
+				console.log('#:    Project '+i+' = '+currentProject);
 				if (currentProject != '') {
 					var entry_parts    = currentProject.split(':');
 
