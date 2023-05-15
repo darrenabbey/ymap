@@ -45,7 +45,7 @@
 		// Requested user does exist: Generate new locked.txt file for user.
 		$lockFile = $dir."locked.txt";
 		$lock = fopen($lockFile, "w");
-		fwrite($lock, "");
+		fwrite($lock, "locked");
 		fclose($lock);
 
 		// Requested user does exist: Delete active.txt file for user.
