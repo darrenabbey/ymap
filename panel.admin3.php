@@ -82,6 +82,7 @@
 		array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
 		// Trim path from each folder string.
 		foreach($projectFolders as $key=>$folder) {   $projectFolders[$key] = str_replace($projectsDir,"",$folder);   }
+		$projectFolders = array_diff($projectFolders, array('index.php'));
 		// Split project list into ready/working/starting lists for sequential display.
 		$projectFolders_complete       = array();
 		$projectFolders_working        = array();
@@ -106,35 +107,17 @@
 		$projectFolders   = array_merge($projectFolders_starting, $projectFolders_working, $projectFolders_complete);
 		$userProjectCount = count($projectFolders);
 
-		$admin_projectsDir      = "users/".$_user."/projects/";
-		$admin_projectFolders   = array_diff(glob($projectsDir."*"), array('..', '.'));
-		// Sort directories by date, newest first.
-		array_multisort(array_map('filemtime', $admin_projectFolders), SORT_DESC, $admin_projectFolders);
-		// Trim path from each folder string.
-		foreach($admin_projectFolders as $key=>$folder) {   $admin_projectFolders[$key] = str_replace($admin_projectsDir,"",$folder);   }
-		// Split project list into ready/working/starting lists for sequential display.
-		$admin_projectFolders_complete = array();
-		$admin_projectFolders_working  = array();
-		$admin_projectFolders_starting = array();
-		foreach($projectFolders as $key=>$project) {
-			if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
-				array_push($admin_projectFolders_complete,$project);
-			} else if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
-				array_push($admin_projectFolders_working, $project);
-			} else if (is_dir("users/".$user."/projects/".$project)) {
-				array_push($admin_projectFolders_starting,$project);
-			}
-		}
-		$admin_projectCount_starting = count($admin_projectFolders_starting);
-		$admin_projectCount_working  = count($admin_projectFolders_working);
-		$admin_projectCount_complete = count($admin_projectFolders_complete);
-		// Sort complete and working projects alphabetically.
-		array_multisort($admin_projectFolders_working,  SORT_ASC, $admin_projectFolders_working);
-		array_multisort($admin_projectFolders_complete, SORT_ASC, $admin_projectFolders_complete);
-		// Build new 'projectFolders' array;
-		$admin_projectFolders   = array();
-		$admin_projectFolders   = array_merge($admin_projectFolders_starting, $admin_projectFolders_working, $admin_projectFolders_complete);
-		$admin_projectCount = count($admin_projectFolders);
+		$default_projectsDir    = "users/default/projects/";
+		$default_projectFolders = array_diff(glob($default_projectsDir."*"), array('..', '.'));
+		foreach($default_projectFolders as $key=>$folder) { $default_projectFolders[$key] = str_replace($default_projectsDir,"",$folder); }
+		$default_projectFolders = array_diff($default_projectFolders, array('index.php'));
+		$defaultProjectCount    = count($default_projectFolders);
+
+		$admin_projectsDir      = "users/".$user."/projects/";
+		$admin_projectFolders   = array_diff(glob($admin_projectsDir."*"), array('..', '.'));
+		foreach($admin_projectFolders as $key=>$folder) { $admin_projectFolders[$key] = str_replace($admin_projectsDir,"",$folder); }
+		$admin_projectFolders   = array_diff($admin_projectFolders, array('index.php'));
+		$adminProjectCount      = count($admin_projectFolders);
 
 		echo "<b><font size='2'>User installed datasets:</font></b>\n\t\t";
 		echo "<br>\n\t\t";
@@ -175,25 +158,23 @@
 				$parentString         = trim(fgets($handle));
 				fclose($handle);
 				$key       = $key_;
-				$admin_key = $key_ + $admin_projectCount;
-				echo "<span id='p_label_".$admin_key."' style='color:#CC0000;'>\n\t\t";
+				echo "<span id='p_label_".$key."_admin' style='color:#CC0000;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
-				echo "<input id='show_".$admin_key."' type='checkbox' onclick=\"parent.openProject('".$admin_as_user."','".$project."','".$admin_key."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
+				echo "<input id='show_".$key."_admin' type='checkbox' onclick=\"parent.openProject('".$admin_as_user."','".$project."','".$key."_admin','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
 				echo "\n\t\t".$projectNameString."</font></span>\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
-				echo "<div id='frameContainer.p2_".$admin_key."'></div>";
+				echo "<div id='frameContainer.p2_".$key."_admin'></div>";
 			} else {
 				// an error has happened.
 				$key = $key_;
-				$admin_key = $key_ + $admin_projectCount;
-				echo "<span id='p_label_".$admin_key."' style='color:#888888;'>\n\t\t";
+				echo "<span id='p_label_".$key."_admin' style='color:#888888;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
-				echo "<input id='show_".$admin_key."' type='checkbox'>";
+				echo "<input id='show_".$key."_admin' type='checkbox'>";
 				echo "\n\t\t".$project."</font></span>\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
-				echo "<div id='frameContainer.p2_".$admin_key."'></div>";
+				echo "<div id='frameContainer.p2_".$key."_admin'></div>";
 			}
 		}
 		foreach($projectFolders_working as $key_=>$project) {
@@ -232,25 +213,23 @@
 				$parentString         = trim(fgets($handle));
 				fclose($handle);
 				$key = $key_ + $userProjectCount_starting;
-				$admin_key = $key_ + $userProjectCount_starting + $admin_projectCount;
-				echo "<span id='p_label_".$admin_key."' style='color:#BB9900;'>\n\t\t";
+				echo "<span id='p_label_".$key."_admin' style='color:#BB9900;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
-				echo "<input  id='show_".$admin_key."' type='checkbox' onclick=\"parent.openProject('".$admin_as_user."','".$project."','".$admin_key."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
+				echo "<input  id='show_".$key."_admin' type='checkbox' onclick=\"parent.openProject('".$admin_as_user."','".$project."','".$key."_admin','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
 				echo "\n\t\t".$projectNameString."</font></span>\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
-				echo "<div id='frameContainer.p2_".$admin_key."'></div>";
+				echo "<div id='frameContainer.p2_".$key."_admin'></div>";
 			} else {
 				// an error has happend.
 				$key = $key_ + $userProjectCount_starting;
-				$admin_key = $key_ + $userProjectCount_starting + $admin_projectCount;
-				echo "<span id='p_label_".$admin_key."' style='color:#888888;'>\n\t\t";
+				echo "<span id='p_label_".$key."_admin' style='color:#888888;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
-				echo "<input  id='show_".$admin_key."' type='checkbox'>";
+				echo "<input  id='show_".$key."_admin' type='checkbox'>";
 				echo "\n\t\t".$project."</font></span>\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
-				echo "<div id='frameContainer.p2_".$admin_key."'></div>";
+				echo "<div id='frameContainer.p2_".$key."_admin'></div>";
 			}
 		}
 		foreach($projectFolders_complete as $key_=>$project) {
@@ -291,25 +270,23 @@
 				$parentString         = trim(fgets($handle));
 				fclose($handle);
 				$key = $key_ + $userProjectCount_starting + $userProjectCount_working;
-				$admin_key = $key_ + $userProjectCount_starting + $userProjectCount_working + $admin_projectCount;
-				echo "<span id='project_label_".$admin_key."' style='color:#00AA00;'>\n\t\t";
+				echo "<span id='project_label_".$key."_admin' style='color:#00AA00;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
-				echo "<input  id='show_".$admin_key."' type='checkbox' onclick=\"parent.openProject('$admin_as_user','$project','$admin_key','$projectNameString','$colorString1','$colorString2','$parentString'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
+				echo "<input  id='show_".$key."_admin' type='checkbox' onclick=\"parent.openProject('".$admin_as_user."','".$project."','".$key."_admin','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
 				echo "\n\t\t".$projectNameString."</font></span>\n\t\t";
 				echo "<span id='p2_".$project."_delete'></span><span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
-				echo "<div id='frameContainer.p1_".$admin_key."'></div>";
+				echo "<div id='frameContainer.p1_".$key."_admin'></div>";
 			} else {
 				// an error has happened;
 				$key = $key_ + $userProjectCount_starting;
-				$admin_key = $key_ + $userProjectCount_starting + $userProjectCount_working + $admin_projectCount;
-				echo "<span id='p_label_".$admin_key."' style='color:#888888;'>\n\t\t";
+				echo "<span id='p_label_".$key."_admin' style='color:#888888;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
-				echo "<input  id='show_".$admin_key."' type='checkbox'>";
+				echo "<input  id='show_".$key."_admin' type='checkbox'>";
 				echo "\n\t\t".$project."</font></span>\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
-				echo "<div id='frameContainer.p2_".$admin_key."'></div>";
+				echo "<div id='frameContainer.p2_".$ key."_admin'></div>";
 			}
 		}
 	} else {

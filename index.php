@@ -345,14 +345,17 @@ function blank_and_content_tab() {
 		newImg.document.close();
 	}
 	function openProject(user,project,key,projectName,color1,color2,parent) {
-		var visualize_iframe          = document.getElementById('panel_visualizeDataset_iframe');
-		var admin_visualize_iframe    = document.getElementById('panel_admin3_iframe');
-		var show_button_element       = visualize_iframe.contentDocument.getElementById("show_"+key);
-		var admin_show_button_element = admin_visualize_iframe.contentDocument.getElementById("admin_show_"+key);
+		if (key.includes("_admin")) {
+			var visualize_iframe    = document.getElementById('panel_admin3_iframe');
+			var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
+		} else {
+			var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
+			var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
+		}
 		closeProject_viewOnly(key);
 		console.log('#     parent.openProject : "'+user+':'+project+':'+key+':'+projectName+'"');
 
-		if ((show_button_element.checked == false) && (admin_show_button_element.checked == false)) {
+		if (show_button_element.checked == false) {
 			closeProject(user,project,key,projectName,color1,color2,parent);
 		} else {
 			var file_list   = JSON.parse(show_button_element.getAttribute('data-file-list'));
@@ -566,10 +569,13 @@ function blank_and_content_tab() {
 		}
 	}
 	function closeProject(user,project,key,projectName,color1,color2,parent) {
-		var visualize_iframe          = document.getElementById('panel_visualizeDataset_iframe');
-		var admin_visualize_iframe    = document.getElementById('panel_admin3_iframe');
-		var show_button_element       = visualize_iframe.contentDocument.getElementById("show_"+key);
-		var admin_show_button_element = visualize_iframe.contentDocument.getElementById("admin_show_"+key);
+		if (key.includes("_admin")) {
+			var visualize_iframe    = document.getElementById('panel_admin3_iframe');
+			var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
+		} else {
+			var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
+			var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
+		}
 		if (show_button_element) {
 			show_button_element.checked = false;
 		}
@@ -776,12 +782,12 @@ function update_projectsShown_after_project_delete(deletedProjectKey) {
 
 
 // upon page reload.
-if(localStorage.getItem("tabInUse")){
+if(localStorage.getItem("tabInUse")) {
 	var tabInUse      = localStorage.getItem("tabInUse");
 } else {
 	var tabInUse      = "user";
 }
-if(localStorage.getItem("projectsShown")){
+if(localStorage.getItem("projectsShown")) {
 	var projectsShown = localStorage.getItem("projectsShown");
 }
 
