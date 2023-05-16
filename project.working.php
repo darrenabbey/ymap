@@ -1,17 +1,16 @@
 <?php
-    session_start();
-    if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript">reload(); </script> <?php } else { $user = $_SESSION['user']; }
-    require_once 'constants.php';
+	session_start();
+	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript">reload(); </script> <?php } else { $user = $_SESSION['user']; }
+	require_once 'constants.php';
 	require_once 'sharedFunctions.php';
-    echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
+	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HEAD>
 	<style type="text/css">
 		body {font-family: arial;}
 	</style>
-    <meta charset="UTF-8">
+	<meta charset="UTF-8">
 </HEAD>
 <BODY>
 <script type="text/javascript">
@@ -20,21 +19,25 @@
 		var conclusion = document.createElement("form");
 		conclusion.setAttribute("method","post");
 		conclusion.setAttribute("action","project.working_server.php");
-		var input1 = document.createElement("input");
-		input1.setAttribute("type","hidden");
-		input1.setAttribute("name","user");
-		input1.setAttribute("value",user);
-		conclusion.appendChild(input1);
+
 		var input2 = document.createElement("input");
 		input2.setAttribute("type","hidden");
 		input2.setAttribute("name","project");
 		input2.setAttribute("value",project);
 		conclusion.appendChild(input2);
+
 		var input3 = document.createElement("input");
 		input3.setAttribute("type","hidden");
 		input3.setAttribute("name","key");
 		input3.setAttribute("value",key);
 		conclusion.appendChild(input3);
+
+		var input4 = document.createElement('input');
+		input4.setAttribute('type','hidden');
+		input4.setAttribute('name','status');
+		input4.setAttribute('value',status);
+		conclusion.appendChild(input4);
+
 		document.body.appendChild(conclusion);
 		// Automatically submit constructed form to post data to page.
 		conclusion.submit();		// works in Safari, but not Firefox.
