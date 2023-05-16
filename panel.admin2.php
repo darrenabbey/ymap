@@ -77,13 +77,10 @@
 	if (isset($_SESSION['logged_on'])) {
 		$projectsDir      = "users/".$admin_as_user."/projects/";
 		$projectFolders   = array_diff(glob($projectsDir."*"), array('..', '.'));
-
 		// Sort directories by date, newest first.
 		array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
-
 		// Trim path from each folder string.
 		foreach($projectFolders as $key=>$folder) {   $projectFolders[$key] = str_replace($projectsDir,"",$folder);   }
-
 		// Split project list into ready/working/starting lists for sequential display.
 		$projectFolders_complete = array();
 		$projectFolders_working  = array();
