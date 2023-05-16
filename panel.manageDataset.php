@@ -118,12 +118,14 @@
 			} else {
 				printprojectInfo("4", $key_, "888888", $user, $project);
 			}
+			$key_starting = $key;
 		}
 		foreach($projectFolders_working as $key_=>$project) {
-			printprojectInfo("2", $key_ + $userprojectCount_starting, "BB9900", $user, $project);
+			printprojectInfo("2", $key_ + count($projectFolders_starting), "BB9900", $user, $project);
+			$key_working = $key;
 		}
 		foreach($projectFolders_complete as $key_=>$project) {
-			printprojectInfo("1", $key_ + $userprojectCount_starting + $userprojectCount_working, "00AA00", $user, $project);
+			printprojectInfo("1", $key_ + count($projectFolders_starting) + count($projectFolders_working), "00AA00", $user, $project);
 		}
 
 ?>
@@ -176,9 +178,9 @@
 			echo " <font color='black' size='1'>(". $projectSizeStr .")</font>";
 		}
 		echo "</font></span>\n\t\t\t\t";
-		echo "<span id='p_delete_".$key."'></span>\n\t\t";
-		echo "\n\t\t\t\t";
-		echo "<div id='frameContainer.p".$frameContainerIx."_".$key."'></div>";
+		echo "<span id='p_delete_".$key."'></span>\n";
+		echo "\t\t\t\t";
+		echo "<div id='frameContainer.p".$frameContainerIx."_".$key."'></div>\n\n\t\t\t\t";
 	}
 
 	?>
@@ -272,10 +274,10 @@ if (isset($_SESSION['logged_on'])) {
 		echo "var el_p            = document.getElementById('frameContainer.p2_".$key."');\n";
 		echo "el_p.innerHTML      = '<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
 		echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
-		echo "var p_iframe        = document.getElementById('p_".$key."');\n\t";
+		echo "var p_iframe        = document.getElementById('p_".$key."');\n";
 		echo "var p_js            = p_iframe.contentWindow;\n";
-		echo "p_js.user           = \"".$user."\";\n\t";
-		echo "p_js.project        = \"".$project."\";\n\t";
+		echo "p_js.user           = \"".$user."\";\n";
+		echo "p_js.project        = \"".$project."\";\n";
 		echo "p_js.key            = \"p_".$key."\";\n";
 	}
 }
