@@ -28,12 +28,6 @@
 		session_destroy();
 		header('Location: ../');
 	}
-	if (($project == "") and ($genome == "")) {
-		log_stuff($user,"","","","","UPLOAD fail: null project/genome during upload attempt!");
-		// project and genome strings empty, should never happen: Force logout.
-		session_destroy();
-		header('Location: ../');
-	}
 
 	if ($genome != "") {
 		$genome_dir  = "../../users/".$user."/genomes/".$genome;
