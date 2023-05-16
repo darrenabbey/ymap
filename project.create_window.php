@@ -117,6 +117,8 @@
 					</div>
 				</td><td valign="top">
 					<div id="hiddenFormSection4" style="display:inline">
+					Reference genomes starting with a "+" have been more intensively tested.<br>
+					Those without will work, but resulting figures may have formatting limitations.
 					</div>
 				</td></tr>
 				<tr bgcolor="#CCCCFF"><td>
