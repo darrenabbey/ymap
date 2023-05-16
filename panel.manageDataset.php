@@ -50,11 +50,11 @@
 				echo "parent.document.getElementById(\"Hidden_InstallNewDataset_Frame\").contentWindow.location.reload(); ";
 				echo "parent.show_hidden(\"Hidden_InstallNewDataset\"); ";
 				echo "parent.update_interface();";
-			echo "'><br>";
+			echo "'><br><font color='red' size='2'> (Wait until uploads complete!)</font><br>";
 		}
 
 		$_SESSION['pending_install_project_count'] = 0;
-		?>
+		?><br>
 		<b><font size='2'>Datasets Pending</font></b><br>
 		<div class='tab' style='color:#CC0000; font-size:10pt;' id='newly_installed_list' name='newly_installed_list'></div><br>
 		<div style='color:#CC0000; font-size:10pt; visibility:hidden; text-align:left;' id='pending_comment' name='pending_comment'>Reload page after any current uploads have completed to prepare pending datasets
