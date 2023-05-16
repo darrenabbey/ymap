@@ -409,6 +409,7 @@ function blank_and_content_tab() {
 			string1     = string1 + "<div id='userProjectB_"+key+"'   style='display:inline'></div>";
 			string1     = string1 + "<div id='userProjectHOM_"+key+"' style='display:inline'></div>";
 			string1     = string1 + "</td></tr></table>";
+			string1     = string1 + "("+projectName+")";
 			string1     = string1 + "</td><td width='60%' align='left'><font size='-1'>";
 
 			if (file_list.indexOf(fig_linear_CNV_SNP+"png") != -1) {
@@ -812,10 +813,10 @@ function restore_shown_figures() {
 
 		var visualize_iframe = document.getElementById('panel_visualizeDataset_iframe');
 		visualize_iframe.onload = function () {
+			var projectsShown_new = "";
 			console.log("#: Opening projects shown before page reload.");
 			for (var i=0;i<projectsShown_entries.length; i++) {
 				var currentProject = projectsShown_entries[i];
-				console.log('#:    Project '+i+' = '+currentProject);
 				if (currentProject != '') {
 					var entry_parts    = currentProject.split(':');
 
@@ -825,13 +826,17 @@ function restore_shown_figures() {
 					key             = entry_parts[2];
 					projectNameText = entry_parts[3];
 
-					var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
-					show_button_element.checked = true;
-
-					// Open projects previously shown.
-					openProject(userName,projectName,key,projectNameText, 'null', 'null', 'null');
+					if (!key.includes("_admin")) {
+						console.log('#:    Project '+i+' = '+currentProject);
+						var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
+						show_button_element.checked = true;
+						// Open projects previously shown, except for admin_as_user projects.
+						openProject(userName,projectName,key,projectNameText, 'null', 'null', 'null');
+						projectsShown_new = projectsShown_new + currentProject+";";
+					}
 				}
 			}
+			localStorage.setItem("projectsShown", projectsShown_new);
 		}
 	}
 }
