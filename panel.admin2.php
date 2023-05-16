@@ -121,10 +121,10 @@
 			}
 		}
 		foreach($projectFolders_working as $key_=>$project) {
-			printprojectInfo("2", $key_ + $userprojectCount_starting, "BB9900", $admin_as_user, $project);
+			printprojectInfo("2", $key_ + count($projectFolders_starting), "BB9900", $admin_as_user, $project);
 		}
 		foreach($projectFolders_complete as $key_=>$project) {
-			printprojectInfo("1", $key_ + $userprojectCount_starting + $userprojectCount_working, "00AA00", $admin_as_user, $project);
+			printprojectInfo("1", $key_ + count($projectFolders_starting) + count($projectFolders_working), "00AA00", $admin_as_user, $project);
 		}
 
 ?>
