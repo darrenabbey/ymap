@@ -14,13 +14,27 @@
 	// Load user string from session.
 	$user     = $_SESSION['user'];
 
-// Only information needed by this script sent by "js/ajaxfileupload.js" from form defined in "uploader.1.php".
-// This safe data is used to construct the target file location.
+	// Only information needed by this script sent by "js/ajaxfileupload.js" from form defined in "uploader.1.php".
+	// This safe data is used to construct the target file location.
+
 	// Sanitize input strings.
 	$genome  = sanitize_POST("target_genome");
 	$project = sanitize_POST("target_project");
 
 	// Confirm if requested genome/project exists.
+	if ($user == "") {
+		log_stuff($user,"","","","","UPLOAD fail: null user during upload attempt!");
+		// User not logged in or empty string, should never happen: Force logout.
+		session_destroy();
+		header('Location: ../');
+	}
+	if (($project == "") and ($genome == "")) {
+		log_stuff($user,"","","","","UPLOAD fail: null project/genome during upload attempt!");
+		// project and genome strings empty, should never happen: Force logout.
+		session_destroy();
+		header('Location: ../');
+	}
+
 	if ($genome != "") {
 		$genome_dir  = "../../users/".$user."/genomes/".$genome;
 		if (!is_dir($genome_dir)) {
