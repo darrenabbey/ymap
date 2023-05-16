@@ -286,7 +286,7 @@
 				echo "\n\t\t".$project."</font></span>\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
-				echo "<div id='frameContainer.p2_".$ key."_admin'></div>";
+				echo "<div id='frameContainer.p2_".$key."_admin'></div>";
 			}
 		}
 	} else {
