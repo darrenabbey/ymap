@@ -115,16 +115,16 @@
 
 		foreach($projectFolders_starting as $key_=>$project) {
 			if (!$exceededSpace) {
-				printprojectInfo("3", $key_, "CC0000", $admin_as_user, $project);
+				printprojectInfo("4", $key_, "CC0000", $admin_as_user, $project, "(Data upload in process.)");
 			} else {
-				printprojectInfo("4", $key_, "888888", $admin_as_user, $project);
+				printprojectInfo("4", $key_, "888888", $admin_as_user, $project, "(Data upload in process.)");
 			}
 		}
 		foreach($projectFolders_working as $key_=>$project) {
-			printprojectInfo("2", $key_ + count($projectFolders_starting), "BB9900", $admin_as_user, $project);
+			printprojectInfo("2", $key_ + count($projectFolders_starting), "BB9900", $admin_as_user, $project, "");
 		}
 		foreach($projectFolders_complete as $key_=>$project) {
-			printprojectInfo("1", $key_ + count($projectFolders_starting) + count($projectFolders_working), "00AA00", $admin_as_user, $project);
+			printprojectInfo("1", $key_ + count($projectFolders_starting) + count($projectFolders_working), "00AA00", $admin_as_user, $project, "");
 		}
 
 ?>
@@ -136,7 +136,7 @@
 <?php
 	}
 
-	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $user, $project) {
+	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $user, $project, $comment) {
 		$projectNameFile = "users/".$user."/projects/".$project."/name.txt";
 		$projectNameString = file_get_contents($projectNameFile);
 		$projectNameString = trim($projectNameString);
@@ -145,7 +145,7 @@
 		$projectNameString  = trim($projectNameString);
 		echo "<span id='p_label_".$key."' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
 		echo "<font size='2'>".($key+1).".";
-		echo $projectNameString;
+		echo $projectNameString." ".$comment;
 
 		// display total size of files only if the project is finished processeing
 		if ($frameContainerIx == "1") {
