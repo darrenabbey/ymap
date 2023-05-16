@@ -58,41 +58,41 @@
 				</td></tr>
 				<tr bgcolor="#CCFFCC"><td>
 					<label for="dataFormat">Data type : </label><select name="dataFormat" id="dataFormat" onchange="UpdateForm(); UpdateHapmap(); UpdateParentList()">
-						<option value="0">SnpCgh microarray        </option>
-						<option value="1">Whole genome NGS         </option>
-						<option value="2">ddRADseq                 </option>
-					<!--	<option value="5">RADseq           </option> --!>
+						<option value="0">SnpCgh microarray                      </option>
+						<option value="1" selected>Whole genome NGS (short-reads)</option>
+						<option value="2">ddRADseq                               </option>
+					<!--	<option value="5">RADseq                                 </option> --!>
 					</select>
 				</td><td>
 					The type of data to be processed.
 				</td></tr>
 				<tr bgcolor="#CCCCFF"><td valign="top">
-					<div id="hiddenFormSection1" style="display:none">
+					<div id="hiddenFormSection1" style="display:inline">
 						<label for="readType">Read type : </label><select name="readType" id="readType">
-							<option value="0">single-end reads; FASTQ/ZIP/GZ file.</option>
-							<option value="1">paired-end reads; FASTQ/ZIP/GZ files.</option>
+							<option value="0">single-end short-reads; FASTQ/ZIP/GZ file.</option>
+							<option value="1">paired-end short-reads; FASTQ/ZIP/GZ files.</option>
 							<option value="2">SAM/BAM file.</option>
 							<option value="3">TXT file.</option>
 							</select><br>
 					</div>
 				</td><td>
-					<div id="hiddenFormSection2" style="display:none">
+					<div id="hiddenFormSection2" style="display:inline">
 						Single-end or paired-end reads in FASTQ format can be compressed into ZIP or GZ archives or in SAM/BAM alignment files.<br>
 						Tab-delimted TXT column format is described in 'About' tab of main page.
 					</div>
 				</td></tr>
 				<tr bgcolor="#CCFFCC"><td>
-                                        <div id="hiddenFormSection2a" style="display:none">
+                                        <div id="hiddenFormSection2a" style="display:inline">
                                                 <input type="checkbox" name="indelrealign" value="True">Perform Indel-realignment<br>
                                         </div>
 				</td><td>
-					<div id="hiddenFormSection2b" style="display:none">
-						Enable only if required. Try running data without it first to see if it meets your needs.<br>
+					<div id="hiddenFormSection2b" style="display:inline">
+						Enable only if required, after testing without.<br>
 						Disabled resulted in 1% spurious SNPs in test case, with no visual impact, but shortened analysis by ~3 hours.
 					</div>
 				</td></tr>
 				<tr bgcolor="#CCFFCC"><td>
-					<div id="hiddenFormSection3" style="display:none">
+					<div id="hiddenFormSection3" style="display:inline">
 						<label for="genome">Reference genome : </label><select name="genome" id="genome" onchange="UpdateHapmap(); UpdateHapmapList(); UpdateParentList()">
 							<?php
                                 $genomesMap = array(); // A mapping of folder names to display names, sorted by folder names.
@@ -116,7 +116,7 @@
 						</select><br>
 					</div>
 				</td><td valign="top">
-					<div id="hiddenFormSection4" style="display:none">
+					<div id="hiddenFormSection4" style="display:inline">
 					</div>
 				</td></tr>
 				<tr bgcolor="#CCCCFF"><td>
@@ -153,7 +153,7 @@
 					$hapmapFolders_raw = array_merge($hapmapFolders1,$hapmapFolders2);
 					// Go through each $hapmapFolder and look at 'genome.txt'; build javascript array of hapmapName:genome pairs.
 					?>
-					<div id="hiddenFormSection5" style="display:none">
+					<div id="hiddenFormSection5" style="display:inline">
 						Haplotype map : <select id="selectHapmap" name="selectHapmap" onchange="UpdateParent();"><option>[choose]</option></select>
 						<script type="text/javascript">
 						var hapmapGenome_entries = [['hapmap','genome']<?php
@@ -174,7 +174,7 @@
 						</script>
 					</div>
 				</td><td valign="top">
-					<div id="hiddenFormSection6" style="display:none">
+					<div id="hiddenFormSection6" style="display:inline">
 						A haplotype map defines the phasing of heterozygous SNPs across the genome and must be matched to the background of the experiment for informative results.
 						SNP information from the hapmap will be used for SNP/LOH analsyses.
 					</div>
@@ -189,7 +189,7 @@
 					$projectFolders_raw = array_merge($projectFolders1,$projectFolders2);
 					// Go through each $projectFolder and look at 'genome.txt' and 'dataFormat.txt'; build javascript array of [parent:genome:dataFormat:projectName]s.
 					?>
-<div id="hiddenFormSection7" style="display:none">
+					<div id="hiddenFormSection7" style="display:inline">
 						Parental strain : <select id="selectParent" name="selectParent"><option>[choose]</option></select>
 						<script type="text/javascript">
 						var parentGenomeDataFormat_entries = [
@@ -230,7 +230,7 @@
 						</script>
 					</div>
 				</td><td valign="top">
-					<div id="hiddenFormSection8a" style="display:none">
+					<div id="hiddenFormSection8a" style="display:inline">
 						This strain will act as the SNP distribution control.
 					</div>
 					<div id="hiddenFormSection8b" style="display:none">
@@ -238,12 +238,12 @@
 					</div>
 				</td></tr>
 				<tr bgcolor="#CCFFCC"><td>
-					<div id="hiddenFormSection9a" style="display:inline">
+					<div id="hiddenFormSection9a" style="display:none">
 						<!-- SnpCgh array --!>
 						<input type="checkbox"      name="0_bias2" value="True" checked>GC-content bias<br>
 						<input type="checkbox"      name="0_bias4" value="True"        >chromosome-end bias
 					</div>
-					<div id="hiddenFormSection9b" style="display:none">
+					<div id="hiddenFormSection9b" style="display:inline">
 						<!-- WGseq --!>
 						<input type="checkbox"      id="1_bias2" name="1_bias2" value="True" checked>GC-content bias<br>
 						<input type="checkbox"      id="1_bias4" name="1_bias4" value="True"  onchange="UpdateBiasWG();"      >chromosome-end bias (forces using GC content bias)
@@ -255,7 +255,9 @@
 						<input type="checkbox"      name="2_bias4" value="True"        >chromosome-end bias
 					</div>
 				</td><td>
-				Corrections applied.
+				GC% bias correction is almost always ideal.<br>
+				Use chromosome-end correction with care. <font size='2'>(Chr end bias in data can potentially reveal structural changes which alter the distance between<br>
+				a locus and a chromosome end vs in the reference genome. Correcting this bias can lead to confounding copy number artifacts in cases like this.)</font>
 				</td></tr></table><br>
 				<?php
 				if (!$exceededSpace) {
