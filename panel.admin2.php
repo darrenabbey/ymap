@@ -192,7 +192,7 @@ if (isset($_SESSION['logged_on'])) {
 		echo "\n// javascript for project #".$key.", '".$project."'\n";
 		echo "var el_p               = document.getElementById('frameContainer.p3_".$key."');\n";
 		// Javascript to build file load button interface.
-		echo "el_p.innerHTML         = 'Data <iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" ";
+		echo "el_p.innerHTML         = '<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" ";
 		if ((strlen($dataFormat) > 1) && ($dataFormat[2] == '1')) {
 			// paired files to be uploaded.
 		//	echo "style=\"height:76px\" src=\"uploader.2.php\"";
