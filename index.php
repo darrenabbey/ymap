@@ -409,7 +409,6 @@ function blank_and_content_tab() {
 			string1     = string1 + "<div id='userProjectB_"+key+"'   style='display:inline'></div>";
 			string1     = string1 + "<div id='userProjectHOM_"+key+"' style='display:inline'></div>";
 			string1     = string1 + "</td></tr></table>";
-			string1     = string1 + "("+projectName+")";
 			string1     = string1 + "</td><td width='60%' align='left'><font size='-1'>";
 
 			if (file_list.indexOf(fig_linear_CNV_SNP+"png") != -1) {
