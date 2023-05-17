@@ -16,9 +16,9 @@
 	$user    = $_SESSION['user'];
 
 	// Sanitize input strings.
-	$project = sanitize_POST("project");
-	$key     = sanitize_POST("key");
-	$status  = (int)sanitize_POST("status");
+	$project       = sanitize_POST("project");
+	$key           = sanitize_POST("key");
+	$status        = (int)sanitize_POST("status");
 
 	// Confirm if requested project exists.
 	$project_dir = "users/".$user."/projects/".$project;
