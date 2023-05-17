@@ -21,7 +21,10 @@
 <font size='3'>
 <?php
 	if ($admin_logged_in == "true") {
-		echo "Your account has been provided with administrator priviledges.<br><br>";
+		echo "Your account has been provided with administrator priviledges.<br>";
+		echo "<form action='' method='post'>";
+		echo "<input type='submit' value='Reload this tab only.'>";
+		echo "</form>";
 	} else {
 		echo "Your account has not been provided with administrator priviledges.<br>";
 	}

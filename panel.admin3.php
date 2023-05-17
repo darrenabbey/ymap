@@ -51,8 +51,8 @@
 			echo "<option value='".$key."'>".$folder."</option>";
 		}
 	}
-	echo "</select>";
-	echo "<input type='submit'>";
+	echo "</select> ";
+	echo "<input type='submit' value='Reload this tab only as user'>";
 	echo "</form>";
 
 	if (isset($_SESSION['logged_on'])) {
