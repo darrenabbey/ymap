@@ -188,54 +188,7 @@ if (isset($_SESSION['logged_on'])) {
 		$dataFormat = fgets($handle);
 		fclose($handle);
 		echo "\n// javascript for project #".$key.", '".$project."'\n";
-		echo "var el_p               = document.getElementById('admin_frameContainer.p3_".$key."');\n";
-		// Javascript to build file load button interface.
-		echo "el_p.innerHTML         = '<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" ";
-		if ((strlen($dataFormat) > 1) && ($dataFormat[2] == '1')) {
-			// paired files to be uploaded.
-			echo "style=\"height:76px\" src=\"uploader.2.php\"";
-		} else {
-			// single file to be uploaded.
-			echo "style=\"height:38px\" src=\"uploader.1.php\"";
-		}
-		echo " marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
-		echo "var p_iframe           = document.getElementById('p_".$key."');\n";
-		echo "var p_js               = p_iframe.contentWindow;\n";
-		echo "p_js.display_string    = new Array();\n";
-		echo "p_js.user              = '".$admin_as_user."';\n";
-		echo "p_js.project           = '".$project."';\n";
-		echo "p_js.key               = 'p_".$key."';\n";
-		if ($dataFormat == '0') {
-			// SnpCgh microarray
-			echo "p_js.display_string[0] = 'Add : SnpCgh array data...';\n";
-			echo "p_js.dataFormat        = 'SnpCghArray';\n";
-		} else if (($dataFormat == '1:0:0') || ($dataFormat == '1:0:1')) {
-			// WGseq : single-end [FASTQ/ZIP/GZ]
-			echo "p_js.display_string[0] = 'Add : Single-end-read WGseq data (FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.dataFormat        = 'WGseq_single';\n";
-		} else if (($dataFormat == '1:1:0') || ($dataFormat == '1:1:1')) {
-			// WGseq : paired-end [FASTQ/ZIP/GZ]
-			echo "p_js.display_string[0] = 'Add : Paired-end-read WGseq data (1/2; FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.display_string[1] = 'Add : Paired-end-read WGseq data (2/2; FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.dataFormat        = 'WGseq_paired';\n";
-		} else if (($dataFormat == '1:2:0') || ($dataFormat == '1:2:1') || ($dataFormat == '1:3:0') || ($dataFormat == '1:3:1')) {
-			// WGseq : [SAM/BAM/TXT]
-			echo "p_js.display_string[0] = 'Add : WGseq data (SAM/BAM/TXT)...';\n";
-			echo "p_js.dataFormat        = 'WGseq_single';\n";
-		} else if (($dataFormat == '2:0:0') || ($dataFormat == '2:0:1')) {
-			// ddRADseq : single-end [FASTQ/ZIP/GZ]
-			echo "p_js.display_string[0] = 'Add : Single-end-read ddRADseq data (FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.dataFormat        = 'ddRADseq_single';\n";
-		} else if (($dataFormat == '2:1:0') || ($dataFormat == '2:1:1')) {
-			// ddRADseq : paired-end [FASTQ/ZIP/GZ]
-			echo "p_js.display_string[0] = 'Add : Paired-end-read ddRADseq data (1/2; FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.display_string[1] = 'Add : Paired-end-read ddRADseq data (2/2; FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.dataFormat        = 'ddRADseq_paired';\n";
-		} else if (($dataFormat == '2:2:0') || ($dataFormat == '2:2:1') || ($dataFormat == '2:3:0') || ($dataFormat == '2:3:1')) {
-			// ddRADseq : [SAM/BAM/TXT]
-			echo "p_js.display_string[0] = 'Add : ddRADseq data (SAM/BAM/TXT)...';\n";
-			echo "p_js.dataFormat        = 'ddRADseq_single';\n";
-		}
+		echo "// None needed.";
 	}
 	foreach($projectFolders_working as $key_=>$project) {   // admin_frameContainer.p2_[$key] : working.
 		$key      = $key_ + $userProjectCount_starting;
