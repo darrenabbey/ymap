@@ -155,6 +155,50 @@ Copy genomes to default user account.<br><br>
 </td><td width="35%" valign="top">
 </td></tr></table>
 
+
+<hr width="100%">
+Copy hapmaps to default user account.<br><br>
+<table width="100%" cellpadding="0"><tr>
+<td width="100%" valign="top">
+	<?php
+	//.-----------------------.
+	//| Admin account hapmaps |
+	//'-----------------------'
+	if (($admin_logged_in == "true") and isset($_SESSION['logged_on'])) {
+		$hapmapDir     = "users/".$_SESSION['user']."/hapmaps/";
+		$hapmapFolders = array_diff(glob($hapmapDir."*\/"), array('..', '.'));
+
+		// Sort directories by date, newest first.
+		array_multisort($hapmapFolders, SORT_ASC, $hapmapFolders);
+		// Trim path from each folder string.
+		foreach($hapmapFolders as $key=>$folder) {
+			$hapmapFolders[$key] = str_replace($hapmapDir,"",$folder);
+		}
+		$hapmapCount = count($hapmapFolders);
+
+		echo "<table width='100%'>";
+		echo "<tr><td width='30%'><font size='2'><b>Hapmaps</b></font></td>";
+		echo "<td width='30%'><font size='2'><b>Copy</b></font></td>";
+		echo "</tr>\n";
+		foreach($hapmapFolders as $key=>$hapmap) {
+			echo "\t\t<tr style='";
+			if ($key % 2 == 0) { echo "; background:#DDBBBB;"; }
+			echo "'>";
+			echo "<td>\n\t\t\t<span id='hapmap_label_".$key."' style='color:#000000;'>";
+			echo "<font size='2'>".($key+1).". ".$hapmap."</font></span>\n";
+			echo "\t\t</td><td>\n";
+			echo "\t\t\t<input type='button' value='Copy hapmap to default user' onclick=\"key = '$key'; $.ajax({url:'admin.copyHapmap_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin1.php');\">\n";
+			echo "\t\t</td></tr>\n";
+		}
+		echo "</table>";
+	}
+?>
+</td><td width="35%" valign="top">
+</td></tr></table>
+
+
+
+
 <hr width="100%">
 Minimize and copy projects to default user account.<br>
 <font size='2'>(Minimized projects can only be viewed, can't be used for further analysis.)</font><br><br>
