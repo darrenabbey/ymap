@@ -150,7 +150,7 @@
 <table width="100%"><tr>
 	<td width="25%" align="center" style="max-height:100%">
 		<table width="100%" height="300px"><tr valign="top"><td>
-		<img src="images/Logo_title.2.png" alt="YMAP; Yeast Mapping Analysis Pipeline"><br><br>
+		<img src="images/Logo_title.3.png" alt="YMAP; Yeast Mapping Analysis Pipeline"><br><br>
 		</td></tr><tr valign="bottom"><td align="middle">
 <font size='2'>
 	For support, please contact us at <a href="mailto:ymapsupport@tauex.tau.ac.il">ymapsupport@tauex.tau.ac.il</a><br/><br/>
