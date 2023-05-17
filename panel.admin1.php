@@ -146,7 +146,7 @@ Copy genomes to default user account.<br><br>
 			echo "<td>\n\t\t\t<span id='genome_label_".$key."' style='color:#000000;'>";
 			echo "<font size='2'>".($key+1).". ".$genome."</font></span>\n";
 			echo "\t\t</td><td>\n";
-			echo "\t\t\t<input type='button' value='Copy genome to default user' onclick=\"key = '$key'; $.ajax({url:'admin.copyGenome_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
+			echo "\t\t\t<input type='button' value='Copy genome to default user' onclick=\"key = '$key'; $.ajax({url:'admin.copyGenome_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin1.php');\">\n";
 			echo "\t\t</td></tr>\n";
 		}
 		echo "</table>";
@@ -191,11 +191,11 @@ Minimize and copy projects to default user account.<br>
 			echo "<font size='2'>".($key+1).". ".$project."</font></span>\n";
 			echo "\t\t</td><td>\n";
 			if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
-				echo "\t\t\t<input type='button' value='Minimize project' onclick=\"key = '$key'; $.ajax({url:'admin.cleanProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
+				echo "\t\t\t<input type='button' value='Minimize project' onclick=\"key = '$key'; $.ajax({url:'admin.cleanProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin1.php');\">\n";
 			}
 			echo "\t\t</td><td>\n";
 			if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
-				echo "\t\t\t<input type='button' value='Copy project to default user' onclick=\"key = '$key'; $.ajax({url:'admin.copyProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin.php');\">\n";
+				echo "\t\t\t<input type='button' value='Copy project to default user' onclick=\"key = '$key'; $.ajax({url:'admin.copyProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin1.php');\">\n";
 			}
 			echo "\t\t</td><td>\n";
 			$nameFile          = "users/".$user."/projects/".$project."name.txt";
