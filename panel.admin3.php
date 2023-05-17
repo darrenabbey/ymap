@@ -125,7 +125,7 @@
 			[$colorString1, $colorString2] = getColors($admin_as_user,$project);
 
 			// getting genome name for project.
-			$genome_name = "<font size='1'>[".getGenomeName($admin_as_user,$project)."]</font>";
+			$genome_name = "<font size='1'>[vs genome: ".getGenomeName($admin_as_user,$project)."]</font>";
 			$genome_name = str_replace("+ ","",$genome_name);
 
 			// getting project name
@@ -176,7 +176,7 @@
 			[$colorString1, $colorString2] = getColors($admin_as_user,$project);
 
 			// getting genome name for project.
-			$genome_name = "<font size='1'>[".getGenomeName($admin_as_user,$project)."]</font>";
+			$genome_name = "<font size='1'>[vs genome: ".getGenomeName($admin_as_user,$project)."]</font>";
 			$genome_name = str_replace("+ ","",$genome_name);
 
 			$nameFile        = "users/".$admin_as_user."/projects/".$project."/name.txt";
@@ -226,7 +226,7 @@
 			[$colorString1, $colorString2] = getColors($admin_as_user,$project);
 
 			// getting genome name for project.
-			$genome_name = "<font size='1'>[".getGenomeName($admin_as_user,$project)."]</font>";
+			$genome_name = "<font size='1'>[vs genome: ".getGenomeName($admin_as_user,$project)."]</font>";
 			$genome_name = str_replace("+ ","",$genome_name);
 
 			$nameFile        = "users/".$admin_as_user."/projects/".$project."/name.txt";
