@@ -30,6 +30,8 @@ function log_stuff($user,$project,$hapmap,$genome,$filename,$message) {
 	$filePath = str_replace("/scripts_hapmaps","",$filePath);
 	$filePath = str_replace("/scripts_ddRADseq","",$filePath);
 
+	echo $filePath;
+
 	// define log file.
 	$log_file = "logs/".date('Y-m-d')."_activity.log";
 
