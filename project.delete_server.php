@@ -28,7 +28,7 @@
 	} else {
 		// Project doesn't exist, should never happen.
 		echo "ERROR:".$user." doesn't own project.";
-		log_stuff($user,$project,"","","","project:DELETE failure");
+		log_stuff($user,$project,"","","","project:DELETE failure, user doesn't own project.");
 	}
 
 	// Function for recursive rmdir, to clean out full genome directory.
