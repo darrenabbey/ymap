@@ -14,7 +14,7 @@
 	$user = $_SESSION['user'];
 
 	// This script is intended to take information from file uploaders and then initiate the pipeline scripts to start processing.
-	// This has been added to remove any server-side location information from being passed through client-side scripting.
+	// This has been added to minimize the changes necessary to the uploader when a new version is installed.
 
 	// validate POST strings.
 	$dataFormat = sanitize_POST("dataFormat");
