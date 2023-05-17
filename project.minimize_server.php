@@ -31,7 +31,7 @@
 		log_stuff($user,$project,"","","","project:MINIMIZE failure, user doesn't own project.");
 	}
 
-	// Function for recursive rmdir, to clean out full genome directory.
+	// Function for reducing project files to only necessary for display.
 	function minimizeProject($dir) {
 		$dir = $dir."/";
 		// Make a temp directory.
@@ -73,7 +73,7 @@
 
 		// Cycle through all source files
 		foreach ($files as $file) {
-			if (in_array($file, array("complete.txt","dataFormat.txt","genome.txt","index.php","name.txt","parent.txt","totalSize.txt"))) {
+			if (in_array($file, array("complete.txt","dataFormat.txt","genome.txt","index.php","name.txt","parent.txt"))) {
 				copy($source.$file, $destination.$file);
 			}
 			$file_ext = substr(strrchr($file, '.'), 1);
