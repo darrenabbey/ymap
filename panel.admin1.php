@@ -18,19 +18,16 @@
 		font-family: arial !important;
 	}
 </style>
-<font size='3'>
 <?php
 	if ($admin_logged_in == "true") {
-		echo "Your account has been provided with administrator priviledges.<br>";
+		echo "<font size='4'><b>YMAP administrative functions:<b></font><br>";
 		echo "<form action='' method='post'>";
 		echo "<input type='submit' value='Reload this tab only.'>";
 		echo "</form>";
 	} else {
-		echo "Your account has not been provided with administrator priviledges.<br>";
+		echo "<font size='4'><br>Your account has not been provided with administrator priviledges.</b></font><br>";
 	}
 ?>
-</font>
-
 <script type="text/javascript" src="js/jquery-3.6.3.js"></script>
 <script type="text/javascript" src="js/jquery.form.js"></script>
 
@@ -116,7 +113,8 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 </td></tr></table>
 
 <hr width="100%">
-Copy genomes to default user account.<br><br>
+<font size='3'>Copy genomes to default user account.</font><br>
+<font size='2'>(There currently isn't an undo function, corrections will need applied via server access.)</font><br><br>
 <table width="100%" cellpadding="0"><tr>
 <td width="100%" valign="top">
 	<?php
@@ -157,7 +155,8 @@ Copy genomes to default user account.<br><br>
 
 
 <hr width="100%">
-Copy hapmaps to default user account.<br><br>
+<font size='3'>Copy hapmaps to default user account.</font><br>
+<font size='2'>(There currently isn't an undo function, corrections will need applied via server access.)</font><br><br>
 <table width="100%" cellpadding="0"><tr>
 <td width="100%" valign="top">
 	<?php
@@ -197,10 +196,9 @@ Copy hapmaps to default user account.<br><br>
 </td></tr></table>
 
 
-
-
 <hr width="100%">
-Minimize and copy projects to default user account.<br>
+<font size='3'>Minimize and copy projects to default user account.</font><br>
+<font size='2'>(There currently isn't an undo function, corrections will need applied via server access.)</font><br>
 <font size='2'>(Minimized projects can only be viewed, can't be used for further analysis.)</font><br><br>
 <table width="100%" cellpadding="0"><tr>
 <td width="100%" valign="top">

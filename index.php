@@ -346,7 +346,7 @@ function blank_and_content_tab() {
 	}
 	function openProject(user,project,key,projectName,color1,color2,parent) {
 		if (key.includes("_admin")) {
-			var visualize_iframe    = document.getElementById('panel_admin3_iframe');
+			var visualize_iframe    = document.getElementById('panel_admin2_iframe');
 			var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
 		} else {
 			var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
@@ -570,7 +570,7 @@ function blank_and_content_tab() {
 	}
 	function closeProject(user,project,key,projectName,color1,color2,parent) {
 		if (key.includes("_admin")) {
-			var visualize_iframe    = document.getElementById('panel_admin3_iframe');
+			var visualize_iframe    = document.getElementById('panel_admin2_iframe');
 			var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
 		} else {
 			var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
