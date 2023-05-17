@@ -83,7 +83,7 @@
 				echo "<span id='p_label_".$key."' style='color:#CC0000;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
 				echo "<input id='show_".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
-				echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
+				echo "\n\t\t".$projectNameString."</font></span>\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
 				echo "<div id='frameContainer.p2_".$key."'></div>";
