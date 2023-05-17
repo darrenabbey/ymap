@@ -48,8 +48,8 @@
 			echo "<option value='".$key."'>".$folder."</option>";
 		}
 	}
-	echo "</select>";
-	echo "<input type='submit'>";
+	echo "</select> ";
+	echo "<input type='submit' value='Reload this tab only as user'>";
 	echo "</form>";
 
 
@@ -167,8 +167,7 @@
 			echo " <font color='black' size='1'>(". $projectSizeStr .")</font>";
 		}
 		echo "</font></span>\n\t\t\t\t";
-		echo "\n\t\t\t\t";
-		echo "<div id='frameContainer.p".$frameContainerIx."_".$key."'></div>";
+		echo "<div id='admin_frameContainer.p".$frameContainerIx."_".$key."'></div>\n\n\t\t\t\t";
 	}
 
 	?>
@@ -182,7 +181,7 @@ var systemProjectCount = "<?php echo $systemProjectCount; ?>";
 //| Uploading data |
 //'----------------'
 if (isset($_SESSION['logged_on'])) {
-	foreach($projectFolders_starting as $key_=>$project) {    // frameContainer.p3_[$key] : starting.
+	foreach($projectFolders_starting as $key_=>$project) {    // admin_frameContainer.p3_[$key] : starting.
 		$key      = $key_;
 		$project  = $projectFolders[$key];
 		// Read in dataFormat string for project.
@@ -190,7 +189,7 @@ if (isset($_SESSION['logged_on'])) {
 		$dataFormat = fgets($handle);
 		fclose($handle);
 		echo "\n// javascript for project #".$key.", '".$project."'\n";
-		echo "var el_p               = document.getElementById('frameContainer.p3_".$key."');\n";
+		echo "var el_p               = document.getElementById('admin_frameContainer.p3_".$key."');\n";
 		// Javascript to build file load button interface.
 		echo "el_p.innerHTML         = '<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" ";
 		if ((strlen($dataFormat) > 1) && ($dataFormat[2] == '1')) {
@@ -239,20 +238,20 @@ if (isset($_SESSION['logged_on'])) {
 			echo "p_js.dataFormat        = 'ddRADseq_single';\n";
 		}
 	}
-	foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.
+	foreach($projectFolders_working as $key_=>$project) {   // admin_frameContainer.p2_[$key] : working.
 		$key      = $key_ + $userProjectCount_starting;
 		$project  = $projectFolders[$key];
 		$handle   = fopen("users/".$user."/projects/".$project."/dataFormat.txt", "r");
 		$dataFormat = fgets($handle);
 		fclose($handle);
 		echo "\n// javascript for project #".$key.", '".$project."'\n";
-		echo "var el_p            = document.getElementById('frameContainer.p2_".$key."');\n";
+		echo "var el_p            = document.getElementById('admin_frameContainer.p2_".$key."');\n";
 		echo "el_p.innerHTML      = '<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
-		echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
-		echo "var p_iframe        = document.getElementById('p_".$key."');\n\t";
+		echo     "src=\"project.admin_working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
+		echo "var p_iframe        = document.getElementById('p_".$key."');\n";
 		echo "var p_js            = p_iframe.contentWindow;\n";
-		echo "p_js.user           = \"".$user."\";\n\t";
-		echo "p_js.project        = \"".$project."\";\n\t";
+		echo "p_js.user           = \"".$admin_as_user."\";\n";
+		echo "p_js.project        = \"".$project."\";\n";
 		echo "p_js.key            = \"p_".$key."\";\n";
 	}
 }
