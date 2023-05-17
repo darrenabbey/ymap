@@ -4,7 +4,7 @@ function minimizeProjectConfirmation(project,key){
 	panel_iframe             = document.getElementById('panel_manageDataset_iframe');
 	dom_object               = panel_iframe.contentDocument.getElementById('p_minimize_'+key);
 
-	dom_object.innerHTML     = "<b><font color=\"red\">[Minimzed projects can't be used for further analysis. Are you sure?]</font><button type='button' onclick='parent.minimizeProject_yes(\""+project+"\",\""+key+"\")'>Yes, minimize.</button>";
+	dom_object.innerHTML     = "<b><font color=\"red\">[Minimized projects can't be used for further analysis. Are you sure?]</font><button type='button' onclick='parent.minimizeProject_yes(\""+project+"\",\""+key+"\")'>Yes, minimize.</button>";
 	dom_object.innerHTML    += "<button type='button' onclick='parent.minimizeProject_no(\""+project+"\",\""+key+"\")'>No, cancel</button></b>";
 
 	dom_button               = panel_iframe.contentDocument.getElementById('project_minimize_'+key);
