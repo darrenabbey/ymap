@@ -38,7 +38,7 @@
 
 	// Make selection form:
 	echo "<form action='' method='post'>";
-	echo "<label for='admin_as_user'>Select a user:</label>";
+	echo "<input type='submit' value='Reload this tab only as user:'>";
 	echo "<select name='admin_as_user' id='admin_as_user'>";
 	foreach($userFolders as $key=>$folder) {
 		if ($key == $admin_as_user_key) {
@@ -49,7 +49,6 @@
 		}
 	}
 	echo "</select> ";
-	echo "<input type='submit' value='Reload this tab only as user'>";
 	echo "</form>";
 
 
