@@ -154,7 +154,7 @@
 		}
 
 		echo $projectNameString." ".$comment;
-		echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
+		echo "</font></span> ".$genome_name."\n\t\t";
 
 		// display total size of files only if the project is finished processeing
 		if ($frameContainerIx == "1") {
