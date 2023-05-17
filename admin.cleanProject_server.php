@@ -76,7 +76,7 @@
 	$destination = $projectDir.$project_to_clean;
 	// Cycle through all source files
 	foreach ($files as $file) {
-		if (in_array($file, array("complete.txt","dataFormat.txt","index.php","name.txt","parent.txt","totalSize.txt"))) {
+		if (in_array($file, array("complete.txt","dataFormat.txt","genome.txt","index.php","name.txt","parent.txt","totalSize.txt"))) {
 			copy($source.$file, $destination.$file);
 		}
 		$file_ext = substr(strrchr($file, '.'), 1);
