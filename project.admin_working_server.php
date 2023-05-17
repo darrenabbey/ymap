@@ -164,7 +164,7 @@ body {font-family: arial;}
 				input1.setAttribute('type','hidden');
 				input1.setAttribute('name','user');
 				input1.setAttribute('value',user);
-				conclusion.appendChild(input1);
+				autoSubmitForm.appendChild(input1);
 
 				var input2 = document.createElement('input');
 				input2.setAttribute('type','hidden');
@@ -183,6 +183,7 @@ body {font-family: arial;}
 				input4.setAttribute('name','status');
 				input4.setAttribute('value',status);
 				autoSubmitForm.appendChild(input4);
+
 				document.body.appendChild(autoSubmitForm);
 				autoSubmitForm.submit();
 			}
