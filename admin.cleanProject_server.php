@@ -45,7 +45,6 @@
 	$src  = $projectDir.$project_to_clean;
 
 
-
 	// Make a temp directory.
 	$temp_dir = $projectDir.$project_to_clean."temp/";
 	mkdir($temp_dir);
