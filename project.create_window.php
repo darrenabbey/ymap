@@ -183,13 +183,13 @@
 				</td></tr>
 				<tr bgcolor="#CCFFCC"><td>
 					<?php
-					// figure out which hapmaps have been defined for this species, if any.
+					// figure out which projects have been defined for this species, if any.
 					$projectsDir1       = "users/default/projects/";
 					$projectsDir2       = "users/".$user."/projects/";
 					$projectFolders1    = array_diff(glob($projectsDir1."*"), array('..', '.'));
 					$projectFolders2    = array_diff(glob($projectsDir2."*"), array('..', '.'));
 					$projectFolders_raw = array_merge($projectFolders1,$projectFolders2);
-					// Go through each $projectFolder and look at 'genome.txt' and 'dataFormat.txt'; build javascript array of [parent:genome:dataFormat:projectName]s.
+					// Go through each $projectFolder and look at 'genome.txt', 'dataFormat.txt', and 'minimized.txt'; build javascript array of [parent:genome:dataFormat:projectName]s.
 					?>
 					<div id="hiddenFormSection7" style="display:inline">
 						Parental strain : <select id="selectParent" name="selectParent"><option>[choose]</option></select>
@@ -200,6 +200,7 @@
 						foreach ($projectFolders_raw as $key=>$folder) {
 							// display project only if processing finished
 							if (file_exists($folder . "/complete.txt")) {
+								// Figure out genome used.
 								$genome_filename = $folder."/genome.txt";
 								$genome_string = "";
 								if (file_exists($genome_filename)) {
@@ -208,24 +209,31 @@
 									$genome_string   = trim(fgets($handle1));
 									fclose($handle1);
 								}
+
+								// Figure out data format.
 						 		$handle2           = fopen($folder."/dataFormat.txt", "r");
 								$dataFormat_string = trim(fgets($handle2));
 								$dataFormat_string = explode(":",$dataFormat_string);
 								$dataFormat_string = $dataFormat_string[0];
 								fclose($handle2);
+
+								// Figure out parent project name.
 								$parentName        = $folder;
-								// read name according to the folder the parent exist
 								if (file_exists($folder."/name.txt")) {
-									$projectNameString = trim(file_get_contents($folder."/name.txt"));
+									$projectNameString = strip_tags(trim(file_get_contents($folder."/name.txt")));
 									$parentName        = trim(str_replace($projectsDir1,"",$parentName));
 								} else {
-									$projectNameString = trim(file_get_contents($folder."/name.txt"));
+									$projectNameString = strip_tags(trim(file_get_contents($folder."/name.txt")));
 								}
 								$parentName      = trim(str_replace($projectsDir1,"",$parentName));
 								$parentName      = trim(str_replace($projectsDir2,"",$parentName));
-								echo "\t\t\t\t\t\t\t";
-								echo "['{$parentName}', '{$genome_string}', {$dataFormat_string}, '{$projectNameString}']";
-								echo ",\n";
+
+								// Output found strings if parent project isn't minimized.
+								if (!file_exists($folder."/minimized.txt")) {
+									echo "\t\t\t\t\t\t\t";
+									echo "['{$parentName}', '{$genome_string}', {$dataFormat_string}, '{$projectNameString}']";
+									echo ",\n";
+								}
 							}
 						}
 ?>						];
@@ -233,7 +241,7 @@
 					</div>
 				</td><td valign="top">
 					<div id="hiddenFormSection8a" style="display:inline">
-						This strain will act as the SNP distribution control.
+						This strain will act as the SNP distribution control. <font size='2'>(Minimized projects can't be used for this purpose.)</font>
 					</div>
 					<div id="hiddenFormSection8b" style="display:none">
 						This strain will act as the CNV normalization control.
