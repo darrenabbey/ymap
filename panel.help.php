@@ -10,6 +10,34 @@
 		margin-left:    1cm;
 	}
 </style>
+<p><font size='3' color='#990000'>
+	For security reasons, new user accounts are no longer automatically approved by YMAP.<br><br>
+	After you submit a new user request via the "User" tab at left, I or another admin will<br>
+	confirm your identity using resources outside YMAP before activating the account. We'll<br>
+	then send you a short email to let you know the account has been activated.<br>
+</font></p>
+<hr>
+<p>
+<font size='3'><b>Observations from data processed here.</b></font>
+<font size='2'>
+<p class="tab">
+<p>
+	<li class="tab">Large FASTQ files occassionally get clipped during file transfer processes, both here and elsewhere. YMAP checks for the resulting damage and will continue processing.</li>
+</p><p>
+	<li class="tab">Large BAM files can also be clipped during file transfer processes. YMAP doesn't check for this damage, but one example was seen where YMAP continued processing.
+	It was a sorted BAM file and the result was a large portion at the end of the genome had a copy number estimate of zero. On a second attempt, the file uploaded and processed perfectly.</li>
+</p><p>
+	<li class="tab">Sometimes, datasets will show a strong chromosome-end bias to the sequence read depth. If there is a structural rearrangement in the genome within the impacted areas,
+	this bias in read depth can help you characterize the rearrangement. Using chromosome-end bias correction in these cases will lead to figures that are hard to interpret.</li>
+</p><p>
+	<li class="tab">Though YMAP can perform an indel-realignment step during processing, the step is very slow and is not recommended.</li>
+</p>
+
+</p>
+</font><br>
+<hr>
+
+
 <font size='3'><b>User Manual</b></font>: 
 <font size="2">
 <a href="YMAP_User_Manual.docx">A detailed description of the user interface and tools available in YMAP.</a><br>

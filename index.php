@@ -189,8 +189,8 @@
 	onclick="tabWindow('bugs');"            >Bug Reporting</td>
 <td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_help"
 	onclick="tabWindow('help');"            >Help</td>
-<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_examples"
-	onclick="tabWindow('examples');"        >Example Datasets</td>
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_citations"
+	onclick="tabWindow('citations');"       >Citations</td>
 <?php
 // Check if logged in user has admin rights.
 $super_user_flag_file = "users/".$user."/super.txt";
@@ -234,7 +234,7 @@ if ($admin == "true") {
 	<div id="panel_hapmap"           name="panel_hapmap"           style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
 	<div id="panel_bugs"             name="panel_bugs"             style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
 	<div id="panel_help"             name="panel_help"             style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
-	<div id="panel_examples"         name="panel_examples"         style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
+	<div id="panel_citations"        name="panel_citations"        style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
 	<div id="panel_admin1"           name="panel_admin1"           style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
 	<div id="panel_admin2"           name="panel_admin2"           style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
 	<div id="panel_admin3"           name="panel_admin3"           style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
@@ -253,7 +253,7 @@ p_genome                     = document.getElementById('panel_genome');
 p_hapmap                     = document.getElementById('panel_hapmap');
 p_bugs                       = document.getElementById('panel_bugs');
 p_help                       = document.getElementById('panel_help');
-p_examples                   = document.getElementById('panel_examples');
+p_citations                  = document.getElementById('panel_citations');
 p_admin1                     = document.getElementById('panel_admin1');
 p_admin2                     = document.getElementById('panel_admin2');
 p_admin3                     = document.getElementById('panel_admin3');
@@ -264,7 +264,7 @@ p_genome.innerHTML           = '<iframe id="panel_genome_iframe"           src="
 p_hapmap.innerHTML           = '<iframe id="panel_hapmap_iframe"           src="panel.hapmap.php"           style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
 p_bugs.innerHTML             = '<iframe id="panel_bugs_iframe"             src="panel.bugs.php"             style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
 p_help.innerHTML             = '<iframe id="panel_help_iframe"             src="panel.help.php"             style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
-p_examples.innerHTML         = '<iframe id="panel_examples_iframe"         src="panel.examples.php"         style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
+p_citations.innerHTML        = '<iframe id="panel_citations_iframe"        src="panel.citations.php"        style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
 p_admin1.innerHTML           = '<iframe id="panel_admin1_iframe"           src="panel.admin1.php"           style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
 p_admin2.innerHTML           = '<iframe id="panel_admin2_iframe"           src="panel.admin2.php"           style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
 p_admin3.innerHTML           = '<iframe id="panel_admin3_iframe"           src="panel.admin3.php"           style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>;">';
@@ -292,7 +292,7 @@ function deselect_all_tabs() {
 	deselect_tab("hapmap");
 	deselect_tab("bugs");
 	deselect_tab("help");
-	deselect_tab("examples");
+	deselect_tab("citations");
 	deselect_tab("admin1");
 	deselect_tab("admin2");
 	deselect_tab("admin3");
@@ -697,7 +697,7 @@ function update_interface() {
 	document.getElementById('panel_hapmap_iframe'          ).contentWindow.location.reload();
 	document.getElementById('panel_bugs_iframe'            ).contentWindow.location.reload();
 	document.getElementById('panel_help_iframe'            ).contentWindow.location.reload();
-	document.getElementById('panel_examples_iframe'        ).contentWindow.location.reload();
+	document.getElementById('panel_citations_iframe'       ).contentWindow.location.reload();
 }
 function update_interface_after_login() {
 	document.getElementById('panel_manageDataset_iframe'   ).contentWindow.location.reload();
@@ -706,7 +706,7 @@ function update_interface_after_login() {
 	document.getElementById('panel_hapmap_iframe'          ).contentWindow.location.reload();
 	document.getElementById('panel_bugs_iframe'            ).contentWindow.location.reload();
 	document.getElementById('panel_help_iframe'            ).contentWindow.location.reload();
-	document.getElementById('panel_examples_iframe'        ).contentWindow.location.reload();
+	document.getElementById('panel_citations_iframe'       ).contentWindow.location.reload();
 }
 function update_interface_after_logout() {
 	localStorage.removeItem('projectsShown');
@@ -716,7 +716,7 @@ function update_interface_after_logout() {
 	var ff4 = parent.document.getElementById('panel_hapmap_iframe');
 	var ff5 = parent.document.getElementById('panel_bugs_iframe');
 	var ff6 = parent.document.getElementById('panel_help_iframe');
-	var ff7 = parent.document.getElementById('panel_examples_iframe');
+	var ff7 = parent.document.getElementById('panel_citations_iframe');
 	ff1.src = ff1.src;  // reload panel.
 	ff2.src = ff2.src;
 	ff3.src = ff3.src;
