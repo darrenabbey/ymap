@@ -23,6 +23,8 @@ function log_stuff($user,$project,$hapmap,$genome,$filename,$message) {
 	// define log file.
 	$log_file = "logs/".date('Y-m-d')."_activity.log";
 
+	echo getcwd();
+
 	// check if log file exists, create if not.
 	if (!file_exists($log_file)) {
 		$myfile = fopen($log_file, "w");
