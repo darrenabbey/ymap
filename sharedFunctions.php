@@ -20,10 +20,18 @@ function getUserQuota($userName) {
 
 // YMAP logging function.
 function log_stuff($user,$project,$hapmap,$genome,$filename,$message) {
+	// find main Ymap directory, by removing possible ymap subdirectories from path of calling script.
+	$filePath = getcwd();
+	$filePath = str_replace("scripts_genomes_enhanced_annotations/","",$filePath);
+	$filePath = str_replace("scripts_genomes/","",$filePath);
+	$filePath = str_replace("scripts_seqModules/","",$filePath);
+	$filePath = str_replace("scripts_SnpCghArray/","",$filePath);
+	$filePath = str_replace("scripts_WGseq/","",$filePath);
+	$filePath = str_replace("scripts_hapmaps/","",$filePath);
+	$filePath = str_replace("scripts_ddRADseq/","",$filePath);
+
 	// define log file.
 	$log_file = "logs/".date('Y-m-d')."_activity.log";
-
-	echo getcwd();
 
 	// check if log file exists, create if not.
 	if (!file_exists($log_file)) {
