@@ -29,6 +29,7 @@ function log_stuff($user,$project,$hapmap,$genome,$filename,$message) {
 	$filePath = str_replace("/scripts_WGseq","",$filePath);
 	$filePath = str_replace("/scripts_hapmaps","",$filePath);
 	$filePath = str_replace("/scripts_ddRADseq","",$filePath);
+	$filePath = $filePath."/";
 
 	echo $filePath;
 
