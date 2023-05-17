@@ -13,9 +13,9 @@
 <font size='3'><b>Primary citations related to YMAP.</b></font><br>
 <font size="2">
 <p>
-	Abbey DA, Funt J, Lurie-Weinberger MN et al. YMAP: a pipeline for visualization<br>
-	of copy number variation and loss of heterozygosity in eukaryotic pathogens. Genome<br>
-	Med. 2014;6:100.
+	Abbey DA, Funt J, Lurie-Weinberger MN, Thompson DA, Regev A, Myers CL, Berman J. 2014.<br>
+	YMAP: a pipeline for visualization of copy number variation and loss of heterozygosity in<br>
+	eukaryotic pathogens. Genome Med. 2014;6:100.
 	<a href="https://pubmed.ncbi.nlm.nih.gov/25505934/">https://pubmed.ncbi.nlm.nih.gov/25505934/</a><br>
 	<p class="tab">
 	This paper introduced YMAP and described it in some detail as it was in 2014.<br>
