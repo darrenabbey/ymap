@@ -21,7 +21,7 @@
 </style>
 <?php
 	if ($admin_logged_in == "true") {
-		echo "<font size='4'><b>Check installation status of user installed datasets:<b></font><br>";
+		echo "<font size='4'><b>Admin review of user installed datasets:<b></font><br>";
 	} else {
 		echo "<font size='4'><br>Your account has not been provided with administrator priviledges.</b></font><br>";
 	}
