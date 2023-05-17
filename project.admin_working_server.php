@@ -16,7 +16,7 @@
 	//$user    = $_SESSION['user'];
 
 	// Sanitize input strings.
-	$user          = sanitize_post("user");
+	$user          = sanitize_post("user");		// this "user" is the admin_as_user.
 	$project       = sanitize_POST("project");
 	$key           = sanitize_POST("key");
 	$status        = (int)sanitize_POST("status");
@@ -150,29 +150,39 @@ body {font-family: arial;}
 			$condensedLogEntry = $condensedLog[count($condensedLog)-1];
 			?>
 			<script type="text/javascript">
+			var user    = "<?php echo $user; ?>";
 			var project = "<?php echo $project; ?>";
 			var key     = "<?php echo $key; ?>";
 			var status  = "<?php echo $status; ?>";
 			reload_page=function() {
 				// Make a form to generate a form to POST information to pass along to page reloads, auto-triggered by form submit.
 				var autoSubmitForm = document.createElement('form');
-				    autoSubmitForm.setAttribute('method','post');
-				    autoSubmitForm.setAttribute('action','project.admin_working_server.php');
+				autoSubmitForm.setAttribute('method','post');
+				autoSubmitForm.setAttribute('action','project.admin_working_server.php');
+
+				var input1 = document.createElement('input');
+				input1.setAttribute('type','hidden');
+				input1.setAttribute('name','user');
+				input1.setAttribute('value',user);
+				conclusion.appendChild(input1);
+
 				var input2 = document.createElement('input');
-				    input2.setAttribute('type','hidden');
-				    input2.setAttribute('name','key');
-				    input2.setAttribute('value',key);
-				    autoSubmitForm.appendChild(input2);
+				input2.setAttribute('type','hidden');
+				input2.setAttribute('name','key');
+				input2.setAttribute('value',key);
+				autoSubmitForm.appendChild(input2);
+
 				var input3 = document.createElement('input');
-				    input3.setAttribute('type','hidden');
-				    input3.setAttribute('name','project');
-				    input3.setAttribute('value',project);
-				    autoSubmitForm.appendChild(input3);
+				input3.setAttribute('type','hidden');
+				input3.setAttribute('name','project');
+				input3.setAttribute('value',project);
+				autoSubmitForm.appendChild(input3);
+
 				var input4 = document.createElement('input');
-				    input4.setAttribute('type','hidden');
-				    input4.setAttribute('name','status');
-				    input4.setAttribute('value',status);
-				    autoSubmitForm.appendChild(input4);
+				input4.setAttribute('type','hidden');
+				input4.setAttribute('name','status');
+				input4.setAttribute('value',status);
+				autoSubmitForm.appendChild(input4);
 				document.body.appendChild(autoSubmitForm);
 				autoSubmitForm.submit();
 			}
