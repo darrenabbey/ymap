@@ -29,12 +29,11 @@ function log_stuff($user,$project,$hapmap,$genome,$filename,$message) {
 	$filePath = str_replace("/scripts_WGseq","",$filePath);
 	$filePath = str_replace("/scripts_hapmaps","",$filePath);
 	$filePath = str_replace("/scripts_ddRADseq","",$filePath);
-	$filePath = $filePath."/";
 
 	echo $filePath;
 
 	// define log file.
-	$log_file = "logs/".date('Y-m-d')."_activity.log";
+	$log_file = $filePath."/logs/".date('Y-m-d')."_activity.log";
 
 	// check if log file exists, create if not.
 	if (!file_exists($log_file)) {
