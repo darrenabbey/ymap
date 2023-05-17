@@ -127,6 +127,7 @@
 
 			// getting genome name for project.
 			$genome_name = "<font size='1'>[".getGenomeName($admin_as_user,$project)."]</font>";
+			$genome_name = str_replace("+ ","",$genome_name);
 
 			// getting project name
 			$nameFile        = "users/".$admin_as_user."/projects/".$project."/name.txt";
@@ -177,6 +178,7 @@
 
 			// getting genome name for project.
 			$genome_name = "<font size='1'>[".getGenomeName($admin_as_user,$project)."]</font>";
+			$genome_name = str_replace("+ ","",$genome_name);
 
 			$nameFile        = "users/".$admin_as_user."/projects/".$project."/name.txt";
 			$parent_file     = "users/".$admin_as_user."/projects/".$project."/parent.txt";
@@ -226,6 +228,7 @@
 
 			// getting genome name for project.
 			$genome_name = "<font size='1'>[".getGenomeName($admin_as_user,$project)."]</font>";
+			$genome_name = str_replace("+ ","",$genome_name);
 
 			$nameFile        = "users/".$admin_as_user."/projects/".$project."/name.txt";
 			$parent_file     = "users/".$admin_as_user."/projects/".$project."/parent.txt";
