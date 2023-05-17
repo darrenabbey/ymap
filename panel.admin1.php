@@ -135,7 +135,8 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 
 		echo "<table width='100%'>";
 		echo "<tr><td width='30%'><font size='2'><b>Genomes</b></font></td>";
-		echo "<td width='30%'><font size='2'><b>Copy</b></font></td>";
+		echo "<td width='30%'><font size='2'><b>Copy Genome</b></font></td>";
+		echo "<td><font size='2'><b>Genome \"name.txt\" Contents</b></font></td>";
 		echo "</tr>\n";
 		foreach($genomeFolders as $key=>$genome) {
 			echo "\t\t<tr style='";
@@ -145,6 +146,12 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 			echo "<font size='2'>".($key+1).". ".$genome."</font></span>\n";
 			echo "\t\t</td><td>\n";
 			echo "\t\t\t<input type='button' value='Copy genome to default user' onclick=\"key = '$key'; $.ajax({url:'admin.copyGenome_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin1.php');\">\n";
+			echo "\t\t</td><td>\n";
+			$nameFile         = "users/".$user."/genomes/".$genome."name.txt";
+			$genomeNameString = file_get_contents($nameFile);
+			$genomeNameString = trim($genomeNameString);
+			echo "<font size='2'>".$genomeNameString."</font>";
+
 			echo "\t\t</td></tr>\n";
 		}
 		echo "</table>";
@@ -177,7 +184,8 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 
 		echo "<table width='100%'>";
 		echo "<tr><td width='30%'><font size='2'><b>Hapmaps</b></font></td>";
-		echo "<td width='30%'><font size='2'><b>Copy</b></font></td>";
+		echo "<td width='30%'><font size='2'><b>Copy Hapmap</b></font></td>";
+		echo "<td><font size='2'><b>Hapmapt \"name.txt\" Contents</b></font></td>";
 		echo "</tr>\n";
 		foreach($hapmapFolders as $key=>$hapmap) {
 			echo "\t\t<tr style='";
@@ -187,6 +195,12 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 			echo "<font size='2'>".($key+1).". ".$hapmap."</font></span>\n";
 			echo "\t\t</td><td>\n";
 			echo "\t\t\t<input type='button' value='Copy hapmap to default user' onclick=\"key = '$key'; $.ajax({url:'admin.copyHapmap_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin1.php');\">\n";
+			echo "\t\t</td><td>\n";
+			$nameFile          = "users/".$user."/hapmaps/".$hapmap."name.txt";
+			$hapmapNameString = file_get_contents($nameFile);
+			$hapmapNameString = trim($hapmapNameString);
+			echo "<font size='2'>".$hapmapNameString."</font>";
+
 			echo "\t\t</td></tr>\n";
 		}
 		echo "</table>";
@@ -220,7 +234,7 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 
 		echo "<table width='100%'>";
 		echo "<tr><td width='30%'><font size='2'><b>Projects</b></font></td>";
-		echo "<td><font size='2'><b>Minimize and Copy Project</b></font></td>";
+		echo "<td width='30%'><font size='2'><b>Minimize and Copy Project</b></font></td>";
 		echo "<td><font size='2'><b>Project \"name.txt\" Contents</b></font></td>";
 		echo "</tr>\n";
 		foreach($projectFolders as $key=>$project) {
