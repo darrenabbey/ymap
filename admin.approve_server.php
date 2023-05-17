@@ -44,7 +44,7 @@
 		$lockFile = $dir."locked.txt";
 		unlink($lockFile);
 
-		// Generate lockfile into user account, pending admin approval.
+		// Generate keyfile into user account, pending admin approval.
 		$activeFile = $dir."/active.txt";
 		$active     = fopen($activeFile, 'w');
 		fclose($active);
