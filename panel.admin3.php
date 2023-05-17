@@ -123,16 +123,10 @@
 		echo "<br>\n\t\t";
 		foreach($projectFolders_starting as $key_=>$project) {
 			// Load colors for project.
-			$colors_file  = "users/".$admin_as_user."/projects/".$project."/colors.txt";
-			if (file_exists($colors_file)) {
-				$handle       = fopen($colors_file,'r');
-				$colorString1 = trim(fgets($handle));
-				$colorString2 = trim(fgets($handle));
-				fclose($handle);
-			} else {
-				$colorString1 = 'null';
-				$colorString2 = 'null';
-			}
+			[$colorString1, $colorString2] = getColors($admin_as_user,$project);
+
+			// getting genome name for project.
+			$genome_name = "<font size='1'>[".getGenomeName($admin_as_user,$project)."]</font>";
 
 			// getting project name
 			$nameFile        = "users/".$admin_as_user."/projects/".$project."/name.txt";
@@ -161,7 +155,7 @@
 				echo "<span id='p_label_".$key."_admin' style='color:#CC0000;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
 				echo "<input id='show_".$key."_admin' type='checkbox' onclick=\"parent.openProject('".$admin_as_user."','".$project."','".$key."_admin','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
-				echo "\n\t\t".$projectNameString."</font></span>\n\t\t";
+				echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
 				echo "<div id='frameContainer.p2_".$key."_admin'></div>";
@@ -171,7 +165,7 @@
 				echo "<span id='p_label_".$key."_admin' style='color:#888888;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
 				echo "<input id='show_".$key."_admin' type='checkbox'>";
-				echo "\n\t\t".$project."</font></span>\n\t\t";
+				echo "\n\t\t".$project."</font></span> ".$genome_name."\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
 				echo "<div id='frameContainer.p2_".$key."_admin'></div>";
@@ -179,16 +173,10 @@
 		}
 		foreach($projectFolders_working as $key_=>$project) {
 			// Load colors for project.
-			$colors_file          = "users/".$admin_as_user."/projects/".$project."/colors.txt";
-			if (file_exists($colors_file)) {
-				$handle       = fopen($colors_file,'r');
-				$colorString1 = trim(fgets($handle));
-				$colorString2 = trim(fgets($handle));
-				fclose($handle);
-			} else {
-				$colorString1 = 'null';
-				$colorString2 = 'null';
-			}
+			[$colorString1, $colorString2] = getColors($admin_as_user,$project);
+
+			// getting genome name for project.
+			$genome_name = "<font size='1'>[".getGenomeName($admin_as_user,$project)."]</font>";
 
 			$nameFile        = "users/".$admin_as_user."/projects/".$project."/name.txt";
 			$parent_file     = "users/".$admin_as_user."/projects/".$project."/parent.txt";
@@ -216,7 +204,7 @@
 				echo "<span id='p_label_".$key."_admin' style='color:#BB9900;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
 				echo "<input  id='show_".$key."_admin' type='checkbox' onclick=\"parent.openProject('".$admin_as_user."','".$project."','".$key."_admin','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
-				echo "\n\t\t".$projectNameString."</font></span>\n\t\t";
+				echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
 				echo "<div id='frameContainer.p2_".$key."_admin'></div>";
@@ -226,7 +214,7 @@
 				echo "<span id='p_label_".$key."_admin' style='color:#888888;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
 				echo "<input  id='show_".$key."_admin' type='checkbox'>";
-				echo "\n\t\t".$project."</font></span>\n\t\t";
+				echo "\n\t\t".$project."</font></span> ".$genome_name."\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
 				echo "<div id='frameContainer.p2_".$key."_admin'></div>";
@@ -234,16 +222,10 @@
 		}
 		foreach($projectFolders_complete as $key_=>$project) {
 			// Load colors for project.
-			$colors_file          = "users/".$admin_as_user."/projects/".$project."/colors.txt";
-			if (file_exists($colors_file)) {
-				$handle       = fopen($colors_file,'r');
-				$colorString1 = trim(fgets($handle));
-				$colorString2 = trim(fgets($handle));
-				fclose($handle);
-			} else {
-				$colorString1 = 'null';
-				$colorString2 = 'null';
-			}
+			[$colorString1, $colorString2] = getColors($admin_as_user,$project);
+
+			// getting genome name for project.
+			$genome_name = "<font size='1'>[".getGenomeName($admin_as_user,$project)."]</font>";
 
 			$nameFile        = "users/".$admin_as_user."/projects/".$project."/name.txt";
 			$parent_file     = "users/".$admin_as_user."/projects/".$project."/parent.txt";
@@ -273,7 +255,7 @@
 				echo "<span id='project_label_".$key."_admin' style='color:#00AA00;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
 				echo "<input  id='show_".$key."_admin' type='checkbox' onclick=\"parent.openProject('".$admin_as_user."','".$project."','".$key."_admin','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
-				echo "\n\t\t".$projectNameString."</font></span>\n\t\t";
+				echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
 				echo "<span id='p2_".$project."_delete'></span><span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
 				echo "<div id='frameContainer.p1_".$key."_admin'></div>";
@@ -283,7 +265,7 @@
 				echo "<span id='p_label_".$key."_admin' style='color:#888888;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
 				echo "<input  id='show_".$key."_admin' type='checkbox'>";
-				echo "\n\t\t".$project."</font></span>\n\t\t";
+				echo "\n\t\t".$project."</font></span> ".$genome_name."\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
 				echo "<div id='frameContainer.p2_".$key."_admin'></div>";
@@ -294,6 +276,53 @@
 		$userProjectCount_working  = 0;
 		$userProjectCount_complete = 0;
 	}
+
+	function getColors($user,$project) {
+		//[$colorStrin1, $colorStrin2] = getColors($user,$project);
+		$colors_file  = "users/".$user."/projects/".$project."/colors.txt";
+		if (file_exists($colors_file)) {
+			$handle       = fopen($colors_file,'r');
+			$colorString1 = trim(fgets($handle));
+			$colorString2 = trim(fgets($handle));
+			fclose($handle);
+		} else {
+			$colorString1 = 'null';
+			$colorString2 = 'null';
+		}
+		return [$colorString1,$colorString2];
+	}
+
+	function getGenomeName($user,$project) {
+		// grab genome.txt from project.
+		$genome_file = "users/".$user."/projects/".$project."/genome.txt";
+		if (file_exists($genome_file)) {
+			$handle      = fopen($genome_file,'r');
+			$genome      = trim(fgets($handle));
+			fclose($handle);
+		} else {
+			$genome      = '';
+		}
+
+		// grab name.txt from genome.
+		if ($genome != "") {
+			$genomeName_file1 = "users/".$user."/genomes/".$genome."/name.txt";
+			$genomeName_file2 = "users/default/genomes/".$genome."/name.txt";
+			if (file_exists($genomeName_file1)) {
+				$handle      = fopen($genomeName_file1,'r');
+				$genome_name = trim(fgets($handle));
+				fclose($handle);
+			} else if (file_exists($genomeName_file2)) {
+				$handle      = fopen($genomeName_file2,'r');
+				$genome_name = trim(fgets($handle));
+				fclose($handle);
+			} else {
+				$genome_name = "";
+			}
+		} else {
+			$genome_name = "";
+		}
+		return $genome_name;
+        }
 	?>
 </td><td width="35%" valign="top">
 <br>
