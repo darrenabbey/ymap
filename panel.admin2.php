@@ -185,7 +185,7 @@ if (isset($_SESSION['logged_on'])) {
 		$key      = $key_;
 		$project  = $projectFolders[$key];
 		// Read in dataFormat string for project.
-		$handle     = fopen("users/".$user."/projects/".$project."/dataFormat.txt", "r");
+		$handle     = fopen("users/".$admin_as_user."/projects/".$project."/dataFormat.txt", "r");
 		$dataFormat = fgets($handle);
 		fclose($handle);
 		echo "\n// javascript for project #".$key.", '".$project."'\n";
@@ -203,7 +203,7 @@ if (isset($_SESSION['logged_on'])) {
 		echo "var p_iframe           = document.getElementById('p_".$key."');\n";
 		echo "var p_js               = p_iframe.contentWindow;\n";
 		echo "p_js.display_string    = new Array();\n";
-		echo "p_js.user              = '".$user."';\n";
+		echo "p_js.user              = '".$admin_as_user."';\n";
 		echo "p_js.project           = '".$project."';\n";
 		echo "p_js.key               = 'p_".$key."';\n";
 		if ($dataFormat == '0') {
@@ -241,7 +241,7 @@ if (isset($_SESSION['logged_on'])) {
 	foreach($projectFolders_working as $key_=>$project) {   // admin_frameContainer.p2_[$key] : working.
 		$key      = $key_ + $userProjectCount_starting;
 		$project  = $projectFolders[$key];
-		$handle   = fopen("users/".$user."/projects/".$project."/dataFormat.txt", "r");
+		$handle   = fopen("users/".$admin_as_user."/projects/".$project."/dataFormat.txt", "r");
 		$dataFormat = fgets($handle);
 		fclose($handle);
 		echo "\n// javascript for project #".$key.", '".$project."'\n";
