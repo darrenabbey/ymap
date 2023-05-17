@@ -86,7 +86,7 @@ function showColors(colorName,targetToChange,contentString) {
 
 			if (is_dir("users/".$user."/hapmaps/".$hapmap)) {
 				echo "<button id='hapmap_delete_".$key."' type='button' onclick=\"parent.deleteHapmapConfirmation('".$user."','".$hapmap."','".$key."')\">Delete</button>\n\t\t";
-				echo "<font size='2'>".$hapmap."</font></span></td><td>\n\t\t\t\t";
+				echo "<font size='2'>".getHapmapName($user,$hapmap)."</font></span></td><td>\n\t\t\t\t";
 				echo "<span id='h_delete_".$key."'></span>\n\t\t\t\t";
 
 				echo "<td><div id='userHapmapA_".$key."'  >[a]</div></td>\n\t\t\t\t";
@@ -154,13 +154,35 @@ function showColors(colorName,targetToChange,contentString) {
 	echo "<div class='hapmap'><b><font size='2'>System hapmaps:</font></b>\n\t\t\t\t";
 	foreach ($systemHapmapFolders as $key=>$hapmap) {
 		if (is_dir("users/default/hapmaps/".$hapmap)) {
-			echo "<div class='tab'><table><tr><td><font size='2'>".$hapmap."</font></td>\n\t\t\t\t";
+			echo "<div class='tab'><table><tr><td><font size='2'>".getHapmapName($user,$hapmap)."</font></td>\n\t\t\t\t";
 			echo "<td><div id='defaultHapmapA_".$key."'  >[a]</div></td>\n\t\t\t\t";
 			echo "<td><div id='defaultHapmapHET_".$key."'>[ab]</div></td>\n\t\t\t\t";
 			echo "<td><div id='defaultHapmapB_".$key."'  >[b]</div></td>\n\t\t\t\t";
 			echo "<td><div id='defaultHapmapHOM_".$key."'>[hom]</div></td></tr></table>\n\t\t\t\t";
 			echo "</div>\n\t\t\t\t";
 		}
+	}
+
+	function getHapmapName($user,$hapmap) {
+		// grab name.txt from hapmap.
+		if ($hapmap != "") {
+			$hapmapName_file1 = "users/".$user."/hapmaps/".$hapmap."/name.txt";
+			$hapmapName_file2 = "users/default/hapmaps/".$hapmap."/name.txt";
+			if (file_exists($hapmapName_file1)) {
+				$handle      = fopen($hapmapName_file1,'r');
+				$hapmap_name = trim(fgets($handle));
+				fclose($handle);
+			} else if (file_exists($hapmapName_file2)) {
+				$handle      = fopen($hapmapName_file2,'r');
+				$hapmap_name = trim(fgets($handle));
+				fclose($handle);
+			} else {
+				$hapmap_name = $hapmap;
+			}
+		} else {
+			$hapmap_name = "";
+		}
+		return $hapmap_name;
 	}
 	?>
 </td></tr></table>
