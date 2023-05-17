@@ -211,3 +211,32 @@
 	}
 	?>
 </td></tr></table>
+
+
+<script type="text/javascript">
+var userProjectCount   = "<?php echo $userProjectCount; ?>";
+var systemProjectCount = "<?php echo $systemProjectCount; ?>";
+<?php
+//.--------------------------------------------------------------------.
+//| javascript to load "project.working.php" for each working project. |
+//'--------------------------------------------------------------------'
+if (isset($_SESSION['logged_on'])) {
+	foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.
+		$key      = $key_ + $userProjectCount_starting;
+		$project  = $projectFolders[$key];
+		$handle   = fopen("users/".$user."/projects/".$project."/dataFormat.txt", "r");
+		$dataFormat = fgets($handle);
+		fclose($handle);
+		echo "\n// javascript for project #".$key.", '".$project."'\n";
+		echo "var el_p            = document.getElementById('frameContainer.p2_".$key."');\n";
+		echo "el_p.innerHTML      = '<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+		echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
+		echo "var p_iframe        = document.getElementById('p_".$key."');\n";
+		echo "var p_js            = p_iframe.contentWindow;\n";
+		echo "p_js.user           = \"".$user."\";\n";
+		echo "p_js.project        = \"".$project."\";\n";
+		echo "p_js.key            = \"p_".$key."\";\n";
+	}
+}
+?>
+</script>
