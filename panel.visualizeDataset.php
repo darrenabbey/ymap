@@ -53,7 +53,7 @@
 			[$colorString1, $colorString2] = getColors($user,$project);
 
 			// getting genome name for project.
-			$genome_name = "<font size='1'>[vs genome: ".getGenomeName($user,$project)."]</font>";
+			$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."]</font>";
 			$genome_name = str_replace("+ ","",$genome_name);
 
 			// getting project name.
@@ -104,7 +104,7 @@
 			[$colorString1, $colorString2] = getColors($user,$project);
 
 			// getting genome name for project.
-			$genome_name = "<font size='1'>[vs genome: ".getGenomeName($user,$project)."]</font>";
+			$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."]</font>";
 			$genome_name = str_replace("+ ","",$genome_name);
 
 			// getting project name.
@@ -155,7 +155,7 @@
 			[$colorString1, $colorString2] = getColors($user,$project);
 
 			// getting genome name for project.
-			$genome_name = "<font size='1'>[vs genome: ".getGenomeName($user,$project)."]</font>";
+			$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."]</font>";
 			$genome_name = str_replace("+ ","",$genome_name);
 
 			// getting project name.
