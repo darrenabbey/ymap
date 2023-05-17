@@ -233,7 +233,7 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 			echo "<font size='2'>".($key+1).". ".$project."</font></span>\n";
 			echo "\t\t</td><td>\n";
 			if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
-				echo "\t\t\t<input type='button' value='Minimize project' onclick=\"key = '$key'; $.ajax({url:'admin.cleanProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin1.php');\">\n";
+				echo "\t\t\t<input type='button' value='Minimize project' onclick=\"key = '$key'; $.ajax({url:'admin.minimizeProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin1.php');\">\n";
 			}
 			echo "\t\t</td><td>\n";
 			if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {

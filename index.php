@@ -780,7 +780,6 @@ function update_projectsShown_after_project_delete(deletedProjectKey) {
 	localStorage.setItem("projectsShown",new_projectsShown);
 }
 
-
 // upon page reload.
 if(localStorage.getItem("tabInUse")) {
 	var tabInUse      = localStorage.getItem("tabInUse");
@@ -864,6 +863,7 @@ if (isset($_SESSION['logged_on'])) {
 </script>
 <!-- Manage interfaces for deleting objects.--!>
 	<script type="text/javascript" src="js/project.delete_index.js"></script>
+	<script type="text/javascript" src="js/project.minimize_index.js"></script>
 	<script type="text/javascript" src="js/genome.delete_index.js"></script>
 	<script type="text/javascript" src="js/user.delete_index.js"></script>
 	<script type="text/javascript" src="js/hapmap.delete_index.js"></script>

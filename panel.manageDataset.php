@@ -147,6 +147,7 @@
 		echo "<span id='p_label_".$key."' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
 		echo "<font size='2'>".($key+1).".";
 		echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$project."','".$key."');\">Delete</button>";
+		echo "<button id='project_minimize_".$key."' type='button' onclick=\"parent.minimizeProjectConfirmation('".$project."','".$key."');\">Minimize</button>";
 		echo $projectNameString;
 
 		// checks condensed log to see if initial processing is done.
@@ -179,6 +180,7 @@
 		}
 		echo "</font></span>\n\t\t\t\t";
 		echo "<span id='p_delete_".$key."'></span>\n";
+		echo "<span id='p_minimize_".$key."'></span>\n";
 		echo "\t\t\t\t";
 		echo "<div id='frameContainer.p".$frameContainerIx."_".$key."'></div>\n\n\t\t\t\t";
 	}
