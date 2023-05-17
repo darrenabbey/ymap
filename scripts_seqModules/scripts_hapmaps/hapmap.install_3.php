@@ -3,6 +3,7 @@
 	error_reporting(E_ALL);
         require_once '../../constants.php';
 	require_once '../../POST_validation.php';
+	require_once '../../sharedFunctions.php';
 	require_once '../../SecureNewDirectory.php';
         ini_set('display_errors', 1);
 
@@ -58,7 +59,7 @@
 		//--------------------------------------------
 		echo "Hapmap '".$hapmap."' directory already exists.";
 
-		log_stuff($user,"",$hapmap,"","","H:CREATE failure");
+		log_stuff($user,"",$hapmap,"","","hapmap:CREATE failure, hapmap with that name already exists.");
 ?>
         <html>
         <body>
@@ -155,7 +156,7 @@
 		$system_call_string = "sh hapmap.install_4.sh ".$user." ".$referencePloidy." ".$project1." ".$project2." ".$hapmap." > /dev/null &";
 		system($system_call_string);
 
-		log_stuff($user,"",$hapmap,"","","H:CREATE success");
+		log_stuff($user,"",$hapmap,"","","hapmap:CREATE success.");
 ?>
 <script type="text/javascript">
 	var el3 = parent.document.getElementById('Hidden_GenerateNewHapmap');
