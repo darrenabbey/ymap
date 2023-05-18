@@ -13,16 +13,18 @@
         }
 
 	// Load user string from session.
-	$user    = $_SESSION['user'];
-
-	// Sanitize input strings.
-	$project = sanitize_POST("project");
+	if(isset($_SESSION['user'])) {
+		$user   = $_SESSION['user'];
+	} else {
+		$user = "";
+	}
 
 	if ($user = "") {
-		log_stuff("",$project,"","","","project:MINIMIZE failure, no user name found in session.");
-		session_destroy();
+		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
 	} else {
+		// Sanitize input strings.
+		$project = sanitize_POST("project");
 		$dir     = "users/".$user."/projects/".$project;
 
 		// Confirm if requested project exists.

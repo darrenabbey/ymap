@@ -14,17 +14,19 @@
 	}
 
 	// Load user string from session.
-	$user            = $_SESSION['user'];
-
-	// Validate input strings.
-	$project         = sanitize_POST("project");
+	if(isset($_SESSION['user'])) {
+		$user   = $_SESSION['user'];
+	} else {
+		$user = "";
+	}
 
 	if ($user = "") {
-		log_stuff("",$project,"","","","project:CREATE failure, no user name found in session.");
+		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		session_destroy();
 		header('Location: .');
 	} else {
 		// Validate input strings.
+		$project         = sanitize_POST("project");
 		$ploidy          = sanitizeFloat_POST("ploidy");
 		$ploidyBase      = sanitizeFloat_POST("ploidyBase");
 		$dataFormat      = sanitizeIntChar_POST("dataFormat");

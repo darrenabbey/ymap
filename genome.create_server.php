@@ -8,22 +8,25 @@
 	ini_set('display_errors', 1);
 
 	// If the user is not logged on, redirect to login page.
-	if(!isset($_SESSION['logged_on'])){
+	if(!isset($_SESSION['logged_on'])) {
 		session_destroy();
 		header('Location: .');
 	}
 
 	// Load user string from session.
-	$user   = $_SESSION['user'];
+	if(isset($_SESSION['user'])) {
+		$user   = $_SESSION['user'];
+	} else {
+		$user = "";
+	}
 
-	// Sanitize input string.
-	$genome = sanitize_POST("newGenomeName");
-
-	if ($user = "") {
-		log_stuff("","","",$genome,"","genome:CREATE failure, no user name found in session.");
-		session_destroy();
+	if ($user == "") {
+		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
 	} else {
+		// Sanitize input string.
+		$genome = sanitize_POST("newGenomeName");
+
 		// construct directory locations.
 		$dir1   = "users/".$user."/genomes";
 		$dir2   = "users/".$user."/genomes/".$genome;
@@ -42,21 +45,14 @@
 			echo "Genome '".$genome."' directory already exists.";
 
 			log_stuff($user,"","",$genome,"","genome:CREATE failure");
-?>
-	<html>
-	<body>
-	<script type="text/javascript">
-	var el1 = parent.document.getElementById('Hidden_InstallNewGenome');
-	el1.style.display = 'none';
 
-	var el2 = parent.document.getElementById('panel_genome_iframe').contentDocument.getElementById('name_error_comment');
-	el2.style.visibility = 'visible';
-
-	window.location = "genome.create_window.php";
-	</script>
-	</body>
-	</html>
-<?php
+			echo "<html>\n<body>\n<script type='text/javascript'>\n";
+			echo "var el1 = parent.document.getElementById('Hidden_InstallNewGenome');\n";
+			echo "el1.style.display = 'none';\n\n";
+			echo "var el2 = parent.document.getElementById('panel_genome_iframe').contentDocument.getElementById('name_error_comment');\n";
+			echo "el2.style.visibility = 'visible';\n\n";
+			echo "window.location = 'genome.create_window.php';\n";
+			echo "</script>\n</body>\n</html>\n";
 		} else {
 			// Create the genome folder inside the user's genomes directory
 			mkdir($dir2);
@@ -71,29 +67,19 @@
 			fclose($output);
 
 			$_SESSION['pending_install_genome_count'] += 1;
-
 			log_stuff($user,"","",$genome,"","genome:CREATE success");
-?>
-	<html>
-	<body>
-	<script type="text/javascript">
-	var el1 = parent.document.getElementById('panel_genome_iframe').contentDocument.getElementById('newly_installed_list');
-	el1.innerHTML += "<?php echo $_SESSION['pending_install_genome_count']; ?>. <?php echo $genome; ?><br>";
 
-	var el2 = parent.document.getElementById('panel_genome_iframe').contentDocument.getElementById('pending_comment');
-	el2.style.visibility = 'visible';
-
-	var el3 = parent.document.getElementById('panel_genome_iframe').contentDocument.getElementById('name_error_comment');
-	el3.style.visibility = 'hidden';
-
-	var el4 = parent.document.getElementById('Hidden_InstallNewGenome');
-	el4.style.display = 'none';
-
-	window.location = "genome.create_window.php";
-	</script>
-	</body>
-	</html>
-<?php
+			echo "<html>\n<body>\n<script type='text/javascript'>\n";
+			echo "var el1 = parent.document.getElementById('panel_genome_iframe').contentDocument.getElementById('newly_installed_list');\n";
+			echo "el1.innerHTML += ".$_SESSION['pending_install_genome_count'].". ".$genome."<br>\n";
+			echo "var el2 = parent.document.getElementById('panel_genome_iframe').contentDocument.getElementById('pending_comment');\n";
+			echo "el2.style.visibility = 'visible';\n";
+			echo "var el3 = parent.document.getElementById('panel_genome_iframe').contentDocument.getElementById('name_error_comment');\n";
+			echo "el3.style.visibility = 'hidden';\n\n";
+			echo "var el4 = parent.document.getElementById('Hidden_InstallNewGenome');\n";
+			echo "el4.style.display = 'none';\n\n";
+			echo "window.location = 'genome.create_window.php';\n";
+			echo "</script>\n</body>\n</html>\n";
 		}
 		log_stuff($user,"","",$genome,"","genome:CREATE success.");
 	}

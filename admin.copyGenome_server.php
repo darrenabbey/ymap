@@ -13,40 +13,43 @@
         }
 
 	// Ensure admin user is logged in.
-	$user = $_SESSION['user'];
-
-	$super_user_flag_file = "users/".$user."/super.txt";
-	if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
-		$admin_logged_in = "true";
+	if(isset($_SESSION['user'])) {
+		$user   = $_SESSION['user'];
 	} else {
-		// not an admin account, redirect to login page.
-		$admin_logged_in = "false";
-		session_destroy();
-		log_stuff($user,"","","","","CREDENTIAL fail: user attempted to use admin function to copy genome to default!");
-		header('Location: .');
+		$user = "";
 	}
 
-	// Load user string from session.
-	$user_key = sanitizeInt_POST('key');
-
-	// Determine user account associated with key.
-	$genomeDir      = "users/".$user."/genomes/";
-	$genomeFolders  = array_diff(glob($genomeDir."*\/"), array('..', '.', 'users/default/'));
-
-	// Sort directories by date, newest first.
-	array_multisort($genomeFolders, SORT_ASC, $genomeFolders);
-
-	// Trim path from each folder string.
-	foreach($genomeFolders as $key=>$folder) {
-		$genomeFolders[$key] = str_replace($genomeDir,"",$folder);
-	}
-	$genome_to_copy = $genomeFolders[$user_key];
-
-	if ($user = "") {
-		log_stuff("","","",$genome_to_copy,"","ADMIN fail: no user name found in session.");
-		session_destroy();
+	if ($user == "") {
+		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
 	} else {
+		$super_user_flag_file = "users/".$user."/super.txt";
+		if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
+			$admin_logged_in = "true";
+		} else {
+			// not an admin account, redirect to login page.
+			$admin_logged_in = "false";
+			session_destroy();
+			log_stuff($user,"","","","","CREDENTIAL fail: user attempted to use admin function to copy genome to default!");
+			header('Location: .');
+		}
+
+		// Load user string from session.
+		$user_key = sanitizeInt_POST('key');
+
+		// Determine user account associated with key.
+		$genomeDir      = "users/".$user."/genomes/";
+		$genomeFolders  = array_diff(glob($genomeDir."*\/"), array('..', '.', 'users/default/'));
+
+		// Sort directories by date, newest first.
+		array_multisort($genomeFolders, SORT_ASC, $genomeFolders);
+
+		// Trim path from each folder string.
+		foreach($genomeFolders as $key=>$folder) {
+			$genomeFolders[$key] = str_replace($genomeDir,"",$folder);
+		}
+		$genome_to_copy = $genomeFolders[$user_key];
+
 		$src  = $genomeDir.$genome_to_copy;
 		$dest = "users/default/genomes/".$genome_to_copy;
 

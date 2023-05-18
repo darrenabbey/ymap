@@ -13,40 +13,44 @@
         }
 
 	// Ensure admin user is logged in.
-	$user = $_SESSION['user'];
-	$super_user_flag_file = "users/".$user."/super.txt";
-	if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
-		$admin_logged_in = "true";
+	if(isset($_SESSION['user'])) {
+		$user   = $_SESSION['user'];
 	} else {
-		// not an admin account, redirect to login page.
-		$admin_logged_in = "false";
-		session_destroy();
-		log_stuff($user,"","","","","CREDENTIAL fail: user attempted to use admin function to copy project to default!");
-		header('Location: .');
+		$user = "";
 	}
 
-	// Load user string from session.
-	$user     = $_SESSION['user'];
-	$user_key = sanitizeInt_POST('key');
-
-	// Determine user account associated with key.
-	$projectDir      = "users/".$user."/projects/";
-	$projectFolders  = array_diff(glob($projectDir."*\/"), array('..', '.', 'users/default/'));
-
-	// Sort directories by date, newest first.
-	array_multisort($projectFolders, SORT_ASC, $projectFolders);
-
-	// Trim path from each folder string.
-	foreach($projectFolders as $key=>$folder) {
-		$projectFolders[$key] = str_replace($projectDir,"",$folder);
-	}
-	$project_to_copy = $projectFolders[$user_key];
-
-	if ($user = "") {
-		log_stuff("",$project_to_copy,"","","","ADMIN fail: no user name found in session.");
-		session_destroy();
+	if ($user == "") {
+		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
 	} else {
+		$super_user_flag_file = "users/".$user."/super.txt";
+		if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
+			$admin_logged_in = "true";
+		} else {
+			// not an admin account, redirect to login page.
+			$admin_logged_in = "false";
+			session_destroy();
+			log_stuff($user,"","","","","CREDENTIAL fail: user attempted to use admin function to copy project to default!");
+			header('Location: .');
+		}
+
+		// Load user string from session.
+		$user     = $_SESSION['user'];
+		$user_key = sanitizeInt_POST('key');
+
+		// Determine user account associated with key.
+		$projectDir      = "users/".$user."/projects/";
+		$projectFolders  = array_diff(glob($projectDir."*\/"), array('..', '.', 'users/default/'));
+
+		// Sort directories by date, newest first.
+		array_multisort($projectFolders, SORT_ASC, $projectFolders);
+
+		// Trim path from each folder string.
+		foreach($projectFolders as $key=>$folder) {
+			$projectFolders[$key] = str_replace($projectDir,"",$folder);
+		}
+		$project_to_copy = $projectFolders[$user_key];
+
 		$src  = $projectDir.$project_to_copy;
 		$dest = "users/default/projects/".$project_to_copy;
 
