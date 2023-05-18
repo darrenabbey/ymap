@@ -20,7 +20,7 @@
 	if ($user == "") {
 		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
-
+	} else {
 		// mini page loaded into frame when two files are to be uploaded.
 ?>
 <!DOCTYPE html>
