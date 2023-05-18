@@ -8,7 +8,7 @@
 	ini_set('display_errors', 1);
 
 	// If the user is not logged on, redirect to login page.
-	if(!isset($_SESSION['logged_on'])) {
+	if (!isset($_SESSION['logged_on'])) {
 		session_destroy();
 		header('Location: .');
 	}
@@ -71,13 +71,14 @@
 
 			echo "<html>\n<body>\n<script type='text/javascript'>\n";
 			echo "var el1 = parent.document.getElementById('panel_genome_iframe').contentDocument.getElementById('newly_installed_list');\n";
-			echo "el1.innerHTML += ".$_SESSION['pending_install_genome_count'].". ".$genome."<br>\n";
+			echo "el1.innerHTML += '".$_SESSION["pending_install_genome_count"].". ".$genome."<br>';\n";
+
 			echo "var el2 = parent.document.getElementById('panel_genome_iframe').contentDocument.getElementById('pending_comment');\n";
 			echo "el2.style.visibility = 'visible';\n";
 			echo "var el3 = parent.document.getElementById('panel_genome_iframe').contentDocument.getElementById('name_error_comment');\n";
-			echo "el3.style.visibility = 'hidden';\n\n";
+			echo "el3.style.visibility = 'hidden';\n";
 			echo "var el4 = parent.document.getElementById('Hidden_InstallNewGenome');\n";
-			echo "el4.style.display = 'none';\n\n";
+			echo "el4.style.display = 'none';\n";
 			echo "window.location = 'genome.create_window.php';\n";
 			echo "</script>\n</body>\n</html>\n";
 		}
