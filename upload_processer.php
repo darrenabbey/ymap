@@ -11,21 +11,22 @@
 		session_destroy();
 		header('Location: .');
 	}
-	$user = $_SESSION['user'];
+	if(isset($_SESSION['user'])) {
+		$user   = $_SESSION['user'];
+	} else {
+		$user = "";
+	}
 
 	// This script is intended to take information from file uploaders and then initiate the pipeline scripts to start processing.
 	// This has been added to minimize the changes necessary to the uploader when a new version is installed.
 
-	// validate POST strings.
-	$genome     = sanitize_POST("genome");
-	$project    = sanitize_POST("project");
-
-	if ($user = "") {
-		log_stuff("",$project,"",$genome,"","UPLOAD failure, no user name found in session.");
-		session_destroy();
+	if ($user == "") {
+		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
 	} else {
 		// validate POST strings.
+		$genome     = sanitize_POST("genome");
+		$project    = sanitize_POST("project");
 		$dataFormat = sanitize_POST("dataFormat");
 		$fileName   = sanitizeFile_POST("fileName");
 		$key        = sanitize_POST("key");

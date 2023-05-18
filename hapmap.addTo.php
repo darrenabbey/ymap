@@ -12,8 +12,17 @@
 		header('Location: .');
 	}
 
-	$user      = $_SESSION['user'];
-	$key       = preg_replace('/\D/', '', $_GET['k']);  //Strip all non-numerical characters from string.
+	if(isset($_SESSION['user'])) {
+		$user   = $_SESSION['user'];
+	} else {
+		$user = "";
+	}
+
+	if ($user == "") {
+		log_stuff("","","","","","user:VALIDATION failure, session expired.");
+		header('Location: .');
+	} else {
+		$key       = preg_replace('/\D/', '', $_GET['k']);  //Strip all non-numerical characters from string.
 ?>
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -41,3 +50,6 @@
 	</div>
 </BODY>
 </html>
+<?php
+	}
+?>

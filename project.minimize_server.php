@@ -19,7 +19,7 @@
 		$user = "";
 	}
 
-	if ($user = "") {
+	if ($user == "") {
 		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
 	} else {

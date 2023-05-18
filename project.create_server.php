@@ -20,9 +20,8 @@
 		$user = "";
 	}
 
-	if ($user = "") {
+	if ($user == "") {
 		log_stuff("","","","","","user:VALIDATION failure, session expired.");
-		session_destroy();
 		header('Location: .');
 	} else {
 		// Validate input strings.

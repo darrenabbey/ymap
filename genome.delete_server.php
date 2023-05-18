@@ -13,22 +13,31 @@
         }
 
 	// Load user string from session.
-	$user    = $_SESSION['user'];
-
-	// Sanitize input string.
-	$genome  = sanitize_POST("genome");
-	$dir     = "users/".$user."/genomes/".$genome;
-
-	// Confirm if requested project exists.
-	if (is_dir($dir)) {
-		// Requested project dir does exist for logged in user: Delete installed project.
-		rrmdir($dir);
-		echo "COMPLETE";
-		log_stuff($user,"","",$genome,"","genome:DELETE success");
+	if(isset($_SESSION['user'])) {
+		$user = $_SESSION['user'];
 	} else {
-		// Project doesn't exist, should never happen.
-		echo "ERROR:".$user." doesn't own project.";
-		log_stuff($user,"","",$genome,"","genome:DELETE failure");
+		$user = "";
+	}
+
+	if ($user == "") {
+		log_stuff("","","","","","user:VALIDATION failure, session expired.");
+		header('Location: .');
+	} else {
+		// Sanitize input string.
+		$genome  = sanitize_POST("genome");
+		$dir     = "users/".$user."/genomes/".$genome;
+
+		// Confirm if requested project exists.
+		if (is_dir($dir)) {
+			// Requested project dir does exist for logged in user: Delete installed project.
+			rrmdir($dir);
+			echo "COMPLETE";
+			log_stuff($user,"","",$genome,"","genome:DELETE success");
+		} else {
+			// Project doesn't exist, should never happen.
+			echo "ERROR:".$user." doesn't own project.";
+			log_stuff($user,"","",$genome,"","genome:DELETE failure");
+		}
 	}
 
 	// Function for recursive rmdir, to clean out full genome directory.

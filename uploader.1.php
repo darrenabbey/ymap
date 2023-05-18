@@ -11,9 +11,17 @@
 		session_destroy();
 		header('Location: .');
 	}
-	$user = $_SESSION['user'];
+	if(isset($_SESSION['user'])) {
+		$user   = $_SESSION['user'];
+	} else {
+		$user = "";
+	}
 
-	// mini page loaded into frame when one file is to be uploaded.
+	if ($user == "") {
+		log_stuff("","","","","","user:VALIDATION failure, session expired.");
+		header('Location: .');
+
+		// mini page loaded into frame when one file is to be uploaded.
 ?>
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -145,3 +153,6 @@
 
 </body>
 </html>
+<?php
+	}
+?>

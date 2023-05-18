@@ -6,7 +6,11 @@
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 
 	if (isset($_SESSION['logged_on'])) {
-		$user = $_SESSION['user'];
+		if(isset($_SESSION['user'])) {
+			$user   = $_SESSION['user'];
+		} else {
+			$user = "";
+		}
 		// getting the current size of the user folder in Gigabytes
 		$currentSize = getUserUsageSize($user);
 		// getting user quota in Gigabytes
@@ -17,6 +21,13 @@
 		if ($exceededSpace) {
 			echo "<span style='color:#FF0000; font-weight: bold;'>You have exceeded your quota (".$quota."G) please clear space by deleting and/or minimizing projects and then reload to build new hapmap.</span><br><br>";
 		}
+	} else {
+		$user = "";
+	}
+
+	if ($user == "") {
+		log_stuff("","","","","","user:VALIDATION failure, session expired.");
+		header('Location: .');
 	}
 ?>
 <html lang="en">
@@ -37,19 +48,21 @@
 					Unique name for this hapmap.
 				</td></tr><tr bgcolor="#CCCCFF"><td>
 					<label for="genome">Reference Diploid Genome : </label><select name="genome" id="genome" onchange="UpdateProjectList()">
-						<?php
-						$genomesDir1    = "users/default/genomes/";
-						$genomesDir2    = "users/".$user."/genomes/";
-						$genomeFolders1 = array_diff(glob($genomesDir1."*"), array('..', '.'));
-						$genomeFolders2 = array_diff(glob($genomesDir2."*"), array('..', '.'));
-						foreach($genomeFolders1 as $key=>$folder) {   $genomeFolders1[$key] = str_replace($genomesDir1,"",$folder);   }
-						foreach($genomeFolders2 as $key=>$folder) {   $genomeFolders2[$key] = str_replace($genomesDir2,"",$folder);   }
-						$genomeFolders  = array_merge($genomeFolders1,$genomeFolders2);
-						sort($genomeFolders);   //sort alphabetical.
-						foreach ($genomeFolders as $key=>$genome) {
-							echo "\n\t\t\t\t\t<option value='".$genome."'>".$genome."</option>";
-						}
-						?>
+		<?php
+	if (!$user == "") {
+		$genomesDir1    = "users/default/genomes/";
+		$genomesDir2    = "users/".$user."/genomes/";
+		$genomeFolders1 = array_diff(glob($genomesDir1."*"), array('..', '.'));
+		$genomeFolders2 = array_diff(glob($genomesDir2."*"), array('..', '.'));
+		foreach($genomeFolders1 as $key=>$folder) {   $genomeFolders1[$key] = str_replace($genomesDir1,"",$folder);   }
+		foreach($genomeFolders2 as $key=>$folder) {   $genomeFolders2[$key] = str_replace($genomesDir2,"",$folder);   }
+		$genomeFolders  = array_merge($genomeFolders1,$genomeFolders2);
+		sort($genomeFolders);   //sort alphabetical.
+		foreach ($genomeFolders as $key=>$genome) {
+			echo "\n\t\t\t\t\t<option value='".$genome."'>".$genome."</option>";
+		}
+	}
+		?>
 					</select><br>
 				</td><td valign="top">
 					Reference genome used to construct hapmap.
@@ -64,38 +77,42 @@
 				</td></tr><tr bgcolor="#CCFFCC"><td>
 					<div id="hiddenFormSection1" style="display:inline">
 <?php
-// figure out which hapmaps have been defined for this species, if any.
-$projectsDir1       = "users/default/projects/";
-$projectsDir2       = "users/".$user."/projects/";
-$projectFolders1    = array_diff(glob($projectsDir1."*"), array('..', '.'));
-$projectFolders2    = array_diff(glob($projectsDir2."*"), array('..', '.'));
-$projectFolders_raw = array_merge($projectFolders1,$projectFolders2);
-// Go through each $projectFolder and look at 'genome.txt' and 'dataFormat.txt'; build javascript array of prejectName:genome:dataFormat triplets.
+	if (!$user == "") {
+		// figure out which hapmaps have been defined for this species, if any.
+		$projectsDir1       = "users/default/projects/";
+		$projectsDir2       = "users/".$user."/projects/";
+		$projectFolders1    = array_diff(glob($projectsDir1."*"), array('..', '.'));
+		$projectFolders2    = array_diff(glob($projectsDir2."*"), array('..', '.'));
+		$projectFolders_raw = array_merge($projectFolders1,$projectFolders2);
+		// Go through each $projectFolder and look at 'genome.txt' and 'dataFormat.txt'; build javascript array of prejectName:genome:dataFormat triplets.
+	}
 ?>
 						Parental strain : <select id="parent" name="parent"><option>[choose]</option></select>
 <script type="text/javascript">
 var projectGenomeDataFormat_entries = [['project','genome','dataFormat']<?php
-foreach ($projectFolders_raw as $key=>$folder) {
-	if (!str_contains($folder, "index.php")) {
-		$genome_filename = $folder."/genome.txt";
-		$genome_string = "";
-		if (file_exists($genome_filename)) {
-			// Some datasets don't have a reference genome (e.g., SnpCgh arrays).
-			$handle1         = fopen($genome_filename, "r");
-			$genome_string   = trim(fgets($handle1));
-			fclose($handle1);
+	if (!$user == "") {
+		foreach ($projectFolders_raw as $key=>$folder) {
+			if (!str_contains($folder, "index.php")) {
+				$genome_filename = $folder."/genome.txt";
+				$genome_string = "";
+				if (file_exists($genome_filename)) {
+					// Some datasets don't have a reference genome (e.g., SnpCgh arrays).
+					$handle1         = fopen($genome_filename, "r");
+					$genome_string   = trim(fgets($handle1));
+					fclose($handle1);
+				}
+				$handle2         = fopen($folder."/dataFormat.txt", "r");
+				$dataFormat_string = trim(fgets($handle2));
+				$dataFormat_string = explode(":",$dataFormat_string);
+				$dataFormat_string = $dataFormat_string[0];
+				fclose($handle2);
+				$projectName     = $folder;
+				$projectName     = str_replace($projectsDir1,"",$projectName);
+				$projectName     = str_replace($projectsDir2,"",$projectName);
+				echo ",['{$projectName}','{$genome_string}',{$dataFormat_string}]";
+			}
 		}
-		$handle2         = fopen($folder."/dataFormat.txt", "r");
-		$dataFormat_string = trim(fgets($handle2));
-		$dataFormat_string = explode(":",$dataFormat_string);
-		$dataFormat_string = $dataFormat_string[0];
-		fclose($handle2);
-		$projectName     = $folder;
-		$projectName     = str_replace($projectsDir1,"",$projectName);
-		$projectName     = str_replace($projectsDir2,"",$projectName);
-		echo ",['{$projectName}','{$genome_string}',{$dataFormat_string}]";
 	}
-}
 ?>];
 
 UpdateProjectList=function() {
@@ -182,11 +199,13 @@ UpdateProjectList=function() {
 						This strain will form haplotype 'b'.
 					</div<
 				</td></tr></table><br>
-				<?php
-				if (!$exceededSpace) {
-					echo "<input type='submit' value='Create New Hapmap'>";
-				}
-				?>
+	<?php
+	if (!$user == "") {
+		if (!$exceededSpace) {
+			echo "<input type='submit' value='Create New Hapmap'>";
+		}
+	}
+	?>
 			</form>
 		</p></div>
 	</body>

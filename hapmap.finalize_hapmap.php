@@ -13,36 +13,45 @@
 	}
 
 	// Load user string from session.
-	$user   = $_SESSION['user'];
+	if(isset($_SESSION['user'])) {
+		$user   = $_SESSION['user'];
+	} else {
+		$user = "";
+	}
 
-	// Sanitize input strings.
-	$hapmap = sanitize_POST("hapmap");
-	$key    = sanitize_POST("key");
-
-	// Construct local dir strings.
-	$hapmap_dir = "users/".$user."/hapmaps/".$hapmap;
-
-	// Confirm if requested hapmap exists.
-	if (!is_dir($hapmap_dir)) {
-		// Hapmap doesn't exist, should never happen: Force logout.
-		session_destroy();
+	if ($user == "") {
+		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
-        }
+	} else {
+		// Sanitize input strings.
+		$hapmap = sanitize_POST("hapmap");
+		$key    = sanitize_POST("key");
 
-	// Re-initialize 'process_log.txt' file.
-	$logOutputName = $hapmap_dir."/process_log.txt";
-	$logOutput     = fopen($logOutputName, 'a');
-	fwrite($logOutput, "Log file restarted for hapmap finalization.\n");
+		// Construct local dir strings.
+		$hapmap_dir = "users/".$user."/hapmaps/".$hapmap;
 
-	// Generate 'complete.txt' file to let the pipeline know that the haplotype map has been finalized.
-	$handleName = $hapmap_dir."/complete.txt";
-	$handle     = fopen($handleName, 'w');
-	fwrite($handle, "complete");
-	fclose($handle);
+		// Confirm if requested hapmap exists.
+		if (!is_dir($hapmap_dir)) {
+			// Hapmap doesn't exist, should never happen: Force logout.
+			session_destroy();
+			header('Location: .');
+	        }
 
-	// log output.
-	fwrite($logOutput, "Haplotype map finalized.\n");
-	fclose($logOutput);
+		// Re-initialize 'process_log.txt' file.
+		$logOutputName = $hapmap_dir."/process_log.txt";
+		$logOutput     = fopen($logOutputName, 'a');
+		fwrite($logOutput, "Log file restarted for hapmap finalization.\n");
+
+		// Generate 'complete.txt' file to let the pipeline know that the haplotype map has been finalized.
+		$handleName = $hapmap_dir."/complete.txt";
+		$handle     = fopen($handleName, 'w');
+		fwrite($handle, "complete");
+		fclose($handle);
+
+		// log output.
+		fwrite($logOutput, "Haplotype map finalized.\n");
+		fclose($logOutput);
+	}
 ?>
 <script type="text/javascript">
 	var ff = parent.parent.document.getElementById('panel_hapmap_iframe');
