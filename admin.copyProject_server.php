@@ -42,18 +42,24 @@
 	}
 	$project_to_copy = $projectFolders[$user_key];
 
-	$src  = $projectDir.$project_to_copy;
-	$dest = "users/default/projects/".$project_to_copy;
-
-	// Copy from source project directory to destination project directory.
-	if (file_exists($dest)) {
-		log_stuff($user,"","",$project_to_copy,"","ADMIN fail: attempted to copy project to default user, but project name is already in use.");
+	if ($user = "") {
+		log_stuff("",$project_to_copy,"","","","ADMIN fail: no user name found in session.");
+		session_destroy();
+		header('Location: .');
 	} else {
-		log_stuff($user,"","",$project_to_copy,"","ADMIN success: copied project to default user.");
-		mkdir($dest, 0777, true);
-		foreach (scandir($src) as $file) {
-			if (!is_readable($src . '/' . $file)) continue;
-                        copy($src . '/' . $file, $dest . '/' . $file);
+		$src  = $projectDir.$project_to_copy;
+		$dest = "users/default/projects/".$project_to_copy;
+
+		// Copy from source project directory to destination project directory.
+		if (file_exists($dest)) {
+			log_stuff($user,"","",$project_to_copy,"","ADMIN fail: attempted to copy project to default user, but project name is already in use.");
+		} else {
+			log_stuff($user,"","",$project_to_copy,"","ADMIN success: copied project to default user.");
+			mkdir($dest, 0777, true);
+			foreach (scandir($src) as $file) {
+				if (!is_readable($src . '/' . $file)) continue;
+	                        copy($src . '/' . $file, $dest . '/' . $file);
+			}
 		}
 	}
 ?>

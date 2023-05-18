@@ -14,6 +14,7 @@
 
 	// Ensure admin user is logged in.
 	$user = $_SESSION['user'];
+
 	$super_user_flag_file = "users/".$user."/super.txt";
 	if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
 		$admin_logged_in = "true";
@@ -26,7 +27,6 @@
 	}
 
 	// Load user string from session.
-	$user     = $_SESSION['user'];
 	$user_key = sanitizeInt_POST('key');
 
 	// Determine user account associated with key.
@@ -42,18 +42,24 @@
 	}
 	$genome_to_copy = $genomeFolders[$user_key];
 
-	$src  = $genomeDir.$genome_to_copy;
-	$dest = "users/default/genomes/".$genome_to_copy;
-
-	// Copy from source genome directory to destination genome directory.
-	if (file_exists($dest)) {
-		log_stuff($user,"","",$genome_to_copy,"","ADMIN fail: attempted to copy genome to default user, but genome name is already in use.");
+	if ($user = "") {
+		log_stuff("","","",$genome_to_copy,"","ADMIN fail: no user name found in session.");
+		session_destroy();
+		header('Location: .');
 	} else {
-		log_stuff($user,"","",$genome_to_copy,"","ADMIN success: copied genome to default user.");
-		mkdir($dest, 0777, true);
-		foreach (scandir($src) as $file) {
-			if (!is_readable($src . '/' . $file)) continue;
-                        copy($src . '/' . $file, $dest . '/' . $file);
+		$src  = $genomeDir.$genome_to_copy;
+		$dest = "users/default/genomes/".$genome_to_copy;
+
+		// Copy from source genome directory to destination genome directory.
+		if (file_exists($dest)) {
+			log_stuff($user,"","",$genome_to_copy,"","ADMIN fail: attempted to copy genome to default user, but genome name is already in use.");
+		} else {
+			log_stuff($user,"","",$genome_to_copy,"","ADMIN success: copied genome to default user.");
+			mkdir($dest, 0777, true);
+			foreach (scandir($src) as $file) {
+				if (!is_readable($src . '/' . $file)) continue;
+	                        copy($src . '/' . $file, $dest . '/' . $file);
+			}
 		}
 	}
 ?>

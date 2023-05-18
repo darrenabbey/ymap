@@ -17,18 +17,26 @@
 
 	// Sanitize input strings.
 	$project = sanitize_POST("project");
-	$dir     = "users/".$user."/projects/".$project;
 
-	// Confirm if requested project exists.
-	if (is_dir($dir)) {
-		// Requested project dir does exist for logged in user: Delete installed project.
-		minimizeProject($dir);
-		echo "COMPLETE";
-		log_stuff($user,$project,"","","","project:MINIMIZE success");
+	if ($user = "") {
+		log_stuff("",$project,"","","","project:MINIMIZE failure, no user name found in session.");
+		session_destroy();
+		header('Location: .');
 	} else {
-		// Project doesn't exist, should never happen.
-		echo "ERROR:".$user." doesn't own project.";
-		log_stuff($user,$project,"","","","project:MINIMIZE failure, user doesn't own project.");
+		$dir     = "users/".$user."/projects/".$project;
+
+		// Confirm if requested project exists.
+		if (is_dir($dir)) {
+			// Requested project dir does exist for logged in user: Delete installed project.
+			minimizeProject($dir);
+			echo "COMPLETE";
+			log_stuff($user,$project,"","","","project:MINIMIZE success");
+		} else {
+			// Project doesn't exist, should never happen.
+			echo "ERROR:".$user." doesn't own project.";
+			log_stuff($user,$project,"","","","project:MINIMIZE failure, user doesn't own project.");
+		}
+		log_stuff($user,$project,"","","","project:MINIMIZE success.");
 	}
 
 	// Function for reducing project files to only necessary for display.

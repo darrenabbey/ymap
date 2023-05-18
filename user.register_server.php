@@ -34,7 +34,15 @@
 // Functions used to generate user account.
 //---------------------------------------------------------
 	function createNewUser($user, $pw){
-		if (!doesUserDirectoryExist($user)) {
+		if ($user == "") {
+			// The user directory already exists!
+			echo "<font color=\"red\"><b>ERROR: Invalid user name, try another.</b></font><br>";
+			echo "(Main page will reload shortly...)\n";
+			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
+			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
+			log_stuff("","","","","","user:REGISTRATION failure, no user name provided.");
+			return false;
+		} else if (!doesUserDirectoryExist($user)) {
 			$dir = "users/".$user;
 			mkdir($dir);
 			secureNewDirectory($dir);
@@ -59,6 +67,7 @@
 			echo "(Main page will reload shortly...)\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 2500);\n</script>\n";
+			log_stuff($user,"","","","","user:REGISTRATION success.");
 			return false;
 		} else {
 			// The user directory already exists!
@@ -66,6 +75,7 @@
 			echo "(Main page will reload shortly...)\n";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"user.register.php\");\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 5000);\n</script>\n";
+			log_stuff($user,"","","","","user:REGISTRATION failure, improper user name provided.");
 			return false;
 		}
 	}

@@ -14,6 +14,7 @@
 
 	// Ensure admin user is logged in.
 	$user = $_SESSION['user'];
+
 	$super_user_flag_file = "users/".$user."/super.txt";
 	if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
 		$admin_logged_in = "true";
@@ -26,7 +27,6 @@
 	}
 
 	// Load user string from session.
-	$user     = $_SESSION['user'];
 	$user_key = sanitizeInt_POST('key');
 
 	// Determine user account associated with key.
@@ -42,57 +42,64 @@
 	}
 	$project_to_clean = $projectFolders[$user_key];
 
-	$src  = $projectDir.$project_to_clean;
+	if ($user = "") {
+		log_stuff("",$project_to_clean,"","","","project:MINIMIZE failure, no user name found in session.");
+		session_destroy();
+		header('Location: .');
+	} else {
+		$src  = $projectDir.$project_to_clean;
 
+		// Make a temp directory.
+		$temp_dir = $projectDir.$project_to_clean."temp/";
+		mkdir($temp_dir);
 
-	// Make a temp directory.
-	$temp_dir = $projectDir.$project_to_clean."temp/";
-	mkdir($temp_dir);
-
-	// Move all project files to temp directory.
-	// Get array of all source files
-	$files = scandir($projectDir.$project_to_clean);
-	// Identify directories
-	$source = $projectDir.$project_to_clean;
-	$destination = $temp_dir;
-	// Cycle through all source files
-	foreach ($files as $file) {
-		if (in_array($file, array(".","..","temp"))) continue;
-		// If we copied this successfully, mark it for deletion
-		if (copy($source.$file, $destination.$file)) {
-			$delete[] = $source.$file;
+		// Move all project files to temp directory.
+		// Get array of all source files
+		$files = scandir($projectDir.$project_to_clean);
+		// Identify directories
+		$source = $projectDir.$project_to_clean;
+		$destination = $temp_dir;
+		// Cycle through all source files
+		foreach ($files as $file) {
+			if (in_array($file, array(".","..","temp"))) continue;
+			// If we copied this successfully, mark it for deletion
+			if (copy($source.$file, $destination.$file)) {
+				$delete[] = $source.$file;
+			}
 		}
-	}
-	// Delete all successfully-copied files
-	foreach ($delete as $file) {
-		unlink($file);
-	}
-
-	// Move only needed files back to project directory.
-	// Get array of target source files
-	$files = scandir($temp_dir);
-	// Identify directories
-	$source = $temp_dir;
-	$destination = $projectDir.$project_to_clean;
-	// Cycle through all source files
-	foreach ($files as $file) {
-		if (in_array($file, array("complete.txt","dataFormat.txt","genome.txt","index.php","name.txt","parent.txt","totalSize.txt"))) {
-			copy($source.$file, $destination.$file);
+		// Delete all successfully-copied files
+		foreach ($delete as $file) {
+			unlink($file);
 		}
-		$file_ext = substr(strrchr($file, '.'), 1);
-		// mv [png|eps|bed|gff3] files.
-		if (($file_ext == "png") or ($file_ext == "eps") or ($file_ext == "bed") or ($file_ext == "gff3")) {
-			copy($source.$file, $destination.$file);
+
+		// Move only needed files back to project directory.
+		// Get array of target source files
+		$files = scandir($temp_dir);
+		// Identify directories
+		$source = $temp_dir;
+		$destination = $projectDir.$project_to_clean;
+		// Cycle through all source files
+		foreach ($files as $file) {
+			if (in_array($file, array("complete.txt","dataFormat.txt","genome.txt","index.php","name.txt","parent.txt","totalSize.txt"))) {
+				copy($source.$file, $destination.$file);
+			}
+			$file_ext = substr(strrchr($file, '.'), 1);
+			// mv [png|eps|bed|gff3] files.
+			if (($file_ext == "png") or ($file_ext == "eps") or ($file_ext == "bed") or ($file_ext == "gff3")) {
+				copy($source.$file, $destination.$file);
+			}
 		}
-	}
 
-	// Cycle through all files remaining in temp directory and delete.
-	$files = scandir($temp_dir);
-	foreach ($files as $file) {
-		if (in_array($file, array(".",".."))) continue;
-		$delete[] = $temp_dir.$file;
-	}
+		// Cycle through all files remaining in temp directory and delete.
+		$files = scandir($temp_dir);
+		foreach ($files as $file) {
+			if (in_array($file, array(".",".."))) continue;
+			$delete[] = $temp_dir.$file;
+		}
 
-	// Delete temp directory.
-	rmdir($temp_dir);
+		// Delete temp directory.
+		rmdir($temp_dir);
+
+		log_stuff($user,$project_to_clean,"","","","project:MINIMIZE success.");
+	}
 ?>
