@@ -44,7 +44,8 @@ function showColors(colorName,targetToChange,contentString) {
 		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear
 		$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
 		if ($exceededSpace) {
-			echo "<span style='color:#FF0000; font-weight: bold;'>You have exceeded your quota (" . $quota . "G) please clear space by deleting and/or minimizing projects and then reload to generate new hapmap.</span><br><br>";
+			echo "<span style='color:#FF0000; font-weight: bold;'>You have exceeded your quota (".$quota."G). ";
+			echo "Clear space by deleting/minimizing projects or wait until datasets finish processing before building a new hapmap.</span><br><br>";
 		}
 	}
 ?>
