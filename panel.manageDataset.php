@@ -189,11 +189,13 @@
 
 		if ($frameContainerIx == "1") {
 			// define update dataset button, which passes key value to update project page in iframe of main page.
-			echo "<input name='button_UpdateDataset' type='button' value='Update Dataset' onclick='";
-			echo "parent.document.getElementById(\"Hidden_UpdateDataset_Frame\").contentWindow.location.href = \"project.update_window.php?key=".$key."\";\n";
-			echo "parent.show_hidden(\"Hidden_UpdateDataset\"); ";
-			echo "parent.update_interface();";
-			echo "'><br>";
+			if (!file_exists("users/".$user."/projects/".$project."/minimized.txt") && file_exists("users/".$user."/projects/".$project."/complete.txt")) {
+				echo "<input name='button_UpdateDataset' type='button' value='Update Dataset' onclick='";
+				echo "parent.document.getElementById(\"Hidden_UpdateDataset_Frame\").contentWindow.location.href = \"project.update_window.php?key=".$key."\";\n";
+				echo "parent.show_hidden(\"Hidden_UpdateDataset\"); ";
+				echo "parent.update_interface();";
+				echo "'><br>";
+			}
 		}
 
 

@@ -20,9 +20,6 @@
 		}
 	}
 
-	// Grab key from GET string.
-	$key = sanitizeInt_GET("key");
-
 	//======================
 	// Find project folder.
 	//----------------------
@@ -36,16 +33,28 @@
 	foreach($projectFolders as $key_=>$folder) {   $projectFolders[$key_] = str_replace($projectsDir,"",$folder);   }
 
 	// Split project list into ready/working/starting lists for sequential display.
+	$projectFolders_starting = array();
+	$projectFolders_working  = array();
 	$projectFolders_complete = array();
 	foreach($projectFolders as $project) {
 		if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
 			array_push($projectFolders_complete,$project);
+		} else if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
+			array_push($projectFolders_working, $project);
+		} else if (is_dir("users/".$user."/projects/".$project)) {
+			array_push($projectFolders_starting,$project);
 		}
 	}
+	$userProjectCount_starting = count($projectFolders_starting);
+	$userProjectCount_working  = count($projectFolders_working);
 	$userProjectCount_complete = count($projectFolders_complete);
 
 	// Sort complete and working projects alphabetically.
 	array_multisort($projectFolders_complete, SORT_ASC, $projectFolders_complete);
+
+	// Grab key from GET string.
+	$key = sanitizeInt_GET("key");
+	$key = $key - $userProjectCount_starting - $userProjectCount_working;
 
 	// Grab name string from 'name.txt'.
 	$project                 = $projectFolders_complete[$key];
@@ -87,7 +96,7 @@
 		<div id="loginControls"><p>
 		</p></div>
 		<div id="projectCreationInformation"><p>
-			<form action="project.update_server.php" onsubmit="parent.document.getElementById('Hidden_UpdateDataset').style.display = 'none'; parent.update_projectsShown_after_new_project();" method="post">
+			<form action="project.update_server.php" onsubmit="parent.document.getElementById('Hidden_UpdateDataset').style.display = 'none'; parent.document.getElementById('panel_manageDataset').contentDocument.location.reload();" method="post">
 				<table><tr bgcolor="#CCFFCC"><td>
 					<label for="project">Dataset Name : </label><input type="text" name="project" id="project" value="<?php echo $project; ?>" readonly style="background-color:#CCFFCC">
 				</td><td>
