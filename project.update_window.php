@@ -96,7 +96,7 @@
 		<div id="loginControls"><p>
 		</p></div>
 		<div id="projectCreationInformation"><p>
-			<form action="project.update_server.php" onsubmit="parent.document.getElementById('Hidden_UpdateDataset').style.display = 'none'; parent.document.getElementById('panel_manageDataset').contentDocument.location.reload();" method="post">
+			<form action="project.update_server.php" onsubmit="parent.document.getElementById('Hidden_UpdateDataset').style.display = 'none';" method="post">
 				<table><tr bgcolor="#CCFFCC"><td>
 					<label for="project">Dataset Name : </label><input type="text" name="project" id="project" value="<?php echo $project; ?>" readonly style="background-color:#CCFFCC">
 				</td><td>

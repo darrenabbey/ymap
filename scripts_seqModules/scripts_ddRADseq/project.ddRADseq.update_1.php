@@ -15,6 +15,12 @@
 	$user     = $_SESSION['user'];
 	$project  = $_SESSION['project'];
 
+?>
+<script type="text/javascript">
+	parent.update_interface();
+</script>
+<?php
+
 	$project_dir = "../../users/".$user."/projects/".$project;
 
 // Initialize log files.

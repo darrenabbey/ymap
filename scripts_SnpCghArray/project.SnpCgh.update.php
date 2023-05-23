@@ -17,6 +17,12 @@
 	$project  = $_SESSION['project'];
 	$key      = $_SESSION['key'];
 
+?>
+<script type="text/javascript">
+	parent.update_interface();
+</script>
+<?php
+
 	$project_dir = "../users/".$user."/projects/".$project;
 
 	include_once '../process_input_files.php';
