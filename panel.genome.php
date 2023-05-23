@@ -13,8 +13,7 @@
 <p><font size='2'>
     <b>IMPORTANT:</b>
     <ol>
-        <li>Ymap only supports .fasta file extensions (which can be compressed with gzip or zip - ending with .gz and .zip, respectively). If your files end with .fa or .fna, you should rename them appropriately.</li>
-        <li>Small chromosomes and mitochodnrial DNA (less than 100 kbp) will not be displayed well, and you should remove them from the reference before uploading.</li>
+	<li>Small chromosomes and mitochodnrial DNA (less than 100 kbp) will not be displayed well, and should be unselected during genome configuration.</li>
     </ol>
 </font></p>
 <?php

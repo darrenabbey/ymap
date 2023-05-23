@@ -248,7 +248,7 @@
 				chmod($fileName,0644);
 			}
 
-			log_stuff($user,$project,"","","","projcet:CREATE success");
+			log_stuff($user,$project,"","","","project:CREATE success");
 ?>
 	<html>
 	<body>

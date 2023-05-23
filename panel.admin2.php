@@ -142,8 +142,8 @@
 		$projectNameString = file_get_contents($projectNameFile);
 		$projectNameString = trim($projectNameString);
 
-		$projectyNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
-		$projectNameString  = trim($projectNameString);
+		$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
+		$projectNameString = trim($projectNameString);
 		echo "<span id='p_label_".$key."_admin' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
 		echo "<font size='2'>".($key+1).".";
 		if ($frameContainerIx != "1") {

@@ -81,9 +81,9 @@
 		foreach($projectFolders as $key=>$folder) {   $projectFolders[$key] = str_replace($projectsDir,"",$folder);   }
 
 		// Split project list into ready/working/starting lists for sequential display.
-		$projectFolders_complete = array();
-		$projectFolders_working  = array();
 		$projectFolders_starting = array();
+		$projectFolders_working  = array();
+		$projectFolders_complete = array();
 		foreach($projectFolders as $key=>$project) {
 			if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
 				array_push($projectFolders_complete,$project);
@@ -96,6 +96,7 @@
 		$userProjectCount_starting = count($projectFolders_starting);
 		$userProjectCount_working  = count($projectFolders_working);
 		$userProjectCount_complete = count($projectFolders_complete);
+
 		// Sort complete and working projects alphabetically.
 		array_multisort($projectFolders_working,  SORT_ASC, $projectFolders_working);
 		array_multisort($projectFolders_complete, SORT_ASC, $projectFolders_complete);
@@ -142,7 +143,7 @@
 		$projectNameString = file_get_contents($projectNameFile);
 		$projectNameString = trim($projectNameString);
 
-		$projectyNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
+		$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 		$projectNameString  = trim($projectNameString);
 		echo "<span id='p_label_".$key."' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
 		echo "<font size='2'>".($key+1).".";
@@ -185,6 +186,17 @@
 		if (!file_exists("users/".$user."/projects/".$project."/minimized.txt") && file_exists("users/".$user."/projects/".$project."/complete.txt")) {
 			echo "<span id='p_minimize_".$key."'></span>\n";
 		}
+
+		if ($frameContainerIx == "1") {
+			// define update dataset button, which passes key value to update project page in iframe of main page.
+			echo "<input name='button_UpdateDataset' type='button' value='Update Dataset' onclick='";
+			echo "parent.document.getElementById(\"Hidden_UpdateDataset_Frame\").contentWindow.location.href = \"project.update_window.php?key=".$key."\";\n";
+			echo "parent.show_hidden(\"Hidden_UpdateDataset\"); ";
+			echo "parent.update_interface();";
+			echo "'><br>";
+		}
+
+
 		echo "\t\t\t\t";
 		echo "<div id='frameContainer.p".$frameContainerIx."_".$key."'></div>\n\n\t\t\t\t";
 	}

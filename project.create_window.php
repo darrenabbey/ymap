@@ -94,25 +94,25 @@
 				<tr bgcolor="#CCFFCC"><td>
 					<div id="hiddenFormSection3" style="display:inline">
 						<label for="genome">Reference genome : </label><select name="genome" id="genome" onchange="UpdateHapmap(); UpdateHapmapList(); UpdateParentList()">
-							<?php
-                                $genomesMap = array(); // A mapping of folder names to display names, sorted by folder names.
-                                foreach (array("default", $user) as $genomeUser) {
-                                    $genomesDir = "users/" . $genomeUser . "/genomes/";
-                                    foreach (array_diff(glob($genomesDir . "*"), array('..', '.')) as $genomeDir) {
-                                        // display genome only if processing finished
-                                        if (file_exists($genomeDir . "/complete.txt")) {
-                                                $genomeDirName = str_replace($genomesDir, "", $genomeDir);
-                                                $genomeDisplayName = file_get_contents($genomeDir . "/name.txt");
-                                                $genomesMap[$genomeDirName] = $genomeDisplayName;
-                                        }
-                                    }
-                                }
+					<?php
+					$genomesMap = array(); // A mapping of folder names to display names, sorted by folder names.
+					foreach (array("default", $user) as $genomeUser) {
+						$genomesDir = "users/" . $genomeUser . "/genomes/";
+						foreach (array_diff(glob($genomesDir . "*"), array('..', '.')) as $genomeDir) {
+							// display genome only if processing finished
+							if (file_exists($genomeDir . "/complete.txt")) {
+								$genomeDirName = str_replace($genomesDir, "", $genomeDir);
+								$genomeDisplayName = file_get_contents($genomeDir . "/name.txt");
+								$genomesMap[$genomeDirName] = $genomeDisplayName;
+							}
+						}
+					}
 
-                                ksort($genomesMap);
-                                foreach ($genomesMap as $genomeDirName => $genomeDisplayName) {
-                                    echo "\n\t\t\t\t\t<option value='" . $genomeDirName . "'>" . $genomeDisplayName . "</option>";
-                                }
-							?>
+					ksort($genomesMap);
+					foreach ($genomesMap as $genomeDirName => $genomeDisplayName) {
+						echo "\n\t\t\t\t\t<option value='" . $genomeDirName . "'>" . $genomeDisplayName . "</option>";
+					}
+					?>
 						</select><br>
 					</div>
 				</td><td valign="top">
@@ -196,7 +196,7 @@
 						<script type="text/javascript">
 						var parentGenomeDataFormat_entries = [
 							['parent', 'genome', 'dataFormat', 'projectName'],
-<?php
+						<?php
 						foreach ($projectFolders_raw as $key=>$folder) {
 							// display project only if processing finished
 							if (file_exists($folder . "/complete.txt")) {
@@ -236,7 +236,7 @@
 								}
 							}
 						}
-?>						];
+						?>];
 						</script>
 					</div>
 				</td><td valign="top">
