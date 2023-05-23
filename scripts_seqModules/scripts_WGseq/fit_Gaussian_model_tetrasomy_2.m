@@ -91,18 +91,23 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p1_a         = abs(params(1));   % height.
 	p1_b         = locations(1);     % location.
 	p1_c         = abs(params(2));   % width.
+
 	p2_a         = abs(params(3));   % height.
 	p2_b         = locations(2);     % location.
 	p2_c         = abs(params(4));   % width.
+
 	p3_a         = abs(params(5));   % height.
 	p3_b         = locations(3);     % location.
-	p3_c         = abs(params(6));   % width.
+	p3_c         = abs(params(4)); % abs(params(6));   % width.
+
 	p4_a         = abs(params(7));   % height.
 	p4_b         = locations(4);     % location.
-	p4_c         = abs(params(8));   % width.
+	p4_c         = abs(params(4)); % abs(params(8));   % width.
+
 	p5_a         = abs(params(9));   % height.
 	p5_b         = locations(5);     % location.
-	p5_c         = abs(params(10));  % width.
+	p5_c         = abs(params(2)); % abs(params(10));  % width.
+
 	skew_factor1 = abs(params(11));
 	skew_factor2 = abs(params(12));
 	skew_factor3 = 1;

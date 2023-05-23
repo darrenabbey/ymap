@@ -31,7 +31,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 		datamax = data;
 		datamax(data ~= max(datamax)) = [];
 	end;
-    
+
 	% a = height; b = location; c = width.
 	p1_ai = datamax;   p1_bi = locations(1);   p1_ci = init_width;
 	p2_ai = datamax;   p2_bi = locations(2);   p2_ci = init_width;
@@ -124,27 +124,35 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p1_a         = abs(params(1));   % height.
 	p1_b         = locations(1);     % location.
 	p1_c         = abs(params(2));   % width.
+
 	p2_a         = abs(params(3));   % height.
 	p2_b         = locations(2);     % location.
 	p2_c         = abs(params(4));   % width.
+
 	p3_a         = abs(params(5));   % height.
 	p3_b         = locations(3);     % location.
-	p3_c         = abs(params(6));   % width.
+	p3_c         = abs(params(4)); % abs(params(6));   % width.
+
 	p4_a         = abs(params(7));   % height.
 	p4_b         = locations(4);     % location.
-	p4_c         = abs(params(8));   % width.
+	p4_c         = abs(params(4)); % abs(params(8));   % width.
+
 	p5_a         = abs(params(9));   % height.
 	p5_b         = locations(5);     % location.
-	p5_c         = abs(params(10));  % width.
+	p5_c         = abs(params(4)); % abs(params(10));  % width.
+
 	p6_a         = abs(params(11));  % height.
 	p6_b         = locations(6);     % location.
-	p6_c         = abs(params(12));  % width.
+	p6_c         = abs(params(4)); % abs(params(12));  % width.
+
 	p7_a         = abs(params(13));  % height.
 	p7_b         = locations(7);     % location.
-	p7_c         = abs(params(14));  % width.
+	p7_c         = abs(params(4)); % abs(params(14));  % width.
+
 	p8_a         = abs(params(15));  % height.
 	p8_b         = locations(8);     % location.
-	p8_c         = abs(params(16));  % width.
+	p8_c         = abs(params(2)); % abs(params(16));  % width.
+
 	skew_factor1 = abs(params(17));
 	skew_factor2 = abs(params(18));
 	skew_factor3 = abs(params(19));

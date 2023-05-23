@@ -1,5 +1,6 @@
 function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, skew_factor] = fit_Gaussian_model_monosomy_2(workingDir, saveName, data,locations,init_width,func_type)
 	% attempt to fit a 2-gaussian model to data.
+	$ peaks should be narrow, since only sequencing error noise is being examined.
 
 	show = false;
 	p1_a = nan;   p1_b = nan;   p1_c = nan;
@@ -66,9 +67,11 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p1_a         = abs(params(1));   % height.
 	p1_b         = locations(1);     % location.
 	p1_c         = abs(params(2));   % width.
+
 	p2_a         = abs(params(3));   % height.
 	p2_b         = locations(2);     % location.
-	p2_c         = abs(params(4));   % width.
+	p2_c         = abs(params(2));   %abs(params(4));   % width.
+
 	skew_factor1 = abs(params(5));
 	skew_factor2 = abs(params(6));
 	if (p1_c == 0); p1_c = 0.001; end
@@ -82,7 +85,7 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	if (time1_1(end) == time1_2(1));time1_1(end) = [];  end;
 	time2_1 = 1:floor(p2_b);
 	time2_2 = ceil(p2_b):200;
-	if (time2_1(end) == time2_2(1));time2_2(1) = [];end;  
+	if (time2_1(end) == time2_2(1));time2_2(1) = [];end;
 	c1_  = p1_c/2 + p1_c*skew_factor1/(100.5-abs(100.5-p1_b))/2;
 	p1_c = p1_c*p1_c/c1_;
 	c2_  = p2_c/2 + p2_c*skew_factor2/(100.5-abs(100.5-p2_b))/2;

@@ -1,7 +1,7 @@
 %% =========================================================================================
 % Calculate allelic fraction cutoffs.
 %-------------------------------------------------------------------------------------------
-% Initialize 
+% Initialize
 for chr = num_chrs
 	if (chr_in_use(chr) == 1)
 		for segment = 1:length(chrCopyNum{chr})
@@ -83,8 +83,8 @@ for chr = 1:num_chrs
 
 			% log-scale the histogram to minimize difference between hom & het peak heights.
 			% average this with the raw histogram so the large peaks still appear visibily larger than the small peaks.
-			
-			data_hist                  = (data_hist + log(data_hist+1))/2;
+
+			data_hist                  = data_hist/2 + log(data_hist+1)/2;
 			% data_hist                = log(data_hist+1);
 
 			% smooth the histogram.

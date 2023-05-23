@@ -12,19 +12,19 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gau
 	% find max height in data.
 	datamax = max(data);
 	%datamax(data ~= max(datamax)) = [];
-    
+
 	% if maxdata is final bin, then find next highest p
 	if (find(data == datamax) == length(data))
 		data(data == datamax) = 0;
 		datamax = data;
 		datamax(data ~= max(datamax)) = [];
 	end;
-    
+
 	% a = height; b = location; c = width.
 	p1_ai = datamax;   p1_bi = locations(1);   p1_ci = init_width;
 	p2_ai = datamax;   p2_bi = locations(2);   p2_ci = init_width;
 	p3_ai = datamax;   p3_bi = locations(3);   p3_ci = init_width;
-   
+
 %%	initial = [p1_ai,p1_bi,p1_ci,  p2_ai,  skew_factor];
 	initial = [p1_ai,p1_ci,  p3_ai,  skew_factor];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
@@ -186,7 +186,7 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	else
 		time3_1 = [];
 	end;
-    
+
 	if (skew_factor/(100-abs(100-p1_b)) < 1)
 		skew_factor = (100-abs(100-p1_b));
 	end;
@@ -195,13 +195,13 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p1_c = p1_c*p1_c/c1_;
 	c3_  = p3_c/2 + p3_c*skew_factor/(100-abs(100-p3_b))/2;
 	p3_c = p3_c*p3_c/c3_;
-    
+
 	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
 	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor/(100-abs(100-p1_b))) ).^2);
 	p2_fit   = p2_a*exp(-0.5*((time-p2_b)./p2_c).^2);
 	p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c/(skew_factor/(100-abs(100-p3_b))) ).^2);
 	p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c).^2);
-    
+
 	p1_fit = [p1_fit_L p1_fit_R];
 	p3_fit = [p3_fit_L p3_fit_R];
 	fitted = p1_fit+p2_fit+p3_fit;
@@ -224,6 +224,6 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 			sse          = sum(Error_Vector.^2);
 		otherwise
 			error('Error: choice for fitting not implemented yet!');
-			sse          = 1;            
+			sse          = 1;
 	end;
 end

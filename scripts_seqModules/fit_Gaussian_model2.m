@@ -6,7 +6,7 @@ function [G1_a, G1_b, G1_c] = fit_Gaussian_model2(data, location, func_type, sho
 	G1_a = nan;
 	G1_b = nan;
 	G1_c = nan;
-    
+
 	if isnan(data)
 		% fitting variables
 		return
@@ -15,24 +15,24 @@ function [G1_a, G1_b, G1_c] = fit_Gaussian_model2(data, location, func_type, sho
 	% find max height in data.
 	datamax = max(data);
 	%datamax(data ~= max(datamax)) = [];
-    
+
 	% if maxdata is final bin, then find next highest p
 	if (find(data == datamax) == length(data))
 		data(data == datamax) = 0;
 		datamax = data;
 		datamax(data ~= max(datamax)) = [];
 	end;
-    
+
 	% a = height; b = location; c = width.
 	G1_ai = datamax;
 	G1_bi = location;
-    
+
 	%find G1_ci; width of G1 at halfmax.
 	dd = data;
 	dd(data < max(data)/2) = 0;
 	c1 = find(dd,1,'first');
 	G1_ci = (G1_bi-c1)/sqrt(2*log(2));
-    
+
 	initial = [G1_ai, G1_bi, G1_ci];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',10000);
 
@@ -73,14 +73,14 @@ function sse = fiterror(params,time,data,func_type, show_fitting,ploidy1x)
 
 	G1_fit = G1_a*exp(-0.5*((time-G1_b)./G1_c).^2);
 	fitted = G1_fit;
-    
+
 	if (show_fitting == 1)
 		%------------------------------------------------------------------
 		% show fitting in process.
-		figure(1);    
+		figure(1);
 		% show data being fit.
 		plot(data,'x-','color',[0.75 0.75 1]);
-		hold on;    
+		hold on;
 		% show fit curve.
 		plot(fitted,'-','color',[0 0.5 0.5],'lineWidth',2);
 		% show ploidy lines.
