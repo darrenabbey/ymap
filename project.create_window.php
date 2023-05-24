@@ -84,7 +84,7 @@
 				</td></tr>
 				<tr bgcolor="#CCFFCC"><td>
                                         <div id="hiddenFormSection2a" style="display:inline">
-                                                <input type="checkbox" name="indelrealign" value="True">Perform Indel-realignment<br>
+                                                <input type="checkbox" name="indelrealign" value="False" disabled="disabled">Perform Indel-realignment <font color="red" size="2"><b>(Disabled, pending testing.)</b></font><br>
                                         </div>
 				</td><td>
 					<div id="hiddenFormSection2b" style="display:inline">
