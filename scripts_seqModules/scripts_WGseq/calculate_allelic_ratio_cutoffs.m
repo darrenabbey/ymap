@@ -104,8 +104,9 @@ for chr = 1:num_chrs
 			segment_smoothedHistogram  = smoothed;                         % whole chromosome allelic ratio histogram smoothed.
 
 			% Define cutoffs between Gaussian fits.
-			saveName = ['allelic_ratios.chr_' num2str(chr) '.seg_' num2str(segment)];
-			[peaks,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(workingDir,saveName, chr,segment, segment_copyNum,segment_smoothedHistogram, true);
+			workingDir = ['users/'];
+			saveName   = ['allelic_ratios.chr_' num2str(chr) '.seg_' num2str(segment)];
+			[peaks,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(workingDir,saveName, chr,segment, segment_copyNum,segment_smoothedHistogram, false);
 
 			fprintf(['^^^ copyNum             = ' num2str(segment_copyNum    ) '\n']);
 			fprintf(['^^^ peaks               = ' num2str(peaks              ) '\n']);
