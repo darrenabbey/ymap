@@ -28,7 +28,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gau
 	p2_ai = datamax;   p2_bi = locations(2);   p2_ci = init_width;
 	p3_ai = datamax;   p3_bi = locations(3);   p3_ci = init_width;
 
-	initial = [p1_ai,p1_ci,p2_ai,p2_ci,p3_ai,p3_ci, skew_factor,skew_factor,skew_factor];
+	initial = [p1_ai,p1_ci,p2_ai,p2_ci,p3_ai,p3_ci]; %, skew_factor,skew_factor,skew_factor];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
 	time    = 1:length(data);
 
@@ -49,6 +49,16 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gau
 		% < 0 : did not converge to a solution.
 		% return last best estimate anyhow.
 	end;
+
+
+	% Estimates(2):homozygous should always be narrower than Estimates(4):heterozygous.
+	if (abs(Estimates(4)) < abs(Estimates(2)))
+		% swap them
+		temp         = Estimates(4);
+		Estimates(4) = Estimates(2);
+		Estimates(2) = temp;
+	end
+
 	p1_a         = abs(Estimates(1));
 	p1_b         = locations(1);
 	p1_c         = abs(Estimates(2));
@@ -61,9 +71,9 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gau
 	p3_b         = locations(3);
 	p3_c         = abs(Estimates(2));
 
-	skew_factor1 = abs(Estimates(7));
+	skew_factor1 = 1; %abs(Estimates(7));
 	skew_factor2 = 1;
-	skew_factor3 = 2-abs(Estimates(7));
+	skew_factor3 = 1; %2-abs(Estimates(7));
 	if (skew_factor1 < 0); skew_factor1 = 0; end; if (skew_factor1 > 2); skew_factor1 = 2; end;
 	if (skew_factor2 < 0); skew_factor2 = 0; end; if (skew_factor2 > 2); skew_factor2 = 2; end;
 	if (skew_factor3 < 0); skew_factor3 = 0; end; if (skew_factor3 > 2); skew_factor3 = 2; end;
@@ -75,12 +85,12 @@ end
 
 function sse = fiterror(params,time,data,func_type,locations,show)
 	% params(2):homozygous should always be narrower than params(4):heterozygous.
-	if (abs(params(4)) < abs(params(2))) {
+	if (abs(params(4)) < abs(params(2)))
 		% swap them
 		temp      = params(4);
 		params(4) = params(2);
 		params(2) = temp;
-	}
+	end;
 
 	p1_a         = abs(params(1));   % height.
 	p1_b         = locations(1);     % location.
@@ -94,9 +104,9 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p3_b         = locations(3);     % location.
 	p3_c         = abs(params(2));   %abs(params(6));   % width.
 
-	skew_factor1 = abs(params(7));
+	skew_factor1 = 1; %abs(params(7));
 	skew_factor2 = 1;
-	skew_factor3 = 2-abs(params(7));
+	skew_factor3 = 1; %2-abs(params(7));
 
 	if (p1_c == 0); p1_c = 0.001; end;
 	if (p2_c == 0); p2_c = 0.001; end;

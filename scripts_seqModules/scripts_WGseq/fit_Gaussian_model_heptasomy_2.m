@@ -42,7 +42,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	p7_ai = datamax;   p7_bi = locations(7);   p7_ci = init_width;
 	p8_ai = datamax;   p8_bi = locations(8);   p8_ci = init_width;
 
-	initial = [p1_ai,p1_ci,p2_ai,p2_ci,p3_ai,p3_ci,p4_ai,p4_ci,p5_ai,p5_ci,p6_ai,p6_ci,p7_ai,p7_ci,p8_ai,p8_ci, skew_factor,skew_factor,skew_factor,skew_factor,skew_factor,skew_factor,skew_factor,skew_factor];
+	initial = [p1_ai,p1_ci,p2_ai,p2_ci,p3_ai,p3_ci,p4_ai,p4_ci,p5_ai,p5_ci,p6_ai,p6_ci,p7_ai,p7_ci,p8_ai,p8_ci]; %, skew_factor,skew_factor,skew_factor,skew_factor,skew_factor,skew_factor,skew_factor,skew_factor];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
 	time    = 1:length(data);
 
@@ -62,6 +62,15 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 		% < 0 : did not converge to a solution.
 		% return last best estimate anyhow.
 	end;
+
+	% Estimates(2):homozygous should always be narrower than Estimates(4):heterozygous.
+	if (abs(Estimates(4)) < abs(Estimates(2)))
+		% swap them
+		temp         = Estimates(4);
+		Estimates(4) = Estimates(2);
+		Estimates(2) = temp;
+	end;
+
 	p1_a         = abs(Estimates(1));
 	p1_b         = locations(1);
 	p1_c         = abs(Estimates(2));
@@ -94,14 +103,14 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	p8_b         = locations(8);
 	p8_c         = abs(Estimates(2));
 
-	skew_factor1 = abs(Estimates(17));
-	skew_factor2 = abs(Estimates(18));
-	skew_factor3 = abs(Estimates(19));
-	skew_factor4 = abs(Estimates(20));
-	skew_factor5 = 2-abs(Estimates(20));
-	skew_factor6 = 2-abs(Estimates(19));
-	skew_factor7 = 2-abs(Estimates(18));
-	skew_factor8 = 2-abs(Estimates(17));
+	skew_factor1 = 1; %abs(Estimates(17));
+	skew_factor2 = 1; %abs(Estimates(18));
+	skew_factor3 = 1; %abs(Estimates(19));
+	skew_factor4 = 1; %abs(Estimates(20));
+	skew_factor5 = 1; %2-abs(Estimates(20));
+	skew_factor6 = 1; %2-abs(Estimates(19));
+	skew_factor7 = 1; %2-abs(Estimates(18));
+	skew_factor8 = 1; %2-abs(Estimates(17));
 
 	if (skew_factor1 < 0); skew_factor1 = 0; end; if (skew_factor1 > 2); skew_factor1 = 2; end;
 	if (skew_factor2 < 0); skew_factor2 = 0; end; if (skew_factor2 > 2); skew_factor2 = 2; end;
@@ -131,12 +140,12 @@ end
 
 function sse = fiterror(params,time,data,func_type,locations,show)
 	% params(2):homozygous should always be narrower than params(4):heterozygous.
-	if (abs(params(4)) < abs(params(2))) {
+	if (abs(params(4)) < abs(params(2)))
 		% swap them
 		temp      = params(4);
 		params(4) = params(2);
 		params(2) = temp;
-	}
+	end;
 
 	p1_a         = abs(params(1));   % height.
 	p1_b         = locations(1);     % location.
@@ -170,14 +179,14 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p8_b         = locations(8);     % location.
 	p8_c         = abs(params(2)); % abs(params(16));  % width.
 
-	skew_factor1 = abs(params(17));
-	skew_factor2 = abs(params(18));
-	skew_factor3 = abs(params(19));
-	skew_factor4 = abs(params(20));
-	skew_factor5 = 2-abs(params(20));
-	skew_factor6 = 2-abs(params(19));
-	skew_factor7 = 2-abs(params(18));
-	skew_factor8 = 2-abs(params(17));
+	skew_factor1 = 1; %abs(params(17));
+	skew_factor2 = 1; %abs(params(18));
+	skew_factor3 = 1; %abs(params(19));
+	skew_factor4 = 1; %abs(params(20));
+	skew_factor5 = 1; %2-abs(params(20));
+	skew_factor6 = 1; %2-abs(params(19));
+	skew_factor7 = 1; %2-abs(params(18));
+	skew_factor8 = 1; %2-abs(params(17));
 
 	if (p1_c == 0); p1_c = 0.001; end;
 	if (p2_c == 0); p2_c = 0.001; end;

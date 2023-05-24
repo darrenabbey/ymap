@@ -55,8 +55,8 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, skew_factor] = fit_Gaussian_model_mono
 	p2_b         = locations(2);
 	p2_c         = abs(Estimates(2));
 
-	skew_factor1 = abs(Estimates(5));
-	skew_factor2 = 2-abs(Estimates(5));
+	skew_factor1 = 1; %abs(Estimates(5));
+	skew_factor2 = 1; %2-abs(Estimates(5));
 
 	if (skew_factor < 0); skew_factor = 0; end; if (skew_factor > 2); skew_factor = 2; end;
 
@@ -75,8 +75,8 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p2_b         = locations(2);     % location.
 	p2_c         = abs(params(2));   %abs(params(4));   % width.
 
-	skew_factor1 = abs(params(5));
-	skew_factor2 = 2-abs(params(5));
+	skew_factor1 = 1; %abs(params(5));
+	skew_factor2 = 1; %2-abs(params(5));
 
 	if (p1_c == 0); p1_c = 0.001; end
 	if (p2_c == 0); p2_c = 0.001; end

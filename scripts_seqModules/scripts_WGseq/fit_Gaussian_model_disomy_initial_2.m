@@ -26,7 +26,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gau
 	p3_ai = datamax;   p3_bi = locations(3);   p3_ci = init_width;
 
 %%	initial = [p1_ai,p1_bi,p1_ci,  p2_ai,  skew_factor];
-	initial = [p1_ai,p1_ci,  p3_ai,  skew_factor];
+	initial = [p1_ai,p1_ci,  p3_ai]; %,  skew_factor];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
 	time    = 1:length(data);
 
@@ -66,7 +66,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gau
 	p3_a = p1_a;
 	p3_b = locations(3);
 	p3_c = p1_c;
-	skew_factor = abs(Estimates(4));
+	skew_factor = 1; %abs(Estimates(4));
 
 	c1_ = p1_c/2 + p1_c/2*1/(p1_b/skew_factor);
 	p1_c = p1_c*p1_c/c1_;
@@ -142,7 +142,7 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p3_a = p1_a;
 	p3_b = locations(3);
 	p3_c = p1_c;
-	skew_factor = abs(params(4));
+	skew_factor = 1; %abs(params(4));
 
 %	p1_a = abs(params(1));      % height.
 %	p1_b = abs(params(2));      % location.

@@ -54,6 +54,15 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 		% < 0 : did not converge to a solution.
 		% return last best estimate anyhow.
 	end;
+
+	% Estimates(2):homozygous should always be narrower than Estimates(4):heterozygous.
+	if (abs(Estimates(4)) < abs(Estimates(2)))
+		% swap them
+		temp         = Estimates(4);
+		Estimates(4) = Estimates(2);
+		Estimates(2) = temp;
+	end;
+
 	p1_a         = abs(Estimates(1));
 	p1_b         = locations(1);
 	p1_c         = abs(Estimates(2));
@@ -78,12 +87,12 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	p6_b         = locations(6);
 	p6_c         = abs(Estimates(2));
 
-	skew_factor1 = abs(Estimates(13));
-	skew_factor2 = abs(Estimates(14));
-	skew_factor3 = abs(Estimates(15));
-	skew_factor4 = 2-abs(Estimates(15));
-	skew_factor5 = 2-abs(Estimates(14));
-	skew_factor6 = 2-abs(Estimates(13));
+	skew_factor1 = 1; %abs(Estimates(13));
+	skew_factor2 = 1; %abs(Estimates(14));
+	skew_factor3 = 1; %abs(Estimates(15));
+	skew_factor4 = 1; %2-abs(Estimates(15));
+	skew_factor5 = 1; %2-abs(Estimates(14));
+	skew_factor6 = 1; %2-abs(Estimates(13));
 
 	if (skew_factor1 < 0); skew_factor1 = 0; end; if (skew_factor1 > 2); skew_factor1 = 2; end;
 	if (skew_factor2 < 0); skew_factor2 = 0; end; if (skew_factor2 > 2); skew_factor2 = 2; end;
@@ -107,12 +116,12 @@ end
 
 function sse = fiterror(params,time,data,func_type,locations,show)
 	% params(2):homozygous should always be narrower than params(4):heterozygous.
-	if (abs(params(4)) < abs(params(2))) {
+	if (abs(params(4)) < abs(params(2)))
 		% swap them
 		temp      = params(4);
 		params(4) = params(2);
 		params(2) = temp;
-	}
+	end;
 
 	p1_a         = abs(params(1));  % height.
 	p1_b         = locations(1);    % location.
@@ -138,12 +147,12 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p6_b         = locations(6);    % location.
 	p6_c         = abs(params(2)); % abs(params(12)); % width.
 
-	skew_factor1 = abs(params(13));
-	skew_factor2 = abs(params(14));
-	skew_factor3 = abs(params(15));
-	skew_factor4 = 2-abs(params(15));
-	skew_factor5 = 2-abs(params(14));
-	skew_factor6 = 2-abs(params(13));
+	skew_factor1 = 1; %abs(params(13));
+	skew_factor2 = 1; %abs(params(14));
+	skew_factor3 = 1; %abs(params(15));
+	skew_factor4 = 1; %2-abs(params(15));
+	skew_factor5 = 1; %2-abs(params(14));
+	skew_factor6 = 1; %2-abs(params(13));
 
 	if (p1_c == 0); p1_c = 0.001; end;
 	if (p2_c == 0); p2_c = 0.001; end;
