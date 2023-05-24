@@ -69,43 +69,54 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	p1_a          = abs(Estimates(1));
 	p1_b          = locations(1);
 	p1_c          = abs(Estimates(2));
+
 	p2_a          = abs(Estimates(3));
 	p2_b          = locations(2);
 	p2_c          = abs(Estimates(4));
+
 	p3_a          = abs(Estimates(5));
 	p3_b          = locations(3);
-	p3_c          = abs(Estimates(6));
+	p3_c          = abs(Estimates(4));
+
 	p4_a          = abs(Estimates(7));
 	p4_b          = locations(4);
-	p4_c          = abs(Estimates(8));
+	p4_c          = abs(Estimates(4));
+
 	p5_a          = abs(Estimates(9));
 	p5_b          = locations(5);
-	p5_c          = abs(Estimates(10));
+	p5_c          = abs(Estimates(4));
+
 	p6_a          = abs(Estimates(11));
 	p6_b          = locations(6);
-	p6_c          = abs(Estimates(12));
+	p6_c          = abs(Estimates(4));
+
 	p7_a          = abs(Estimates(13));
 	p7_b          = locations(7);
-	p7_c          = abs(Estimates(14));
+	p7_c          = abs(Estimates(4));
+
 	p8_a          = abs(Estimates(15));
 	p8_b          = locations(8);
-	p8_c          = abs(Estimates(16));
+	p8_c          = abs(Estimates(4));
+
 	p9_a          = abs(Estimates(17));
         p9_b          = locations(9);
-        p9_c          = abs(Estimates(18));
+        p9_c          = abs(Estimates(4));
+
 	p10_a         = abs(Estimates(19));
         p10_b         = locations(10);
-        p10_c         = abs(Estimates(20));
+        p10_c         = abs(Estimates(2));
+
 	skew_factor1  = abs(Estimates(21));
 	skew_factor2  = abs(Estimates(22));
 	skew_factor3  = abs(Estimates(23));
 	skew_factor4  = abs(Estimates(24));
 	skew_factor5  = abs(Estimates(25));
-	skew_factor6  = abs(Estimates(26));
-	skew_factor7  = abs(Estimates(27));
-	skew_factor8  = abs(Estimates(28));
-	skew_factor9  = abs(Estimates(29));
-	skew_factor10 = abs(Estimates(30));
+	skew_factor6  = 2-abs(Estimates(25));
+	skew_factor7  = 2-abs(Estimates(24));
+	skew_factor8  = 2-abs(Estimates(23));
+	skew_factor9  = 2-abs(Estimates(22));
+	skew_factor10 = 2-abs(Estimates(21));
+
 	if (skew_factor1  < 0); skew_factor1  = 0; end; if (skew_factor1  > 2); skew_factor1  = 2; end;
 	if (skew_factor2  < 0); skew_factor2  = 0; end; if (skew_factor2  > 2); skew_factor2  = 2; end;
 	if (skew_factor3  < 0); skew_factor3  = 0; end; if (skew_factor3  > 2); skew_factor3  = 2; end;
@@ -192,11 +203,12 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	skew_factor3  = abs(params(23));
 	skew_factor4  = abs(params(24));
 	skew_factor5  = abs(params(25));
-	skew_factor6  = abs(params(26));
-	skew_factor7  = abs(params(27));
-	skew_factor8  = abs(params(28));
-	skew_factor9  = abs(params(29));
-	skew_factor10 = abs(params(30));
+	skew_factor6  = 2-abs(params(25));
+	skew_factor7  = 2-abs(params(24));
+	skew_factor8  = 2-abs(params(23));
+	skew_factor9  = 2-abs(params(22));
+	skew_factor10 = 2-abs(params(21));
+
 	if (p1_c  == 0); p1_c  = 0.001; end;
 	if (p2_c  == 0); p2_c  = 0.001; end;
 	if (p3_c  == 0); p3_c  = 0.001; end;

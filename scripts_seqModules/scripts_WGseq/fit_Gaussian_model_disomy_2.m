@@ -52,15 +52,18 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gau
 	p1_a         = abs(Estimates(1));
 	p1_b         = locations(1);
 	p1_c         = abs(Estimates(2));
+
 	p2_a         = abs(Estimates(3));
 	p2_b         = locations(2);
 	p2_c         = abs(Estimates(4));
+
 	p3_a         = abs(Estimates(5));
 	p3_b         = locations(3);
-	p3_c         = abs(Estimates(6));
+	p3_c         = abs(Estimates(2));
+
 	skew_factor1 = abs(Estimates(7));
 	skew_factor2 = 1;
-	skew_factor3 = abs(Estimates(9));
+	skew_factor3 = 2-abs(Estimates(7));
 	if (skew_factor1 < 0); skew_factor1 = 0; end; if (skew_factor1 > 2); skew_factor1 = 2; end;
 	if (skew_factor2 < 0); skew_factor2 = 0; end; if (skew_factor2 > 2); skew_factor2 = 2; end;
 	if (skew_factor3 < 0); skew_factor3 = 0; end; if (skew_factor3 > 2); skew_factor3 = 2; end;
@@ -93,7 +96,8 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 
 	skew_factor1 = abs(params(7));
 	skew_factor2 = 1;
-	skew_factor3 = abs(params(9));
+	skew_factor3 = 2-abs(params(7));
+
 	if (p1_c == 0); p1_c = 0.001; end;
 	if (p2_c == 0); p2_c = 0.001; end;
 	if (p3_c == 0); p3_c = 0.001; end;

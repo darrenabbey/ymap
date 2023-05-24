@@ -55,23 +55,29 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	p1_a = abs(Estimates(1));
 	p1_b = locations(1);
 	p1_c = abs(Estimates(2));
+
 	p2_a = abs(Estimates(3));
 	p2_b = locations(2);
 	p2_c = abs(Estimates(4));
+
 	p3_a = abs(Estimates(5));
 	p3_b = locations(3);
-	p3_c = abs(Estimates(6));
+	p3_c = abs(Estimates(4));
+
 	p4_a = abs(Estimates(7));
 	p4_b = locations(4);
-	p4_c = abs(Estimates(8));
+	p4_c = abs(Estimates(4));
+
 	p5_a = abs(Estimates(9));
 	p5_b = locations(5);
-	p5_c = abs(Estimates(10));
+	p5_c = abs(Estimates(2));
+
 	skew_factor1 = abs(Estimates(11));
 	skew_factor2 = abs(Estimates(12));
 	skew_factor3 = 1;
-	skew_factor4 = abs(Estimates(14));
-	skew_factor5 = abs(Estimates(15));
+	skew_factor4 = 2-abs(Estimates(12));
+	skew_factor5 = 2-abs(Estimates(11));
+
 	if (skew_factor1 < 0); skew_factor1 = 0; end; if (skew_factor1 > 2); skew_factor1 = 2; end;
 	if (skew_factor2 < 0); skew_factor2 = 0; end; if (skew_factor2 > 2); skew_factor2 = 2; end;
 	if (skew_factor3 < 0); skew_factor3 = 0; end; if (skew_factor3 > 2); skew_factor3 = 2; end;
@@ -119,8 +125,9 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	skew_factor1 = abs(params(11));
 	skew_factor2 = abs(params(12));
 	skew_factor3 = 1;
-	skew_factor4 = abs(params(14));
-	skew_factor5 = abs(params(15));
+	skew_factor4 = 2-abs(params(12));
+	skew_factor5 = 2-abs(params(11));
+
 	if (p1_c == 0); p1_c = 0.001; end;
 	if (p2_c == 0); p2_c = 0.001; end;
 	if (p3_c == 0); p3_c = 0.001; end;
