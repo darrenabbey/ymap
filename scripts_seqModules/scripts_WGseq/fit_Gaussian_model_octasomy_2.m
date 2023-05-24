@@ -123,6 +123,14 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 end
 
 function sse = fiterror(params,time,data,func_type,locations,show)
+	% params(2):homozygous should always be narrower than params(4):heterozygous.
+	if (abs(params(4)) < abs(params(2))) {
+		% swap them
+		temp      = params(4);
+		params(4) = params(2);
+		params(2) = temp;
+	}
+
 	p1_a         = abs(params(1));   % height.
 	p1_b         = locations(1);     % location.
 	p1_c         = abs(params(2));   % width.
