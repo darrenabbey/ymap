@@ -36,6 +36,8 @@ LOH_hapmap_v4(main_dir,user,genomeUser,project,parent_or_hapmap,genome,ploidyEst
 
 parent = parent_or_hapmap;
 hapmap = parent_or_hapmap;
+
+% Generate fireplot.
 allelic_ratios_WGseq(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 
 
