@@ -19,19 +19,18 @@ displayBREAKS          = true;
 referenceCHR           = 1;
 
 %% Grab the first column of the first line of the putative_SNP pileup file.
-datafile       = [workingDir 'putative_SNPs_' SNP_verString '.txt'];
-data           = fopen(datafile);
-fprintf(['datafile : ' datafile]);
-line           = fgetl(data);           % grab the first line of the putative_CNV datafile.
-% printing first line only if file is not empty
-if (~feof(data))
-    fprintf(['\n' datafile '::' num2str(data) '::' line '\n']);
-    exampleChrName = sscanf(line, '%s',1);  % grab the first column, ex : 'ChrA_C_glabrata_CBS138';
-else
-    fprintf('putative_SNPs file is empty');
-end;
-fclose(data);
-
+%datafile       = [workingDir 'putative_SNPs_' SNP_verString '.txt'];
+%data           = fopen(datafile);
+%fprintf(['datafile : ' datafile]);
+%line           = fgetl(data);           % grab the first line of the putative_CNV datafile.
+%% printing first line only if file is not empty
+%if (~feof(data))
+%	fprintf(['\n' datafile '::' num2str(data) '::' line '\n']);
+%	exampleChrName = sscanf(line, '%s',1);  % grab the first column, ex : 'ChrA_C_glabrata_CBS138';
+%else
+%	fprintf('putative_SNPs file is empty');
+%end;
+%fclose(data);
 
 LOH_hapmap_v4(main_dir,user,genomeUser,project,parent_or_hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 
