@@ -27,17 +27,16 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	end;
 
 	% a = height; b = location; c = width.
-	p1_ai = datamax;   p1_bi = locations(1);   p1_ci = init_width;
-	p2_ai = datamax;   p2_bi = locations(2);   p2_ci = init_width;
-	p3_ai = datamax;   p3_bi = locations(3);   p3_ci = init_width;
-	p4_ai = datamax;   p4_bi = locations(4);   p4_ci = init_width;
-	p5_ai = datamax;   p5_bi = locations(5);   p5_ci = init_width;
-	p6_ai = datamax;   p6_bi = locations(6);   p6_ci = init_width;
+	p1_ai = data(round(locations(1)));   p1_bi = locations(1);   p1_ci = init_width;
+	p2_ai = data(round(locations(2)));   p2_bi = locations(2);   p2_ci = init_width;
+	p3_ai = data(round(locations(3)));   p3_bi = locations(3);   p3_ci = init_width;
+	p4_ai = data(round(locations(4)));   p4_bi = locations(4);   p4_ci = init_width;
+	p5_ai = data(round(locations(5)));   p5_bi = locations(5);   p5_ci = init_width;
+	p6_ai = data(round(locations(6)));   p6_bi = locations(6);   p6_ci = init_width;
 
-	initial = [p1_ai,p1_ci,p2_ai,p2_ci,p3_ai,p3_ci,p4_ai,p4_ci,p5_ai,p5_ci,p6_ai,p6_ci,skew_factor,skew_factor,skew_factor,skew_factor,skew_factor,skew_factor];
-	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
+	initial = [p1_ai,p1_ci,p2_ai,p2_ci,p3_ai,p4_ai,p5_ai,p6_ai];
+	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',200000);
 	time= 1:length(data);
-
 	[Estimates,~,exitflag] = fminsearch(@fiterror, ...   % function to be fitted.
 	                                    initial, ...     % initial values.
 	                                    options, ...     % options for fitting algorithm.
@@ -75,24 +74,24 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	p3_b         = locations(3);
 	p3_c         = abs(Estimates(4));
 
-	p4_a         = abs(Estimates(7));
+	p4_a         = abs(Estimates(6));
 	p4_b         = locations(4);
 	p4_c         = abs(Estimates(4));
 
-	p5_a         = abs(Estimates(9));
+	p5_a         = abs(Estimates(7));
 	p5_b         = locations(5);
 	p5_c         = abs(Estimates(4));
 
-	p6_a         = abs(Estimates(11));
+	p6_a         = abs(Estimates(8));
 	p6_b         = locations(6);
 	p6_c         = abs(Estimates(2));
 
-	skew_factor1 = 1; %abs(Estimates(13));
-	skew_factor2 = 1; %abs(Estimates(14));
-	skew_factor3 = 1; %abs(Estimates(15));
-	skew_factor4 = 1; %2-abs(Estimates(15));
-	skew_factor5 = 1; %2-abs(Estimates(14));
-	skew_factor6 = 1; %2-abs(Estimates(13));
+	skew_factor1 = 1;
+	skew_factor2 = 1;
+	skew_factor3 = 1;
+	skew_factor4 = 1;
+	skew_factor5 = 1;
+	skew_factor6 = 1;
 
 	if (skew_factor1 < 0); skew_factor1 = 0; end; if (skew_factor1 > 2); skew_factor1 = 2; end;
 	if (skew_factor2 < 0); skew_factor2 = 0; end; if (skew_factor2 > 2); skew_factor2 = 2; end;
@@ -125,34 +124,34 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 
 	p1_a         = abs(params(1));  % height.
 	p1_b         = locations(1);    % location.
-	p1_c         = abs(params(2));  % width.
+	p1_c         = abs(params(2));  % relative width.
 
 	p2_a         = abs(params(3));  % height.
 	p2_b         = locations(2);    % location.
-	p2_c         = abs(params(4));  % width.
+	p2_c         = abs(params(4));  % relative width.
 
 	p3_a         = abs(params(5));  % height.
 	p3_b         = locations(3);    % location.
-	p3_c         = abs(params(4)); % abs(params(6));  % width.
+	p3_c         = abs(params(4));  % relative width.
 
-	p4_a         = abs(params(7));  % height.
+	p4_a         = abs(params(6));  % height.
 	p4_b         = locations(4);    % location.
-	p4_c         = abs(params(4)); % abs(params(8));  % width.
+	p4_c         = abs(params(4));  % relative width.
 
-	p5_a         = abs(params(9));  % height.
+	p5_a         = abs(params(7));  % height.
 	p5_b         = locations(5);    % location.
-	p5_c         = abs(params(4)); % abs(params(10)); % width.
+	p5_c         = abs(params(4));  % relative width.
 
-	p6_a         = abs(params(11)); % height.
+	p6_a         = abs(params(8));  % height.
 	p6_b         = locations(6);    % location.
-	p6_c         = abs(params(2)); % abs(params(12)); % width.
+	p6_c         = abs(params(2));  % relative width.
 
-	skew_factor1 = 1; %abs(params(13));
-	skew_factor2 = 1; %abs(params(14));
-	skew_factor3 = 1; %abs(params(15));
-	skew_factor4 = 1; %2-abs(params(15));
-	skew_factor5 = 1; %2-abs(params(14));
-	skew_factor6 = 1; %2-abs(params(13));
+	skew_factor1 = 1;
+	skew_factor2 = 1;
+	skew_factor3 = 1;
+	skew_factor4 = 1;
+	skew_factor5 = 1;
+	skew_factor6 = 1;
 
 	if (p1_c == 0); p1_c = 0.001; end;
 	if (p2_c == 0); p2_c = 0.001; end;

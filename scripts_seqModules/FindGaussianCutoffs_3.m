@@ -14,7 +14,7 @@ nonasomy_peaks  = [0, 1/9, 2/9, 3/9, 4/9, 5/9, 6/9, 7/9, 8/9, 1]*199+1;
 % Fits Gaussians to real data per chromomsome, then determines equal probability cutoffs between them.
 sigma = 5;
 %% FindGaussianCutoffs Finds cutoffs as intersections of Gaussians, fit to the data at each peak location.
-ErrorType      = 'linear';
+ErrorType      = 'cubic';
 % Define range of fit curves.
 range = 1:200;
 
@@ -52,8 +52,8 @@ elseif (copyNum == 1)
 	fit_curve_1 = G{1}.a*exp(-0.5*((range-G{1}.b)./G{1}.c).^2);
 	fit_curve_2 = G{2}.a*exp(-0.5*((range-G{2}.b)./G{2}.c).^2);
 	if (MakeFigure == true)
-		plot(fit_curve_1,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
-		plot(fit_curve_2,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_1,'color',[0.50 1.00 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_2,'color',[0.50 1.00 0.50],'linestyle','-','linewidth',1);
 	end;
 	fit_curve_tot = fit_curve_1+fit_curve_2;
 elseif (copyNum == 2)
@@ -79,9 +79,9 @@ elseif (copyNum == 2)
 	fit_curve_2 = G{2}.a*exp(-0.5*((range-G{2}.b)./G{2}.c).^2);
 	fit_curve_3 = G{3}.a*exp(-0.5*((range-G{3}.b)./G{3}.c).^2);
 	if (MakeFigure == true)
-		plot(fit_curve_1,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_1,'color',[0.50 1.00 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_2,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
-		plot(fit_curve_3,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_3,'color',[0.50 1.00 0.50],'linestyle','-','linewidth',1);
 	end;
 	fit_curve_tot = fit_curve_1+fit_curve_2+fit_curve_3;
 elseif (copyNum == 3)
@@ -108,10 +108,10 @@ elseif (copyNum == 3)
 	fit_curve_3 = G{3}.a*exp(-0.5*((range-G{3}.b)./G{3}.c).^2);
 	fit_curve_4 = G{4}.a*exp(-0.5*((range-G{4}.b)./G{4}.c).^2);
 	if (MakeFigure == true)
-		plot(fit_curve_1,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_1,'color',[0.50 1.00 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_2,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_3,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
-		plot(fit_curve_4,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_4,'color',[0.50 1.00 0.50],'linestyle','-','linewidth',1);
 	end;
 	fit_curve_tot = fit_curve_1+fit_curve_2+fit_curve_3+fit_curve_4;
 elseif (copyNum == 4)
@@ -139,11 +139,11 @@ elseif (copyNum == 4)
 	fit_curve_4 = G{4}.a*exp(-0.5*((range-G{4}.b)./G{4}.c).^2);
 	fit_curve_5 = G{5}.a*exp(-0.5*((range-G{5}.b)./G{5}.c).^2);
 	if (MakeFigure == true)
-		plot(fit_curve_1,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_1,'color',[0.50 1.00 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_2,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_3,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_4,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
-		plot(fit_curve_5,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_5,'color',[0.50 1.00 0.50],'linestyle','-','linewidth',1);
 	end;
 	fit_curve_tot = fit_curve_1+fit_curve_2+fit_curve_3+fit_curve_4+fit_curve_5;
 elseif (copyNum == 5)
@@ -172,12 +172,12 @@ elseif (copyNum == 5)
 	fit_curve_5 = G{5}.a*exp(-0.5*((range-G{5}.b)./G{5}.c).^2);
 	fit_curve_6 = G{6}.a*exp(-0.5*((range-G{6}.b)./G{6}.c).^2);
 	if (MakeFigure == true)
-		plot(fit_curve_1,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_1,'color',[0.50 1.00 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_2,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_3,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_4,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_5,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
-		plot(fit_curve_6,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_6,'color',[0.50 1.00 0.50],'linestyle','-','linewidth',1);
 	end;
 	fit_curve_tot = fit_curve_1+fit_curve_2+fit_curve_3+fit_curve_4+fit_curve_5+fit_curve_6;
 elseif (copyNum == 6)
@@ -207,19 +207,19 @@ elseif (copyNum == 6)
 	fit_curve_6 = G{6}.a*exp(-0.5*((range-G{6}.b)./G{6}.c).^2);
 	fit_curve_7 = G{7}.a*exp(-0.5*((range-G{7}.b)./G{7}.c).^2);
 	if (MakeFigure == true)
-		plot(fit_curve_1,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_1,'color',[0.50 1.00 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_2,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_3,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_4,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_5,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_6,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
-		plot(fit_curve_7,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_7,'color',[0.50 1.00 0.50],'linestyle','-','linewidth',1);
 	end;
 	fit_curve_tot = fit_curve_1+fit_curve_2+fit_curve_3+fit_curve_4+fit_curve_5+fit_curve_6+fit_curve_7;
 elseif (copyNum == 7)
 	G                   = [];
 	[G{1}.a,G{1}.b,G{1}.c, G{2}.a,G{2}.b,G{2}.c, G{3}.a,G{3}.b,G{3}.c, G{4}.a,G{4}.b,G{4}.c, G{5}.a,G{5}.b,G{5}.c, G{6}.a,G{6}.b,G{6}.c, G{7}.a,G{7}.b,G{7}.c, G{8}.a,G{8}.b,G{8}.c] = ...
-		fit_Gaussian_model_heptasomy_2(workingDir,saveName, smoothed_Histogram,heptasomy_peaks,sigma,ErrorType);	
+		fit_Gaussian_model_heptasomy_2(workingDir,saveName, smoothed_Histogram,heptasomy_peaks,sigma,ErrorType);
 	[list]              = FindHighestGaussian_2(G);
 	%	fprintf(['||2 list            = ' num2str(list) '\n']);
 	actual_cutoffs      = [];
@@ -245,14 +245,14 @@ elseif (copyNum == 7)
 	fit_curve_7 = G{7}.a*exp(-0.5*((range-G{7}.b)./G{7}.c).^2);
 	fit_curve_8 = G{8}.a*exp(-0.5*((range-G{8}.b)./G{8}.c).^2);
 	if (MakeFigure == true)
-		plot(fit_curve_1,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_1,'color',[0.50 1.00 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_2,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_3,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_4,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_5,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_6,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_7,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
-		plot(fit_curve_8,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_8,'color',[0.50 1.00 0.50],'linestyle','-','linewidth',1);
 	end;
 	fit_curve_tot = fit_curve_1+fit_curve_2+fit_curve_3+fit_curve_4+fit_curve_5+fit_curve_6+fit_curve_7+fit_curve_8;
 elseif (copyNum == 8)
@@ -284,7 +284,7 @@ elseif (copyNum == 8)
 	fit_curve_8 = G{8}.a*exp(-0.5*((range-G{8}.b)./G{8}.c).^2);
 	fit_curve_9 = G{9}.a*exp(-0.5*((range-G{9}.b)./G{9}.c).^2);
 	if (MakeFigure == true)
-		plot(fit_curve_1,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_1,'color',[0.50 1.00 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_2,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_3,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_4,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
@@ -292,7 +292,7 @@ elseif (copyNum == 8)
 		plot(fit_curve_6,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_7,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 		plot(fit_curve_8,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
-		plot(fit_curve_9,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_9,'color',[0.50 1.00 0.50],'linestyle','-','linewidth',1);
 	end;
 	fit_curve_tot = fit_curve_1+fit_curve_2+fit_curve_3+fit_curve_4+fit_curve_5+fit_curve_6+fit_curve_7+fit_curve_8+fit_curve_9;
 else % if (copyNum == 9+)
@@ -325,22 +325,22 @@ else % if (copyNum == 9+)
 	fit_curve_9  = G{ 9}.a*exp(-0.5*((range-G{ 9}.b)./G{ 9}.c).^2);
 	fit_curve_10 = G{10}.a*exp(-0.5*((range-G{10}.b)./G{10}.c).^2);
 	if (MakeFigure == true)
-		plot(fit_curve_1,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
-		plot(fit_curve_2,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
-		plot(fit_curve_3,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
-		plot(fit_curve_4,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
-		plot(fit_curve_5,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
-		plot(fit_curve_6,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
-		plot(fit_curve_7,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
-		plot(fit_curve_8,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
-		plot(fit_curve_9,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
-		plot(fit_curve_10,'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_1, 'color',[0.50 1.00 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_2, 'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_3, 'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_4, 'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_5, 'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_6, 'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_7, 'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_8, 'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_9, 'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
+		plot(fit_curve_10,'color',[0.50 1.00 0.50],'linestyle','-','linewidth',1);
 	end;
 	fit_curve_tot = fit_curve_1+fit_curve_2+fit_curve_3+fit_curve_4+fit_curve_5+fit_curve_6+fit_curve_7+fit_curve_8+fit_curve_9+fit_curve_10;
 end;
 
 if (MakeFigure == true)
-	plot(smoothed_Histogram,'color',[0.50 0.50 1.00],'linestyle','-','linewidth',1);
+	plot(smoothed_Histogram,'color',[0.50 0.50 1.00],'linestyle','-','linewidth',2);
 	for cutoffID = 1:length(actual_cutoffs)
 		plot([actual_cutoffs(cutoffID) actual_cutoffs(cutoffID)],[fit_curve_tot(round(actual_cutoffs(cutoffID)))/2 1],'color',[1.00 0.50 0.50],'linestyle','-','linewidth',1);
 	end;

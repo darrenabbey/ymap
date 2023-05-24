@@ -24,11 +24,11 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, skew_factor] = fit_Gaussian_model_mono
 	end;
 
 	% a = height; b = location; c = width.
-	p1_ai = datamax;   p1_bi = locations(1);   p1_ci = init_width;
-	p2_ai = datamax;   p2_bi = locations(2);   p2_ci = init_width;
+	p1_ai = data(round(locations(1)));   p1_bi = locations(1);   p1_ci = init_width;
+	p2_ai = data(round(locations(2)));   p2_bi = locations(2);   p2_ci = init_width;
 
-	initial = [p1_ai,p1_ci,p2_ai,p2_ci,skew_factor,skew_factor];
-	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
+	initial = [p1_ai,p1_ci,p2_ai,p2_ci];
+	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',200000);
 	time= 1:length(data);
 
 	[Estimates,~,exitflag] = fminsearch(@fiterror, ...   % function to be fitted.
@@ -55,8 +55,8 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, skew_factor] = fit_Gaussian_model_mono
 	p2_b         = locations(2);
 	p2_c         = abs(Estimates(2));
 
-	skew_factor1 = 1; %abs(Estimates(5));
-	skew_factor2 = 1; %2-abs(Estimates(5));
+	skew_factor1 = 1;
+	skew_factor2 = 1;
 
 	if (skew_factor < 0); skew_factor = 0; end; if (skew_factor > 2); skew_factor = 2; end;
 
@@ -69,14 +69,14 @@ end
 function sse = fiterror(params,time,data,func_type,locations,show)
 	p1_a         = abs(params(1));   % height.
 	p1_b         = locations(1);     % location.
-	p1_c         = abs(params(2));   % width.
+	p1_c         = abs(params(2));   % relative width.
 
 	p2_a         = abs(params(3));   % height.
 	p2_b         = locations(2);     % location.
-	p2_c         = abs(params(2));   %abs(params(4));   % width.
+	p2_c         = abs(params(2));   % relative width.
 
-	skew_factor1 = 1; %abs(params(5));
-	skew_factor2 = 1; %2-abs(params(5));
+	skew_factor1 = 1;
+	skew_factor2 = 1;
 
 	if (p1_c == 0); p1_c = 0.001; end
 	if (p2_c == 0); p2_c = 0.001; end
