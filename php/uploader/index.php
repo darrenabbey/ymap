@@ -55,7 +55,7 @@
 	// getting the current size of the user folder in Gigabytes
 	$currentSize = shell_exec("du -scm ../../users/".$user."/ | awk 'END{print $1}'") / (1000);
 	// getting user quota in Gigabytes
-	$quota_ = getUserQuota($user);
+	$quota_ = trim(getUserQuota("../../users/".$user));
 	if ($quota_ > $quota) { $quota = $quota_; }
 	// Setting boolean variable that will indicate whether the user has exceeded it's allocated space.
 	$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
@@ -69,7 +69,7 @@
 	if ($exceededSpace) {
 		// Successfully interrupts file upload when quota space is exceeded.
 		// Attempts to force reload of user interface, but doesn't work right.
-		echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tnparent.parent.update_interface();\n}\n";
+		echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tnparent.parent.parent.update_interface();\n}\n";
 		echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 	} else {
 		//============================================================================
