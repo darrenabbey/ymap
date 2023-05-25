@@ -21,7 +21,7 @@
 </style>
 <?php
 	if ($admin_logged_in == "true") {
-		echo "<font size='4'><b>Admin review of stalled user installed datasets:<b></font><br>";
+		echo "<font size='4'><b>Admin review of working/stalled user installed datasets:<b></font><br>";
 	} else {
 		echo "<font size='4'><br>Your account has not been provided with administrator priviledges.</b></font><br>";
 	}
@@ -88,10 +88,10 @@
 
 			// Push in-process projects to display.
 			foreach($projectFolders_working as $key_=>$project) {
-				printprojectInfo("2", $key_+$sumKey, "BB9900", $admin_as_user, $project, $sumKey);
+				printprojectInfo("2", $key_+count($projectFolders_starting), "BB9900", $admin_as_user, $project, $sumKey);
+				$sumKey += 1;
 			}
-
-			$sumKey += count($projectFolders_working);
+			//$sumKey += count($projectFolders_working);
 		}
 	}
 
@@ -106,8 +106,8 @@
 
 		$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 		$projectNameString = trim($projectNameString);
-		echo "<span id='p_label_".$key+$sumKey."_admin' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
-		echo "<font size='2'>[".$user."] ".($key+$sumKey+1).". &nbsp; &nbsp;";
+		echo "<span id='p_label_".$sumKey."_admin' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
+		echo "<font size='2'>[".$user."] ".($sumKey+1).". &nbsp; &nbsp;";
 
 		echo $projectNameString." ";
 		echo "</font></span> ".$genome_name."\n\t\t";
@@ -119,7 +119,7 @@
 			echo "parent.show_hidden(\"Hidden_Admin\"); ";
 			echo "parent.update_interface();";
 			echo "localStorage.setItem(\"user\",\"".$user."\");";
-			echo "localStorage.setItem(\"projectKey\",\"".$key+$sumKey."\");";
+			echo "localStorage.setItem(\"projectKey\",\"".$key."\");";
 			echo "localStorage.setItem(\"projectName\",\"".$project."\");";
 		echo "'>";
 		echo "</form>";
