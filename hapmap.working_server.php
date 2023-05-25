@@ -82,7 +82,7 @@
 ?>
 		<html>
 		<body onload = "parent.parent.update_hapmap_label_color('<?php echo $key; ?>','#AA0000'); parent.parent.resize_hapmap('<?php echo $key; ?>', 100);" >
-			<font color="red"><b>[Error : Consult site admin.]</b></font><br>
+			<font color="red"><b>[Unrecoverable Error]</b></font><br>
 			<?php echo $error; ?>
 		</body>
 		</html>
