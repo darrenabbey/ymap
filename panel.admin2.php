@@ -43,8 +43,8 @@
 		} else {
 			// find admin user's key.
 			foreach($userFolders as $key=>$folder) {
-				if ($folder = $user."/") {
-					$admin_as_user_key = $key-1;
+				if (substr($folder, 0, -1) == $user) {
+					$admin_as_user_key = $key;
 				}
 			}
 		}
