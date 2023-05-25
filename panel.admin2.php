@@ -183,8 +183,8 @@
 			echo " <font color='black' size='1'><b>(". $projectSizeStr .")</b></font>";
 		}
 		if ($frameContainerIx == "2") {
-			// Restart analysis after issue resolved manually.
-			echo "<form action='' method='post'>";
+			// Button to add/change error message for user project.
+			echo "<form action='' method='post' style='display: inline;'>";
 			echo "<input name='button_ErrorProject' type='button' value='Add/change error message.' onclick='";
 				echo "parent.document.getElementById(\"Hidden_Admin_Frame\").src = \"admin.error.php\"; ";
 				echo "parent.show_hidden(\"Hidden_Admin\"); ";
