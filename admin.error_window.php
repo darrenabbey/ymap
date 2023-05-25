@@ -68,9 +68,8 @@
 				</script>
 			</form>
 		</p></div>
-		Add an "<b>error.txt</b>" file to stalled project directory after investigating via server access.<br>
+		Use this tool to add an "<b>error.txt</b>" file to stalled project directory after investigating via server access.<br>
 		Error text will be displayed to user when next they check the dataset's status.<br>
-		Will overwrite an existing error file.<br><br>
-		<b>[Not yet functional.]</b>
+		This will overwrite an existing error file.<br><br>
 	</body>
 </html>
