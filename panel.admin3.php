@@ -88,7 +88,7 @@
 
 			// Push in-process projects to display.
 			foreach($projectFolders_working as $key_=>$project) {
-				printprojectInfo("2", $key_, "BB9900", $admin_as_user, $project, $sumKey);
+				printprojectInfo("2", $key_+$sumKey, "BB9900", $admin_as_user, $project, $sumKey);
 			}
 
 			$sumKey += count($projectFolders_working);
