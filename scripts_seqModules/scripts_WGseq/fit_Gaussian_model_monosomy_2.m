@@ -1,6 +1,6 @@
 function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, skew_factor] = fit_Gaussian_model_monosomy_2(workingDir, saveName, data,locations,init_width,func_type)
 	% attempt to fit a 2-gaussian model to data.
-	$ peaks should be narrow, since only sequencing error noise is being examined.
+	% peaks should be narrow, since only sequencing error noise is being examined.
 
 	show = false;
 	p1_a = nan;   p1_b = nan;   p1_c = nan;
