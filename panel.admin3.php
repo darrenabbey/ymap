@@ -100,7 +100,6 @@
 		$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."]</font>";
 		$genome_name = str_replace("+ ","",$genome_name);
 
-
 		$projectNameFile = "users/".$user."/projects/".$project."/name.txt";
 		$projectNameString = file_get_contents($projectNameFile);
 		$projectNameString = trim($projectNameString);
@@ -108,13 +107,7 @@
 		$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 		$projectNameString = trim($projectNameString);
 		echo "<span id='p_label_".$key."_admin' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
-		echo "<font size='2'>".($key+1).". [".$user."]";
-		if ($frameContainerIx != "1") {
-			echo "<input id='show_".$key."_admin' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."_admin','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
-		} else {
-			$json_file_list = json_encode(scandir("users/$user/projects/$project"));
-			echo "<input id='show_".$key."_admin' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."_admin','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
-		}
+		echo "<font size='2'>[".$user."] ".($key+1).". &nbsp; &nbsp;";
 
 		echo $projectNameString." ";
 		echo "</font></span> ".$genome_name."\n\t\t";
