@@ -27,12 +27,6 @@
 	}
 
 	if (($admin_logged_in == "true") and isset($_SESSION['logged_on'])) {
-		// check to see if value was passed to page.
-		if (isset($_POST['admin_as_user'])) {
-			$admin_as_user_key = sanitizeInt_POST('admin_as_user');
-			$admin_as_user     = 0;
-		}
-
 		// get list of users:
 		$userDir      = "users/";
 		$userFolders  = array_diff(glob($userDir."*\/"), array('..', '.', 'users/default/'));
@@ -41,6 +35,19 @@
 		// Trim path from each folder string.
 		foreach($userFolders as $key=>$folder) {   $userFolders[$key] = str_replace($userDir,"",$folder);   }
 		$userCount = count($userFolders);
+
+		// check to see if 'admin_as_user' value was passed to page.
+		if (isset($_POST['admin_as_user'])) {
+			$admin_as_user_key = sanitizeInt_POST('admin_as_user');
+			// $admin_as_user     = 0;
+		} else {
+			// find admin user's key.
+			foreach($userFolders as $key=>$folder) {
+				if ($folder = $user."/") {
+					$admin_as_user_key = $key-1;
+				}
+			}
+		}
 
 		// Make selection form:
 		echo "<form action='' method='post'>";
@@ -164,7 +171,7 @@
 				$handle       = fopen($totalSizeFile,'r');
 				$projectSizeStr = trim(fgets($handle));
 				fclose($handle);
-			} else { // calculate size and store in totalSize.txt to avoid calculating again
+			} else {
 				// calculating size
 				$projectSizeStr = trim(shell_exec("du -sh " . "users/".$user."/projects/". $project . "/ | cut -f1"));
 				// saving to file
@@ -172,8 +179,16 @@
 				fwrite($output, $projectSizeStr);
 				fclose($output);
 			}
-			// printing total size
+			// Print total size.
 			echo " <font color='black' size='1'><b>(". $projectSizeStr .")</b></font>";
+		}
+		if ($frameContainerIx == "2") {
+			// Restart analysis after issue resolved manually.
+			echo "<form action='' method='post'>";
+			echo "<input type='submit' value='Add error message.'> Function not developed yet.";
+			echo "<input type='hidden' id='user' name='user' value='".$user."'>";
+			echo "<input type='hidden' id='project' name='project' value='".$key."'>";
+			echo "</form>";
 		}
 		echo "</font></span>\n\t\t\t\t";
 		echo "<div id='frameContainer.p".$frameContainerIx."_".$key."_admin'></div>\n\n\t\t\t\t";
