@@ -663,7 +663,7 @@ function blank_and_content_tab() {
 	<td width="5%" align="right"><div onmousedown="document.getElementById('Hidden_Admin').style.display = 'none';" style="display:inline-block;"><b>[X]</b></div></td>
 	</tr></table>
 	<br>
-	<iframe id="Hidden_Admin"></iframe>
+	<iframe id="Hidden_Admin_Frame"></iframe>
 </DIV>
 <?php } ?>
 

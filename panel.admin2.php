@@ -185,9 +185,14 @@
 		if ($frameContainerIx == "2") {
 			// Restart analysis after issue resolved manually.
 			echo "<form action='' method='post'>";
-			echo "<input type='submit' value='Add error message.'> Function not developed yet.";
-			echo "<input type='hidden' id='user' name='user' value='".$user."'>";
-			echo "<input type='hidden' id='project' name='project' value='".$key."'>";
+			echo "<input name='button_ErrorProject' type='button' value='Add/change error message.' onclick='";
+				echo "parent.document.getElementById(\"Hidden_Admin_Frame\").src = \"admin.error.php\"; ";
+				echo "parent.show_hidden(\"Hidden_Admin\"); ";
+				echo "parent.update_interface();";
+				echo "localStorage.setItem(\"user\",\"".$user."\");";
+				echo "localStorage.setItem(\"projectKey\",\"".$key."\");";
+				echo "localStorage.setItem(\"projectName\",\"".$project."\");";
+			echo "'>";
 			echo "</form>";
 		}
 		echo "</font></span>\n\t\t\t\t";
