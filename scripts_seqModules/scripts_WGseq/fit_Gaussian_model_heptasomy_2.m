@@ -147,8 +147,6 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 		params(2) = temp;
 	end;
 
-	initial = [p1_ai,p1_ci,p2_ai,p2_ci,p3_ai,p4_ai,p5_ai,p6_ai,p7_ai,p8_ai];
-
 	p1_a         = abs(params(1));   % height.
 	p1_b         = locations(1);     % location.
 	p1_c         = abs(params(2));   % relative width.
