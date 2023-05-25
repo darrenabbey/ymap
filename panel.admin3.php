@@ -106,44 +106,24 @@
 
 		$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 		$projectNameString = trim($projectNameString);
-		echo "<span id='p_label_".$key."_admin' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
-		echo "<font size='2'>[".$user."] ".($key+1).". &nbsp; &nbsp;";
+		echo "<span id='p_label_".$key+$sumKey."_admin' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
+		echo "<font size='2'>[".$user."] ".($key+$sumKey+1).". &nbsp; &nbsp;";
 
 		echo $projectNameString." ";
 		echo "</font></span> ".$genome_name."\n\t\t";
 
-		// display total size of files only if the project is finished processeing
-		if ($frameContainerIx == "1") {
-			$totalSizeFile = "users/".$user."/projects/". $project ."/totalSize.txt";
-			// display total project size: first checking if size already calculated and is stored in totalSize.txt
-			if (file_exists($totalSizeFile)) {
-				$handle       = fopen($totalSizeFile,'r');
-				$projectSizeStr = trim(fgets($handle));
-				fclose($handle);
-			} else {
-				// calculating size
-				$projectSizeStr = trim(shell_exec("du -sh " . "users/".$user."/projects/". $project . "/ | cut -f1"));
-				// saving to file
-				$output       = fopen($totalSizeFile, 'w');
-				fwrite($output, $projectSizeStr);
-				fclose($output);
-			}
-			// Print total size.
-			echo " <font color='black' size='1'><b>(". $projectSizeStr .")</b></font>";
-		}
-		if ($frameContainerIx == "2") {
-			// Button to add/change error message for user project.
-			echo "<form action='' method='post' style='display: inline;'>";
-			echo "<input name='button_ErrorProject' type='button' value='Add/change error message.' onclick='";
-				echo "parent.document.getElementById(\"Hidden_Admin_Frame\").src = \"admin.error.php\"; ";
-				echo "parent.show_hidden(\"Hidden_Admin\"); ";
-				echo "parent.update_interface();";
-				echo "localStorage.setItem(\"user\",\"".$user."\");";
-				echo "localStorage.setItem(\"projectKey\",\"".$key+$sumKey."\");";
-				echo "localStorage.setItem(\"projectName\",\"".$project."\");";
-			echo "'>";
-			echo "</form>";
-		}
+		// Button to add/change error message for user project.
+		echo "\t\t<form action='' method='post' style='display: inline;'>";
+		echo "<input name='button_ErrorProject' type='button' value='Add/change error message.' onclick='";
+			echo "parent.document.getElementById(\"Hidden_Admin_Frame\").src = \"admin.error.php\"; ";
+			echo "parent.show_hidden(\"Hidden_Admin\"); ";
+			echo "parent.update_interface();";
+			echo "localStorage.setItem(\"user\",\"".$user."\");";
+			echo "localStorage.setItem(\"projectKey\",\"".$key+$sumKey."\");";
+			echo "localStorage.setItem(\"projectName\",\"".$project."\");";
+		echo "'>";
+		echo "</form>";
+
 		echo "</font></span>\n\t\t\t\t";
 		echo "<div id='frameContainer.p".$frameContainerIx."_".$key."_admin'></div>\n\n\t\t\t\t";
 	}
