@@ -125,7 +125,7 @@
 		echo "</form>";
 
 		echo "</font></span>\n\t\t\t\t";
-		echo "<div id='frameContainer.p".$frameContainerIx."_".$key."_admin'></div>\n\n\t\t\t\t";
+		echo "<div id='frameContainer.p".$frameContainerIx."_".$sumKey."_admin'></div>\n\n\t\t\t\t";
 	}
 	function getGenomeName($user,$project) {
 		// grab genome.txt from project.
