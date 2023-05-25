@@ -83,7 +83,7 @@
 
 		// Cycle through all source files
 		foreach ($files as $file) {
-			if (in_array($file, array("complete.txt","dataFormat.txt","genome.txt","index.php","name.txt","parent.txt","process_log.txt","genome.txt"))) {
+			if (in_array($file, array("complete.txt","dataFormat.txt","genome.txt","index.php","name.txt","parent.txt","process_log.txt"))) {
 				copy($source.$file, $destination.$file);
 			}
 			$file_ext = substr(strrchr($file, '.'), 1);
