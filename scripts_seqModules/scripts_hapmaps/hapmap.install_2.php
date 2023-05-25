@@ -59,17 +59,30 @@
 	// Load the number of chromosomes from "chromosome_sizes.txt"
 	$file1 = $genome_dir1."/chromosome_sizes.txt";
 	$file2 = $genome_dir2."/chromosome_sizes.txt";
+	$file3 = $genome_dir1."/figure_definitions.txt";
+	$file4 = $genome_dir2."/figure_definitions.txt";
 	if (file_exists($file1)) {
-		$handle     = fopen($file1,'r');
-		$fileString = fread($handle, filesize($file1));
+		$handle1     = fopen($file1,'r');
+		$fileString1 = fread($handle1, filesize($file1));
+		$handle2     = fopen($file3,'r');
+		$fileString2 = fread($handle2, filesize($file3));
+	} else if (file_exists($file2)) {
+		$handle1     = fopen($file2,'r');
+		$fileString1 = fread($handle1, filesize($file2));
+		$handle2     = fopen($file4,'r');
+		$fileString2 = fread($handle2, filesize($file4));
 	} else {
-		$handle     = fopen($file2,'r');
-		$fileString = fread($handle, filesize($file2));
+		exit;
 	}
-	fclose($handle);
-	$chrLinesArray  = explode("\n", trim($fileString));
-	array_shift($chrLinesArray);
-	$chr_count      = count($chrLinesArray);
+	fclose($handle1);
+	fclose($handle2);
+
+	// Determine number of chromosomes.
+	$chrLinesArray1  = explode("\n", trim($fileString1));
+	$chrLinesArray2  = explode("\n", trim($fileString2));
+	array_shift($chrLinesArray1);
+	array_shift($chrLinesArray2);
+	$chr_count      = count($chrLinesArray1);
 
 	$chrNumID       = array();
 	$chrNameShort   = array();
@@ -81,7 +94,7 @@
 		array_push($chrSize,"");
 		array_push($newTags,"");
 	}
-	foreach ($chrLinesArray as $key=>$chrLine) {
+	foreach ($chrLinesArray1 as $key=>$chrLine) {
 		$chrLineParts       = preg_split('/\s+/', $chrLine);
 		$oneChrNum          = $chrLineParts[0];
 		$oneChrSize         = $chrLineParts[1];
@@ -89,6 +102,16 @@
 		$chrNumID[$key]     = $oneChrNum;
 		$chrNameShort[$key] = $oneChrName;
 		$chrSize[$key]      = $oneChrSize;
+	}
+
+	// Pull chromosome names from 'figure_definition.txt' file contents.
+	foreach ($chrLinesArray2 as $key=>$chrLine) { // Populate arrays with data.
+		$chrLineParts       = preg_split('/\s+/', $chrLine);
+		if ($chrLineParts[0] != "#") {
+			$chrNum   = $chrLineParts[0];
+			$chrLabel = $chrLineParts[2];
+			$chrNameShort[$chrNum-1] = $chrLabel;
+		}
 	}
 
 	for ($chr=0; $chr<$chr_count; $chr+=1) {
