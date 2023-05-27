@@ -100,7 +100,7 @@ body {font-family: arial;}
 	}
 
 	if (file_exists($dirFigureBase."complete.txt")) {
-		echo "\n<!-- complete file found.\n--!>";
+		echo "\n<!-- complete file found. --!>\n";
 		// Hide iframe and adjust color of entry to indicate completion.
 		?>
 		<html>
