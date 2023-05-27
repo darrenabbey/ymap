@@ -195,10 +195,10 @@ if (isset($_SESSION['logged_on'])) {
 
 		foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.
 			$key      = $key_ + $userProjectCount_starting;
-			$project  = $projectFolders[$key];
-			$handle   = fopen("users/".$admin_as_user."/projects/".$project."/dataFormat.txt", "r");
-			$dataFormat = fgets($handle);
-			fclose($handle);
+			//$project  = $projectFolders[$key];
+			//$handle   = fopen("users/".$admin_as_user."/projects/".$project."/dataFormat.txt", "r");
+			//$dataFormat = fgets($handle);
+			//fclose($handle);
 			echo "\n// javascript for project #".$key+$sumKey."_admin, '".$project."'\n";
 			echo "var el_p            = document.getElementById('frameContainer.p2_".$key+$sumKey."_admin');\n";
 			echo "el_p.innerHTML      = '<iframe id=\"p_".$key+$sumKey."_admin\" name=\"p_".$key+$sumKey."_admin\" class=\"upload\" style=\"height:38px; border:0px;\" ";
