@@ -56,6 +56,14 @@
 			$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."]</font>";
 			$genome_name = str_replace("+ ","",$genome_name);
 
+			// getting figure version for project.
+			$versionFile     = "users/".$user."/projects/".$project."/figVer.txt";
+			if (file_exists($versionFile)) {
+				$figVer = "v".intval(trim(file_get_contents($versionFile))).".";
+			} else {
+				$figVer = "";
+			}
+
 			// getting project name.
 			$nameFile        = "users/".$user."/projects/".$project."/name.txt";
 			$parent_file     = "users/".$user."/projects/".$project."/parent.txt";
@@ -82,7 +90,7 @@
 				$key = $key_;
 				echo "<span id='p_label_".$key."' style='color:#CC0000;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
-				echo "<input id='show_".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
+				echo "<input id='show_".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."');\" style=\"visibility:hidden;\">";
 				echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
@@ -106,6 +114,14 @@
 			// getting genome name for project.
 			$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."]</font>";
 			$genome_name = str_replace("+ ","",$genome_name);
+
+			// getting figure version for project.
+			$versionFile     = "users/".$user."/projects/".$project."/figVer.txt";
+			if (file_exists($versionFile)) {
+				$figVer = "v".intval(trim(file_get_contents($versionFile))).".";
+			} else {
+				$figVer = "";
+			}
 
 			// getting project name.
 			$nameFile        = "users/".$user."/projects/".$project."/name.txt";
@@ -133,7 +149,7 @@
 				$key = $key_ + $userProjectCount_starting;
 				echo "<span id='p_label_".$key."' style='color:#BB9900;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
-				echo "<input  id='show_".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
+				echo "<input id='show_".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."');\" style=\"visibility:hidden;\">";
 				echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
@@ -143,7 +159,7 @@
 				$key = $key_ + $userProjectCount_starting;
 				echo "<span id='p_label_".$key."' style='color:#888888;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
-				echo "<input  id='show_".$key."' type='checkbox'>";
+				echo "<input id='show_".$key."' type='checkbox'>";
 				echo "\n\t\t".$project."</font></span> ".$genome_name."\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
@@ -157,6 +173,14 @@
 			// getting genome name for project.
 			$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."]</font>";
 			$genome_name = str_replace("+ ","",$genome_name);
+
+			// getting figure version for project.
+			$versionFile     = "users/".$user."/projects/".$project."/figVer.txt";
+			if (file_exists($versionFile)) {
+				$figVer = "v".intval(trim(file_get_contents($versionFile))).".";
+			} else {
+				$figVer = "";
+			}
 
 			// getting project name.
 			$nameFile        = "users/".$user."/projects/".$project."/name.txt";
@@ -178,15 +202,20 @@
 					$colorString2 = "magenta";
 				}
 
-				$json_file_list       = json_encode(scandir("users/$user/projects/$project"));
-				$JSONproject          = json_encode("$project");
-				$handle               = fopen($parent_file,'r');
-				$parentString         = trim(fgets($handle));
+				// Limit files list to valid output file types.
+				$projectFiles	= preg_grep('~\.(png|eps|bed|gff3)$~', scandir("users/$user/projects/$project/"));
+				sort($projectFiles);
+				$json_file_list	= json_encode($projectFiles);
+
+				// Get parent.
+				$handle		= fopen($parent_file,'r');
+				$parentString	= trim(fgets($handle));
 				fclose($handle);
+
 				$key = $key_ + $userProjectCount_starting + $userProjectCount_working;
 				echo "<span id='project_label_".$key."' style='color:#00AA00;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
-				echo "<input  id='show_$key' type='checkbox' onclick=\"parent.openProject('$user','$project','$key','$projectNameString','$colorString1','$colorString2','$parentString'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
+				echo "<input id='show_$key' type='checkbox' onclick=\"parent.openProject('$user','$project','$key','$projectNameString','$colorString1','$colorString2','$parentString','$figVer'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
 				echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
 				echo "<span id='p2_".$project."_delete'></span><span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
@@ -196,7 +225,7 @@
 				$key = $key_ + $userProjectCount_starting;
 				echo "<span id='p_label_".$key."' style='color:#888888;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
-				echo "<input  id='show_".$key."' type='checkbox'>";
+				echo "<input id='show_".$key."' type='checkbox'>";
 				echo "\n\t\t".$project."</font></span> ".$genome_name."\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
@@ -294,7 +323,13 @@
 			$colorString1 = 'null';
 			$colorString2 = 'null';
 		}
-		$json_file_list = json_encode(scandir("users/default/projects/$project"));
+
+		// Limit files list to valid output file types.
+		$projectFiles   = preg_grep('~\.(png|eps|bed|gff3)$~', scandir("users/$user/projects/$project/"));
+		sort($projectFiles);
+		$json_file_list = json_encode($projectFiles);
+
+		// Get parent.
 		$parent_file    = "users/default/projects/".$project."/parent.txt";
 		$handle         = fopen($parent_file,'r');
 		$parentString   = trim(fgets($handle));
@@ -310,7 +345,7 @@
 
 		$key = $key_ + $userProjectCount_starting + $userProjectCount_working + $userProjectCount_complete;
 		echo "<font size='2'>".($key+1).".";
-		echo "<input  id='show_".$key."_sys' type='checkbox' onclick=\"parent.openProject('default','".$project."','".$key."_sys','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."');\" data-file-list='".$json_file_list. "'>";
+		echo "<input id='show_".$key."_sys' type='checkbox' onclick=\"parent.openProject('default','".$project."','".$key."_sys','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."');\" data-file-list='".$json_file_list."'>";
 
 		echo $projectNameString."</font>";
 		echo "<br>\n\t\t";
