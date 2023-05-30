@@ -1,7 +1,18 @@
 function [realHomozygous_peak, disomy_fit, skew_factor] = ...
     FindRealHomozygousPeaks_initial_2(chrCopyNum,SNP_probeset_length,probeset1,chr_breaks,chr_size,show_unnassigned,DataTypeToUse,show_fitting, workingDir)
-% FindRealHomozygousPeakLocation determines where homozygous peaks
-%    are in the data for an experiment.
+% FindRealHomozygousPeakLocation determines where homozygous peaks are in the data for an experiment.
+
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
+
 histAll = [];
 no_usable_ploidies = 1;
 for usedChr = [8 1:7]
@@ -15,7 +26,7 @@ for usedChr = [8 1:7]
                     if (length(probeset1(i).probe_Ratio) > 0) && (length(probeset1(i+1).probe_Ratio) > 0)
                         % Calculate value of SNP probe pair.
                         [UsedData] = calculateValue(probeset1,i,DataTypeToUse);
-                        
+
                         if (isfield(probeset1(1),'probe_polarity') == 1)
                             if (probeset1(i).probe_polarity == 0)
                                 if (show_unnassigned == true)
@@ -67,7 +78,7 @@ if (no_usable_ploidies == 0) % disomics/tetrasomics were found, so we can determ
 	histMax = find(smoothed_1a == max(smoothed_1a));
 	% determines final homozygous peak location.
 	initialHomozygous_peak = histMax/200;
-    
+
 	% generate a smoothed dataset of all outer quartile data, for use in gaussian fitting.
 	smoother = [smoothed_1a fliplr(smoothed_1a)];
 %%%	smoother(51:150) = 0;
@@ -114,8 +125,8 @@ test_locations = locations
 		plot([201-locations(1) 201-locations(1)],[min(smoother2) max(smoother2)],'-','color',[0.0 0.0 0.0],'lineWidth',1);
 	hold off;
 	title('initial minus central peak');
-	% saveas(fig, [workingDir 'initGaussianFit_minusFit.eps'], 'epsc');
-	  saveas(fig, [workingDir 'initGaussianFit_minusFit.png'], 'png');
+	% saveas(fig, [workingDir 'initGaussianFit_minusFit.' figVer 'eps'], 'epsc');
+	  saveas(fig, [workingDir 'initGaussianFit_minusFit.' figVer 'png'], 'png');
 	delete(fig);
 	%----------------------------------------------------------------------
 

@@ -2,6 +2,18 @@ function [] = CNV_manualLOH_v1(main_dir,user,genomeUser,project,hapmap,genome,pl
                                SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 addpath('../');
 
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+workingDir = [main_dir 'users/' user '/projects/' project '/'];
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
+
 %% ========================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
 %    bases_per_bin              : Controls bin sizes for SNP/CGH fractions of plot.
@@ -821,13 +833,13 @@ else
 
 	%% Save figures.
 	set(fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
-	saveas(fig,        [projectDir 'fig.CNV-manualLOH-map.1.eps'], 'epsc');
-	saveas(fig,        [projectDir 'fig.CNV-manualLOH-map.1.png'], 'png');
+	saveas(fig,        [projectDir 'fig.CNV-manualLOH-map.1.' figVer 'eps'], 'epsc');
+	saveas(fig,        [projectDir 'fig.CNV-manualLOH-map.1.' figVer 'png'], 'png');
 	delete(fig);
 
 	set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
-	saveas(Linear_fig, [projectDir 'fig.CNV-manualLOH-map.2.eps'], 'epsc');
-	saveas(Linear_fig, [projectDir 'fig.CNV-manualLOH-map.2.png'], 'png');
+	saveas(Linear_fig, [projectDir 'fig.CNV-manualLOH-map.2.' figVer 'eps'], 'epsc');
+	saveas(Linear_fig, [projectDir 'fig.CNV-manualLOH-map.2.' figVer 'png'], 'png');
 	delete(Linear_fig);
 end;
 

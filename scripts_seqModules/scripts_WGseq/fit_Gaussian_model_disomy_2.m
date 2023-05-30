@@ -1,6 +1,16 @@
 function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gaussian_model_disomy_2(workingDir, saveName, data,locations,init_width,func_type)
 	% attempt to fit a 3-gaussian model to data.
 
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
 	show = true;
 	p1_a = nan;   p1_b = nan;   p1_c = nan;
 	p2_a = nan;   p2_b = nan;   p2_c = nan;
@@ -32,7 +42,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gau
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',200000);
 	time    = 1:length(data);
 
-	saveFileName = [workingDir saveName '.png']
+	saveFileName = [workingDir saveName '.' figVer 'png']
 
 	[Estimates,~,exitflag] = fminsearch(@fiterror, ...   % function to be fitted.
 	                                    initial, ...     % initial values.

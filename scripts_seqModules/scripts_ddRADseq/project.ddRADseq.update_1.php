@@ -38,6 +38,14 @@
 	fwrite($condensedLogOutput, "Updating.\n");
 	fclose($condensedLogOutput);
 
+// Delete pre-existing final output files.
+	fwrite($logOutput, "Cleaning up old output files.\n");
+	$projectFiles   = preg_grep('~\.(png|eps|bed|gff3)$~', scandir("../../users/".$user."/projects/".$project."/"));
+	foreach ($projectFiles as $file) {
+		fwrite($logOutput, "\t".$file."\n");
+		unlink("../../users/".$user."/projects/".$project."/".$file);
+	}
+
 // Final install functions are in shell script.
 	fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_ddRADseq/project.ddRADseq.update_2.sh'\n");
 	fwrite($logOutput, "\t\tCurrent directory = '".getcwd()."'\n" );

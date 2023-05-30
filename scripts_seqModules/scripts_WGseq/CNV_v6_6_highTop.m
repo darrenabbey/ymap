@@ -2,6 +2,18 @@ function [] = CNV_v6_6_highTop(main_dir,user,genomeUser,project,genome,ploidyEst
 							   CNV_verString,rDNA_verString,displayBREAKS, referenceCHR);
 addpath('../');
 
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+workingDir = [main_dir 'users/' user '/projects/' project '/'];
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
+
 %% ========================================================================
 Centromere_format_default   = 0;
 Yscale_nearest_even_ploidy  = true;
@@ -789,16 +801,16 @@ end;
 % leaving code for debug options
 %{
 set(Standard_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
-saveas(Standard_fig, [projectDir 'fig.CNV-map.highTop.1.eps'], 'epsc');
-saveas(Standard_fig, [projectDir 'fig.CNV-map.highTop.1.png'], 'png');
+saveas(Standard_fig, [projectDir 'fig.CNV-map.highTop.1.' figVer 'eps'], 'epsc');
+saveas(Standard_fig, [projectDir 'fig.CNV-map.highTop.1.' figVer 'png'], 'png');
 %}
 delete(Standard_fig);
 
 % Save horizontal aligned genome figure, multiplying height since this is
 % an higher figure
 set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height*2]);
-saveas(Linear_fig, [projectDir 'fig.CNV-map.highTop.2.eps'], 'epsc');
-saveas(Linear_fig, [projectDir 'fig.CNV-map.highTop.2.png'], 'png');
+saveas(Linear_fig, [projectDir 'fig.CNV-map.highTop.2.' figVer 'eps'], 'epsc');
+saveas(Linear_fig, [projectDir 'fig.CNV-map.highTop.2.' figVer 'png'], 'png');
 delete(Linear_fig);
 
 end

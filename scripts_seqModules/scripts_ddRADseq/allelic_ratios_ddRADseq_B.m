@@ -2,6 +2,17 @@ function [] = allelic_ratios_ddRADseq_B(main_dir,user,genomeUser,project,parent,
 addpath('../');
 workingDir = [main_dir 'users/' user '/projects/' project '/'];
 
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
+
 %% ================================================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
 %    bases_per_bin              : Controls bin sizes for SNP/CGH fractions of plot.
@@ -824,8 +835,8 @@ for chr = 1:num_chrs
 	end;
 end;
 set(histogram_fig,'PaperPosition',[0 0 8*(num_chrs/8)^2 1.5*(num_chrs/8)]*4);
-%saveas(histogram_fig, [projectDir 'fig.allelic_fraction_histogram.eps'], 'epsc');
-saveas(histogram_fig, [projectDir 'fig.allelic_fraction_histogram.png'], 'png');
+%saveas(histogram_fig, [projectDir 'fig.allelic_fraction_histogram.' figVer 'eps'], 'epsc');
+saveas(histogram_fig, [projectDir 'fig.allelic_fraction_histogram.' figVer 'png'], 'png');
 delete(histogram_fig);
 
 
@@ -1252,13 +1263,13 @@ end;
 
 %% Save figures.
 set(fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
-%saveas(fig,        [projectDir 'fig.allelic_ratio-map.c1.eps'], 'epsc');
-saveas(fig,        [projectDir 'fig.allelic_ratio-map.c1.png'], 'png');
+%saveas(fig,        [projectDir 'fig.allelic_ratio-map.c1.' figVer 'eps'], 'epsc');
+saveas(fig,        [projectDir 'fig.allelic_ratio-map.c1.' figVer 'png'], 'png');
 delete(fig);
 
 set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
-%saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.c2.eps'], 'epsc');
-saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.c2.png'], 'png');
+%saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.c2.' figVer 'eps'], 'epsc');
+saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.c2.' figVer 'png'], 'png');
 delete(Linear_fig);
 
 %%================================================================================================

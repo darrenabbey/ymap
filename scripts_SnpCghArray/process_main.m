@@ -6,6 +6,17 @@ function [result_image_location, archive_data_location] = ...
 % This version does not load calibration data and generate a hapmap...   see 'calibration_setup.m' for relevant script.
 %
 
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
+
 %%% Let the processing pipeline know that the analysis has started.
 %new_fid = fopen([workingDir 'working.txt'],'a');
 %fprintf(new_fid,'working');
@@ -439,8 +450,8 @@ if (performGCbiasCorrection)
 			ylabel('corrected CNV data');
 			xlim([0 1.0]);   ylim([0 5]);
 			axis square;
-		saveas(GCfig, [workingDir 'fig_GCratio_vs_CGH.eps'], 'epsc');
-		saveas(GCfig, [workingDir 'fig_GCratio_vs_CGH.png'], 'png');
+		saveas(GCfig, [workingDir 'fig_GCratio_vs_CGH.' figVer 'eps'], 'epsc');
+		saveas(GCfig, [workingDir 'fig_GCratio_vs_CGH.' figVer 'png'], 'png');
 
 		% Move LOWESS-normalizd CGH data into display pipeline.
 		for chr = 1:num_chrs
@@ -550,8 +561,8 @@ if (performEndbiasCorrection)
 			xlim([0 200]);
 			ylim([0 4]);
 			axis square;
-		saveas(Endfig, [workingDir 'fig_EndDistance_vs_CGH.eps'], 'epsc');
-		saveas(Endfig, [workingDir 'fig_EndDistance_vs_CGH.png'], 'png');
+		saveas(Endfig, [workingDir 'fig_EndDistance_vs_CGH.' figVer 'eps'], 'epsc');
+		saveas(Endfig, [workingDir 'fig_EndDistance_vs_CGH.' figVer 'png'], 'png');
 
 		% Move LOWESS-normalizd CGH data into display pipeline.
 		for chr = 1:num_chrs
@@ -1839,12 +1850,12 @@ hold off;
 
 fprintf('\n');
 set(   fig,        'PaperPosition',[0 0 8 6]*2);
-saveas(fig,        [workingDir 'fig.CNV-SNP-map.1.eps'], 'epsc');
-saveas(fig,        [workingDir 'fig.CNV-SNP-map.1.png'], 'png' );
+saveas(fig,        [workingDir 'fig.CNV-SNP-map.1.' figVer 'eps'], 'epsc');
+saveas(fig,        [workingDir 'fig.CNV-SNP-map.1.' figVer 'png'], 'png' );
 delete(fig);
 set(   Linear_fig, 'PaperPosition',[0 0 8 0.62222222]*2);
-saveas(Linear_fig, [workingDir 'fig.CNV-SNP-map.2.eps'], 'epsc');
-saveas(Linear_fig, [workingDir 'fig.CNV-SNP-map.2.png'], 'png' );
+saveas(Linear_fig, [workingDir 'fig.CNV-SNP-map.2.' figVer 'eps'], 'epsc');
+saveas(Linear_fig, [workingDir 'fig.CNV-SNP-map.2.' figVer 'png'], 'png' );
 delete(Linear_fig);
 
 
@@ -1857,8 +1868,8 @@ fprintf('\n');
 %set(0,'ShowHiddenHandles','on');
 %delete(get(0,'Children'));
 
-result_image_location1 = [workingDir 'fig_1.' experiment_name '.png'];
-result_image_location2 = [workingDir 'fig_2.' experiment_name '.png'];
+result_image_location1 = [workingDir 'fig_1.' experiment_name '.' figVer 'png'];
+result_image_location2 = [workingDir 'fig_2.' experiment_name '.' figVer 'png'];
 archive_data_location  = {	[workingDir microarray_design '.' strrep(experiment_name,' ','_') '.SNP_data.mat'], ...
 				[workingDir microarray_design '.' strrep(experiment_name,' ','_') '.CGH_data.mat'], ...
 				[workingDir microarray_design '.' strrep(experiment_name,' ','_') '.datasetDetails.mat']};

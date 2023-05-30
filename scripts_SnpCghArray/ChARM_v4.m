@@ -2,7 +2,7 @@ function [] = ChARM_v4(projectName, workingDir)
 %% =========================================================================================
 % Analyze CNV information for copy number changes.
 % Code based on algorithms described in:
-% 	Accurate detection of aneuploidies in array CGH and gene expression microarray data 
+% 	Accurate detection of aneuploidies in array CGH and gene expression microarray data
 %	Chad L. Myers, Maitreya J. Dunham, S.Y. Kung, Olga G. Troyanskaya (2004)
 %===========================================================================================
 
@@ -14,6 +14,18 @@ Chr_max_width     = 0.8;
 show_annotations  = true;
    temp_figures   = true;
 
+
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
+
 %%=========================================================================
 % Load Common_CNV file for project : 'CNVplot2', 'genome_CNV'.
 %--------------------------------------------------------------------------
@@ -23,6 +35,7 @@ load(dataFile);
 vars          = who('-file',dataFile);
 genome        = genome_CNV;
 examined_data = CNVplot2;
+
 
 %%=========================================================================
 % Control variables.
@@ -149,7 +162,7 @@ for chr = 1:num_chr
     CNV_median_smoothed{chr} = smooth_gaussian(CNV_median{chr},smooth_gaussian_sigma,smooth_gaussian_sigma*16);
 end;
 
-%% =================================================================================================== 
+%% ===================================================================================================
 % differentiation filter
 %-----------------------------------------------------------------------------------------------------
 fprintf('\nDifferentiation Filter');
@@ -238,8 +251,8 @@ if (temp_figures == true)
 	xlim([0,chr_size(chr)*chr_length_scale_multiplier]);    ylim([0,maxY]);
 	set(gca,'YTick',[0 maxY/2 maxY]);    set(gca,'YTickLabel',{'','',''});
     end;
-    saveas(fig,[workingDir 'ChARM_test.1.eps'], 'epsc');
-	saveas(fig,[workingDir 'ChARM_test.1.png'], 'png');
+    saveas(fig,[workingDir 'ChARM_test.1.' figVer 'eps'], 'epsc');
+	saveas(fig,[workingDir 'ChARM_test.1.' figVer 'png'], 'png');
     delete(fig);
 
     fig = figure(2);    dataShow = data2;
@@ -254,17 +267,17 @@ if (temp_figures == true)
 	for i = 1:length(dataShow{chr});
 	    x_ = [i i i-1 i-1];
 	    if (dataShow{chr}(i) == 0);    CNVhistValue = 0;    else;    CNVhistValue = dataShow{chr}(i);    end;
-	    startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);   
+	    startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
 	    set(f,'linestyle','none');
 	end;
 	x2 = chr_size(chr)*chr_length_scale_multiplier;
 	plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
 	hold off;
 	xlim([0,chr_size(chr)*chr_length_scale_multiplier]);    ylim([0,maxY]);
-	set(gca,'YTick',[0 maxY/2 maxY]);    set(gca,'YTickLabel',{'','',''}); 
+	set(gca,'YTick',[0 maxY/2 maxY]);    set(gca,'YTickLabel',{'','',''});
     end;
-    saveas(fig,[workingDir 'ChARM_test.2.eps'], 'epsc');
-	saveas(fig,[workingDir 'ChARM_test.2.png'], 'png');
+    saveas(fig,[workingDir 'ChARM_test.2.' figVer 'eps'], 'epsc');
+	saveas(fig,[workingDir 'ChARM_test.2.' figVer 'png'], 'png');
     delete(fig);
 
     fig = figure(3);    dataShow = data3;
@@ -279,17 +292,17 @@ if (temp_figures == true)
 	for i = 1:length(dataShow{chr});
 	    x_ = [i i i-1 i-1];
 	    if (dataShow{chr}(i) == 0);    CNVhistValue = 1;    else;    CNVhistValue = dataShow{chr}(i);    end;
-	    startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);   
+	    startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
 	    set(f,'linestyle','none');
 	end;
 	x2 = chr_size(chr)*chr_length_scale_multiplier;
 	plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
 	hold off;
 	xlim([0,chr_size(chr)*chr_length_scale_multiplier]);    ylim([0,maxY]);
-	set(gca,'YTick',[0 maxY/2 maxY]);    set(gca,'YTickLabel',{'','',''}); 
+	set(gca,'YTick',[0 maxY/2 maxY]);    set(gca,'YTickLabel',{'','',''});
     end;
-    saveas(fig,[workingDir 'ChARM_test.3.eps'], 'epsc');
-	saveas(fig,[workingDir 'ChARM_test.3.png'], 'png');
+    saveas(fig,[workingDir 'ChARM_test.3.' figVer 'eps'], 'epsc');
+	saveas(fig,[workingDir 'ChARM_test.3.' figVer 'png'], 'png');
     delete(fig);
 
     fig = figure(4);
@@ -324,8 +337,8 @@ if (temp_figures == true)
 	set(gca,'YTick',[-1 0 1]);
 	set(gca,'YTickLabel',{'','',''});
     end;
-    saveas(fig,[workingDir 'ChARM_test.4.eps'], 'epsc');
-	saveas(fig,[workingDir 'ChARM_test.4.png'], 'png');
+    saveas(fig,[workingDir 'ChARM_test.4.' figVer 'eps'], 'epsc');
+	saveas(fig,[workingDir 'ChARM_test.4.' figVer 'png'], 'png');
     delete(fig)
 end;
 
@@ -520,7 +533,7 @@ for t = 1:1; % num_permutations
 	fprintf(['\n\tchr' num2str(chr) ' : ' num2str(pos_change{chr}) ]);
     end;
     fprintf(['\n\tave : ' num2str(mean(abs([pos_change{1} pos_change{2} pos_change{3}]))) ]);
-    
+
     %% Update positions of edges.
     locs = new_locs;
 
@@ -550,7 +563,7 @@ for chr = 1:num_chr
 	%    This was not described in the ChARM paper, but is useful.
 	%----------------------------------------------------------------------
 	position(1)   = 1;
-	position(end) = length(examined_data{chr});   
+	position(end) = length(examined_data{chr});
 
 	%----------------------------------------------------------------------
 	% Converts edge pairs that are too close into single edges.
@@ -675,7 +688,7 @@ for chr = 1:num_chr
 %		set(gca,'YTick',[0 maxY/2 maxY]);
 %		set(gca,'YTickLabel',{'','',''});
 %	    end;
-%	    saveas(fig,[workingDir 'ChARM_test.5.' num2str(chr_fig) '_' num2str(t,'%02d') '.eps'], 'epsc');
+%	    saveas(fig,[workingDir 'ChARM_test.5.' num2str(chr_fig) '_' num2str(t,'%02d') '.' figVer 'eps'], 'epsc');
 %	    delete(fig)
 %	end;
     end;
@@ -698,7 +711,7 @@ if (temp_figures == true)
 	    x_ = [i i i-1 i-1];
 	    if (dataShow{chr}(i) == 0);    CNVhistValue = 1;    else;    CNVhistValue = dataShow{chr}(i);    end;
 	    startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
-	    set(f,'linestyle','none');   
+	    set(f,'linestyle','none');
 	end;
 	x2 = chr_size(chr)*chr_length_scale_multiplier;
 	plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
@@ -709,14 +722,14 @@ if (temp_figures == true)
 	xlim([0,chr_size(chr)*chr_length_scale_multiplier]);    ylim([0,maxY]);
 	set(gca,'YTick',[0 maxY/2 maxY]);    set(gca,'YTickLabel',{'','',''});
     end;
-    saveas(fig,[workingDir 'ChARM_test.5.eps'], 'epsc');
-	saveas(fig,[workingDir 'ChARM_test.5.png'], 'png');
+    saveas(fig,[workingDir 'ChARM_test.5.' figVer 'eps'], 'epsc');
+	saveas(fig,[workingDir 'ChARM_test.5.' figVer 'png'], 'png');
     delete(fig)
 end;
 
 %%=========================================================================
 % Save common_ChARM file for project : 'segmental_aneuploidy'.
-%--------------------------------------------------------------------------   
+%--------------------------------------------------------------------------
 dataFile = [workingDir 'Common_ChARM.mat']
 fprintf(['\nSaving common_ChARM file for "' projectName '" : ' dataFile '\n']);
 

@@ -2,6 +2,18 @@ function [] = CNV_v6_fragmentLengthCorrected_9_dots(main_dir,user,genomeUser,pro
                                                     CNV_verString,displayBREAKS);
 addpath('../');
 
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+workingDir = [main_dir 'users/' user '/projects/' project '/'];
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
+
 %% ========================================================================
 % Generate CGH-type figures from RADseq data, using a reference dataset to correct for genome position-dependant biases.
 %==========================================================================
@@ -739,13 +751,13 @@ end;
 
 % Save figures.
 set(Main_fig,'PaperPosition',[0 0 8 6]*2);
-saveas(Main_fig,   [projectDir 'fig.CNV-map.1.dots.eps'], 'epsc');
-saveas(Main_fig,   [projectDir 'fig.CNV-map.1.dots.png'], 'png');
+saveas(Main_fig,   [projectDir 'fig.CNV-map.1.dots.' figVer 'eps'], 'epsc');
+saveas(Main_fig,   [projectDir 'fig.CNV-map.1.dots.' figVer 'png'], 'png');
 delete(Main_fig);
 
 set(Linear_fig,'PaperPosition',[0 0 8 0.62222222]*2);
-saveas(Linear_fig, [projectDir 'fig.CNV-map.2.dots.eps'], 'epsc');
-saveas(Linear_fig, [projectDir 'fig.CNV-map.2.dots.png'], 'png');
+saveas(Linear_fig, [projectDir 'fig.CNV-map.2.dots.' figVer 'eps'], 'epsc');
+saveas(Linear_fig, [projectDir 'fig.CNV-map.2.dots.' figVer 'png'], 'png');
 delete(Linear_fig);
 
 end

@@ -3,6 +3,17 @@ function [] = CNV_SNP_hapmap_v5_RADseq(main_dir,user,genomeUser,project,parent,h
 addpath('../');
 
 
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+workingDir = [main_dir 'users/' user '/projects/' project '/'];
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
 fprintf('\n');
 fprintf('#########################################\n');
 fprintf('## CNV_SNP_hapmap_v5_RADseq_RedGreen.m ##\n');
@@ -548,14 +559,14 @@ if ((useHapmap) || (useParent))
 	%==========================================================================
 	%% Save figures.
 	set(Main_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
-	saveas(Main_fig,        [projectDir 'fig.CNV-SNP-map.RedGreen.1.eps'], 'epsc');
-	saveas(Main_fig,        [projectDir 'fig.CNV-SNP-map.RedGreen.1.png'], 'png');
+	saveas(Main_fig,        [projectDir 'fig.CNV-SNP-map.RedGreen.1.' figVer 'eps'], 'epsc');
+	saveas(Main_fig,        [projectDir 'fig.CNV-SNP-map.RedGreen.1.' figVer 'png'], 'png');
 	delete(Main_fig);
 
 	if (Linear_display == true)
 		set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
-		saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.RedGreen.2.eps'], 'epsc');
-		saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.RedGreen.2.png'], 'png');
+		saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.RedGreen.2.' figVer 'eps'], 'epsc');
+		saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.RedGreen.2.' figVer 'png'], 'png');
 		delete(Linear_fig);
 	end;
 elseif (useParent)

@@ -45,6 +45,20 @@
 		?><script type="text/javascript"> parent.location.reload(); </script><?php
 	}
 
+	// getting figure version for project.
+	$versionFile1  = "../..users/".$user."/projects/".$project1."/figVer.txt";
+	if (file_exists($versionFile1)) {
+		$figVer11 = intval(trim(file_get_contents($versionFile1)));
+	} else {
+		$figVer11 = 0;
+	}
+	$versionFile2  = "../..users/default/projects/".$project1."/figVer.txt";
+	if (file_exists($versionFile2)) {
+		$figVer12 = intval(trim(file_get_contents($versionFile1)));
+	} else {
+		$figVer12 = 0;
+	}
+
 	// Confirm if requested project2 project exists.
 	$project2_dir1 = "../../users/".$user."/projects/".$project2;
 	$project2_dir2 = "../../users/default/projects/".$project2;
@@ -142,17 +156,17 @@
 	// Find and display parent strain figure.
 	echo "Reference dataset : ".$project1."<br>";
 	if (file_exists($project1_dir1)) {
-	    if (file_exists($project1_dir1."/fig.CNV-LOH-map.2.png")) {
-	        $imageUrl = $project1_dir1."/fig.CNV-LOH-map.2.png";
+	    if (file_exists($project1_dir1."/fig.CNV-LOH-map.2.".$figVer11."png")) {
+	        $imageUrl = $project1_dir1."/fig.CNV-LOH-map.2.".$figVer11."png";
 	    } else {
-	        $imageUrl = $project1_dir1."/fig.CNV-SNP-map.2.png";
+	        $imageUrl = $project1_dir1."/fig.CNV-SNP-map.2.".$figVer11."png";
 	    }
 	    echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
 	} else if (file_exists($project1_dir2)) {
-		if (file_exists($project1_dir2."/fig.CNV-LOH-map.2.png")) {
-			$imageUrl = $project1_dir2."/fig.CNV-LOH-map.2.png";
+		if (file_exists($project1_dir2."/fig.CNV-LOH-map.2.".$figVer12."png")) {
+			$imageUrl = $project1_dir2."/fig.CNV-LOH-map.2.".$figVer12."png";
 		} else {
-			$imageUrl = $project1_dir2."/fig.CNV-SNP-map.2.png";
+			$imageUrl = $project1_dir2."/fig.CNV-SNP-map.2.".$figVer12."png";
 		}
 		echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
 	} else {
@@ -162,10 +176,10 @@
 	// Find and display secondary strain figure.
 	echo "Experimental dataset : ".$project2."<br>";
 	if (file_exists($project2_dir1)) {
-		if (file_exists($project2_dir1."/fig.CNV-LOH-map.2.png")) {
-			$imageUrl = $project2_dir1."/fig.CNV-LOH-map.2.png";
+		if (file_exists($project2_dir1."/fig.CNV-LOH-map.2.".$figVer21."png")) {
+			$imageUrl = $project2_dir1."/fig.CNV-LOH-map.2.".$figVer21."png";
 		} else {
-			$imageUrl = $project2_dir1."/fig.CNV-SNP-map.2.png";
+			$imageUrl = $project2_dir1."/fig.CNV-SNP-map.2.".$figVer21."png";
 		}
 		echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
 		$CGD_annotations_url = $project2_dir1."/CGD_annotations.".$project2.".txt";
@@ -173,10 +187,10 @@
 			echo "<br><div class='tab'>Examine <button onclick=\"loadExternal('".$CGD_annotations_url."',50,  220);\">GBrowse annotation track</button> to determine precise breakpoints.</div><br>";
 		}
 	} else if (file_exists($project2_dir2)) {
-		if (file_exists($project2_dir2."/fig.CNV-LOH-map.2.png")) {
-			$imageUrl = $project2_dir2."/fig.CNV-LOH-map.2.png";
+		if (file_exists($project2_dir2."/fig.CNV-LOH-map.2.".$figVer22."png")) {
+			$imageUrl = $project2_dir2."/fig.CNV-LOH-map.2.".$figVer22."png";
 		} else {
-			$imageUrl = $project2_dir2."/fig.CNV-SNP-map.2.png";
+			$imageUrl = $project2_dir2."/fig.CNV-SNP-map.2.".$figVer22."png";
 		}
 		echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
 		$CGD_annotations_url = $project2_dir2."/CGD_annotations.".$project2.".txt";

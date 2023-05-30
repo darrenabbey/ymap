@@ -8,6 +8,18 @@ addpath('../');
 %	Chad L. Myers, Maitreya J. Dunham, S.Y. Kung, Olga G. Troyanskaya (2004)
 %===========================================================================================
 
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+workingDir = [main_dir 'users/' user '/projects/' project '/'];
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
+
 fprintf(['\nGenerating ChARM figure from project "' project '" data.\n']);
 
 % Centromere_format : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
@@ -271,8 +283,8 @@ if (temp_figures == true)
 			set(gca,'YTickLabel',[]);
 		end;
 	end;
-	saveas(fig,[projectDir 'fig.ChARM_test.1.eps'], 'epsc');
-	saveas(fig,[projectDir 'fig.ChARM_test.1.png'], 'png');
+	saveas(fig,[projectDir 'fig.ChARM_test.1.' figVer 'eps'], 'epsc');
+	saveas(fig,[projectDir 'fig.ChARM_test.1.' figVer 'png'], 'png');
 	delete(fig);
 
 	fig = figure(2);    dataShow = data2;
@@ -288,7 +300,7 @@ if (temp_figures == true)
 			for i = 1:length(dataShow{chr});
 				x_ = [i i i-1 i-1];
 				if (dataShow{chr}(i) == 0);    CNVhistValue = 0;    else;    CNVhistValue = dataShow{chr}(i);    end;
-				startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);   
+				startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
 				set(f,'linestyle','none');
 			end;
 			x2 = chr_size(chr)*chr_length_scale_multiplier;
@@ -297,11 +309,11 @@ if (temp_figures == true)
 			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
 			ylim([0,maxY]);
 			set(gca,'YTick',[0 maxY/2 maxY]);
-			set(gca,'YTickLabel',[]); 
+			set(gca,'YTickLabel',[]);
 		end;
 	end;
-	saveas(fig,[projectDir 'fig.ChARM_test.2.eps'], 'epsc');
-	saveas(fig,[projectDir 'fig.ChARM_test.2.png'], 'png');
+	saveas(fig,[projectDir 'fig.ChARM_test.2.' figVer 'eps'], 'epsc');
+	saveas(fig,[projectDir 'fig.ChARM_test.2.' figVer 'png'], 'png');
 	delete(fig);
 
 	fig = figure(3);    dataShow = data3;
@@ -317,7 +329,7 @@ if (temp_figures == true)
 			for i = 1:length(dataShow{chr});
 				x_ = [i i i-1 i-1];
 				if (dataShow{chr}(i) == 0);    CNVhistValue = 1;    else;    CNVhistValue = dataShow{chr}(i);    end;
-				startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);   
+				startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
 				set(f,'linestyle','none');
 			end;
 			x2 = chr_size(chr)*chr_length_scale_multiplier;
@@ -326,11 +338,11 @@ if (temp_figures == true)
 			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
 			ylim([0,maxY]);
 			set(gca,'YTick',[0 maxY/2 maxY]);
-			set(gca,'YTickLabel',[]); 
+			set(gca,'YTickLabel',[]);
 		end;
 	end;
-	saveas(fig,[projectDir 'fig.ChARM_test.3.eps'], 'epsc');
-	saveas(fig,[projectDir 'fig.ChARM_test.3.png'], 'png');
+	saveas(fig,[projectDir 'fig.ChARM_test.3.' figVer 'eps'], 'epsc');
+	saveas(fig,[projectDir 'fig.ChARM_test.3.' figVer 'png'], 'png');
 	delete(fig);
 
 	fig = figure(4);
@@ -367,8 +379,8 @@ if (temp_figures == true)
 			set(gca,'YTickLabel',[]);
 		end;
 	end;
-	saveas(fig,[projectDir 'fig.ChARM_test.4.eps'], 'epsc');
-	saveas(fig,[projectDir 'fig.ChARM_test.4.png'], 'png');
+	saveas(fig,[projectDir 'fig.ChARM_test.4.' figVer 'eps'], 'epsc');
+	saveas(fig,[projectDir 'fig.ChARM_test.4.' figVer 'png'], 'png');
 	delete(fig);
 end;
 
@@ -755,11 +767,11 @@ if (temp_figures == true)
 				x_ = [i i i-1 i-1];
 				CNVhistValue = dataShow{chr}(i);
 				startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
-				set(f,'linestyle','none');   
+				set(f,'linestyle','none');
 			end;
 			fprintf([num2str(chr_size) '\n']);
 			x2 = chr_size(chr)*chr_length_scale_multiplier;
-			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.	
+			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
 			for edge = 1:length(locs{chr})
 				plot([locs{chr}(edge) locs{chr}(edge)], [0 maxY],'color',[0 0 1]);
 			end;
@@ -770,14 +782,14 @@ if (temp_figures == true)
 			set(gca,'YTickLabel',[]);
 		end;
 	end;
-	saveas(fig,[projectDir 'fig.ChARM_test.5.eps'], 'epsc');
-	saveas(fig,[projectDir 'fig.ChARM_test.5.png'], 'png');
+	saveas(fig,[projectDir 'fig.ChARM_test.5.' figVer 'eps'], 'epsc');
+	saveas(fig,[projectDir 'fig.ChARM_test.5.' figVer 'png'], 'png');
 	delete(fig);
 end;
 
 %%=========================================================================
 % Save common_ChARM file for project : 'segmental_aneuploidy'.
-%--------------------------------------------------------------------------   
+%--------------------------------------------------------------------------
 fprintf('\n\nSaving output of ChARM algorithm.\n');
 fprintf(    '---------------------------------\n');
 dataFile = [projectDir 'Common_ChARM.mat'];

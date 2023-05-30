@@ -41,6 +41,20 @@
 			session_destroy();
 			?><script type="text/javascript"> parent.location.reload(); </script><?php
 		}
+
+		// getting figure version for project.
+		$versionFile1  = "../..users/".$user."/projects/".$project1."/figVer.txt";
+		if (file_exists($versionFile1)) {
+			$figVer11 = intval(trim(file_get_contents($versionFile1)));
+		} else {
+			$figVer11 = 0;
+		}
+		$versionFile2  = "../..users/default/projects/".$project1."/figVer.txt";
+		if (file_exists($versionFile2)) {
+			$figVer12 = intval(trim(file_get_contents($versionFile1)));
+		} else {
+			$figVer12 = 0;
+		}
 	}
 
 	if ($project2 != '') {
@@ -52,6 +66,21 @@
 			session_destroy();
 			?><script type="text/javascript"> parent.location.reload(); </script><?php
 		}
+
+		// getting figure version for project.
+		$versionFile1  = "../..users/".$user."/projects/".$project2."/figVer.txt";
+		if (file_exists($versionFile1)) {
+			$figVer21 = intval(trim(file_get_contents($versionFile2)));
+		} else {
+			$figVer21 = 0;
+		}
+		$versionFile2  = "../..users/default/projects/".$project2."/figVer.txt";
+		if (file_exists($versionFile2)) {
+			$figVer22 = intval(trim(file_get_contents($versionFile2)));
+		} else {
+			$figVer22 = 0;
+		}
+
 	}
 
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
@@ -144,17 +173,17 @@
 		echo "Reference dataset 1 : ".$project1."<br>";
 	}
 	if (file_exists($project1_dir1)) {
-	    if (file_exists($project1_dir1."/fig.CNV-LOH-map.2.png")) {
-	        $imageUrl = $project1_dir1."/fig.CNV-LOH-map.2.png";
+	    if (file_exists($project1_dir1."/fig.CNV-LOH-map.2.".$figVer11."png")) {
+	        $imageUrl = $project1_dir1."/fig.CNV-LOH-map.2.".$figVer11."png";
 	    } else {
-	        $imageUrl = $project1_dir1."/fig.CNV-SNP-map.2.png";
+	        $imageUrl = $project1_dir1."/fig.CNV-SNP-map.2.".$figVer11."png";
 	    }
 	    echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
 	} else {
-		if (file_exists($project1_dir2."/fig.CNV-LOH-map.2.png")) {
-			$imageUrl = $project1_dir2."/fig.CNV-LOH-map.2.png";
+		if (file_exists($project1_dir2."/fig.CNV-LOH-map.2.".$figVer12."png")) {
+			$imageUrl = $project1_dir2."/fig.CNV-LOH-map.2.".$figVer12."png";
 		} else {
-			$imageUrl = $project1_dir2."/fig.CNV-SNP-map.2.png";
+			$imageUrl = $project1_dir2."/fig.CNV-SNP-map.2.".$figVer12."png";
 		}
 		echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
 	}
@@ -166,10 +195,10 @@
 		echo "Reference dataset 2 : ".$project2."<br>";
 	}
 	if (file_exists($project2_dir1)) {
-		if (file_exists($project2_dir1."/fig.CNV-LOH-map.2.png")) {
-			$imageUrl = $project2_dir1."/fig.CNV-LOH-map.2.png";
+		if (file_exists($project2_dir1."/fig.CNV-LOH-map.2.".$figVer21."png")) {
+			$imageUrl = $project2_dir1."/fig.CNV-LOH-map.2.".$figVer21."png";
 		} else {
-			$imageUrl = $project2_dir1."/fig.CNV-SNP-map.2.png";
+			$imageUrl = $project2_dir1."/fig.CNV-SNP-map.2.".$figVer21."png";
 		}
 		echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
 		$CGD_annotations_url = $project2_dir1."/CGD_annotations.".$project2.".txt";
@@ -179,10 +208,10 @@
 			}
 		}
 	} else {
-		if (file_exists($project2_dir2."/fig.CNV-LOH-map.2.png")) {
-			$imageUrl = $project2_dir2."/fig.CNV-LOH-map.2.png";
+		if (file_exists($project2_dir2."/fig.CNV-LOH-map.2.".$figVer22."png")) {
+			$imageUrl = $project2_dir2."/fig.CNV-LOH-map.2.".$figVer22."png";
 		} else {
-			$imageUrl = $project2_dir2."/fig.CNV-SNP-map.2.png";
+			$imageUrl = $project2_dir2."/fig.CNV-SNP-map.2.".$figVer22."png";
 		}
 		echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
 		$CGD_annotations_url = $project2_dir2."/CGD_annotations.".$project2.".txt";

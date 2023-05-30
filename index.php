@@ -356,7 +356,7 @@ function blank_and_content_tab() {
 		console.log('#     parent.openProject : "'+user+':'+project+':'+key+':'+projectName+':'+figVer+'"');
 
 		if (show_button_element.checked == false) {
-			closeProject(user,project,key,projectName,color1,color2,parent);
+			closeProject(user,project,key,projectName,color1,color2,parent,figVer);
 		} else {
 			var file_list   = JSON.parse(show_button_element.getAttribute('data-file-list'));
 			var file_prefix = "users/"+user+"/projects/"+project+"/";
@@ -390,8 +390,8 @@ function blank_and_content_tab() {
 			}
 			var fig_linear_manual                = file_prefix + "fig.CNV-manualLOH-map.2." + figVer_;
 			var fig_standard_manual              = file_prefix + "fig.CNV-manualLOH-map.1." + figVer_;
-			var CGD_CNV_track                    = file_prefix + "cnv."+project+".gff3";
-			var CGD_SNP_track                    = file_prefix + "allele_ratios."+project+".bed";
+			var CGD_CNV_track                    = file_prefix + "cnv."+project+"."; + figVer_
+			var CGD_SNP_track                    = file_prefix + "allele_ratios."+project+"." + figVer_;
 
 			var CNV_bias_SnpCghArray_GCcontent   = file_prefix + "fig_GCratio_vs_CGH." + figVer_;
 			var CNV_bias_SnpCghArray_end         = file_prefix + "fig_EndDistance_vs_CGH." + figVer_;
@@ -424,6 +424,10 @@ function blank_and_content_tab() {
 			} else if (file_list.indexOf(fig_linear_SNP+"png") != -1) {
 				mainFigure1 = fig_linear_SNP;
 			}
+			console.log("## "+figVer_);
+			console.log("## "+fig_linear_CNV_SNP+"png");
+			console.log("## "+fig_linear_CNV+"png");
+			console.log("## "+fig_linear_SNP+"png");
 
 			if (file_list.indexOf(fig_linear_CNV_SNP+"png") != -1) {
 				string1 = string1 + "<b>CNV and SNP/LOH</b> (linear ";
@@ -505,7 +509,7 @@ function blank_and_content_tab() {
 				}
 			}
 			if (file_list.indexOf(CGD_CNV_track) != -1) {
-				string1 += "; <a href=\"" + CGD_CNV_track + "\">GBrowse CNV track</a>";
+				string1 += "; <a href=\"" + CGD_CNV_track + "\"gff3>GBrowse CNV track</a>";
 				CGD_tracks_present = true;
 			}
 			if (file_list.indexOf(fig_linear_SNP+"png") != -1) {
@@ -530,7 +534,7 @@ function blank_and_content_tab() {
 			}
 
 			if (file_list.indexOf(CGD_SNP_track) != -1) {
-				string1 += "; <a href=\"" + CGD_SNP_track + "\">GBrowse allele ratio track</a>";
+				string1 += "; <a href=\"" + CGD_SNP_track + "bed\">GBrowse allele ratio track</a>";
 				CGD_tracks_present = true;
 			}
 
@@ -540,7 +544,7 @@ function blank_and_content_tab() {
 
 			string1 = string1 + "</font>";
 
-			var string2 = "</td><td width='5%' align='right'><div onclick=\'closeProject(\""+user+"\",\""+project+"\",\""+key+"\",\""+projectName+"\",\""+color1+"\",\""+color2+"\",\""+parent+"\");' style='display:inline-block;'><b>[X]</b></div></td></tr>";
+			var string2 = "</td><td width='5%' align='right'><div onclick=\'closeProject(\""+user+"\",\""+project+"\",\""+key+"\",\""+projectName+"\",\""+color1+"\",\""+color2+"\",\""+parent+"\",\""+figVer+"\");' style='display:inline-block;'><b>[X]</b></div></td></tr>";
 			var string3 = "<tr><td align='center' colspan='3'>";
 			var string4 = "<div id='fig_"+key+"'><img src='"+mainFigure1+"png' width='100%'></div>";
 			string4 = string4 + "</td></tr></table>"+"<hr></div>";
@@ -574,7 +578,7 @@ function blank_and_content_tab() {
 			console.log('#         projectsShown = "'+projectsShown+'"');
 		}
 	}
-	function closeProject(user,project,key,projectName,color1,color2,parent) {
+	function closeProject(user,project,key,projectName,color1,color2,parent,figVer) {
 		if (key.includes("_admin")) {
 			var visualize_iframe    = document.getElementById('panel_admin2_iframe');
 			var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
@@ -590,12 +594,12 @@ function blank_and_content_tab() {
 			figure_element.remove();
 		}
 		var projectsShown = localStorage.getItem("projectsShown");
-		projectsShown = projectsShown.replace(user+":"+project+":"+key+":"+projectName+";","");
+		projectsShown = projectsShown.replace(user+":"+project+":"+key+":"+projectName+":"+figVer+";","");
 		projectsShown = projectsShown.replace("  "," ");  // remove duplicate " " characters.
 		while (projectsShown.charAt(0) == " ")
 			projectsShown = projectsShown.slice( 1 );     // remove leading " " characater.
 		localStorage.setItem("projectsShown", projectsShown);
-		console.log('#     Remove from projectsShown : "'+user+':'+project+':'+key+':'+projectName+'"');
+		console.log('#     Remove from projectsShown : "'+user+':'+project+':'+key+':'+projectName+":"+figVer+'"');
 		console.log('#         projectsShown = "'+projectsShown+'"');
 	}
 	function closeProject_viewOnly(key) {

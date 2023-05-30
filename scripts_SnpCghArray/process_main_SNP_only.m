@@ -6,6 +6,16 @@ function [result_image_location, archive_data_location] = ...
 % This version does not load calibration data and generate a hapmap...   see 'calibration_setup.m' for relevant script.
 %
 
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
 %%% Let the processing pipeline know that the analysis has started.
 %new_fid = fopen([workingDir 'working.txt'],'a');
 %fprintf(new_fid,'working');
@@ -942,12 +952,12 @@ hold off;
 
 fprintf('\n');
 set(   fig,        'PaperPosition',[0 0 8 6]*2);
-saveas(fig,        [workingDir 'fig.SNP-map.1.eps'], 'epsc');
-saveas(fig,        [workingDir 'fig.SNP-map.1.png'], 'png' );
+saveas(fig,        [workingDir 'fig.SNP-map.1.' figVer 'eps'], 'epsc');
+saveas(fig,        [workingDir 'fig.SNP-map.1.' figVer 'png'], 'png' );
 delete(fig);
 set(   Linear_fig, 'PaperPosition',[0 0 8 0.62222222]*2);
-saveas(Linear_fig, [workingDir 'fig.SNP-map.2.eps'], 'epsc');
-saveas(Linear_fig, [workingDir 'fig.SNP-map.2.png'], 'png' );
+saveas(Linear_fig, [workingDir 'fig.SNP-map.2.' figVer 'eps'], 'epsc');
+saveas(Linear_fig, [workingDir 'fig.SNP-map.2.' figVer 'png'], 'png' );
 delete(Linear_fig);
 
 
@@ -960,11 +970,11 @@ fprintf('\n');
 %set(0,'ShowHiddenHandles','on');
 %delete(get(0,'Children'));
 
-result_image_location1 = [workingDir 'fig_1.' experiment_name '.png'];
-result_image_location2 = [workingDir 'fig_2.' experiment_name '.png'];
+result_image_location1 = [workingDir 'fig_1.' experiment_name '.' figVer 'png'];
+result_image_location2 = [workingDir 'fig_2.' experiment_name '.' figVer 'png'];
 archive_data_location = {	[workingDir microarray_design '.' strrep(experiment_name,' ','_') '.SNP_data.mat'], ...
-							[workingDir microarray_design '.' strrep(experiment_name,' ','_') '.CGH_data.mat'], ...
-							[workingDir microarray_design '.' strrep(experiment_name,' ','_') '.datasetDetails.mat']};
+				[workingDir microarray_design '.' strrep(experiment_name,' ','_') '.CGH_data.mat'], ...
+				[workingDir microarray_design '.' strrep(experiment_name,' ','_') '.datasetDetails.mat']};
 
 %% Let the processing pipeline know that the analysis has completed.
 new_fid        = fopen([workingDir 'complete.txt'],'w');

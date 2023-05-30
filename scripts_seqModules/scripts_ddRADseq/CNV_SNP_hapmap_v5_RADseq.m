@@ -4,6 +4,17 @@ addpath('../');
 
 workingDir = [main_dir 'users/' user '/projects/' project '/'];
 
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
+
 %% ========================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
 %    bases_per_bin              : Controls bin sizes for SNP/CGH fractions of plot.
@@ -947,14 +958,14 @@ end;
 %==========================================================================
 %% Save figures.
 set(Main_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
-saveas(Main_fig,        [projectDir 'fig.CNV-SNP-map.1.eps'], 'epsc');
-saveas(Main_fig,        [projectDir 'fig.CNV-SNP-map.1.png'], 'png');
+saveas(Main_fig,        [projectDir 'fig.CNV-SNP-map.1.' figVer 'eps'], 'epsc');
+saveas(Main_fig,        [projectDir 'fig.CNV-SNP-map.1.' figVer 'png'], 'png');
 delete(Main_fig);
 
 if (Linear_display == true)
 	set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
-	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.eps'], 'epsc');
-	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.png'], 'png');
+	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.' figVer 'eps'], 'epsc');
+	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.' figVer 'png'], 'png');
 	delete(Linear_fig);
 end;
 

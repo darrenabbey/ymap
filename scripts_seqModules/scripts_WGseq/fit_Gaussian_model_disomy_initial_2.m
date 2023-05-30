@@ -1,6 +1,18 @@
 function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gaussian_model_disomy_initial_2(data,locations,init_width,skew_factor,func_type,show, workingDir)
 % attempt to fit a single-gaussian model to data.
 %[G1_a, G1_b, G1_c, G2_a, G2_b, G2_c, S_a, S_c] = GaussianModel_G1SG2(tet_control,parameter,'fcs1','');
+
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
+
 	p1_a = nan;   p1_b = nan;   p1_c = nan;
 	p2_a = nan;   p2_b = nan;   p2_c = nan;
 	p3_a = nan;   p3_b = nan;   p3_c = nan;
@@ -99,8 +111,8 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gau
 	plot(p3_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
 	plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
 	hold off;
-	% saveas(fig, [workingDir 'initGaussianFit_final.eps'], 'epsc');
-	saveas(fig, [workingDir 'initGaussianFit_final.png'], 'png');
+	% saveas(fig, [workingDir 'initGaussianFit_final.' figVer 'eps'], 'epsc');
+	saveas(fig, [workingDir 'initGaussianFit_final.' figVer 'png'], 'png');
 	delete(fig);
 	%----------------------------------------------------------------------
 

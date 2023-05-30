@@ -1,5 +1,16 @@
 function [x_peak,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(workingDir,saveName, chromosome,segment,copyNum, smoothed_Histogram, MakeFigure);
 
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
+
 monosomy_peaks  = [0, 1]*199+1;
 disomy_peaks    = [0, 1/2, 1]*199+1;
 trisomy_peaks   = [0, 1/3, 2/3, 1]*199+1;
@@ -349,7 +360,7 @@ if (MakeFigure == true)
 	hold off;
 	xlim([1,200]);
 	% save then delete figures.
-	saveas(fig, [workingDir saveName '.png'], 'png');
+	saveas(fig, [workingDir saveName '.' figVer 'png'], 'png');
 	delete(fig);
 end;
 

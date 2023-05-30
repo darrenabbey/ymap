@@ -1,4 +1,15 @@
 function [fitted] = fit_Gaussian_model_heterozygousPeak_initial(data,locations,func_type,show, workingDir)
+
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
 	fitted = [];
 	if isnan(data);
 		return
@@ -97,8 +108,8 @@ function [fitted] = fit_Gaussian_model_heterozygousPeak_initial(data,locations,f
 
 	plot(fitted ,'-','color',[0.333 0.333 0.333],'lineWidth',2);
 	hold off;
-	% saveas(fig, [workingDir 'initGaussianFit.eps'], 'epsc');
-	  saveas(fig, [workingDir 'initGaussianFit.png'], 'png');
+	% saveas(fig, [workingDir 'initGaussianFit.' figVer 'eps'], 'epsc');
+	  saveas(fig, [workingDir 'initGaussianFit.' figVer 'png'], 'png');
 	delete(fig);
 	%----------------------------------------------------------------------
 end
@@ -160,6 +171,6 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 			sse          = sum(abs(Error_Vector));
 		otherwise
 			error('Error: choice for fitting not implemented yet!');
-			sse          = 1;            
+			sse          = 1;
 	end;
 end

@@ -1,6 +1,16 @@
 function [raw,smoothed,x_peak,actual_cutoffs,mostLikelyGaussians,chrCopyNum] = FindGaussianCutoffs_2(probeset1,chrCopyNum,chr_breaks,chr_size,chromosome,segment, ...
     monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak,skew_factor,name,file_dir,MakeFigure,show_fitting,DataTypeToUse, workingDir)
 
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
 
 %% Set to true will produce a separate saved image for each allelic ratio histogram on each chromosome.
 MakeFigure = false;
@@ -1009,8 +1019,8 @@ if (MakeFigure == true)
     ylim([0,max(raw)]);
     % save then delete figures.
 
-	% saveas(fig, [workingDir 'hist_chr-' num2str(chromosome) '_seg-' num2str(segment) '.eps'], 'epsc');    
-	  saveas(fig, [workingDir 'hist_chr-' num2str(chromosome) '_seg-' num2str(segment) '.png'], 'png');
+	% saveas(fig, [workingDir 'hist_chr-' num2str(chromosome) '_seg-' num2str(segment) '.' figVer 'eps'], 'epsc');
+	  saveas(fig, [workingDir 'hist_chr-' num2str(chromosome) '_seg-' num2str(segment) '.' figVer 'png'], 'png');
 	delete(fig);
 end;
 end

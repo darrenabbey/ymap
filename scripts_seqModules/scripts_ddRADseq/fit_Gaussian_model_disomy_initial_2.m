@@ -1,4 +1,15 @@
 function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c] = fit_Gaussian_model_disomy_initial_2(data,locations,init_width,func_type,show, workingDir)
+
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
 	p1_a = nan;   p1_b = nan;   p1_c = nan;
 	p2_a = nan;   p2_b = nan;   p2_c = nan;
 	p3_a = nan;   p3_b = nan;   p3_c = nan;
@@ -10,19 +21,19 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c] = fit_Gaussian_model_d
 	% find max height in data.
 	datamax = max(data);
 	%datamax(data ~= max(datamax)) = [];
-    
+
 	% if maxdata is final bin, then find next highest p
 	if (find(data == datamax) == length(data))
 		data(data == datamax) = 0;
 		datamax = data;
 		datamax(data ~= max(datamax)) = [];
 	end;
-    
+
 	% a = height; b = location; c = width.
 	p1_ai = datamax;   p1_bi = locations(1);   p1_ci = init_width;
 	p2_ai = datamax;   p2_bi = locations(2);   p2_ci = init_width;
 	p3_ai = datamax;   p3_bi = locations(3);   p3_ci = init_width;
-   
+
 	initial = [p1_ai,p1_ci,p3_ai];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
 	time    = 1:length(data);
@@ -69,8 +80,8 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c] = fit_Gaussian_model_d
 	plot(p3_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
 	plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
 	hold off;
-	% saveas(fig, [workingDir 'initGaussianFit_final.eps'], 'epsc');
-	saveas(fig, [workingDir 'initGaussianFit_final.png'], 'png');
+	% saveas(fig, [workingDir 'initGaussianFit_final.' figVer 'eps'], 'epsc');
+	saveas(fig, [workingDir 'initGaussianFit_final.' figVer 'png'], 'png');
 	delete(fig);
 	%----------------------------------------------------------------------
 

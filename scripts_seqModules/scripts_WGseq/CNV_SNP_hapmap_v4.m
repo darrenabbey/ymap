@@ -6,6 +6,16 @@ fprintf(    '\t| Generate CNV/SNP/LOH plot in script "CNV_SNP_hapmap_v4.m".    |
 fprintf(    '\t*---------------------------------------------------------------*\n');
 tic;
 
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
 
 %% ========================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
@@ -1296,14 +1306,14 @@ end;
 
 fprintf('\n###\n### Saving main figure.\n###\n');
 set(   fig,        'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
-saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.eps'], 'epsc');
-saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.png'], 'png' );
+saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.' figVer 'eps'], 'epsc');
+saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.' figVer 'png'], 'png' );
 delete(fig);
 
 fprintf('\n###\n### Saving linear figure.\n###\n');
 set(   Linear_fig, 'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
-saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.eps'], 'epsc');
-saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.png'], 'png' );
+saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.' figVer 'eps'], 'epsc');
+saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.' figVer 'png'], 'png' );
 delete(Linear_fig);
 
 end

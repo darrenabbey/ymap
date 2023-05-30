@@ -1,6 +1,18 @@
 function [raw,smoothed,x_peaks,actual_cutoffs,mostLikelyGaussians,chrCopyNum] = Find50Cutoffs(probeset1,chrCopyNum,chr_breaks,chr_size,dataset,chromosome,segment, ...
     monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak,name,file_dir,MakeFigure,~,DataTypeToUse, workingDir)
 
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
+
+
 % Overlap of 1st SD before assume identity.
 
 % initialize vectors for scattergram analysis
@@ -246,8 +258,8 @@ if (MakeFigure == true)
     ylim([0,max(raw)]);
     % save then delete figures.
 
-    % saveas(fig, [workingDir '50cutoffs_chr-' num2str(chromosome) '_seg-' num2str(segment) '.eps'], 'epsc');
-      saveas(fig, [workingDir '50cutoffs_chr-' num2str(chromosome) '_seg-' num2str(segment) '.png'], 'png');
+    % saveas(fig, [workingDir '50cutoffs_chr-' num2str(chromosome) '_seg-' num2str(segment) '.' figVer 'eps'], 'epsc');
+      saveas(fig, [workingDir '50cutoffs_chr-' num2str(chromosome) '_seg-' num2str(segment) '.' figVer 'png'], 'png');
     delete(fig);
 end;
 end

@@ -1,6 +1,17 @@
 function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gaussian_model_disomy_initial_2(data,locations,init_width,skew_factor,func_type,show, workingDir)
 % attempt to fit a single-gaussian model to data.
 %[G1_a, G1_b, G1_c, G2_a, G2_b, G2_c, S_a, S_c] = GaussianModel_G1SG2(tet_control,parameter,'fcs1','');
+
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
 	p1_a = nan;   p1_b = nan;   p1_c = nan;
 	p2_a = nan;   p2_b = nan;   p2_c = nan;
 	p3_a = nan;   p3_b = nan;   p3_c = nan;
@@ -12,19 +23,19 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gau
 	% find max height in data.
 	datamax = max(data);
 	%datamax(data ~= max(datamax)) = [];
-    
+
 	% if maxdata is final bin, then find next highest p
 	if (find(data == datamax) == length(data))
 		data(data == datamax) = 0;
 		datamax = data;
 		datamax(data ~= max(datamax)) = [];
 	end;
-    
+
 	% a = height; b = location; c = width.
 	p1_ai = datamax;   p1_bi = locations(1);   p1_ci = init_width;
 	p2_ai = datamax;   p2_bi = locations(2);   p2_ci = init_width;
 	p3_ai = datamax;   p3_bi = locations(3);   p3_ci = init_width;
-   
+
 	initial = [p1_ai,p1_ci,  p3_ai,  skew_factor];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
 	time    = 1:length(data);
@@ -99,8 +110,8 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gau
 	plot(p3_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
 	plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
 	hold off;
-	% saveas(fig, [workingDir 'initGaussianFit_final.eps'], 'epsc');
-	saveas(fig, [workingDir 'initGaussianFit_final.png'], 'png');
+	% saveas(fig, [workingDir 'initGaussianFit_final.' figVer 'eps'], 'epsc');
+	saveas(fig, [workingDir 'initGaussianFit_final.' figVer 'png'], 'png');
 	delete(fig);
 	%----------------------------------------------------------------------
 
@@ -149,7 +160,7 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	else
 		time3_1 = [];
 	end;
-    
+
 	if (skew_factor/(100-abs(100-p1_b)) < 1)
 		skew_factor = (100-abs(100-p1_b));
 	end;
@@ -158,13 +169,13 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p1_c = p1_c*p1_c/c1_;
 	c3_  = p3_c/2 + p3_c*skew_factor/(100-abs(100-p3_b))/2;
 	p3_c = p3_c*p3_c/c3_;
-    
+
 	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
 	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor/(100-abs(100-p1_b))) ).^2);
 	p2_fit   = p2_a*exp(-0.5*((time-p2_b)./p2_c).^2);
 	p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c/(skew_factor/(100-abs(100-p3_b))) ).^2);
 	p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c).^2);
-    
+
 	p1_fit = [p1_fit_L p1_fit_R];
 	p3_fit = [p3_fit_L p3_fit_R];
 	fitted = p1_fit+p2_fit+p3_fit;
@@ -187,6 +198,6 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 			sse          = sum(Error_Vector.^2);
 		otherwise
 			error('Error: choice for fitting not implemented yet!');
-			sse          = 1;            
+			sse          = 1;
 	end;
 end

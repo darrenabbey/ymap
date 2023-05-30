@@ -75,6 +75,14 @@
 	chmod($outputName,0644);
 	fwrite($outputLog, "| working.txt generated.\n");
 
+// Delete pre-existing final output files.
+	fwrite($outputLog, "| cleaninup up old output files.\n");
+	$projectFiles   = preg_grep('~\.(png|eps|bed|gff3)$~', scandir("../users/".$user."/projects/".$project."/"));
+	foreach ($projectFiles as $file) {
+		fwrite($outputLog, "\t".$file."\n");
+		unlink("../users/".$user."/projects/".$project."/".$file);
+	}
+
 // Call Matlab to process SnpCgh data file into final figure.
 	$designDefinition   = "design1";
 	$inputFile          = $project_dir."/".$fileName;

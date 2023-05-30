@@ -5,6 +5,18 @@ addpath('../');
 % Close all pre-existing figures.
 delete(findall(0,'Type','figure'));
 
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+workingDir = [main_dir 'users/' user '/projects/' project '/'];
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
+
 %% ========================================================================
 % Generate CGH-type figures from RADseq data, using a reference dataset to correct for genome position-dependant biases.
 %==========================================================================
@@ -830,8 +842,8 @@ if (exist([main_dir 'users/' user '/projects/' project '/corrected_CNV.project.m
 	if (performLengthbiasCorrection) || (performRepetbiasCorrection)
 		fprintf('Saving bias figure 1.\n');
 		set(fig1,'PaperPosition',[0 0 8 5]*4);
-		saveas(fig1, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.1.eps'], 'epsc');
-		saveas(fig1, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.1.png'], 'png');
+		saveas(fig1, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.1.' figVer 'eps'], 'epsc');
+		saveas(fig1, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.1.' figVer 'png'], 'png');
 		delete(fig1);
 	end;
 
@@ -1215,8 +1227,8 @@ if (exist([main_dir 'users/' user '/projects/' project '/corrected_CNV.project.m
 	if (performGCbiasCorrection)
 		fprintf('Saving bias figure 2.\n');
 		set(fig2,'PaperPosition',[0 0 8 5]*4);
-		saveas(fig2, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.2.eps'], 'epsc');
-		saveas(fig2, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.2.png'], 'png');
+		saveas(fig2, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.2.' figVer 'eps'], 'epsc');
+		saveas(fig2, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.2.' figVer 'png'], 'png');
 		delete(fig2);
 	end;
 
@@ -1617,8 +1629,8 @@ if (exist([main_dir 'users/' user '/projects/' project '/Common_CNV.mat'],'file'
 	if (performEndbiasCorrection)
 		fprintf('Saving figure 3.\n');
 		set(GCfig,'PaperPosition',[0 0 8 2]*4);
-		saveas(GCfig, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.3.eps'], 'epsc');
-		saveas(GCfig, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.3.png'], 'png');
+		saveas(GCfig, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.3.' figVer 'eps'], 'epsc');
+		saveas(GCfig, [main_dir 'users/' user '/projects/' project '/fig.examine_bias.3.' figVer 'png'], 'png');
 		delete(GCfig);
 	end;
 
@@ -2235,14 +2247,14 @@ end;
 
 % Save figures.
 set(Main_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
-saveas(Main_fig,   [projectDir 'fig.CNV-map.1.eps'], 'epsc');
-saveas(Main_fig,   [projectDir 'fig.CNV-map.1.png'], 'png');
+saveas(Main_fig,   [projectDir 'fig.CNV-map.1.' figVer 'eps'], 'epsc');
+saveas(Main_fig,   [projectDir 'fig.CNV-map.1.' figVer 'png'], 'png');
 delete(Main_fig);
 
 if (Linear_display == true)
 	set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
-	saveas(Linear_fig, [projectDir 'fig.CNV-map.2.eps'], 'epsc');
-	saveas(Linear_fig, [projectDir 'fig.CNV-map.2.png'], 'png');
+	saveas(Linear_fig, [projectDir 'fig.CNV-map.2.' figVer 'eps'], 'epsc');
+	saveas(Linear_fig, [projectDir 'fig.CNV-map.2.' figVer 'png'], 'png');
 	delete(Linear_fig);
 end;
 

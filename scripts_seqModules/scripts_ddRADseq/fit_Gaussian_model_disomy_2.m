@@ -1,11 +1,21 @@
 function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c] = fit_Gaussian_model_disomy_2(workingDir, saveName, data,locations,init_width,func_type)
 	% attempt to fit a 3-gaussian model to data.
 
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
 	show = true;
 	p1_a = nan;   p1_b = nan;   p1_c = nan;
 	p2_a = nan;   p2_b = nan;   p2_c = nan;
 	p3_a = nan;   p3_b = nan;   p3_c = nan;
-    
+
 	if isnan(data)
 		% fitting variables
 		return
@@ -13,24 +23,24 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c] = fit_Gaussian_model_d
 
 	% find max height in data.
 	datamax = max(data);
-    
+
 	% if maxdata is final bin, then find next highest p
 	if (find(data == datamax) == length(data))
 		data(data == datamax) = 0;
 		datamax = data;
 		datamax(data ~= max(datamax)) = [];
 	end;
-    
+
 	% a = height; b = location; c = width.
 	p1_ai = datamax;   p1_bi = locations(1);   p1_ci = init_width;
 	p2_ai = datamax;   p2_bi = locations(2);   p2_ci = init_width;
 	p3_ai = datamax;   p3_bi = locations(3);   p3_ci = init_width;
-   
+
 	initial = [p1_ai,p1_ci,p2_ai,p2_ci,p3_ai,p3_ci];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
 	time    = 1:length(data);
 
-	saveFileName = [workingDir saveName '.png'];
+	saveFileName = [workingDir saveName '.' figVer 'png'];
 
 	[Estimates,~,exitflag] = fminsearch(@fiterror, ...   % function to be fitted.
 	                                    initial, ...     % initial values.

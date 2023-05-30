@@ -2,6 +2,18 @@ function [] = CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateStr
                        CNV_verString,rDNA_verString,displayBREAKS, referenceCHR);
 addpath('../');
 
+%%=========================================================================
+% Load project figure version.
+%--------------------------------------------------------------------------
+workingDir = [main_dir 'users/' user '/projects/' project '/'];
+versionFile = [workingDir 'figVer.txt'];
+if exist(versionFile, 'file') == 2
+	figVer = ['v' fileread(versionFile) '.'];
+else
+	figVer = '';
+end;
+
+
 %% ========================================================================
 Centromere_format_default   = 0;
 Yscale_nearest_even_ploidy  = true;
@@ -602,8 +614,8 @@ if (performEndbiasCorrection)
 	title('NearestEnd Corrected');
 
 	set(bias_end_fig,'PaperPosition',[0 0 6 3]*2);
-	saveas(bias_end_fig, [projectDir 'fig.bias_chr_end.eps'], 'epsc');
-	saveas(bias_end_fig, [projectDir 'fig.bias_chr_end.png'], 'png');
+	saveas(bias_end_fig, [projectDir 'fig.bias_chr_end.' figVer 'eps'], 'epsc');
+	saveas(bias_end_fig, [projectDir 'fig.bias_chr_end.' figVer 'png'], 'png');
 	delete(bias_end_fig);
 end;
 if (performGCbiasCorrection)
@@ -640,8 +652,8 @@ if (performGCbiasCorrection)
 	title('GC bias Corrected');
 
 	set(bias_GC_fig,'PaperPosition',[0 0 6 3]*2);
-	saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.eps'], 'epsc');
-	saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.png'], 'png');
+	saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.' figVer 'eps'], 'epsc');
+	saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.' figVer 'png'], 'png');
 	delete(bias_GC_fig);
 end;
 if (performRepetbiasCorrection)
@@ -678,8 +690,8 @@ if (performRepetbiasCorrection)
 	title('Repetitiveness Corrected');
 
 	set(bias_repet_fig,'PaperPosition',[0 0 6 3]*2);
-	saveas(bias_repet_fig, [projectDir 'fig.bias_repetitiveness.eps'], 'epsc');
-	saveas(bias_repet_fig, [projectDir 'fig.bias_repetitiveness.png'], 'png');
+	saveas(bias_repet_fig, [projectDir 'fig.bias_repetitiveness.' figVer 'eps'], 'epsc');
+	saveas(bias_repet_fig, [projectDir 'fig.bias_repetitiveness.' figVer 'png'], 'png');
 	delete(bias_repet_fig);
 end;
 
@@ -1288,14 +1300,14 @@ end;
 
 % Save primary genome figure.
 set(Standard_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
-saveas(Standard_fig, [projectDir 'fig.CNV-map.1.eps'], 'epsc');
-saveas(Standard_fig, [projectDir 'fig.CNV-map.1.png'], 'png');
+saveas(Standard_fig, [projectDir 'fig.CNV-map.1.' figVer 'eps'], 'epsc');
+saveas(Standard_fig, [projectDir 'fig.CNV-map.1.' figVer 'png'], 'png');
 %delete(Standard_fig);
 
 % Save horizontal aligned genome figure.
 set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
-saveas(Linear_fig,   [projectDir 'fig.CNV-map.2.eps'], 'epsc');
-saveas(Linear_fig,   [projectDir 'fig.CNV-map.2.png'], 'png');
+saveas(Linear_fig,   [projectDir 'fig.CNV-map.2.' figVer 'eps'], 'epsc');
+saveas(Linear_fig,   [projectDir 'fig.CNV-map.2.' figVer 'png'], 'png');
 delete(Linear_fig);
 
 % Output chromosome copy number estimates.
