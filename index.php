@@ -516,7 +516,7 @@ function blank_and_content_tab() {
 				}
 			}
 			if (file_list.indexOf(CGD_CNV_track+"gff3") != -1) {
-				string1 += "; <a href=\"" + CGD_CNV_track + "gff3\">GBrowse CNV track</a>";
+				string1 += "; <a href=\"" + CGD_CNV_track + "gff3\" target=\"_blank\">GBrowse CNV track</a>";
 				CGD_tracks_present = true;
 			}
 			if (file_list.indexOf(fig_linear_SNP+"png") != -1) {
@@ -541,7 +541,7 @@ function blank_and_content_tab() {
 			}
 
 			if (file_list.indexOf(CGD_SNP_track+"bed") != -1) {
-				string1 += "; <a href=\"" + CGD_SNP_track + "bed\">GBrowse allele ratio track</a>";
+				string1 += "; <a href=\"" + CGD_SNP_track + "bed\" target=\"_blank\">GBrowse allele ratio track</a>";
 				CGD_tracks_present = true;
 			}
 
