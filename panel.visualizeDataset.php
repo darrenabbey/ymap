@@ -59,9 +59,9 @@
 			// getting figure version for project.
 			$versionFile     = "users/".$user."/projects/".$project."/figVer.txt";
 			if (file_exists($versionFile)) {
-				$figVer = "v".intval(trim(file_get_contents($versionFile))).".";
+				$figVer = intval(trim(file_get_contents($versionFile)));
 			} else {
-				$figVer = "";
+				$figVer = 0;
 			}
 
 			// getting project name.
@@ -118,9 +118,9 @@
 			// getting figure version for project.
 			$versionFile     = "users/".$user."/projects/".$project."/figVer.txt";
 			if (file_exists($versionFile)) {
-				$figVer = "v".intval(trim(file_get_contents($versionFile))).".";
+				$figVer = intval(trim(file_get_contents($versionFile)));
 			} else {
-				$figVer = "";
+				$figVer = 0;
 			}
 
 			// getting project name.
@@ -177,9 +177,9 @@
 			// getting figure version for project.
 			$versionFile     = "users/".$user."/projects/".$project."/figVer.txt";
 			if (file_exists($versionFile)) {
-				$figVer = "v".intval(trim(file_get_contents($versionFile))).".";
+				$figVer = intval(trim(file_get_contents($versionFile)));
 			} else {
-				$figVer = "";
+				$figVer = 0;
 			}
 
 			// getting project name.
@@ -327,9 +327,9 @@
 		// getting figure version for project.
 		$versionFile     = "users/default/projects/".$project."/figVer.txt";
 		if (file_exists($versionFile)) {
-			$figVer = "v".intval(trim(file_get_contents($versionFile))).".";
+			$figVer = intval(trim(file_get_contents($versionFile)));
 		} else {
-			$figVer = "";
+			$figVer = 0;
 		}
 
 		// Limit files list to valid output file types.

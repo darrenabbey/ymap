@@ -144,10 +144,18 @@
 		$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."]</font>";
 		$genome_name = str_replace("+ ","",$genome_name);
 
-
+		// get project name string.
 		$projectNameFile = "users/".$user."/projects/".$project."/name.txt";
 		$projectNameString = file_get_contents($projectNameFile);
 		$projectNameString = trim($projectNameString);
+
+		// getting figure version for project.
+		$versionFile     = "users/".$user."/projects/".$project."/figVer.txt";
+		if (file_exists($versionFile)) {
+			$figVer = intval(trim(file_get_contents($versionFile)));
+		} else {
+			$figVer = 0;
+		}
 
 		$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 		$projectNameString = trim($projectNameString);
