@@ -1,10 +1,10 @@
 <?php
 	session_start();
-	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
+	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
+	if(!isset($_SESSION['logged_on'])){ ?><script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
 	require_once 'constants.php';
 	require_once 'sharedFunctions.php';
 	require_once 'POST_validation.php';
-	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 
 	if (isset($_SESSION['logged_on'])) {
 		$user = $_SESSION['user'];
@@ -19,70 +19,81 @@
 			echo "<span style='color:#FF0000; font-weight: bold;'>You have exceeded your quota (".$quota."G). ";
 			echo "Clear space by deleting/minimizing projects or wait until datasets finish processing before adding a new dataset.</span><br><br>";
 		}
-	}
 
-	//======================
-	// Find project folder.
-	//----------------------
-	$projectsDir      = "users/".$user."/projects/";
-	$projectFolders   = array_diff(glob($projectsDir."*"), array('..', '.'));
+		//======================
+		// Find project folder.
+		//----------------------
+		$projectsDir      = "users/".$user."/projects/";
+		$projectFolders   = array_diff(glob($projectsDir."*"), array('..', '.'));
 
-	// Sort directories by date, newest first.
-	array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
+		// Sort directories by date, newest first.
+		array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
 
-	// Trim path from each folder string.
-	foreach($projectFolders as $key_=>$folder) {   $projectFolders[$key_] = str_replace($projectsDir,"",$folder);   }
+		// Trim path from each folder string.
+		foreach($projectFolders as $key_=>$folder) {   $projectFolders[$key_] = str_replace($projectsDir,"",$folder);   }
 
-	// Split project list into ready/working/starting lists for sequential display.
-	$projectFolders_starting = array();
-	$projectFolders_working  = array();
-	$projectFolders_complete = array();
-	foreach($projectFolders as $project) {
-		if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
-			array_push($projectFolders_complete,$project);
-		} else if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
-			array_push($projectFolders_working, $project);
-		} else if (is_dir("users/".$user."/projects/".$project)) {
-			array_push($projectFolders_starting,$project);
+		// Split project list into ready/working/starting lists for sequential display.
+		$projectFolders_starting = array();
+		$projectFolders_working  = array();
+		$projectFolders_complete = array();
+		foreach($projectFolders as $project) {
+			if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
+				array_push($projectFolders_complete,$project);
+			} else if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
+				array_push($projectFolders_working, $project);
+			} else if (is_dir("users/".$user."/projects/".$project)) {
+				array_push($projectFolders_starting,$project);
+			}
 		}
+		$userProjectCount_starting = count($projectFolders_starting);
+		$userProjectCount_working  = count($projectFolders_working);
+		$userProjectCount_complete = count($projectFolders_complete);
+
+		// Sort complete and working projects alphabetically.
+		array_multisort($projectFolders_complete, SORT_ASC, $projectFolders_complete);
+
+		// Grab key from GET string.
+		$key = sanitizeInt_GET("key");
+		$key = intval($key) - $userProjectCount_starting - $userProjectCount_working;
+
+		// Grab name string from 'name.txt'.
+		$project                 = $projectFolders_complete[$key];
+		$projectNameString       = file_get_contents("users/".$user."/projects/".$project."/name.txt");
+		$name                    = $projectNameString;
+
+		// Grab genome and hapmap names from 'genome.txt'.
+		$genomeFileStrings       = file_get_contents("users/".$user."/projects/".$project."/genome.txt");
+		$genomeStrings           = preg_split("/\r\n|\n|\r/", $genomeFileStrings);
+		$genome                  = $genomeStrings[0];
+		$hapmap                  = $genomeStrings[1];
+
+		// Grab ploidy strings from 'ploidy.txt'.
+		$ploidyFileStrings       = file_get_contents("users/".$user."/projects/".$project."/ploidy.txt");
+		$ploidyStrings           = preg_split("/\r\n|\n|\r/", $ploidyFileStrings);
+		$ploidy                  = $ploidyStrings[0];
+		$ploidy_baseline         = $ploidyStrings[1];
+
+		// Grab data format numbers from 'dataFormat.txt'.
+		$dataFileStrings         = file_get_contents("users/".$user."/projects/".$project."/dataFormat.txt");
+		$dataStrings             = explode(":",$dataFileStrings);
+		$dataType                = $dataStrings[0];
+		$readType                = $dataStrings[1];
+		$performIndelRealignment = $dataStrings[2];
+
+		// Figure out parent project name.
+		$parent                  = strip_tags(trim(file_get_contents("users/".$user."/projects/".$project."/parent.txt")));
+	} else {
+		$genome				= "";
+		$project			= "";
+		$hapmap				= "";
+		$parent				= "";
+		$dataType			= 99;
+		$readType			= 99;
+		$exceededSpace			= true;
+		$performIndelRealignment	= false;
+		$ploidy				= "2.0";
+		$ploidy_baseline		= "2.0";
 	}
-	$userProjectCount_starting = count($projectFolders_starting);
-	$userProjectCount_working  = count($projectFolders_working);
-	$userProjectCount_complete = count($projectFolders_complete);
-
-	// Sort complete and working projects alphabetically.
-	array_multisort($projectFolders_complete, SORT_ASC, $projectFolders_complete);
-
-	// Grab key from GET string.
-	$key = sanitizeInt_GET("key");
-	$key = $key - $userProjectCount_starting - $userProjectCount_working;
-
-	// Grab name string from 'name.txt'.
-	$project                 = $projectFolders_complete[$key];
-	$projectNameString       = file_get_contents("users/".$user."/projects/".$project."/name.txt");
-	$name                    = $projectNameString;
-
-	// Grab genome and hapmap names from 'genome.txt'.
-	$genomeFileStrings       = file_get_contents("users/".$user."/projects/".$project."/genome.txt");
-	$genomeStrings           = preg_split("/\r\n|\n|\r/", $genomeFileStrings);
-	$genome                  = $genomeStrings[0];
-	$hapmap                  = $genomeStrings[1];
-
-	// Grab ploidy strings from 'ploidy.txt'.
-	$ploidyFileStrings       = file_get_contents("users/".$user."/projects/".$project."/ploidy.txt");
-	$ploidyStrings           = preg_split("/\r\n|\n|\r/", $ploidyFileStrings);
-	$ploidy                  = $ploidyStrings[0];
-	$ploidy_baseline         = $ploidyStrings[1];
-
-	// Grab data format numbers from 'dataFormat.txt'.
-	$dataFileStrings         = file_get_contents("users/".$user."/projects/".$project."/dataFormat.txt");
-	$dataStrings             = explode(":",$dataFileStrings);
-	$dataType                = $dataStrings[0];
-	$readType                = $dataStrings[1];
-	$performIndelRealignment = $dataStrings[2];
-
-	// Figure out parent project name.
-	$parent                  = strip_tags(trim(file_get_contents("users/".$user."/projects/".$project."/parent.txt")));
 ?>
 <html lang="en">
 	<HEAD>
