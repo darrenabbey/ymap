@@ -72,8 +72,12 @@
 		project_key                 = project_key.replace('p_','');
 		var project_label1          = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('p_label_'+project_key);
 		var project_label2          = document.getElementById('panel_visualizeDataset_iframe').contentDocument.getElementById('p_label_'+project_key);
-		project_label1.style.color  = label_color;
-		project_label2.style.color  = label_color;
+		if (project_label1 != null) {
+			project_label1.style.color  = label_color;
+		}
+		if (project_label2 != null) {
+			project_label2.style.color  = label_color;
+		}
 	}
 	function update_project_file_size(project_key,sizeString_1,sizeString_2) {
 		// Checks cumulative disk space used by project, then updates user interface.
@@ -89,7 +93,10 @@
 	}
 	function resize_project(project_key, pixels) {
 		// Changes size of iframe shown for the project.
-		document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById(project_key).style.height = pixels+"px";
+		var domElement = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById(project_key);
+		if (domElement != null) {
+			domElement.style.height = pixels+"px";
+		}
 	}
 
 	//============================
