@@ -101,14 +101,15 @@
 		$fileName = $project_dir."/figVer.txt";
 		if (file_exists($fileName)) {
 			$figVer = intval(file_get_contents($fileName));
+			fwrite($logOutput, "\tIncremented 'figVer.txt' file.\n");
 		} else {
 			$figVer = 0;
+			fwrite($logOutput, "\tGenerated 'figVer.txt' file.\n");
 		}
 		$file     = fopen($fileName, 'w');
 		fwrite($file, $figVer+1);
 		fclose($file);
 		chmod($fileName,0755);
-		fwrite($logOutput, "\tGenerated 'figVer.txt' file.\n");
 
 		// Remove 'working_done.txt' file to let pipeline know processing isn't done.
 		unlink($project_dir."/working_done.txt");
