@@ -324,6 +324,14 @@
 			$colorString2 = 'null';
 		}
 
+		// getting figure version for project.
+		$versionFile     = "users/default/projects/".$project."/figVer.txt";
+		if (file_exists($versionFile)) {
+			$figVer = "v".intval(trim(file_get_contents($versionFile))).".";
+		} else {
+			$figVer = "";
+		}
+
 		// Limit files list to valid output file types.
 		$projectFiles   = preg_grep('~\.(png|eps|bed|gff3)$~', scandir("users/$user/projects/$project/"));
 		sort($projectFiles);

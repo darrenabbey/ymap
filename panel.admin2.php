@@ -154,10 +154,13 @@
 		echo "<span id='p_label_".$key."_admin' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
 		echo "<font size='2'>".($key+1).".";
 		if ($frameContainerIx != "1") {
-			echo "<input id='show_".$key."_admin' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."_admin','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."');\" style=\"visibility:hidden;\">";
+			echo "<input id='show_".$key."_admin' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."_admin','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."');\" style=\"visibility:hidden;\">";
 		} else {
-			$json_file_list = json_encode(scandir("users/$user/projects/$project"));
-			echo "<input id='show_".$key."_admin' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."_admin','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
+			// Limit files list to valid output file types.
+			$projectFiles   = preg_grep('~\.(png|eps|bed|gff3)$~', scandir("users/$user/projects/$project/"));
+			sort($projectFiles);
+			$json_file_list = json_encode($projectFiles);
+			echo "<input id='show_".$key."_admin' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."_admin','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
 		}
 
 		echo $projectNameString." ".$comment;
