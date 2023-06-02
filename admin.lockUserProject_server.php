@@ -44,11 +44,11 @@
 	$projectFolders_working  = array();
 	$projectFolders_starting = array();
 	foreach($projectFolders as $key=>$project) {
-		if (file_exists("users/".$admin_as_user."/projects/".$project."/complete.txt")) {
+		if (file_exists("users/".$project_user."/projects/".$project."/complete.txt")) {
 			array_push($projectFolders_complete,$project);
-		} else if (file_exists("users/".$admin_as_user."/projects/".$project."/working.txt")) {
+		} else if (file_exists("users/".$project_user."/projects/".$project."/working.txt")) {
 			array_push($projectFolders_working, $project);
-		} else if (is_dir("users/".$admin_as_user."/projects/".$project)) {
+		} else if (is_dir("users/".$project_user."/projects/".$project)) {
 			array_push($projectFolders_starting,$project);
 		}
 	}
