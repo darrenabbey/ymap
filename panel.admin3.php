@@ -120,7 +120,7 @@
 		$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 		$projectNameString = trim($projectNameString);
 
-		echo "<table style='background-color:".$bgColor.";'><tr><td>\n";
+		echo "<table style='background-color:".$bgColor.";' width='100%'><tr><td>\n";
 		echo "<span id='p_label_".$sumKey."_admin' style='color:#".$labelRgbColor.";'>\n\t\t";
 		echo "<font size='2'>[".$user."] ".($sumKey+1).". &nbsp; &nbsp;";
 
