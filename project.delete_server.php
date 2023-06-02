@@ -18,17 +18,25 @@
 	// Sanitize input strings.
 	$project = sanitize_POST("project");
 	$dir     = "users/".$user."/projects/".$project;
+	$dir2    = "users/".$user."/projects/".$project."/locked.txt";
 
-	// Confirm if requested project exists.
-	if (is_dir($dir)) {
+	// Confirm if requested project exists and is not locked.
+
+	if (is_dir($dir) and !file_exists($dir2))  {
 		// Requested project dir does exist for logged in user: Delete installed project.
 		rrmdir($dir);
 		echo "COMPLETE";
 		log_stuff($user,$project,"","","","project:DELETE success");
 	} else {
-		// Project doesn't exist, should never happen.
-		echo "ERROR:".$user." doesn't own project.";
-		log_stuff($user,$project,"","","","project:DELETE failure, user doesn't own project.");
+		if (file_exists($dir2)) {
+			// Project is locked.
+			echo "ERROR:".$user." project is locked by admin.";
+			log_stuff($user,$project,"","","","project:DELETE failure, project is locked by admin.");
+		} else {
+			// Project doesn't exist, should never happen.
+			echo "ERROR:".$user." doesn't own project.";
+			log_stuff($user,$project,"","","","project:DELETE failure, user doesn't own project.");
+		}
 	}
 
 	// Function for recursive rmdir, to clean out full genome directory.

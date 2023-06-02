@@ -787,30 +787,32 @@ function update_projectsShown_after_project_delete(deletedProjectKey) {
 	    deletedProjectID = deletedProjectID.replace("_delete","");
 	    deletedProjectID = Number(deletedProjectID);
 	// adjust projectsShown string to reflect new positions of projects.
-	var projectsShown_entries = projectsShown.split('; ');
-	var new_projectsShown = "";
-	localStorage.setItem("projectsShown","");
-	for (var i=0;i<projectsShown_entries.length; i++) {
-		var currentProject = projectsShown_entries[i];
-		if (currentProject != '') {
-			var entry_parts    = currentProject.split(':');
-			projID = parseInt(entry_parts[2]);
-			if (projID < deletedProjectID) {
-				projID.toString();
-				new_projectsShown = new_projectsShown + entry_parts[0]+":"+entry_parts[1]+":"+projID+":"+entry_parts[3]+":"+entry_parts[4]+":"+entry_parts[5]+" ";
-			} else if (projID == deletedProjectID) {
-				Deleted_entry_parts = entry_parts;
-				// Remove deleted entry from active area.
-				closeProject(Deleted_entry_parts[0],Deleted_entry_parts[1],Deleted_entry_parts[2],Deleted_entry_parts[3],Deleted_entry_parts[4],Deleted_entry_parts[5]);
-			} else {  // if (projID > deletedProjectID) {
-				projID = projID-1;
-				projID.toString();
-				new_projectsShown = new_projectsShown + entry_parts[0]+":"+entry_parts[1]+":"+projID+":"+entry_parts[3]+":"+entry_parts[4]+":"+entry_parts[5]+" ";
+	if (projectsShown !== null) {
+		var projectsShown_entries = projectsShown.split('; ');
+		var new_projectsShown = "";
+		localStorage.setItem("projectsShown","");
+		for (var i=0;i<projectsShown_entries.length; i++) {
+			var currentProject = projectsShown_entries[i];
+			if (currentProject != '') {
+				var entry_parts    = currentProject.split(':');
+				projID = parseInt(entry_parts[2]);
+				if (projID < deletedProjectID) {
+					projID.toString();
+					new_projectsShown = new_projectsShown + entry_parts[0]+":"+entry_parts[1]+":"+projID+":"+entry_parts[3]+":"+entry_parts[4]+":"+entry_parts[5]+" ";
+				} else if (projID == deletedProjectID) {
+					Deleted_entry_parts = entry_parts;
+					// Remove deleted entry from active area.
+					closeProject(Deleted_entry_parts[0],Deleted_entry_parts[1],Deleted_entry_parts[2],Deleted_entry_parts[3],Deleted_entry_parts[4],Deleted_entry_parts[5]);
+				} else {  // if (projID > deletedProjectID) {
+					projID = projID-1;
+					projID.toString();
+					new_projectsShown = new_projectsShown + entry_parts[0]+":"+entry_parts[1]+":"+projID+":"+entry_parts[3]+":"+entry_parts[4]+":"+entry_parts[5]+" ";
+				}
 			}
 		}
+		new_projectsShown = new_projectsShown.slice(0, -1);
+		localStorage.setItem("projectsShown",new_projectsShown);
 	}
-	new_projectsShown = new_projectsShown.slice(0, -1);
-	localStorage.setItem("projectsShown",new_projectsShown);
 }
 
 // upon page reload.

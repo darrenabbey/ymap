@@ -6,9 +6,13 @@
 	require_once 'POST_validation.php';
 
 	// check if admin is logged in.
-	$super_user_flag_file = "users/".$user."/super.txt";
-	if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
-		$admin_logged_in = "true";
+	if(isset($_SESSION['logged_on'])) {
+		$super_user_flag_file = "users/".$user."/super.txt";
+		if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
+			$admin_logged_in = "true";
+		} else {
+			$admin_logged_in = "false";
+		}
 	} else {
 		$admin_logged_in = "false";
 	}
@@ -43,6 +47,9 @@
 	}
 ?>
 <hr>
+<script type="text/javascript" src="js/jquery-3.6.3.js"></script>
+<script type="text/javascript" src="js/jquery.form.js"></script>
+
 <table width="100%" cellpadding="0"><tr>
 <td width="75%" valign="top">
 	<?php
@@ -106,25 +113,30 @@
 
 		$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 		$projectNameString = trim($projectNameString);
-		echo "<span id='p_label_".$sumKey."_admin' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
+		echo "<span id='p_label_".$sumKey."_admin' style='color:#".$labelRgbColor.";'>\n\t\t";
 		echo "<font size='2'>[".$user."] ".($sumKey+1).". &nbsp; &nbsp;";
 
 		echo $projectNameString." ";
-		echo "</font></span> ".$genome_name."\n\t\t";
+		echo "</font></span> ".$genome_name."\n";
 
 		// Button to add/change error message for user project.
-		echo "\t\t<form action='' method='post' style='display: inline;'>";
-		echo "<input name='button_ErrorProject' type='button' value='Add/change error message.' onclick='";
+		echo "\t\t<form action='' method='post' style='display: inline;'>\n";
+		echo "\t\t\t<input name='button_ErrorProject' type='button' value='Add/change error message.' onclick='";
 			echo "parent.document.getElementById(\"Hidden_Admin_Frame\").src = \"admin.error_window.php\"; ";
 			echo "parent.show_hidden(\"Hidden_Admin\"); ";
 			echo "parent.update_interface();";
 			echo "localStorage.setItem(\"user\",\"".$user."\");";
 			echo "localStorage.setItem(\"projectKey\",\"".$key."\");";
 			echo "localStorage.setItem(\"projectName\",\"".$project."\");";
-		echo "'>";
-		echo "</form>";
+		echo "'>\n";
+		if (file_exists("users/".$user."/projects/".$project."/locked.txt")) {
+			echo "\t\t\t<input type='button' value='Unlock project' onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin3.php')},500);\">\n";
+		} else {
+			echo "\t\t\t<input type='button' value='Lock project'   onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.lockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin3.php')},500);\">\n";
+		}
+		echo "\t\t</form>\n";
 
-		echo "</font></span>\n\t\t\t\t";
+		echo "\t\t</font>\n\t</span>\n\t\t\t\t";
 		echo "<div id='frameContainer.p".$frameContainerIx."_".$sumKey."_admin'></div>\n\n\t\t\t\t";
 	}
 	function getGenomeName($user,$project) {
@@ -163,7 +175,6 @@
 
 
 <script type="text/javascript">
-var userProjectCount   = "<?php echo $userProjectCount; ?>";
 <?php
 //.--------------------------------------------------------------------.
 //| javascript to load "project.working.php" for each working project. |

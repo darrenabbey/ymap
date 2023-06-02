@@ -72,8 +72,8 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 			echo "\t\t</td><td style='text-align:center'>\n";
 			if (!file_exists("users/".$userFolder."/super.txt")) {
 				if (file_exists("users/".$userFolder."/locked.txt")) {
-					echo "\t\t\t<input type='button' value='Approve user' onclick=\"key = '$key'; $.ajax({url:'admin.approve_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
-					echo "\t\t\t<input type='button' value='Delete user'  onclick=\"key = '$key'; $.ajax({url:'admin.delete_server.php' ,type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
+					echo "\t\t\t<input type='button' value='Approve user' onclick=\"key = '$key'; $.ajax({url:'admin.approveUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
+					echo "\t\t\t<input type='button' value='Delete user'  onclick=\"key = '$key'; $.ajax({url:'admin.deleteUser_server.php' ,type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
 				} else if (file_exists("users/".$userFolder."/active.txt") and ($userFolder != "default/")) {
 					echo "\t\t\t<input type='button' value='Lock user' onclick=\"key = '$key'; $.ajax({url:'admin.lockUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
 				}

@@ -27,15 +27,24 @@ function deleteProject_yes(project,key){
 			}
 		}
 	});
+
+	// Hide delete confirmation user interface.
+	dom_object           = panel_iframe.contentDocument.getElementById('p_delete_'+key)
+	dom_object.innerHTML = "";
+	dom_button               = panel_iframe.contentDocument.getElementById('project_delete_'+key);
+	dom_button.style.display = 'inline';
+
+	// Update user interface display panel to remove deleted project.
 	update_projectsShown_after_project_delete(key);
 }
 
 function deleteProject_no(project,key){
 	console.log('deleteProject_no');
 	panel_iframe         = document.getElementById('panel_manageDataset_iframe');
+
+	// Hide delete confirmation user interface.
 	dom_object           = panel_iframe.contentDocument.getElementById('p_delete_'+key)
 	dom_object.innerHTML = "";
-
 	dom_button               = panel_iframe.contentDocument.getElementById('project_delete_'+key);
 	dom_button.style.display = 'inline';
 }
