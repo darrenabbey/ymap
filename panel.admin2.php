@@ -79,6 +79,9 @@
 	}
 ?>
 <hr>
+<script type="text/javascript" src="js/jquery-3.6.3.js"></script>
+<script type="text/javascript" src="js/jquery.form.js"></script>
+
 <table width="100%" cellpadding="0"><tr>
 <td width="75%" valign="top">
 	<?php
