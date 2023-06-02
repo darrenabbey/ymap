@@ -30,7 +30,7 @@ import string, sys, re, time, os
 genome           = sys.argv[1]
 genomeUser       = sys.argv[2]
 hapmap           = sys.argv[3]	# 'hapmap' or 'parent project'...            both will contain a 'SNPdata_parent.txt' format file.
-hapmapUser       = sys.argv[4]	# 'hapmap user' or 'parent project user'... 
+hapmapUser       = sys.argv[4]	# 'hapmap user' or 'parent project user'...
 project          = sys.argv[5]	# 'child project'.
 projectUser      = sys.argv[6]	# 'child project user'.
 main_dir         = sys.argv[7]
@@ -40,6 +40,17 @@ runMode          = sys.argv[9]  # 'hapmap' or 'LOH' modes.
 with open(logName, "a") as myfile:
 	myfile.write("\t\t*=======================================================================================*\n")
 	myfile.write("\t\t| Log of 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'   |\n")
+	myfile.write("\t\t*---------------------------------------------------------------------------------------*\n")
+	myfile.write("\t\t| Input arguments:\n");
+	myfile.write("\t\t|     genome      ="+genome+"\n")
+	myfile.write("\t\t|     genomeUser  = "+genomeUser+"\n")
+	myfile.write("\t\t|     hapmap      = "+hapmap+"\n")
+	myfile.write("\t\t|     hapmapuser  = "+hapmapUser+"\n")
+	myfile.write("\t\t|     project     = "+project+"\n")
+	myfile.write("\t\t|     projectUser = "+projectUser+"\n")
+	myfile.write("\t\t|     main_dir    = "+main_dir+"\n")
+	myfile.write("\t\t|     logName     = "+logName+"\n")
+	myfile.write("\t\t|     runMode     = "+runMode+"\n")
 	myfile.write("\t\t*---------------------------------------------------------------------------------------*\n")
 
 # Figure out if input name 'hapmap' corresponds to a project or an actual hapmap.
