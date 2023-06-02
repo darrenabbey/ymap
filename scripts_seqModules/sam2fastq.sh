@@ -8,7 +8,7 @@ main_dir=$(pwd)"/";
 
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 logFile=$projectDirectory"process_log.txt";
-echo "#|---- sam2fastw.sh ---- begin." >> $logFile;
+echo "#|---- sam2fastq.sh ---- begin." >> $logFile;
 
 # import locations of auxillary software for pipeline analysis.
 . $main_dir"local_installed_programs.sh";
@@ -101,4 +101,4 @@ rm $tempOutput1;
 rm $tempOutput2a;
 rm $tempOutput2b;
 
-echo "#|---- sam2fastw.sh ---- end." >> $logFile;
+echo "#|---- sam2fastq.sh ---- end." >> $logFile;

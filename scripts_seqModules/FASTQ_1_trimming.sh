@@ -20,7 +20,7 @@ else
 	then
 		echo;
 		echo "# ";
-		echo "# Trimming of unbalanced read pairs has already been run on this datsaet.";
+		echo "# Trimming of incomplete read entries in FASTQs has already been run on this datsaet.";
 		echo "# ";
 		exit 0;   # exit with no error.
 	else
