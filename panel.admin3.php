@@ -104,7 +104,7 @@
 
 	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $user, $project, $sumKey) {
 		if ($key%2 == 0) {
-			$bgColor = "#FFDDDD";
+			$bgColor = "#FFD00D";
 		} else {
 			$bgColor = "#DDBBBB";
 		}
@@ -120,7 +120,7 @@
 		$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 		$projectNameString = trim($projectNameString);
 
-		echo "<span style='background-color:".$bgColor.";'>\n";
+		echo "<table style='background-color:".$bgColor.";'><tr><td>\n";
 		echo "<span id='p_label_".$sumKey."_admin' style='color:#".$labelRgbColor.";'>\n\t\t";
 		echo "<font size='2'>[".$user."] ".($sumKey+1).". &nbsp; &nbsp;";
 
@@ -145,8 +145,8 @@
 		echo "\t\t</form>\n";
 
 		echo "\t\t</font>\n\t\n\t\t\t\t";
-		echo "<div id='frameContainer.p".$frameContainerIx."_".$sumKey."_admin' style='background-color:".$bgColor.";'></div>\n\n\t\t\t\t";
-		echo "</span>";
+		echo "<div id='frameContainer.p".$frameContainerIx."_".$sumKey."_admin'></div>\n\n\t\t\t\t";
+		echo "</td></tr></table>";
 	}
 	function getGenomeName($user,$project) {
 		// grab genome.txt from project.
