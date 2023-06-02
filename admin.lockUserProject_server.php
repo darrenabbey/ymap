@@ -60,7 +60,7 @@
 	array_multisort($projectFolders_complete, SORT_ASC, $projectFolders_complete);
 
 	// grab selected project by it's key
-	$project_target = $projectFolders_working[$project_key];
+	$project_target = $projectFolders_working[$project_key-$userProjectCount_starting];
 
 	// Confirm if requested user and project exists.
 	$dir     = "users/".$project_user."/projects/".$project_target;
