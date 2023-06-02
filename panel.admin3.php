@@ -104,7 +104,7 @@
 
 	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $user, $project, $sumKey) {
 		if ($key%2 == 0) {
-			$bgColor = "#FFD00D";
+			$bgColor = "#FFDDDD";
 		} else {
 			$bgColor = "#DDBBBB";
 		}
