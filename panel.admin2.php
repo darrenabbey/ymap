@@ -198,7 +198,7 @@
 		}
 		if ($frameContainerIx == "2") {
 			// Button to add/change error message for user project.
-			echo "<form action='' method='post' style='display: inline;'>";
+			echo "<br><form action='' method='post' style='display: inline;'>";
 			echo "<input name='button_ErrorProject' type='button' value='Add/change error message.' onclick='";
 				echo "parent.document.getElementById(\"Hidden_Admin_Frame\").src = \"admin.error_window.php\"; ";
 				echo "parent.show_hidden(\"Hidden_Admin\"); ";
