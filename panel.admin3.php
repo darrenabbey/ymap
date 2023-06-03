@@ -128,7 +128,7 @@
 		echo "</font></span> ".$genome_name."\n";
 
 		// Button to add/change error message for user project.
-		echo "\t\t<form action='' method='post' style='display: inline;'>\n";
+		echo "\t\t<br><form action='' method='post' style='display: inline;'>\n";
 		echo "\t\t\t<input name='button_ErrorProject' type='button' value='Add/change error message.' onclick='";
 			echo "parent.document.getElementById(\"Hidden_Admin_Frame\").src = \"admin.error_window.php\"; ";
 			echo "parent.show_hidden(\"Hidden_Admin\"); ";
