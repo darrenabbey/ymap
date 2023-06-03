@@ -113,6 +113,7 @@
 		$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."]</font>";
 		$genome_name = str_replace("+ ","",$genome_name);
 
+		// get project name string.
 		$projectNameFile = "users/".$user."/projects/".$project."/name.txt";
 		$projectNameString = file_get_contents($projectNameFile);
 		$projectNameString = trim($projectNameString);
