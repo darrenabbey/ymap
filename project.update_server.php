@@ -31,6 +31,7 @@
 		}
 		$ploidy          = sanitizeFloat_POST("ploidy");
 		$ploidyBase      = sanitizeFloat_POST("ploidyBase");
+		$dataFormat      = sanitizeIntChar_POST("dataFormat");
 		$showAnnotations = sanitizeIntChar_POST("showAnnotations");
 
 		// Define some directories for later use.
