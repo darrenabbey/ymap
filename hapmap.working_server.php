@@ -76,9 +76,8 @@
 <?php
 		} else if (file_exists($hapmap_dir."/error.txt")) {
 			// Load error.txt from hapmap folder.
-			$handle = fopen($hapmap_dir."/error.txt", "r");
-			$error = fgets($handle);
-			fclose($handle);
+			$errorFile = $dirFigureBase."error.txt"; 
+			$error     = trim(file_get_contents($errorFile));
 ?>
 		<html>
 		<body onload = "parent.parent.update_hapmap_label_color('<?php echo $key; ?>','#AA0000'); parent.parent.resize_hapmap('<?php echo $key; ?>', 100);" >

@@ -43,7 +43,7 @@
 					projectName = localStorage.getItem("projectName");
 					document.write(projectName + " (key=" + projectKey + ")");
 				</script><br>
-				<label for="newGenomeName">Error text: </label><input type="text" name="errorText" id="errorText" size="100"><br>
+				<label for="newGenomeName">Error text: </label><textarea name="errorText" id="errorText" rows="5" cols="100"></textarea><br>
 				<br>
 				<?php
 				if (!$exceededSpace) {

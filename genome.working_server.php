@@ -89,9 +89,8 @@
 		} else if (file_exists($dirFigureBase."error.txt")) {
 			echo "\n<!-- error file found.\n--!>";
 			// Load error.txt from project folder.
-			$handle = fopen($dirFigureBase."error.txt", "r");
-			$error = fgets($handle);
-			fclose($handle);
+			$errorFile = $dirFigureBase."error.txt";
+			$error     = trim(file_get_contents($errorFile));
 			?>
 			<html>
 			<body onload = "parent.parent.resize_project('<?php echo $key; ?>', 100);" >
