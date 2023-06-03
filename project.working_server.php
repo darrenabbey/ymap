@@ -116,7 +116,7 @@ body {font-family: arial;}
 		?>
 		<html>
 		<body onload = "parent.parent.resize_project('<?php echo $key; ?>', 100);" >
-			<font color="red"><b>[Error]</b></font><br>
+			<font color="red"><b>[Error]</b></font>
 			<?php echo $error; ?>
 		</body>
 		</html>
@@ -135,7 +135,7 @@ body {font-family: arial;}
 		if ($intervalTime > $timeLimit) { // likely error.
 			?>
 			<BODY onload = "parent.parent.resize_project('<?PHP echo $key; ?>', 100);" class="tab">
-				<font color="red" size="2"><b>[Error]</b></font><?php echo " &nbsp; &nbsp; ".$clock; ?><br>
+				<font color="red" size="2"><b>[Error]</b></font><?php echo " &nbsp; &nbsp; ".$clock; ?>
 				<font size="2">Processing of data has taken longer than expected and might be stalled.<br>
 				Check back later or contact the admin with details and they will check on the job.<br>
 				Don't delete the job until the admin has responded, or they will be unable to assist.</font>

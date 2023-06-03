@@ -86,6 +86,20 @@
 			</body>
 			</html>
 			<?php
+		} else if (file_exists($dirFigureBase."error.txt")) {
+			echo "\n<!-- error file found.\n--!>";
+			// Load error.txt from project folder.
+			$handle = fopen($dirFigureBase."error.txt", "r");
+			$error = fgets($handle);
+			fclose($handle);
+			?>
+			<html>
+			<body onload = "parent.parent.resize_project('<?php echo $key; ?>', 100);" >
+				<font color="red"><b>[Error]</b></font>
+				<?php echo $error; ?>
+			</body>
+			</html>
+			<?php
 		} else if (file_exists($genome_dir."/working.txt")) {
 			// Load start time from 'working.txt'
 			$startTimeStamp = file_get_contents($genome_dir."/working.txt");
@@ -95,7 +109,7 @@
 			if ($intervalTime > 60*60*24) { // likely error.
 				?>
 				<BODY onload = "parent.parent.resize_genome('<?php echo $key; ?>', 100);" class="tab">
-				<font color="red" size="2"><b>[Error]</b></font><?php echo " &nbsp; &nbsp; ".$clock; ?><br>
+				<font color="red" size="2"><b>[Error]</b></font><?php echo " &nbsp; &nbsp; ".$clock; ?>
 				<font size="2">Processing of genome data has taken longer than expected and might be stalled.<br>Contact the admin through the "System" tab with details and they will check on the job.</font>
 				</BODY>
 				</HTML>

@@ -76,13 +76,13 @@
 <?php
 		} else if (file_exists($hapmap_dir."/error.txt")) {
 			// Load error.txt from hapmap folder.
-	        $handle = fopen($hapmap_dir."/error.txt", "r");
-	        $error = fgets($handle);
-	        fclose($handle);
+			$handle = fopen($hapmap_dir."/error.txt", "r");
+			$error = fgets($handle);
+			fclose($handle);
 ?>
 		<html>
 		<body onload = "parent.parent.update_hapmap_label_color('<?php echo $key; ?>','#AA0000'); parent.parent.resize_hapmap('<?php echo $key; ?>', 100);" >
-			<font color="red"><b>[Error]</b></font><br>
+			<font color="red"><b>[Error]</b></font>
 			<?php echo $error; ?>
 		</body>
 		</html>
@@ -96,7 +96,7 @@
 			if ($intervalTime > 60*60*3) { // likely error.
 ?>
 			<BODY onload = "parent.parent.resize_hapmap('<?php echo $key; ?>', 100);" class="tab">
-				<font color="red" size="2"><b>[Error]</b></font><?php echo " &nbsp; &nbsp; ".$clock; ?><br>
+				<font color="red" size="2"><b>[Error]</b></font><?php echo " &nbsp; &nbsp; ".$clock; ?>
 				<font size="2">Processing of hapmap data has taken longer than expected and might be stalled.<br>Contact the admin through the "System" tab with details and they will check on the job.</font>
 			</BODY>
 			</HTML>
