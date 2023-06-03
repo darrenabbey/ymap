@@ -43,7 +43,8 @@
 					projectName = localStorage.getItem("projectName");
 					document.write(projectName + " (key=" + projectKey + ")");
 				</script><br>
-				<label for="newGenomeName">Error text: </label><textarea name="errorText" id="errorText" rows="5" cols="100"></textarea><br>
+				<label for="newGenomeName">Error text can include following html tags: <b>&lt;b&gt;</b>, <b>&lt;i&gt;</b>, <b>&lt;u&gt;</b>, & <b>&lt;br&gt;</b><br>
+				<textarea name="errorText" id="errorText" rows="5" cols="100"></textarea><br>
 				<br>
 				<?php
 				if (!$exceededSpace) {

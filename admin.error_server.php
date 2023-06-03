@@ -27,8 +27,7 @@
 	// Load user string from session.
 	$admin_as_user = sanitize_POST('user');
 	$key_          = sanitizeInt_POST('key');
-	// error text isn't sanitized so admin can use html formatting in comment. Function not available to users.
-	$errorText     = $_POST["errorText"];
+	$errorText     = whitelistHTML_POST("errorText");
 
 	log_stuff($user,"","","","","troubleshooting: [".$admin_as_user."]");
 	log_stuff($user,"","","","","troubleshooting: [".$key_."]");

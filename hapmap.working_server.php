@@ -76,11 +76,12 @@
 <?php
 		} else if (file_exists($hapmap_dir."/error.txt")) {
 			// Load error.txt from hapmap folder.
-			$errorFile = $dirFigureBase."error.txt"; 
+			$errorFile = $dirFigureBase."error.txt";
 			$error     = trim(file_get_contents($errorFile));
+			$errorLineCount = substr_count($error,"<br>")+1;
 ?>
 		<html>
-		<body onload = "parent.parent.update_hapmap_label_color('<?php echo $key; ?>','#AA0000'); parent.parent.resize_hapmap('<?php echo $key; ?>', 100);" >
+		<body onload = "parent.parent.update_hapmap_label_color('<?php echo $key; ?>','#AA0000'); parent.parent.resize_project('<?php echo $key; ?>', '<?php echo $errorLineCount*18; ?>');" >
 			<font color="red"><b>[Error]</b></font>
 			<?php echo $error; ?>
 		</body>

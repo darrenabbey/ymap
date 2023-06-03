@@ -93,9 +93,12 @@
 	}
 	function resize_project(project_key, pixels) {
 		// Changes size of iframe shown for the project.
-		var domElement = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById(project_key);
-		if (domElement != null) {
-			domElement.style.height = pixels+"px";
+		var domElement1 = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById(project_key);
+		var domElement2 = document.getElementById('panel_admin2_iframe').contentDocument.getElementById(project_key);
+		if (domElement1 != null) {
+			domElement1.style.height = pixels+"px";
+		} else if (domElement2 != null) {
+			domElement2.style.height = pixels+"px";
 		}
 	}
 

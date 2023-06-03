@@ -110,11 +110,12 @@ body {font-family: arial;}
 	} else if (file_exists($dirFigureBase."error.txt")) {
 		echo "\n<!-- error file found.\n--!>";
 		// Load error.txt from project folder.
-		$errorFile = $dirFigureBase."error.txt";
-		$error     = trim(file_get_contents($errorFile));
+		$errorFile      = $dirFigureBase."error.txt";
+		$error          = trim(file_get_contents($errorFile));
+		$errorLineCount = substr_count($error,"<br>")+1;
 		?>
 		<html>
-		<body onload = "parent.parent.resize_project('<?php echo $key; ?>', 100);" >
+		<body onload = "parent.parent.resize_project('<?php echo $key; ?>', '<?php echo $errorLineCount*18; ?>');" >
 			<font color="red"><b>[Error]</b></font>
 			<?php echo $error; ?>
 		</body>
