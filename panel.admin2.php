@@ -216,6 +216,10 @@
 
 			// Print completed date/time.
 			echo "<font size='1' style='color:".$greyColor.";'> - Completed: ".$figDate."</font>";
+
+			echo "<br><form action=''>";
+			echo "<input type='button' value='Copy project to admin user' onclick=\"key = '$key'; user = '$user'; $.ajax({url:'admin.copyProjectAdmin_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}});location.replace('panel.admin2.php');\">";
+			echo "</form>";
 		}
 		if ($frameContainerIx == "2") {
 			// Button to add/change error message for user project.
@@ -229,10 +233,12 @@
 				echo "localStorage.setItem(\"projectName\",\"".$project."\");";
 			echo "'>";
 			if (file_exists("users/".$user."/projects/".$project."/locked.txt")) {
-				echo "<input type='button' value='Unlock project' onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin2.php')},500);\">\n";
+				echo "<input type='button' value='Unlock project' onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin2.php')},500);\">";
 			} else {
-				echo "<input type='button' value='Lock project'   onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.lockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin2.php')},500);\">\n";
+				echo "<input type='button' value='Lock project'   onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.lockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin2.php')},500);\">";
 			}
+			echo "<input type='button' value='Copy project to admin user' onclick=\"key = '$key'; user = '$user'; $.ajax({url:'admin.copyProjectAdmin_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}});location.replace('panel.admin2.php');\">";
+
 			echo "</form>";
 		}
 

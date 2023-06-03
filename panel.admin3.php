@@ -143,6 +143,8 @@
 		} else {
 			echo "<input type='button' value='Lock project'   onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.lockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin3.php')},500);\">\n";
 		}
+		echo "<input type='button' value='Copy project to admin user' onclick=\"key = '$key'; user = '$user'; $.ajax({url:'admin.copyProjectAdmin_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}});location.replace('panel.admin3.php');\">";
+
 		echo "\t\t</form>\n";
 
 		echo "\t\t</font>\n\t\n\t\t\t\t";
