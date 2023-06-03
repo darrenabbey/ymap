@@ -214,7 +214,7 @@
 					<div id="hiddenFormSection9b" style="display:inline">
 						<!-- WGseq --!>
 						<input type="checkbox"      id="1_bias2" name="1_bias2" value="True" checked>GC-content bias<br>
-						<input type="checkbox"      id="1_bias4" name="1_bias4" value="True"  onchange="UpdateBiasWG();"      >chromosome-end bias (forces using GC content bias)
+						<input type="checkbox"      id="1_bias4" name="1_bias4" value="True"  onchange="UpdateBiasWG();">chromosome-end bias (forces using GC content bias)
 					</div>
 					<div id="hiddenFormSection9c" style="display:none">
 						<!-- ddRADseq --!>
