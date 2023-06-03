@@ -95,10 +95,15 @@
 		// Changes size of iframe shown for the project.
 		var domElement1 = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById(project_key);
 		var domElement2 = document.getElementById('panel_admin2_iframe').contentDocument.getElementById(project_key);
+		var domElement2 = document.getElementById('panel_admin3_iframe').contentDocument.getElementById(project_key);
 		if (domElement1 != null) {
 			domElement1.style.height = pixels+"px";
-		} else if (domElement2 != null) {
+		}
+		if (domElement2 != null) {
 			domElement2.style.height = pixels+"px";
+		}
+		if (domElement3 != null) {
+			domElement3.style.height = pixels+"px";
 		}
 	}
 
