@@ -144,9 +144,11 @@
 
 	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $user, $project, $comment) {
 		if ($key%2 == 0) {
-			$bgColor = "#FFDDDD";
+			$bgColor   = "#FFDDDD";
+			$greyColor = "#888888";
 		} else {
-			$bgColor = "#DDBBBB";
+			$bgColor   = "#DDBBBB";
+			$greyColor = "#666666";
 		}
 
 		// getting genome name for project.
@@ -164,6 +166,14 @@
 			$figVer = intval(trim(file_get_contents($versionFile)));
 		} else {
 			$figVer = 0;
+		}
+
+		// getting project processing completion date/time.
+		$dateFile     = "users/".$user."/projects/".$project."/working_done.txt";
+		if (file_exists($dateFile)) {
+			$figDate = trim(file_get_contents($dateFile));
+		} else {
+			$figDate = 0;
 		}
 
 		$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
@@ -203,6 +213,9 @@
 			}
 			// Print total size.
 			echo " <font color='black' size='1'><b>(". $projectSizeStr .")</b></font>";
+
+			// Print completed date/time.
+			echo "<font size='1' style='color:".$greyColor.";'> - Completed: ".$figDate."</font>";
 		}
 		if ($frameContainerIx == "2") {
 			// Button to add/change error message for user project.
@@ -222,6 +235,7 @@
 			}
 			echo "</form>";
 		}
+
 		echo "</font></span>\n\t\t\t\t";
 		echo "<div id='frameContainer.p".$frameContainerIx."_".$key."_admin'></div>\n\n\t\t\t\t";
 		echo "</td></tr></table>";

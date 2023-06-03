@@ -182,6 +182,15 @@
 				$figVer = 0;
 			}
 
+			// getting project processing completion date/time.
+			$dateFile     = "users/".$user."/projects/".$project."/working_done.txt";
+			if (file_exists($dateFile)) {
+				$figDate = trim(file_get_contents($dateFile));
+			} else {
+				$figDate = 0;
+			}
+
+
 			// getting project name.
 			$nameFile        = "users/".$user."/projects/".$project."/name.txt";
 			$parent_file     = "users/".$user."/projects/".$project."/parent.txt";
@@ -217,6 +226,7 @@
 				echo "<font size='2'>".($key+1).".";
 				echo "<input id='show_$key' type='checkbox' onclick=\"parent.openProject('$user','$project','$key','$projectNameString','$colorString1','$colorString2','$parentString','$figVer'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
 				echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
+				echo "<font size='1' style='color:#999999;'> - Completed: ".$figDate."</font>";
 				echo "<span id='p2_".$project."_delete'></span><span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
 				echo "<div id='frameContainer.p1_".$key."'></div>";
