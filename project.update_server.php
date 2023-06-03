@@ -132,6 +132,33 @@
 		$readType                = $dataStrings[1];
 		$performIndelRealignment = $dataStrings[2];
 
+		// Regenerate 'dataBiases.txt' file.
+		$fileName2 = "users/".$user."/projects/".$project."/dataBiases.txt";
+		$file2     = fopen($fileName2, 'w');
+		if ($dataFormat == "0") { // SnpCghArray
+			$bias_GC     = filter_input(INPUT_POST, "0_bias2", FILTER_SANITIZE_STRING);
+			$bias_end    = filter_input(INPUT_POST, "0_bias4", FILTER_SANITIZE_STRING);
+			if (strcmp($bias_GC ,"") == 0) { $bias_GC  = "False"; }
+			if (strcmp($bias_end,"") == 0) { $bias_end = "False"; }
+			fwrite($file2,"False\n".$bias_GC."\nFalse\n".$bias_end);
+		} else if ($dataFormat == "1") { // WGseq
+			$bias_GC     = filter_input(INPUT_POST, "1_bias2", FILTER_SANITIZE_STRING);
+			$bias_end    = filter_input(INPUT_POST, "1_bias4", FILTER_SANITIZE_STRING);
+			if (strcmp($bias_GC ,"") == 0) { $bias_GC  = "False"; }
+			if (strcmp($bias_end,"") == 0) { $bias_end = "False"; } else {$bias_GC  = "True"; }
+			fwrite($file2,"False\n".$bias_GC."\nFalse\n".$bias_end);
+		} else if ($dataFormat == "2") { // ddRADseq
+			$bias_length = filter_input(INPUT_POST, "2_bias1", FILTER_SANITIZE_STRING);
+			$bias_GC     = filter_input(INPUT_POST, "2_bias2", FILTER_SANITIZE_STRING);
+			$bias_end    = filter_input(INPUT_POST, "2_bias4", FILTER_SANITIZE_STRING);
+			if (strcmp($bias_length,"") == 0) { $bias_length = "False"; }
+			if (strcmp($bias_GC    ,"") == 0) { $bias_GC     = "False"; }
+			if (strcmp($bias_end   ,"") == 0) { $bias_end    = "False"; }
+			fwrite($file2,$bias_length."\n".$bias_GC."\nFalse\n".$bias_end);
+		}
+		fclose($file2);
+		chmod($fileName1,0644);
+
 		// initiate project processing.
 		$conclusion_script = "";
 		switch ($dataType) {
