@@ -97,7 +97,7 @@
 			//--------------------------------------------
 			echo "Project '".$project."' directory already exists.";
 
-			log_stuff($user,$project,"","","","project:CREATE failure");
+			log_stuff($user,$project,"","","","project:CREATE failure, project already exists.");
 ?>
 	<html>
 	<body>
