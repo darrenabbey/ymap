@@ -139,9 +139,9 @@
 			echo "localStorage.setItem(\"projectName\",\"".$project."\");";
 		echo "'>\n";
 		if (file_exists("users/".$user."/projects/".$project."/locked.txt")) {
-			echo "\t\t\t<input type='button' value='Unlock project' onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin3.php')},500);\">\n";
+			echo "<input type='button' value='Unlock project' onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin3.php')},500);\">\n";
 		} else {
-			echo "\t\t\t<input type='button' value='Lock project'   onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.lockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin3.php')},500);\">\n";
+			echo "<input type='button' value='Lock project'   onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.lockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin3.php')},500);\">\n";
 		}
 		echo "\t\t</form>\n";
 
