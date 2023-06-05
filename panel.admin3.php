@@ -138,9 +138,12 @@
 		echo "</font></span> ".$genome_name."\n";
 
 		// Load error.txt from project folder into $_SESSION.
-		$errorFile      = "users/".$user."/projects/".$project."/error.txt";
-		$error          = trim(file_get_contents($errorFile));
-		$errorLineCount = substr_count($error,"<br>")+1;
+		$errorFile     = "users/".$user."/projects/".$project."/error.txt";
+		if (file_exists($errorFile)) {
+			$error = trim(file_get_contents($errorFile));
+		} else {
+			$error = "";
+		}
 		$_SESSION['error_'.$key] = $error;
 
 		// Button to add/change error message for user project.
