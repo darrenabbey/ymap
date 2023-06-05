@@ -131,7 +131,7 @@
 		$projectNameString = trim($projectNameString);
 
 		echo "<table style='background-color:".$bgColor.";' width='100%'><tr><td>\n";
-		echo "<span id='p_label_".$sumKey."_admin' style='color:#".$labelRgbColor.";'>\n\t\t";
+		echo "<span id='p_label_".$sumKey."_admin3' style='color:#".$labelRgbColor.";'>\n\t\t";
 		echo "<font size='2'>[".$user."] ".($sumKey+1).". &nbsp; &nbsp;";
 
 		echo $projectNameString." ";
@@ -166,7 +166,7 @@
 		echo "\t\t</form>\n";
 
 		echo "\t\t</font>\n\t\n\t\t\t\t";
-		echo "<div id='frameContainer.p".$frameContainerIx."_".$sumKey."_admin'></div>\n\n\t\t\t\t";
+		echo "<div id='frameContainer.p".$frameContainerIx."_".$sumKey."_admin3'></div>\n\n\t\t\t\t";
 		echo "</td></tr></table>";
 	}
 	function getGenomeName($user,$project) {
@@ -241,15 +241,15 @@ if (isset($_SESSION['logged_on'])) {
 				//$handle   = fopen("users/".$admin_as_user."/projects/".$project."/dataFormat.txt", "r");
 				//$dataFormat = fgets($handle);
 				//fclose($handle);
-				echo "\n// javascript for project #".$key+$sumKey."_admin, '".$project."'\n";
-				echo "var el_p            = document.getElementById('frameContainer.p2_".$key+$sumKey."_admin');\n";
-				echo "el_p.innerHTML      = '<iframe id=\"p_".$key+$sumKey."_admin\" name=\"p_".$key+$sumKey."_admin\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+				echo "\n// javascript for project #".$key+$sumKey."_admin3, '".$project."'\n";
+				echo "var el_p            = document.getElementById('frameContainer.p2_".$key+$sumKey."_admin3');\n";
+				echo "el_p.innerHTML      = '<iframe id=\"p_".$key+$sumKey."_admin3\" name=\"p_".$key+$sumKey."_admin3\" class=\"upload\" style=\"height:38px; border:0px;\" ";
 				echo     "src=\"project.admin_working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
-				echo "var p_iframe        = document.getElementById('p_".$key+$sumKey."_admin');\n";
+				echo "var p_iframe        = document.getElementById('p_".$key+$sumKey."_admin3');\n";
 				echo "var p_js            = p_iframe.contentWindow;\n";
 				echo "p_js.user           = \"".$admin_as_user."\";\n";
 				echo "p_js.project        = \"".$project."\";\n";
-				echo "p_js.key            = \"p_".$key+$sumKey."_admin\";\n";
+				echo "p_js.key            = \"p_".$key+$sumKey."_admin3\";\n";
 			}
 			$sumKey += count($projectFolders_working);
 		}
