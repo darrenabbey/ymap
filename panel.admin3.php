@@ -144,18 +144,17 @@
 		} else {
 			$error = "";
 		}
-		$_SESSION['error_'.$key] = $error;
 
 		// Button to add/change error message for user project.
 		echo "\t\t<br><form action='' method='post' style='display: inline;'>\n";
-		echo "\t\t\t<input name='button_ErrorProject' type='button' value='Add/change error message.' onclick='";
+		echo "\t\t\t<input name='button_ErrorProject' type='button' value='Add/change error.' onclick='";
 			echo "parent.document.getElementById(\"Hidden_Admin_Frame\").src = \"admin.error_window.php\"; ";
 			echo "parent.show_hidden(\"Hidden_Admin\"); ";
 			echo "parent.update_interface();";
 			echo "localStorage.setItem(\"user\",\"".$user."\");";
 			echo "localStorage.setItem(\"projectKey\",\"".$key."\");";
 			echo "localStorage.setItem(\"projectName\",\"".$project."\");";
-			echo "localStorage.setItem(\"projectError\",\"".$error."\");";
+			echo "localStorage.setItem(\"projectError\",".json_encode($error).");";
 		echo "'>";
 		if (file_exists("users/".$user."/projects/".$project."/locked.txt")) {
 			echo "<input type='button' value='Unlock.' onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin3.php')},100);\">";
