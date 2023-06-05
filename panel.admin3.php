@@ -206,42 +206,44 @@ if (isset($_SESSION['logged_on'])) {
 		// Cleanup admin_as_user names;
 		$admin_as_user = substr($admin_as_user, 0, -1);
 
-		// Get list of projects per user.
-		$projectsDir      = "users/".$admin_as_user."/projects/";
-		$projectFolders   = array_diff(glob($projectsDir."*"), array('..', '.'));
-		// Sort directories by date, newest first.
-		array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
-		// Trim path from each folder string.
-		foreach($projectFolders as $key=>$folder) {   $projectFolders[$key] = str_replace($projectsDir,"",$folder);   }
-		// Split project list into ready/working/starting lists for sequential display.
-		$projectFolders_working  = array();
-		foreach($projectFolders as $key=>$project) {
-			if (file_exists("users/".$admin_as_user."/projects/".$project."/complete.txt")) {
-			} else if (file_exists("users/".$admin_as_user."/projects/".$project."/working.txt")) {
-				array_push($projectFolders_working, $project);
+		if ($admin_as_user != $user) {
+			// Get list of projects per user.
+			$projectsDir      = "users/".$admin_as_user."/projects/";
+			$projectFolders   = array_diff(glob($projectsDir."*"), array('..', '.'));
+			// Sort directories by date, newest first.
+			array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
+			// Trim path from each folder string.
+			foreach($projectFolders as $key=>$folder) {   $projectFolders[$key] = str_replace($projectsDir,"",$folder);   }
+			// Split project list into ready/working/starting lists for sequential display.
+			$projectFolders_working  = array();
+			foreach($projectFolders as $key=>$project) {
+				if (file_exists("users/".$admin_as_user."/projects/".$project."/complete.txt")) {
+				} else if (file_exists("users/".$admin_as_user."/projects/".$project."/working.txt")) {
+					array_push($projectFolders_working, $project);
+				}
 			}
-		}
-		$userProjectCount_working  = count($projectFolders_working);
-		// Sort complete and working projects alphabetically.
-		array_multisort($projectFolders_working,  SORT_ASC, $projectFolders_working);
+			$userProjectCount_working  = count($projectFolders_working);
+			// Sort complete and working projects alphabetically.
+			array_multisort($projectFolders_working,  SORT_ASC, $projectFolders_working);
 
-		foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.
-			$key      = $key_ + $userProjectCount_starting;
-			//$project  = $projectFolders[$key];
-			//$handle   = fopen("users/".$admin_as_user."/projects/".$project."/dataFormat.txt", "r");
-			//$dataFormat = fgets($handle);
-			//fclose($handle);
-			echo "\n// javascript for project #".$key+$sumKey."_admin, '".$project."'\n";
-			echo "var el_p            = document.getElementById('frameContainer.p2_".$key+$sumKey."_admin');\n";
-			echo "el_p.innerHTML      = '<iframe id=\"p_".$key+$sumKey."_admin\" name=\"p_".$key+$sumKey."_admin\" class=\"upload\" style=\"height:38px; border:0px;\" ";
-			echo     "src=\"project.admin_working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
-			echo "var p_iframe        = document.getElementById('p_".$key+$sumKey."_admin');\n";
-			echo "var p_js            = p_iframe.contentWindow;\n";
-			echo "p_js.user           = \"".$admin_as_user."\";\n";
-			echo "p_js.project        = \"".$project."\";\n";
-			echo "p_js.key            = \"p_".$key+$sumKey."_admin\";\n";
+			foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.
+				$key      = $key_ + $userProjectCount_starting;
+				//$project  = $projectFolders[$key];
+				//$handle   = fopen("users/".$admin_as_user."/projects/".$project."/dataFormat.txt", "r");
+				//$dataFormat = fgets($handle);
+				//fclose($handle);
+				echo "\n// javascript for project #".$key+$sumKey."_admin, '".$project."'\n";
+				echo "var el_p            = document.getElementById('frameContainer.p2_".$key+$sumKey."_admin');\n";
+				echo "el_p.innerHTML      = '<iframe id=\"p_".$key+$sumKey."_admin\" name=\"p_".$key+$sumKey."_admin\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+				echo     "src=\"project.admin_working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
+				echo "var p_iframe        = document.getElementById('p_".$key+$sumKey."_admin');\n";
+				echo "var p_js            = p_iframe.contentWindow;\n";
+				echo "p_js.user           = \"".$admin_as_user."\";\n";
+				echo "p_js.project        = \"".$project."\";\n";
+				echo "p_js.key            = \"p_".$key+$sumKey."_admin\";\n";
+			}
+			$sumKey += count($projectFolders_working);
 		}
-		$sumKey += count($projectFolders_working);
 	}
 }
 ?>
