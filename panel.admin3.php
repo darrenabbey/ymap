@@ -69,11 +69,13 @@
 			// Sort directories by date, newest first.
 			array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
 			// Trim path from each folder string.
-			foreach($projectFolders as $key=>$folder) {   $projectFolders[$key] = str_replace($projectsDir,"",$folder);   }
+			foreach($projectFolders as $key=>$folder) {
+				$projectFolders[$key] = str_replace($projectsDir,"",$folder);
+			}
 			// Split project list into ready/working/starting lists for sequential display.
-			$projectFolders_complete = array();
-			$projectFolders_working  = array();
 			$projectFolders_starting = array();
+			$projectFolders_working  = array();
+			$projectFolders_complete = array();
 			foreach($projectFolders as $key=>$project) {
 				if (file_exists("users/".$admin_as_user."/projects/".$project."/complete.txt")) {
 					array_push($projectFolders_complete,$project);
@@ -87,6 +89,7 @@
 			$userProjectCount_working  = count($projectFolders_working);
 			$userProjectCount_complete = count($projectFolders_complete);
 			// Sort complete and working projects alphabetically.
+			array_multisort($projectFolders_starting, SORT_ASC, $projectFolders_starting);
 			array_multisort($projectFolders_working,  SORT_ASC, $projectFolders_working);
 			array_multisort($projectFolders_complete, SORT_ASC, $projectFolders_complete);
 
@@ -139,11 +142,11 @@
 			echo "localStorage.setItem(\"projectName\",\"".$project."\");";
 		echo "'>";
 		if (file_exists("users/".$user."/projects/".$project."/locked.txt")) {
-			echo "<input type='button' value='Unlock project' onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin3.php')},500);\">\n";
+			echo "<input type='button' value='Unlock.' onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin3.php')},100);\">";
 		} else {
-			echo "<input type='button' value='Lock project'   onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.lockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin3.php')},500);\">\n";
+			echo "<input type='button' value='Lock.'   onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.lockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin3.php')},100);\">";
 		}
-		echo "<input type='button' value='Copy project to admin user' onclick=\"key = '$key'; user = '$user'; $.ajax({url:'admin.copyProjectAdmin_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}});location.replace('panel.admin3.php');\">";
+		echo "<input type='button' value='Copy to admin.'  onclick=\"key = '$key'; user = '$user'; $.ajax({url:'admin.copyProjectToAdmin_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); location.replace('panel.admin3.php');\">";
 
 		echo "\t\t</form>\n";
 

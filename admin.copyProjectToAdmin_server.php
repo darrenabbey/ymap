@@ -54,6 +54,33 @@
 		foreach($projectFolders as $key=>$folder) {
 			$projectFolders[$key] = str_replace($projectDir,"",$folder);
 		}
+
+		// Split project list into starting/working/complete lists for sequential display.
+		$projectFolders_starting = array();
+		$projectFolders_working  = array();
+		$projectFolders_complete = array();
+		foreach($projectFolders as $key=>$project) {
+			if (file_exists("users/".$admin_as_user."/projects/".$project."/complete.txt")) {
+				array_push($projectFolders_complete,$project);
+			} else if (file_exists("users/".$admin_as_user."/projects/".$project."/working.txt")) {
+				array_push($projectFolders_working, $project);
+			} else if (is_dir("users/".$admin_as_user."/projects/".$project)) {
+				array_push($projectFolders_starting,$project);
+			}
+		}
+		$userProjectCount_starting = count($projectFolders_starting);
+		$userProjectCount_working  = count($projectFolders_working);
+		$userProjectCount_complete = count($projectFolders_complete);
+		// Sort complete and working projects alphabetically.
+		array_multisort($projectFolders_starting, SORT_ASC, $projectFolders_starting);
+		array_multisort($projectFolders_working,  SORT_ASC, $projectFolders_working);
+		array_multisort($projectFolders_complete, SORT_ASC, $projectFolders_complete);
+		// Build new 'projectFolders' array;
+		$projectFolders   = array();
+		$projectFolders   = array_merge($projectFolders_starting, $projectFolders_working, $projectFolders_complete);
+		$userProjectCount = count($projectFolders);
+
+		// Determine project to copy from provided project key.
 		$project_to_copy = $projectFolders[$user_key];
 
 		$src  = $projectDir.$project_to_copy;

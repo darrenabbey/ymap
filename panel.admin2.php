@@ -6,9 +6,13 @@
 	require_once 'POST_validation.php';
 
 	// check if admin is logged in.
-	$super_user_flag_file = "users/".$user."/super.txt";
-	if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
-		$admin_logged_in = "true";
+	if(isset($_SESSION['logged_on'])) {
+		$super_user_flag_file = "users/".$user."/super.txt";
+		if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
+			$admin_logged_in = "true";
+		} else {
+			$admin_logged_in = "false";
+		}
 	} else {
 		$admin_logged_in = "false";
 	}
@@ -36,12 +40,14 @@
 		foreach($userFolders as $key=>$folder) {   $userFolders[$key] = str_replace($userDir,"",$folder);   }
 		$userCount = count($userFolders);
 
-		// check to see if 'admin_as_user' value was passed to page.
+		// check to see if 'admin_as_user' value was passed to page or stored in $_SESSION
 		if (isset($_POST['admin_as_user'])) {
 			$admin_as_user_key = sanitizeInt_POST('admin_as_user');
-			// $admin_as_user     = 0;
+			$_SESSION['admin_as_user'] = $admin_as_user_key;
+		} else if (isset($_SESSION['admin_as_user'])) {
+			$admin_as_user_key = $_SESSION['admin_as_user'];
 		} else {
-			// find admin user's key.
+			// find admin user's key if none previously selected.
 			foreach($userFolders as $key=>$folder) {
 				if (substr($folder, 0, -1) == $user) {
 					$admin_as_user_key = $key;
@@ -95,11 +101,13 @@
 		// Sort directories by date, newest first.
 		array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
 		// Trim path from each folder string.
-		foreach($projectFolders as $key=>$folder) {   $projectFolders[$key] = str_replace($projectsDir,"",$folder);   }
-		// Split project list into ready/working/starting lists for sequential display.
-		$projectFolders_complete = array();
-		$projectFolders_working  = array();
+		foreach($projectFolders as $key=>$folder) {
+			$projectFolders[$key] = str_replace($projectsDir,"",$folder);
+		}
+		// Split project list into starting/working/complete lists for sequential display.
 		$projectFolders_starting = array();
+		$projectFolders_working  = array();
+		$projectFolders_complete = array();
 		foreach($projectFolders as $key=>$project) {
 			if (file_exists("users/".$admin_as_user."/projects/".$project."/complete.txt")) {
 				array_push($projectFolders_complete,$project);
@@ -113,12 +121,14 @@
 		$userProjectCount_working  = count($projectFolders_working);
 		$userProjectCount_complete = count($projectFolders_complete);
 		// Sort complete and working projects alphabetically.
+		array_multisort($projectFolders_starting, SORT_ASC, $projectFolders_starting);
 		array_multisort($projectFolders_working,  SORT_ASC, $projectFolders_working);
 		array_multisort($projectFolders_complete, SORT_ASC, $projectFolders_complete);
 		// Build new 'projectFolders' array;
 		$projectFolders   = array();
 		$projectFolders   = array_merge($projectFolders_starting, $projectFolders_working, $projectFolders_complete);
 		$userProjectCount = count($projectFolders);
+
 		// displaying size if it's bigger then 0
 		if ($currentSize > 0) {
 			echo "<b><font size='2'>User installed datasets: (currently using " . $currentSize . "G of " . $quota . "G)</font></b>\n\t\t\t\t";
@@ -218,13 +228,13 @@
 			echo "<font size='1' style='color:".$greyColor.";'> - Completed: ".$figDate."</font>";
 
 			echo "<br><form action=''>";
-			echo "<input type='button' value='Copy project to admin user' onclick=\"key = '$key'; user = '$user'; $.ajax({url:'admin.copyProjectAdmin_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}});location.replace('panel.admin2.php');\">";
+			echo "<input type='button' value='Copy to admin.' onclick=\"key = '$key'; user = '$user'; $.ajax({url:'admin.copyProjectToAdmin_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}});location.replace('panel.admin2.php');\">";
 			echo "</form>";
 		}
 		if ($frameContainerIx == "2") {
 			// Button to add/change error message for user project.
 			echo "<br><form action='' method='post' style='display: inline;'>";
-			echo "<input name='button_ErrorProject' type='button' value='Add/change error message.' onclick='";
+			echo "<input name='button_ErrorProject' type='button' value='Add/change error.' onclick='";
 				echo "parent.document.getElementById(\"Hidden_Admin_Frame\").src = \"admin.error_window.php\"; ";
 				echo "parent.show_hidden(\"Hidden_Admin\"); ";
 				echo "parent.update_interface();";
@@ -233,11 +243,11 @@
 				echo "localStorage.setItem(\"projectName\",\"".$project."\");";
 			echo "'>";
 			if (file_exists("users/".$user."/projects/".$project."/locked.txt")) {
-				echo "<input type='button' value='Unlock project' onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin2.php')},500);\">";
+				echo "<input type='button' value='Unlock.' onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=>{location.replace('panel.admin2.php');},100);\">";
 			} else {
-				echo "<input type='button' value='Lock project'   onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.lockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin2.php')},500);\">";
+				echo "<input type='button' value='Lock.'   onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.lockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=>{location.replace('panel.admin2.php');},100);\">";
 			}
-			echo "<input type='button' value='Copy project to admin user' onclick=\"key = '$key'; user = '$user'; $.ajax({url:'admin.copyProjectAdmin_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}});location.replace('panel.admin2.php');\">";
+			echo "<input type='button' value='Copy to admin.'  onclick=\"key = '$key'; user = '$user'; $.ajax({url:'admin.copyProjectToAdmin_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); location.replace('panel.admin2.php');\">";
 
 			echo "</form>";
 		}
