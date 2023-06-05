@@ -343,7 +343,7 @@
 		}
 
 		// Limit files list to valid output file types.
-		$projectFiles   = preg_grep('~\.(png|eps|bed|gff3)$~', scandir("users/$user/projects/$project/"));
+		$projectFiles   = preg_grep('~\.(png|eps|bed|gff3)$~', scandir("users/default/projects/$project/"));
 		sort($projectFiles);
 		$json_file_list = json_encode($projectFiles);
 
