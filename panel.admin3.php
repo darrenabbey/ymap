@@ -137,6 +137,12 @@
 		echo $projectNameString." ";
 		echo "</font></span> ".$genome_name."\n";
 
+		// Load error.txt from project folder into $_SESSION.
+		$errorFile      = "users/".$user."/projects/".$project."/error.txt";
+		$error          = trim(file_get_contents($errorFile));
+		$errorLineCount = substr_count($error,"<br>")+1;
+		$_SESSION['error_'.$key] = $error;
+
 		// Button to add/change error message for user project.
 		echo "\t\t<br><form action='' method='post' style='display: inline;'>\n";
 		echo "\t\t\t<input name='button_ErrorProject' type='button' value='Add/change error message.' onclick='";
@@ -146,6 +152,7 @@
 			echo "localStorage.setItem(\"user\",\"".$user."\");";
 			echo "localStorage.setItem(\"projectKey\",\"".$key."\");";
 			echo "localStorage.setItem(\"projectName\",\"".$project."\");";
+			echo "localStorage.setItem(\"projectError\",\"".$error."\");";
 		echo "'>";
 		if (file_exists("users/".$user."/projects/".$project."/locked.txt")) {
 			echo "<input type='button' value='Unlock.' onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin3.php')},100);\">";

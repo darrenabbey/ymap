@@ -215,7 +215,7 @@
 				fclose($handle);
 			} else {
 				// calculating size
-				$projectSizeStr = trim(shell_exec("du -sh " . "users/".$user."/projects/". $project . "/ | cut -f1"));
+				$projectSizeStr = trim(shell_exec("du -sh "."users/".$user."/projects/".$project."/ | cut -f1"));
 				// saving to file
 				$output       = fopen($totalSizeFile, 'w');
 				fwrite($output, $projectSizeStr);
@@ -232,15 +232,22 @@
 			echo "</form>";
 		}
 		if ($frameContainerIx == "2") {
+			// Load error.txt from project folder into $_SESSION.
+			$errorFile      = "users/".$user."/projects/".$project."/error.txt";
+			$error          = trim(file_get_contents($errorFile));
+			$errorLineCount = substr_count($error,"<br>")+1;
+			$_SESSION['error_'.$key] = $error;
+
 			// Button to add/change error message for user project.
 			echo "<br><form action='' method='post' style='display: inline;'>";
-			echo "<input name='button_ErrorProject' type='button' value='Add/change error.' onclick='";
-				echo "parent.document.getElementById(\"Hidden_Admin_Frame\").src = \"admin.error_window.php\"; ";
+			echo "<input type='button' name='button_ErrorProject' value='Add/change error.' onclick='";
+				echo "parent.document.getElementById(\"Hidden_Admin_Frame\").src = \"admin.error_window.php\";";
 				echo "parent.show_hidden(\"Hidden_Admin\"); ";
 				echo "parent.update_interface();";
 				echo "localStorage.setItem(\"user\",\"".$user."\");";
 				echo "localStorage.setItem(\"projectKey\",\"".$key."\");";
 				echo "localStorage.setItem(\"projectName\",\"".$project."\");";
+				echo "localStorage.setItem(\"projectError\",\"".$error."\");";
 			echo "'>";
 			if (file_exists("users/".$user."/projects/".$project."/locked.txt")) {
 				echo "<input type='button' value='Unlock.' onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=>{location.replace('panel.admin2.php');},100);\">";

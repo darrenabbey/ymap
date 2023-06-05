@@ -39,13 +39,16 @@
 					document.write(user);
 				</script><br>
 				Project: <script type="text/javascript">
-					projectKey = localStorage.getItem("projectKey");
+					projectKey  = localStorage.getItem("projectKey");
 					projectName = localStorage.getItem("projectName");
 					document.write(projectName + " (key=" + projectKey + ")");
 				</script><br>
 				<label for="newGenomeName">Error text can include following html tags: <b>&lt;b&gt;</b>, <b>&lt;i&gt;</b>, <b>&lt;u&gt;</b>, & <b>&lt;br&gt;</b><br>
 				<textarea name="errorText" id="errorText" rows="5" cols="100"></textarea><br>
-				<br>
+				<script type="text/javascript">
+					projectError = localStorage.getItem("projectError");
+					document.getElementById("errorText").value = projectError;
+				</script><br>
 				<?php
 				if (!$exceededSpace) {
 					echo "<input type='submit' value='Push error to project.' onclick='";
