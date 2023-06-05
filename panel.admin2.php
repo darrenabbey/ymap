@@ -249,7 +249,7 @@
 				echo "localStorage.setItem(\"user\",\"".$user."\");";
 				echo "localStorage.setItem(\"projectKey\",\"".$key."\");";
 				echo "localStorage.setItem(\"projectName\",\"".$project."\");";
-			//	echo "localStorage.setItem(\"projectError\",".json_encode($error).");";
+				echo "localStorage.setItem(\"projectError\",".json_encode($error).");";
 			echo "'>";
 			if (file_exists("users/".$user."/projects/".$project."/locked.txt")) {
 				echo "<input type='button' value='Unlock.' onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=>{location.replace('panel.admin2.php');},100);\">";
