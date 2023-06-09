@@ -39,9 +39,6 @@
 		$user          = $_SESSION['user'];
 		$admin_as_user = sanitize_POST('user');
 		$user_key      = sanitizeInt_POST('key');
-		log_stuff($user,"","","","","ADMIN testing: ".$user);
-		log_stuff($user,"","","","","ADMIN testing: ".$admin_as_user);
-		log_stuff($user,"","","","","ADMIN testing: ".$user_key);
 
 		// Determine user account associated with key.
 		$projectDir      = "users/".$admin_as_user."/projects/";
@@ -98,10 +95,17 @@
 		                        copy($src.'/'.$file, $dest.'/'.$file);
 				}
 			}
+
 			// update name.txt file.
 			$projectName  = file_get_contents($dest."/name.txt",'r');
 			$handle       = fopen($dest."/name.txt",'w');
 			fwrite($handle, "<b>".$admin_as_user."</b> ".$projectName);
+			fclose($handle);
+
+			// update parent.txt file
+			$parentName  = file_get_contents($dest."/parent.txt",'r');
+			$handle      = fopen($dest."/parent.txt",'w');
+			fwrite($handle, $admin_as_user."_".$parentName);
 			fclose($handle);
 		}
 	}
