@@ -109,7 +109,7 @@ for feature in range(1,numFeatures):
 	chrID_string = features[feature-1][0]
 	startBP_int  = features[feature-1][1]
 	endBP_int    = features[feature-1][2]
-	print chrID_string + '\t' + str(startBP_int) + '\t' + str(endBP_int)
+	print(chrID_string + '\t' + str(startBP_int) + '\t' + str(endBP_int));
 #------------------------------------------------------------------------------------------------------------
 # End of code section to output information about features. 
 #============================================================================================================
