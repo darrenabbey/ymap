@@ -84,9 +84,9 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 			echo "<font size='2'>".($key+1).". ".$userFolder."</font></span>\n";
 			echo "\t\t</td><td style='text-align:center'>\n";
 			if (file_exists("users/".$userFolder."/super.txt")) {
-				echo "\t\t\t<font size='2'>[Super user]</font>\n";
+				echo "\t\t\t<font size='2'>[Super admin]</font>\n";
 			} else if (file_exists("users/".$userFolder."/admin.txt")) {
-				echo "\t\t\t<font size='2'>[Admin user]</font>\n";
+				echo "\t\t\t<font size='2'>[Admin]</font>\n";
 			} else {
 				if (file_exists("users/".$userFolder."/locked.txt")) {
 					echo "\t\t\t<input type='button' value='Approve' onclick=\"key = '$key'; $.ajax({url:'admin.approveUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
