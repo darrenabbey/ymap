@@ -208,8 +208,8 @@
 	onclick="tabWindow('citations');"       >Citations</td>
 <?php
 // Check if logged in user has admin rights.
-$super_user_flag_file = "users/".$user."/super.txt";
-if (file_exists($super_user_flag_file)) {
+$admin_user_flag_file = "users/".$user."/admin.txt";
+if (file_exists($admin_user_flag_file)) {
 	$admin = "true";
 } else {
 	$admin = "false";

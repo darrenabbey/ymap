@@ -4,11 +4,24 @@
 	require_once 'constants.php';
 	require_once 'sharedFunctions.php';
 
-	// check if admin is logged in.
-	$super_user_flag_file = "users/".$user."/super.txt";
-	if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
-		$admin_logged_in = "true";
+	if(isset($_SESSION['logged_on'])) {
+		// check if super is logged in.
+		$super_user_flag_file = "users/".$user."/super.txt";
+		if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
+			$super_logged_in = "true";
+		} else {
+			$super_logged_in = "false";
+		}
+
+		// check if admin is logged in.
+		$admin_user_flag_file = "users/".$user."/admin.txt";
+		if (file_exists($admin_user_flag_file)) {  // Super-user privilidges.
+			$admin_logged_in = "true";
+		} else {
+			$admin_logged_in = "false";
+		}
 	} else {
+		$super_logged_in = "false";
 		$admin_logged_in = "false";
 	}
 ?>
@@ -50,7 +63,7 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 
 		echo "<table width='100%'>";
 		echo "<tr><td width='16%'><font size='2'><b>User Account</b></font></td>";
-		echo     "<td width='16%' style='text-align:center'><font size='2'><b>Approval Needed</b></font></td>";
+		echo     "<td width='16%' style='text-align:center'><font size='2'><b>User status</b></font></td>";
 		echo     "<td width='16%' style='text-align:center'><font size='2'><b>Account size</b><br>";
 
 		// calculating user account size.
@@ -70,15 +83,17 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 			echo "<td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
 			echo "<font size='2'>".($key+1).". ".$userFolder."</font></span>\n";
 			echo "\t\t</td><td style='text-align:center'>\n";
-			if (!file_exists("users/".$userFolder."/super.txt")) {
-				if (file_exists("users/".$userFolder."/locked.txt")) {
-					echo "\t\t\t<input type='button' value='Approve user' onclick=\"key = '$key'; $.ajax({url:'admin.approveUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
-					echo "\t\t\t<input type='button' value='Delete user'  onclick=\"key = '$key'; $.ajax({url:'admin.deleteUser_server.php' ,type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
-				} else if (file_exists("users/".$userFolder."/active.txt") and ($userFolder != "default/")) {
-					echo "\t\t\t<input type='button' value='Lock user' onclick=\"key = '$key'; $.ajax({url:'admin.lockUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
-				}
+			if (file_exists("users/".$userFolder."/super.txt")) {
+				echo "\t\t\t<font size='2'>[Super user]</font>\n";
+			} else if (file_exists("users/".$userFolder."/admin.txt")) {
+				echo "\t\t\t<font size='2'>[Admin user]</font>\n";
 			} else {
-				echo "\t\t\t<font size='2'>[Admin]</font>\n";
+				if (file_exists("users/".$userFolder."/locked.txt")) {
+					echo "\t\t\t<input type='button' value='Approve' onclick=\"key = '$key'; $.ajax({url:'admin.approveUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
+					echo "\t\t\t<input type='button' value='Delete'  onclick=\"key = '$key'; $.ajax({url:'admin.deleteUser_server.php' ,type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
+				} else if (file_exists("users/".$userFolder."/active.txt") and ($userFolder != "default/")) {
+					echo "\t\t\t<input type='button' value='Lock' onclick=\"key = '$key'; $.ajax({url:'admin.lockUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
+				}
 			}
 			echo "\t\t</td>\n";
 
@@ -112,50 +127,53 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 </td><td width="35%" valign="top">
 </td></tr></table>
 
+<?php
+	if ($super_logged_in == "true") {
+?>
 <hr width="100%">
 <font size='3'>Copy genomes to default user account.</font><br>
 <font size='2'>(There currently isn't an undo function, corrections will need applied via server access.)</font><br><br>
 <table width="100%" cellpadding="0"><tr>
 <td width="100%" valign="top">
-	<?php
-	//.-----------------------.
-	//| Admin account genomes |
-	//'-----------------------'
-	if (($admin_logged_in == "true") and isset($_SESSION['logged_on'])) {
-		$genomeDir     = "users/".$_SESSION['user']."/genomes/";
-		$genomeFolders = array_diff(glob($genomeDir."*\/"), array('..', '.'));
+<?php
+		//.-----------------------.
+		//| Admin account genomes |
+		//'-----------------------'
+		if (($admin_logged_in == "true") and isset($_SESSION['logged_on'])) {
+			$genomeDir     = "users/".$_SESSION['user']."/genomes/";
+			$genomeFolders = array_diff(glob($genomeDir."*\/"), array('..', '.'));
 
-		// Sort directories by date, newest first.
-		array_multisort($genomeFolders, SORT_ASC, $genomeFolders);
-		// Trim path from each folder string.
-		foreach($genomeFolders as $key=>$folder) {
-			$genomeFolders[$key] = str_replace($genomeDir,"",$folder);
+			// Sort directories by date, newest first.
+			array_multisort($genomeFolders, SORT_ASC, $genomeFolders);
+			// Trim path from each folder string.
+			foreach($genomeFolders as $key=>$folder) {
+				$genomeFolders[$key] = str_replace($genomeDir,"",$folder);
+			}
+			$genomeCount = count($genomeFolders);
+
+			echo "<table width='100%'>";
+			echo "<tr><td width='30%'><font size='2'><b>Genomes</b></font></td>";
+			echo "<td width='30%'><font size='2'><b>Copy Genome</b></font></td>";
+			echo "<td><font size='2'><b>Genome \"name.txt\" Contents</b></font></td>";
+			echo "</tr>\n";
+			foreach($genomeFolders as $key=>$genome) {
+				echo "\t\t<tr style='";
+				if ($key % 2 == 0) { echo "; background:#DDBBBB;"; }
+				echo "'>";
+				echo "<td>\n\t\t\t<span id='genome_label_".$key."' style='color:#000000;'>";
+				echo "<font size='2'>".($key+1).". ".$genome."</font></span>\n";
+				echo "\t\t</td><td>\n";
+				echo "\t\t\t<input type='button' value='Copy genome to default user' onclick=\"key = '$key'; $.ajax({url:'admin.copyGenome_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin1.php');\">\n";
+				echo "\t\t</td><td>\n";
+				$nameFile         = "users/".$user."/genomes/".$genome."name.txt";
+				$genomeNameString = file_get_contents($nameFile);
+				$genomeNameString = trim($genomeNameString);
+				echo "<font size='2'>".$genomeNameString."</font>";
+
+				echo "\t\t</td></tr>\n";
+			}
+			echo "</table>";
 		}
-		$genomeCount = count($genomeFolders);
-
-		echo "<table width='100%'>";
-		echo "<tr><td width='30%'><font size='2'><b>Genomes</b></font></td>";
-		echo "<td width='30%'><font size='2'><b>Copy Genome</b></font></td>";
-		echo "<td><font size='2'><b>Genome \"name.txt\" Contents</b></font></td>";
-		echo "</tr>\n";
-		foreach($genomeFolders as $key=>$genome) {
-			echo "\t\t<tr style='";
-			if ($key % 2 == 0) { echo "; background:#DDBBBB;"; }
-			echo "'>";
-			echo "<td>\n\t\t\t<span id='genome_label_".$key."' style='color:#000000;'>";
-			echo "<font size='2'>".($key+1).". ".$genome."</font></span>\n";
-			echo "\t\t</td><td>\n";
-			echo "\t\t\t<input type='button' value='Copy genome to default user' onclick=\"key = '$key'; $.ajax({url:'admin.copyGenome_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin1.php');\">\n";
-			echo "\t\t</td><td>\n";
-			$nameFile         = "users/".$user."/genomes/".$genome."name.txt";
-			$genomeNameString = file_get_contents($nameFile);
-			$genomeNameString = trim($genomeNameString);
-			echo "<font size='2'>".$genomeNameString."</font>";
-
-			echo "\t\t</td></tr>\n";
-		}
-		echo "</table>";
-	}
 ?>
 </td><td width="35%" valign="top">
 </td></tr></table>
@@ -166,45 +184,45 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 <font size='2'>(There currently isn't an undo function, corrections will need applied via server access.)</font><br><br>
 <table width="100%" cellpadding="0"><tr>
 <td width="100%" valign="top">
-	<?php
-	//.-----------------------.
-	//| Admin account hapmaps |
-	//'-----------------------'
-	if (($admin_logged_in == "true") and isset($_SESSION['logged_on'])) {
-		$hapmapDir     = "users/".$_SESSION['user']."/hapmaps/";
-		$hapmapFolders = array_diff(glob($hapmapDir."*\/"), array('..', '.'));
+<?php
+		//.-----------------------.
+		//| Admin account hapmaps |
+		//'-----------------------'
+		if (($admin_logged_in == "true") and isset($_SESSION['logged_on'])) {
+			$hapmapDir     = "users/".$_SESSION['user']."/hapmaps/";
+			$hapmapFolders = array_diff(glob($hapmapDir."*\/"), array('..', '.'));
 
-		// Sort directories by date, newest first.
-		array_multisort($hapmapFolders, SORT_ASC, $hapmapFolders);
-		// Trim path from each folder string.
-		foreach($hapmapFolders as $key=>$folder) {
-			$hapmapFolders[$key] = str_replace($hapmapDir,"",$folder);
+			// Sort directories by date, newest first.
+			array_multisort($hapmapFolders, SORT_ASC, $hapmapFolders);
+			// Trim path from each folder string.
+			foreach($hapmapFolders as $key=>$folder) {
+				$hapmapFolders[$key] = str_replace($hapmapDir,"",$folder);
+			}
+			$hapmapCount = count($hapmapFolders);
+
+			echo "<table width='100%'>";
+			echo "<tr><td width='30%'><font size='2'><b>Hapmaps</b></font></td>";
+			echo "<td width='30%'><font size='2'><b>Copy Hapmap</b></font></td>";
+			echo "<td><font size='2'><b>Hapmapt \"name.txt\" Contents</b></font></td>";
+			echo "</tr>\n";
+			foreach($hapmapFolders as $key=>$hapmap) {
+				echo "\t\t<tr style='";
+				if ($key % 2 == 0) { echo "; background:#DDBBBB;"; }
+				echo "'>";
+				echo "<td>\n\t\t\t<span id='hapmap_label_".$key."' style='color:#000000;'>";
+				echo "<font size='2'>".($key+1).". ".$hapmap."</font></span>\n";
+				echo "\t\t</td><td>\n";
+				echo "\t\t\t<input type='button' value='Copy hapmap to default user' onclick=\"key = '$key'; $.ajax({url:'admin.copyHapmap_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin1.php');\">\n";
+				echo "\t\t</td><td>\n";
+				$nameFile          = "users/".$user."/hapmaps/".$hapmap."name.txt";
+				$hapmapNameString = file_get_contents($nameFile);
+				$hapmapNameString = trim($hapmapNameString);
+				echo "<font size='2'>".$hapmapNameString."</font>";
+
+				echo "\t\t</td></tr>\n";
+			}
+			echo "</table>";
 		}
-		$hapmapCount = count($hapmapFolders);
-
-		echo "<table width='100%'>";
-		echo "<tr><td width='30%'><font size='2'><b>Hapmaps</b></font></td>";
-		echo "<td width='30%'><font size='2'><b>Copy Hapmap</b></font></td>";
-		echo "<td><font size='2'><b>Hapmapt \"name.txt\" Contents</b></font></td>";
-		echo "</tr>\n";
-		foreach($hapmapFolders as $key=>$hapmap) {
-			echo "\t\t<tr style='";
-			if ($key % 2 == 0) { echo "; background:#DDBBBB;"; }
-			echo "'>";
-			echo "<td>\n\t\t\t<span id='hapmap_label_".$key."' style='color:#000000;'>";
-			echo "<font size='2'>".($key+1).". ".$hapmap."</font></span>\n";
-			echo "\t\t</td><td>\n";
-			echo "\t\t\t<input type='button' value='Copy hapmap to default user' onclick=\"key = '$key'; $.ajax({url:'admin.copyHapmap_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin1.php');\">\n";
-			echo "\t\t</td><td>\n";
-			$nameFile          = "users/".$user."/hapmaps/".$hapmap."name.txt";
-			$hapmapNameString = file_get_contents($nameFile);
-			$hapmapNameString = trim($hapmapNameString);
-			echo "<font size='2'>".$hapmapNameString."</font>";
-
-			echo "\t\t</td></tr>\n";
-		}
-		echo "</table>";
-	}
 ?>
 </td><td width="35%" valign="top">
 </td></tr></table>
@@ -217,49 +235,50 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 <table width="100%" cellpadding="0"><tr>
 <td width="100%" valign="top">
 <?php
-	//.-----------------------.
-	//| Admin account projects |
-	//'-----------------------'
-	if (($admin_logged_in == "true") and isset($_SESSION['logged_on'])) {
-		$projectDir     = "users/".$_SESSION['user']."/projects/";
-		$projectFolders = array_diff(glob($projectDir."*\/"), array('..', '.'));
+		//.-----------------------.
+		//| Admin account projects |
+		//'-----------------------'
+		if (($admin_logged_in == "true") and isset($_SESSION['logged_on'])) {
+			$projectDir     = "users/".$_SESSION['user']."/projects/";
+			$projectFolders = array_diff(glob($projectDir."*\/"), array('..', '.'));
 
-		// Sort directories by date, newest first.
-		array_multisort($projectFolders, SORT_ASC, $projectFolders);
-		// Trim path from each folder string.
-		foreach($projectFolders as $key=>$folder) {
-			$projectFolders[$key] = str_replace($projectDir,"",$folder);
-		}
-		$projectCount = count($projectFolders);
-
-		echo "<table width='100%'>";
-		echo "<tr><td width='30%'><font size='2'><b>Projects</b></font></td>";
-		echo "<td width='30%'><font size='2'><b>Minimize and Copy Project</b></font></td>";
-		echo "<td><font size='2'><b>Project \"name.txt\" Contents</b></font></td>";
-		echo "</tr>\n";
-		foreach($projectFolders as $key=>$project) {
-			echo "\t\t<tr style='";
-			if ($key % 2 == 0) { echo "; background:#DDBBBB;"; }
-			echo "'>";
-
-			echo "<td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
-			echo "<font size='2'>".($key+1).". ".$project."</font></span>\n";
-			echo "\t\t</td><td>\n";
-			if (file_exists("users/".$user."/projects/".$project."/complete.txt") && !file_exists("users/".$user."/projects/".$project."/minimized.txt")) {
-				echo "\t\t\t<input type='button' value='Minimize project' onclick=\"key = '$key'; $.ajax({url:'admin.minimizeProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin1.php');\">\n";
+			// Sort directories by date, newest first.
+			array_multisort($projectFolders, SORT_ASC, $projectFolders);
+			// Trim path from each folder string.
+			foreach($projectFolders as $key=>$folder) {
+				$projectFolders[$key] = str_replace($projectDir,"",$folder);
 			}
-			if (file_exists("users/".$user."/projects/".$project."/complete.txt") && file_exists("users/".$user."/projects/".$project."/minimized.txt")) {
-				echo "\t\t\t<input type='button' value='Copy project to default user' onclick=\"key = '$key'; $.ajax({url:'admin.copyProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin1.php');\">\n";
-			}
-			echo "\t\t</td><td>\n";
-			$nameFile          = "users/".$user."/projects/".$project."name.txt";
-			$projectNameString = file_get_contents($nameFile);
-			$projectNameString = trim($projectNameString);
-			echo "<font size='2'>".$projectNameString."</font>";
+			$projectCount = count($projectFolders);
 
-			echo "\t\t</td></tr>\n";
+			echo "<table width='100%'>";
+			echo "<tr><td width='30%'><font size='2'><b>Projects</b></font></td>";
+			echo "<td width='30%'><font size='2'><b>Minimize and Copy Project</b></font></td>";
+			echo "<td><font size='2'><b>Project \"name.txt\" Contents</b></font></td>";
+			echo "</tr>\n";
+			foreach($projectFolders as $key=>$project) {
+				echo "\t\t<tr style='";
+				if ($key % 2 == 0) { echo "; background:#DDBBBB;"; }
+				echo "'>";
+
+				echo "<td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
+				echo "<font size='2'>".($key+1).". ".$project."</font></span>\n";
+				echo "\t\t</td><td>\n";
+				if (file_exists("users/".$user."/projects/".$project."/complete.txt") && !file_exists("users/".$user."/projects/".$project."/minimized.txt")) {
+					echo "\t\t\t<input type='button' value='Minimize project' onclick=\"key = '$key'; $.ajax({url:'admin.minimizeProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin1.php');\">\n";
+				}
+				if (file_exists("users/".$user."/projects/".$project."/complete.txt") && file_exists("users/".$user."/projects/".$project."/minimized.txt")) {
+					echo "\t\t\t<input type='button' value='Copy project to default user' onclick=\"key = '$key'; $.ajax({url:'admin.copyProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin1.php');\">\n";
+				}
+				echo "\t\t</td><td>\n";
+				$nameFile          = "users/".$user."/projects/".$project."name.txt";
+				$projectNameString = file_get_contents($nameFile);
+				$projectNameString = trim($projectNameString);
+				echo "<font size='2'>".$projectNameString."</font>";
+
+				echo "\t\t</td></tr>\n";
+			}
+			echo "</table>";
 		}
-		echo "</table>";
 	}
 	?>
 </td><td width="35%" valign="top">

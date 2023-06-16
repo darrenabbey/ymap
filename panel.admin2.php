@@ -5,15 +5,24 @@
 	require_once 'sharedFunctions.php';
 	require_once 'POST_validation.php';
 
-	// check if admin is logged in.
 	if(isset($_SESSION['logged_on'])) {
+		// check if super is logged in.
 		$super_user_flag_file = "users/".$user."/super.txt";
 		if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
+			$super_logged_in = "true";
+		} else {
+			$super_logged_in = "false";
+		}
+
+		// check if admin is logged in.
+		$admin_user_flag_file = "users/".$user."/admin.txt";
+		if (file_exists($admin_user_flag_file)) {  // Super-user privilidges.
 			$admin_logged_in = "true";
 		} else {
 			$admin_logged_in = "false";
 		}
 	} else {
+		$super_logged_in = "false";
 		$admin_logged_in = "false";
 	}
 ?>
@@ -24,13 +33,15 @@
 	}
 </style>
 <?php
-	if ($admin_logged_in == "true") {
-		echo "<font size='4'><b>Admin review of user installed datasets:<b></font><br>";
+	if ($super_logged_in == "true") {
+		echo "<font size='4'><b>Super review of user installed datasets:<b></font><br>";
+	} else if ($admin_logged_in == "true") {
+		echo "<font size='4'><b>No admin user functions at this time.<b></font><br>";
 	} else {
 		echo "<font size='4'><br>Your account has not been provided with administrator priviledges.</b></font><br>";
 	}
 
-	if (($admin_logged_in == "true") and isset($_SESSION['logged_on'])) {
+	if (($super_logged_in == "true") and isset($_SESSION['logged_on'])) {
 		// get list of users:
 		$userDir      = "users/";
 		$userFolders  = array_diff(glob($userDir."*\/"), array('..', '.', 'users/default/'));
@@ -90,11 +101,11 @@
 
 <table width="100%" cellpadding="0"><tr>
 <td width="75%" valign="top">
-	<?php
+<?php
 	// .---------------.
 	// | User projects |
 	// '---------------'
-	if (($admin_logged_in == "true") and isset($_SESSION['logged_on'])) {
+	if (($super_logged_in == "true") and isset($_SESSION['logged_on'])) {
 		$userProjectCount = 0;
 		$projectsDir      = "users/".$admin_as_user."/projects/";
 		$projectFolders   = array_diff(glob($projectsDir."*"), array('..', '.'));
@@ -296,7 +307,7 @@
 		}
 		return $genome_name;
 	}
-	?>
+?>
 </td></tr></table>
 
 
@@ -304,26 +315,26 @@
 var userProjectCount   = "<?php echo $userProjectCount; ?>";
 var systemProjectCount = "<?php echo $systemProjectCount; ?>";
 <?php
-//.--------------------------------------------------------------------.
-//| javascript to load "project.working.php" for each working project. |
-//'--------------------------------------------------------------------'
-if (isset($_SESSION['logged_on'])) {
-	foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.
-		$key      = $key_ + $userProjectCount_starting;
-		$project  = $projectFolders[$key];
-		$handle   = fopen("users/".$admin_as_user."/projects/".$project."/dataFormat.txt", "r");
-		$dataFormat = fgets($handle);
-		fclose($handle);
-		echo "\n// javascript for project #".$key."_admin2, '".$project."'\n";
-		echo "var el_p            = document.getElementById('frameContainer.p2_".$key."_admin2');\n";
-		echo "el_p.innerHTML      = '<iframe id=\"p_".$key."_admin2\" name=\"p_".$key."_admin2\" class=\"upload\" style=\"height:38px; border:0px;\" ";
-		echo     "src=\"project.admin_working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
-		echo "var p_iframe        = document.getElementById('p_".$key."_admin2');\n";
-		echo "var p_js            = p_iframe.contentWindow;\n";
-		echo "p_js.user           = \"".$admin_as_user."\";\n";
-		echo "p_js.project        = \"".$project."\";\n";
-		echo "p_js.key            = \"p_".$key."_admin2\";\n";
+	//.--------------------------------------------------------------------.
+	//| javascript to load "project.working.php" for each working project. |
+	//'--------------------------------------------------------------------'
+	if (($super_logged_in == "true") and isset($_SESSION['logged_on'])) {
+		foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.
+			$key      = $key_ + $userProjectCount_starting;
+			$project  = $projectFolders[$key];
+			$handle   = fopen("users/".$admin_as_user."/projects/".$project."/dataFormat.txt", "r");
+			$dataFormat = fgets($handle);
+			fclose($handle);
+			echo "\n// javascript for project #".$key."_admin2, '".$project."'\n";
+			echo "var el_p            = document.getElementById('frameContainer.p2_".$key."_admin2');\n";
+			echo "el_p.innerHTML      = '<iframe id=\"p_".$key."_admin2\" name=\"p_".$key."_admin2\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+			echo     "src=\"project.admin_working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
+			echo "var p_iframe        = document.getElementById('p_".$key."_admin2');\n";
+			echo "var p_js            = p_iframe.contentWindow;\n";
+			echo "p_js.user           = \"".$admin_as_user."\";\n";
+			echo "p_js.project        = \"".$project."\";\n";
+			echo "p_js.key            = \"p_".$key."_admin2\";\n";
+		}
 	}
-}
 ?>
 </script>

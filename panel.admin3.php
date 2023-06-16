@@ -5,15 +5,24 @@
 	require_once 'sharedFunctions.php';
 	require_once 'POST_validation.php';
 
-	// check if admin is logged in.
 	if(isset($_SESSION['logged_on'])) {
+		// check if super is logged in.
 		$super_user_flag_file = "users/".$user."/super.txt";
 		if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
+			$super_logged_in = "true";
+		} else {
+			$super_logged_in = "false";
+		}
+
+		// check if admin is logged in.
+		$admin_user_flag_file = "users/".$user."/admin.txt";
+		if (file_exists($admin_user_flag_file)) {  // Super-user privilidges.
 			$admin_logged_in = "true";
 		} else {
 			$admin_logged_in = "false";
 		}
 	} else {
+		$super_logged_in = "false";
 		$admin_logged_in = "false";
 	}
 ?>
@@ -24,13 +33,15 @@
 	}
 </style>
 <?php
-	if ($admin_logged_in == "true") {
-		echo "<font size='4'><b>Admin review of working/stalled user installed datasets:<b></font><br>";
+	if ($super_logged_in == "true") {
+		echo "<font size='4'><b>Super review of user installed datasets:<b></font><br>";
+	} else if ($admin_logged_in == "true") {
+		echo "<font size='4'><b>No admin user functions at this time.<b></font><br>";
 	} else {
 		echo "<font size='4'><br>Your account has not been provided with administrator priviledges.</b></font><br>";
 	}
 
-	if (($admin_logged_in == "true") and isset($_SESSION['logged_on'])) {
+	if (($super_logged_in == "true") and isset($_SESSION['logged_on'])) {
 		// get list of users:
 		$userDir      = "users/";
 		$userFolders  = array_diff(glob($userDir."*\/"), array('..', '.', 'users/default/'));
@@ -56,15 +67,22 @@
 	// .---------------.
 	// | User projects |
 	// '---------------'
-	if (($admin_logged_in == "true") and isset($_SESSION['logged_on'])) {
+	if (($super_logged_in == "true") and isset($_SESSION['logged_on'])) {
 		$userProjectCount = 0;
 		$sumKey = 0;
 		foreach($userFolders as $userKey=>$admin_as_user) {
 			// Cleanup admin_as_user names;
 			$admin_as_user = substr($admin_as_user, 0, -1);
 
-			// Only show projects from user/admin accounts not of the current logged in admin.
-			if ($admin_as_user != $user) {
+			// Only show projects from user accounts, not admin accounts.
+			$adminFile = "users/".$admin_as_user."/admin.txt";
+			if (file_exists($adminFile)) {
+				$adminUser = true;
+			} else {
+				$adminUser = false;
+			}
+
+			if ($adminUser == false) {
 				// Get list of projects per user.
 				$projectsDir      = "users/".$admin_as_user."/projects/";
 				$projectFolders   = array_diff(glob($projectsDir."*"), array('..', '.'));
