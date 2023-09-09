@@ -18,7 +18,8 @@
 	// The following constants stem from the fact that Ymap display up to 50 chromosomes and that php supports up to around 1000 variables that can be passed
 	// between forms and in $_SESSION variables which limits the genome form to up to 300 entries
 	$MAX_CHROM_SELECTION = 50;  // the maximum number of chromosomes that can be chosen for drawing
-	$MAX_CHROM_POOL      = 300; // the maximum number of chromosomes that will be displayed to the user to choose from the 50 to draw
+	$MAX_CHROM_POOL      = 200; // the maximum number of chromosomes that will be displayed to the user to choose from the 50 to draw.
+				    // Too high a maximum leads to scripts_genomes/genome.install_2.php failing to run when a reference with many contigs is loaded.
 
 	// Pepper string for password security.
 	include(".pepper.php");
