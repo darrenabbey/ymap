@@ -86,10 +86,10 @@
 			</body>
 			</html>
 			<?php
-		} else if (file_exists($dirFigureBase."error.txt")) {
+		} else if (file_exists($genome_dir."error.txt")) {
 			echo "\n<!-- error file found.\n--!>";
 			// Load error.txt from project folder.
-			$errorFile = $dirFigureBase."error.txt";
+			$errorFile = $genome_dir."error.txt";
 			$error     = trim(file_get_contents($errorFile));
 			$errorLineCount = substr_count($error,"<br>")+1;
 			?>
