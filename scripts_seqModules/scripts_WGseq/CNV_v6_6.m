@@ -781,8 +781,8 @@ for chr_to_draw  = 1:length(chr_order)
 		bottom = chr_posY(chr);
 		width  = chr_width(chr);
 		height = chr_height(chr);
-		subplot('Position',[left bottom width height]);
 		fprintf(['chr' num2str(chr) ': figposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\t']);
+		subplot('Position',[left bottom width height]);
 		hold on;
 
 		% reverse order of color bins if chromosome is indicated as reversed in figure_definitions.txt file.
