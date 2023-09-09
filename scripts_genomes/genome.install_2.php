@@ -13,13 +13,16 @@
 
 	// Load user string from session.
 	$user   = $_SESSION['user'];
-
-
 	$key    = sanitize_POST("key");
 
 	// Load strings from session.
 	$genome     = $_SESSION['genome_'.$key];
 	$chr_count  = $_SESSION['chr_count_'.$key];
+
+	// Prevent over-limit errors.
+	if ($chr_count > $MAX_CHROM_POOL) {
+		$chr_count = $MAX_CHROM_POOL;
+	}
 
 	$genome_dir = "../users/".$user."/genomes/".$genome;
 
@@ -151,12 +154,7 @@
 	fwrite($logOutput, "\tGenerating 'figure_definitions.txt' file.\n");
 	$max_length       = max($chr_lengths);
 	$outputName       = $genome_dir."/figure_definitions.txt";
-	if (file_exists($outputName)) {
-		$fileContents = file_get_contents($outputName);
-		unlink($outputName);
-		$output       = fopen($outputName, 'w');
-		fwrite($output, $fileContents);
-	} else {
+	if (!file_exists($outputName)) {
 		$output       = fopen($outputName, 'w');
 		fwrite($output, "# Chr\tUse\tLabel\tName\tposX\tposY\twidth\theight\tfigOrder\tfigReversed\n");
 		if ($chr_count != 0) {
@@ -165,7 +163,7 @@
 			$fig_height = 0.5*(0.97/($chr_count_used + 0.5));
 			for ($chr=0; $chr<$chr_count; $chr += 1) {
 				$chrID = $chr + 1;
-				if ($chr_draws[$chr] == 1) {// if this chromosome should be drawn incrementing
+				if ($chr_draws[$chr] == 1) { // if this chromosome should be drawn incrementing
 					$usedChrID += 1;
 				}
 				// standard chr cartoons placed at 0.15 from left side.
@@ -186,8 +184,8 @@
 				}
 			}
 		}
+		fclose($output);
 	}
-	fclose($output);
 
 // Generate "genome.bed" :
 	fwrite($logOutput, "\tGenerating 'genome.bed' file.\n");
