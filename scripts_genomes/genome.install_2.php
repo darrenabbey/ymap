@@ -152,7 +152,16 @@
 
 // Generate 'figure_definitions.txt' for defining arrangement of standard figure.
 	fwrite($logOutput, "\tGenerating 'figure_definitions.txt' file.\n");
-	$max_length       = max($chr_lengths);
+	// Determine max chromosome length among displayed chromosomes.
+	$max_length = 0;
+	for ($chr=0; $chr<$chr_count; $chr += 1) {
+		if ($chr_draws[$chr] == 1) {
+			if ($chr_lengths[$chr] > $max_length) {
+				$max_length = $chr_lengths[$chr];
+			}
+		}
+	}
+
 	$outputName       = $genome_dir."/figure_definitions.txt";
 	if (!file_exists($outputName)) {
 		$output       = fopen($outputName, 'w');
