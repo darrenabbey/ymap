@@ -189,7 +189,7 @@
 				if ($chr_draws[$chr] == 1) {
 					fwrite($output, $chrID."\t1\t".$chr_shortNames[$chr]."\t".$chr_names[$chr]."\t".$fig_posX."\t".$fig_posY."\t".$fig_width."\t".$fig_height."\t".$fig_order."\t".$fig_reversed."\n");
 				} else {
-					fwrite($output, "0\t0\t".$chr_shortNames[$chr]."\t".$chr_names[$chr]."\t0\t0\t0\t0\t0\t0\n");
+					fwrite($output, $chrID."\t0\t".$chr_shortNames[$chr]."\t".$chr_names[$chr]."\t0\t0\t0\t0\t0\t0\n");
 				}
 			}
 		}

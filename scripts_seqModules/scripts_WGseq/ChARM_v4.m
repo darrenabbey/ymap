@@ -75,10 +75,12 @@ if (length(annotations) > 0)
 end;
 for i = 1:length(figure_details)
     if (figure_details(i).chr == 0)
-        key_posX   = figure_details(i).posX;
-        key_posY   = figure_details(i).posY;
-        key_width  = figure_details(i).width;
-        key_height = figure_details(i).height;
+	if (strcmp(figure_details(i).label,'Key') == 1)
+	    key_posX   = figure_details(i).posX;
+	    key_posY   = figure_details(i).posY;
+	    key_width  = figure_details(i).width;
+	    key_height = figure_details(i).height;
+	end;
     else
         chr_id         (figure_details(i).chr) = figure_details(i).chr;
         chr_label      {figure_details(i).chr} = figure_details(i).label;
