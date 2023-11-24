@@ -104,7 +104,7 @@ end;
 % Sanitize user input of euploid state base for species.
 ploidyBase = round(str2num(ploidyBaseString));
 if (ploidyBase > 4);   ploidyBase = 4;   end;
-if (ploidyBase < 1);   ploidyBase = 1;   end; 
+if (ploidyBase < 1);   ploidyBase = 1;   end;
 fprintf(['\nEuploid base = "' num2str(ploidyBase) '"\n']);
 
 % basic plot parameters not defined per genome.
