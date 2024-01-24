@@ -100,6 +100,12 @@ for chr = 1:num_chrs
 
 			%% Calculate Gaussian fitting details for segment.
 			segment_copyNum            = round(chrCopyNum{chr}(segment));  % copy number estimate of this segment.
+
+			% DRAGON
+			%if (segment_copyNum == 0)
+			%	segment_copyNum = 1;
+			%end;
+
 			segment_chrBreaks          = chr_breaks{chr}(segment);         % break points of this segment.
 			segment_smoothedHistogram  = smoothed;                         % whole chromosome allelic ratio histogram smoothed.
 
@@ -107,10 +113,11 @@ for chr = 1:num_chrs
 			saveName   = ['allelic_ratios.chr_' num2str(chr) '.seg_' num2str(segment)];
 			[peaks,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(workingDir,saveName, chr,segment, segment_copyNum,segment_smoothedHistogram, false);
 
-			fprintf(['^^^ copyNum             = ' num2str(segment_copyNum    ) '\n']);
-			fprintf(['^^^ peaks               = ' num2str(peaks              ) '\n']);
-			fprintf(['^^^ mostLikelyGaussians = ' num2str(mostLikelyGaussians) '\n']);
-			fprintf(['^^^ actual_cutoffs      = ' num2str(actual_cutoffs     ) '\n']);
+			fprintf(['^^^ copyNum             = ' num2str(segment_copyNum          ) '\n']);
+			fprintf(['^^^ copyNum_raw         = ' num2str(chrCopyNum{chr}(segment) ) '\n']);
+			fprintf(['^^^ peaks               = ' num2str(peaks                    ) '\n']);
+			fprintf(['^^^ mostLikelyGaussians = ' num2str(mostLikelyGaussians      ) '\n']);
+			fprintf(['^^^ actual_cutoffs      = ' num2str(actual_cutoffs           ) '\n']);
 
 			chrSegment_peaks{              chr}{segment} = peaks;
 			chrSegment_mostLikelyGaussians{chr}{segment} = mostLikelyGaussians;

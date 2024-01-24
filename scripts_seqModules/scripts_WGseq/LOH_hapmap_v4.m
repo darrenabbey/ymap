@@ -230,6 +230,20 @@ fprintf('\t|\tLoading "Common_CNV" data file, to be used in copy number estimati
 load([projectDir 'Common_CNV.mat']);   % 'CNVplot2', 'genome_CNV'
 [chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use);
 
+fprintf('*** dragon 2\n');
+for chr = 1:length(chr_breaks)
+	for segment = 1:length(chrCopyNum{chr})
+		fprintf(['*** chr_breaks{' num2str(chr) '}(' num2str(segment) ')  = ' num2str(chr_breaks{chr}(segment)) '\n']);
+	end;
+end;
+fprintf(['\n']);
+for chr = 1:length(chrCopyNum)
+	for segment = 1:length(chrCopyNum{chr})
+		fprintf(['*** chrCopyNum{' num2str(chr) '}(' num2str(segment) ')  = ' num2str(chrCopyNum{chr}(segment)) '\n']);
+	end;
+end;
+
+
 
 %% =========================================================================================
 % Test adjacent segments for no change in copy number estimate.
@@ -237,6 +251,7 @@ load([projectDir 'Common_CNV.mat']);   % 'CNVplot2', 'genome_CNV'
 % Adjacent pairs of segments with the same copy number will be fused into a single segment.
 % Segments with a <= zero copy number will be fused to an adjacent segment.
 %-------------------------------------------------------------------------------------------
+fprintf(['\n### Examining if adjacent segments have same copy number estimate => fuse if so.\n']);
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
 		if (length(chrCopyNum{chr}) > 1)  % more than one segment, so lets examine if adjacent segments have different copyNums.
@@ -246,6 +261,7 @@ for chr = 1:num_chrs
 			chr_breaks_new{chr}    = [];
 			chrCopyNum_new{chr}    = [];
 			chr_breaks_new{chr}(1) = 0.0;
+
 			fprintf(['\nlength(chrCopyNum{chr}) = ' num2str(length(chrCopyNum{chr})) '\n']);
 			if (length(chrCopyNum{chr}) > 0)
 				fprintf(['chrCopyNum{chr}(1) = ' num2str(chrCopyNum{chr}(1)) '\n']);
@@ -264,15 +280,22 @@ for chr = 1:num_chrs
 			% add break representing right end of chromosome.
 			breakCount_new = breakCount_new+1;
 			chr_breaks_new{chr}(breakCount_new) = 1.0;
+
+			% output status to log file.
 			fprintf(['@@@ chr = ' num2str(chr) '\n']);
 			fprintf(['@@@    chr_breaks_old = ' num2str(chr_breaks{chr})     '\n']);
 			fprintf(['@@@    chrCopyNum_old = ' num2str(chrCopyNum{chr})     '\n']);
 			fprintf(['@@@    chr_breaks_new = ' num2str(chr_breaks_new{chr}) '\n']);
 			fprintf(['@@@    chrCopyNum_new = ' num2str(chrCopyNum_new{chr}) '\n']);
+
 			% copy new lists to old.
 			chr_breaks{chr} = chr_breaks_new{chr};
 			chrCopyNum{chr} = [];
 			chrCopyNum{chr} = chrCopyNum_new{chr};
+		else
+			% output status to log file.
+			fprintf(['@@@ chr = ' num2str(chr) '\n']);
+			fprintf(['@@@    Only one CNV segment on this chromosome\n']);
 		end;
 	end;
 end;
@@ -323,14 +346,14 @@ end;
 %		unphased_alleles_string     = '(Z:G/C,Z:A/C)';
 %	end;
 
-fprintf('\t|\tLoad SNP/LOH data.\n');
+fprintf(['\n### Load SNP/LOH data.\n']);
 if (exist([projectDir 'SNP_' SNP_verString '.mat'],'file') == 0)
 	fprintf(['\t|\t\tMAT file "SNP_' SNP_verString '.mat" not found, regenerating.']);
 	datafile       = [projectDir 'preprocessed_SNPs.txt'];
 	data           = fopen(datafile, 'r');
 	count          = 0;
 	old_chr        = 0;
-	gap_string     = '';	
+	gap_string     = '';
 	while not (feof(data))
 		dataLine = fgetl(data);
 		if (length(dataLine) > 0)
@@ -346,8 +369,7 @@ if (exist([projectDir 'SNP_' SNP_verString '.mat'],'file') == 0)
 				unphased_coordinates_string = lineVariables{7}{1};
 				phased_alleles_string = lineVariables{8}{1};
 				unphased_alleles_string = lineVariables{9}{1};
-				
-				
+
 				% format = simple, one number per column.
 				chr_length                  = ceil(chr_size(chr_num)/bases_per_bin);
 				chr_bin                     = ceil(fragment_start/bases_per_bin);
@@ -488,7 +510,7 @@ end;
 %        chr_SNPdata{chr,6}{chr_bin} = unphased SNP allele strings.
 %-------------------------------------------------------------------------------------------
 
-fprintf('\t|\tCalculate allelic ratio cutoffs using Gaussian fitting.\n');
+fprintf('\n\n### Calculate allelic ratio cutoffs using Gaussian fitting.\n');
 temp_holding = chr_SNPdata;
 calculate_allelic_ratio_cutoffs;
 chr_SNPdata = temp_holding;
@@ -526,7 +548,7 @@ for chr = 1:num_chrs
 					end;
 					baseCall                              = allele_string(1);
 					homologA                              = allele_string(3);
-					homologB                              = allele_string(5);					
+					homologB                              = allele_string(5);
 
 					% identify the segment containing the SNP.
 					segmentID                             = 0;

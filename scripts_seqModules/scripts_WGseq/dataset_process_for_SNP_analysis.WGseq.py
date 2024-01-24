@@ -251,19 +251,20 @@ print('### parentDatafile = ' + parentDatafile)
 data         = open(parentDatafile,'r')
 searchTarget = open(childDatafile,'r')
 childLine    = ''
+empty_line_count = 0;
 
 # Process hapmap 'SNPdata_parent.txt' file, line by line.
 for line in data:
 	#===============================================================================================================
 	# Process the line from the parent 'SNPdata_parent.txt' line, describing one heterozgyous locus.
-	#--------------------------------------------------------------------------------------------------------------- 
+	#---------------------------------------------------------------------------------------------------------------
 	# example lines from file:
 	# if (runMode == 'LOH'):
 	#	chromosome                   coord   allele1   allele2
 	#	Ca21chr1_C_albicans_SC5314   3706    T         C
 	# if (runMode == 'hapmap'):
-	#       chromosome                   coord   allele1   allele2   phasingData  phasingData
-	#       Ca21chr1_C_albicans_SC5314   3706    T         C         1            11
+	#       chromosome                   coord   allele1   allele2   phasingData  [phasingData]
+	#       Ca21chr1_C_albicans_SC5314   3706    T         C         1            [11]
 	if line[0] != "#":
 		count += 1
 		parentLine    = line.strip()
@@ -335,156 +336,176 @@ for line in data:
 				# If current coordinate is at/after end of a fragment, update fragment_found to 0.
 				if P_position >= fragments[current_fragment-1][2]:
 					fragment_found = 0
+
 			#===============================================================================================================
-			# Find line in dataset corresponding to SNP from hapmap dataset 'SNPdata_parent.txt' file.
-			#--------------------------------------------------------------------------------------------------------------- 
+			# Find line in child dataset corresponding to SNP from hapmap dataset 'SNPdata_parent.txt' file.
+			#---------------------------------------------------------------------------------------------------------------
 			searchString = P_chr_name+"\t"+str(P_position)
 			result = ""
 			# Fast line search, relies upon presorted search target file.
-			if len(childLine) == 0:
-				childLine   = searchTarget.readline()
-			childLine_parts = childLine.split('\t')
-			C_chr_name      = childLine_parts[0]
-			C_position      = int(childLine_parts[1])
-			C_chr           = 0
-			for x in range(0,chrCount):
-				if (chrNums[x] != 0):
-					if chrName[x] == C_chr_name:
-						C_chr = x+1
-			#print("1|P:C "+str(P_chr)+":"+str(C_chr)+" "+str(P_position)+":"+str(C_position)+"|")
-			while P_chr > C_chr:    # WORKING: this section jumps through the child lines of chromosomes with no parent lines.
-				childLine       = searchTarget.readline()
-				if len(childLine) > 0:
-					childLine       = childLine.strip()
-					childLine_parts = childLine.split('\t')
-					C_chr_name      = childLine_parts[0]
-					C_position      = int(childLine_parts[1])
-					for x in range(0,chrCount):
-						if (chrNums[x] != 0):
-							if chrName[x] == C_chr_name:
-								C_chr = x+1
-				else:
-					C_chr = P_chr
-			#print("2|P:C "+str(P_chr)+":"+str(C_chr)+" "+str(P_position)+":"+str(C_position)+"|")
-			while P_chr == C_chr and P_position > C_position:   # WORKING: this section jumps through the child lines until the correct chromosome and coordinate is reached.
-				childLine       = searchTarget.readline()
-				if len(childLine) > 0:
-					childLine       = childLine.strip()
-					childLine_parts = childLine.split('\t')
-					C_chr_name      = childLine_parts[0]
-					C_position      = int(childLine_parts[1])
-					for x in range(0,chrCount):
-						if (chrNums[x] != 0):
-							if chrName[x] == C_chr_name:
-								C_chr = x+1
-				else:
-					C_position = P_position
-			#print("3|P:C "+str(P_chr)+":"+str(C_chr)+" "+str(P_position)+":"+str(C_position)+"|")
-			if P_chr > C_chr:
-				result          = ""
-			elif P_chr == C_chr and P_position > C_position:
-				result          = ""
-			elif P_chr == C_chr and P_position < C_position:
-				result          = ""
-			elif P_chr == C_chr and P_position == C_position:
-				result          = childLine
-			#print("4|"+childLine+"|")
-			C_ratio        = 0.0
-			if result == "":
-				# locus is not found in dataset, no contribution to SNP interpretations.
-				print('# locus not found in dataset.')
+			# childLine is initialized as ''; this loads the first line from 'SNP_CNV_v1.txt' if needed.
+			# DRAGON
+			old_childLine = childLine;
+			if len(childLine) == 0:  # Triggered at first and last line of input file processing. Last use is error condition.
+				# print('$$$1 '+ childLine);
+				childLine = searchTarget.readline()
+				empty_line_count += 1;
+			# If line read from 'SNP_CNV_v1.txt' is longer than zero bytes, process the line.
+			# print('|'+childLine)  # outputs to 'preprocessed_SNPs.txt'.
+
+			if (empty_line_count < 2):   # Prevents line processing code from running when blank line at end of file is processed.
+				childLine_parts = childLine.split('\t')
+				#if len(childLine_parts) == 1:
+				#print('$$$ '+ childLine);
+
+				C_chr_name      = childLine_parts[0]
+				C_position      = int(childLine_parts[1])
+				# This script outputs "preprocessed_SNPs.txt" file, which tallys up number of SNP loci within each genome block.
+				#	C_chr_name			C_position	sum	allele	#A	#T	#G	#C
+				#	Ca21chrR_C_albicans_SC5314	1971663		10	A	10	0	0	0
+				# Simulated illumina reads have no SNPs at all.
+				# searchTarget  = 'SNP_CNV_v1.txt'
+				C_chr           = 0
+				for x in range(0,chrCount):
+					if (chrNums[x] != 0):
+						if chrName[x] == C_chr_name:
+							C_chr = x+1
+
+				#print("1|P:C "+str(P_chr)+":"+str(C_chr)+" "+str(P_position)+":"+str(C_position)+"|")
+				while P_chr > C_chr:    # WORKING: this section jumps through the child lines of chromosomes with no parent lines.
+					childLine = searchTarget.readline()
+					if len(childLine) > 0:
+						childLine       = childLine.strip()
+						childLine_parts = childLine.split('\t')
+						C_chr_name      = childLine_parts[0]
+						C_position      = int(childLine_parts[1])
+						for x in range(0,chrCount):
+							if (chrNums[x] != 0):
+								if chrName[x] == C_chr_name:
+									C_chr = x+1
+					else:
+						C_chr = P_chr
+
+				#print("2|P:C "+str(P_chr)+":"+str(C_chr)+" "+str(P_position)+":"+str(C_position)+"|")
+				while P_chr == C_chr and P_position > C_position:   # WORKING: this section jumps through the child lines until the correct chromosome and coordinate is reached.
+					childLine = searchTarget.readline()
+					if len(childLine) > 0:
+						childLine       = childLine.strip()
+						childLine_parts = childLine.split('\t')
+						C_chr_name      = childLine_parts[0]
+						C_position      = int(childLine_parts[1])
+						for x in range(0,chrCount):
+							if (chrNums[x] != 0):
+								if chrName[x] == C_chr_name:
+									C_chr = x+1
+					else:
+						C_position = P_position
+
+				#print("3|P:C "+str(P_chr)+":"+str(C_chr)+" "+str(P_position)+":"+str(C_position)+"|")
+				if P_chr > C_chr:
+					result = ""
+				elif P_chr == C_chr and P_position > C_position:
+					result = ""
+				elif P_chr == C_chr and P_position < C_position:
+					result = ""
+				elif P_chr == C_chr and P_position == C_position:
+					result = childLine
+				#print("4|"+childLine+"|")
 				C_ratio        = 0.0
-				C_valid        = 0
-			else:
-				C_chr_name     = childLine_parts[0]   # chr_name_string
-				C_position     = childLine_parts[1]   # bp_coordinate
-				C_countTot     = childLine_parts[2]   # total_reads
-				C_refBase      = childLine_parts[3]   # reference_base
-				C_countA       = childLine_parts[4]   # A reads
-				C_countT       = childLine_parts[5]   # T reads
-				C_countG       = childLine_parts[6]   # G reads
-				C_countC       = childLine_parts[7]   # C reads
-				C_counts       = [int(float(C_countA)), int(float(C_countT)), int(float(C_countG)), int(float(C_countC))]
-				# Generate read count data structure.
-				alleleData     = [(int(float(C_countA)), 'A'), (int(float(C_countT)), 'T'), (int(float(C_countG)), 'G'), (int(float(C_countC)), 'C')];
-				# Sort alleles by read count, largest last.				
-				sortedAlleles  = sorted(alleleData, key=lambda alleleDatum: alleleDatum[0]);
-				C_maxCount     = sortedAlleles[3][0];
-				C_maxAllele    = sortedAlleles[3][1];
-				if sum(C_counts) == 0:
-					C_ratio                 = 0.0;
-					C_valid                 = 0;
+				if result == "":
+					# locus is not found in dataset, no contribution to SNP interpretations.
+					# print('# locus not found in dataset.')
+					C_ratio        = 0.0
+					C_valid        = 0
 				else:
-					C_ratio                 = float(C_maxCount)/float(sum(C_counts));
-					if phaseCall == 1:
-						temp            = P_allele1;
-						P_allele1       = P_allele2;
-						P_allele2       = temp;
-						if C_maxAllele == P_allele1:
-							C_ratio = 1-C_ratio;
-					elif phaseCall == 0:
-						if C_maxAllele == P_allele1:
-							C_ratio = 1-C_ratio;
+					C_chr_name     = childLine_parts[0]   # chr_name_string
+					C_position     = childLine_parts[1]   # bp_coordinate
+					C_countTot     = childLine_parts[2]   # total_reads
+					C_refBase      = childLine_parts[3]   # reference_base
+					C_countA       = childLine_parts[4]   # A reads
+					C_countT       = childLine_parts[5]   # T reads
+					C_countG       = childLine_parts[6]   # G reads
+					C_countC       = childLine_parts[7]   # C reads
+					C_counts       = [int(float(C_countA)), int(float(C_countT)), int(float(C_countG)), int(float(C_countC))]
+					# Generate read count data structure.
+					alleleData     = [(int(float(C_countA)), 'A'), (int(float(C_countT)), 'T'), (int(float(C_countG)), 'G'), (int(float(C_countC)), 'C')];
+					# Sort alleles by read count, largest last.
+					sortedAlleles  = sorted(alleleData, key=lambda alleleDatum: alleleDatum[0]);
+					C_maxCount     = sortedAlleles[3][0];
+					C_maxAllele    = sortedAlleles[3][1];
+					if sum(C_counts) == 0:
+						C_ratio                 = 0.0;
+						C_valid                 = 0;
 					else:
-						C_maxAllele = 'Z';
-					C_valid                 = 1;
-				allele_string                   = C_maxAllele + ':' + P_allele1 + '/' + P_allele2;
-
-			C_chr = 0;
-			for x in range(0,chrCount):
-				if (chrNums[x] != 0):
-					if chrName[x] == P_chr_name:
-						C_chr = x+1;
-
-			#===============================================================================================================
-			# Add allelic ratio data to standard-bin fragment data
-			#---------------------------------------------------------------------------------------------------------------
-			if fragment_found == 1:
-				if  C_valid == 1:
-					# standard-bin fragments structure:   'current_fragment-1'
-					#   fragments    = [chr_num,bp_start,bp_end,phasedData,unphasedData,phasedCoordinate,unphasedCoordinate]
-					if phaseCall == 0 or phaseCall == 1:
-						# correctly phased data, or incorrectly phased data.
-						#    the corrected C_ratio is calculated in the above section.
-						fragments[current_fragment-1][3] = fragments[current_fragment-1][3] + str(C_ratio)    + ','
-						fragments[current_fragment-1][5] = fragments[current_fragment-1][5] + str(C_position) + ','
-						fragments[current_fragment-1][7] = fragments[current_fragment-1][7] + allele_string   + ','
-					else:
-						# unphased data.
-						fragments[current_fragment-1][4] = fragments[current_fragment-1][4] + str(C_ratio)    + ','
-						fragments[current_fragment-1][6] = fragments[current_fragment-1][6] + str(C_position) + ','
-						fragments[current_fragment-1][8] = fragments[current_fragment-1][8] + allele_string   + ','
-			#print("|"+str(current_fragment)+" "+str(C_ratio))
-
-			#===============================================================================================================
-			# Output log file status updates.
-			#---------------------------------------------------------------------------------------------------------------
-			if old_chr != P_chr:
-				print('### chr change : ' + str(old_chr) + ' -> ' + str(P_chr))
-				with open(logName, "a") as myfile:
-					myfile.write("\n\t\t|\t    " + str(old_chr) + " -> " + str(P_chr) + " = " + P_chr_name + "\n")
-					myfile.write(  "\t\t|\t1........01........01........01........01........01........01........01........01........01........0")
-			# Reset for each new chromosome examined.
-			if old_chr != P_chr:
-				if log_offset != 0:
-					log_offset_string = " "*(log_offset%100)
-					with open(logName, "a") as myfile:
-						myfile.write("\n\t\t|\t" + log_offset_string)
-			# If (fragment_found == 1), add current bp coordinate data to fragment data.
-			if fragment_found == 1:
-				# display status updates to log file.
-				if last_fragment != current_fragment:
-					log_count  += 1
-					log_offset += 1
-					if ((log_count-1)%100) == 0:
-						if (log_count-1) == 0:
-							with open(logName, "a") as myfile:
-								myfile.write("\n\t\t|\t")
+						C_ratio                 = float(C_maxCount)/float(sum(C_counts));
+						if phaseCall == 1:
+							temp            = P_allele1;
+							P_allele1       = P_allele2;
+							P_allele2       = temp;
+							if C_maxAllele == P_allele1:
+								C_ratio = 1-C_ratio;
+						elif phaseCall == 0:
+							if C_maxAllele == P_allele1:
+								C_ratio = 1-C_ratio;
 						else:
-							with open(logName, "a") as myfile:
-								myfile.write(" " + str(log_count-1) + "\n\t\t|\t")
+							C_maxAllele = 'Z';
+						C_valid                 = 1;
+					allele_string                   = C_maxAllele + ':' + P_allele1 + '/' + P_allele2;
+				C_chr = 0;
+				for x in range(0,chrCount):
+					if (chrNums[x] != 0):
+						if chrName[x] == P_chr_name:
+							C_chr = x+1;
+
+				#===============================================================================================================
+				# Add allelic ratio data to standard-bin fragment data
+				#---------------------------------------------------------------------------------------------------------------
+				if fragment_found == 1:
+					if  C_valid == 1:
+						# standard-bin fragments structure:   'current_fragment-1'
+						#   fragments    = [chr_num,bp_start,bp_end,phasedData,unphasedData,phasedCoordinate,unphasedCoordinate]
+						if phaseCall == 0 or phaseCall == 1:
+							# correctly phased data, or incorrectly phased data.
+							#    the corrected C_ratio is calculated in the above section.
+							fragments[current_fragment-1][3] = fragments[current_fragment-1][3] + str(C_ratio)    + ','
+							fragments[current_fragment-1][5] = fragments[current_fragment-1][5] + str(C_position) + ','
+							fragments[current_fragment-1][7] = fragments[current_fragment-1][7] + allele_string   + ','
+						else:
+							# unphased data.
+							fragments[current_fragment-1][4] = fragments[current_fragment-1][4] + str(C_ratio)    + ','
+							fragments[current_fragment-1][6] = fragments[current_fragment-1][6] + str(C_position) + ','
+							fragments[current_fragment-1][8] = fragments[current_fragment-1][8] + allele_string   + ','
+				#print("|"+str(current_fragment)+" "+str(C_ratio))
+
+				#===============================================================================================================
+				# Output log file status updates.
+				#---------------------------------------------------------------------------------------------------------------
+				if old_chr != P_chr:
+					print('### chr change : ' + str(old_chr) + ' -> ' + str(P_chr))
 					with open(logName, "a") as myfile:
-						myfile.write(".")
+						myfile.write("\n\t\t|\t    " + str(old_chr) + " -> " + str(P_chr) + " = " + P_chr_name + "\n")
+						myfile.write(  "\t\t|\t1........01........01........01........01........01........01........01........01........01........0")
+				# Reset for each new chromosome examined.
+				if old_chr != P_chr:
+					if log_offset != 0:
+						log_offset_string = " "*(log_offset%100)
+						with open(logName, "a") as myfile:
+							myfile.write("\n\t\t|\t" + log_offset_string)
+				# If (fragment_found == 1), add current bp coordinate data to fragment data.
+				if fragment_found == 1:
+					# display status updates to log file.
+					if last_fragment != current_fragment:
+						log_count  += 1
+						log_offset += 1
+						if ((log_count-1)%100) == 0:
+							if (log_count-1) == 0:
+								with open(logName, "a") as myfile:
+									myfile.write("\n\t\t|\t")
+							else:
+								with open(logName, "a") as myfile:
+									myfile.write(" " + str(log_count-1) + "\n\t\t|\t")
+						with open(logName, "a") as myfile:
+							myfile.write(".")
 
 		#===============================================================================================================
 		# Update tracking variables to current coordinates before moving to next line in 'SNPdata_parent.txt' file.

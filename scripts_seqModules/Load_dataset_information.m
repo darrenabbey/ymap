@@ -9,7 +9,7 @@ if (exist([projectDir 'Common_ChARM.mat'],'file') ~= 0)
     load(dataFile);
 else
     fprintf(['\nThe Common_ChARM.mat file for "' projectDir '" was not found.\n']);
-    fprintf(['Analyze your dataset with "analyze_ChARM.sh" first.\n']);
+    fprintf(['Analyze your dataset with "ChARM_v4.m" first.\n']);
     segmental_aneuploidy = [];
 end;
 

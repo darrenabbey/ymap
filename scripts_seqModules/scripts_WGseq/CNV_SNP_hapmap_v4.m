@@ -226,6 +226,22 @@ end;
 fprintf('\t|\tLoad CNV data.\n');
 load([projectDir 'Common_CNV.mat']);       % 'CNVplot2','genome_CNV'
 [chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use);
+
+fprintf('*** dragon 1\n');
+for chr = 1:length(chr_breaks)
+	for segment = 1:length(chrCopyNum{chr})
+		fprintf(['*** chr_breaks{' num2str(chr) '}(' num2str(segment) ')  = ' num2str(chr_breaks{chr}(segment)) '\n']);
+	end;
+end;
+fprintf(['\n']);
+for chr = 1:length(chrCopyNum)
+	for segment = 1:length(chrCopyNum{chr})
+		fprintf(['*** chrCopyNum{' num2str(chr) '}(' num2str(segment) ')  = ' num2str(chrCopyNum{chr}(segment)) '\n']);
+	end;
+end;
+
+
+
 largestChr = find(chr_width == max(chr_width));
 largestChr = largestChr(1);
 

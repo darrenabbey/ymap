@@ -699,7 +699,7 @@ end;
 %% ====================================================================
 % Save presented CNV data in a file format common across pipeline modules.
 %----------------------------------------------------------------------
-fprintf('\nSaving "Common_CNV" data file.');
+fprintf('\nSaving "Common_CNV" data file.\n');
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
 		CNVplot2{chr} = CNVplot{chr};
@@ -710,7 +710,7 @@ save([projectDir 'Common_CNV.mat'], 'CNVplot2','genome_CNV');
 
 ploidy = str2num(ploidyEstimateString);
 [chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use);
-fprintf('\n');
+
 largestChr = find(chr_width == max(chr_width));
 largestChr = largestChr(1);
 
