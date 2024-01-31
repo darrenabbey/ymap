@@ -255,7 +255,7 @@ if (performGCbiasCorrection)
 		if (length(dataLine) > 0)
 			if (dataLine(1) ~= '#')
 				lines_analyzed = lines_analyzed+1;
-					chr            = str2num(sscanf(dataLine, '%s',1));
+				chr            = str2num(sscanf(dataLine, '%s',1));
 				fragment_start = sscanf(dataLine, '%s',2);  for i = 1:size(sscanf(dataLine,'%s',1),2);      fragment_start(1) = []; end;    fragment_start = str2num(fragment_start);
 				fragment_end   = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1) = [];   end;    fragment_end   = str2num(fragment_end);
 				GCratio        = sscanf(dataLine, '%s',4);  for i = 1:size(sscanf(dataLine,'%s',3),2);      GCratio(1) = [];        end;    GCratio        = str2num(GCratio);
@@ -793,20 +793,21 @@ for chr_to_draw  = 1:length(chr_order)
 		%% cgh plot section.
 		c_ = [0 0 0];
 		fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
-		for i = 1:length(CNVplot2{chr});
-			x_ = [i i i-1 i-1];
-			CNVhistValue = CNVplot2{chr}(i);
+		for chr_bin = 1:length(CNVplot2{chr});   % ceil(chr_size(chr)/bases_per_bin)
+			x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
+			CNVhistValue = CNVplot2{chr}(chr_bin);
 
 			% The CNV-histogram values were normalized to a median value of 1.
 			% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the
 			% median line.
 			startY = maxY/2;
 			if (Low_quality_ploidy_estimate == true)
-				endY = CNVhistValue*ploidy*ploidyAdjust;
+				endY = min(maxY,CNVhistValue*ploidy*ploidyAdjust);
 			else
-				endY = CNVhistValue*ploidy;
+				endY = min(maxY,CNVhistValue*ploidy);
 			end;
 			y_ = [startY endY endY startY];
+
 			% makes a blackbar for each bin.
 			f = fill(x_,y_,c_);
 			set(f,'linestyle','none');

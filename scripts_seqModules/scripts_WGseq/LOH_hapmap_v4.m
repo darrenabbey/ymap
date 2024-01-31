@@ -265,6 +265,14 @@ for chr = 1:num_chrs
 			fprintf(['\nlength(chrCopyNum{chr}) = ' num2str(length(chrCopyNum{chr})) '\n']);
 			if (length(chrCopyNum{chr}) > 0)
 				fprintf(['chrCopyNum{chr}(1) = ' num2str(chrCopyNum{chr}(1)) '\n']);
+
+				% dragon: attempt to clean up poor behavior with zero copy number estimates leading to no SNP/LOH data presented.
+				for segment = 1:(length(chrCopyNum{chr})-1)
+					if (round(chrCopyNum{chr}(segment)) == 0)
+						chrCopyNum{chr}(segment) = 1;
+					end;
+				end;
+
 				chrCopyNum_new{chr}(1) = chrCopyNum{chr}(1);
 				for segment = 1:(length(chrCopyNum{chr})-1)
 					if (round(chrCopyNum{chr}(segment)) == round(chrCopyNum{chr}(segment+1)))
@@ -277,6 +285,7 @@ for chr = 1:num_chrs
 					end;
 				end;
 			end;
+
 			% add break representing right end of chromosome.
 			breakCount_new = breakCount_new+1;
 			chr_breaks_new{chr}(breakCount_new) = 1.0;
@@ -585,7 +594,8 @@ for chr = 1:num_chrs
 						end;
 					end;
 
-					if (segment_copyNum <= 0);                          colorList = colorNoData;
+					if (segment_copyNum <= 0);
+						colorList = colorNoData;
 					elseif (segment_copyNum == 1)
 						% allelic fraction cutoffs: [0.50000] => [A B]
 						if ((baseCall == homologA) || (baseCall == homologB))

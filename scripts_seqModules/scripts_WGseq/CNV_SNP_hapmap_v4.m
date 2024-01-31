@@ -171,6 +171,7 @@ end;
 
 % Process input ploidy.
 ploidy = str2num(ploidyEstimateString);
+
 % Sanitize user input of euploid state.
 ploidyBase = round(str2num(ploidyBaseString));
 if (ploidyBase > 4);   ploidyBase = 4;   end;
@@ -280,6 +281,14 @@ for chr = 1:num_chrs
 			fprintf(['\nlength(chrCopyNum{chr}) = ' num2str(length(chrCopyNum{chr})) '\n']);
 			if (length(chrCopyNum{chr}) > 0)
 				fprintf(['chrCopyNum{chr}(1) = ' num2str(chrCopyNum{chr}(1)) '\n']);
+
+				% dragon: attempt to clean up poor behavior with zero copy number estimates leading to no SNP/LOH data presented.
+				for segment = 1:(length(chrCopyNum{chr})-1)
+					if (round(chrCopyNum{chr}(segment)) == 0)
+						chrCopyNum{chr}(segment) = 1;
+					end;
+				end;
+
 				chrCopyNum_new{chr}(1) = chrCopyNum{chr}(1);
 				for segment = 1:(length(chrCopyNum{chr})-1)
 					if (round(chrCopyNum{chr}(segment)) == round(chrCopyNum{chr}(segment+1)))
@@ -299,7 +308,7 @@ for chr = 1:num_chrs
 			fprintf(['@@@    chr_breaks_old = ' num2str(chr_breaks{chr})     '\n']);
 			fprintf(['@@@    chrCopyNum_old = ' num2str(chrCopyNum{chr})     '\n']);
 			fprintf(['@@@    chr_breaks_new = ' num2str(chr_breaks_new{chr}) '\n']);
-			fprintf(['@@@    chrCopyNum_new = ' num2str(chrCopyNum_new{chr}) '\n']);		
+			fprintf(['@@@    chrCopyNum_new = ' num2str(chrCopyNum_new{chr}) '\n']);
 			% copy new lists to old.
 			chr_breaks{chr} = chr_breaks_new{chr};
 			chrCopyNum{chr} = [];
@@ -406,7 +415,8 @@ for chr = 1:num_chrs
 						end;
 					end;
 
-					if (segment_copyNum <= 0);                  colorList = colorNoData;
+					if (segment_copyNum <= 0);
+						colorList = colorNoData;
 					elseif (segment_copyNum == 1)
 						% allelic fraction cutoffs: [0.50000] => [A B]
 						if ((baseCall == homologA) || (baseCall == homologB))
@@ -861,9 +871,10 @@ for chr_to_draw  = 1:length(chr_order)
 		fprintf(['\nmain-plot : chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 		fprintf(['ploidy     = ' num2str(ploidy)     '\n']);
 		fprintf(['ploidyBase = ' num2str(ploidyBase) '\n']);
-		for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
+		for chr_bin = 1:length(CNVplot2{chr});   % ceil(chr_size(chr)/bases_per_bin)
 			x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
 			CNVhistValue = CNVplot2{chr}(chr_bin);
+
 			% The CNV-histogram values were normalized to a median value of 1.
 			% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
 			startY = maxY/2;
