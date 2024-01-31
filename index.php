@@ -168,7 +168,7 @@
 		<img src="images/Logo_title.3.png" alt="YMAP; Yeast Mapping Analysis Pipeline"><br><br>
 		</td></tr><tr valign="bottom"><td align="middle">
 <font size='2'>
-	For support, please contact us at <a href="mailto:ymapsupport@tauex.tau.ac.il">ymapsupport@tauex.tau.ac.il</a><br/><br/>
+	For support, please contact us at <a href="mailto:darrenabbey.ymap@gmail.com">darrenabbey.ymap@gmail.com</a><br/><br/>
 	<button onclick="Generate_combined_figure(); document.getElementById('combined_fig_options').style.display = 'inline';">Combine figures viewed below.</button><br>
 <?php
 	// Defines the filenames for combined figures.
