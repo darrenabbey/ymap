@@ -172,14 +172,17 @@
 	<button onclick="Generate_combined_figure(); document.getElementById('combined_fig_options').style.display = 'inline';">Combine figures viewed below.</button><br>
 <?php
 	// Defines the filenames for combined figures.
-	$cfig_CNV_SNP = "users/".$user."/combined_figure.1.png";
-	$cfig_CNV     = "users/".$user."/combined_figure.2.png";
-	$cfig_SNP     = "users/".$user."/combined_figure.3.png";
+	$cfig_CNV_SNP     = "users/".$user."/combined_figure.1.png";
+	$cfig_CNV         = "users/".$user."/combined_figure.2.png";
+	$cfig_SNP         = "users/".$user."/combined_figure.3.png";
+	$cfig_CNV_SNP_alt = "users/".$user."/combined_figure.4.png";
 ?>
 	<div id='combined_fig_options' style='display:none;'>
 		CNV-SNP/LOH <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadExternal("<?php echo $cfig_CNV_SNP; ?>")'>
 		CNV <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadExternal("<?php echo $cfig_CNV; ?>")'>
 		SNP/LOH <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadExternal("<?php echo $cfig_SNP; ?>")'>
+		<br>
+		CNV-SNP/LOH (alt colors) <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadExternal("<?php echo $cfig_CNV_SNP_alt; ?>")'>
 	</div>
 </font>
 		</td></tr></table>
