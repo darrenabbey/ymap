@@ -262,12 +262,12 @@ for chr = 1:num_chrs
 			chrCopyNum_new{chr}    = [];
 			chr_breaks_new{chr}(1) = 0.0;
 
-			fprintf(['\nlength(chrCopyNum{chr}) = ' num2str(length(chrCopyNum{chr})) '\n']);
-			if (length(chrCopyNum{chr}) > 0)
-				fprintf(['chrCopyNum{chr}(1) = ' num2str(chrCopyNum{chr}(1)) '\n']);
+			%fprintf(['\nlength(chrCopyNum{chr}) = ' num2str(length(chrCopyNum{chr})) '\n']);
+			%if (length(chrCopyNum{chr}) > 0)
+				%fprintf(['chrCopyNum{chr}(1) = ' num2str(chrCopyNum{chr}(1)) '\n']);
 
 				% dragon: attempt to clean up poor behavior with zero copy number estimates leading to no SNP/LOH data presented.
-				for segment = 1:(length(chrCopyNum{chr})-1)
+				for segment = 1:(length(chrCopyNum{chr}))
 					if (round(chrCopyNum{chr}(segment)) == 0)
 						chrCopyNum{chr}(segment) = 1;
 					end;
@@ -284,18 +284,18 @@ for chr = 1:num_chrs
 						chrCopyNum_new{chr}(breakCount_new) = chrCopyNum{chr}(segment+1);
 					end;
 				end;
-			end;
+			%end;
 
 			% add break representing right end of chromosome.
 			breakCount_new = breakCount_new+1;
 			chr_breaks_new{chr}(breakCount_new) = 1.0;
 
 			% output status to log file.
-			fprintf(['@@@ chr = ' num2str(chr) '\n']);
-			fprintf(['@@@    chr_breaks_old = ' num2str(chr_breaks{chr})     '\n']);
-			fprintf(['@@@    chrCopyNum_old = ' num2str(chrCopyNum{chr})     '\n']);
-			fprintf(['@@@    chr_breaks_new = ' num2str(chr_breaks_new{chr}) '\n']);
-			fprintf(['@@@    chrCopyNum_new = ' num2str(chrCopyNum_new{chr}) '\n']);
+			fprintf(['@@@1 chr = ' num2str(chr) '\n']);
+			fprintf(['@@@1    chr_breaks_old = ' num2str(chr_breaks{chr})     '\n']);
+			fprintf(['@@@1    chrCopyNum_old = ' num2str(chrCopyNum{chr})     '\n']);
+			fprintf(['@@@1    chr_breaks_new = ' num2str(chr_breaks_new{chr}) '\n']);
+			fprintf(['@@@1    chrCopyNum_new = ' num2str(chrCopyNum_new{chr}) '\n']);
 
 			% copy new lists to old.
 			chr_breaks{chr} = chr_breaks_new{chr};
@@ -303,8 +303,8 @@ for chr = 1:num_chrs
 			chrCopyNum{chr} = chrCopyNum_new{chr};
 		else
 			% output status to log file.
-			fprintf(['@@@ chr = ' num2str(chr) '\n']);
-			fprintf(['@@@    Only one CNV segment on this chromosome\n']);
+			fprintf(['@@@1 chr = ' num2str(chr) '\n']);
+			fprintf(['@@@1    Only one CNV segment on this chromosome\n']);
 		end;
 	end;
 end;
