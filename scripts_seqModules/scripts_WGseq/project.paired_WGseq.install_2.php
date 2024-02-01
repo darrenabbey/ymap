@@ -73,7 +73,7 @@
 		$fileSizeString = filesize($projectPath.$name);
 		fwrite($output2, $fileSizeString);
 		fclose($output2);
-		chmod($output2Name,0666);
+		chmod($output2Name,0664);
 		fwrite($logOutput, "\tGenerated 'upload_size".$fileNumber.".txt' file.\n");
 
 		// Process the uploaded file.
@@ -85,7 +85,7 @@
 		}
 	}
 	fclose($output);
-	chmod($outputName,0666);
+	chmod($outputName,0664);
 
 	// Trim the last "\n" character from 'datafiles.txt'.
 	$fh = fopen($outputName, 'r+');

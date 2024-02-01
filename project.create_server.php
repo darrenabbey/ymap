@@ -88,7 +88,7 @@
 		if (!file_exists($projects_dir)){
 			mkdir($projects_dir);
 			secureNewDirectory($projects_dir);
-			chmod($projects_dir,0666);
+			chmod($projects_dir,0777);
 		}
 
 		if (file_exists($project_dir1) || file_exists($project_dir2)) {
@@ -121,7 +121,7 @@
 			// Create the project folder inside the user's projects directory
 			mkdir($project_dir1);
 			secureNewDirectory($project_dir1);
-			chmod($project_dir1,0666);
+			chmod($project_dir1,0777);
 
 			// Generate 'name.txt' file containing:
 			//      one line; name of genome.
@@ -129,6 +129,7 @@
 			$output       = fopen($outputName, 'w');
 			fwrite($output, $project);
 			fclose($output);
+			chmod($outputName,0664);
 
 			$_SESSION['pending_install_project_count'] += 1;
 
@@ -151,7 +152,7 @@
 				}
 			}
 			fclose($file);
-			chmod($fileName,0666);
+			chmod($fileName,0664);
 
 			// Generate 'parent.txt' file.
 			$fileName = $project_dir1."/parent.txt";
@@ -162,7 +163,7 @@
 				fwrite($file, $parent);
 			}
 			fclose($file);
-			chmod($fileName,0666);
+			chmod($fileName,0664);
 
 			// Generate 'dataFormat.txt' and 'dataBiases.txt' files.
 			// dataFormat.txt file: #:#:# where 1st # indicates type of data, 2nd # indicates format of input data, & 3rd # indicates if indel-realignment should be done.
@@ -199,8 +200,8 @@
 			}
 			fclose($file1);
 			fclose($file2);
-			chmod($fileName1,0666);
-			chmod($fileName1,0666);
+			chmod($fileName1,0664);
+			chmod($fileName2,0664);
 
 			// Generate 'restrictionEnzymes.txt' file, only for ddRADseq projects.
 			if ($dataFormat == "2") { // ddRADseq
@@ -208,7 +209,7 @@
 				$file     = fopen($fileName, 'w');
 				fwrite($file, $restrictionEnzymes);
 				fclose($file);
-				chmod($fileName,0666);
+				chmod($fileName,0664);
 			}
 
 			// Generate 'snowAnnotations.txt' file.
@@ -216,7 +217,7 @@
 			$file     = fopen($fileName, 'w');
 			fwrite($file, $showAnnotations);
 			fclose($file);
-			chmod($fileName,0666);
+			chmod($fileName,0664);
 
 			// Generate 'genome.txt' file : containing genome used.
 			//	1st line : (String) genome name.
@@ -229,7 +230,7 @@
 				fwrite($file, $genome."\n".$hapmap);
 			}
 			fclose($file);
-			chmod($fileName,0666);
+			chmod($fileName,0664);
 
 			// Generate 'manualLOH.txt' file : contains manual LOH annotation information.
 			// one entry per line...  if input was provided.
@@ -245,7 +246,7 @@
 				$file     = fopen($fileName, 'w');
 				fwrite($file, $manualLOH);
 				fclose($file);
-				chmod($fileName,0666);
+				chmod($fileName,0664);
 			}
 
 			log_stuff($user,$project,"","","","project:CREATE success");

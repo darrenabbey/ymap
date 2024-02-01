@@ -46,15 +46,16 @@
 			$dir = "users/".$user;
 			mkdir($dir);
 			secureNewDirectory($dir);
-			chmod($dir,0666);
+			chmod($dir,0777);
 			mkdir($dir."/projects/");    // initialize user projects dir.
 			secureNewDirectory($dir."/projects/");
 			mkdir($dir."/genomes/");     // initialize user genomes dir.
 			secureNewDirectory($dir."/genomes/");
 			mkdir($dir."/hapmaps/");     // initialize user hapmaps dir.
 			secureNewDirectory($dir."/hapmaps/");
-			chmod($dir."/projects/",0666);
-			chmod($dir."/genomes/", 0666);
+			chmod($dir."/projects/",0777);
+			chmod($dir."/genomes/", 0777);
+			chmod($dir."/hapmaps/", 0777);
 			writePassword($user, $pw);
 
 			// Generate lockfile into user account, pending admin approval.
@@ -84,7 +85,7 @@
 		$fh     = fopen($pwFile, 'w');
 		fwrite($fh, $pw);
 		fclose($fh);
-		chmod($pwFile, 0666);
+		chmod($pwFile, 0664);
 	}
 	function doesUserDirectoryExist($user){
 		$dir = "users/".$user."/";
@@ -100,7 +101,7 @@
 		fwrite($fileHandle, "Secondary Name: ".$secondaryName."\n");
 		fwrite($fileHandle, "Secondary Email: ".$secondaryEmail."\n");
 		fclose($fileHandle);
-		chmod($secondaryInformationFile, 0666);
+		chmod($secondaryInformationFile, 0664);
 	}
 
 //=========================================================

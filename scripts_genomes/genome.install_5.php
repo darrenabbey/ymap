@@ -92,7 +92,7 @@
 		$fileSizeString = filesize($genomePath.$name);
 		fwrite($output2, $fileSizeString);
 		fclose($output2);
-		chmod($output2Name,0666);
+		chmod($output2Name,0664);
 		fwrite($logOutput, "\tGenerated 'upload_size_1.txt' file.\n");
 
 		// Process the uploaded file.
@@ -159,5 +159,5 @@
 	$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
 	fwrite($condensedLogOutput, "Process started.\n");
 	fclose($condensedLogOutput);
-	chmod($outputName,0666);
+	chmod($outputName,0664);
 ?>
