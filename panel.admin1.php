@@ -33,7 +33,7 @@
 </style>
 <?php
 	if ($admin_logged_in == "true") {
-		echo "<font size='4'><b>YMAP administrative functions:<b></font><br>";
+		echo "<font size='4'><b>YMAP administrative functions: User approval/deletion; copy items to default user; delete items from default.<b></font><br>";
 		echo "<form action='' method='post'>";
 		echo "<input type='submit' value='Reload this tab only.'>";
 		echo "</form>";
@@ -132,7 +132,7 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 ?>
 <hr width="100%">
 <font size='3'>Copy genomes to default user account.</font><br>
-<font size='2'>(There currently isn't an undo function, corrections will need applied via server access.)</font><br><br>
+<font size='2'>(Function to remove default user projects is lower on the page.)</font><br><br>
 <table width="100%" cellpadding="0"><tr>
 <td width="100%" valign="top">
 <?php
@@ -181,7 +181,7 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 
 <hr width="100%">
 <font size='3'>Copy hapmaps to default user account.</font><br>
-<font size='2'>(There currently isn't an undo function, corrections will need applied via server access.)</font><br><br>
+<font size='2'>(Function to remove default user projects is lower on the page.)</font><br><br>
 <table width="100%" cellpadding="0"><tr>
 <td width="100%" valign="top">
 <?php
@@ -230,7 +230,7 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 
 <hr width="100%">
 <font size='3'>Minimize and copy projects to default user account.</font><br>
-<font size='2'>(There currently isn't an undo function, corrections will need applied via server access.)</font><br>
+<font size='2'>(Function to remove default user projects is lower on the page.)</font><br>
 <font size='2'>(Minimized projects can only be viewed, can't be used for further analysis.)</font><br><br>
 <table width="100%" cellpadding="0"><tr>
 <td width="100%" valign="top">
@@ -252,7 +252,7 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 
 			echo "<table width='100%'>";
 			echo "<tr><td width='30%'><font size='2'><b>Projects</b></font></td>";
-			echo "<td width='30%'><font size='2'><b>Minimize and Copy Project</b></font></td>";
+			echo "<td width='30%'><font size='2'><b>Minimize then Copy Project</b></font></td>";
 			echo "<td><font size='2'><b>Project \"name.txt\" Contents</b></font></td>";
 			echo "</tr>\n";
 			foreach($projectFolders as $key=>$project) {
@@ -279,8 +279,134 @@ User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQ
 			}
 			echo "</table>";
 		}
-	}
 	?>
+
+
+<hr width="100%">
+<b>
+<font size='3'>Delete projects from default user account.</font><br>
+<font size='2' color='red'>(There is no way to undo this!)</font><br>
+<font size='2' color='red'>(There is no second chance!)</font><br>
+<font size='2' color='red'>(On error, you will have to reinstall!)</font><br>
+</b>
+<table width="100%" cellpadding="0"><tr>
+<td width="100%" valign="top">
+<?php
+		//.-------------------------------.
+		//| Delete admin account projects |
+		//'-------------------------------'
+		if (($admin_logged_in == "true") and isset($_SESSION['logged_on'])) {
+			$projectDir     = "users/default/projects/";
+			$projectFolders = array_diff(glob($projectDir."*\/"), array('..', '.'));
+
+			// Sort directories by date, newest first.
+			array_multisort($projectFolders, SORT_ASC, $projectFolders);
+			// Trim path from each folder string.
+			foreach($projectFolders as $key=>$folder) {
+				$projectFolders[$key] = str_replace($projectDir,"",$folder);
+			}
+			$projectCount = count($projectFolders);
+
+			echo "<table width='100%'>";
+			echo "<tr><td width='50%'><font size='2'><b>Projects</b></font></td>";
+			echo "<td width='10%'><font size='2'><b>Delete Project</b></font></td>";
+			echo "<td><font size='2'><b>Project \"name.txt\" Contents</b></font></td>";
+			echo "</tr>\n";
+			foreach($projectFolders as $key=>$project) {
+				echo "\t\t<tr style='";
+				if ($key % 2 == 0) { echo "; background:#DDBBBB;"; }
+				echo "'>";
+
+				echo "<td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
+				echo "<font size='2'>".($key+1).". ".$project."</font></span>\n";
+				echo "\t\t</td><td>\n";
+
+				echo "\t\t\t<input type='button' value='Delete project' onclick=\"key = '$key'; $.ajax({url:'admin.deleteProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin1.php');\">\n";
+
+				echo "\t\t</td><td>\n";
+				$nameFile          = "users/default/projects/".$project."name.txt";
+				$projectNameString = file_get_contents($nameFile);
+				$projectNameString = trim($projectNameString);
+				echo "<font size='2'>".$projectNameString."</font>";
+
+				echo "\t\t</td></tr>\n";
+			}
+			echo "</table>";
+		}
+?>
+
+
+
+<hr width="100%">
+<b>
+<font size='3'>Delete genomes from default user account.</font><br>
+<font size='2' color='red'>(There is no way to undo this!)</font><br>
+<font size='2' color='red'>(There is no second chance!)</font><br>
+<font size='2' color='red'>(On error, you will have to reinstall!)</font><br>
+</b>
+<table width="100%" cellpadding="0"><tr>
+<td width="100%" valign="top">
+<?php
+		//.-------------------------------.
+		//| Delete admin account genomes  |
+		//'-------------------------------'
+		if (($admin_logged_in == "true") and isset($_SESSION['logged_on'])) {
+			$genomeDir     = "users/default/genomes/";
+			$genomeFolders = array_diff(glob($genomeDir."*\/"), array('..', '.'));
+
+			// Sort directories by date, newest first.
+			array_multisort($genomeFolders, SORT_ASC, $genomeFolders);
+			// Trim path from each folder string.
+			foreach($genomeFolders as $key=>$folder) {
+				$genomeFolders[$key] = str_replace($genomeDir,"",$folder);
+			}
+			$genomeCount = count($genomeFolders);
+
+			echo "<table width='100%'>";
+			echo "<tr><td width='50%'><font size='2'><b>Genomes</b></font></td>";
+			echo "<td width='10%'><font size='2'><b>Delete Genome</b></font></td>";
+			echo "<td><font size='2'><b>Genome \"name.txt\" Contents</b></font></td>";
+			echo "</tr>\n";
+			foreach($genomeFolders as $key=>$genome) {
+				echo "\t\t<tr style='";
+				if ($key % 2 == 0) { echo "; background:#DDBBBB;"; }
+				echo "'>";
+
+				echo "<td>\n\t\t\t<span id='genome_label_".$key."' style='color:#000000;'>";
+				echo "<font size='2'>".($key+1).". ".$genome."</font></span>\n";
+				echo "\t\t</td><td>\n";
+
+				echo "\t\t\t<input type='button' value='Delete genome' onclick=\"key = '$key'; $.ajax({url:'admin.deleteGenome_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin1.php');\">\n";
+
+				echo "\t\t</td><td>\n";
+				$nameFile          = "users/default/genomes/".$genome."name.txt";
+				$genomeNameString = file_get_contents($nameFile);
+				$genomeNameString = trim($genomeNameString);
+				echo "<font size='2'>".$genomeNameString."</font>";
+
+				echo "\t\t</td></tr>\n";
+			}
+			echo "</table>";
+		}
+?>
+
+<hr width="100%">
+<b>
+<font size='3'>Delete hapmapss from default user account.</font><br>
+<font size='2' color='red'>(This is too dangerous.)</font><br>
+<font size='2' color='red'>(No function provided until automatic backup of hapmaps can be made.)</font><br>
+</b>
+<table width="100%" cellpadding="0"><tr>
+<td width="100%" valign="top">
+<?php
+		//.-------------------------------.
+		//| Delete admin account hapmapss |
+		//'-------------------------------'
+?>
+
+<?php
+	}
+?>
 </td><td width="35%" valign="top">
 </td></tr></table>
 </html>
