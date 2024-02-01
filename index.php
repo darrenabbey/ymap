@@ -218,14 +218,27 @@ if (file_exists($admin_user_flag_file)) {
 	$admin = "false";
 }
 
+// Check if logged in user has superuser rights.
+$super_user_flag_file = "users/".$user."/super.txt";
+if (file_exists($super_user_flag_file)) {
+	$super = "true";
+} else {
+	$super = "false";
+}
+
 // If user is admin, show the "Admin" tab in the user interface.
 if ($admin == "true") {
 	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin1" ';
-	echo 'onclick="tabWindow(\'admin1\');"          >Admin1</td>';
-	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin2" ';
-	echo 'onclick="tabWindow(\'admin2\');"          >Admin2</td>';
-	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin3" ';
-	echo 'onclick="tabWindow(\'admin3\');"          >Admin3</td>';
+	echo 'onclick="tabWindow(\'admin1\');"          >Admin</td>';
+	if ($super == "true") {
+		echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin2" ';
+		echo 'onclick="tabWindow(\'admin2\');"          >Super1</td>';
+		echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin3" ';
+		echo 'onclick="tabWindow(\'admin3\');"          >Super2</td>';
+	} else {
+		echo '<div id="tab_admin2" style="visibility:hidden;"></div>';
+		echo '<div id="tab_admin3" style="visibility:hidden;"></div>';
+	}
 } else {
 	echo '<div id="tab_admin1" style="visibility:hidden;"></div>';
 	echo '<div id="tab_admin2" style="visibility:hidden;"></div>';
