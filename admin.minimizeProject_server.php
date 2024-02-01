@@ -18,19 +18,18 @@
 	} else {
 		$user = "";
 	}
-
 	if ($user == "") {
 		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
 	} else {
-		$super_user_flag_file = "users/".$user."/super.txt";
-		if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
+		$admin_user_flag_file = "users/".$user."/admin.txt";
+		if (file_exists($admin_user_flag_file)) {  // Admin-user privilidges.
 			$admin_logged_in = "true";
 		} else {
 			// not an admin account, redirect to login page.
 			$admin_logged_in = "false";
 			session_destroy();
-			log_stuff($user,"","","","","CREDENTIAL fail: user attempted to use admin function to clean project!");
+			log_stuff($user,"","","","","CREDENTIAL fail: user attempted to use admin function to minimize/clean project!");
 			header('Location: .');
 		}
 
