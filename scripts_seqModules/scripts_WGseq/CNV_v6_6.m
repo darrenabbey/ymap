@@ -214,7 +214,7 @@ end;
 CGHdata_all = [];
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
-	    CGHdata_all = [CGHdata_all     CNVplot{chr}];
+		CGHdata_all = [CGHdata_all     CNVplot{chr}];
 	end;
 end;
 medianRawY = median(CGHdata_all)
@@ -224,7 +224,7 @@ CGHdata_all = [];
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
 		if (medianRawY ~= 0)
-		    CNVplot{chr} = CNVplot{chr}/medianRawY;
+			CNVplot{chr} = CNVplot{chr}/medianRawY;
 		end;
 		CGHdata_all = [CGHdata_all CNVplot{chr}];
 	end;
@@ -247,11 +247,11 @@ if (performGCbiasCorrection)
 	lines_analyzed = 0;
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
-		    chr_GCratioData{chr} = zeros(1,ceil(chr_size(chr)/bases_per_bin));
+			chr_GCratioData{chr} = zeros(1,ceil(chr_size(chr)/bases_per_bin));
 		end;
 	end;
 	while not (feof(standard_bins_GC_ratios_fid))
-	    dataLine = fgetl(standard_bins_GC_ratios_fid);
+		dataLine = fgetl(standard_bins_GC_ratios_fid);
 		if (length(dataLine) > 0)
 			if (dataLine(1) ~= '#')
 				lines_analyzed = lines_analyzed+1;
@@ -323,10 +323,12 @@ if (performEndbiasCorrection)
 	chr_EndDistanceData_extended = chr_EndDistanceData;
 	largest_chr_bin_count        = ceil(max(chr_size)/bases_per_bin);
 	for chr = 1:num_chrs
-		chr_bin_count = ceil(chr_size(chr)/bases_per_bin);
-		for pos = 1:(largest_chr_bin_count - chr_bin_count)
-			bin_center                               = pos + chr_bin_count/2;
-			chr_EndDistanceData_extended{chr}(end+1) = min(bin_center, largest_chr_bin_count - bin_center);
+		if (chr_in_use(chr) == 1)
+			chr_bin_count = ceil(chr_size(chr)/bases_per_bin);
+			for pos = 1:(largest_chr_bin_count - chr_bin_count)
+				bin_center                               = pos + chr_bin_count/2;
+				chr_EndDistanceData_extended{chr}(end+1) = min(bin_center, largest_chr_bin_count - bin_center);
+			end;
 		end;
 	end;
 end;
@@ -340,7 +342,9 @@ if (performEndbiasCorrection)
 	chr_CGHdata_extended  = [];
 	largest_chr_bin_count = ceil(max(chr_size)/bases_per_bin);
 	for chr = 1:num_chrs
-		chr_CGHdata_extended{chr} = CNVplot{chr};
+		if (chr_in_use(chr) == 1)
+			chr_CGHdata_extended{chr} = CNVplot{chr};
+		end;
 	end;
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
@@ -467,35 +471,35 @@ if (performGCbiasCorrection)
 	% perform correction only if the data has more then one value since
 	% otherwise inner functions of matlab will cause crash
 	if (size(rawData_X2,2) > 1 && size(rawData_Y2,2) > 1)
-        fprintf(['Lowess X:Y size : [' num2str(size(rawData_X2,1)) ',' num2str(size(rawData_X2,2)) ']:[' num2str(size(rawData_Y2,1)) ',' num2str(size(rawData_Y2,2)) ']\n']);
-        [fitX2, fitY2] = optimize_mylowess(rawData_X2,rawData_Y2,10, 0);
-        % Correct data using normalization to LOWESS fitting
-        Y_target = 1;
-        for chr = 1:num_chrs
-            if (chr_in_use(chr) == 1)
-                fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
-                rawData_chr_X2{chr}        = chr_GCratioData{chr};
-                rawData_chr_Y2{chr}        = normalizedData_chr_Y1{chr}; % CNVplot{chr};
-                fitData_chr_Y2{chr}        = interp1(fitX2,fitY2,rawData_chr_X2{chr},'spline');
+	fprintf(['Lowess X:Y size : [' num2str(size(rawData_X2,1)) ',' num2str(size(rawData_X2,2)) ']:[' num2str(size(rawData_Y2,1)) ',' num2str(size(rawData_Y2,2)) ']\n']);
+	[fitX2, fitY2] = optimize_mylowess(rawData_X2,rawData_Y2,10, 0);
+	% Correct data using normalization to LOWESS fitting
+	Y_target = 1;
+	for chr = 1:num_chrs
+		if (chr_in_use(chr) == 1)
+			fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
+			rawData_chr_X2{chr}        = chr_GCratioData{chr};
+			rawData_chr_Y2{chr}        = normalizedData_chr_Y1{chr}; % CNVplot{chr};
+			fitData_chr_Y2{chr}        = interp1(fitX2,fitY2,rawData_chr_X2{chr},'spline');
 
-                % Filter by dividing out the fit curve.
-                normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
+			% Filter by dividing out the fit curve.
+			normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
 
-                % Filter by subtracting out the fit curve : no strong rationale for this.
-                %normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
+			% Filter by subtracting out the fit curve : no strong rationale for this.
+			%normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
 
-                %Filter by average of above two methods.
-                %try1                       = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
-                %try2                       = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
-                %normalizedData_chr_Y2{chr} = (try1+try2)/2;
+			%Filter by average of above two methods.
+			%try1                       = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
+			%try2                       = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
+			%normalizedData_chr_Y2{chr} = (try1+try2)/2;
 
-            end;
-        end;
+			end;
+		end;
 	else
 		for chr = 1:num_chrs
-		    if (chr_in_use(chr) == 1)
-			normalizedData_chr_Y2{chr} = normalizedData_chr_Y1{chr};
-		    end;
+			if (chr_in_use(chr) == 1)
+				normalizedData_chr_Y2{chr} = normalizedData_chr_Y1{chr};
+			end;
 		end;
 		% disabling perform GC bias correction since data is invalid or empty and so the figure should not be created
 		performGCbiasCorrection = 0; 
@@ -744,18 +748,18 @@ stringChrCNVs = '';
 %-------------------------------------------------------------------------------------------
 CNVdata_all = [];
 for chr = 1:num_chrs
-    if (chr_in_use(chr) == 1)
-        CNVdata_all = [CNVdata_all   CNVplot2{chr}];
-    end;
+	if (chr_in_use(chr) == 1)
+		CNVdata_all = [CNVdata_all   CNVplot2{chr}];
+	end;
 end;
 medianCNV = median(CNVdata_all)
 % avoid divding by zero
 if (medianCNV ~= 0)
-    for chr = 1:num_chrs
-        if (chr_in_use(chr) == 1)
-            CNVplot2{chr} = CNVplot2{chr}/medianCNV;
-        end;
-    end;
+	for chr = 1:num_chrs
+		if (chr_in_use(chr) == 1)
+			CNVplot2{chr} = CNVplot2{chr}/medianCNV;
+		end;
+	end;
 end;
 
 
