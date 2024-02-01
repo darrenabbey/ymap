@@ -100,8 +100,27 @@
 		}
 
 		// Delete temp directory.
-		rmdir($temp_dir);
+		rrmdir($temp_dir);
+
+		// Make minimized.txt file in project dir to mark project as minimized.
+		$minimizedFile = $projectDir.$project_to_clean."/minimized.txt";
+		$minimized     = fopen($minimizedFile, 'w');
+		fclose($minimized);
 
 		log_stuff($user,$project_to_clean,"","","","project:MINIMIZE success.");
+	}
+
+	// Function for recursive rmdir, to clean out full genome directory.
+	function rrmdir($dir) {
+		if (is_dir($dir)) {
+			$objects = scandir($dir);
+			foreach ($objects as $object) {
+				if ($object != "." && $object != "..") {
+					if (filetype($dir."/".$object) == "dir") rrmdir($dir."/".$object); else unlink($dir."/".$object);
+				}
+			}
+			reset($objects);
+			rmdir($dir);
+		}
 	}
 ?>
