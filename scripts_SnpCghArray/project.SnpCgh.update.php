@@ -72,7 +72,7 @@
 	$startTimeString = date("Y-m-d H:i:s");
 	fwrite($output, $startTimeString);
 	fclose($output);
-	chmod($outputName,0644);
+	chmod($outputName,0666);
 	fwrite($outputLog, "| working.txt generated.\n");
 
 // Delete pre-existing final output files.
@@ -135,7 +135,7 @@
 	$outputString      .= "end";
 	fwrite($output, $outputString);
 	fclose($output);
-	chmod($outputName,0644);
+	chmod($outputName,0666);
 	fwrite($outputLog, "| Matlab script generated: processing.m.\n");
 	fwrite($outputLog, $outputString."\n");
 

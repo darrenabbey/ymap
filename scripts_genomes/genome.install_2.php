@@ -67,7 +67,7 @@
 	$startTimeString = date("Y-m-d H:i:s");
 	fwrite($output, $startTimeString);
 	fclose($output);
-	chmod($outputName,0755);
+	chmod($outputName,0666);
 	fwrite($logOutput, "\tGenerated 'working2.txt' file.\n");
 
 // process POST data.

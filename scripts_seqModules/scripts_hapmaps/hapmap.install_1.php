@@ -97,7 +97,7 @@
 	if (!file_exists($dir1)){
 		mkdir($dir1);
 		secureNewDirectory($dir1);
-		chmod($dir1,0777);
+		chmod($dir1,0666);
 	}
 
 	if (file_exists($hapmap_dir1) || file_exists($hapmap_dir2)) {

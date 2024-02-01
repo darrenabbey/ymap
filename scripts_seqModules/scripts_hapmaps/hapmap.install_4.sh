@@ -203,7 +203,7 @@ else
 	timestamp=$(date +%T);
 	echo $timestamp > $completeFile;
 	echo "\tGenerated 'complete.txt' file." >> $logName;
-	chmod 0755 $completeFile;
+	chmod 0666 $completeFile;
 fi
 
 echo "Concluding analysis." >> $condensedLog;

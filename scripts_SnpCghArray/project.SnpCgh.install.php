@@ -67,7 +67,7 @@
 	$startTimeString = date("Y-m-d H:i:s");
 	fwrite($output, $startTimeString);
 	fclose($output);
-	chmod($outputName,0644);
+	chmod($outputName,0666);
 	fwrite($outputLog, "| working.txt generated.\n");
 
 // Generate 'upload_size.txt' file to contain the size of the uploaded file (irrespective of format) for display in "Manage Datasets" tab.
@@ -76,7 +76,7 @@
 	$fileSizeString  = filesize($project_dir."/".$fileName);
 	fwrite($output, $fileSizeString);
 	fclose($output);
-	chmod($outputName,0644);
+	chmod($outputName,0666);
 	fwrite($outputLog, "| Generated 'upload_size_1.txt' file.\n");
 
 //// Generate 'datafile1.txt' file containing: name of first data file.
@@ -84,7 +84,7 @@
 //	$output     = fopen($outputName, 'w');
 //	fwrite($output, $fileName);
 //	fclose($output);
-//	chmod($outputName,0644);
+//	chmod($outputName,0666);
 //	fwrite($outputLog, "| datafile1.txt file generated.\n");
 
 // Generate 'datafiles.txt' file containing: name of all data files.
@@ -111,7 +111,7 @@
 		$fileSizeString = filesize($projectPath.$name);
 		fwrite($output2, $fileSizeString);
 		fclose($output2);
-		chmod($output2Name,0755);
+		chmod($output2Name,0666);
 		fwrite($outputLog, "\tGenerated 'upload_size".$fileNumber.".txt' file.\n");
 
 		// Process the uploaded file.
@@ -123,7 +123,7 @@
 		}
 	}
 	fclose($output);
-	chmod($outputName,0755);
+	chmod($outputName,0666);
 
 
 
@@ -196,7 +196,7 @@
 	$outputString      .= "end";
 	fwrite($output, $outputString);
 	fclose($output);
-	chmod($outputName,0644);
+	chmod($outputName,0666);
 	fwrite($outputLog, "| Matlab script generated: processing.m.\n");
 	fwrite($outputLog, $outputString."\n");
 
@@ -244,7 +244,7 @@
 	-o    : output file.
 	*/
 	foreach (array($cghRowsFile, $snpRowsFile, $mlstRowsFile) as $fileToProcess) {
-		chmod($fileToProcess, 0644);
+		chmod($fileToProcess, 0666);
 		$tmpFile = "$fileToProcess.tmp";
 		system("sort -b -k1,1 $fileToProcess -o $tmpFile");
 		system("mv $tmpFile $fileToProcess");

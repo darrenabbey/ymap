@@ -132,7 +132,7 @@ else
 	# preprocess dataset SNP data.
 	echo "\tProcessing SNP data with python script: 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py'" >> $logName;
 	$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py" $genome $genomeUser $parent $parentUser $project $user $main_dir $RestrctionEnzymes $logName LOH > $projectDirectory"preprocessed_SNPs.ddRADseq.txt" 2>> $logName;
-	chmod 0777 $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
+	chmod 0666 $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
 	echo "\tpre-processing complete." >> $logName;
 fi
 

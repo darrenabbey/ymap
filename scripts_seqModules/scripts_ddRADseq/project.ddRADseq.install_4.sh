@@ -114,7 +114,7 @@ else
 	# preprocess dataset SNP data.
 	echo "\Processing SNP data with python script: 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py'" >> $logName;
 	$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py" $genome $genomeUser $parent $parentUser $project $user $main_dir $RestrctionEnzymes $logName LOH > $projectDirectory"preprocessed_SNPs.ddRADseq.txt" 2>> $logName;
-	chmod 0777 $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
+	chmod 0666 $projectDirectory"preprocessed_SNPs.ddRADseq.txt";
 	echo "\tpre-processing complete." >> $logName;
 fi
 
@@ -276,5 +276,5 @@ sh $main_dir"scripts_seqModules/scripts_ddRADseq/cleaning_ddRADseq.sh" $user $pr
 ##==============================================================================
 ## Adjust permissions of output png/eps files so apache2 can serve them.
 ##------------------------------------------------------------------------------
-#chmod o+r $main_dir"users/"$user"/projects/"$project"/*.png";
-#chmod o+r $main_dir"users/"$user"/projects/"$project"/*.eps";
+#chmod 0666 $main_dir"users/"$user"/projects/"$project"/*.png";
+#chmod 0666 $main_dir"users/"$user"/projects/"$project"/*.eps";

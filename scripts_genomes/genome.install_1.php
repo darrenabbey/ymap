@@ -26,7 +26,7 @@
 	$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
 	fwrite($condensedLogOutput, "Initializing.\n");
 	fclose($condensedLogOutput);
-	chmod($condensedLogOutputName,0744);
+	chmod($condensedLogOutputName,0666);
 
 	// Generate 'working.txt' file to let pipeline know processing is started.
 	$outputName      = "../users/".$user."/genomes/".$genome."/working.txt";
@@ -34,7 +34,7 @@
 	$startTimeString = date("Y-m-d H:i:s");
 	fwrite($output, $startTimeString);
 	fclose($output);
-	chmod($outputName,0755);
+	chmod($outputName,0666);
 	fwrite($logOutput, "\tGenerated 'working.txt' file.\n");
 
 	// Generate 'reference.txt' file containing:
@@ -81,7 +81,7 @@
 	$fileSizeString  = filesize($genomePath.$fileName);
 	fwrite($output, $fileSizeString);
 	fclose($output);
-	chmod($outputName,0755);
+	chmod($outputName,0666);
 	fwrite($logOutput, "\tGenerated 'upload_size_1.txt' file.\n");
 
 	// Rename uploaded file to lower-case, accounting for file name change by uploader script.

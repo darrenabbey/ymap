@@ -78,7 +78,7 @@
 			}
 		}
 		fclose($file);
-		chmod($fileName,0644);
+		chmod($fileName,0666);
 		fwrite($logOutput, "\tUpdated 'ploidy.txt' file.\n");
 
 		// Update 'snowAnnotations.txt' file.
@@ -86,7 +86,7 @@
 		$file     = fopen($fileName, 'w');
 		fwrite($file, $showAnnotations);
 		fclose($file);
-		chmod($fileName,0644);
+		chmod($fileName,0666);
 		fwrite($logOutput, "\tUpdated 'showAnnotations.txt' file.\n");
 
 		// Generate 'working.txt' file to let pipeline know processing is started.
@@ -95,7 +95,7 @@
 		$startTimeString = date("Y-m-d H:i:s");
 		fwrite($file, $startTimeString);
 		fclose($file);
-		chmod($fileName,0755);
+		chmod($fileName,0666);
 		fwrite($logOutput, "\tGenerated 'working.txt' file.\n");
 
 		// Update/generate 'figVer.txt file to let user interface know to force reload of images instead of using cached versions.
@@ -110,7 +110,7 @@
 		$file     = fopen($fileName, 'w');
 		fwrite($file, $figVer+1);
 		fclose($file);
-		chmod($fileName,0755);
+		chmod($fileName,0666);
 
 		// Remove 'working_done.txt' file to let pipeline know processing isn't done.
 		unlink($project_dir."/working_done.txt");
@@ -158,7 +158,7 @@
 			fwrite($file2,$bias_length."\n".$bias_GC."\nFalse\n".$bias_end);
 		}
 		fclose($file2);
-		chmod($fileName1,0644);
+		chmod($fileName1,0666);
 
 		// initiate project processing.
 		$conclusion_script = "";

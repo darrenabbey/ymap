@@ -32,7 +32,7 @@ projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 # Setup process_log.txt file.
 logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
-#chmod 0755 $logName;
+#chmod 0666 $logName;
 echo "#.............................................................................." >> $logName;
 echo "Running 'scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_3.sh'" >> $logName;
 echo "Variables passed via command-line from 'scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_2.php' :" >> $logName;

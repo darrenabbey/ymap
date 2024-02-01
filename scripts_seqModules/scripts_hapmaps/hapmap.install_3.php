@@ -83,7 +83,7 @@
 		// Create the hapmap folder inside the user's hapmaps directory
 		mkdir($hapmap_dir);
 		secureNewDirectory($hapmap_dir);
-		chmod($hapmap_dir,0777);
+		chmod($hapmap_dir,0666);
 
 		// Initialize 'process_log.txt' file.
 		$logOutputName = $hapmap_dir."/process_log.txt";

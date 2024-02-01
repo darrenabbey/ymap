@@ -36,7 +36,7 @@ then
 	timestamp=$(date +%T);
 	echo $timestamp >> $completeFile;
 	echo "\tGenerated 'complete.txt' file." >> $logName;
-	chmod 0744 $completeFile;
+	chmod 0666 $completeFile;
 
 	## changing working.txt to working_done.txt
 	if [ -f $reflocation"working.txt" ]
@@ -77,7 +77,7 @@ completeFile=$reflocation"complete.txt";
 echo "complete" > $completeFile;
 echo $timestamp >> $completeFile;
 echo "\tGenerated 'complete.txt' file." >> $logName;
-chmod 0755 $completeFile;
+chmod 0666 $completeFile;
 if [ -f $reflocation"working.txt" ]
 then
 	echo "\n"$timestamp >> $reflocation"working.txt"

@@ -23,7 +23,6 @@ ddRADseq_FASTA=$reflocation$FASTAname".MfeI_MboI.fasta";				# Name of digested r
 logName=$reflocation"process_log.txt";
 condensedLog=$reflocation"condensed_log.txt";
 
-#chmod 0755 $logName;
 echo "\n\nRunning 'scripts_genomes/genome.install_6.sh'" >> $logName;
 echo "\tInput to shell script:" >> $logName;
 echo "\t\t\$1 (user)         = $1" >> $logName;
