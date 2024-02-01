@@ -107,7 +107,7 @@
 		$minimized     = fopen($minimizedFile, 'w');
 		fclose($minimized);
 
-		log_stuff($user,$project_to_clean,"","","","project:MINIMIZE success.");
+		log_stuff($user,$project_to_clean,"","","","ADMIN project:MINIMIZE success.");
 	}
 
 	// Function for recursive rmdir, to clean out full genome directory.
