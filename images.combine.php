@@ -42,7 +42,7 @@
 			// general variables
 			$linearCartoonHeight = 139; //139 the height in px of the cartoon without labels 136 valid so + 4px.
 
-			echo "<script type='text/javascript'> console.log('Combine images from: [".$projectsShown."]'); </script>";
+			echo "<script type='text/javascript'> console.log('1 Combine images from: [".$projectsShown."]'); </script>";
 
 			// break projectsShown string into individual strings per project.
 			$projectsShown_entries = explode(";",$projectsShown);
@@ -127,7 +127,7 @@
 				$fig_project = $entry_parts[1];
 				$fig_key     = $entry_parts[2];
 
-				echo "<script type='text/javascript'> console.log('Combine images from: ".$fig_user.":".$fig_project.":".$fig_key."'); </script>";
+				echo "<script type='text/javascript'> console.log('2 Combine images from: ".$fig_user.":".$fig_project.":".$fig_key."'); </script>";
 
 				//================================================================
 				// Validate sub-strings received from projectsShown string.
@@ -157,7 +157,13 @@
 				} else { // other.
 					$fig_SNP = "users/".$fig_user."/projects/".$fig_project."/fig.SNP-map.2.png";
 				}
-				$fig_CNV_SNP_alt = "users/".$fig_user."/projects/".$fig_project."/fig.CNV-SNP-map.RedGreen.2.png";
+				if (file_exists("users/".$fig_user."/projects/".$fig_project."/fig.CNV-SNP-map.RedGreen.2.png")) {
+					// File doesn't get made for basic analysis.
+					$fig_CNV_SNP_alt = "users/".$fig_user."/projects/".$fig_project."/fig.CNV-SNP-map.RedGreen.2.png";
+				} else {
+					// Default to basic CNV-SNP plot if alternate color scheme file isn't found.
+					$fig_CNV_SNP_alt = $fig_CNV_SNP;
+				}
 
 				// creating images for copy
 				$image1      = imagecreatefrompng($fig_CNV_SNP);
