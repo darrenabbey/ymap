@@ -94,8 +94,8 @@
 	function resize_project(project_key, pixels) {
 		// Changes size of iframe shown for the project.
 		var domElement1 = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById(project_key);
-		var domElement2 = document.getElementById('panel_admin2_iframe').contentDocument.getElementById(project_key);
-		var domElement3 = document.getElementById('panel_admin3_iframe').contentDocument.getElementById(project_key);
+		var domElement2 = document.getElementById('panel_super1_iframe').contentDocument.getElementById(project_key);
+		var domElement3 = document.getElementById('panel_super2_iframe').contentDocument.getElementById(project_key);
 		if (domElement1 != null) {
 			domElement1.style.height = pixels+"px";
 		}
@@ -229,20 +229,26 @@ if (file_exists($super_user_flag_file)) {
 // If user is admin, show the "Admin" tab in the user interface.
 if ($admin == "true") {
 	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin1" ';
-	echo 'onclick="tabWindow(\'admin1\');"          >Admin</td>';
+	echo 'onclick="tabWindow(\'admin1\');"          >Admin1</td>';
+	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin2" ';
+	echo 'onclick="tabWindow(\'admin2\');"          >Admin2</td>';
+	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin3" ';
+	echo 'onclick="tabWindow(\'admin3\');"          >Admin3</td>';
 	if ($super == "true") {
-		echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin2" ';
-		echo 'onclick="tabWindow(\'admin2\');"          >Super1</td>';
-		echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin3" ';
-		echo 'onclick="tabWindow(\'admin3\');"          >Super2</td>';
+		echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_super1" ';
+		echo 'onclick="tabWindow(\'super1\');"          >Super1</td>';
+		echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_super2" ';
+		echo 'onclick="tabWindow(\'super2\');"          >Super2</td>';
 	} else {
-		echo '<div id="tab_admin2" style="visibility:hidden;"></div>';
-		echo '<div id="tab_admin3" style="visibility:hidden;"></div>';
+		echo '<div id="tab_super1" style="visibility:hidden;"></div>';
+		echo '<div id="tab_super2" style="visibility:hidden;"></div>';
 	}
 } else {
 	echo '<div id="tab_admin1" style="visibility:hidden;"></div>';
 	echo '<div id="tab_admin2" style="visibility:hidden;"></div>';
 	echo '<div id="tab_admin3" style="visibility:hidden;"></div>';
+	echo '<div id="tab_super1" style="visibility:hidden;"></div>';
+	echo '<div id="tab_super2" style="visibility:hidden;"></div>';
 }
 ?>
 
@@ -269,6 +275,8 @@ if ($admin == "true") {
 	<div id="panel_admin1"           name="panel_admin1"           style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
 	<div id="panel_admin2"           name="panel_admin2"           style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
 	<div id="panel_admin3"           name="panel_admin3"           style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
+	<div id="panel_super1"           name="panel_super1"           style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
+	<div id="panel_super2"           name="panel_super2"           style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
 	</td>
 </tr></table>
 <!--                                               --!>
@@ -288,6 +296,8 @@ p_citations                  = document.getElementById('panel_citations');
 p_admin1                     = document.getElementById('panel_admin1');
 p_admin2                     = document.getElementById('panel_admin2');
 p_admin3                     = document.getElementById('panel_admin3');
+p_super1                     = document.getElementById('panel_super1');
+p_super2                     = document.getElementById('panel_super2');
 p_user.innerHTML             = '<iframe id="panel_user_iframe"             src="panel.user.php"             style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
 p_manageDataset.innerHTML    = '<iframe id="panel_manageDataset_iframe"    src="panel.manageDataset.php"    style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
 p_visualizeDataset.innerHTML = '<iframe id="panel_visualizeDataset_iframe" src="panel.visualizeDataset.php" style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
@@ -298,13 +308,15 @@ p_help.innerHTML             = '<iframe id="panel_help_iframe"             src="
 p_citations.innerHTML        = '<iframe id="panel_citations_iframe"        src="panel.citations.php"        style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
 p_admin1.innerHTML           = '<iframe id="panel_admin1_iframe"           src="panel.admin1.php"           style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
 p_admin2.innerHTML           = '<iframe id="panel_admin2_iframe"           src="panel.admin2.php"           style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
-p_admin3.innerHTML           = '<iframe id="panel_admin3_iframe"           src="panel.admin3.php"           style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>;">';
+p_admin3.innerHTML           = '<iframe id="panel_admin3_iframe"           src="panel.admin3.php"           style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
+p_super1.innerHTML           = '<iframe id="panel_super1_iframe"           src="panel.super1.php"           style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
+p_super2.innerHTML           = '<iframe id="panel_super2_iframe"           src="panel.super2.php"           style="margin:0; padding:0; border:none; width:100%; height:<?php echo $ui_iframe_height; ?>">';
 
 function deselect_tab(name) {
 	//console.log( '\tdeselect_tab("'+name+'")' );
 	var current_tab = document.getElementById("tab_"+name);
 	current_tab.style.border="1px solid #000000";
-	if ((name == "admin1") || (name == "admin2") || (name == "admin3")) {
+	if ((name == "admin1") || (name == "admin2") || (name == "admin3") || (name == "super1") || (name == "super2")) {
 		current_tab.style.backgroundColor="#DDBBBB";
 	} else {
 		current_tab.style.backgroundColor="#DDDDDD";
@@ -327,13 +339,15 @@ function deselect_all_tabs() {
 	deselect_tab("admin1");
 	deselect_tab("admin2");
 	deselect_tab("admin3");
+	deselect_tab("super1");
+	deselect_tab("super2");
 }
 function select_tab(name) {
 	//console.log ( 'select_tab("'+name+'")' );
 	var current_tab = document.getElementById("tab_"+name);
 	current_tab.style.border="1px solid #000000";
 	current_tab.style.borderBottom="none";
-	if ((name == "admin1") || (name == "admin2") || (name == "admin3")) {
+	if ((name == "admin1") || (name == "admin2") || (name == "admin3") || (name == "super1") || (name == "super2")) {
 		current_tab.style.backgroundColor="#FFDDDD";
 	} else {
 		current_tab.style.backgroundColor="#FFFFFF";
@@ -377,7 +391,7 @@ function blank_and_content_tab() {
 	}
 	function openProject(user,project,key,projectName,color1,color2,parent,figVer) {
 		if (key.includes("_admin")) {
-			var visualize_iframe    = document.getElementById('panel_admin2_iframe');
+			var visualize_iframe    = document.getElementById('panel_super1_iframe');
 			var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
 		} else {
 			var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
@@ -611,7 +625,7 @@ function blank_and_content_tab() {
 	}
 	function closeProject(user,project,key,projectName,color1,color2,parent,figVer) {
 		if (key.includes("_admin")) {
-			var visualize_iframe    = document.getElementById('panel_admin2_iframe');
+			var visualize_iframe    = document.getElementById('panel_super1_iframe');
 			var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
 		} else {
 			var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
