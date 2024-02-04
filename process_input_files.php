@@ -32,6 +32,7 @@ if (($ext == "tdt") || ($ext == "sam") || ($ext == "bam") || ($ext == "fasta") |
 //================================
 // Deal with compressed archives.
 //--------------------------------
+$errorText = '';
 $currentDir = getcwd(); // get script's path.
 if ($ext == "zip") {
 	fwrite($condensedLogOutput, "Decompressing ZIP file : ".$name."\n");
@@ -51,6 +52,10 @@ if ($ext == "zip") {
 	$fileCount          = shell_exec("zipinfo ".$projectPath.$name." |grep Zip|grep -oE '[^ ]+$'");
 	$fileCount          = trim($fileCount);
 	fwrite($logOutput,"\t\t| Files in zip archive = ".$fileCount."\n");
+	if ($fileCount > 1) {
+		fwrite($logOutput, "\t\t| Multiple files in .ZIP archive, only examining first file.\n");
+		$errorText .= 'Multiple files in .ZIP archive, only examining first file. ';
+	}
 
 	// Extract archive.
 	chdir($projectPath);                   // move to projectDirectory.
@@ -108,6 +113,7 @@ if ($ext == "zip") {
 		// FASTQ file was not found.
 		unlink($projectPath.$name_first);
 		fwrite($logOutput, "\t\t| FASTQ file not found in ZIP!!!\n");
+		$errorText .= 'FASTQ file not found first in ZIP archive. ");
 		$ext_new  = "none1";
 		$name_new = "";
 	}
@@ -117,6 +123,10 @@ if ($ext == "zip") {
 
 	// What is the file count in the archive?
 	$fileCount          = shell_exec("tar -tzf ".$projectPath.$name." | wc -l");
+	if ($fileCount > 1) {
+		fwrite($logOutput, "\t\t| Multiple files in .TAR.GZ archive, only examining first file.\n");
+		$errorText .= 'Multiple files in .TAR.GZ archive, only examining first file. ';
+	}
 
         // Extract archive.
 	if ($fileCount == 0) {
@@ -124,6 +134,12 @@ if ($ext == "zip") {
 		chdir($projectPath);                   // move to projectDirectory.
 		$null = shell_exec("gzip -d ".$name);  // decompress archive.
 		chdir($currentDir);                    // move back to script's path.
+
+		// DRAGON: Needs to check for unexpected end of file using gunzip -t.
+		// if (gunzip -t fails) {
+		//	fwrite($logOutput, "\t\t| Unexpected end of GZ achive.\n");
+		//	$errorText .= 'Unexpected end of GZ achive. ");
+		// }
 
 		// Figure out filename contained in gz archive.
 		// If one file, then filename is same as archive, without gz.
@@ -191,6 +207,7 @@ if ($ext == "zip") {
 		// FASTQ file was not found.
 		unlink($projectPath.$name_first);
 		fwrite($logOutput, "\t\t| FASTQ file not found in GZ!!!\n");
+		$errorText .= 'FASTQ file not found first in ZIP archive. ");
 		$ext_new  = "none1";
 		$name_new = "";
 	}
