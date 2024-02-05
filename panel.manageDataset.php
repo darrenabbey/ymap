@@ -51,6 +51,15 @@
 				echo "parent.update_interface();";
 			echo "'><br><font color='red' size='2'> (Wait until uploads complete!)</font><br>";
 		}
+		// DRAGON : trying to do bulk data processing through user interface.
+		$admin_user_flag_file = "users/".$user."/admin.txt";
+		if (file_exists($admin_user_flag_file)) {
+			echo "[Admin<input name='button_InstallNewDataset' type='button' value='Install Bulk Dataset' onclick='";
+				echo "parent.document.getElementById(\"Hidden_InstallBulkDataset_Frame\").contentWindow.location.reload(); ";
+				echo "parent.show_hidden(\"Hidden_InstallBulkDataset\"); ";
+				echo "parent.update_interface();";
+			echo "'>]<br><font color='red' size='2'> (Wait until uploads complete!)</font><br>";
+		}
 
 		$_SESSION['pending_install_project_count'] = 0;
 		?><br>
