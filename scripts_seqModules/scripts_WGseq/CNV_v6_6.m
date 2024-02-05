@@ -1158,11 +1158,11 @@ for chr_to_draw  = 1:length(chr_order)
 				dy = cen_tel_Yindent;
 				% draw white triangles at corners and centromere locations.
 				% top left corner.
-				c_ = [1.0 1.0 1.0];   
-				x_ = [leftEnd   leftEnd   leftEnd+dx];   
+				c_ = [1.0 1.0 1.0];
+				x_ = [leftEnd   leftEnd   leftEnd+dx];
 				y_ = [maxY-dy   maxY      maxY      ];
 				f = fill(x_,y_,c_);
-				set(f,'linestyle','none'); 
+				set(f,'linestyle','none');
 				% bottom left corner.
 				x_ = [leftEnd   leftEnd   leftEnd+dx];
 				y_ = [dy        0         0         ];

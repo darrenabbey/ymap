@@ -82,6 +82,12 @@ for usedChr = 1:num_chrs
 			else
 				chrCopyNum{usedChr}(segment) = 0;
 			end;
+
+			% Zero copy number only happens with simulated data limited to part of genome, leads to weird artifacts.
+			if (chrCopyNum{usedChr}(segment) == 0)
+				chrCopyNum{usedChr}(segment) = 1;
+			end;
+
 			chrCopyNum_vector = [chrCopyNum_vector chrCopyNum{usedChr}(segment)];
 		end;
 	end;
