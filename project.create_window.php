@@ -283,8 +283,8 @@
 				var selectedHapmap = document.getElementById("selectHapmap").value;
 				if (selectedHapmap == 'none') {
 					document.getElementById("hiddenFormSection7" ).style.display  = 'inline';
-					document.getElementById("hiddenFormSection8a").style.display  = 'none';
-					document.getElementById("hiddenFormSection8b").style.display  = 'inline';
+					document.getElementById("hiddenFormSection8a").style.display  = 'inline';
+					document.getElementById("hiddenFormSection8b").style.display  = 'none';
 				} else {
 					if (document.getElementById("dataFormat").value == 2) {    // ddRADseq.
 						document.getElementById("hiddenFormSection7" ).style.display  = 'inline';
