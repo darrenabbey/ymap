@@ -50,7 +50,7 @@
 		log_stuff($user,"","",$hapmap_to_copy,"","ADMIN fail: attempted to copy hapmap to default user, but hapmap name is already in use.");
 	} else {
 		log_stuff($user,"","",$hapmap_to_copy,"","ADMIN success: copied hapmap to default user.");
-		mkdir($dest, 0777, true);
+		mkdir($dest, 0773, true);
 		foreach (scandir($src) as $file) {
 			if (!is_readable($src . '/' . $file)) continue;
                         copy($src . '/' . $file, $dest . '/' . $file);

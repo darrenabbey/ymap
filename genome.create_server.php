@@ -36,7 +36,7 @@
 		if (!file_exists($dir1)){
 			mkdir($dir1);
 			secureNewDirectory($dir1);
-			chmod($dir1,0777);
+			chmod($dir1,0773);
 		}
 
 		// Checks if existing genome shares requested name.
@@ -57,7 +57,7 @@
 			// Create the genome folder inside the user's genomes directory
 			mkdir($dir2);
 			secureNewDirectory($dir2);
-			chmod($dir2,0777);
+			chmod($dir2,0773);
 
 			// Generate 'name.txt' file containing:
 			//      one line; name of genome.

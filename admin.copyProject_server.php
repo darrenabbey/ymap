@@ -59,7 +59,7 @@
 			log_stuff($user,"","",$project_to_copy,"","ADMIN fail: attempted to copy project to default user, but project name is already in use.");
 		} else {
 			log_stuff($user,"","",$project_to_copy,"","ADMIN success: copied project to default user.");
-			mkdir($dest, 0777, true);
+			mkdir($dest, 0773, true);
 			foreach (scandir($src) as $file) {
 				if (!is_readable($src . '/' . $file)) continue;
 	                        copy($src . '/' . $file, $dest . '/' . $file);

@@ -88,7 +88,7 @@
 			log_stuff($user,"","",$project_to_copy,"","ADMIN fail: attempted to copy project to admin user, but project name is already in use.");
 		} else {
 			log_stuff($user,"","",$project_to_copy,"","ADMIN success: copied project to admin user.");
-			mkdir($dest, 0777, true);
+			mkdir($dest, 0773, true);
 			foreach (scandir($src) as $file) {
 				if (!is_readable($src.'/'.$file)) continue;
 				if (($file != "..") and ($file != ".")) {

@@ -46,16 +46,16 @@
 			$dir = "users/".$user;
 			mkdir($dir);
 			secureNewDirectory($dir);
-			chmod($dir,0777);
+			chmod($dir,0773);
 			mkdir($dir."/projects/");    // initialize user projects dir.
 			secureNewDirectory($dir."/projects/");
 			mkdir($dir."/genomes/");     // initialize user genomes dir.
 			secureNewDirectory($dir."/genomes/");
 			mkdir($dir."/hapmaps/");     // initialize user hapmaps dir.
 			secureNewDirectory($dir."/hapmaps/");
-			chmod($dir."/projects/",0777);
-			chmod($dir."/genomes/", 0777);
-			chmod($dir."/hapmaps/", 0777);
+			chmod($dir."/projects/",0773);
+			chmod($dir."/genomes/", 0773);
+			chmod($dir."/hapmaps/", 0773);
 			writePassword($user, $pw);
 
 			// Generate lockfile into user account, pending admin approval.
