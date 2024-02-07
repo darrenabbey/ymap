@@ -22,7 +22,7 @@ $name      = $name_new;
 
 // If uploaded file is wrong file type, delete.
 $ext = strtolower($ext);
-if (($ext == "tdt") || ($ext == "sam") || ($ext == "bam") || ($ext == "fasta") || ($ext == "fastq") || ($ext == "fq") || ($ext == "zip") || ($ext == "gz")) {
+if (($ext == "tdt") || ($ext == "sam") || ($ext == "bam") || ($ext == "fasta") || ($ext == "fna") || ($ext == "ffn") || ($ext == "faa") || ($ext == "frn") || ($ext == "fa") || ($ext == "fastq") || ($ext == "fq") || ($ext == "zip") || ($ext == "gz")) {
 } else {
 	unlink($projectPath.$name);
 	fwrite($logOutput, "\t\t| Incompatible file format uploaded!!!\n");
