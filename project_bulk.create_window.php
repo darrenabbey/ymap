@@ -32,22 +32,24 @@
 	<BODY onload="UpdateHapmapList(); UpdateParentList()" bgcolor="FFCCCC">
 		<div id="loginControls"><p>
 		</p></div>
+<b>Bulk data has to be previously loaded into a "bulkdata" directory added to the admin user account.<br>
+Once data processing settings have been made here, YMAP will automatically process through the datsets iteratively.</b>
 		<div id="projectCreationInformation"><p>
-			<form action="project.create_bulk_server.php" method="post">
+			<form action="project_bulk.create_server.php" method="post">
 				<table><tr bgcolor="#FFFFCC"><td>
-					<label for="project">Dataset Name : </label><input type="text" name="project" id="project">
+					<label for="project">Dataset Names : [automatic from filenames]</label>
 				</td><td>
-					Unique name for this dataset.
+					Unique name for datasets are determined from file names found in the user's bulk data directory.
 				</td></tr>
 				<tr bgcolor="#FFCCFF"><td>
 					<label for="ploidy">Ploidy of experiment : </label><input type="text" name="ploidy"  id="ploidy" value="2.0"><br>
 				</td><td>
-					A ploidy estimate for the strain being analyzed.
+					A ploidy estimate for the strains being analyzed. Ploidy estimates can be updated per dataste later.
 				</td></tr>
 				<tr bgcolor="#FFFFCC"><td>
 					<label for="ploidy">Baseline ploidy : </label><input type="text" name="ploidyBase"  id="ploidyBase" value="2.0"><br>
 				</td><td>
-					The copy number to use as a baseline in drawing copy number variations.
+					The copy number to use as a baseline in drawing copy number variations. Baseline copy number can be updated per dataset later.
 				</td></tr>
 				<tr bgcolor="#FFCCFF"><td>
 					<label for="showAnnotations">Generate figure with annotations?</label><select name="showAnnotations" id="showAnnotations">
@@ -59,37 +61,22 @@
 				</td></tr>
 				<tr bgcolor="#FFFFCC"><td>
 					<label for="dataFormat">Data type : </label><select name="dataFormat" id="dataFormat" onchange="UpdateForm(); UpdateHapmap(); UpdateParentList()">
-						<option value="0">SnpCgh microarray                      </option>
 						<option value="1" selected>Whole genome NGS (short-reads)</option>
-						<option value="2">ddRADseq                               </option>
-					<!--	<option value="5">RADseq                                 </option> --!>
 					</select>
 				</td><td>
 					The type of data to be processed.
 				</td></tr>
 				<tr bgcolor="#FFCCFF"><td valign="top">
 					<div id="hiddenFormSection1" style="display:inline">
-						<label for="readType">Read type : </label><select name="readType" id="readType">
-							<option value="0">single-end short-reads; FASTQ/ZIP/GZ file.</option>
-							<option value="1">paired-end short-reads; FASTQ/ZIP/GZ files.</option>
-							<option value="2">SAM/BAM file.</option>
-							<option value="3">TXT file.</option>
-							</select><br>
+						<label for="readType">Read type : [automatic from below types]<br>
+							&emsp;&emsp;* single-end short-reads; FASTQ/ZIP/GZ file.<br>
+							&emsp;&emsp;* paired-end short-reads; FASTQ/ZIP/GZ files.<br>
+							&emsp;&emsp;* SAM/BAM file.<br>
 					</div>
 				</td><td>
 					<div id="hiddenFormSection2" style="display:inline">
 						Single-end or paired-end reads in FASTQ format can be compressed into ZIP or GZ archives or in SAM/BAM alignment files.<br>
-						Tab-delimted TXT column format is described in 'About' tab of main page.
-					</div>
-				</td></tr>
-				<tr bgcolor="#FFFFCC"><td>
-                                        <div id="hiddenFormSection2a" style="display:inline">
-                                                <input type="checkbox" name="indelrealign" value="False" disabled="disabled">Perform Indel-realignment <font color="red" size="2"><b>(Disabled, pending testing.)</b></font><br>
-                                        </div>
-				</td><td>
-					<div id="hiddenFormSection2b" style="display:inline">
-						Enable only if required, after testing without.<br>
-						Disabled resulted in 1% spurious SNPs in test case, with no visual impact, but shortened analysis by ~3 hours.
+						Paired-end data files must be compressed separately and must end with "_R1" and "_R2".
 					</div>
 				</td></tr>
 				<tr bgcolor="#FFFFCC"><td>
@@ -178,8 +165,9 @@
 					</div>
 				</td><td valign="top">
 					<div id="hiddenFormSection6" style="display:inline">
-						A haplotype map defines the phasing of heterozygous SNPs across the genome and must be matched to the background of the experiment for informative results.
-						SNP information from the hapmap will be used for SNP/LOH analsyses.
+						A haplotype map defines the phasing of heterozygous SNPs across the genome.<br>
+						SNP information from the hapmap will be used for SNP/LOH analsyses.<br>
+						The installed hapmap is derived for Candida albicans SC5314, as published in Abbey <i>et al</i>, 2014.
 					</div>
 				</td></tr>
 				<tr bgcolor="#FFFFCC"><td>
@@ -193,7 +181,7 @@
 					// Go through each $projectFolder and look at 'genome.txt', 'dataFormat.txt', and 'minimized.txt'; build javascript array of [parent:genome:dataFormat:projectName]s.
 					?>
 					<div id="hiddenFormSection7" style="display:inline">
-						Parental strain : <select id="selectParent" name="selectParent"><option>[choose]</option></select>
+						Parental strain : [No parent strain for comparison.]
 						<script type="text/javascript">
 						var parentGenomeDataFormat_entries = [
 							['parent', 'genome', 'dataFormat', 'projectName'],
@@ -241,11 +229,9 @@
 						</script>
 					</div>
 				</td><td valign="top">
-					<div id="hiddenFormSection8a" style="display:inline">
-						This strain will act as the SNP distribution control. <font size='2'>(Minimized projects can't be used for this purpose.)</font>
-					</div>
-					<div id="hiddenFormSection8b" style="display:none">
-						This strain will act as the CNV normalization control.
+					<div id="hiddenFormSection8" style="display:inline">
+						Parental strain selection is not available for bulk analysis.<br>
+						Initially process all datasets without, then later analyze individual datasets vs a parental strain will help visualize LOHs.
 					</div>
 				</td></tr>
 				<tr bgcolor="#FFFFCC"><td>
@@ -279,22 +265,15 @@
 
 			<script type="text/javascript">
 			UpdateParent = function() {
-				// if 'selectHapmap' isn't "[None defined]" then hide parental strain row.
 				var selectedHapmap = document.getElementById("selectHapmap").value;
 				if (selectedHapmap == 'none') {
-					document.getElementById("hiddenFormSection7" ).style.display  = 'inline';
-					document.getElementById("hiddenFormSection8a").style.display  = 'none';
-					document.getElementById("hiddenFormSection8b").style.display  = 'inline';
+					// If a hapmap is not selected, show the "parental strain" row of form.
+					document.getElementById("hiddenFormSection7").style.display  = 'inline';
+					document.getElementById("hiddenFormSection8").style.display  = 'inline';
 				} else {
-					if (document.getElementById("dataFormat").value == 2) {    // ddRADseq.
-						document.getElementById("hiddenFormSection7" ).style.display  = 'inline';
-						document.getElementById("hiddenFormSection8a").style.display  = 'none';
-						document.getElementById("hiddenFormSection8b").style.display  = 'inline';
-					} else {
-						document.getElementById("hiddenFormSection7" ).style.display  = 'none';
-						document.getElementById("hiddenFormSection8a").style.display  = 'none';
-						document.getElementById("hiddenFormSection8b").style.display  = 'none';
-					}
+					// If a hapmap is selected, hide the "parental strain" row of form.
+					document.getElementById("hiddenFormSection7").style.display  = 'none';
+					document.getElementById("hiddenFormSection8").style.display  = 'none';
 				}
 			}
 			UpdateHapmapList=function() {
@@ -321,7 +300,7 @@
 				var select             = document.getElementById("selectParent");     // grab select list.
 				select.innerHTML       = '';
 				var el                 = document.createElement("option");
-				el.textContent         = '[This strain is parental type.]';
+				el.textContent         = '[No parent strain for comparison.]';
 				el.value               = 'none';
 				select.appendChild(el);
 				for (var i = 1; i < parentGenomeDataFormat_entries.length; i++) {
@@ -380,14 +359,11 @@
 			}
 			UpdateHapmap=function() {
 				if (document.getElementById("dataFormat").value == 0) {			// SnpCgh microarray.
-					document.getElementById("hiddenFormSection8a").style.display = 'none';
-					document.getElementById("hiddenFormSection8b").style.display = 'none';
+					document.getElementById("hiddenFormSection8").style.display = 'none';
 				} else if (document.getElementById("dataFormat").value == 2) {	// ddRADseq.
-					document.getElementById("hiddenFormSection8a").style.display = 'none';
-					document.getElementById("hiddenFormSection8b").style.display = 'inline';
+					document.getElementById("hiddenFormSection8").style.display = 'none';
 				} else {								// WGseq
-					document.getElementById("hiddenFormSection8a").style.display = 'inline';
-					document.getElementById("hiddenFormSection8b").style.display = 'none';
+					document.getElementById("hiddenFormSection8").style.display = 'inline';
 				}
 			}
 			UpdateBiasWG=function() {
