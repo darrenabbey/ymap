@@ -178,8 +178,9 @@
 					</div>
 				</td><td valign="top">
 					<div id="hiddenFormSection6" style="display:inline">
-						A haplotype map defines the phasing of heterozygous SNPs across the genome and must be matched to the background of the experiment for informative results.
-						SNP information from the hapmap will be used for SNP/LOH analsyses.
+						A haplotype map defines the phasing of heterozygous SNPs across the genome.<br>
+						SNP information from the hapmap will be used for SNP/LOH analsyses.<br>
+						The installed hapmap is derived for Candida albicans SC5314, as published in Abbey <i>et al</i>, 2014.
 					</div>
 				</td></tr>
 				<tr bgcolor="#CCFFCC"><td>
@@ -242,7 +243,9 @@
 					</div>
 				</td><td valign="top">
 					<div id="hiddenFormSection8a" style="display:inline">
-						This strain will act as the SNP distribution control. <font size='2'>(Minimized projects can't be used for this purpose.)</font>
+						This strain will act as the SNP distribution control.<br>
+						It is advised to initially process all datasets without changing this setting.<br>
+						Later, setting a parental strain will help visualize LOHs.
 					</div>
 					<div id="hiddenFormSection8b" style="display:none">
 						This strain will act as the CNV normalization control.
@@ -321,7 +324,7 @@
 				var select             = document.getElementById("selectParent");     // grab select list.
 				select.innerHTML       = '';
 				var el                 = document.createElement("option");
-				el.textContent         = '[This strain is parental type.]';
+				el.textContent         = '[No parent strain for comparison.]';
 				el.value               = 'none';
 				select.appendChild(el);
 				for (var i = 1; i < parentGenomeDataFormat_entries.length; i++) {
