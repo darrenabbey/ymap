@@ -94,7 +94,7 @@
 						} else {
 							echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" onchange=\"chromosomeCheck()\" name=\"draw_{$chrID}\" disabled></td>\n";
 						}
-					}
+				}
 					echo "\t\t\t<td><font size=\"2\">{$chr_names[$chr]}</font></td>\n";
 					echo "\t\t\t<td><input type=\"text\"     name=\"short_{$chrID}\"    value=\"Chr{$chrID}\" size=\"6\"maxlength=\"6\" ></td>\n";
 					echo "\t\t\t<td><input type=\"text\"     name=\"cenStart_{$chrID}\" value=\"0\"           size=\"6\"></td>\n";
@@ -110,11 +110,10 @@
 				echo "<font size=\"2\">";
 				echo "Ploidy = <input type=\"text\" name=\"ploidy\" value=\"2.0\" size=\"6\"><br>";
 				echo "rDNA (start = <input type=\"text\" name=\"rDNAstart\" value=\"0\" size=\"6\">; end = <input type=\"text\" name=\"rDNAend\" value=\"0\" size=\"6\">)<br>";
-				echo "Futher annotations to add to the genome? <input type=\"text\" name=\"annotation_count\" value=\"0\" size=\"6\"><br>";
-				//echo "Select <input type=\"checkbox\" name=\"expression_regions\"> if a tab-delimited-text file listing ORF coordinates is available.<br>";
+				echo "Further annotations to add to the genome? <input type=\"text\" name=\"annotation_count\" value=\"0\" size=\"6\"><br>";
 				echo "</font>";
 				echo "<br>";
-				echo "<input type=\"submit\" value=\"Save genome details...\" onclick=\"parent.hide_hidden('Hidden_InstallNewGenome2')\">";
+				echo "<input type=\"submit\" value=\"Save genome details...\">";
 				echo "<input type=\"hidden\" id=\"key\" name=\"key\" value=\"".  $key . "\">";
 				echo "</form>";
 			}

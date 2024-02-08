@@ -81,7 +81,7 @@
 	if ($chr_count != 0) {
 		for ($chr=0; $chr<$chr_count; $chr += 1) {
 			$chrID = $chr + 1;
-			if (filter_input(INPUT_POST, "draw_".$chrID, FILTER_SANITIZE_STRING) == "on") {
+			if (sanitize_POSt("draw_".$chrID) == "on") {
 				$chr_draw       = 1;
 				$chr_count_used += 1;
 			} else {
@@ -91,7 +91,7 @@
 			$chr_cenStart         = sanitizeInt_POST("cenStart_".$chrID);
 			$chr_cenEnd           = sanitizeInt_POST("cenEnd_".$chrID);
 			$chr_figOrder         = sanitizeInt_POST("chrFigOrder_".$chrID);
-			if (filter_input(INPUT_POST, "reversed_".$chrID, FILTER_SANITIZE_STRING) == "on") {
+			if (sanitize_POSt("reversed_".$chrID) == "on") {
 				$chr_reversed = 1;
 			} else {
 				$chr_reversed = 0;
@@ -319,12 +319,11 @@
 				echo "</select>\t\t\t</td>\n";
 
 				echo "\t\t\t<td><input type=\"text\" name=\"annotation_size_{$annotation}\" value=\"5\" size=\"6\"></td>\n";
-
 				echo "\t\t</tr>\n";
 			}
 		?>
 		</table><br>
-		<input type="submit" id="form_submit_gi2" value="Save genome details..." disabled>
+		<input type="submit" id="form_submit_gi2" value="Save genome details..." onclick="parent.hide_hidden('Hidden_InstallNewGenome2')" disabled>
 
 		<input type="hidden" id="key"                name="key"                value="<?php echo $key;                ?>">
 		<input type="hidden" id="expression_regions" name="expression_regions" value="<?php echo $expression_regions; ?>">
