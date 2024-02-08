@@ -54,7 +54,7 @@ if ($ext == "zip") {
 	fwrite($logOutput,"\t\t| Files in zip archive = ".$fileCount."\n");
 	if ($fileCount > 1) {
 		fwrite($logOutput, "\t\t| Multiple files in .ZIP archive, only examining first file.\n");
-		$errorText .= 'Multiple files in .ZIP archive, only examining first file. ';
+		$errorText = $errorText."Multiple files in .ZIP archive, only examining first file. ";
 	}
 
 	// Extract archive.
@@ -113,7 +113,7 @@ if ($ext == "zip") {
 		// FASTQ file was not found.
 		unlink($projectPath.$name_first);
 		fwrite($logOutput, "\t\t| FASTQ file not found in ZIP!!!\n");
-		$errorText .= 'FASTQ file not found first in ZIP archive. ");
+		$errorText = $errorText."FASTQ file not found first in ZIP archive. ";
 		$ext_new  = "none1";
 		$name_new = "";
 	}
@@ -125,7 +125,7 @@ if ($ext == "zip") {
 	$fileCount          = shell_exec("tar -tzf ".$projectPath.$name." | wc -l");
 	if ($fileCount > 1) {
 		fwrite($logOutput, "\t\t| Multiple files in .TAR.GZ archive, only examining first file.\n");
-		$errorText .= 'Multiple files in .TAR.GZ archive, only examining first file. ';
+		$errorText = $errorText."Multiple files in .TAR.GZ archive, only examining first file. ";
 	}
 
         // Extract archive.
@@ -138,7 +138,7 @@ if ($ext == "zip") {
 		// DRAGON: Needs to check for unexpected end of file using gunzip -t.
 		// if (gunzip -t fails) {
 		//	fwrite($logOutput, "\t\t| Unexpected end of GZ achive.\n");
-		//	$errorText .= 'Unexpected end of GZ achive. ");
+		//	$errorText = $errorText."Unexpected end of GZ achive. ";
 		// }
 
 		// Figure out filename contained in gz archive.
@@ -207,7 +207,7 @@ if ($ext == "zip") {
 		// FASTQ file was not found.
 		unlink($projectPath.$name_first);
 		fwrite($logOutput, "\t\t| FASTQ file not found in GZ!!!\n");
-		$errorText .= 'FASTQ file not found first in ZIP archive. ");
+		$errorText = $errorText."FASTQ file not found first in ZIP archive. ";
 		$ext_new  = "none1";
 		$name_new = "";
 	}
