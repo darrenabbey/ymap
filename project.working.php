@@ -32,12 +32,6 @@
 		input3.setAttribute("value",key);
 		conclusion.appendChild(input3);
 
-//		var input4 = document.createElement('input');
-//		input4.setAttribute('type','hidden');
-//		input4.setAttribute('name','status');
-//		input4.setAttribute('value',status);
-//		conclusion.appendChild(input4);
-
 		document.body.appendChild(conclusion);
 		// Automatically submit constructed form to post data to page.
 		conclusion.submit();		// works in Safari, but not Firefox.
