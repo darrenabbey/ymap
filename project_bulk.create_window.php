@@ -32,10 +32,11 @@
 	<BODY onload="UpdateHapmapList(); UpdateParentList()" bgcolor="FFCCCC">
 		<div id="loginControls"><p>
 		</p></div>
-<b>Bulk data has to be previously loaded into a "bulkdata" directory added to the admin user account.<br>
-Once data processing settings have been made here, YMAP will automatically process through the datsets iteratively.</b>
+			<b>Bulk data has to have been previously loaded into a "bulkdata/" directory in the admin user account.<br>
+			Once data processing settings have been made here, YMAP will automatically process through the datsets iteratively.</b>
 		<div id="projectCreationInformation"><p>
-			<form action="project_bulk.create_server.php" method="post">
+			<form id="bulk_submit" action="project_bulk.create_server.php" method="post">
+
 				<table><tr bgcolor="#FFFFCC"><td>
 					<label for="project">Dataset Names : [automatic from filenames]</label>
 				</td><td>
@@ -258,10 +259,18 @@ Once data processing settings have been made here, YMAP will automatically proce
 				</td></tr></table><br>
 				<?php
 				if (!$exceededSpace) {
-					echo "<input type='submit' value='Initiate Bulk Dataset Processing'>";
+					echo "<input type='button' value='Initiate Bulk Dataset Processing' onclick='submit_func();'><br>";
+					echo "<b>Form window will close when button is pressed.</b><br>";
+					echo "<b>Main user interface will pause while projects are setup, but will then refresh.</b>";
 				}
 				?>
 			</form>
+			<script type="text/javascript">
+				function submit_func(form) {
+					parent.document.getElementById('Hidden_InstallBulkDataset').style.display = 'none';
+					document.forms["bulk_submit"].submit();
+				}
+			</script>
 
 			<script type="text/javascript">
 			UpdateParent = function() {
