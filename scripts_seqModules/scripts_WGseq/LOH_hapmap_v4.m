@@ -1239,8 +1239,8 @@ saveas(fig,        [projectDir 'fig.SNP-map.1.' figVer 'png'], 'png');
 delete(fig);
 
 %% change permissions of figures.
-system(['chmod 664 ' projectDir 'fig.SNP-SNP.1.' figVer 'eps']);
-system(['chmod 664 ' projectDir 'fig.SNP-SNP.1.' figVer 'png']);
+system(['chmod 664 ' projectDir 'fig.SNP-map.1.' figVer 'eps']);
+system(['chmod 664 ' projectDir 'fig.SNP-map.1.' figVer 'png']);
 
 set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
 saveas(Linear_fig, [projectDir 'fig.SNP-map.2.' figVer 'eps'], 'epsc');
@@ -1248,8 +1248,8 @@ saveas(Linear_fig, [projectDir 'fig.SNP-map.2.' figVer 'png'], 'png');
 delete(Linear_fig);
 
 %% change permissions of figures.
-system(['chmod 664 ' projectDir 'fig.SNP-SNP.2.' figVer 'eps']);
-system(['chmod 664 ' projectDir 'fig.SNP-SNP.2.' figVer 'png']);
+system(['chmod 664 ' projectDir 'fig.SNP-map.2.' figVer 'eps']);
+system(['chmod 664 ' projectDir 'fig.SNP-map.2.' figVer 'png']);
 
 %% ========================================================================
 % end stuff
