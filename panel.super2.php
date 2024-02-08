@@ -122,14 +122,14 @@
 
 				// Push in-process projects to display.
 				foreach($projectFolders_working as $key_=>$project) {
-					printprojectInfo("2", $key_+count($projectFolders_starting), "BB9900", $admin_as_user, $project, $sumKey);
+					printProjectInfo("2", $key_+count($projectFolders_starting), "BB9900", "FFFFFF", $admin_as_user, $project, $sumKey);
 					$sumKey += 1;
 				}
 			}
 		}
 	}
 
-	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $user, $project, $sumKey) {
+	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $labelRgbBackgroundColor, $user, $project, $sumKey) {
 		if ($key%2 == 0) {
 			$bgColor = "#FFDDDD";
 		} else {
@@ -149,7 +149,7 @@
 		$projectNameString = trim($projectNameString);
 
 		echo "<table style='background-color:".$bgColor.";' width='100%'><tr><td>\n";
-		echo "<span id='p_label_".$sumKey."_admin3' style='color:#".$labelRgbColor.";'>\n\t\t";
+		echo "<span id='p_label_".$sumkey."_super2' style='color:#".$labelRgbColor."; background-color:#".$labelRgbBackgroundColor.";'>\n\t\t\t\t";
 		echo "<font size='2'>[".$user."] ".($sumKey+1).". &nbsp; &nbsp;";
 
 		echo $projectNameString." ";
@@ -175,16 +175,16 @@
 			echo "localStorage.setItem(\"projectError\",".json_encode($error).");";
 		echo "'>";
 		if (file_exists("users/".$user."/projects/".$project."/locked.txt")) {
-			echo "<input type='button' value='Unlock.' onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin3.php')},100);\">";
+			echo "<input type='button' value='Unlock.' onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.super2.php')},100);\">";
 		} else {
-			echo "<input type='button' value='Lock.'   onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.lockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.admin3.php')},100);\">";
+			echo "<input type='button' value='Lock.'   onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.lockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.super2.php')},100);\">";
 		}
-		echo "<input type='button' value='Copy to admin.'  onclick=\"key = '$key'; user = '$user'; $.ajax({url:'admin.copyProjectToAdmin_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); location.replace('panel.admin3.php');\">";
+		echo "<input type='button' value='Copy to admin.'  onclick=\"key = '$key'; user = '$user'; $.ajax({url:'admin.copyProjectToAdmin_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); location.replace('panel.super2.php');\">";
 
 		echo "\t\t</form>\n";
 
 		echo "\t\t</font>\n\t\n\t\t\t\t";
-		echo "<div id='frameContainer.p".$frameContainerIx."_".$sumKey."_admin3'></div>\n\n\t\t\t\t";
+		echo "<div id='frameContainer.p".$frameContainerIx."_".$sumKey."_super2'></div>\n\n\t\t\t\t";
 		echo "</td></tr></table>";
 	}
 	function getGenomeName($user,$project) {
@@ -259,15 +259,15 @@ if (isset($_SESSION['logged_on'])) {
 				//$handle   = fopen("users/".$admin_as_user."/projects/".$project."/dataFormat.txt", "r");
 				//$dataFormat = fgets($handle);
 				//fclose($handle);
-				echo "\n// javascript for project #".$key+$sumKey."_admin3, '".$project."'\n";
-				echo "var el_p            = document.getElementById('frameContainer.p2_".$key+$sumKey."_admin3');\n";
-				echo "el_p.innerHTML      = '<iframe id=\"p_".$key+$sumKey."_admin3\" name=\"p_".$key+$sumKey."_admin3\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+				echo "\n// javascript for project #".$key+$sumKey."_super2, '".$project."'\n";
+				echo "var el_p            = document.getElementById('frameContainer.p2_".$key+$sumKey."_super2');\n";
+				echo "el_p.innerHTML      = '<iframe id=\"p_".$key+$sumKey."_super2\" name=\"p_".$key+$sumKey."_super2\" class=\"upload\" style=\"height:38px; border:0px;\" ";
 				echo     "src=\"project.admin_working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
-				echo "var p_iframe        = document.getElementById('p_".$key+$sumKey."_admin3');\n";
+				echo "var p_iframe        = document.getElementById('p_".$key+$sumKey."_super2');\n";
 				echo "var p_js            = p_iframe.contentWindow;\n";
 				echo "p_js.user           = \"".$admin_as_user."\";\n";
 				echo "p_js.project        = \"".$project."\";\n";
-				echo "p_js.key            = \"p_".$key+$sumKey."_admin3\";\n";
+				echo "p_js.key            = \"p_".$key+$sumKey."_super2\";\n";
 			}
 			$sumKey += count($projectFolders_working);
 		}

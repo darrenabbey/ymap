@@ -150,20 +150,20 @@
 
 		foreach($projectFolders_starting as $key_=>$project) {
 			if (!$exceededSpace) {
-				printprojectInfo("4", $key_, "CC0000", $admin_as_user, $project, "(Data upload pending.)");
+				printProjectInfo("4", $key_, "CC0000", "FFFFFF", $admin_as_user, $project, "(Data upload pending.)");
 			} else {
-				printprojectInfo("4", $key_, "888888", $admin_as_user, $project, "(Data upload pending.)");
+				printProjectInfo("4", $key_, "888888", "FFFFFF" $admin_as_user, $project, "(Data upload pending.)");
 			}
 		}
 		foreach($projectFolders_working as $key_=>$project) {
-			printprojectInfo("2", $key_ + count($projectFolders_starting), "BB9900", $admin_as_user, $project, "");
+			printProjectInfo("2", $key_ + count($projectFolders_starting), "BB9900", "FFFFFF", $admin_as_user, $project, "");
 		}
 		foreach($projectFolders_complete as $key_=>$project) {
-			printprojectInfo("1", $key_ + count($projectFolders_starting) + count($projectFolders_working), "00AA00", $admin_as_user, $project, "");
+			printProjectInfo("1", $key_ + count($projectFolders_starting) + count($projectFolders_working), "00AA00", "FFFFFF", $admin_as_user, $project, "");
 		}
 	}
 
-	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $user, $project, $comment) {
+	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $labelRgbBackgroundColor, $user, $project, $comment) {
 		if ($key%2 == 0) {
 			$bgColor   = "#FFDDDD";
 			$greyColor = "#888888";
@@ -201,16 +201,16 @@
 		$projectNameString = trim($projectNameString);
 
 		echo "<table style='background-color:".$bgColor.";' width='100%'><tr><td>\n";
-		echo "<span id='p_label_".$key."_admin2' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
+		echo "<span id='p_label_".$key."_super1' style='color:#".$labelRgbColor."; background-color:#".$labelRgbBackgroundColor.";'>\n\t\t\t\t";
 		echo "<font size='2'>".($key+1).".";
 		if ($frameContainerIx != "1") {
-			echo "<input id='show_".$key."_admin2' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."_admin2','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."');\" style=\"visibility:hidden;\">";
+			echo "<input id='show_".$key."_super1' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."_super1','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."');\" style=\"visibility:hidden;\">";
 		} else {
 			// Limit files list to valid output file types.
 			$projectFiles   = preg_grep('~\.(png|eps|bed|gff3)$~', scandir("users/$user/projects/$project/"));
 			sort($projectFiles);
 			$json_file_list = json_encode($projectFiles);
-			echo "<input id='show_".$key."_admin2' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."_admin2','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
+			echo "<input id='show_".$key."_super1' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."_super1','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
 		}
 
 		echo $projectNameString." ".$comment;
@@ -273,7 +273,7 @@
 		}
 
 		echo "</font></span>\n\t\t\t\t";
-		echo "<div id='frameContainer.p".$frameContainerIx."_".$key."_admin2'></div>\n\n\t\t\t\t";
+		echo "<div id='frameContainer.p".$frameContainerIx."_".$key."_super1'></div>\n\n\t\t\t\t";
 		echo "</td></tr></table>";
 	}
 	function getGenomeName($user,$project) {
@@ -325,15 +325,15 @@ var systemProjectCount = "<?php echo $systemProjectCount; ?>";
 			$handle   = fopen("users/".$admin_as_user."/projects/".$project."/dataFormat.txt", "r");
 			$dataFormat = fgets($handle);
 			fclose($handle);
-			echo "\n// javascript for project #".$key."_admin2, '".$project."'\n";
-			echo "var el_p            = document.getElementById('frameContainer.p2_".$key."_admin2');\n";
-			echo "el_p.innerHTML      = '<iframe id=\"p_".$key."_admin2\" name=\"p_".$key."_admin2\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+			echo "\n// javascript for project #".$key."_super1, '".$project."'\n";
+			echo "var el_p            = document.getElementById('frameContainer.p2_".$key."_super1');\n";
+			echo "el_p.innerHTML      = '<iframe id=\"p_".$key."_super1\" name=\"p_".$key."_super1\" class=\"upload\" style=\"height:38px; border:0px;\" ";
 			echo     "src=\"project.admin_working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
-			echo "var p_iframe        = document.getElementById('p_".$key."_admin2');\n";
+			echo "var p_iframe        = document.getElementById('p_".$key."_super1');\n";
 			echo "var p_js            = p_iframe.contentWindow;\n";
 			echo "p_js.user           = \"".$admin_as_user."\";\n";
 			echo "p_js.project        = \"".$project."\";\n";
-			echo "p_js.key            = \"p_".$key."_admin2\";\n";
+			echo "p_js.key            = \"p_".$key."_super1\";\n";
 		}
 	}
 ?>
