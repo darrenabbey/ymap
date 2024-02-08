@@ -152,7 +152,7 @@
 			if (!$exceededSpace) {
 				printProjectInfo("4", $key_, "CC0000", "FFFFFF", $admin_as_user, $project, "(Data upload pending.)");
 			} else {
-				printProjectInfo("4", $key_, "888888", "FFFFFF" $admin_as_user, $project, "(Data upload pending.)");
+				printProjectInfo("4", $key_, "888888", "FFFFFF", $admin_as_user, $project, "(Data upload pending.)");
 			}
 		}
 		foreach($projectFolders_working as $key_=>$project) {
@@ -231,6 +231,7 @@
 				$output       = fopen($totalSizeFile, 'w');
 				fwrite($output, $projectSizeStr);
 				fclose($output);
+				chmod($totalSizeFile, 0664);
 			}
 			// Print total size.
 			echo " <font color='black' size='1'><b>(". $projectSizeStr .")</b></font>";
