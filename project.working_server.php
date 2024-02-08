@@ -64,16 +64,13 @@ body {font-family: arial;}
 	$dirFigureBase = $project_dir."/";
 
 	// Load 'dataFormat' from project folder.
-	$handle   = fopen($dirFigureBase."dataFormat.txt", "r");
-	$dataFormat = trim(fgets($handle));
-	fclose($handle);
-
-	// Load 'parent' from project folder.
-	$handle = fopen($dirFigureBase."parent.txt", "r");
-	$parent = trim(fgets($handle));
-	fclose($handle);
-
-	//echo "\n<!--\tuser = ".$user."; project = ".$project." --!>";
+	if (file_exists($dirFigureBase."dataFormat.txt")) {
+		$handle   = fopen($dirFigureBase."dataFormat.txt", "r");
+		$dataFormat = trim(fgets($handle));
+		fclose($handle);
+	} else {
+		$dataFormat = "1:0:0";
+	}
 
 	$sizeString_1 = "";
 	$sizeString_2 = "";
@@ -103,7 +100,7 @@ body {font-family: arial;}
 		// Hide iframe and adjust color of entry to indicate completion.
 		?>
 		<html>
-		<body onload = "parent.parent.update_project_label_color('<?php echo $key; ?>','#00AA00'); parent.parent.resize_project('<?php echo $key; ?>', 0); parent.parent.update_project_remove_iframe('<?php echo $key; ?>', '<?php echo htmlspecialchars(json_encode(scandir("users/$user/projects/$project"))); ?>');">
+		<body onload = "parent.parent.update_project_label_color('<?php echo $key; ?>','#00AA00','#FFFFFF'); parent.parent.resize_project('<?php echo $key; ?>', 0); parent.parent.update_project_remove_iframe('<?php echo $key; ?>', '<?php echo htmlspecialchars(json_encode(scandir("users/$user/projects/$project"))); ?>');">
 		</body>
 		</html>
 		<?php
@@ -121,6 +118,56 @@ body {font-family: arial;}
 		</body>
 		</html>
 		<?php
+	} else if (file_exists($dirFigureBase."bulk.txt")) {
+		echo "\n<!-- bulk file found. --!>\n";
+		// Load last line from "condensed_log.txt" file.
+		if (file_exists($dirFigureBase."condensed_log.txt")) {
+			$condensedLog      = explode("\n", trim(file_get_contents($dirFigureBase."condensed_log.txt")));
+			$condensedLogEntry = $condensedLog[count($condensedLog)-1];
+		} else {
+			$condensedLogEntry = "Log missing.";
+		}
+		?>
+		<script type="text/javascript">
+		var project = "<?php echo $project; ?>";
+		var key     = "<?php echo $key; ?>";
+		var status  = "<?php echo $status; ?>";
+		reload_page=function() {
+			// Make a form to generate a form to POST information to pass along to page reloads, auto-triggered by form submit.
+			var autoSubmitForm = document.createElement('form');
+			    autoSubmitForm.setAttribute('method','post');
+			    autoSubmitForm.setAttribute('action','project.working_server.php');
+			var input2 = document.createElement('input');
+			    input2.setAttribute('type','hidden');
+			    input2.setAttribute('name','key');
+			    input2.setAttribute('value',key);
+			    autoSubmitForm.appendChild(input2);
+			var input3 = document.createElement('input');
+			    input3.setAttribute('type','hidden');
+			    input3.setAttribute('name','project');
+			    input3.setAttribute('value',project);
+			    autoSubmitForm.appendChild(input3);
+			var input4 = document.createElement('input');
+			    input4.setAttribute('type','hidden');
+			    input4.setAttribute('name','status');
+			    input4.setAttribute('value',status);
+			    autoSubmitForm.appendChild(input4);
+			document.body.appendChild(autoSubmitForm);
+			autoSubmitForm.submit();
+		}
+		// Initiate recurrent call to reload_page function, which depends upon project status.
+		var internalIntervalID = window.setInterval(reload_page, 3000);
+		</script>
+		<html>
+		<body onload = "parent.parent.resize_project('<?PHP echo $key; ?>', 38); parent.parent.update_project_label_color('<?php echo $key; ?>','#000000','#FFCCCC');" class="tab">
+		<div style='color: red; display: inline-block; font-size: 10px;'><b>[Processing uploaded data.]</b></div>
+		<?php
+		echo $clock."<br>";
+		echo "<div style='font-size: 10px;'>";
+		echo $condensedLogEntry;
+		echo "</div>";
+		//echo "\n<html>\n<body style='background-color:#FFCCCC;'>\n";
+		//echo "Dataset is in bulk-processing queue.<br>\n";
 	} else if (file_exists($dirFigureBase."working.txt")) {
 		// Load start time from 'working.txt'
 		$startTimeStamp = file_get_contents($project_dir."/working.txt");
@@ -145,8 +192,12 @@ body {font-family: arial;}
 		} else {
 			echo "\n<!-- working file found. --!>\n";
 			// Load last line from "condensed_log.txt" file.
-			$condensedLog      = explode("\n", trim(file_get_contents($dirFigureBase."condensed_log.txt")));
-			$condensedLogEntry = $condensedLog[count($condensedLog)-1];
+			if (file_exists($dirFigureBase."condensed_log.txt")) {
+				$condensedLog      = explode("\n", trim(file_get_contents($dirFigureBase."condensed_log.txt")));
+				$condensedLogEntry = $condensedLog[count($condensedLog)-1];
+			} else {
+				$condensedLogEntry = "Log missing.";
+			}
 			?>
 			<script type="text/javascript">
 			var project = "<?php echo $project; ?>";

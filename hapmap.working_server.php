@@ -70,7 +70,7 @@
 		if (file_exists($hapmap_dir."/complete.txt")) {
 ?>
 		<html>
-		<body onload = "parent.parent.update_hapmap_label_color('<?php echo $key; ?>','#00AA00'); parent.parent.resize_hapmap('<?php echo $key; ?>', 0);" >
+		<body onload = "parent.parent.update_hapmap_label_color('<?php echo $key; ?>','#00AA00','#FFFFFF'); parent.parent.resize_hapmap('<?php echo $key; ?>', 0);" >
 		</body>
 		</html>
 <?php
@@ -81,7 +81,7 @@
 			$errorLineCount = substr_count($error,"<br>")+1;
 ?>
 		<html>
-		<body onload = "parent.parent.update_hapmap_label_color('<?php echo $key; ?>','#AA0000'); parent.parent.resize_project('<?php echo $key; ?>', '<?php echo $errorLineCount*18; ?>');" >
+		<body onload = "parent.parent.update_hapmap_label_color('<?php echo $key; ?>','#AA0000','#FFFFFF'); parent.parent.resize_project('<?php echo $key; ?>', '<?php echo $errorLineCount*18; ?>');" >
 			<font color="red"><b>[Error]</b></font>
 			<?php echo $error; ?>
 		</body>
@@ -153,7 +153,7 @@
 		} else {
 ?>
 		<html>
-		<body onload = "parent.parent.update_hapmap_label_color('<?php echo $key; ?>','#00AA00'); parent.hapmap_UI_refresh_1_<?php echo str_replace('h_','',$key); ?>();">
+		<body onload = "parent.parent.update_hapmap_label_color('<?php echo $key; ?>','#00AA00','#FFFFFF'); parent.hapmap_UI_refresh_1_<?php echo str_replace('h_','',$key); ?>();">
 		</body>
 		</html>
 <?php

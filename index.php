@@ -67,16 +67,18 @@
 		}
 		document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById("p_".project_key).style.height = "0px";
 	}
-	function update_project_label_color(project_key,label_color) {
+	function update_project_label_color(project_key,label_color,label_BGcolor) {
 		// Changes color of project label in user interface.
 		project_key                 = project_key.replace('p_','');
 		var project_label1          = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('p_label_'+project_key);
 		var project_label2          = document.getElementById('panel_visualizeDataset_iframe').contentDocument.getElementById('p_label_'+project_key);
 		if (project_label1 != null) {
-			project_label1.style.color  = label_color;
+			project_label1.style.color            = label_color;
+			project_label1.style.background-color = label_BGcolor;
 		}
 		if (project_label2 != null) {
-			project_label2.style.color  = label_color;
+			project_label2.style.color            = label_color;
+			project_label2.style.background-color = label_BGcolor;
 		}
 	}
 	function update_project_file_size(project_key,sizeString_1,sizeString_2) {
@@ -110,10 +112,11 @@
 	//============================
 	// Hapmap interface functions.
 	//----------------------------
-	function update_hapmap_label_color(hapmap_key,label_color) {
-		hapmap_key               = hapmap_key.replace('h_','');
-		var hapmap_label         = document.getElementById('panel_hapmap_iframe').contentDocument.getElementById('h_label_'+hapmap_key);
-		hapmap_label.style.color = label_color;
+	function update_hapmap_label_color(hapmap_key,label_color,label_BGcolor) {
+		hapmap_key                          = hapmap_key.replace('h_','');
+		var hapmap_label                    = document.getElementById('panel_hapmap_iframe').contentDocument.getElementById('h_label_'+hapmap_key);
+		hapmap_label.style.background-color = label_BGcolor;
+		hapmap_label.style.color            = label_color;
 	}
 	function resize_hapmap(hapmap_key, pixels) {
 		document.getElementById('panel_hapmap_iframe').contentDocument.getElementById(hapmap_key).style.height = pixels+"px";
@@ -132,11 +135,12 @@
 		genome_iframe.innerHTML              = '';
 		document.getElementById("g_".genome_key).style.height = "0px";
 	}
-	function update_genome_label_color(genome_key,label_color) {
+	function update_genome_label_color(genome_key,label_color,label_BGcolor) {
 		// Updates genome font color depending on install status.
-		genome_key               = genome_key.replace('g_','');
-		var genome_label         = document.getElementById('panel_genome_iframe').contentDocument.getElementById('g_label_'+genome_key);
-		genome_label.style.color = label_color;
+		genome_key                          = genome_key.replace('g_','');
+		var genome_label                    = document.getElementById('panel_genome_iframe').contentDocument.getElementById('g_label_'+genome_key);
+		genome_label.style.color            = label_color;
+		genome_label.style.background-color = label_BGcolor;
 	}
 	function update_genome_file_size(genome_key,sizeString_1) {
 		// Updates the "currently using" string for user installed genomes.
