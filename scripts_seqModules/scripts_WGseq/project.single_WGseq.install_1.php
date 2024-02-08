@@ -72,6 +72,9 @@
 
 // Installation continues with next php script... strings recieved as POST are forwarded to next script.
 	fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_WGseq/project.single_WGseq.install_2.php'\n");
+	fwrite($logOutput, "        file    = ".$fileName."\n");
+	fwrite($logOutput, "        user    = ".$user."\n");
+	fwrite($logOutput, "        project = ".$project."\n");
  	$system_call_string = "php project.single_WGseq.install_2.php ".$fileName." ".$user." ".$project." > /dev/null &";
 	system($system_call_string);
 
