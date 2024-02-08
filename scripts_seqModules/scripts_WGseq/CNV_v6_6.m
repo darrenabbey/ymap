@@ -1309,11 +1309,19 @@ saveas(Standard_fig, [projectDir 'fig.CNV-map.1.' figVer 'eps'], 'epsc');
 saveas(Standard_fig, [projectDir 'fig.CNV-map.1.' figVer 'png'], 'png');
 %delete(Standard_fig);
 
+%% change permissions of figures.
+system(['chmod 664 ' projectDir 'fig.CNV-map.1.' figVer 'eps']);
+system(['chmod 664 ' projectDir 'fig.CNV-map.1.' figVer 'png']);
+
 % Save horizontal aligned genome figure.
 set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
 saveas(Linear_fig,   [projectDir 'fig.CNV-map.2.' figVer 'eps'], 'epsc');
 saveas(Linear_fig,   [projectDir 'fig.CNV-map.2.' figVer 'png'], 'png');
 delete(Linear_fig);
+
+%% change permissions of figures.
+system(['chmod 664 ' projectDir 'fig.CNV-map.2.' figVer 'eps']);
+system(['chmod 664 ' projectDir 'fig.CNV-map.2.' figVer 'png']);
 
 % Output chromosome copy number estimates.
 textFileName = [projectDir 'txt.CNV-map.3.txt'];

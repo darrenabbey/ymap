@@ -693,6 +693,11 @@ saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.b2.' figVer 'eps'], 'epsc'
 fprintf('\t|\tSaving linear figure in PNG format.\n');
 saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.b2.' figVer 'png'], 'png');
 
+%% change permissions of figures.
+system(['chmod 664 ' projectDir 'fig.allelic_ratio-map.b2.' figVer 'eps']);
+system(['chmod 664 ' projectDir 'fig.allelic_ratio-map.b2.' figVer 'png']);
+
+
 %% Delete figures from memory.
 delete(fig);
 delete(Linear_fig);

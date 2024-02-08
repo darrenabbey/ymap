@@ -1346,10 +1346,18 @@ saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.' figVer 'eps'], 'epsc');
 saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.' figVer 'png'], 'png' );
 delete(fig);
 
+%% change permissions of figures.
+system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.1.' figVer 'eps']);
+system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.1.' figVer 'png']);
+
 fprintf('\n###\n### Saving linear figure.\n###\n');
 set(   Linear_fig, 'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
 saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.' figVer 'eps'], 'epsc');
 saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.' figVer 'png'], 'png' );
 delete(Linear_fig);
+
+%% change permissions of figures.
+system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.2.' figVer 'eps']);
+system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.2.' figVer 'png']);
 
 end

@@ -828,11 +828,19 @@ if ((useHapmap) || (useParent))
 	saveas(fig,        [projectDir 'fig.CNV-SNP-map.RedGreen.1.' figVer 'png'], 'png' );
 	delete(fig);
 
+	%% change permissions of figures.
+	system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.RedGreen.1.' figVer 'eps']);
+	system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.RedGreen.1.' figVer 'png']);
+
 	fprintf('\n###\n### Saving linear figure.\n###\n');
 	set(   Linear_fig, 'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
 	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.RedGreen.2.' figVer 'eps'], 'epsc');
 	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.RedGreen.2.' figVer 'png'], 'png' );
 	delete(Linear_fig);
+
+	%% change permissions of figures.
+	system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.RedGreen.2.' figVer 'eps']);
+	system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.RedGreen.2.' figVer 'png']);
 elseif (useParent)
 	% Dataset was compared to a parent, so don't draw a Red/Green alternate colors plot.
 	fprintf(['\n##\n## Parent in use, so "CNV_SNP_hapmap_v4_RedGreen.m" is being skipped.\n##\n']);
