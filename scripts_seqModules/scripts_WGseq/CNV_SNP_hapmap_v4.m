@@ -333,6 +333,9 @@ end;
 fprintf('\t|\tSave workspace variables for later use in RedGreen alternate plot.\n');
 save([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
 
+%% change permissions of file.
+system(['chmod 664 ' projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
+
 
 %%================================================================================================
 % Process SNP/hapmap data to determine colors to be presented for each SNP locus.

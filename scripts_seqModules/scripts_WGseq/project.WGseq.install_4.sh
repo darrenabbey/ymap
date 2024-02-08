@@ -86,6 +86,8 @@ else
 	echo "\tPreprocessing CNV data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
 	$python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.txt" 2>> $logName;
 	echo "\tpre-processing complete." >> $logName;
+
+	chmod 664 $projectDirectory"preprocessed_CNVs.txt";
 fi
 
 echo "Analyzing and mapping CNVs." >> $condensedLog;
@@ -191,6 +193,8 @@ else
 
 	$python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" $genome $genomeUser $projectParent $projectParentUser $project $user $main_dir $logName LOH > $projectDirectory"preprocessed_SNPs.txt" 2>> $logName;
 	echo "\tpre-processing complete." >> $logName;
+
+	chmod 664 $projectDirectory"preprocessed_SNPs.txt";
 fi
 
 echo "Mapping SNPs." >> $condensedLog;

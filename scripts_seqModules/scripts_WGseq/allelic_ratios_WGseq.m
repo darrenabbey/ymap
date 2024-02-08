@@ -287,6 +287,9 @@ end;
 fprintf('\t|\tSave processed SNP/LOH data to file "SNP_v4.all1.mat" for project.\n');
 save([projectDir 'SNP_' SNP_verString '.all1.mat'],'chr_SNP_data_ratios','chr_SNP_data_positions','chr_count');
 
+%% change permissions of file.
+system(['chmod 664 ' projectDir 'SNP_' SNP_verString '.all1.mat']);
+
 
 %%================================================================================================
 % Setup basic figure parameters.
@@ -686,6 +689,10 @@ fprintf('\t|\tSaving standard figure in EPS format.\n');
 saveas(fig,        [projectDir 'fig.allelic_ratio-map.b1.' figVer 'eps'], 'epsc');
 fprintf('\t|\tSaving standard figure in PNG format.\n');
 saveas(fig,        [projectDir 'fig.allelic_ratio-map.b1.' figVer' png'], 'png');
+
+%% change permissions of figures.
+system(['chmod 664 ' projectDir 'fig.allelic_ratio-map.b1.' figVer 'eps']);
+system(['chmod 664 ' projectDir 'fig.allelic_ratio-map.b1.' figVer 'png']);
 %}
 set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
 fprintf('\t|\tSaving linear figure in EPS format.\n');

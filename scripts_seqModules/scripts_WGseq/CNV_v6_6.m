@@ -150,7 +150,10 @@ if (exist([projectDir 'CNV_' CNV_verString '.mat'],'file') == 0)
 	end;
 	fclose(data);
 
-    save([projectDir 'CNV_' CNV_verString '.mat'],'chr_CNVdata');
+	save([projectDir 'CNV_' CNV_verString '.mat'],'chr_CNVdata');
+
+	%% change permissions of file.
+	system(['chmod 664 ' projectDir 'CNV_' CNV_verString '.mat']);
 else
 	fprintf('\nMAT file found, loading.\n');
 	load([projectDir 'CNV_' CNV_verString '.mat']);
@@ -621,6 +624,10 @@ if (performEndbiasCorrection)
 	saveas(bias_end_fig, [projectDir 'fig.bias_chr_end.' figVer 'eps'], 'epsc');
 	saveas(bias_end_fig, [projectDir 'fig.bias_chr_end.' figVer 'png'], 'png');
 	delete(bias_end_fig);
+
+	%% change permissions of figures.
+	system(['chmod 664 ' projectDir 'fig.bias_chr_end.' figVer 'eps']);
+	system(['chmod 664 ' projectDir 'fig.bias_chr_end.' figVer 'png']);
 end;
 if (performGCbiasCorrection)
 	bias_GC_fig = figure();
@@ -659,6 +666,10 @@ if (performGCbiasCorrection)
 	saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.' figVer 'eps'], 'epsc');
 	saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.' figVer 'png'], 'png');
 	delete(bias_GC_fig);
+
+	%% change permissions of figures.
+	system(['chmod 664 ' projectDir 'fig.bias_GC_content.' figVer 'eps']);
+	system(['chmod 664 ' projectDir 'fig.bias_GC_content.' figVer 'png']);
 end;
 if (performRepetbiasCorrection)
 	bias_repet_fig = figure();
@@ -697,6 +708,10 @@ if (performRepetbiasCorrection)
 	saveas(bias_repet_fig, [projectDir 'fig.bias_repetitiveness.' figVer 'eps'], 'epsc');
 	saveas(bias_repet_fig, [projectDir 'fig.bias_repetitiveness.' figVer 'png'], 'png');
 	delete(bias_repet_fig);
+
+	%% change permissions of figures.
+	system(['chmod 664 ' projectDir 'fig.bias_repetitiveness.' figVer 'eps']);
+	system(['chmod 664 ' projectDir 'fig.bias_repetitiveness.' figVer 'png']);
 end;
 
 
@@ -711,6 +726,9 @@ for chr = 1:num_chrs
 end;
 genome_CNV = genome;
 save([projectDir 'Common_CNV.mat'], 'CNVplot2','genome_CNV');
+
+%% change permissions of file.
+system(['chmod 664 ' projectDir 'Common_CNV.mat']);
 
 ploidy = str2num(ploidyEstimateString);
 [chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use);
@@ -1329,5 +1347,8 @@ fprintf(['Text output of CNVs : "' textFileName '"\n']);
 textFileID = fopen(textFileName,'w');
 fprintf(textFileID,stringChrCNVs);
 fclose(textFileID);
+
+%% change permissions of figures.
+system(['chmod 664 ' projectDir 'txt.CNV-map.3.txt']);
 
 end

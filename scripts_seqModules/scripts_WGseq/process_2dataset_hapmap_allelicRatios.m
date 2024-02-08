@@ -229,3 +229,6 @@ end;
 %-------------------------------------------------------------------------------------------------------------
 fprintf(['process_2dataset_hapmap_allelicRatios.m: Save processed data.\n']);
 save([project1dir 'SNP_' SNP_verString '.all3.mat'],'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count','C_chr_baseCall','C_chr_SNP_homologA','C_chr_SNP_homologB','C_chr_SNP_flipHomologs');
+
+%% change permissions of file.
+system(['chmod 664 ' projectDir 'SNP_' SNP_verString '.all3.mat']);

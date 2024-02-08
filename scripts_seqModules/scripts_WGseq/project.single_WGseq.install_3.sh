@@ -285,6 +285,8 @@ then
 		echo "\t\t|\tmain_dir   = '$main_dir'"   >> $logName;
 		$python_exec $main_dir"scripts_seqModules/putative_SNPs_from_hapmap_in_child.py" $genome $genomeUser $project $user $hapmap $hapmapUser $main_dir > $projectDirectory"trimmed_SNPs_v5.txt" 2>> $logName;
 		echo "\t\tDone." >> $logName;
+
+		chmod 664 $projectDirectory"trimmed_SNPs_v5.txt";
 	fi
 fi
 

@@ -128,3 +128,6 @@ end;
 %-------------------------------------------------------------------------------------------------------------
 fprintf(['process_2dataset_allelicRatios.m: Save data.\n']);
 save([project1dir 'SNP_' SNP_verString '.all1.mat'],'C_chr_SNP_data_ratios','C_chr_SNP_data_positions','P_chr_SNP_data_ratios','P_chr_SNP_data_positions','C_chr_count','P_chr_count');
+
+%% change permissions of file.
+system(['chmod 664 ' project1dir 'SNP_' SNP_verString '.all1.mat']);

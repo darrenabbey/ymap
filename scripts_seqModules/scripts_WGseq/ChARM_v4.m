@@ -285,6 +285,11 @@ if (temp_figures == true)
 	end;
 	saveas(fig,[projectDir 'fig.ChARM_test.1.' figVer 'eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.1.' figVer 'png'], 'png');
+
+	%% change permissions of file.
+	system(['chmod 664 ' projectDir 'fig.ChARM_Test.1.' figVer 'eps']);
+	system(['chmod 664 ' projectDir 'fig.ChARM_Test.1.' figVer 'png']);
+
 	delete(fig);
 	fig = figure(2);    dataShow = data2;
 	set(gcf, 'Position', [0 70 1024 600]);
@@ -311,6 +316,11 @@ if (temp_figures == true)
 	end;
 	saveas(fig,[projectDir 'fig.ChARM_test.2.' figVer 'eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.2.' figVer 'png'], 'png');
+
+	%% change permissions.
+	system(['chmod 664 ' projectDir 'fig.ChARM_Test.2.' figVer 'eps']);
+	system(['chmod 664 ' projectDir 'fig.ChARM_Test.2.' figVer 'eps']);
+
 	delete(fig);
 	fig = figure(3);    dataShow = data3;
 	set(gcf, 'Position', [0 70 1024 600]);
@@ -337,6 +347,11 @@ if (temp_figures == true)
 	end;
 	saveas(fig,[projectDir 'fig.ChARM_test.3.' figVer 'eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.3.' figVer 'png'], 'png');
+
+	%% change permissions.
+	system(['chmod 664 ' projectDir 'fig.ChARM_Test.3.' figVer 'eps']);
+	system(['chmod 664 ' projectDir 'fig.ChARM_Test.3.' figVer 'eps']);
+
 	delete(fig);
 	fig = figure(4);
 	dataShow = data4;
@@ -375,6 +390,11 @@ if (temp_figures == true)
 	saveas(fig,[projectDir 'fig.ChARM_test.4.' figVer 'eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.4.' figVer 'png'], 'png');
 	delete(fig);
+
+	%% change permissions.
+	system(['chmod 664 ' projectDir 'fig.ChARM_Test.4.' figVer 'eps']);
+	system(['chmod 664 ' projectDir 'fig.ChARM_Test.4.' figVer 'eps']);
+
 end;
 
 
@@ -779,6 +799,11 @@ if (temp_figures == true)
 	saveas(fig,[projectDir 'fig.ChARM_test.5.' figVer 'eps'], 'epsc');
 	saveas(fig,[projectDir 'fig.ChARM_test.5.' figVer 'png'], 'png');
 	delete(fig);
+
+	%% change permissions.
+	system(['chmod 664 ' projectDir 'fig.ChARM_Test.5.' figVer 'eps']);
+	system(['chmod 664 ' projectDir 'fig.ChARM_Test.5.' figVer 'eps']);
+
 end;
 
 %%=========================================================================
@@ -811,6 +836,9 @@ for chr = 1:num_chrs
 	end;
 end;
 save(dataFile, 'segmental_aneuploidy');
+
+%% change permissions of figures.
+system(['chmod 664 ' dataFile]);
 
 fprintf('\n\n#===========================#\n');
 fprintf(    '|END OF "ChARM_v4.m" script.|\n');

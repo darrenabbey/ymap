@@ -500,6 +500,9 @@ if (exist([projectDir 'SNP_' SNP_verString '.mat'],'file') == 0)
 	fclose(data);
 
 	save([projectDir 'SNP_' SNP_verString '.mat'],'chr_SNPdata');
+
+	%% change permissions of file.
+	system(['chmod 664 ' projectDir 'SNP_' SNP_verString '.mat']);
 else
 	fprintf('\t|\t\tMAT file found, loading.\n');
 	load([projectDir 'SNP_' SNP_verString '.mat']);
