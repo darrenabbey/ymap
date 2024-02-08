@@ -243,12 +243,16 @@ if (isset($_SESSION['logged_on'])) {
 			foreach($projectFolders as $key=>$folder) {   $projectFolders[$key] = str_replace($projectsDir,"",$folder);   }
 			// Split project list into ready/working/starting lists for sequential display.
 			$projectFolders_working  = array();
+
 			foreach($projectFolders as $key=>$project) {
 				if (file_exists("users/".$admin_as_user."/projects/".$project."/complete.txt")) {
 				} else if (file_exists("users/".$admin_as_user."/projects/".$project."/working.txt")) {
-					array_push($projectFolders_working, $project);
+					if (!file_exists("users/".$admin_as_user."/admin.txt")) {
+						array_push($projectFolders_working, $project);
+					}
 				}
 			}
+
 			$userProjectCount_working  = count($projectFolders_working);
 			// Sort complete and working projects alphabetically.
 			array_multisort($projectFolders_working,  SORT_ASC, $projectFolders_working);
