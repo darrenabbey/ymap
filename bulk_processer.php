@@ -23,6 +23,7 @@
 	}
 
 $user = "darren";
+$YMAP_instances = 5;
 
 	//==================================================================================================
 	// This script is intended to manage a bulk data queue, limiting YMAP processes to a certain number.
@@ -73,42 +74,57 @@ $user = "darren";
 				}
 			}
 
+			// Calculate projects remaining to be done.
 			$count_bulk_remaining = sizeof($project_dirs) - $count_bulk_working - $count_bulk_complete;
-
 			if (!isset($_SERVER["HTTP_HOST"])) {
 				// print out when run via commandline only.
 				printf($count_bulk_remaining.":".$count_bulk_working.":".$count_bulk_complete."\n");
 			}
 
+			while ($count_bulk_remaining > 0) {
+				foreach ($project_dirs as $key => $project) {
+					if (!file_exists($projects_dir.$project."/working.txt") && !file_exists($projects_dir.$project."/complete.txt") && ($count_bulk_working <= $YMAP_instances)) {
+						//=============================
+						// Call YMAP processes.
+						//-----------------------------
+						$project = $project_dirs[$key];
 
-			//=============================
-			// Call YMAP processes.
-			//-----------------------------
-			for ($key = 1; $key <=5; $key++) {
-				$project = $project_dirs[$key];
+						// Construct filename string from 'datafiles.txt' file.
+						$filename_string = file_get_contents($projects_dir.$project_dirs[$key]."/datafiles.txt");
+						$filename_lines  = preg_split("/\r\n|\n|\r/", $filename_string);
+						if (sizeof($filename_lines) == 3) {
+							$filename1 = $filename_lines[0];
+							$filename2 = $filename_lines[2];
+							$fileName  = $filename1.",".$filename2;
+						} else {
+							$fileName  = $filename_lines[0];
+						}
 
-				// Construct filename string from 'datafiles.txt' file.
-				$filename_string = file_get_contents($projects_dir.$project_dirs[$key]."/datafiles.txt");
-				$filename_lines  = preg_split("/\r\n|\n|\r/", $filename_string);
-				if (sizeof($filename_lines) == 3) {
-					$filename1 = $filename_lines[0];
-					$filename2 = $filename_lines[2];
-					$fileName  = $filename1.",".$filename2;
-				} else {
-					$fileName  = $filename_lines[0];
+						// Construct dataformat string from 'dataFormat.txt' file.
+						$dataformat_string = file_get_contents($projects_dir.$project_dirs[$key]."/dataFormat.txt");
+						$dataformat_lines  = preg_split("/:/", $dataformat_string);
+						if ($dataformat_lines[1] == 0) {
+							$dataFormat = "WGseq_single";
+						} else {
+							$dataFormat = "WGseq_paired";
+						}
+						project_process($user,$project,$dataFormat,$fileName,$key);
+						chdir("../../");
+
+						$count_bulk_working += 1;
+					}
 				}
+				// Count projects with 'bulk.txt' and 'working.txt'.
+				$count_bulk_working = 0;
+				foreach ($project_dirs as $key => $project) {   if (file_exists($projects_dir.$project."/working.txt")) {       $count_bulk_working += 1;       }       }
+				// Count projects with 'bulk.txt' and 'complete.txt'.
+				$count_bulk_complete = 0;
+				foreach ($project_dirs as $key => $project) {   if (file_exists($projects_dir.$project."/complete.txt")) {      $count_bulk_complete += 1;      }       }
+				// Calculate projects remaining to be done.
+				$count_bulk_remaining = sizeof($project_dirs) - $count_bulk_working - $count_bulk_complete;
 
-				// Construct dataformat string from 'dataFormat.txt' file.
-				$dataformat_string = file_get_contents($projects_dir.$project_dirs[$key]."/dataFormat.txt");
-				$dataformat_lines  = preg_split("/:/", $dataformat_string);
-				if ($dataformat_lines[1] == 0) {
-					$dataFormat = "WGseq_single";
-				} else {
-					$dataFormat = "WGseq_paired";
-				}
-
-				project_process($user,$project,$dataFormat,$fileName,$key);
-				chdir("../../");
+				// Pause and let YMAP instances run before checking again.
+				sleep(300);
 			}
 		}
 	}
