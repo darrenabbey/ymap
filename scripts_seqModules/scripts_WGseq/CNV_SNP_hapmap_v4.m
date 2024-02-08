@@ -731,6 +731,9 @@ end;
 
 fclose(alleleRatiosFid);
 
+%% change file permissions.
+system(['chmod 664 ' projectDir 'allele_ratios.' project  '.bed']);
+
 %% =========================================================================================
 % Setup for main figure generation.
 %-------------------------------------------------------------------------------------------
