@@ -61,10 +61,10 @@
 		$ext         = strtolower(pathinfo($name, PATHINFO_EXTENSION));
 		$filename    = strtolower(pathinfo($name, PATHINFO_FILENAME));
 		fwrite($logOutput, "\tFile ".$key."\n");
-		fwrite($logOutput, "\t\tDatafile   : '$name'.\n");
-		fwrite($logOutput, "\t\tFilename   : '$filename.'.\n");
-		fwrite($logOutput, "\t\tExtension  : '$ext'.\n");
-		fwrite($logOutput, "\t\tPath       : '$projectPath'.\n");
+		fwrite($logOutput, "\t\tDatafile   : '$name'\n");
+		fwrite($logOutput, "\t\tFilename   : '$filename'\n");
+		fwrite($logOutput, "\t\tExtension  : '$ext'\n");
+		fwrite($logOutput, "\t\tPath       : '$projectPath'\n");
 
 		// Generate 'upload_size.txt' file to contain the size of the uploaded file (irrespective of format) for display in "Manage Datasets" tab.
 		$fileNumber     = $key+1;

@@ -1,22 +1,37 @@
 <?php
 	session_start();
 	error_reporting(E_ALL);
-        require_once '../../constants.php';
-	require_once '../../POST_validation.php';
         ini_set('display_errors', 1);
+	require_once '../../constants.php';
+	require_once '../../POST_validation.php';
 
-        // If the user is not logged on, redirect to login page.
-        if(!isset($_SESSION['logged_on'])){
-		session_destroy();
-                header('Location: ../../');
-        }
+	if (!isset($_SERVER["HTTP_HOST"])) {
+		//=============================
+		// Script run from commandline.
+		//-----------------------------
+		parse_str($argv[1], $output1);
+		parse_str($argv[2], $output2);
+		parse_str($argv[3], $output3);
+		parse_str($argv[4], $output4);
 
-	// pull strings from session.
-	$user     = $_SESSION['user'];
-	$fileName = $_SESSION['fileName'];
-	$project  = $_SESSION['project'];
-	$key      = $_SESSION['key'];
-
+		$user     = $output1['user'];
+		$fileName = $output2['fileName'];
+		$project  = $output3['project'];
+		$key      = $output4['key'];
+	} else {
+		//===============================
+		// Script run from web interface.
+		//-------------------------------
+		// If the user is not logged on, redirect to login page.
+		if(!isset($_SESSION['logged_on'])){
+			session_destroy();
+			header('Location: ../../');
+		}
+		$user     = $_SESSION['user'];
+		$fileName = $_SESSION['fileName'];
+		$project  = $_SESSION['project'];
+		$key      = $_SESSION['key'];
+	}
 	$project_dir = "../../users/".$user."/projects/".$project;
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">

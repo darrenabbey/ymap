@@ -298,15 +298,18 @@
 						fclose($file1);
 						chmod($fileName1,0664);
 
+						// Copy raw data to project directories. Rename raw file as we go.
+						$fileName_     = pathinfo($filename, PATHINFO_FILENAME);
+						$fileType_     = pathinfo($filename, PATHINFO_EXTENSION);
+						$filename_new1 = str_replace(".","-",$fileName_).".".$fileType_;
+						copy($projects_bulkdata."/".$filename, $project_dir1."/".$filename_new1);
+
 						// Make txt file containing raw data file name(s).
 						$fileName = $project_dir1."/datafiles.txt";
 						$file     = fopen($fileName, 'w');
-						fwrite($file, $filename."\n");
+						fwrite($file, $filename_new1."\n");
 						fclose($file);
 						chmod($fileName,0664);
-
-						// Copy raw data to project directories.
-						copy($projects_bulkdata."/".$filename, $project_dir1."/".$filename);
 
 						// If filename ends with "_R1", copy next file in table if the name includes "_R2".
 						if ($skip == 1) {
@@ -338,10 +341,14 @@
 							if (substr($project2,-3) == "_R2") {
 								copy($projects_bulkdata."/".$filename2, $project_dir1."/".$filename2);
 
+								$fileName_     = pathinfo($filename2, PATHINFO_FILENAME);
+								$fileType_     = pathinfo($filename2, PATHINFO_EXTENSION);
+								$filename_new2 = str_replace(".","-",$fileName_).".".$fileType_;
+
 								// Make txt file containing raw data file name(s).
 								$fileName = $project_dir1."/datafiles.txt";
 								$file     = fopen($fileName, 'a');
-								fwrite($file, "\n".$filename2);
+								fwrite($file, "\n".$filename_new2);
 								fclose($file);
 								chmod($fileName,0664);
 							}
