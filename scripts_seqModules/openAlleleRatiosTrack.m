@@ -6,6 +6,6 @@ fprintf(alleleRatiosFid, ['track name=' projectName 'AlleleRatios description="'
 fclose(alleleRatiosFid);
 
 %% change permissions of file.
-system(['chmod 664 ' outputDir 'allele_ratios.' projectName '.bed']);
+system(['chmod 664 ' projectDir 'allele_ratios.' projectName '.bed']);
 
 end
