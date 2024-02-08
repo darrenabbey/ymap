@@ -159,15 +159,22 @@ body {font-family: arial;}
 		var internalIntervalID = window.setInterval(reload_page, 3000);
 		</script>
 		<html>
-		<body onload = "parent.parent.resize_project('<?PHP echo $key; ?>', 38); parent.parent.update_project_label_color('<?php echo $key; ?>','#000000','#FFCCCC');" class="tab">
-		<div style='color: red; display: inline-block; font-size: 10px;'><b>[Processing uploaded data.]</b></div>
 		<?php
+		if (file_exists($dirFigureBase."working.txt")) {
+			?>
+			<body onload = "parent.parent.resize_project('<?PHP echo $key; ?>', 38); parent.parent.update_project_label_color('<?php echo $key; ?>','#FF0000','#BB99CC');" class="tab">
+			<div style='color: red; display: inline-block; font-size: 10px;'><b>[Processing data.]</b></div>
+			<?php
+		} else {
+			?>
+			<body onload = "parent.parent.resize_project('<?PHP echo $key; ?>', 38); parent.parent.update_project_label_color('<?php echo $key; ?>','#FF0000','#FFCCCC');" class="tab">
+			<div style='color: red; display: inline-block; font-size: 10px;'><b>[In bulk data queue.]</b></div>
+			<?php
+		}
 		echo $clock."<br>";
 		echo "<div style='font-size: 10px;'>";
 		echo $condensedLogEntry;
 		echo "</div>";
-		//echo "\n<html>\n<body style='background-color:#FFCCCC;'>\n";
-		//echo "Dataset is in bulk-processing queue.<br>\n";
 	} else if (file_exists($dirFigureBase."working.txt")) {
 		// Load start time from 'working.txt'
 		$startTimeStamp = file_get_contents($project_dir."/working.txt");
@@ -230,7 +237,7 @@ body {font-family: arial;}
 			var internalIntervalID = window.setInterval(reload_page, 3000);
 			</script>
 			<html>
-			<body onload = "parent.parent.resize_project('<?PHP echo $key; ?>', 38); parent.parent.update_project_label_color('<?php echo $key; ?>','#BB9900');" class="tab">
+			<body onload = "parent.parent.resize_project('<?PHP echo $key; ?>', 38); parent.parent.update_project_label_color('<?php echo $key; ?>','#BB9900','#FFFFFF');" class="tab">
 			<div style='color: red; display: inline-block; font-size: 10px;'><b>[Processing uploaded data.]</b></div>
 			<?php
 			echo $clock."<br>";
