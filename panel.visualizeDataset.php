@@ -166,6 +166,8 @@
 				echo "<div id='frameContainer.p2_".$key."'></div>";
 			}
 		}
+
+
 		foreach($projectFolders_complete as $key_=>$project) {
 			// Load colors for project.
 			[$colorString1, $colorString2] = getColors($user,$project);
@@ -189,7 +191,6 @@
 			} else {
 				$figDate = 0;
 			}
-
 
 			// getting project name.
 			$nameFile        = "users/".$user."/projects/".$project."/name.txt";
@@ -242,6 +243,7 @@
 				echo "<div id='frameContainer.p2_".$key."'></div>";
 			}
 		}
+
 	} else {
 		$userProjectCount_starting = 0;
 		$userProjectCount_working  = 0;
