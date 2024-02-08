@@ -74,6 +74,8 @@ echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
 
 cp $hapmapDirectory"colors.txt" $projectDirectory"colors.txt";
 
+chmod 664 $projectDirectory"colors.txt";
+
 
 ##==============================================================================
 ## Perform CGH analysis, with GC-correction, on dataset.

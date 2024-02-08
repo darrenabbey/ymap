@@ -59,6 +59,8 @@ else
 		echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
 		hapmapUser=$user;
 		hapmapInUse=1;
+
+		chmod 664 $projectDirectory"colors.txt";
 	elif [ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]
 	then
 		hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
@@ -67,6 +69,8 @@ else
 		echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
 		hapmapUser="default";
 		hapmapInUse=1;
+
+		chmod 664 $projectDirectory"colors.txt";
 	else
 		hapmapInUse=0;
 	fi
