@@ -165,7 +165,7 @@
 				chmod($fileName,0664);
 			}
 
-			log_stuff($user,"[BULKDATA]","","","","bulkdata:CREATE settings success");
+			log_stuff($user,"[BULKDATA]","","","","bulkdata:CREATE settings success.");
 
 // Initialize html here.
 ?>
@@ -229,7 +229,6 @@
 						// Project directory already exists, so do nothing.
 						echo "Project '".$project."' directory already exists.";
 						log_stuff($user,$project,"","","","bulkdata:FAIL project name already exists.");
-						// log_stuff($user,$project,"","","","bulk-project:CREATE failure, project already exists.");
 					} else {
 						$_SESSION['pending_install_project_count'] += 1;
 
@@ -300,9 +299,9 @@
 						chmod($fileName1,0664);
 
 						// Make txt file containing raw data file name(s).
-						$fileName = $project_dir1."/rawfiles.txt";
+						$fileName = $project_dir1."/datafiles.txt";
 						$file     = fopen($fileName, 'w');
-						fwrite($file, $filename);
+						fwrite($file, $filename."\n");
 						fclose($file);
 						chmod($fileName,0664);
 
@@ -340,7 +339,7 @@
 								copy($projects_bulkdata."/".$filename2, $project_dir1."/".$filename2);
 
 								// Make txt file containing raw data file name(s).
-								$fileName = $project_dir1."/rawfiles.txt";
+								$fileName = $project_dir1."/datafiles.txt";
 								$file     = fopen($fileName, 'a');
 								fwrite($file, "\n".$filename2);
 								fclose($file);
@@ -352,6 +351,7 @@
 	var el1 = parent.document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('newly_installed_list');
 	el1.innerHTML += "<?php echo $_SESSION['pending_install_project_count']; ?>. <?php echo $project; ?><br>";
 <?php
+						log_stuff($user,$project,"","","","bulkdata:CREATE individual project success.");
 					}
 				} else {
 					$skip -= 1;
