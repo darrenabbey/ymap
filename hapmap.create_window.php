@@ -115,8 +115,7 @@ var projectGenomeDataFormat_entries = [['project','genome','dataFormat']<?php
 		}
 	}
 ?>];
-
-UpdateProjectList=function() {
+function UpdateProjectList() {
 	var selectedGenome   = document.getElementById("genome").value;     // grab genome.
 	var selectedDataFormat = 1
 	var select           = document.getElementById("parent");     // grab select list.
@@ -213,7 +212,7 @@ UpdateProjectList=function() {
 </html>
 
 <script type="text/javascript">
-UpdateForm=function() {
+function UpdateForm() {
 	if (document.getElementById("referencePloidy").value == 2) {
 		document.getElementById("hiddenFormSection1").style.display  = 'inline';
 		document.getElementById("hiddenFormSection2").style.display  = 'inline';
