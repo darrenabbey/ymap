@@ -21,6 +21,8 @@
 	$MAX_CHROM_POOL      = 200; // the maximum number of chromosomes that will be displayed to the user to choose from the 50 to draw.
 				    // Too high a maximum leads to scripts_genomes/genome.install_2.php failing to run when a reference with many contigs is loaded.
 
+	$MAX_BULK_PARALLEL   = 5;   // the maximum number of datasets to be analyzed in parallele when processed in bulk.
+
 	// Pepper string for password security.
 	include(".pepper.php");
 ?>
