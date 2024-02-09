@@ -73,12 +73,12 @@
 		var project_label1          = document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('p_label_'+project_key);
 		var project_label2          = document.getElementById('panel_visualizeDataset_iframe').contentDocument.getElementById('p_label_'+project_key);
 		if (project_label1 != null) {
-			project_label1.style.color            = label_color;
-		//	project_label1.style.background-color = label_BGcolor;
+			project_label1.style.color           = label_color;
+			project_label1.style.backgroundColor = label_BGcolor;
 		}
 		if (project_label2 != null) {
-			project_label2.style.color            = label_color;
-		//	project_label2.style.background-color = label_BGcolor;
+			project_label2.style.color           = label_color;
+			project_label2.style.backgroundColor = label_BGcolor;
 		}
 	}
 	function update_project_file_size(project_key,sizeString_1,sizeString_2) {
