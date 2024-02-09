@@ -59,6 +59,13 @@
 					echo "parent.show_hidden(\"Hidden_InstallBulkDataset\"); ";
 					echo "parent.update_interface();";
 				echo "'><br>";
+				$_SESSION['user']  = $user;
+				?>
+				<form id="bulk_process" action="run_bulk_processer.php" method="post">
+				<input	name='button_ProcessBulkDataset' type='submit' value='Admin: Process Bulk Dataset' style='background-color:#FFCCCC;'
+					onclick='parent.update_interface();'>
+				</form>
+				<?php
 			}
 
 			echo "<font color='red' size='2'> (Wait until uploads complete!)</font><br>";
@@ -138,22 +145,22 @@
 
 		foreach($projectFolders_starting as $key_=>$project) {
 			if (!$exceededSpace) {
-				printprojectInfo("3", $key_, "CC0000", "FFFFFF", $user, $project);
+				printProjectInfo("3", $key_, "CC0000", "FFFFFF", $user, $project);
 			} else {
-				printprojectInfo("4", $key_, "888888", "FFFFFF", $user, $project);
+				printProjectInfo("4", $key_, "888888", "FFFFFF", $user, $project);
 			}
 			$key_starting = $key;
 		}
 		foreach($projectFolders_bulk as $key_=>$project) {
-			printprojectInfo("5", $key_ + count($projectFolders_starting), "000000", "FFCCCC", $user, $project);
+			printProjectInfo("5", $key_ + count($projectFolders_starting), "000000", "CCCCCC", $user, $project);
 			$key_working = $key;
 		}
 		foreach($projectFolders_working as $key_=>$project) {
-			printprojectInfo("2", $key_ + count($projectFolders_bulk) + count($projectFolders_starting), "BB9900", "FFFFFF", $user, $project);
+			printProjectInfo("2", $key_ + count($projectFolders_bulk) + count($projectFolders_starting), "BB9900", "FFFFFF", $user, $project);
 			$key_working = $key;
 		}
 		foreach($projectFolders_complete as $key_=>$project) {
-			printprojectInfo("1", $key_ + count($projectFolders_bulk)+ count($projectFolders_starting) + count($projectFolders_working), "00AA00", "FFFFFF", $user, $project);
+			printProjectInfo("2", $key_ + count($projectFolders_bulk)+ count($projectFolders_starting) + count($projectFolders_working), "00AA00", "FFFFFF", $user, $project);
 		}
 		// 1: project complete.
 		// 2: project working.
@@ -218,10 +225,12 @@
 				$output       = fopen($totalSizeFile, 'w');
 				fwrite($output, $projectSizeStr);
 				fclose($output);
+				chmod($totalSizeFile, 0664);
 			}
 			// printing total size
 			echo " <font color='black' size='1'>(". $projectSizeStr .")</font>";
 		}
+
 		echo "</font></span>\n\t\t\t\t";
 		echo "<span id='p_delete_".$key."'></span>\n";
 		if (!file_exists("users/".$user."/projects/".$project."/minimized.txt") && file_exists("users/".$user."/projects/".$project."/complete.txt")) {
