@@ -6,6 +6,10 @@ fprintf(    '\t| Generate SNP/LOH only plot in script "LOH_hapmap_v4.m".       |
 fprintf(    '\t*---------------------------------------------------------------*\n');
 tic;
 
+% hide figures during construction.
+set(0,'DefaultFigureVisible','off');
+
+
 %%=========================================================================
 % Load project figure version.
 %--------------------------------------------------------------------------

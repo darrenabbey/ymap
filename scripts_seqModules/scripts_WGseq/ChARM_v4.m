@@ -1,6 +1,10 @@
 function [] = ChARM_v4(project,user,genome,genomeUser,main_dir)
 addpath('../');
 
+% hide figures during construction.
+set(0,'DefaultFigureVisible','off');
+
+
 %% =========================================================================================
 % Analyze CNV information for copy number changes.   Code based on algorithms
 % described in:

@@ -3,6 +3,9 @@ function [x_peak,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(wor
 %%=========================================================================
 % Load project figure version.
 %--------------------------------------------------------------------------
+% hide figures during construction.
+set(0,'DefaultFigureVisible','off');
+
 versionFile = [workingDir 'figVer.txt'];
 if exist(versionFile, 'file') == 2
 	figVer = ['v' fileread(versionFile) '.'];

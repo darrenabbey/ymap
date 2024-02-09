@@ -2,6 +2,10 @@ function [] = CNV_SNP_hapmap_v4_RedGreen(main_dir,user,genomeUser,project,hapmap
 addpath('../');
 workingDir      = [main_dir 'users/' user '/projects/' project '/'];
 
+% hide figures during construction.
+set(0,'DefaultFigureVisible','off');
+
+
 %%=========================================================================
 % Load project figure version.
 %--------------------------------------------------------------------------

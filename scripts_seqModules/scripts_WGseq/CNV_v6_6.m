@@ -2,6 +2,10 @@ function [] = CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateStr
                        CNV_verString,rDNA_verString,displayBREAKS, referenceCHR);
 addpath('../');
 
+% hide figures during construction.
+set(0,'DefaultFigureVisible','off');
+
+
 %%=========================================================================
 % Load project figure version.
 %--------------------------------------------------------------------------

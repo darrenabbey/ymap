@@ -6,6 +6,10 @@ fprintf(    '\t| Generate CNV/SNP/LOH plot in script "CNV_SNP_hapmap_v4.m".    |
 fprintf(    '\t*---------------------------------------------------------------*\n');
 tic;
 
+% hide figures during construction.
+set(0,'DefaultFigureVisible','off');
+
+
 %%=========================================================================
 % Load project figure version.
 %--------------------------------------------------------------------------

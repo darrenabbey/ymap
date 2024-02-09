@@ -2,6 +2,10 @@ function [] = CNV_manualLOH_v1(main_dir,user,genomeUser,project,hapmap,genome,pl
                                SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 addpath('../');
 
+% hide figures during construction.
+set(0,'DefaultFigureVisible','off');
+
+
 %%=========================================================================
 % Load project figure version.
 %--------------------------------------------------------------------------

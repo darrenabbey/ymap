@@ -1,6 +1,9 @@
 function [] = allelic_ratios_WGseq(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 addpath('../');
 
+% hide figures during construction.
+set(0,'DefaultFigureVisible','off');
+
 
 %%=========================================================================
 % Load project figure version.
