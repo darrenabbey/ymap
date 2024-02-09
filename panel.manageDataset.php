@@ -161,9 +161,9 @@
 		}
 		foreach($projectFolders_complete as $key_=>$project) {
 			if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
-				printProjectInfo("2", $key_ + count($projectFolders_bulk)+ count($projectFolders_starting) + count($projectFolders_working), "000000", "CCFFCC", $user, $project);
+				printProjectInfo("1", $key_ + count($projectFolders_bulk)+ count($projectFolders_starting) + count($projectFolders_working), "000000", "CCFFCC", $user, $project);
 			} else {
-				printProjectInfo("2", $key_ + count($projectFolders_bulk)+ count($projectFolders_starting) + count($projectFolders_working), "00CC00", "FFFFFF", $user, $project);
+				printProjectInfo("1", $key_ + count($projectFolders_bulk)+ count($projectFolders_starting) + count($projectFolders_working), "00CC00", "FFFFFF", $user, $project);
 			}
 		}
 		// 1: project complete.
