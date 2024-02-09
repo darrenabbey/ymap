@@ -236,21 +236,10 @@
 					</div>
 				</td></tr>
 				<tr bgcolor="#FFFFCC"><td>
-					<div id="hiddenFormSection9a" style="display:none">
-						<!-- SnpCgh array --!>
-						<input type="checkbox"      name="0_bias2" value="True" checked>GC-content bias<br>
-						<input type="checkbox"      name="0_bias4" value="True"        >chromosome-end bias
-					</div>
 					<div id="hiddenFormSection9b" style="display:inline">
 						<!-- WGseq --!>
 						<input type="checkbox"      id="1_bias2" name="1_bias2" value="True" checked>GC-content bias<br>
 						<input type="checkbox"      id="1_bias4" name="1_bias4" value="True"  onchange="UpdateBiasWG();"      >chromosome-end bias (forces using GC content bias)
-					</div>
-					<div id="hiddenFormSection9c" style="display:none">
-						<!-- ddRADseq --!>
-						<input type="checkbox"      name="2_bias1" value="True" checked>fragment-length bias<br>
-						<input type="checkbox"      name="2_bias2" value="True" checked>GC-content bias<br>
-						<input type="checkbox"      name="2_bias4" value="True"        >chromosome-end bias
 					</div>
 				</td><td>
 				GC% bias correction is almost always ideal.<br>
@@ -304,25 +293,25 @@
 				}
 			}
 			UpdateParentList=function() {
-				var selectedGenome     = document.getElementById("genome").value;     // grab genome name.
-				var selectedDataFormat = document.getElementById("dataFormat").value; // grab dataset type.
-				var select             = document.getElementById("selectParent");     // grab select list.
-				select.innerHTML       = '';
-				var el                 = document.createElement("option");
-				el.textContent         = '[No parent strain for comparison.]';
-				el.value               = 'none';
-				select.appendChild(el);
-				for (var i = 1; i < parentGenomeDataFormat_entries.length; i++) {
-					var item = parentGenomeDataFormat_entries[i];
-					if (selectedGenome == item[1] && selectedDataFormat == item[2]) {
-						if (item[3] != "") {
-							var el         = document.createElement("option");
-							el.textContent = item[3];
-							el.value       = item[0];
-							select.appendChild(el);
-						}
-					}
-				}
+			//	var selectedGenome     = document.getElementById("genome").value;     // grab genome name.
+			//	var selectedDataFormat = document.getElementById("dataFormat").value; // grab dataset type.
+			//	var select             = document.getElementById("selectParent");     // grab select list.
+			//	select.innerHTML       = '';
+			//	var el                 = document.createElement("option");
+			//	el.textContent         = '[No parent strain for comparison.]';
+			//	el.value               = 'none';
+			//	select.appendChild(el);
+			//	for (var i = 1; i < parentGenomeDataFormat_entries.length; i++) {
+			//		var item = parentGenomeDataFormat_entries[i];
+			//		if (selectedGenome == item[1] && selectedDataFormat == item[2]) {
+			//			if (item[3] != "") {
+			//				var el         = document.createElement("option");
+			//				el.textContent = item[3];
+			//				el.value       = item[0];
+			//				select.appendChild(el);
+			//			}
+			//		}
+			//	}
 			}
 			UpdateForm=function() {
 				// Manages hiding and displaying form sections during user interaction.

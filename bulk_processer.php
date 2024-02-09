@@ -11,19 +11,70 @@
 	require_once 'POST_validation.php';
 	ini_set('display_errors', 1);
 
-	// If the user is not logged on, redirect to login page.
-	if(!isset($_SESSION['logged_on'])){
-		session_destroy();
-		header('Location: .');
-	}
-	if(isset($_SESSION['user'])) {
-		$user   = $_SESSION['user'];
-	} else {
-		$user = "";
-	}
+	if (!isset($_SERVER["HTTP_HOST"])) {
+		//=============================
+		// Script run from commandline.
+		//-----------------------------
+		// php bulk_processer.php user=[user] ymaps=[number]
+		if (isset($argv[1])) {
+			parse_str($argv[1], $output1);
+			if (isset($output1['user'])) {
+				$user           = $output1['user'];
+			} else {
+				$user = '';
+				$YMAP_instances = "";
+				echo "*--------------------------------------------------------------*\n";
+				echo "| YMAP command-line tool.                                      |\n";
+				echo "*--------------------------------------------------------------*\n";
+				echo "| Use : php bulk_processer.php user=[user] ymaps=[number]      |\n";
+				echo "|        user  = YMAP user account.                            |\n";
+				echo "|        ymaps = number of datasets to run at once. (optional) |\n";
+				echo "*--------------------------------------------------------------*\n";
+				exit;
+			}
 
-$user = "darren";
-$YMAP_instances = 5;
+			if (isset($argv[2])) {
+				parse_str($argv[2], $output2);
+				if (isset($output2['ymaps'])) {
+					$YMAP_instances = $output2['ymaps'];
+				} else {
+					$YMAP_instances = $MAX_BULK_PARALLEL;
+				}
+			} else {
+				$YMAP_instances = $MAX_BULK_PARALLEL;
+			}
+		} else {
+			$user = "";
+			$YMAP_instances = "";
+			echo "*--------------------------------------------------------------*\n";
+			echo "| YMAP command-line tool.                                      |\n";
+			echo "*--------------------------------------------------------------*\n";
+			echo "| Use : php bulk_processer.php user=[user] ymaps=[number]      |\n";
+			echo "|        user  = YMAP admin user account.                      |\n";
+			echo "|        ymaps = number of datasets to run at once. (optional) |\n";
+			echo "*--------------------------------------------------------------*\n";
+			exit;
+		}
+
+		echo $user."\n".$YMAP_instances."\n";
+	} else {
+		//===============================
+		// Script run from web interface.
+		//-------------------------------
+		// If the user is not logged on, redirect to login page.
+		if(!isset($_SESSION['logged_on'])){
+			session_destroy();
+			header('Location: .');
+		}
+		if(isset($_SESSION['user'])) {
+			$user           = $_SESSION['user'];
+		} else {
+			session_destroy();
+			header('Location: .');
+		}
+
+		$YMAP_instances = $MAX_BULK_PARALLEL;
+	}
 
 	//==================================================================================================
 	// This script is intended to manage a bulk data queue, limiting YMAP processes to a certain number.
@@ -35,6 +86,11 @@ $YMAP_instances = 5;
 	} else {
 		$admin_user_flag_file = "users/".$user."/admin.txt";
 		if (file_exists($admin_user_flag_file)) {
+			// setup log file.
+			$logOutputName = "users/".$user."/bulksettings/process_log.txt";
+			$logOutput     = fopen($logOutputName, 'w');
+			fwrite($logOutput, "Log file initialized.\n");
+
 			// pull project list from projects directory.
 			$projects_dir  = "users/".$user."/projects/";
 			$project_dirs = scandir($projects_dir);
@@ -78,16 +134,21 @@ $YMAP_instances = 5;
 			$count_bulk_remaining = sizeof($project_dirs) - $count_bulk_working - $count_bulk_complete;
 			if (!isset($_SERVER["HTTP_HOST"])) {
 				// print out when run via commandline only.
-				printf($count_bulk_remaining.":".$count_bulk_working.":".$count_bulk_complete."\n");
+				//printf($count_bulk_remaining.":".$count_bulk_working.":".$count_bulk_complete."\n");
 			}
 
 			while ($count_bulk_remaining > 0) {
+				// Count projects with 'bulk.txt' and 'working.txt'.
+				$count_bulk_working = 0;
+				foreach ($project_dirs as $key => $project) {   if (file_exists($projects_dir.$project."/working.txt")) {       $count_bulk_working += 1;       }       }
+
 				foreach ($project_dirs as $key => $project) {
-					if (!file_exists($projects_dir.$project."/working.txt") && !file_exists($projects_dir.$project."/complete.txt") && ($count_bulk_working <= $YMAP_instances)) {
+					if (!file_exists($projects_dir.$project."/working.txt") && !file_exists($projects_dir.$project."/complete.txt") && ($count_bulk_working < $YMAP_instances)) {
 						//=============================
 						// Call YMAP processes.
 						//-----------------------------
 						$project = $project_dirs[$key];
+						fwrite($logOutput, "processing: ".$project."\n");
 
 						// Construct filename string from 'datafiles.txt' file.
 						$filename_string = file_get_contents($projects_dir.$project_dirs[$key]."/datafiles.txt");
@@ -114,9 +175,6 @@ $YMAP_instances = 5;
 						$count_bulk_working += 1;
 					}
 				}
-				// Count projects with 'bulk.txt' and 'working.txt'.
-				$count_bulk_working = 0;
-				foreach ($project_dirs as $key => $project) {   if (file_exists($projects_dir.$project."/working.txt")) {       $count_bulk_working += 1;       }       }
 				// Count projects with 'bulk.txt' and 'complete.txt'.
 				$count_bulk_complete = 0;
 				foreach ($project_dirs as $key => $project) {   if (file_exists($projects_dir.$project."/complete.txt")) {      $count_bulk_complete += 1;      }       }
@@ -124,8 +182,10 @@ $YMAP_instances = 5;
 				$count_bulk_remaining = sizeof($project_dirs) - $count_bulk_working - $count_bulk_complete;
 
 				// Pause and let YMAP instances run before checking again.
-				sleep(300);
+				sleep(60);
 			}
+		} else {
+			log_stuff($user,"","","","","bulk:FAIL user attempted to use admin-only 'bulk_procesesser.php' feature.");
 		}
 	}
 	function project_process($user,$project,$dataFormat,$fileName,$key) {
@@ -166,4 +226,6 @@ $YMAP_instances = 5;
 			header("Location: ".$conclusion_script);
 		}
 	}
+
+	fclose($logOutputName);
 ?>

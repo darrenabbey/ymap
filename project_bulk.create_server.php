@@ -277,7 +277,7 @@
 						// Generate 'condensed_log.txt' file.
 						$fileName = $project_dir1."/condensed_log.txt";
 						$file     = fopen($fileName, 'w');
-						fwrite($file, "Dataset added to bulk processing queue.");
+						fwrite($file, "");
 						fclose($file);
 						chmod($fileName,0664);
 
