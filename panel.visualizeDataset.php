@@ -223,7 +223,12 @@
 				fclose($handle);
 
 				$key = $key_ + $userProjectCount_starting + $userProjectCount_working;
-				echo "<span id='project_label_".$key."' style='color:#00AA00;'>\n\t\t";
+				if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+					echo "<span id='project_label_".$key."' style='color:#000000; background-color:#CCFFCC'>\n\t\t";
+				} else {
+					echo "<span id='project_label_".$key."' style='color:#00CC00;'>\n\t\t";
+				}
+
 				echo "<font size='2'>".($key+1).".";
 				echo "<input id='show_$key' type='checkbox' onclick=\"parent.openProject('$user','$project','$key','$projectNameString','$colorString1','$colorString2','$parentString','$figVer'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
 				echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";

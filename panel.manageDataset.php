@@ -160,7 +160,11 @@
 			$key_working = $key;
 		}
 		foreach($projectFolders_complete as $key_=>$project) {
-			printProjectInfo("2", $key_ + count($projectFolders_bulk)+ count($projectFolders_starting) + count($projectFolders_working), "00AA00", "FFFFFF", $user, $project);
+			if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+				printProjectInfo("2", $key_ + count($projectFolders_bulk)+ count($projectFolders_starting) + count($projectFolders_working), "000000", "CCFFCC", $user, $project);
+			} else {
+				printProjectInfo("2", $key_ + count($projectFolders_bulk)+ count($projectFolders_starting) + count($projectFolders_working), "00CC00", "FFFFFF", $user, $project);
+			}
 		}
 		// 1: project complete.
 		// 2: project working.
@@ -181,7 +185,7 @@
 		// $frameContainerIx values:
 		//	1: project complete.
 		//	2: project working.
-		//	3: project starting, quota not filled.
+		//	31: project starting, quota not filled.
 		//	4: project starting, quota filled.
 		//	5: project in bulk-processing-queue.
 
