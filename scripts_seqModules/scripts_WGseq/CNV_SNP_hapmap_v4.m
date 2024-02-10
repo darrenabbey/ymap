@@ -21,7 +21,7 @@ else
 end;
 
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
-if isfile([main_dir 'users/' user '/projects/' project '/figure_options.txt'])
+if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
 	figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
 	option         = figure_options{9,1};
 	if strcmp(option,'False')
@@ -1376,24 +1376,28 @@ end;
 % end stuff
 %==========================================================================
 
-fprintf('\n###\n### Saving main figure.\n###\n');
-set(   fig,        'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
-saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.' figVer 'eps'], 'epsc');
-saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.' figVer 'png'], 'png' );
-delete(fig);
+if (Standard_display == true)
+	fprintf('\n###\n### Saving main figure.\n###\n');
+	set(   fig,        'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
+	saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.' figVer 'eps'], 'epsc');
+	saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.' figVer 'png'], 'png' );
+	delete(fig);
 
-%% change permissions of figures.
-system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.1.' figVer 'eps']);
-system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.1.' figVer 'png']);
+	%% change permissions of figures.
+	system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.1.' figVer 'eps']);
+	system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.1.' figVer 'png']);
+end;
 
-fprintf('\n###\n### Saving linear figure.\n###\n');
-set(   Linear_fig, 'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
-saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.' figVer 'eps'], 'epsc');
-saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.' figVer 'png'], 'png' );
-delete(Linear_fig);
+if (Linear_display == true)
+	fprintf('\n###\n### Saving linear figure.\n###\n');
+	set(   Linear_fig, 'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
+	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.' figVer 'eps'], 'epsc');
+	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.' figVer 'png'], 'png' );
+	delete(Linear_fig);
 
-%% change permissions of figures.
-system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.2.' figVer 'eps']);
-system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.2.' figVer 'png']);
+	%% change permissions of figures.
+	system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.2.' figVer 'eps']);
+	system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.2.' figVer 'png']);
+end;
 
 end

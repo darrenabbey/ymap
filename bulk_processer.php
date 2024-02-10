@@ -4,17 +4,16 @@
 	//	exec("php script.php > /dev/null &");
 	//------------------------------------------------------
 
-	session_start();
-	error_reporting(E_ALL);
-	require_once 'constants.php';
-	require_once 'sharedFunctions.php';
-	require_once 'POST_validation.php';
-	ini_set('display_errors', 1);
-
 	if (!isset($_SERVER["HTTP_HOST"])) {
 		//=============================
 		// Script run from commandline.
 		//-----------------------------
+		error_reporting(E_ALL);
+		require_once 'constants.php';
+		require_once 'sharedFunctions.php';
+		require_once 'POST_validation.php';
+		ini_set('display_errors', 1);
+
 		// php bulk_processer.php user=[user] ymaps=[number]
 		if (isset($argv[1])) {
 			parse_str($argv[1], $output1);
@@ -61,6 +60,13 @@
 		//===============================
 		// Script run from web interface.
 		//-------------------------------
+		session_start();
+		error_reporting(E_ALL);
+		require_once 'constants.php';
+		require_once 'sharedFunctions.php';
+		require_once 'POST_validation.php';
+		ini_set('display_errors', 1);
+
 		// If the user is not logged on, redirect to login page.
 		if(!isset($_SESSION['logged_on'])){
 			session_destroy();
@@ -93,7 +99,7 @@
 
 			// pull project list from projects directory.
 			$projects_dir  = "users/".$user."/projects/";
-			$project_dirs = scandir($projects_dir);
+			$project_dirs  = scandir($projects_dir);
 
 			// Remove '.' and '..' from scandir results.
 			unset($project_dirs[0]);
