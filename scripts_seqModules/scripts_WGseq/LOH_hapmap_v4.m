@@ -20,9 +20,9 @@ else
 	figVer = '';
 end;
 
-fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n);
+fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if isfile([main_dir 'users/' user '/projects/' project '/figure_options.txt'])
-        figure_options = readtable('sample.txt');
+        figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
         option         = figure_options{6,1};
         if strcmp(option,'False')
                 Make_figure_linear = false;
