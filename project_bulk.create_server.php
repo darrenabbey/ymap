@@ -97,18 +97,18 @@
 			// Create figure selections file.
 			$fileName = $projects_bulksettings."/figure_options.txt";
 			$file     = fopen($fileName, 'w');
-				fwrite($file,$fig_A1);
-				fwrite($file,$fig_A2);
-				fwrite($file,$fig_B1);
-				fwrite($file,$fig_B2);
-				fwrite($file,$fig_C);
-				fwrite($file,$fig_D1);
-				fwrite($file,$fig_D2);
-				fwrite($file,$fig_E);
-				fwrite($file,$fig_F1);
-				fwrite($file,$fig_F2);
-				fwrite($file,$fig_G1);
-				fwrite($file,$fig_G2);
+				if ($fig_A1 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
+				if ($fig_A2 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
+				if ($fig_B1 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
+				if ($fig_B2 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
+				if ($fig_C  != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
+				if ($fig_D1 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
+				if ($fig_D2 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
+				if ($fig_E  != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
+				if ($fig_F1 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
+				if ($fig_F2 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
+				if ($fig_G1 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
+				if ($fig_G2 != 1) { fwrite($file,"False");   } else { fwrite($file,"True"); }
 			fclose($file);
 			chmod($fileName,0664);
 
@@ -290,6 +290,7 @@
 						if (file_exists($projects_bulksettings."/showAnnotations.txt")) {       copy($projects_bulksettings."/showAnnotations.txt", $project_dir1."/showAnnotations.txt");      }
 						if (file_exists($projects_bulksettings."/genome.txt")) {                copy($projects_bulksettings."/genome.txt", $project_dir1."/genome.txt");                        }
 						if (file_exists($projects_bulksettings."/manualLOH.txt")) {             copy($projects_bulksettings."/manualLOH.txt", $project_dir1."/manualLOH.txt");                  }
+						if (file_exists($projects_bulksettings."/figure_options.txt")) {	copy($projects_bulksettings."/figure_options.txt", $project_dir1."/figure_options.txt");	}
 
 						// Generate 'parent.txt' file.
 						$fileName = $project_dir1."/parent.txt";

@@ -175,7 +175,7 @@
 						$count_bulk_working += 1;
 
 						// Pause after initiating processing of a dataset, to avoid n datasets all piling up at once when done.
-						sleep(60);
+						sleep(15);
 					}
 				}
 				// Count projects with 'bulk.txt' and 'complete.txt'.
