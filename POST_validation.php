@@ -44,6 +44,14 @@ function sanitizeProjectsShown_POST($POST_name) {   // for cleaning projectsShow
 	$cleanString = preg_replace("/[^\w\-_.:; ]+/", "", $cleanString);
         return $cleanString;
 }
+function sanitizeBoolean_POST($POST_name) {
+	$cleanString = sanitize_POST($POST_name);
+	if (strtolower($cleanString) == "true") {
+		return true;
+	} else {
+		return false;
+	}
+}
 function sanitizeColor_POST($POST_name) {
 	$cleanString = sanitize_POST($POST_name);
 	// convert any underlines to spaces.

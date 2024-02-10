@@ -29,7 +29,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
 		<title>[Needs Title]</title>
 	</HEAD>
-	<BODY onload="UpdateHapmapList(); UpdateParentList()" bgcolor="FFCCCC">
+	<BODY onload="UpdateHapmapList(); UpdateParentList();" bgcolor="FFCCCC">
 		<div id="loginControls"><p>
 		</p></div>
 			<b>Bulk data has to have been previously loaded into a "bulkdata/" directory in the admin user account.<br>
@@ -61,7 +61,7 @@
 					Genome annotations, such as rDNA locus, can be drawn at bottom of figures.
 				</td></tr>
 				<tr bgcolor="#FFFFCC"><td>
-					<label for="dataFormat">Data type : </label><select name="dataFormat" id="dataFormat" onchange="UpdateForm(); UpdateHapmap(); UpdateParentList()">
+					<label for="dataFormat">Data type : </label><select name="dataFormat" id="dataFormat" onchange="UpdateForm();">
 						<option value="1" selected>Whole genome NGS (short-reads)</option>
 					</select>
 				</td><td>
@@ -82,7 +82,7 @@
 				</td></tr>
 				<tr bgcolor="#FFFFCC"><td>
 					<div id="hiddenFormSection3" style="display:inline">
-						<label for="genome">Reference genome : </label><select name="genome" id="genome" onchange="UpdateHapmap(); UpdateHapmapList(); UpdateParentList()">
+						<label for="genome">Reference genome : </label><select name="genome" id="genome" onchange="UpdateHapmapList();">
 					<?php
 					$genomesMap = array(); // A mapping of folder names to display names, sorted by folder names.
 					foreach (array("default", $user) as $genomeUser) {
@@ -120,19 +120,6 @@
 					$hapmapFolders_raw = array_merge($hapmapFolders1,$hapmapFolders2);
 					// Go through each $hapmapFolder and look at 'genome.txt'; build javascript array of hapmapName:genome pairs.
 					?>
-					<div id="hiddenFormSection10" style="display:none">
-						Restriction enzymes :
-						<select id="selectRestrictionEnzymes" name="selectRestrictionEnzymes" onchange="UpdateParent();">
-						<option value="MfeI_MboI">MfeI & MboI</option>
-						<?php // <option value="BamHI_BclI">BamHI & BclI (testing)</option>
-						?>
-						</select>
-					</div>
-				</td><td valign="top">
-					<div id="hiddenFormSection11" style="display:none">
-						Analysis of ddRADseq data is limited to restriction fragments bound by both restriction enzymes.<br>
-						If your restriction enzyme pair is not listed, you can contact the system administrators about developing the option as a collaboration.
-					</div>
 				</td></tr>
 				<tr bgcolor="#FFCCFF"><td>
 					<?php
@@ -230,22 +217,43 @@
 						</script>
 					</div>
 				</td><td valign="top">
-					<div id="hiddenFormSection8" style="display:inline">
-						Parental strain selection is not available for bulk analysis.<br>
-						Initially process all datasets without, then later analyze individual datasets vs a parental strain will help visualize LOHs.
-					</div>
+					Parental strain selection is not available for bulk analysis.<br>
+					Initially process all datasets without, then later analyze individual datasets vs a parental strain will help visualize LOHs.
 				</td></tr>
-				<tr bgcolor="#FFFFCC"><td>
-					<div id="hiddenFormSection9b" style="display:inline">
-						<!-- WGseq --!>
-						<input type="checkbox"      id="1_bias2" name="1_bias2" value="True" checked>GC-content bias<br>
-						<input type="checkbox"      id="1_bias4" name="1_bias4" value="True"  onchange="UpdateBiasWG();"      >chromosome-end bias (forces using GC content bias)
+				<tr bgcolor="#FFCCFF"><td>
+					<div id="hiddenFormSection8" style="display:inline">
+						<input type="checkbox" id="1_bias2" name="1_bias2" value="True" onchange="UpdateFigureSelections();" checked        >GC-content bias<br>
+						<input type="checkbox" id="1_bias4" name="1_bias4" value="True" onchange="UpdateBiasWG(); UpdateFigureSelections();">chromosome-end bias (forces using GC content bias)
 					</div>
 				</td><td>
 				GC% bias correction is almost always ideal.<br>
 				Use chromosome-end correction with care. <font size='2'>(Chr end bias in data can potentially reveal structural changes which alter the distance between<br>
 				a locus and a chromosome end vs in the reference genome. Correcting this bias can lead to confounding copy number artifacts in cases like this.)</font>
-				</td></tr></table><br>
+				</td></tr>
+				<tr bgcolor="#FFFFCC"><td>
+					<div id="hiddenFormSection9" style="display:inline">
+						<input type="checkbox" id="fig_bias_1"      name="fig_A1" value="True"><span id="label_bias_1" style="color:black">GC-content bias figure.</span><br>
+						<input type="checkbox" id="fig_bias_2"      name="fig_A2" value="True" disabled><span id="label_bias_2" style="color:grey">Chromosome-end bias figure.</span><br><br>
+
+						<input type="checkbox" id="fig_Cnv_1"       name="fig_B1" value="True">Linear CNV map figure.<br>
+						<input type="checkbox" id="fig_Cnv_2"       name="fig_B2" value="True">Full CNV map figure.<br>
+						<input type="checkbox" id="fig_CnvHigh"     name="fig_C"  value="True">Linear high-top CNV map figure.<br><br>
+
+						<input type="checkbox" id="fig_Snp_1"       name="fig_D1" value="True">Linear SNP/LOH map figure.<br>
+						<input type="checkbox" id="fig_Snp_2"       name="fig_D2" value="True">Full SNP/LOH map figure.<br>
+						<input type="checkbox" id="fig_fireplot_2"  name="fig_E"  value="True">Linear alleleic ratio (fire-plot) map figure.<br><br>
+
+						<input type="checkbox" id="fig_CnvSnp_1"    name="fig_F1" value="True" checked>Linear CNV/SNP/LOH map figure.<br>
+						<input type="checkbox" id="fig_CnvSnp_2"    name="fig_F2" value="True">Full CNV/SNP/LOH map figure.<br>
+						<input type="checkbox" id="fig_CnvSnpAlt_1" name="fig_G1" value="True">Linear CNV/SNP/LOH map figure with alternate color scheme.<br>
+						<input type="checkbox" id="fig_CnvSnpAlt_2" name="fig_G2" value="True">Full CNV/SNP/LOH map figure with alternate color scheme.
+					</div>
+				</td><td>
+				Select which figure types you would like generated for each of your datasets.<br><br>
+				Reduce the number of figures to be generated to allow bulk processing to complete more quicklt.<br>
+				Individual datasets can be reprocessed later to regenerate additional figures.
+				</td></tr>
+				</table><br>
 				<?php
 				if (!$exceededSpace) {
 					echo "<input type='button' value='Initiate Bulk Dataset Processing' onclick='submit_func();'><br>";
@@ -267,11 +275,9 @@
 				if (selectedHapmap == 'none') {
 					// If a hapmap is not selected, show the "parental strain" row of form.
 					document.getElementById("hiddenFormSection7").style.display  = 'inline';
-					document.getElementById("hiddenFormSection8").style.display  = 'inline';
 				} else {
 					// If a hapmap is selected, hide the "parental strain" row of form.
 					document.getElementById("hiddenFormSection7").style.display  = 'none';
-					document.getElementById("hiddenFormSection8").style.display  = 'none';
 				}
 			}
 			UpdateHapmapList=function() {
@@ -293,87 +299,65 @@
 				}
 			}
 			UpdateParentList=function() {
-			//	var selectedGenome     = document.getElementById("genome").value;     // grab genome name.
-			//	var selectedDataFormat = document.getElementById("dataFormat").value; // grab dataset type.
-			//	var select             = document.getElementById("selectParent");     // grab select list.
-			//	select.innerHTML       = '';
-			//	var el                 = document.createElement("option");
-			//	el.textContent         = '[No parent strain for comparison.]';
-			//	el.value               = 'none';
-			//	select.appendChild(el);
-			//	for (var i = 1; i < parentGenomeDataFormat_entries.length; i++) {
-			//		var item = parentGenomeDataFormat_entries[i];
-			//		if (selectedGenome == item[1] && selectedDataFormat == item[2]) {
-			//			if (item[3] != "") {
-			//				var el         = document.createElement("option");
-			//				el.textContent = item[3];
-			//				el.value       = item[0];
-			//				select.appendChild(el);
-			//			}
-			//		}
-			//	}
-			}
-			UpdateForm=function() {
-				// Manages hiding and displaying form sections during user interaction.
-				if (document.getElementById("dataFormat").value == 0) { // SnpCgh Microarray.
-					document.getElementById("hiddenFormSection1").style.display  = 'none';
-					document.getElementById("hiddenFormSection2").style.display  = 'none';
-					document.getElementById("hiddenFormSection2a").style.display = 'none';
-					document.getElementById("hiddenFormSection2b").style.display = 'none';
-					document.getElementById("hiddenFormSection3").style.display  = 'none';
-					document.getElementById("hiddenFormSection4").style.display  = 'none';
-					document.getElementById("hiddenFormSection5").style.display  = 'none';
-					document.getElementById("hiddenFormSection6").style.display  = 'none';
-					document.getElementById("hiddenFormSection7").style.display  = 'none';
-					document.getElementById("hiddenFormSection9a").style.display = 'inline';
-					document.getElementById("hiddenFormSection9b").style.display = 'none';
-					document.getElementById("hiddenFormSection9c").style.display = 'none';
-					document.getElementById("hiddenFormSection10").style.display = 'none';
-					document.getElementById("hiddenFormSection11").style.display = 'none';
-				} else { // WGseq or ddRADseq.
-					document.getElementById("hiddenFormSection1").style.display  = 'inline';
-					document.getElementById("hiddenFormSection2").style.display  = 'inline';
-					document.getElementById("hiddenFormSection2a").style.display = 'inline';
-					document.getElementById("hiddenFormSection2b").style.display = 'inline';
-					document.getElementById("hiddenFormSection3").style.display  = 'inline';
-					document.getElementById("hiddenFormSection4").style.display  = 'inline';
-					document.getElementById("hiddenFormSection5").style.display  = 'inline';
-					document.getElementById("hiddenFormSection6").style.display  = 'inline';
-					document.getElementById("hiddenFormSection7").style.display  = 'inline';
-					document.getElementById("hiddenFormSection10").style.display = 'none';
-					document.getElementById("hiddenFormSection11").style.display = 'none';
-					if (document.getElementById("dataFormat").value == 1) { // WGseq
-						document.getElementById("hiddenFormSection9a").style.display = 'none';
-						document.getElementById("hiddenFormSection9b").style.display = 'inline';
-						document.getElementById("hiddenFormSection9c").style.display = 'none';
-					} else if (document.getElementById("dataFormat").value == 2) { // ddRADseq
-						document.getElementById("hiddenFormSection9a").style.display = 'none';
-						document.getElementById("hiddenFormSection9b").style.display = 'none';
-						document.getElementById("hiddenFormSection9c").style.display = 'inline';
-						document.getElementById("hiddenFormSection10").style.display = 'inline';
-						document.getElementById("hiddenFormSection11").style.display = 'inline';
+				var selectedGenome     = document.getElementById("genome").value;     // grab genome name.
+				var selectedDataFormat = document.getElementById("dataFormat").value; // grab dataset type.
+				var select             = document.getElementById("selectParent");     // grab select list.
+				select.innerHTML       = '';
+				var el                 = document.createElement("option");
+				el.textContent         = '[No parent strain for comparison.]';
+				el.value               = 'none';
+				select.appendChild(el);
+				for (var i = 1; i < parentGenomeDataFormat_entries.length; i++) {
+					var item = parentGenomeDataFormat_entries[i];
+					if (selectedGenome == item[1] && selectedDataFormat == item[2]) {
+						if (item[3] != "") {
+							var el         = document.createElement("option");
+							el.textContent = item[3];
+							el.value       = item[0];
+							select.appendChild(el);
+						}
 					}
 				}
 			}
-			UpdateHapmap=function() {
-				if (document.getElementById("dataFormat").value == 0) {			// SnpCgh microarray.
-					document.getElementById("hiddenFormSection8").style.display = 'none';
-				} else if (document.getElementById("dataFormat").value == 2) {	// ddRADseq.
-					document.getElementById("hiddenFormSection8").style.display = 'none';
-				} else {								// WGseq
-					document.getElementById("hiddenFormSection8").style.display = 'inline';
-				}
+			UpdateForm=function() {
+				// Manages hiding and displaying form sections during user interaction.
+				document.getElementById("hiddenFormSection1").style.display = 'inline';
+				document.getElementById("hiddenFormSection2").style.display = 'inline';
+				document.getElementById("hiddenFormSection3").style.display = 'inline';
+				document.getElementById("hiddenFormSection4").style.display = 'inline';
+				document.getElementById("hiddenFormSection5").style.display = 'inline';
+				document.getElementById("hiddenFormSection6").style.display = 'inline';
+				document.getElementById("hiddenFormSection7").style.display = 'inline';
+				document.getElementById("hiddenFormSection8").style.display = 'inline';
+				document.getElementById("hiddenFormSection9").style.display = 'inline';
 			}
 			UpdateBiasWG=function() {
-				if (document.getElementById("1_bias4").checked)
-				{
+				if (document.getElementById("1_bias4").checked)	{
 					document.getElementById("1_bias2").disabled = true;
 					document.getElementById("1_bias2").checked = true;
-				}
-				else
-				{
+				} else 	{
 					document.getElementById("1_bias2").disabled = false;
 					document.getElementById("1_bias2").checked = true;
+				}
+			}
+			UpdateFigureSelections=function() {
+				if (document.getElementById("1_bias2").checked) {
+					document.getElementById("fig_bias_1").disabled = false;
+					document.getElementById("fig_bias_1").checked  = false;
+					document.getElementById("label_bias_1").style.color="black";
+				} else {
+					document.getElementById("fig_bias_1").disabled = true;
+					document.getElementById("fig_bias_1").checked  = false;
+					document.getElementById("label_bias_1").style.color="grey";
+				}
+				if (document.getElementById("1_bias4").checked) {
+					document.getElementById("fig_bias_2").disabled = false;
+					document.getElementById("fig_bias_2").checked  = false;
+					document.getElementById("label_bias_2").style.color="black";
+				} else {
+					document.getElementById("fig_bias_2").disabled = true;
+					document.getElementById("fig_bias_2").checked  = false;
+					document.getElementById("label_bias_2").style.color="grey";
 				}
 			}
 			</script>

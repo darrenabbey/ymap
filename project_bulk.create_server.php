@@ -56,6 +56,20 @@
 				}
 			}
 
+			// Figure selection booleans.
+			$fig_A1          = sanitizeBoolean_POST("fig_A1");
+			$fig_A2          = sanitizeBoolean_POST("fig_A2");
+			$fig_B1          = sanitizeBoolean_POST("fig_B1");
+			$fig_B2          = sanitizeBoolean_POST("fig_B2");
+			$fig_C           = sanitizeBoolean_POST("fig_C");
+			$fig_D1          = sanitizeBoolean_POST("fig_D1");
+			$fig_D2          = sanitizeBoolean_POST("fig_D2");
+			$fig_E           = sanitizeBoolean_POST("fig_E");
+			$fig_F1          = sanitizeBoolean_POST("fig_F1");
+			$fig_F2          = sanitizeBoolean_POST("fig_F2");
+			$fig_G1          = sanitizeBoolean_POST("fig_G1");
+			$fig_G2          = sanitizeBoolean_POST("fig_G2");
+
 			// Define some directories for later use.
 			$projects_bulkdata     = "users/".$user."/bulkdata";
 			$projects_bulksettings = "users/".$user."/bulksettings";
@@ -79,6 +93,24 @@
 				secureNewDirectory($projects_bulksettings);
 				chmod($$projects_bulksettings,0777);
 			}
+
+			// Create figure selections file.
+			$fileName = $projects_bulksettings."/figure_options.txt";
+			$file     = fopen($fileName, 'w');
+				fwrite($file,$fig_A1);
+				fwrite($file,$fig_A2);
+				fwrite($file,$fig_B1);
+				fwrite($file,$fig_B2);
+				fwrite($file,$fig_C);
+				fwrite($file,$fig_D1);
+				fwrite($file,$fig_D2);
+				fwrite($file,$fig_E);
+				fwrite($file,$fig_F1);
+				fwrite($file,$fig_F2);
+				fwrite($file,$fig_G1);
+				fwrite($file,$fig_G2);
+			fclose($file);
+			chmod($fileName,0664);
 
 			// Generate 'ploidy.txt' file.
 			$fileName = $projects_bulksettings."/ploidy.txt";

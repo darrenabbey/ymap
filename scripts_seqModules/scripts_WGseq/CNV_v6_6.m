@@ -17,6 +17,42 @@ else
 	figVer = '';
 end;
 
+fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n);
+if isfile([main_dir 'users/' user '/projects/' project '/figure_options.txt'])
+	figure_options = readtable('sample.txt');
+	option         = figure_options{2,1};
+	if strcmp(option,'False')
+		Make_figure_bias_end = false;
+	else
+		Make_figure_bias_end = true;
+	end;
+
+	option         = figure_options{1,1};
+	if strcmp(option,'False')
+		Make_figure_bias_GC = false;
+	else
+		Make_figure_bias_GC = true;
+	end;
+
+	option         = figure_options{3,1};
+	if strcmp(option,'False')
+		Make_figure_linear = false;
+	else
+		Make_figure_linear = true;
+	end;
+
+	option         = figure_options{4,1};
+	if strcmp(option,'False')
+		Make_figure_standard = false;
+	else
+		Make_figure_standard = true;
+	end;
+else
+	Make_figure_bias_end = true;
+	Make_figure_bias_GC  = true;
+	Make_figure_linear   = true;
+	Make_figure_standard = true;
+end;
 
 %% ========================================================================
 Centromere_format_default   = 0;
@@ -25,7 +61,8 @@ HistPlot                    = true;
 ChrNum                      = true;
 show_annotations            = true;
 analyze_rDNA                = true;
-Linear_display              = true;
+Standard_display            = Make_figure_standard;
+Linear_display              = Make_figure_linear;
 Linear_displayBREAKS        = false;
 Low_quality_ploidy_estimate = true;
 
@@ -590,90 +627,94 @@ for chr = 1:num_chrs
 end;
 
 
-%% Generate figure showing subplots of LOWESS fittings.
-if (performEndbiasCorrection)
-	bias_end_fig = figure();
-	subplot(1,2,1);
-	hold on;
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			plot(rawData_chr_X1{chr},rawData_chr_Y1{chr},'k.','markersize',1);        % raw data
+if (Make_figure_bias_end == true)
+	%% Generate figure showing subplots of LOWESS fittings.
+	if (performEndbiasCorrection)
+		bias_end_fig = figure();
+		subplot(1,2,1);
+		hold on;
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+				plot(rawData_chr_X1{chr},rawData_chr_Y1{chr},'k.','markersize',1);        % raw data
+			end;
 		end;
-	end;
-	plot(fitX1,fitY1,'r','LineWidth',2);                        % LOWESS fit curve.
-	hold off;
-	xlabel('NearestEnd');
-	ylabel('CGH data');
-	xlim([0 200]);
-	ylim([0 4]);
-	axis square;
-	title('Reads vs. NearestEnd');
-	subplot(1,2,2);
-	hold on;
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			plot(rawData_chr_X1{chr},normalizedData_chr_Y1{chr},'k.','markersize',1); % corrected data.
+		plot(fitX1,fitY1,'r','LineWidth',2);                        % LOWESS fit curve.
+		hold off;
+		xlabel('NearestEnd');
+		ylabel('CGH data');
+		xlim([0 200]);
+		ylim([0 4]);
+		axis square;
+		title('Reads vs. NearestEnd');
+		subplot(1,2,2);
+		hold on;
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+				plot(rawData_chr_X1{chr},normalizedData_chr_Y1{chr},'k.','markersize',1); % corrected data.
+			end;
 		end;
+		plot([fitX1(1) fitX1(end)],[Y_target Y_target],'r','LineWidth',2);          % normalization line.
+		hold off;
+		xlabel('NearestEnd');
+		ylabel('corrected CGH data');
+		xlim([0 200]);
+		ylim([0 4]);
+		axis square;
+		title('NearestEnd Corrected');
+
+		set(bias_end_fig,'PaperPosition',[0 0 6 3]*2);
+		saveas(bias_end_fig, [projectDir 'fig.bias_chr_end.' figVer 'eps'], 'epsc');
+		saveas(bias_end_fig, [projectDir 'fig.bias_chr_end.' figVer 'png'], 'png');
+		delete(bias_end_fig);
+
+		%% change permissions of figures.
+		system(['chmod 664 ' projectDir 'fig.bias_chr_end.' figVer 'eps']);
+		system(['chmod 664 ' projectDir 'fig.bias_chr_end.' figVer 'png']);
 	end;
-	plot([fitX1(1) fitX1(end)],[Y_target Y_target],'r','LineWidth',2);          % normalization line.
-	hold off;
-	xlabel('NearestEnd');
-	ylabel('corrected CGH data');
-	xlim([0 200]);
-	ylim([0 4]);
-	axis square;
-	title('NearestEnd Corrected');
-
-	set(bias_end_fig,'PaperPosition',[0 0 6 3]*2);
-	saveas(bias_end_fig, [projectDir 'fig.bias_chr_end.' figVer 'eps'], 'epsc');
-	saveas(bias_end_fig, [projectDir 'fig.bias_chr_end.' figVer 'png'], 'png');
-	delete(bias_end_fig);
-
-	%% change permissions of figures.
-	system(['chmod 664 ' projectDir 'fig.bias_chr_end.' figVer 'eps']);
-	system(['chmod 664 ' projectDir 'fig.bias_chr_end.' figVer 'png']);
 end;
-if (performGCbiasCorrection)
-	bias_GC_fig = figure();
-	subplot(1,2,1);
-	hold on;
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			plot(rawData_chr_X2{chr},rawData_chr_Y2{chr},'k.','markersize',1);		% raw data
+if (Make_figure_bias_GC == true)
+	if (performGCbiasCorrection)
+		bias_GC_fig = figure();
+		subplot(1,2,1);
+		hold on;
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+				plot(rawData_chr_X2{chr},rawData_chr_Y2{chr},'k.','markersize',1);		% raw data
+			end;
 		end;
-	end;
-	plot(fitX2,fitY2,'r','LineWidth',2);						% LOWESS fit curve.
-	hold off;
-	xlabel('GC ratio');
-	ylabel('CGH data');
-	xlim([0.0 1.0]);
-	ylim([0 4]);
-	axis square;
-	title('Reads vs. GC bias');
-	subplot(1,2,2);
-	hold on;
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			plot(rawData_chr_X2{chr},normalizedData_chr_Y2{chr},'k.','markersize',1);	% corrected data.
+		plot(fitX2,fitY2,'r','LineWidth',2);						% LOWESS fit curve.
+		hold off;
+		xlabel('GC ratio');
+		ylabel('CGH data');
+		xlim([0.0 1.0]);
+		ylim([0 4]);
+		axis square;
+		title('Reads vs. GC bias');
+		subplot(1,2,2);
+		hold on;
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+				plot(rawData_chr_X2{chr},normalizedData_chr_Y2{chr},'k.','markersize',1);	% corrected data.
+			end;
 		end;
+		plot([fitX2(1) fitX2(end)],[Y_target Y_target],'r','LineWidth',2);			% normalization line.
+		hold off;
+		xlabel('GC ratio');
+		ylabel('corrected CGH data');
+		xlim([0.0 1.0]);
+		ylim([0 4]);
+		axis square;
+		title('GC bias Corrected');
+
+		set(bias_GC_fig,'PaperPosition',[0 0 6 3]*2);
+		saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.' figVer 'eps'], 'epsc');
+		saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.' figVer 'png'], 'png');
+		delete(bias_GC_fig);
+
+		%% change permissions of figures.
+		system(['chmod 664 ' projectDir 'fig.bias_GC_content.' figVer 'eps']);
+		system(['chmod 664 ' projectDir 'fig.bias_GC_content.' figVer 'png']);
 	end;
-	plot([fitX2(1) fitX2(end)],[Y_target Y_target],'r','LineWidth',2);			% normalization line.
-	hold off;
-	xlabel('GC ratio');
-	ylabel('corrected CGH data');
-	xlim([0.0 1.0]);
-	ylim([0 4]);
-	axis square;
-	title('GC bias Corrected');
-
-	set(bias_GC_fig,'PaperPosition',[0 0 6 3]*2);
-	saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.' figVer 'eps'], 'epsc');
-	saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.' figVer 'png'], 'png');
-	delete(bias_GC_fig);
-
-	%% change permissions of figures.
-	system(['chmod 664 ' projectDir 'fig.bias_GC_content.' figVer 'eps']);
-	system(['chmod 664 ' projectDir 'fig.bias_GC_content.' figVer 'png']);
 end;
 if (performRepetbiasCorrection)
 	bias_repet_fig = figure();
@@ -749,14 +790,17 @@ largestChr = largestChr(1);
     ,Linear_base,rotate,linear_chr_font_size,linear_axis_font_size,linear_gca_font_size,stacked_fig_height,...
     stacked_fig_width,stacked_chr_font_size,stacked_title_size,stacked_axis_font_size,...
     gca_stacked_font_size,stacked_copy_font_size,max_chrom_label_size] = Load_size_info(chr_in_use,num_chrs,chr_label,chr_size);
-Standard_fig = figure();
+
+if (Standard_display == true)
+	Standard_fig = figure();
+end;
 
 if (Linear_display == true)
 	Linear_fig           = figure();
 	Linear_genome_size   = sum(chr_size);
 	Linear_TickSize      = -0.01;            % negative for outside, percentage of longest chr figure.
 	Linear_maxY          = 10;
-    Linear_left          = Linear_left_start;
+	Linear_left          = Linear_left_start;
 	axisLabelPosition_horiz = 0.01125;
 end;
 axisLabelPosition_vert = 0.01125;
@@ -793,7 +837,7 @@ first_chr = true;
 % Determine order to draw chromosome cartoons in.
 chr_order = [];
 for test_chr = 1:num_chrs
-	chr_pos = find(chr_figOrder==test_chr);
+	chr_pos = find(chr_figOrder==tes_chr);
 	chr_order = [chr_order chr_pos];
 end;
 
@@ -801,317 +845,319 @@ end;
 for chr_to_draw  = 1:length(chr_order)
 	chr = chr_order(chr_to_draw);
 	if (chr_in_use(chr) == 1)
-		%% make standard chr cartoons.
-		figure(Standard_fig);
-		left   = chr_posX(chr);
-		bottom = chr_posY(chr);
-		width  = chr_width(chr);
-		height = chr_height(chr);
-		fprintf(['chr' num2str(chr) ': figposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\t']);
-		subplot('Position',[left bottom width height]);
-		hold on;
-
-		% reverse order of color bins if chromosome is indicated as reversed in figure_definitions.txt file.
-		if (chr_figReversed(chr) == 1)
-			CNVplot2{chr} = fliplr(CNVplot2{chr});
-		end;
-
-		%% cgh plot section.
-		c_ = [0 0 0];
-		fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
-		for chr_bin = 1:length(CNVplot2{chr});   % ceil(chr_size(chr)/bases_per_bin)
-			x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
-			CNVhistValue = CNVplot2{chr}(chr_bin);
-
-			% The CNV-histogram values were normalized to a median value of 1.
-			% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the
-			% median line.
-			startY = maxY/2;
-			if (Low_quality_ploidy_estimate == true)
-				endY = min(maxY,CNVhistValue*ploidy*ploidyAdjust);
-			else
-				endY = min(maxY,CNVhistValue*ploidy);
-			end;
-			y_ = [startY endY endY startY];
-
-			% makes a blackbar for each bin.
-			f = fill(x_,y_,c_);
-			set(f,'linestyle','none');
-		end;
-
-		%% draw lines across plots for easier interpretation of CNV regions.
-		x2 = chr_size(chr)/bases_per_bin;
-		for lineNum = 1:(ploidyBase*2-1)
-			line([0 x2], [maxY/(ploidyBase*2)*lineNum  maxY/(ploidyBase*2)*lineNum ],'Color',[0.85 0.85 0.85]);
-		end;
-		plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-		%% end cgh plot section.
-
-		%axes labels etc.
-		hold off;
-		% limit x-axis to range of chromosome.
-		xlim([0,chr_size(chr)/bases_per_bin]);
-
-		% modify y axis limits to show annotation locations if any are provided.
-		if (length(annotations) > 0)
-			ylim([-maxY/10*1.5,maxY]);
-		else
-			ylim([0,maxY]);
-		end;
-
-		set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
-		set(gca,'YTick',[]);
-		set(gca,'YTickLabel',[]);
-		set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
-		set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
-
-		% chromosome cartoon titles for standard figure.
-		if (chr_figReversed(chr) == 0)
-			text(-50000/5000/2*3, maxY/2,chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
-		else
-			text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
-		end;
-
-		% This section sets the Y-axis labelling.
-		switch ploidyBase
-			case 1
-				text(axisLabelPosition_vert, maxY/2,   '1','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-				text(axisLabelPosition_vert, maxY,     '2','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-			case 2
-				text(axisLabelPosition_vert, maxY/4,   '1','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-				text(axisLabelPosition_vert, maxY/2,   '2','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-				text(axisLabelPosition_vert, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-				text(axisLabelPosition_vert, maxY,     '4','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-			case 3
-				text(axisLabelPosition_vert, maxY/2,   '3','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-				text(axisLabelPosition_vert, maxY,     '6','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-			case 4
-				text(axisLabelPosition_vert, maxY/4,   '2','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-				text(axisLabelPosition_vert, maxY/2,   '4','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-				text(axisLabelPosition_vert, maxY/4*3, '6','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-				text(axisLabelPosition_vert, maxY,     '8','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-			case 5
-				text(axisLabelPosition_vert, maxY/2,   '5','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-				text(axisLabelPosition_vert, maxY,    '10','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-			case 6
-				text(axisLabelPosition_vert, maxY/4,   '3','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-				text(axisLabelPosition_vert, maxY/2,   '6','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-				text(axisLabelPosition_vert, maxY/4*3, '9','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-				text(axisLabelPosition_vert, maxY,    '12','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-			case 7
-				text(axisLabelPosition_vert, maxY/2,   '7','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-				text(axisLabelPosition_vert, maxY,    '14','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-			case 8
-				text(axisLabelPosition_vert, maxY/4,   '4','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-				text(axisLabelPosition_vert, maxY/2,   '8','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-				text(axisLabelPosition_vert, maxY/4*3,'12','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-				text(axisLabelPosition_vert, maxY,    '16','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-		end;
-		set(gca,'FontSize',gca_stacked_font_size);
-		if (chr == find(chr_posY == max(chr_posY)))
-			title([ project ' CNV map'],'Interpreter','none','FontSize',stacked_title_size);
-		end;
-
-		hold on;
-		% end axes labels etc.
-
-		%% standard : show segmental anueploidy breakpoints.
-		if (displayBREAKS == true) && (show_annotations == true)
-			chr_length = ceil(chr_size(chr)/bases_per_bin);
-			for segment = 2:length(chr_breaks{chr})-1
-				bP = chr_breaks{chr}(segment)*chr_length;
-				plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
-			end;
-		end;
-		% standard : end of : show segmental aneuploidy breakpoints.
-
-		%% show centromere.
-		if (chr_size(chr) < 100000)
-			Centromere_format = 1;
-		else
-			Centromere_format = Centromere_format_default;
-		end;
-		x1 = cen_start(chr)/bases_per_bin;
-		x2 = cen_end(chr)/bases_per_bin;
-		leftEnd  = 0.5*(5000/bases_per_bin);
-		rightEnd = chr_size(chr)/bases_per_bin-0.5*(5000/bases_per_bin);
-		if (Centromere_format == 0)
-			% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
-			dx = cen_tel_Xindent;
-			dy = cen_tel_Yindent;
-			% draw white triangles at corners and centromere locations.
-			% top left corner.
-			c_ = [1.0 1.0 1.0];
-			x_ = [leftEnd   leftEnd   leftEnd+dx];
-			y_ = [maxY-dy   maxY      maxY      ];
-			f = fill(x_,y_,c_);
-			set(f,'linestyle','none');
-			% bottom left corner.
-			x_ = [leftEnd   leftEnd   leftEnd+dx];
-			y_ = [dy        0         0         ];
-			f = fill(x_,y_,c_);
-			set(f,'linestyle','none');
-			% top right corner.
-			x_ = [rightEnd   rightEnd   rightEnd-dx];
-			y_ = [maxY-dy    maxY       maxY      ];
-			f = fill(x_,y_,c_);
-			set(f,'linestyle','none');
-			% bottom right corner.
-			x_ = [rightEnd   rightEnd   rightEnd-dx];
-			y_ = [dy         0          0         ];
-			f = fill(x_,y_,c_);
-			set(f,'linestyle','none');
-			% top centromere.
-			x_ = [x1-dx   x1        x2        x2+dx];
-			y_ = [maxY    maxY-dy   maxY-dy   maxY];
-			f = fill(x_,y_,c_);
-			set(f,'linestyle','none');
-			% bottom centromere.
-			x_ = [x1-dx   x1   x2   x2+dx];
-			y_ = [0       dy   dy   0    ];
-			f = fill(x_,y_,c_);
-			set(f,'linestyle','none');
-
-			% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are 
-			% not interrupted by horiz lines.
-			plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
-			     [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy     ],...
-			    'Color',[0 0 0]);
-		elseif (Centromere_format == 1)
-			leftEnd  = 0;
-			rightEnd = chr_size(chr)/bases_per_bin;
-
-			% Minimal outline for examining very small sequence regions, such as C.albicans MTL locus.
-			plot([leftEnd   leftEnd   rightEnd   rightEnd   leftEnd], [0   maxY   maxY   0   0], 'Color',[0 0 0]);
-		end;
-		%end show centromere.
-
-		%show annotation locations
-		if (show_annotations) && (length(annotations) > 0)
-			plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
+		if (Standard_display == true)
+			%% make standard chr cartoons.
+			figure(Standard_fig);
+			left   = chr_posX(chr);
+			bottom = chr_posY(chr);
+			width  = chr_width(chr);
+			height = chr_height(chr);
+			fprintf(['chr' num2str(chr) ': figposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\t']);
+			subplot('Position',[left bottom width height]);
 			hold on;
-			annotation_location = (annotation_start+annotation_end)./2;
-			for i = 1:length(annotation_location)
-				if (annotation_chr(i) == chr)
-					annotationLoc   = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-					annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-					annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
-					if (strcmp(annotation_type{i},'dot') == 1)
-						plot(annotationLoc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ... 
-						                                      'MarkerFaceColor',annotation_fillcolor{i}, ...
-						                                      'MarkerSize',     annotation_size(i));
-					elseif (strcmp(annotation_type{i},'block') == 1)
-						fill([annotationStart annotationStart annotationEnd annotationEnd], ...
-						     [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
-						     annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
-					end;
-				end;
-			end;
-			hold off;
-		end;
-		%end show annotation locations.
 
-		% make CGH histograms to the right of the main chr cartoons.
-		if (HistPlot == true)
-			width     = 0.020;
-			height    = chr_height(chr);
-			bottom    = chr_posY(chr);
-			chr_CNVdata;
-			histAll   = [];
-			histAll2  = [];
-			smoothed  = [];
-			smoothed2 = [];
-			fprintf(['chr = ' num2str(chr) '\n']);
-			for segment = 1:length(chrCopyNum{chr})
-				subplot('Position',[(left+chr_width(chr)+0.005)+width*(segment-1) bottom width height]);
+			% reverse order of color bins if chromosome is indicated as reversed in figure_definitions.txt file.
+			if (chr_figReversed(chr) == 1)
+				CNVplot2{chr} = fliplr(CNVplot2{chr});
+			end;
+
+			%% cgh plot section.
+			c_ = [0 0 0];
+			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
+			for chr_bin = 1:length(CNVplot2{chr});   % ceil(chr_size(chr)/bases_per_bin)
+				x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
+				CNVhistValue = CNVplot2{chr}(chr_bin);
 
 				% The CNV-histogram values were normalized to a median value of 1.
-				for i = round(1+length(CNVplot2{chr})*chr_breaks{chr}(segment)):round(length(CNVplot2{chr})*chr_breaks{chr}(segment+1))
-					if (Low_quality_ploidy_estimate == true)
-						histAll{segment}(i) = CNVplot2{chr}(i)*ploidy*ploidyAdjust;
-					else
-						histAll{segment}(i) = CNVplot2{chr}(i)*ploidy;
-					end;
+				% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the
+				% median line.
+				startY = maxY/2;
+				if (Low_quality_ploidy_estimate == true)
+					endY = min(maxY,CNVhistValue*ploidy*ploidyAdjust);
+				else
+					endY = min(maxY,CNVhistValue*ploidy);
 				end;
+				y_ = [startY endY endY startY];
 
-				% make a histogram of CGH data, then smooth it for display.
-				histogram_end                                    = 15;             % end point in copy numbers for the histogram, this should be way outside the expected range.
-				histAll{segment}(histAll{segment}<=0)            = [];
-				histAll{segment}(length(histAll{segment})+1)     = 0;              % endpoints added to ensure histogram bounds.
-				histAll{segment}(length(histAll{segment})+1)     = histogram_end;
-				histAll{segment}(histAll{segment}<0)             = [];             % crop off any copy data outside the range.
-				histAll{segment}(histAll{segment}>histogram_end) = [];
-				smoothed{segment}                                = smooth_gaussian(hist(histAll{segment},histogram_end*20),2,10);
+				% makes a blackbar for each bin.
+				f = fill(x_,y_,c_);
+				set(f,'linestyle','none');
+			end;
 
-				% make a smoothed version of just the endpoints used to ensure histogram bounds.
-				histAll2{segment}(1)                             = 0;
-				histAll2{segment}(2)                             = histogram_end;
-				smoothed2{segment}                               = smooth_gaussian(hist(histAll2{segment},histogram_end*20),2,10);
+			%% draw lines across plots for easier interpretation of CNV regions.
+			x2 = chr_size(chr)/bases_per_bin;
+			for lineNum = 1:(ploidyBase*2-1)
+				line([0 x2], [maxY/(ploidyBase*2)*lineNum  maxY/(ploidyBase*2)*lineNum ],'Color',[0.85 0.85 0.85]);
+			end;
+			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
+			%% end cgh plot section.
 
-				% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
-				smoothed{segment}                                = (smoothed{segment}-smoothed2{segment});
-				smoothed{segment}                                = smoothed{segment}/max(smoothed{segment});
+			%axes labels etc.
+			hold off;
+			% limit x-axis to range of chromosome.
+			xlim([0,chr_size(chr)/bases_per_bin]);
 
-				% draw lines to mark whole copy number changes.
-				plot([0;       0      ],[0; 1],'color',[0.00 0.00 0.00]);
+			% modify y axis limits to show annotation locations if any are provided.
+			if (length(annotations) > 0)
+				ylim([-maxY/10*1.5,maxY]);
+			else
+				ylim([0,maxY]);
+			end;
+
+			set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
+			set(gca,'YTick',[]);
+			set(gca,'YTickLabel',[]);
+			set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
+			set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
+
+			% chromosome cartoon titles for standard figure.
+			if (chr_figReversed(chr) == 0)
+				text(-50000/5000/2*3, maxY/2,chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+			else
+				text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+			end;
+
+			% This section sets the Y-axis labelling.
+			switch ploidyBase
+				case 1
+					text(axisLabelPosition_vert, maxY/2,   '1','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY,     '2','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+				case 2
+					text(axisLabelPosition_vert, maxY/4,   '1','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/2,   '2','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/4*3, '3','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY,     '4','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+				case 3
+					text(axisLabelPosition_vert, maxY/2,   '3','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY,     '6','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+				case 4
+					text(axisLabelPosition_vert, maxY/4,   '2','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/2,   '4','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/4*3, '6','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY,     '8','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+				case 5
+					text(axisLabelPosition_vert, maxY/2,   '5','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY,    '10','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+				case 6
+					text(axisLabelPosition_vert, maxY/4,   '3','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/2,   '6','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/4*3, '9','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY,    '12','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+				case 7
+					text(axisLabelPosition_vert, maxY/2,   '7','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY,    '14','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+				case 8
+					text(axisLabelPosition_vert, maxY/4,   '4','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/2,   '8','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/4*3,'12','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY,    '16','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+			end;
+			set(gca,'FontSize',gca_stacked_font_size);
+			if (chr == find(chr_posY == max(chr_posY)))
+				title([ project ' CNV map'],'Interpreter','none','FontSize',stacked_title_size);
+			end;
+
+			hold on;
+			% end axes labels etc.
+
+			%% standard : show segmental anueploidy breakpoints.
+			if (displayBREAKS == true) && (show_annotations == true)
+				chr_length = ceil(chr_size(chr)/bases_per_bin);
+				for segment = 2:length(chr_breaks{chr})-1
+					bP = chr_breaks{chr}(segment)*chr_length;
+					plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+				end;
+			end;
+			% standard : end of : show segmental aneuploidy breakpoints.
+
+			%% show centromere.
+			if (chr_size(chr) < 100000)
+				Centromere_format = 1;
+			else
+				Centromere_format = Centromere_format_default;
+			end;
+			x1 = cen_start(chr)/bases_per_bin;
+			x2 = cen_end(chr)/bases_per_bin;
+			leftEnd  = 0.5*(5000/bases_per_bin);
+			rightEnd = chr_size(chr)/bases_per_bin-0.5*(5000/bases_per_bin);
+			if (Centromere_format == 0)
+				% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
+				dx = cen_tel_Xindent;
+				dy = cen_tel_Yindent;
+				% draw white triangles at corners and centromere locations.
+				% top left corner.
+				c_ = [1.0 1.0 1.0];
+				x_ = [leftEnd   leftEnd   leftEnd+dx];
+				y_ = [maxY-dy   maxY      maxY      ];
+				f = fill(x_,y_,c_);
+				set(f,'linestyle','none');
+				% bottom left corner.
+				x_ = [leftEnd   leftEnd   leftEnd+dx];
+				y_ = [dy        0         0         ];
+				f = fill(x_,y_,c_);
+				set(f,'linestyle','none');
+				% top right corner.
+				x_ = [rightEnd   rightEnd   rightEnd-dx];
+				y_ = [maxY-dy    maxY       maxY      ];
+				f = fill(x_,y_,c_);
+				set(f,'linestyle','none');
+				% bottom right corner.
+				x_ = [rightEnd   rightEnd   rightEnd-dx];
+				y_ = [dy         0          0         ];
+				f = fill(x_,y_,c_);
+				set(f,'linestyle','none');
+				% top centromere.
+				x_ = [x1-dx   x1        x2        x2+dx];
+				y_ = [maxY    maxY-dy   maxY-dy   maxY];
+				f = fill(x_,y_,c_);
+				set(f,'linestyle','none');
+				% bottom centromere.
+				x_ = [x1-dx   x1   x2   x2+dx];
+				y_ = [0       dy   dy   0    ];
+				f = fill(x_,y_,c_);
+				set(f,'linestyle','none');
+
+				% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are 
+				% not interrupted by horiz lines.
+				plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
+				     [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy     ],...
+				    'Color',[0 0 0]);
+			elseif (Centromere_format == 1)
+				leftEnd  = 0;
+				rightEnd = chr_size(chr)/bases_per_bin;
+
+				% Minimal outline for examining very small sequence regions, such as C.albicans MTL locus.
+				plot([leftEnd   leftEnd   rightEnd   rightEnd   leftEnd], [0   maxY   maxY   0   0], 'Color',[0 0 0]);
+			end;
+			%end show centromere.
+
+			%show annotation locations
+			if (show_annotations) && (length(annotations) > 0)
+				plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 				hold on;
-				for i = 1:15
-					plot([20*i;  20*i],[0; 1],'color',[0.75 0.75 0.75]);
-				end;
-
-				% draw histogram.
-				area(smoothed{segment},'FaceColor',[0 0 0]);
-
-				% Draw red ticks between histplot segments
-				if (displayBREAKS == true) && (show_annotations == true)
-					if (segment > 1)
-						plot([-maxY*20/10*1.5 0],[0 0],  'Color',[1 0 0],'LineWidth',2);
+				annotation_location = (annotation_start+annotation_end)./2;
+				for i = 1:length(annotation_location)
+					if (annotation_chr(i) == chr)
+						annotationLoc   = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+						annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+						annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+						if (strcmp(annotation_type{i},'dot') == 1)
+							plot(annotationLoc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ... 
+							                                      'MarkerFaceColor',annotation_fillcolor{i}, ...
+							                                      'MarkerSize',     annotation_size(i));
+						elseif (strcmp(annotation_type{i},'block') == 1)
+							fill([annotationStart annotationStart annotationEnd annotationEnd], ...
+							     [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
+							     annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
+						end;
 					end;
 				end;
-
-				% Flip subfigure around the origin.
-				view(-90,90);
-				set(gca,'YDir','Reverse');
-
-				% ensure subplot axes are consistent with main chr plots.
 				hold off;
-				axis off;
+			end;
+			%end show annotation locations.
+
+			% make CGH histograms to the right of the main chr cartoons.
+			if (HistPlot == true)
+				width     = 0.020;
+				height    = chr_height(chr);
+				bottom    = chr_posY(chr);
+				chr_CNVdata;
+				histAll   = [];
+				histAll2  = [];
+				smoothed  = [];
+				smoothed2 = [];
+				fprintf(['chr = ' num2str(chr) '\n']);
+				for segment = 1:length(chrCopyNum{chr})
+					subplot('Position',[(left+chr_width(chr)+0.005)+width*(segment-1) bottom width height]);
+
+					% The CNV-histogram values were normalized to a median value of 1.
+					for i = round(1+length(CNVplot2{chr})*chr_breaks{chr}(segment)):round(length(CNVplot2{chr})*chr_breaks{chr}(segment+1))
+						if (Low_quality_ploidy_estimate == true)
+							histAll{segment}(i) = CNVplot2{chr}(i)*ploidy*ploidyAdjust;
+						else
+							histAll{segment}(i) = CNVplot2{chr}(i)*ploidy;
+						end;
+					end;
+
+					% make a histogram of CGH data, then smooth it for display.
+					histogram_end                                    = 15;             % end point in copy numbers for the histogram, this should be way outside the expected range.
+					histAll{segment}(histAll{segment}<=0)            = [];
+					histAll{segment}(length(histAll{segment})+1)     = 0;              % endpoints added to ensure histogram bounds.
+					histAll{segment}(length(histAll{segment})+1)     = histogram_end;
+					histAll{segment}(histAll{segment}<0)             = [];             % crop off any copy data outside the range.
+					histAll{segment}(histAll{segment}>histogram_end) = [];
+					smoothed{segment}                                = smooth_gaussian(hist(histAll{segment},histogram_end*20),2,10);
+
+					% make a smoothed version of just the endpoints used to ensure histogram bounds.
+					histAll2{segment}(1)                             = 0;
+					histAll2{segment}(2)                             = histogram_end;
+					smoothed2{segment}                               = smooth_gaussian(hist(histAll2{segment},histogram_end*20),2,10);
+
+					% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
+					smoothed{segment}                                = (smoothed{segment}-smoothed2{segment});
+					smoothed{segment}                                = smoothed{segment}/max(smoothed{segment});
+
+					% draw lines to mark whole copy number changes.
+					plot([0;       0      ],[0; 1],'color',[0.00 0.00 0.00]);
+					hold on;
+					for i = 1:15
+						plot([20*i;  20*i],[0; 1],'color',[0.75 0.75 0.75]);
+					end;
+
+					% draw histogram.
+					area(smoothed{segment},'FaceColor',[0 0 0]);
+
+					% Draw red ticks between histplot segments
+					if (displayBREAKS == true) && (show_annotations == true)
+						if (segment > 1)
+							plot([-maxY*20/10*1.5 0],[0 0],  'Color',[1 0 0],'LineWidth',2);
+						end;
+					end;
+
+					% Flip subfigure around the origin.
+					view(-90,90);
+					set(gca,'YDir','Reverse');
+
+					% ensure subplot axes are consistent with main chr plots.
+					hold off;
+					axis off;
+					set(gca,'YTick',[]);
+					set(gca,'XTick',[]);
+					ylim([0,1]);
+					if (show_annotations == true)
+						xlim([-maxY*20/10*1.5,maxY*20]);
+					else
+						xlim([0,maxY*20]);
+					end;
+				end;
+			end;
+
+			% places chr copy number to the right of the main chr cartoons.
+			if (ChrNum == true)
+				% subplot to show chr copy number value.
+				width  = 0.020;
+				height = chr_height(chr);
+				bottom = chr_posY(chr);
+				if (HistPlot == true)
+					subplot('Position',[(left + chr_width(chr) + 0.005 + width*(length(chrCopyNum{chr})-1) + width+0.001) bottom width height]);
+				else
+					subplot('Position',[(left + chr_width(chr) + 0.005) bottom width height]);
+				end;
+				axis off square;
 				set(gca,'YTick',[]);
 				set(gca,'XTick',[]);
-				ylim([0,1]);
-				if (show_annotations == true)
-					xlim([-maxY*20/10*1.5,maxY*20]);
+				if (length(chrCopyNum{chr}) == 1)
+					chr_string = num2str(chrCopyNum{chr}(1));
 				else
-					xlim([0,maxY*20]);
+					chr_string = num2str(chrCopyNum{chr}(1));
+					for i = 2:length(chrCopyNum{chr})
+						chr_string = [chr_string ',' num2str(chrCopyNum{chr}(i))];
+					end;
 				end;
-			end;
-		end;
+				text(0.1,0.5, chr_string,'HorizontalAlignment','left','VerticalAlignment','middle','FontSize',stacked_copy_font_size);
 
-		% places chr copy number to the right of the main chr cartoons.
-		if (ChrNum == true)
-			% subplot to show chr copy number value.
-			width  = 0.020;
-			height = chr_height(chr);
-			bottom = chr_posY(chr);
-			if (HistPlot == true)
-				subplot('Position',[(left + chr_width(chr) + 0.005 + width*(length(chrCopyNum{chr})-1) + width+0.001) bottom width height]);
-			else
-				subplot('Position',[(left + chr_width(chr) + 0.005) bottom width height]);
+				stringChrCNVs = [stringChrCNVs ';' chr_string];
 			end;
-			axis off square;
-			set(gca,'YTick',[]);
-			set(gca,'XTick',[]);
-			if (length(chrCopyNum{chr}) == 1)
-				chr_string = num2str(chrCopyNum{chr}(1));
-			else
-				chr_string = num2str(chrCopyNum{chr}(1));
-				for i = 2:length(chrCopyNum{chr})
-					chr_string = [chr_string ',' num2str(chrCopyNum{chr}(i))];
-				end;
-			end;
-			text(0.1,0.5, chr_string,'HorizontalAlignment','left','VerticalAlignment','middle','FontSize',stacked_copy_font_size);
-
-			stringChrCNVs = [stringChrCNVs ';' chr_string];
 		end;
 
 		%% Linear figure draw section
@@ -1316,34 +1362,40 @@ for chr_to_draw  = 1:length(chr_order)
 					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
 				end;
 			end;
-			% shift back to main figure generation.
-			figure(Standard_fig);
-			hold on;
 
+			if (Standard_display == true)
+				% shift back to main figure generation.
+				figure(Standard_fig);
+				hold on;
+			end;
 			first_chr = false;
 		end;
 	end;
 end;
 
-% Save primary genome figure.
-set(Standard_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
-saveas(Standard_fig, [projectDir 'fig.CNV-map.1.' figVer 'eps'], 'epsc');
-saveas(Standard_fig, [projectDir 'fig.CNV-map.1.' figVer 'png'], 'png');
-%delete(Standard_fig);
+if (Standard_display == true)
+	% Save primary genome figure.
+	set(Standard_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
+	saveas(Standard_fig, [projectDir 'fig.CNV-map.1.' figVer 'eps'], 'epsc');
+	saveas(Standard_fig, [projectDir 'fig.CNV-map.1.' figVer 'png'], 'png');
+	delete(Standard_fig);
 
-%% change permissions of figures.
-system(['chmod 664 ' projectDir 'fig.CNV-map.1.' figVer 'eps']);
-system(['chmod 664 ' projectDir 'fig.CNV-map.1.' figVer 'png']);
+	%% change permissions of figures.
+	system(['chmod 664 ' projectDir 'fig.CNV-map.1.' figVer 'eps']);
+	system(['chmod 664 ' projectDir 'fig.CNV-map.1.' figVer 'png']);
+end;
 
-% Save horizontal aligned genome figure.
-set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
-saveas(Linear_fig,   [projectDir 'fig.CNV-map.2.' figVer 'eps'], 'epsc');
-saveas(Linear_fig,   [projectDir 'fig.CNV-map.2.' figVer 'png'], 'png');
-delete(Linear_fig);
+if (Linear_display == true)
+	% Save horizontal aligned genome figure.
+	set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
+	saveas(Linear_fig,   [projectDir 'fig.CNV-map.2.' figVer 'eps'], 'epsc');
+	saveas(Linear_fig,   [projectDir 'fig.CNV-map.2.' figVer 'png'], 'png');
+	delete(Linear_fig);
 
-%% change permissions of figures.
-system(['chmod 664 ' projectDir 'fig.CNV-map.2.' figVer 'eps']);
-system(['chmod 664 ' projectDir 'fig.CNV-map.2.' figVer 'png']);
+	%% change permissions of figures.
+	system(['chmod 664 ' projectDir 'fig.CNV-map.2.' figVer 'eps']);
+	system(['chmod 664 ' projectDir 'fig.CNV-map.2.' figVer 'png']);
+end;
 
 % Output chromosome copy number estimates.
 textFileName = [projectDir 'txt.CNV-map.3.txt'];
