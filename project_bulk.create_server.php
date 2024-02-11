@@ -97,6 +97,7 @@
 			// Create figure selections file.
 			$fileName = $projects_bulksettings."/figure_options.txt";
 			$file     = fopen($fileName, 'w');
+				fwrite($file,"Figures\n");
 				if ($fig_A1 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
 				if ($fig_A2 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
 				if ($fig_B1 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }

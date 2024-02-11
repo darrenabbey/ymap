@@ -23,6 +23,7 @@ end;
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
         figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
+
         option         = figure_options{6,1};
         if strcmp(option,'False')
                 Make_figure_linear = false;
@@ -880,13 +881,13 @@ fprintf('\n');
 if (Standard_display == true)
 	fprintf('\t|\tIntitial setup of main figure.\n');
 	fig = figure(1);
-	%set(gcf, 'Position', [0 70 1024 600]);
-	% basic plot parameters not defined per genome.
-	TickSize         = -0.005;  %negative for outside, percentage of longest chr figure.
-	maxY             = ploidyBase*2;
-	cen_tel_Xindent  = 5;
-	cen_tel_Yindent  = maxY/5;
 end;
+
+% basic plot parameters not defined per genome.
+TickSize         = -0.005;  %negative for outside, percentage of longest chr figure.
+maxY             = ploidyBase*2;
+cen_tel_Xindent  = 5;
+cen_tel_Yindent  = maxY/5;
 
 
 %%================================================================================================
@@ -931,39 +932,41 @@ for chr_to_draw  = 1:length(chr_order)
 			subPlotHandle = subplot('Position',[left bottom width height]);
 			fprintf(['\tfigposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
 			hold on;
+		end;
 
-			c_prev = colorInit;
-			c_post = colorInit;
-			c_     = c_prev;
-			infill = zeros(1,length(phased_plot2{chr}));
-			colors = [];
+		c_prev = colorInit;
+		c_post = colorInit;
+		c_     = c_prev;
+		infill = zeros(1,length(phased_plot2{chr}));
+		colors = [];
 
-			%% standard : determine color of each bin.
-			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
-				c_tot_post = SNPs_to_fullData_ratio{chr}(chr_bin)+SNPs_to_fullData_ratio{chr}(chr_bin);
-				if (c_tot_post == 0)
-					c_post = colorNoData;
-					fprintf('.');
-					if (mod(chr_bin,100) == 0);   fprintf('\n');   end;
-				else
-					% Average of SNP position colors defined earlier.
-					colorMix = [chr_SNPdata_colorsC{chr,1}(chr_bin) chr_SNPdata_colorsC{chr,2}(chr_bin) chr_SNPdata_colorsC{chr,3}(chr_bin)];
+		%% determine color of each bin.
+		for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
+			c_tot_post = SNPs_to_fullData_ratio{chr}(chr_bin)+SNPs_to_fullData_ratio{chr}(chr_bin);
+			if (c_tot_post == 0)
+				c_post = colorNoData;
+				fprintf('.');
+				if (mod(chr_bin,100) == 0);   fprintf('\n');   end;
+			else
+				% Average of SNP position colors defined earlier.
+				colorMix = [chr_SNPdata_colorsC{chr,1}(chr_bin) chr_SNPdata_colorsC{chr,2}(chr_bin) chr_SNPdata_colorsC{chr,3}(chr_bin)];
 
-					% Determine color to draw bin, accounting for limited data and data saturation.
-					c_post =   colorMix   *   min(1,SNPs_to_fullData_ratio{chr}(chr_bin)) + ...
-					           colorNoData*(1-min(1,SNPs_to_fullData_ratio{chr}(chr_bin)));
-				end;
-				colors(chr_bin,1) = c_post(1);
-				colors(chr_bin,2) = c_post(2);
-				colors(chr_bin,3) = c_post(3);
+				% Determine color to draw bin, accounting for limited data and data saturation.
+				c_post =   colorMix   *   min(1,SNPs_to_fullData_ratio{chr}(chr_bin)) + ...
+				           colorNoData*(1-min(1,SNPs_to_fullData_ratio{chr}(chr_bin)));
 			end;
-			% standard : end determine color of each bin.
+			colors(chr_bin,1) = c_post(1);
+			colors(chr_bin,2) = c_post(2);
+			colors(chr_bin,3) = c_post(3);
+		end;
+		% end determine color of each bin.
 
-			% reverse order of color bins if chromosome is indicated as reversed in figure_definitions.txt file.
-			if (chr_figReversed(chr) == 1)
-				colors        = flipud(colors);
-			end;
+		% reverse order of color bins if chromosome is indicated as reversed in figure_definitions.txt file.
+		if (chr_figReversed(chr) == 1)
+			colors        = flipud(colors);
+		end;
 
+		if (Standard_display == true)
 			%% standard : draw colorbars.
 			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
 				x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
@@ -1253,14 +1256,15 @@ for chr_to_draw  = 1:length(chr_order)
 					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
 				end;
 			end;
-
-			if (Standard_display == true)
-				% shift back to main figure generation.
-				figure(fig);
-				hold on;
-			end;
-			first_chr = false;
 		end;
+
+		if (Standard_display == true)
+			% shift back to main figure generation.
+			figure(fig);
+			hold on;
+		end;
+
+		first_chr = false;
 	end;
 end;
 

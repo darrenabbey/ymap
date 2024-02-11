@@ -8,8 +8,8 @@ set(0,'DefaultFigureVisible','off');
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
         figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
-        option         = figure_options{5,1};
 
+        option         = figure_options{5,1};
         if strcmp(option,'False')
                 Make_figure = false;
         else
@@ -806,14 +806,15 @@ if (Make_figure == true)
 						text((chr_size(chr)/bases_per_bin)/2,maxY_highTop+0.5,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
 					end;
 				end;
-
-				if (Standard_display == true)
-					%% shift back to main figure generation.
-					figure(Standard_fig);
-					hold on;
-				end;
-				first_chr = false;
 			end;
+
+			if (Standard_display == true)
+				%% shift back to main figure generation.
+				figure(Standard_fig);
+				hold on;
+			end;
+
+			first_chr = false;
 		end;
 	end;
 

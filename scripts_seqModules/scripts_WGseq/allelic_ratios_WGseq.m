@@ -691,13 +691,14 @@ if (Make_figure == true)
 				end;
 
 				hold off;
-
-				if (Standard_display == true)
-					% shift back to main figure generation.
-					figure(fig);
-				end;
-				first_chr = false;
 			end;
+
+			if (Standard_display == true)
+				% shift back to main figure generation.
+				figure(fig);
+			end;
+
+			first_chr = false;
 		end;
 	end;
 

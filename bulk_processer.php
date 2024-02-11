@@ -54,7 +54,7 @@
 			echo "*--------------------------------------------------------------*\n";
 			exit;
 		}
-
+		$YMAP_instances = (int)$YMAP_instances;
 		echo $user."\n".$YMAP_instances."\n";
 	} else {
 		//===============================
@@ -107,11 +107,14 @@
 			$project_dirs_temp = array_values($project_dirs);
 			$project_dirs = $project_dirs_temp;
 
+
 			// Remove 'index.php' file from scandir results.
-			$key = array_search("index.php", $project_dirs);
-			unset($project_dirs[$key]);
-			$project_dirs_temp = array_values($project_dirs);
-			$project_dirs = $project_dirs_temp;
+			if (file_exists("users/".$user."/bulkdata/index.php")) {
+				$key = array_search("index.php", $project_dirs);
+				unset($project_dirs[$key]);
+				$project_dirs_temp = array_values($project_dirs);
+				$project_dirs = $project_dirs_temp;
+			}
 
 			// Trim list to only projects which contain 'bulk.txt' file.
 			foreach ($project_dirs as $key => $project) {
@@ -147,7 +150,6 @@
 				// Count projects with 'bulk.txt' and 'working.txt'.
 				$count_bulk_working = 0;
 				foreach ($project_dirs as $key => $project) {   if (file_exists($projects_dir.$project."/working.txt")) {       $count_bulk_working += 1;       }       }
-
 				foreach ($project_dirs as $key => $project) {
 					if (!file_exists($projects_dir.$project."/working.txt") && !file_exists($projects_dir.$project."/complete.txt") && ($count_bulk_working < $YMAP_instances)) {
 						//=============================
@@ -193,6 +195,7 @@
 				// Pause and let YMAP instances run before checking again.
 				sleep(60);
 			}
+			fclose($logOutput);
 		} else {
 			log_stuff($user,"","","","","bulk:FAIL user attempted to use admin-only 'bulk_procesesser.php' feature.");
 		}
@@ -235,6 +238,4 @@
 			header("Location: ".$conclusion_script);
 		}
 	}
-
-	fclose($logOutputName);
 ?>

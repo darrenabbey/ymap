@@ -20,18 +20,19 @@ end;
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
 	figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
-	option         = figure_options{2,1};
-	if strcmp(option,'False')
-		Make_figure_bias_end = false;
-	else
-		Make_figure_bias_end = true;
-	end;
 
 	option         = figure_options{1,1};
 	if strcmp(option,'False')
 		Make_figure_bias_GC = false;
 	else
 		Make_figure_bias_GC = true;
+	end;
+
+	option         = figure_options{2,1};
+	if strcmp(option,'False')
+		Make_figure_bias_end = false;
+	else
+		Make_figure_bias_end = true;
 	end;
 
 	option         = figure_options{3,1};
@@ -837,7 +838,7 @@ first_chr = true;
 % Determine order to draw chromosome cartoons in.
 chr_order = [];
 for test_chr = 1:num_chrs
-	chr_pos = find(chr_figOrder==tes_chr);
+	chr_pos = find(chr_figOrder==test_chr);
 	chr_order = [chr_order chr_pos];
 end;
 
@@ -1362,14 +1363,15 @@ for chr_to_draw  = 1:length(chr_order)
 					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
 				end;
 			end;
-
-			if (Standard_display == true)
-				% shift back to main figure generation.
-				figure(Standard_fig);
-				hold on;
-			end;
-			first_chr = false;
 		end;
+
+		if (Standard_display == true)
+			% shift back to main figure generation.
+			figure(Standard_fig);
+			hold on;
+		end;
+
+		first_chr = false;
 	end;
 end;
 
