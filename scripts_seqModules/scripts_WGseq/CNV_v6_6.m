@@ -856,12 +856,16 @@ for chr_to_draw  = 1:length(chr_order)
 			fprintf(['chr' num2str(chr) ': figposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\t']);
 			subplot('Position',[left bottom width height]);
 			hold on;
+		end;
 
+		if ((Standard_display == true) || (Linear_display == true))
 			% reverse order of color bins if chromosome is indicated as reversed in figure_definitions.txt file.
 			if (chr_figReversed(chr) == 1)
 				CNVplot2{chr} = fliplr(CNVplot2{chr});
 			end;
+		end;
 
+		if (Standard_display == true)
 			%% cgh plot section.
 			c_ = [0 0 0];
 			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
@@ -1190,8 +1194,6 @@ for chr_to_draw  = 1:length(chr_order)
 				f = fill(x_,y_,c_);
 				set(f,'linestyle','none');
 			end;
-
-
 
 			x2 = chr_size(chr)/bases_per_bin;
 

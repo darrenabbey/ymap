@@ -146,7 +146,11 @@
 				//printf($count_bulk_remaining.":".$count_bulk_working.":".$count_bulk_complete."\n");
 			}
 
+			//=============================================================================================
+			// Loop over bulk dataset project directories, firing off new procssess until they're all done.
+			//---------------------------------------------------------------------------------------------
 			while ($count_bulk_remaining > 0) {
+				log_stuff($user,"","","","","bulk:TEST Examine if bulk_processer.php main loop continues when browswer shut down.");
 				// Count projects with 'bulk.txt' and 'working.txt'.
 				$count_bulk_working = 0;
 				foreach ($project_dirs as $key => $project) {   if (file_exists($projects_dir.$project."/working.txt")) {       $count_bulk_working += 1;       }       }
@@ -182,13 +186,17 @@
 
 						$count_bulk_working += 1;
 
+						log_stuff($user,$project,"","","","bulk:SUCCESS Dataset processing initiated.");
+
 						// Pause after initiating processing of a dataset, to avoid n datasets all piling up at once when done.
 						sleep(15);
 					}
 				}
+
 				// Count projects with 'bulk.txt' and 'complete.txt'.
 				$count_bulk_complete = 0;
 				foreach ($project_dirs as $key => $project) {   if (file_exists($projects_dir.$project."/complete.txt")) {      $count_bulk_complete += 1;      }       }
+
 				// Calculate projects remaining to be done.
 				$count_bulk_remaining = sizeof($project_dirs) - $count_bulk_working - $count_bulk_complete;
 

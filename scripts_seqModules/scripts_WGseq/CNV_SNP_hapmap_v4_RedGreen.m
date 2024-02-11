@@ -16,6 +16,14 @@ else
 	figVer = '';
 end;
 
+
+%% =========================================================================================
+% Load workspace variables saved in "CNV_SNP_hapmap_v4.m"
+%-------------------------------------------------------------------------------------------
+projectDir  = [main_dir 'users/' user '/projects/' project '/'];
+load([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
+
+
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
 	figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
@@ -32,6 +40,10 @@ if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'f
 	else
 		Make_figure_standard = true;
 	end;
+
+	% Dragon : force script to not render figures.
+	Make_figure_linear   = false;
+	Make_figure_standard = false;
 else
 	Make_figure_linear   = true;
 	Make_figure_standard = true;
@@ -41,19 +53,16 @@ Standard_display = Make_figure_standard;
 Linear_display   = Make_figure_linear;
 
 
-
-
 fprintf('\n');
 fprintf('##################################\n');
 fprintf('## CNV_SNP_hapmap_v4_RedGreen.m ##\n');
 fprintf('##################################\n');
 
-
-%% =========================================================================================
-% Load workspace variables saved in "CNV_SNP_hapmap_v4.m"
-%-------------------------------------------------------------------------------------------
-projectDir  = [main_dir 'users/' user '/projects/' project '/'];
-load([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
+if ((Standard_display == true) || (Linear_display == true))
+	fprintf('## Figure style selected.\n');
+else
+	fprintf('## Figure style not selected.\n');
+end;
 
 
 if ((useHapmap) || (useParent))
