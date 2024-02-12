@@ -1,28 +1,27 @@
 <?php
-	session_start();
-	error_reporting(E_ALL);
-        ini_set('display_errors', 1);
-
-	require_once '../../constants.php';
-	require_once '../../POST_validation.php';
-
 	if (!isset($_SERVER["HTTP_HOST"])) {
 		//=============================
 		// Script run from commandline.
 		//-----------------------------
-		parse_str($argv[1], $output1);
-		parse_str($argv[2], $output2);
-		parse_str($argv[3], $output3);
-		parse_str($argv[4], $output4);
+		error_reporting(E_ALL);
+		ini_set('display_errors', 1);
+		require_once '../../constants.php';
+		require_once '../../POST_validation.php';
 
-		$user     = $output1['user'];
-		$fileName = $output2['fileName'];
-		$project  = $output3['project'];
-		$key      = $output4['key'];
+		$user     = $argv[1];
+		$fileName = $argv[2];
+		$project  = $argv[3];
+		$key      = $argv[4];
 	} else {
 		//===============================
 		// Script run from web interface.
 		//-------------------------------
+		session_start();
+		error_reporting(E_ALL);
+		ini_set('display_errors', 1);
+		require_once '../../constants.php';
+		require_once '../../POST_validation.php';
+
 	        // If the user is not logged on, redirect to login page.
 		if(!isset($_SESSION['logged_on'])){
 			session_destroy();

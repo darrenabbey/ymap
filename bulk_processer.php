@@ -221,7 +221,7 @@
 		$_SESSION['key']        = $key;
 
 		// Set string to pass via commandline.
-		$command_string  = "user=".$user." fileName=".$fileName." project=".$project." key=".$key;
+		$command_string  = $user." ".$fileName." ".$project." ".$key;
 
 		// Initiate project processing.
 		$conclusion_script = "";
