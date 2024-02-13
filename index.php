@@ -261,11 +261,7 @@ if ($admin == "true") {
 <tr>
 	<?php
 		// $number_cols in the next line should be the number of tabs+1.
-		$number_cols = 12;
-		// If admin user, then one further column will be displayed.
-		if ($admin == "true") {
-			$number_cols += 1;
-		}
+		$number_cols = 14;
 	?>
 	<td colspan="<?php echo $number_cols; ?>" valign="top" id="tab_content" name="tab_content" style="margin:0; padding:0;">
 	<div id="panel_user"             name="panel_user"             style="margin:0; padding:0; border:none; width:100%; height:100%;"></div>
