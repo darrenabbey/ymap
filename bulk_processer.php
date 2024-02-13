@@ -235,15 +235,10 @@
 		}
 
 		// Run processing script.
-		if (!isset($_SERVER["HTTP_HOST"])) {
-			// Call script from commandline.
-			// printf($command_string."\n");
-			// user=darren fileName= project=AMS2401_canu_contig_16_illumina key=1
-			chdir("scripts_seqModules/scripts_WGseq/");
-			exec("php ".$conclusion_script." ".$command_string." > /dev/null &");
-		} else {
-			// Run script via web interface.
-			header("Location: ".$conclusion_script);
-		}
+		// Call script from commandline.
+		// printf($command_string."\n");
+		// user=darren fileName= project=AMS2401_canu_contig_16_illumina key=1
+		chdir("scripts_seqModules/scripts_WGseq/");
+		exec("php ".$conclusion_script." ".$command_string." > /dev/null &");
 	}
 ?>
