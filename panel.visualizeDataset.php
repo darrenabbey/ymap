@@ -50,6 +50,7 @@
 		echo "<br>\n\t\t";
 
 		// Add bulk projects being worked on to user interface.
+		$key = 0;
 		foreach($projectFolders_working as $key_=>$project) {
 			if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
 				// Load colors for project.
@@ -89,7 +90,6 @@
 					$handle               = fopen($parent_file,'r');
 					$parentString         = trim(fgets($handle));
 					fclose($handle);
-					$key = $key_;
 					echo "<span id='p_label_".$key."' style='color:#000000; background-color:#BB9900;'>\n\t\t";
 					echo "<font size='2'>".($key+1).".";
 					echo "<input id='show_".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."');\" style=\"visibility:hidden;\">";
@@ -99,7 +99,6 @@
 					echo "<div id='frameContainer.p2_".$key."'></div>";
 				} else {
 					// an error has happend.
-					$key = $key_;
 					echo "<span id='p_label_".$key."' style='color:#888888;'>\n\t\t";
 					echo "<font size='2'>".($key+1).".";
 					echo "<input id='show_".$key."' type='checkbox'>";
@@ -108,6 +107,7 @@
 					echo "<br>\n\t\t";
 					echo "<div id='frameContainer.p2_".$key."'></div>";
 				}
+				$key += 1;
 			}
 		}
 
@@ -151,7 +151,6 @@
 					$handle               = fopen($parent_file,'r');
 					$parentString         = trim(fgets($handle));
 					fclose($handle);
-					$key = $key_;
 					echo "<span id='p_label_".$key."' style='color:#BB9900;'>\n\t\t";
 					echo "<font size='2'>".($key+1).".";
 					echo "<input id='show_".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."');\" style=\"visibility:hidden;\">";
@@ -161,7 +160,6 @@
 					echo "<div id='frameContainer.p2_".$key."'></div>";
 				} else {
 					// an error has happend.
-					$key = $key_;
 					echo "<span id='p_label_".$key."' style='color:#888888;'>\n\t\t";
 					echo "<font size='2'>".($key+1).".";
 					echo "<input id='show_".$key."' type='checkbox'>";
@@ -170,6 +168,7 @@
 					echo "<br>\n\t\t";
 					echo "<div id='frameContainer.p2_".$key."'></div>";
 				}
+				$key += 1;
 			}
 		}
 
@@ -228,7 +227,7 @@
 				echo "<div id='frameContainer.p2_".$key."'></div>";
 			} else {
 				// an error has happened.
-				$key = $key_ + + $userProjectCount_working;
+				$key = $key_ + $userProjectCount_working;
 				echo "<span id='p_label_".$key."' style='color:#888888;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
 				echo "<input id='show_".$key."' type='checkbox'>";
