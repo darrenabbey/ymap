@@ -3,6 +3,8 @@
 	if(!isset($_SESSION['logged_on'])){?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
 	require_once 'constants.php';
 	require_once 'sharedFunctions.php';
+
+	$bulk_ui_projects_limit = 1;
 ?>
 <style type="text/css">
 	html * {
@@ -144,22 +146,23 @@
 
 
 		foreach($projectFolders_starting as $key_=>$project) {
+			// add starting bulk/other projects to user interface.
 			if (!$exceededSpace) {
 				printProjectInfo("3", $key_, "CC0000", "FFFFFF", $user, $project);
 			} else {
 				printProjectInfo("4", $key_, "888888", "FFFFFF", $user, $project);
 			}
-			$key_starting = $key;
 		}
 		foreach($projectFolders_bulk as $key_=>$project) {
+			// add working bulk projects to user interface.
 			printProjectInfo("5", $key_ + count($projectFolders_starting), "000000", "CCCCCC", $user, $project);
-			$key_working = $key;
 		}
 		foreach($projectFolders_working as $key_=>$project) {
+			// add other working projects to user interface.
 			printProjectInfo("2", $key_ + count($projectFolders_bulk) + count($projectFolders_starting), "BB9900", "FFFFFF", $user, $project);
-			$key_working = $key;
 		}
 		foreach($projectFolders_complete as $key_=>$project) {
+			// add complete bulk/other projects to user interface.
 			if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
 				printProjectInfo("1", $key_ + count($projectFolders_bulk)+ count($projectFolders_starting) + count($projectFolders_working), "000000", "CCFFCC", $user, $project);
 			} else {
@@ -185,7 +188,7 @@
 		// $frameContainerIx values:
 		//	1: project complete.
 		//	2: project working.
-		//	31: project starting, quota not filled.
+		//	3: project starting, quota not filled.
 		//	4: project starting, quota filled.
 		//	5: project in bulk-processing-queue.
 
@@ -349,8 +352,11 @@ if (isset($_SESSION['logged_on'])) {
 		$project  = $projectFolders[$key];
 		echo "\n// javascript for project #".$key.", '".$project."'\n";
 		echo "var el_p            = document.getElementById('frameContainer.p5_".$key."');\n";
-		echo "el_p.innerHTML      = '<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
-		echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
+		if ($key_ < $bulk_ui_projects_limit) {
+			echo "el_p.innerHTML      = '<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+			echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
+		} else {
+		}
 		echo "var p_iframe        = document.getElementById('p_".$key."');\n";
 		echo "var p_js            = p_iframe.contentWindow;\n";
 		echo "p_js.user           = \"".$user."\";\n";
