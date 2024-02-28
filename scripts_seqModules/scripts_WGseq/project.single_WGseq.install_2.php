@@ -95,7 +95,7 @@
 		}
 	}
 	fclose($output);
-	chmod($outputName,0664);
+	chmod($outputName, 0664);
 	fwrite($logOutput, "Completed 'datafiles.txt' file.\n");
 
 	// Final install functions are in shell script.
