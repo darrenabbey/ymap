@@ -4,7 +4,7 @@
 	require_once 'constants.php';
 	require_once 'sharedFunctions.php';
 
-	$bulk_ui_projects_limit = 1;
+	$bulk_ui_projects_limit = 10;
 ?>
 <style type="text/css">
 	html * {
