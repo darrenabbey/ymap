@@ -22,13 +22,15 @@
 			} else {
 				$user = '';
 				$YMAP_instances = "";
-				echo "*--------------------------------------------------------------*\n";
-				echo "| YMAP command-line tool.                                      |\n";
-				echo "*--------------------------------------------------------------*\n";
-				echo "| Use : php bulk_processer.php user=[user] ymaps=[number]      |\n";
-				echo "|        user  = YMAP user account.                            |\n";
-				echo "|        ymaps = number of datasets to run at once. (optional) |\n";
-				echo "*--------------------------------------------------------------*\n";
+				echo "*-------------------------*\n";
+				echo "| YMAP command-line tool. |\n";
+				echo "*------------------------------------*------------------------------------------------------*\n";
+				echo "| Use : caffeinate php bulk_processer.php user=[user] ymaps=[number] > /dev/null 2>&1 &     |\n";
+				echo "|    'caffeinate' is a function to prevent OS from sleeping while the process is running.   |\n";
+				echo "|    To run bulk process manager, but not output stdout.                                    |\n";
+				echo "|        user  = YMAP user account.                                                         |\n";
+				echo "|        ymaps = number of datasets to run at once. (optional)                              |\n";
+				echo "*-------------------------------------------------------------------------------------------*\n";
 				exit;
 			}
 
@@ -45,13 +47,15 @@
 		} else {
 			$user = "";
 			$YMAP_instances = "";
-			echo "*--------------------------------------------------------------*\n";
-			echo "| YMAP command-line tool.                                      |\n";
-			echo "*--------------------------------------------------------------*\n";
-			echo "| Use : php bulk_processer.php user=[user] ymaps=[number]      |\n";
-			echo "|        user  = YMAP admin user account.                      |\n";
-			echo "|        ymaps = number of datasets to run at once. (optional) |\n";
-			echo "*--------------------------------------------------------------*\n";
+			echo "*-------------------------*\n";
+			echo "| YMAP command-line tool. |\n";
+			echo "*------------------------------------*------------------------------------------------------*\n";
+			echo "| Use : caffeinate php bulk_processer.php user=[user] ymaps=[number] > /dev/null 2>&1 &     |\n";
+			echo "|    'caffeinate' is a function to prevent OS from sleeping while the process is running.   |\n";
+			echo "|    To run bulk process manager, but not output stdout.                                    |\n";
+			echo "|        user  = YMAP user account.                                                         |\n";
+			echo "|        ymaps = number of datasets to run at once. (optional)                              |\n";
+			echo "*-------------------------------------------------------------------------------------------*\n";
 			exit;
 		}
 		$YMAP_instances = (int)$YMAP_instances;
@@ -123,7 +127,7 @@
 				}
 			}
 
-			// Count projects with 'bulk.txt' and 'working.txt'.
+			// _Count projects with 'bulk.txt' and 'working.txt'.
 			$count_bulk_working = 0;
 			foreach ($project_dirs as $key => $project) {
 				if (file_exists($projects_dir.$project."/working.txt")) {
@@ -140,65 +144,94 @@
 			}
 
 			// Calculate projects remaining to be done.
-			$count_bulk_remaining = sizeof($project_dirs) - $count_bulk_working - $count_bulk_complete;
-			if (!isset($_SERVER["HTTP_HOST"])) {
-				// print out when run via commandline only.
-				//printf($count_bulk_remaining.":".$count_bulk_working.":".$count_bulk_complete."\n");
-			}
+			$count_bulk_remaining = 0;
+                        foreach ($project_dirs as $key => $project) {
+				if (!file_exists($projects_dir.$project."/working.txt") && !file_exists($projects_dir.$project."/complete.txt")) {
+                                        $count_bulk_remaining += 1;
+                                }
+                        }
+
 
 			//=============================================================================================
 			// Loop over bulk dataset project directories, firing off new procssess until they're all done.
 			//---------------------------------------------------------------------------------------------
 			while ($count_bulk_remaining > 0) {
-				log_stuff($user,"","","","","bulk:TEST Examine if bulk_processer.php main loop continues when browswer shut down.");
-				// Count projects with 'bulk.txt' and 'working.txt'.
+				log_stuff($user,"","","","","[1a] bulk:TEST bulk_processer.php while loop.");
+				// Count projects with 'working.txt'.
 				$count_bulk_working = 0;
-				foreach ($project_dirs as $key => $project) {   if (file_exists($projects_dir.$project."/working.txt")) {       $count_bulk_working += 1;       }       }
 				foreach ($project_dirs as $key => $project) {
-					if (!file_exists($projects_dir.$project."/working.txt") && !file_exists($projects_dir.$project."/complete.txt") && ($count_bulk_working < $YMAP_instances)) {
-						//=============================
-						// Call YMAP processes.
-						//-----------------------------
-						$project = $project_dirs[$key];
-						fwrite($logOutput, "processing: ".$project."\n");
-
-						// Construct filename string from 'datafiles.txt' file.
-						$filename_string = file_get_contents($projects_dir.$project_dirs[$key]."/datafiles.txt");
-						$filename_lines  = preg_split("/\r\n|\n|\r/", $filename_string);
-						if (sizeof($filename_lines) == 3) {
-							$filename1 = $filename_lines[0];
-							$filename2 = $filename_lines[2];
-							$fileName  = $filename1.",".$filename2;
-						} else {
-							$fileName  = $filename_lines[0];
-						}
-
-						// Construct dataformat string from 'dataFormat.txt' file.
-						$dataformat_string = file_get_contents($projects_dir.$project_dirs[$key]."/dataFormat.txt");
-						$dataformat_lines  = preg_split("/:/", $dataformat_string);
-						if ($dataformat_lines[1] == 0) {
-							$dataFormat = "WGseq_single";
-						} else {
-							$dataFormat = "WGseq_paired";
-						}
-						project_process($user,$project,$dataFormat,$fileName,$key);
-						chdir("../../");
-
+					if (file_exists($projects_dir.$project."/working.txt")) {
 						$count_bulk_working += 1;
+					}
+				}
 
-						log_stuff($user,$project,"","","","bulk:SUCCESS Dataset processing initiated.");
+				// Main process loop.
+				foreach ($project_dirs as $key => $project) {
+					log_stuff($user,"","","","","[2] bulk:TEST bulk_processer.php main process loop.");
+					if ($count_bulk_working < $YMAP_instances) {
 
-						// Pause after initiating processing of a dataset, to avoid n datasets all piling up at once when done.
-						sleep(15);
+						if (!file_exists($projects_dir.$project."/working.txt") && !file_exists($projects_dir.$project."/complete.txt")) {
+							//=============================
+							// Call YMAP processes.
+							//-----------------------------
+							$project = $project_dirs[$key];
+							fwrite($logOutput, "processing: ".$project."\n");
+
+							// Construct filename string from 'datafiles.txt' file.
+							$filename_string = file_get_contents($projects_dir.$project_dirs[$key]."/datafiles.txt");
+							$filename_lines  = preg_split("/\r\n|\n|\r/", $filename_string);
+							if (sizeof($filename_lines) == 3) {
+								$filename1 = $filename_lines[0];
+								$filename2 = $filename_lines[2];
+								$fileName  = $filename1.",".$filename2;
+							} else {
+								$fileName  = $filename_lines[0];
+							}
+
+							// Construct dataformat string from 'dataFormat.txt' file.
+							$dataformat_string = file_get_contents($projects_dir.$project_dirs[$key]."/dataFormat.txt");
+							$dataformat_lines  = preg_split("/:/", $dataformat_string);
+							if ($dataformat_lines[1] == 0) {
+								$dataFormat = "WGseq_single";
+							} else {
+								$dataFormat = "WGseq_paired";
+							}
+							project_process($user,$project,$dataFormat,$fileName,$key);
+
+							$count_bulk_working += 1;
+
+							log_stuff($user,$project,"","","","bulk:SUCCESS Dataset processing initiated.");
+
+							// Pause after initiating processing of a dataset, to avoid n datasets all piling up at once when done.
+							sleep(15);
+						}
 					}
 				}
 
 				// Count projects with 'bulk.txt' and 'complete.txt'.
 				$count_bulk_complete = 0;
-				foreach ($project_dirs as $key => $project) {   if (file_exists($projects_dir.$project."/complete.txt")) {      $count_bulk_complete += 1;      }       }
+				foreach ($project_dirs as $key => $project) {
+					if (file_exists($projects_dir.$project."/complete.txt")) {
+						$count_bulk_complete += 1;
+					}
+				}
 
-				// Calculate projects remaining to be done.
-				$count_bulk_remaining = sizeof($project_dirs) - $count_bulk_working - $count_bulk_complete;
+				// Count projects remaining to be done.
+				$count_bulk_remaining = 0;
+				foreach ($project_dirs as $key => $project) {
+					if (!file_exists($projects_dir.$project."/working.txt") && !file_exists($projects_dir.$project."/complete.txt")) {
+						$count_bulk_remaining += 1;
+					}
+				}
+
+				// log output:
+				// Change the line below to your timezone!
+				date_default_timezone_set('America/Chicago');
+				$date = date('m/d/Y h:i:s a', time());
+				fwrite($logOutput, "timestamp = ".$date."\n");
+				fwrite($logOutput, "\tcomplete   = ".$count_bulk_complete."\n");
+				fwrite($logOutput, "\tin process = ".$count_bulk_working."\n");
+				fwrite($logOutput, "\tremaining  = ".$count_bulk_remaining."\n");
 
 				// Pause and let YMAP instances run before checking again.
 				sleep(60);
@@ -240,5 +273,6 @@
 		// user=darren fileName= project=AMS2401_canu_contig_16_illumina key=1
 		chdir("scripts_seqModules/scripts_WGseq/");
 		exec("php ".$conclusion_script." ".$command_string." > /dev/null &");
+		chdir("../../");
 	}
 ?>
