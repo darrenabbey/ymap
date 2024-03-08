@@ -775,7 +775,7 @@ fprintf('\t|\tCount SNPs per chromosome bin.\n');
 % synced to bases_per_bin as below, or defaulted to 50.
 full_data_threshold = floor(bases_per_bin/100);
 fig = figure(1);
-figure(1, 'Visible', 'off');
+figure(fig, 'Visible', 'off');
 
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
@@ -812,7 +812,7 @@ largestChr = largestChr(1);
 if (Standard_display == true)
 	fprintf('\t|\tSetup for main figure generation.\n');
 	fig = figure(1);
-	figure(1, 'Visible', 'off');
+	figure(fig, 'Visible', 'off');
 end;
 
 
@@ -822,7 +822,7 @@ end;
 if (Linear_display == true)
 	fprintf('\t|\tSetup for linear figure generation.\n');
 	Linear_fig           = figure(2);
-	figure(2, 'Visible', 'off');
+	figure(Linear_fig, 'Visible', 'off');
 	Linear_genome_size   = sum(chr_size);
 	Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
 	maxY                 = ploidyBase*2;
