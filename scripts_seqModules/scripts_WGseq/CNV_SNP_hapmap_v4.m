@@ -775,7 +775,6 @@ fprintf('\t|\tCount SNPs per chromosome bin.\n');
 % synced to bases_per_bin as below, or defaulted to 50.
 full_data_threshold = floor(bases_per_bin/100);
 fig = figure(1);
-figure(fig, 'Visible', 'off');
 
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
@@ -812,7 +811,6 @@ largestChr = largestChr(1);
 if (Standard_display == true)
 	fprintf('\t|\tSetup for main figure generation.\n');
 	fig = figure(1);
-	figure(fig, 'Visible', 'off');
 end;
 
 
@@ -822,7 +820,6 @@ end;
 if (Linear_display == true)
 	fprintf('\t|\tSetup for linear figure generation.\n');
 	Linear_fig           = figure(2);
-	figure(Linear_fig, 'Visible', 'off');
 	Linear_genome_size   = sum(chr_size);
 	Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
 	maxY                 = ploidyBase*2;
@@ -850,6 +847,7 @@ for chr_to_draw  = 1:length(chr_order)
 	if (chr_in_use(chr) == 1)
 		if (Standard_display == true)
 			figure(fig);
+
 			% make standard chr cartoons.
 			left          = chr_posX(chr);
 			bottom        = chr_posY(chr);
@@ -1180,6 +1178,7 @@ for chr_to_draw  = 1:length(chr_order)
 		%% Linear figure draw section
 		if (Linear_display == true)
 			figure(Linear_fig);
+
 			Linear_width = Linear_Chr_max_width*chr_size(chr)/Linear_genome_size;
 
 			subplot('Position',[Linear_left Linear_base Linear_width Linear_height]);
@@ -1370,6 +1369,7 @@ for chr_to_draw  = 1:length(chr_order)
 		if (Standard_display == true)
 			% shift back to main figure generation.
 			figure(fig);
+
 			hold on;
 		end;
 
