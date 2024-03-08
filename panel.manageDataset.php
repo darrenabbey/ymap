@@ -4,7 +4,10 @@
 	require_once 'constants.php';
 	require_once 'sharedFunctions.php';
 
-	$bulk_ui_projects_showAll = True;
+	// If too many projects are updating at the same time, the user interface stalls out.
+	// 	10 projects is double what is shown on-screen at once time.
+	//	User will need to reload page to refresh once those 10 are done.
+	$bulk_ui_projects_showAll = False;
 	$bulk_ui_projects_limit   = 10;
 ?>
 <style type="text/css">
