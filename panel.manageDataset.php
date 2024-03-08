@@ -4,7 +4,8 @@
 	require_once 'constants.php';
 	require_once 'sharedFunctions.php';
 
-	$bulk_ui_projects_limit = 10;
+	$bulk_ui_projects_showAll = True;
+	$bulk_ui_projects_limit   = 10;
 ?>
 <style type="text/css">
 	html * {
@@ -352,10 +353,15 @@ if (isset($_SESSION['logged_on'])) {
 		$project  = $projectFolders[$key];
 		echo "\n// javascript for project #".$key.", '".$project."'\n";
 		echo "var el_p            = document.getElementById('frameContainer.p5_".$key."');\n";
-		if ($key_ < $bulk_ui_projects_limit) {
+		if ($bulk_ui_projects_showAll) {
 			echo "el_p.innerHTML      = '<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
 			echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
 		} else {
+			if ($key_ < $bulk_ui_projects_limit) {
+				echo "el_p.innerHTML      = '<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+				echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
+			} else {
+			}
 		}
 		echo "var p_iframe        = document.getElementById('p_".$key."');\n";
 		echo "var p_js            = p_iframe.contentWindow;\n";
