@@ -187,22 +187,26 @@ while not (feof(figInfo_fid))
 					figInfo_figReversed(1) = [];
 				end;
 
-				figure_details(lines_analyzed).chr         = str2double(figInfo_chr);
-				figure_details(lines_analyzed).label       = figInfo_label;
-				figure_details(lines_analyzed).name        = figInfo_name;
-				figure_details(lines_analyzed).useChr      = figInfo_useChr;
-				figure_details(lines_analyzed).posX        = str2double(figInfo_posX);
-				figure_details(lines_analyzed).posY        = str2double(figInfo_posY);
-				figure_details(lines_analyzed).width       = figInfo_width;
-				figure_details(lines_analyzed).height      = str2double(figInfo_height);
-				figure_details(lines_analyzed).figOrder    = figInfo_figOrder;
-				figure_details(lines_analyzed).figReversed = figInfo_figReversed;
+				figure_details(lines_analyzed).chr            = str2double(figInfo_chr);
+				figure_details(lines_analyzed).used           = figInfo_useChr;
+				figure_details(lines_analyzed).label          = figInfo_label;
+				figure_details(lines_analyzed).name           = figInfo_name;
+				figure_details(lines_analyzed).useChr         = figInfo_useChr;
+				figure_details(lines_analyzed).posX           = str2double(figInfo_posX);
+				figure_details(lines_analyzed).posY           = str2double(figInfo_posY);
+				figure_details(lines_analyzed).width          = figInfo_width;
+				figure_details(lines_analyzed).height         = str2double(figInfo_height);
+				figure_details(lines_analyzed).figOrder       = figInfo_figOrder;
+				figure_details(lines_analyzed).figReversed    = figInfo_figReversed;
 		    	elseif ((str2num(figInfo_chr) == 0) && (strcmp(figInfo_label,'Ploidy') == 1))
 				figInfo_ploidy_default = sscanf(lineData, '%s',4);
 				for i = 1:size(sscanf(lineData,'%s',3),2);
 					figInfo_ploidy_default(1) = [];
 				end;
 				figInfo_ploidy_default = str2num(figInfo_ploidy_default);
+			else
+				figure_details(lines_analyzed).chr            = str2double(figInfo_chr);
+				figure_details(lines_analyzed).used           = figInfo_useChr;
 			end;
 			fprintf(['\t\t|' lineData '\n']);
 		end;
@@ -225,16 +229,23 @@ for i = 1:length(figure_details)
 	fprintf([num2str(figure_details(i).height) ']\n']);
 
 	if (figure_details(i).chr > 0)
-		if (strcmp(figure_details(i).width(1),'*') == 0)
-			maxFigSize = str2num(figure_details(i).width);
-			maxChrSize = chrSize(figure_details(i).chr).size;
+		if (figure_details(i).used > 0)
+			if (strcmp(figure_details(i).width(1),'*') == 0)
+				maxFigSize = str2num(figure_details(i).width);
+				maxChrSize = chrSize(figure_details(i).chr).size;
+			end;
 		end;
 	end;
 end;
 for i = 1:length(figure_details)
 	if (figure_details(i).chr > 0)
-		currentChrSize          = chrSize(figure_details(i).chr).size;
-		figure_details(i).width = currentChrSize/maxChrSize*maxFigSize;
+		if (figure_details(i).used > 0)
+			currentChrSize          = chrSize(figure_details(i).chr).size;
+			figure_details(i).width = currentChrSize/maxChrSize*maxFigSize;
+		else
+			currentChrSize          = 0;
+			figure_details(i).width = 0;
+		end;
 	end;
 end;
 fclose(figInfo_fid);
