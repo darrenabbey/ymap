@@ -83,7 +83,7 @@
 		fwrite($output2, $fileSizeString);
 		fclose($output2);
 		chmod($output2Name,0664);
-		fwrite($logOutput, "\tGenerated 'upload_size".$fileNumber.".txt' file.\n");
+		fwrite($logOutput, "\tGenerated 'upload_size_".$fileNumber.".txt' file.\n");
 
 		// Process the uploaded file.
 		$paired = process_input_files($ext,$name,$projectPath,$key,$user,$project,$output, $condensedLogOutput,$logOutput);
