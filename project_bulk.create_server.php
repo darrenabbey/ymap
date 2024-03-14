@@ -222,11 +222,11 @@
 
 			// Process each data file name.
 			$skip = 0;
-			foreach ($bulkdata_files as $key=>$filename) {
+			foreach ($bulkdata_files as $key=>$filename_key) {
 				if ($skip == 0) {
 					// Strip extensions off filenames.
-					$project = pathinfo($filename, PATHINFO_FILENAME);
-					$ext1 = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+					$project = pathinfo($filename_key, PATHINFO_FILENAME);
+					$ext1 = strtolower(pathinfo($filename_key, PATHINFO_EXTENSION));
 					if ($ext1 == "gz") {
 						$ext2 = strtolower(pathinfo($project, PATHINFO_EXTENSION));
 					} else {
@@ -241,7 +241,7 @@
 					}
 
 					// Determine file name without extension.
-					$project = str_replace($ext,"",$filename);
+					$project = str_replace($ext,"",$filename_key);
 
 					// Replace any "."s in string with "_"s.
 					$project = str_replace(".","_",$project);
@@ -333,10 +333,10 @@
 						chmod($fileName1,0664);
 
 						// Copy raw data to project directories. Rename raw file as we go.
-						$fileName_     = pathinfo($filename, PATHINFO_FILENAME);
-						$fileType_     = pathinfo($filename, PATHINFO_EXTENSION);
+						$fileName_     = pathinfo($filename_key, PATHINFO_FILENAME);
+						$fileType_     = pathinfo($filename_key, PATHINFO_EXTENSION);
 						$filename_new1 = str_replace(".","-",$fileName_).".".$fileType_;
-						copy($projects_bulkdata."/".$filename, $project_dir1."/".$filename_new1);
+						copy($projects_bulkdata."/".$filename_key, $project_dir1."/".$filename_new1);
 
 						// Make txt file containing raw data file name(s).
 						$fileName = $project_dir1."/datafiles.txt";
@@ -347,10 +347,10 @@
 
 						// If filename ends with "_R1", copy next file in table if the name includes "_R2".
 						if ($skip == 1) {
-							$filename2 = $bulkdata_files[$key+1];
+							$filename_key2 = $bulkdata_files[$key+1];
 
-							$project2 = pathinfo($filename2, PATHINFO_FILENAME);
-							$ext1 = pathinfo($filename2, PATHINFO_EXTENSION);
+							$project2 = pathinfo($filename_key2, PATHINFO_FILENAME);
+							$ext1 = pathinfo($filename_key2, PATHINFO_EXTENSION);
 							if ($ext1 == "gz") {
 								$ext2 = pathinfo($project2, PATHINFO_EXTENSION);
 							} else {
@@ -365,7 +365,7 @@
 							}
 
 							// Determine file name without extension.
-							$project2 = str_replace($ext,"",$filename2);
+							$project2 = str_replace($ext,"",$filename_key2);
 
 							// Replace any "."s in string with "_"s.
 							$project2 = str_replace(".","_",$project2);
@@ -373,11 +373,10 @@
 							// Check if file is one of paired reads. (Name ends in "_R1" or "_R2".)
 							// Strip suffix off name if found and skip next filename.
 							if (substr($project2,-3) == "_R2") {
-								copy($projects_bulkdata."/".$filename2, $project_dir1."/".$filename2);
-
-								$fileName_     = pathinfo($filename2, PATHINFO_FILENAME);
-								$fileType_     = pathinfo($filename2, PATHINFO_EXTENSION);
+								$fileName_     = pathinfo($filename_key2, PATHINFO_FILENAME);
+								$fileType_     = pathinfo($filename_key2, PATHINFO_EXTENSION);
 								$filename_new2 = str_replace(".","-",$fileName_).".".$fileType_;
+								copy($projects_bulkdata."/".$filename_key2, $project_dir1."/".$filename_new2);
 
 								// Make txt file containing raw data file name(s).
 								$fileName = $project_dir1."/datafiles.txt";
