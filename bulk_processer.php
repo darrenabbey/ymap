@@ -25,8 +25,7 @@
 				echo "*-------------------------*\n";
 				echo "| YMAP command-line tool. |\n";
 				echo "*------------------------------------*------------------------------------------------------*\n";
-				echo "| Use : caffeinate php bulk_processer.php user=[user] ymaps=[number] > /dev/null 2>&1 &     |\n";
-				echo "|    'caffeinate' is a function to prevent OS from sleeping while the process is running.   |\n";
+				echo "| Use : php bulk_processer.php user=[user] ymaps=[number] > /dev/null 2>&1 &                |\n";
 				echo "|    To run bulk process manager, but not output stdout.                                    |\n";
 				echo "|        user  = YMAP user account.                                                         |\n";
 				echo "|        ymaps = number of datasets to run at once. (optional)                              |\n";
@@ -50,8 +49,7 @@
 			echo "*-------------------------*\n";
 			echo "| YMAP command-line tool. |\n";
 			echo "*------------------------------------*------------------------------------------------------*\n";
-			echo "| Use : caffeinate php bulk_processer.php user=[user] ymaps=[number] > /dev/null 2>&1 &     |\n";
-			echo "|    'caffeinate' is a function to prevent OS from sleeping while the process is running.   |\n";
+			echo "| Use : php bulk_processer.php user=[user] ymaps=[number] > /dev/null 2>&1 &                |\n";
 			echo "|    To run bulk process manager, but not output stdout.                                    |\n";
 			echo "|        user  = YMAP user account.                                                         |\n";
 			echo "|        ymaps = number of datasets to run at once. (optional)                              |\n";
@@ -191,7 +189,7 @@
 							// Construct dataformat string from 'dataFormat.txt' file.
 							$dataformat_string = file_get_contents($projects_dir.$project_dirs[$key]."/dataFormat.txt");
 							$dataformat_lines  = preg_split("/:/", $dataformat_string);
-							if ($dataformat_lines[1] == 0) {
+							if ((int)$dataformat_lines[1] == 0) {
 								$dataFormat = "WGseq_single";
 							} else {
 								$dataFormat = "WGseq_paired";
