@@ -221,6 +221,7 @@ maxFigSize = 0;
 maxChrSize = 0;
 for i = 1:length(figure_details)
 	fprintf(['Fig_chr : [' num2str(figure_details(i).chr) '|']);
+	fprintf([ figure_details(i).used '|']);
 	fprintf([figure_details(i).label '|']);
 	fprintf([figure_details(i).name '|']);
 	fprintf([num2str(figure_details(i).posX) '|']);
@@ -228,24 +229,20 @@ for i = 1:length(figure_details)
 	fprintf([figure_details(i).width '|']);
 	fprintf([num2str(figure_details(i).height) ']\n']);
 
-	if (figure_details(i).chr > 0)
-		if (figure_details(i).used > 0)
-			if (strcmp(figure_details(i).width(1),'*') == 0)
-				maxFigSize = str2num(figure_details(i).width);
-				maxChrSize = chrSize(figure_details(i).chr).size;
-			end;
+	if (strcmp(figure_details(i).used,'0') == 0)
+		if (strcmp(figure_details(i).width(1),'*') == 0)
+			maxFigSize = str2num(figure_details(i).width);
+			maxChrSize = chrSize(figure_details(i).chr).size; % dragon
 		end;
 	end;
 end;
 for i = 1:length(figure_details)
-	if (figure_details(i).chr > 0)
-		if (figure_details(i).used > 0)
-			currentChrSize          = chrSize(figure_details(i).chr).size;
-			figure_details(i).width = currentChrSize/maxChrSize*maxFigSize;
-		else
-			currentChrSize          = 0;
-			figure_details(i).width = 0;
-		end;
+	if (strcmp(figure_details(i).used,'0') == 0)
+		currentChrSize          = chrSize(figure_details(i).chr).size;
+		figure_details(i).width = currentChrSize/maxChrSize*maxFigSize;
+	else
+		currentChrSize          = 0;
+		figure_details(i).width = 0;
 	end;
 end;
 fclose(figInfo_fid);
