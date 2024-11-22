@@ -114,7 +114,7 @@ with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\t#### Determine chromosome lengths.");
 
 # Process reformatted FASTA file, entry by entry, to determine maximum chromosome length.
-chr_lenths = [];
+chr_lengths = [];
 while True:
 	# FASTA entries are pairs of lines with the following structure.
 	#    >Ca_a.chr1 (9638..10115) (478bp) [*]
@@ -133,13 +133,13 @@ while True:
 		chr_name   = chr_name.replace(">","");
 		# If the current chromosome is one of those in use...
 		if chr_name in chrName:
-			chr_lenths.append(len(line2));
+			chr_lengths.append(len(line2));
 FASTA_data.close();
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\t####     max_chr_length         = " + str(max(chr_lenths)) + " bp");
+	myfile.write("\n\t\t\t####     max_chr_length         = " + str(max(chr_lengths)) + " bp");
 
-# Calculate standard bin size : round(max(chr_lenths)/700);
-bases_per_bin = int(round(max(chr_lenths)/700));
+# Calculate standard bin size : round(max(chr_lengths)/700);
+bases_per_bin = int(round(max(chr_lengths)/700));
 with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\t####     bases_per_standard_bin = " + str(bases_per_bin) + " bp");
 
