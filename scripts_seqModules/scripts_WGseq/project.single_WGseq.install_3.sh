@@ -159,8 +159,8 @@ else
 		echo "\tBowtie : single-end reads aligning into SAM file." >> $logName;
 		## Bowtie 2 command for single reads:
 		echo "\nRunning bowtie2.\n";
-		echo "\tbowtie2 --very-sensitive -p "$cores" "$genomeDirectory"bowtie_index -U "$projectDirectory$datafile" -S "$projectDirectory"data.sam;" >> $logName;
-		$bowtie2Directory"bowtie2" --very-sensitive -p $cores $genomeDirectory"bowtie_index" -U $projectDirectory$datafile -S $projectDirectory"data.sam";
+		echo "\tbowtie2 --very-sensitive -p "$cores" -x "$genomeDirectory"bowtie_index -U "$projectDirectory$datafile" -S "$projectDirectory"data.sam;" >> $logName;
+		$bowtie2Directory"bowtie2" --very-sensitive -p $cores -x $genomeDirectory"bowtie_index" -U $projectDirectory$datafile -S $projectDirectory"data.sam";
 			# -S : SAM output mode.
 			# -p : number of threads to use.
 			# -1 : dataset.
