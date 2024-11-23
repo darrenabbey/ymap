@@ -70,20 +70,27 @@ fi
 #	formatdb -i $reflocation$FASTA -p F -o T;
 #fi
 
-echo "\n\t============================================================================================== 3" >> $logName;
-
-## Check if GATK dictionary and index files have been made for selected genome. Generate these files if not found.
-if [ -e $reflocation$FASTAname".dict" ]
-then
-	echo "\tFASTA dictionary file for genome '$genome' found." >> $logName;
-else
-	echo "Generating FASTA dictionary file for genome, step 1." >> $condensedLog;
-	echo "\tFASTA dictionary file not found for genome '$genome': Regenerating using Picard-tools." >> $logName;
-	echo "\tR="$reflocation$FASTA >> $logName;
-	echo "\tO="$reflocation$FASTAname".dict" >> $logName;
-
-	java -jar $picardDirectory"CreateSequenceDictionary.jar" R=$reflocation$FASTA O=$reflocation$FASTAname".dict";
-fi
+#echo "\n\t============================================================================================== 3" >> $logName;
+#
+### Check if GATK dictionary and index files have been made for selected genome. Generate these files if not found.
+#if [ -e $reflocation$FASTAname".dict" ]
+#then
+#	echo "\tFASTA dictionary file for genome '$genome' found." >> $logName;
+#else
+#	echo "Generating FASTA dictionary file for genome, step 1." >> $condensedLog;
+#	echo "\tFASTA dictionary file not found for genome '$genome': Regenerating using Picard-tools." >> $logName;
+#	echo "\tR="$reflocation$FASTA >> $logName;
+#	echo "\tO="$reflocation$FASTAname".dict" >> $logName;
+#
+#	## use for calling picard tools from installed package.
+#	# PicardCommandLine tools fail when reference fasta includes parentheses "()" in chromosome names. Replace with "*" to allow it to work.
+#	sed -i -e 's/(/*/g' $reflocation$FASTA;
+#	sed -i -e 's/)/*/g' $reflocation$FASTA;
+#	PicardCommandLine CreateSequenceDictionary -R $reflocation$FASTA -O $reflocation$FASTAname".dict";
+#
+#	### use for calling picard tools directly via java.
+#	#java -jar $picardDirectory"CreateSequenceDictionary.jar" R=$reflocation$FASTA O=$reflocation$FASTAname".dict";
+#fi
 
 echo "\n\t============================================================================================== 4" >> $logName;
 
