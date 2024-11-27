@@ -22,15 +22,17 @@ end;
 
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
-	figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
-	option         = figure_options{9,1};
+	%%figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
+	figure_options = importdata([main_dir 'users/' user '/projects/' project '/figure_options.txt'],'\t',1);
+
+	option         = figure_options{10,1};
 	if strcmp(option,'False')
 		Make_figure_linear = false;
 	else
 		Make_figure_linear = true;
 	end;
 
-	option         = figure_options{10,1};
+	option         = figure_options{11,1};
 	if strcmp(option,'False')
 		Make_figure_standard = false;
 	else
@@ -408,8 +410,16 @@ for chr = 1:num_chrs
 			if (length(allelic_ratios) > 0)
 				for SNP = 1:length(allelic_ratios)
 					% Load phased SNP data from earlier defined structure.
-					allelic_ratio                         = allelic_ratios(SNP);
-					coordinate                            = coordinates(SNP);
+					if (isa(allelic_ratios(SNP),'cell') == 1)
+						allelic_ratio                 = str2num(cell2mat(allelic_ratios(SNP)));
+					else
+						allelic_ratio                 = allelic_ratios(SNP);
+					end;
+					if (isa(coordinates(SNP),'cell') == 1)
+						coordinate                    = str2num(cell2mat(coordinates(SNP)));
+					else
+						coordinate                    = coordinates(SNP);
+					end;
 					if (length(allelic_ratios) > 1)
 						allele_string                 = allele_strings{SNP};
 					else
@@ -962,43 +972,43 @@ for chr_to_draw  = 1:length(chr_order)
 			set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 			set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
 			if (chr_figReversed(chr) == 0)
-				text(-50000/5000/2*3, maxY/2,chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+				text(-50000/5000/2*3, maxY/2,chr_label{chr}, 'rotation', 90, 'horizontalalignment', 'center', 'verticalalignment', 'bottom', 'fontsize', stacked_chr_font_size);
 			else
-				text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+				text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'rotation', 90, 'horizontalalignment', 'center', 'verticalalignment', 'bottom', 'fontsize', stacked_chr_font_size);
 			end;
 			switch ploidyBase
 				case 1
-					text(axisLabelPosition_vert, maxY/2,     '1','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-					text(axisLabelPosition_vert, maxY,       '2','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/2,     '1','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY,       '2','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
 				case 2
-					text(axisLabelPosition_vert, maxY/4,     '1','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-					text(axisLabelPosition_vert, maxY/2,     '2','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-					text(axisLabelPosition_vert, maxY/4*3,   '3','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-					text(axisLabelPosition_vert, maxY,       '4','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/4,     '1','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/2,     '2','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/4*3,   '3','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY,       '4','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
 				case 3
-					text(axisLabelPosition_vert, maxY/2,     '3','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-					text(axisLabelPosition_vert, maxY,       '6','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/2,     '3','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY,       '6','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
 				case 4
-					text(axisLabelPosition_vert, maxY/4,     '2','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-					text(axisLabelPosition_vert, maxY/2,     '4','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-					text(axisLabelPosition_vert, maxY/4*3,   '6','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-					text(axisLabelPosition_vert, maxY,       '8','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/4,     '2','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/2,     '4','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/4*3,   '6','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY,       '8','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
 				case 5
-					text(axisLabelPosition_vert, maxY/2,     '5','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-					text(axisLabelPosition_vert, maxY,      '10','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/2,     '5','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY,      '10','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
 				case 6
-					text(axisLabelPosition_vert, maxY/4,     '3','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-					text(axisLabelPosition_vert, maxY/2,     '6','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-					text(axisLabelPosition_vert, maxY/4*3,   '9','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-					text(axisLabelPosition_vert, maxY,      '12','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/4,     '3','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/2,     '6','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/4*3,   '9','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY,      '12','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
 				case 7
-					text(axisLabelPosition_vert, maxY/2,     '7','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-					text(axisLabelPosition_vert, maxY,      '14','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/2,     '7','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY,      '14','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
 				case 8
-					text(axisLabelPosition_vert, maxY/4,     '4','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-					text(axisLabelPosition_vert, maxY/2,     '8','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-					text(axisLabelPosition_vert, maxY/4*3,  '12','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-					text(axisLabelPosition_vert, maxY,      '16','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/4,     '4','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/2,     '8','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY/4*3,  '12','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
+					text(axisLabelPosition_vert, maxY,      '16','horizontalalignment', 'right', 'fontsize', stacked_axis_font_size);
 			end;
 			set(gca,'FontSize',gca_stacked_font_size);
 			if (chr == find(chr_posY == max(chr_posY)))
@@ -1160,7 +1170,7 @@ for chr_to_draw  = 1:length(chr_order)
 							chr_string = [chr_string ',' num2str(chrCopyNum{chr}(i))];
 						end;
 					end;
-					text(0.1,0.5, chr_string,'HorizontalAlignment','left','VerticalAlignment','middle','FontSize',stacked_copy_font_size);
+					text(0.1,0.5, chr_string,'horizontalalignment', 'left', 'verticalalignment', 'middle', 'fontsize', stacked_copy_font_size);
 				end;
 			end;
 			% standard : end of chr copy number at right of the main chr cartons.
@@ -1311,37 +1321,37 @@ for chr_to_draw  = 1:length(chr_order)
 				% This section sets the Y-axis labelling.
 				switch ploidyBase
 					case 1
-						text(axisLabelPosition_horiz, maxY/2,     '1','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY,       '2','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY/2,     '1','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY,       '2','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
 					case 2
-						text(axisLabelPosition_horiz, maxY/4,     '1','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY/2,     '2','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY/4*3,   '3','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY,       '4','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY/4,     '1','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY/2,     '2','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY/4*3,   '3','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY,       '4','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
 					case 3
-						text(axisLabelPosition_horiz, maxY/2,     '3','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY,       '6','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY/2,     '3','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY,       '6','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
 					case 4
-						text(axisLabelPosition_horiz, maxY/4,     '2','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY/2,     '4','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY/4*3,   '6','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY,       '8','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY/4,     '2','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY/2,     '4','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY/4*3,   '6','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY,       '8','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
 					case 5
-						text(axisLabelPosition_horiz, maxY/2,     '5','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY,      '10','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY/2,     '5','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY,      '10','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
 					case 6
-						text(axisLabelPosition_vert, maxY/4,      '3','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-						text(axisLabelPosition_vert, maxY/2,      '6','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-						text(axisLabelPosition_vert, maxY/4*3,    '9','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
-						text(axisLabelPosition_vert, maxY,       '12','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
+						text(axisLabelPosition_vert, maxY/4,      '3','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
+						text(axisLabelPosition_vert, maxY/2,      '6','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
+						text(axisLabelPosition_vert, maxY/4*3,    '9','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
+						text(axisLabelPosition_vert, maxY,       '12','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
 					case 7
-						text(axisLabelPosition_horiz, maxY/2,     '7','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY,      '14','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY/2,     '7','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY,      '14','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
 					case 8
-						text(axisLabelPosition_horiz, maxY/4,     '4','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY/2,     '8','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY/4*3,  '12','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY,      '16','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY/4,     '4','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY/2,     '8','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY/4*3,  '12','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
+						text(axisLabelPosition_horiz, maxY,      '16','horizontalalignment', 'right', 'fontsize', linear_axis_font_size);
 				end;
 			end;
 			set(gca,'FontSize',linear_gca_font_size);
@@ -1359,9 +1369,9 @@ for chr_to_draw  = 1:length(chr_order)
 				end;
 			else
 				if (chr_figReversed(chr) == 0)
-					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'interpreter', 'none', 'fontsize', linear_chr_font_size, 'rotation', rotate);
 				else
-					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
+					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'], 'interpreter', 'tex', 'fontsize', linear_chr_font_size, 'rotation', rotate);
 				end;
 			end;
 		end;

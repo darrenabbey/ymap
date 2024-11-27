@@ -462,13 +462,16 @@ function blank_and_content_tab() {
 			string1     = string1 + "</td></tr></table>";
 			string1     = string1 + "</td><td width='60%' align='left'><font size='-1'>";
 
+			// only? fig.CNV-SNP-map.1.png
 			if (file_list.indexOf(fig_linear_CNV_SNP+"png") != -1) {
 				mainFigure1 = fig_linear_CNV_SNP;
 			} else if (file_list.indexOf(fig_linear_CNV+"png") != -1) {
 				mainFigure1 = fig_linear_CNV;
 			} else if (file_list.indexOf(fig_linear_SNP+"png") != -1) {
 				mainFigure1 = fig_linear_SNP;
-			}
+			} //else if (file_list.indexOf(fig_linear_SNP+"png") != -1) {
+
+
 			console.log("## "+figVer_);
 			console.log("## "+fig_linear_CNV_SNP+"png");
 			console.log("## "+fig_linear_CNV+"png");

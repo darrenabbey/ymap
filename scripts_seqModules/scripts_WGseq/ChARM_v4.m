@@ -629,10 +629,10 @@ for t = 1:1; % num_permutations
 			fprintf('\nchr %d has no edges\n', chr);
 			% setting new locs to be the same
 			new_locs{chr}           = locs{chr};
-		end; 
+		end;
     	else
         	% setting new locs to be the same
-        	new_locs{chr}           = locs{chr};
+        	%new_locs{chr}           = locs{chr};
         	fprintf('\nchr %d is not used\n', chr);
     	end;
     end;

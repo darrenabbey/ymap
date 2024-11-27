@@ -48,7 +48,7 @@
 		$logOutput     = fopen($logOutputName, 'a');
 		fwrite($logOutput, "Log file restarted.\n");
 		fwrite($logOutput, "#..............................................................................\n");
-		fwrite($logOutput, "Running 'scripts_seqModules/scripts_WGseq/project.update_server.php'.\n");
+		fwrite($logOutput, "Running 'scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php'.\n");
 		fwrite($logOutput, "Variables passed :\n");
 		fwrite($logOutput, "\tuser     = '".$user."'\n");
 		fwrite($logOutput, "\tproject  = '".$project."'\n");

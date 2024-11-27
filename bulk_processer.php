@@ -1,7 +1,7 @@
 <?php
 	//======================================================
 	// To run php script, but don't wait for it to conclude:
-	//	exec("php script.php > /dev/null &");
+	//	exec("hp bulk_processer.php user=darren ymaps=5 > /dev/null 2>&1 &");
 	//------------------------------------------------------
 
 	if (!isset($_SERVER["HTTP_HOST"])) {

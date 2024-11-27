@@ -6,11 +6,15 @@
 
 	// Call the bulk data processer and disconnect it from the browser.
 	// php bulk_processer.php user=darren ymaps=5 > /dev/null 2>&1 &
+
+
 	$system_call_string = "php bulk_processer.php user=".$user." ymaps=".$MAX_BULK_PARALLEL." > /dev/null 2>&1 &";
-	echo getcwd();
+//	echo getcwd();
 	echo "<br>\n";
-	echo $system_call_string;
+	echo "To start bulk processor, run the following command from '".getcwd()."/'.<br>\n";
+	echo "<b>".$system_call_string."</b>";
 	echo "<br>\n";
+	echo "<br>\nThis function has not yet been properly integrated into the user interface.\n";
 //	system($system_call_string, $null);
 
 //	system("php bulk_processer.php", $retval);

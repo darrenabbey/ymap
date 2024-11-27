@@ -103,13 +103,13 @@ FASTAname=$(echo $FASTA | sed 's/.fasta//g');                                  #
 
 
 ##==============================================================================
-## Generate script to re-run terminal visualization Matlab code.
+## Generate script to re-run terminal visualization OCTAVE code.
 ##------------------------------------------------------------------------------
 echo "#======================================#" >> $logName;
 echo "# Re-perform visualization of dataset. #" >> $logName;
 echo "#======================================#" >> $logName;
 
-echo "\tGenerating MATLAB script to perform CNV analysis of dataset, with GC-correction." >> $logName;
+echo "\tGenerating OCTAVE script to perform CNV analysis of dataset, with GC-correction." >> $logName;
 outputName=$projectDirectory"processing_Rerun.m";
 echo "\toutputName = "$outputName >> $logName;
 
@@ -130,7 +130,10 @@ fi
 echo "end" >> $outputName;
 echo "end" >> $logName;
 
-echo "\tCalling MATLAB." >> $logName;
-$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;" 2>> $logName;
-echo "\tMATLAB log from redo of visualization.." >> $logName;
+echo "\tCalling OCTAVE." >> $logName;
+#$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;" 2>> $logName;
+cd $projectDirectory;
+$matlab_exec $outputName;
+cd $script_dir;
+echo "\tOCTAVE log from redo of visualization.." >> $logName;
 sed 's/^/\t\t|/;' $projectDirectory"matlab.rerun_visualization.log" >> $logName;

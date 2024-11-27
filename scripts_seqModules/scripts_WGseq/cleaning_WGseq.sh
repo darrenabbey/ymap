@@ -78,29 +78,29 @@ then
 	echo "\tprocessing4.m" >> $logName;
 fi
 
-if [ -f $projectDirectory"matlab.CNV_and_GCbias.log" ]
-then
-	rm $projectDirectory"matlab.CNV_and_GCbias.log";
-	echo "\tmatlab.CNV_and_GCbias.log" >> $logName;
-fi
+#if [ -f $projectDirectory"matlab.CNV_and_GCbias.log" ]
+#then
+#	rm $projectDirectory"matlab.CNV_and_GCbias.log";
+#	echo "\tmatlab.CNV_and_GCbias.log" >> $logName;
+#fi
 
-if [ -f $projectDirectory"matlab.ChARM.log" ]
-then
-	rm $projectDirectory"matlab.ChARM.log";
-	echo "\tmatlab.ChARM.log" >> $logName;
-fi
+#if [ -f $projectDirectory"matlab.ChARM.log" ]
+#then
+#	rm $projectDirectory"matlab.ChARM.log";
+#	echo "\tmatlab.ChARM.log" >> $logName;
+#fi
 
-if [ -f $projectDirectory"matlab.SNP_analysis.log" ]
-then
-	rm $projectDirectory"matlab.SNP_analysis.log";
-	echo "\tmatlab.SNP_analysis.log" >> $logName;
-fi
+#if [ -f $projectDirectory"matlab.SNP_analysis.log" ]
+#then
+#	rm $projectDirectory"matlab.SNP_analysis.log";
+#	echo "\tmatlab.SNP_analysis.log" >> $logName;
+#fi
 
-if [ -f $projectDirectory"matlab.final_figs.log" ]
-then
-	rm $projectDirectory"matlab.final_figs.log";
-	echo "\tmatlab.final_figs.log" >> $logName;
-fi
+#if [ -f $projectDirectory"matlab.final_figs.log" ]
+#then
+#	rm $projectDirectory"matlab.final_figs.log";
+#	echo "\tmatlab.final_figs.log" >> $logName;
+#fi
 
 if [ -f $projectDirectory"data_sorted.bam.bai" ]
 then

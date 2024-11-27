@@ -35,8 +35,6 @@ fprintf('\t|\tGenerating FirePlot of SNP allelic ratio data across genome.\n');
 %% ========================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
 %    bases_per_bin              : Controls bin sizes for SNP/CGH fractions of plot.
-%    scale_type                 : 'Ratio' or 'Log2Ratio' y-axis scaling of copy number.
-%                                 'Log2Ratio' does not properly scale CGH data by ploidy.
 %    Chr_max_width              : max width of chrs as fraction of figure width.
 Centromere_format           = 0;
 Chr_max_width               = 0.8;
@@ -53,9 +51,10 @@ genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
 
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
-	figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
-	option         = figure_options{8,1};
+	%%figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
+	figure_options = importdata([main_dir 'users/' user '/projects/' project '/figure_options.txt'],'\t',1);
 
+	option         = figure_options{9,1};
 	if strcmp(option,'False')
 		Make_figure = false;
 	else
@@ -209,21 +208,21 @@ if (Make_figure == true)
 		% Load only putative SNP data corresponding to hapmap loci.
 		fprintf('\t|\tLoad SNP information from "trimmed_SNPs_v5.txt" file for project.\n');
 		fprintf('\t|\t\t');
-		datafile   = [projectDir 'trimmed_SNPs_v5.txt'];
+		datafile   = [projectDir '/trimmed_SNPs_v5.txt'];
 	else
 		% Load all putative SNP data.
 		fprintf('\t|\tLoad SNP information from "putative_SNPs_v4.txt" file for project.\n');
 		fprintf('\t|\t\t');
-		datafile   = [projectDir 'putative_SNPs_v4.txt'];
+		datafile   = [projectDir '/putative_SNPs_v4.txt'];
 	end;
 
-	data       = fopen(datafile, 'r');
+	data       = fopen(datafile,'r');
 	count      = 0;
 	old_chr    = 0;
 	gap_string = '';
-	% reading the line before checking for end of file to avoid reading empty
-	% file
-	dataLine = fgetl(data);
+	% reading the line before checking for end of file to avoid reading empty file.
+
+	dataLine = fgetl(data);  % failing here means the file isn't present, likely because it was compressed into a zip archive.
 	while not (feof(data))
 		if (length(dataLine) > 0)
 			% process the loaded line into data channels.

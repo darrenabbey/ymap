@@ -7,9 +7,10 @@ set(0,'DefaultFigureVisible','off');
 
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
-        figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
+	%%figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
+	figure_options = importdata([main_dir 'users/' user '/projects/' project '/figure_options.txt'],'\t',1);
 
-        option         = figure_options{5,1};
+        option         = figure_options{6,1};
         if strcmp(option,'False')
                 Make_figure = false;
         else
@@ -201,7 +202,7 @@ if (Make_figure == true)
 	end;
 	medianCNV = median(CNVdata_all)
 	% avoid divding by zero
-	if (medianCNV ~= 0)
+	if (medianCNV > 0)
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
 				CNVplot2{chr} = CNVplot2{chr}/medianCNV;
@@ -328,9 +329,9 @@ if (Make_figure == true)
 				set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 				set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
 				if (chr_figReversed(chr) == 0)
-					text(-50000/5000/2*3, maxY*3/2,chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+					text(-50000/5000/2*3, maxY*3/2,chr_label{chr}, 'rotation',90, 'horizontalalignment', 'center', 'verticalalignment', 'bottom', 'fontsize', stacked_chr_font_size);
 				else
-					text(-50000/5000/2*3, maxY*3/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+					text(-50000/5000/2*3, maxY*3/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'rotation',90, 'horizontalalignment', 'center', 'verticalalignment', 'bottom', 'fontsize', stacked_chr_font_size);
 				end;
 
 				% standard : This section sets the Y-axis labelling.

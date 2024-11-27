@@ -26,15 +26,17 @@ load([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
 
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
-	figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
-	option         = figure_options{11,1};
+	%%figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
+	figure_options = importdata([main_dir 'users/' user '/projects/' project '/figure_options.txt'],'\t',1);
+
+	option         = figure_options{12,1};
 	if strcmp(option,'False')
 		Make_figure_linear = false;
 	else
 		Make_figure_linear = true;
 	end;
 
-	option         = figure_options{12,1};
+	option         = figure_options{13,1};
 	if strcmp(option,'False')
 		Make_figure_standard = false;
 	else
@@ -116,8 +118,16 @@ if ((useHapmap) || (useParent))
 					if (length(allelic_ratios) > 0)
 						for SNP = 1:length(allelic_ratios)
 							% Load phased SNP data from earlier defined structure.
-							allelic_ratio                   = allelic_ratios(SNP);
-							coordinate                      = coordinates(SNP);
+							if (isa(allelic_ratios(SNP),'cell') == 1)
+								allelic_ratio                 = str2num(cell2mat(allelic_ratios(SNP)));
+							else
+								allelic_ratio                 = allelic_ratios(SNP);
+							end;
+							if (isa(coordinates(SNP),'cell') == 1)
+								coordinate                    = str2num(cell2mat(coordinates(SNP)));
+							else
+								coordinate                    = coordinates(SNP);
+							end;
 							if (length(allelic_ratios) > 1)
 								allele_string           = allele_strings{SNP};
 							else

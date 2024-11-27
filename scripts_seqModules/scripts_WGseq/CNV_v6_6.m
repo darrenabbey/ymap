@@ -19,30 +19,40 @@ end;
 
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
-	figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
+	%%
+	%% readtable is not implemented in Octave.
+	%%
+	%figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
 
-	option         = figure_options{1,1};
+	figure_options = importdata([main_dir 'users/' user '/projects/' project '/figure_options.txt'],'\t',1);
+
+%	fprintf('\n');
+%	for k=1:13
+%		fprintf(['&&&&' figure_options{k} '\n']);
+%	endfor;
+
+	option         = figure_options{2,1};
 	if strcmp(option,'False')
 		Make_figure_bias_GC = false;
 	else
 		Make_figure_bias_GC = true;
 	end;
 
-	option         = figure_options{2,1};
+	option         = figure_options{3,1};
 	if strcmp(option,'False')
 		Make_figure_bias_end = false;
 	else
 		Make_figure_bias_end = true;
 	end;
 
-	option         = figure_options{3,1};
+	option         = figure_options{4,1};
 	if strcmp(option,'False')
 		Make_figure_linear = false;
 	else
 		Make_figure_linear = true;
 	end;
 
-	option         = figure_options{4,1};
+	option         = figure_options{5,1};
 	if strcmp(option,'False')
 		Make_figure_standard = false;
 	else
@@ -185,7 +195,8 @@ if (exist([projectDir 'CNV_' CNV_verString '.mat'],'file') == 0)
 				fragment_end               = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1)   = []; end;    fragment_end   = str2num(fragment_end);
 				readAverage                = sscanf(dataLine, '%s',4);  for i = 1:size(sscanf(dataLine,'%s',3),2);      readAverage(1)    = []; end;    readAverage    = str2num(readAverage);
 				position                   = ceil(fragment_start/bases_per_bin);
-					% defining position with fragment_end results in much fuzzier data.
+
+				% defining position with fragment_end results in much fuzzier data.
 				chr_CNVdata{chr}(position) = readAverage;
 			end;
 		end;
@@ -212,19 +223,28 @@ if (exist(datafile,'file') == 0)
 	performEndbiasCorrection   = true;
 else
 	biases_fid = fopen(datafile, 'r');
-	bias1      = fgetl(biases_fid);
-	bias2      = fgetl(biases_fid);
-	bias3      = fgetl(biases_fid);
-	bias4      = fgetl(biases_fid);
+	bias1      = fgetl(biases_fid);	% performLengthbiasCorrection
+	bias2      = fgetl(biases_fid);	% performGCbiasCorrection
+	bias3      = fgetl(biases_fid);	% performRepetbiasCorrection
+	bias4      = fgetl(biases_fid);	% performEndbiasCorrection
 	fclose(biases_fid);
 
+	fprintf('%%%% Load data bias correction selections:\n');
+	fprintf(['%%%%   bias1 = ' bias1 '\n']);
+	fprintf(['%%%%   bias2 = ' bias2 '\n']);
+	fprintf(['%%%%   bias3 = ' bias3 '\n']);
+	fprintf(['%%%%   bias4 = ' bias4 '\n']);
+	fprintf('%%%%\n');
+
 	% performLengthbiasCorrection is meaningless for this data format.
+
 	if (strcmp(bias2,'True') == 1)
 		performGCbiasCorrection    = true;
 	else
 		performGCbiasCorrection    = false;
 	end;
 
+	% Repetitiveness bias correction is turned off, as endedup not being more useful than %GC correction.
 	if (strcmp(bias3,'True') == 1)
 		performRepetbiasCorrection = false;
 		performGCbiasCorrection    = true; % needed since repet bias use gc data
@@ -385,12 +405,16 @@ end;
 if (performEndbiasCorrection)
 	% Extend CGH data for shorter chromosomes to length of the midpoint of the longest chromosome.
 	chr_CGHdata_extended  = [];
-	largest_chr_bin_count = ceil(max(chr_size)/bases_per_bin);
+	%largest_chr_bin_count = ceil(max(chr_size)/bases_per_bin);
+	[largest_chr_size,largest_chr] = max(chr_size);
+	largest_chr_bin_count = ceil(largest_chr_size/bases_per_bin);
+
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			chr_CGHdata_extended{chr} = CNVplot{chr};
 		end;
 	end;
+
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			chr_bin_count     = ceil(chr_size(chr)/bases_per_bin);
@@ -398,9 +422,15 @@ if (performEndbiasCorrection)
 			chr_middle_bin    = round(chr_bin_count/2);
 			fprintf(['chr_middle_bin   = ' num2str(chr_middle_bin) '\n']);
 			median_range = min(20, chr_bin_count/4); % Bin length could be less than 40, so taking a range of 20 crashes the analysis.
-			center_median_CGH = mean(chr_CGHdata_extended{chr}((chr_middle_bin-median_range):(chr_middle_bin+median_range)));
+
+			%center_median_CGH = mean(chr_CGHdata_extended{chr}((chr_middle_bin-median_range):(chr_middle_bin+median_range)));
+
 			for pos = 1:(largest_chr_bin_count - chr_bin_count)
-				chr_CGHdata_extended{chr}(end+1) = center_median_CGH;
+				%% Results in chr end correction not being done well for center of large chromosomes.
+				%chr_CGHdata_extended{chr}(end+1) = center_median_CGH;
+
+				%% Results in chr end correction being done effectively for all areas.
+				chr_CGHdata_extended{chr}(end+1) = chr_CGHdata_extended{largest_chr}(pos+chr_bin_count);
 			end;
 		end;
 	end;
@@ -821,7 +851,7 @@ for chr = 1:num_chrs
 end;
 medianCNV = median(CNVdata_all)
 % avoid divding by zero
-if (medianCNV ~= 0)
+if (medianCNV > 0)
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			CNVplot2{chr} = CNVplot2{chr}/medianCNV;
@@ -917,9 +947,9 @@ for chr_to_draw  = 1:length(chr_order)
 
 			% chromosome cartoon titles for standard figure.
 			if (chr_figReversed(chr) == 0)
-				text(-50000/5000/2*3, maxY/2,chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+				text(-50000/5000/2*3, maxY/2, chr_label{chr}, 'rotation',90, 'horizontalalignment', 'center', 'verticalalignment', 'bottom', 'fontsize', stacked_chr_font_size);
 			else
-				text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+				text(-50000/5000/2*3, maxY/2, [chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'rotation',90, 'horizontalalignment', 'center', 'verticalalignment', 'bottom', 'fontsize',stacked_chr_font_size);
 			end;
 
 			% This section sets the Y-axis labelling.

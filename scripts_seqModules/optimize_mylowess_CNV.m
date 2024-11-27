@@ -3,7 +3,7 @@ function [newX, newY] = optimize_mylowess_CNV(rawData_X,rawData_Y)
 %numDat        = length(rawData_X);
 %spans         = linspace(0.01,0.99, numFits);
 %sse           = zeros(size(spans));
-%cp            = cvpartition(numDat,'k',10);
+%cp            = cvpartition(numDat, 'KFold', 10);
 X             = rawData_X';
 Y             = rawData_Y';
 

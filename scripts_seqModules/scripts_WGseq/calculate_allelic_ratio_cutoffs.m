@@ -43,9 +43,13 @@ for chr = 1:num_chrs
 				if (useHapmap)
 					if (length(ratioData_phased) > 0)
 						for SNP_in_bin = 1:length(ratioData_phased)
-							if ((coordinateData_phased(SNP_in_bin) > chr_breaks{chr}(segment)*chr_length) && (coordinateData_phased(SNP_in_bin) <= chr_breaks{chr}(segment+1)*chr_length))
+							if ( (coordinateData_phased(SNP_in_bin) > chr_breaks{chr}(segment)*chr_length) && (coordinateData_phased(SNP_in_bin) <= chr_breaks{chr}(segment+1)*chr_length) )
 								% Ratio data is phased, so it is added twice in its proper orientation (to match density of unphased data below).
-								allelic_ratio = ratioData_phased(SNP_in_bin);
+								if (isa(ratioData_phased(SNP_in_bin),'cell') == 1)
+									allelic_ratio                 = str2num(cell2mat(ratioData_phased(SNP_in_bin)));
+								else
+									allelic_ratio                 = ratioData_phased(SNP_in_bin);
+								end;
 								histAll_a = [histAll_a allelic_ratio  ];
 								histAll_b = [histAll_b allelic_ratio  ];
 							end;
@@ -54,9 +58,33 @@ for chr = 1:num_chrs
 				end;
 				if (length(ratioData_unphased) > 0)
 					for SNP_in_bin = 1:length(ratioData_unphased)
-						if ((coordinateData_unphased(SNP_in_bin) > chr_breaks{chr}(segment)*chr_length) && (coordinateData_unphased(SNP_in_bin) <= chr_breaks{chr}(segment+1)*chr_length))
+						%fprintf(['#### SNP_in_bin                                     = ' num2str(SNP_in_bin)					'\n' ]); %dragon
+						%fprintf(['####   chr                                          = ' num2str(chr)						'\n' ]);
+						%fprintf(['####   segment                                      = ' num2str(segment)					'\n' ]);
+						%fprintf(['####   chr_length                                   = ' num2str(chr_length)					'\n' ]);
+						%fprintf(['####   chr_breaks{chr}(segment)                     = ' num2str(chr_breaks{chr}(segment))        		'\n' ]);
+						%fprintf(['####   class(coordinateData_unphased(SNP_in_bin))   = ' class(coordinateData_unphased(SNP_in_bin))		'\n' ]);
+						%if (isa(coordinateData_unphased(SNP_in_bin),'cell') == 1)
+						%	fprintf(['####                                                  ' cell2mat(coordinateData_unphased(SNP_in_bin))	'\n' ]);
+						%else
+						%	fprintf(['####                                                  ' num2str(coordinateData_unphased(SNP_in_bin))	'\n' ]);
+						%end;
+						%fprintf(['####   class(chr_breaks{chr}(segment)*chr_length)   = ' class(chr_breaks{chr}(segment)*chr_length)		'\n' ]);
+						%fprintf(['####   class(chr_breaks{chr}(segment+1)*chr_length) = ' class(chr_breaks{chr}(segment+1)*chr_length)		'\n' ]);
+
+						if (isa(coordinateData_unphased(SNP_in_bin),'cell') == 1)
+							testVal1 = str2num(cell2mat(coordinateData_unphased(SNP_in_bin)));
+						else
+							testVal1 = coordinateData_unphased(SNP_in_bin);
+						end;
+
+						if ( (testVal1 > chr_breaks{chr}(segment)*chr_length) && (testVal1 <= chr_breaks{chr}(segment+1)*chr_length) )
 							% Ratio data is unphased, so it is added evenly in both orientations.
-							allelic_ratio = ratioData_unphased(SNP_in_bin);
+							if (isa(ratioData_unphased(SNP_in_bin),'cell') == 1)
+								allelic_ratio = str2num(cell2mat(ratioData_unphased(SNP_in_bin)));
+							else
+								allelic_ratio = ratioData_unphased(SNP_in_bin);
+							end;
 							histAll_a = [histAll_a allelic_ratio  ];
 							histAll_b = [histAll_b 1-allelic_ratio];
 						end;

@@ -8,7 +8,7 @@
 	// 	10 projects is double what is shown on-screen at once time.
 	//	User will need to reload page to refresh once those 10 are done.
 	$bulk_ui_projects_showAll = False;
-	$bulk_ui_projects_limit   = 10;
+	$bulk_ui_projects_limit   = 11;
 ?>
 <style type="text/css">
 	html * {
