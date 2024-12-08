@@ -271,7 +271,7 @@
 				</td><td>
 				GC% bias correction is almost always ideal.<br>
 				Use chromosome-end correction with care. <font size='2'>(Chr end bias in data can potentially reveal structural changes which alter the distance between<br>
-				a locus and a chromosome end vs in the reference genome. Correcting this bias can lead to confounding copy number artifacts in cases like this.)</font>
+				a locus and a chromosome end vs in the reference genome. Correcting this bias can lead to confounding copy number artifacts in such cases.)</font>
 				</td></tr></table><br>
 				<?php
 				if (!$exceededSpace) {

@@ -9,35 +9,26 @@
 #	unzip -j [fiel.zip]
 
 user="darren";
-#project="ID5087";
-#sh project.WGseq.install_4.sh $user $project;
+project="ID5115";
+main_dir=$(pwd)"/../../";
+local_dir=$(pwd);
+projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
+logName=$projectDirectory"process_log.txt";
+condensedLog=$projectDirectory"condensed_log.txt";
 
-#project="ID5088";
-#sh project.WGseq.install_4.sh $user $project;
 
-#project="ID5089";
-#sh project.WGseq.install_4.sh $user $project;
+##==============================================================================
+## Unzip SNP archive file: putative_SNPs_v4.zip
+##------------------------------------------------------------------------------
+if [ -f $projectDirectory"putative_SNPs_v4.txt" ]
+then
+        echo "\tSNP data already decompressed." >> $logName;
+else
+        echo "\tDecompressing SNP data." >> $logName;
+	cd $projectDirectory;
+        unzip -j -o putative_SNPs_v4.zip;
+	cd $local_dir;
+fi
 
-#project="ID5115";
-#sh project.WGseq.install_4.sh $user $project;
 
-#project="ID5150";
-#sh project.WGseq.install_4.sh $user $project;
-
-#project="ID5166";
-#sh project.WGseq.install_4.sh $user $project;
-
-#project="ID5167";
-#sh project.WGseq.install_4.sh $user $project;
-
-#project="ID5171";
-#sh project.WGseq.install_4.sh $user $project;
-
-#project="ID5208";
-#sh project.WGseq.install_4.sh $user $project;
-
-#project="ID5219";
-#sh project.WGseq.install_4.sh $user $project;
-
-#project="ID5269";
-#sh project.WGseq.install_4.sh $user $project;
+sh project.WGseq.install_4.sh $user $project;

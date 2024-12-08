@@ -114,7 +114,8 @@ outputName=$projectDirectory"processing_Rerun.m";
 echo "\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing_Rerun()" > $outputName;
-echo "\tdiary('"$projectDirectory"matlab.rerun_visualization.log');" >> $outputName;
+echo "\tpkg load matgeom;" >> $outputName;
+echo "\tdiary('"$projectDirectory"octave.rerun_visualization.log');" >> $outputName;
 echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 
 #echo     "\tanalyze_CNVs_1(         '$main_dir','$user','$genomeUser','$project',          '$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
@@ -136,4 +137,4 @@ cd $projectDirectory;
 $matlab_exec $outputName;
 cd $script_dir;
 echo "\tOCTAVE log from redo of visualization.." >> $logName;
-sed 's/^/\t\t|/;' $projectDirectory"matlab.rerun_visualization.log" >> $logName;
+sed 's/^/\t\t|/;' $projectDirectory"octave.rerun_visualization.log" >> $logName;

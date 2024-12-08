@@ -78,28 +78,28 @@ then
 	echo "\tprocessing4.m" >> $logName;
 fi
 
-#if [ -f $projectDirectory"matlab.CNV_and_GCbias.log" ]
+#if [ -f $projectDirectory"octave.CNV_and_GCbias.log" ]
 #then
-#	rm $projectDirectory"matlab.CNV_and_GCbias.log";
-#	echo "\tmatlab.CNV_and_GCbias.log" >> $logName;
+#	rm $projectDirectory"octave.CNV_and_GCbias.log";
+#	echo "\toctave.CNV_and_GCbias.log" >> $logName;
 #fi
 
-#if [ -f $projectDirectory"matlab.ChARM.log" ]
+#if [ -f $projectDirectory"octave.ChARM.log" ]
 #then
-#	rm $projectDirectory"matlab.ChARM.log";
-#	echo "\tmatlab.ChARM.log" >> $logName;
+#	rm $projectDirectory"octave.ChARM.log";
+#	echo "\toctave.ChARM.log" >> $logName;
 #fi
 
-#if [ -f $projectDirectory"matlab.SNP_analysis.log" ]
+#if [ -f $projectDirectory"octave.SNP_analysis.log" ]
 #then
-#	rm $projectDirectory"matlab.SNP_analysis.log";
-#	echo "\tmatlab.SNP_analysis.log" >> $logName;
+#	rm $projectDirectory"octave.SNP_analysis.log";
+#	echo "\toctave.SNP_analysis.log" >> $logName;
 #fi
 
-#if [ -f $projectDirectory"matlab.final_figs.log" ]
+#if [ -f $projectDirectory"octave.final_figs.log" ]
 #then
-#	rm $projectDirectory"matlab.final_figs.log";
-#	echo "\tmatlab.final_figs.log" >> $logName;
+#	rm $projectDirectory"octave.final_figs.log";
+#	echo "\toctave.final_figs.log" >> $logName;
 #fi
 
 if [ -f $projectDirectory"data_sorted.bam.bai" ]
@@ -200,6 +200,7 @@ then
 	rm $projectDirectory"SNP_CNV_v1.txt";
 	echo "\tSNP_CNV_v1.txt (created SNP_CNV_v1.zip)" >> $logName;
 fi
+
 
 ## Generate "complete.txt" to indicate processing has completed normally.
 timestamp=$(date +%T);

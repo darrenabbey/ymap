@@ -103,14 +103,16 @@ echo "\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing1()" > $outputName;
 echo "\tpkg load statistics;" >> $outputName;
-echo "\tdiary('"$projectDirectory"matlab.CNV_and_GCbias.log');" >> $outputName;
+echo "\tpkg load matgeom;" >> $outputName;
+echo "\tdiary('"$projectDirectory"octave.CNV_and_GCbias.log');" >> $outputName;
 echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 echo "\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 
 echo "\t|\tfunction [] = processing1()" >> $logName;
 echo "\t|\t    pkg load statistics;" >> $logName;
-echo "\t|\t    diary('"$projectDirectory"matlab.CNV_and_GCbias.log');" >> $logName;
+echo "\t|\t    pkg load matgeom;" >> $logName;
+echo "\t|\t    diary('"$projectDirectory"octave.CNV_and_GCbias.log');" >> $logName;
 echo "\t|\t    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
 echo "\t|\t    analyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 echo "\t|\tend" >> $logName;
@@ -123,8 +125,8 @@ cd $script_dir;
 
 
 echo "\tOCTAVE log from CNV analysis." >> $logName;
-#sed 's/^/\t|/;' $projectDirectory"matlab.CNV_and_GCbias.log" >> $logName;
-cat $projectDirectory"matlab.CNV_and_GCbias.log" >> $logName;
+#sed 's/^/\t|/;' $projectDirectory"octave.CNV_and_GCbias.log" >> $logName;
+cat $projectDirectory"octave.CNV_and_GCbias.log" >> $logName;
 
 
 ##==============================================================================
@@ -144,13 +146,15 @@ else
 	echo "\toutputName = "$outputName >> $logName;
 
 	echo "function [] = processing2()" > $outputName;
-	echo "\tdiary('"$projectDirectory"matlab.ChARM.log');" >> $outputName;
+	echo "\tpkg load matgeom;" >> $outputName;
+	echo "\tdiary('"$projectDirectory"octave.ChARM.log');" >> $outputName;
 	echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 	echo "\tChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $outputName;
 	echo "end" >> $outputName;
 
 	echo "\t|\tfunction [] = processing2()" >> $logName;
-	echo "\t|\t    diary('"$projectDirectory"matlab.ChARM.log');" >> $logName;
+	echo "\t|\t    pkg load matgeom;" >> $logName;
+	echo "\t|\t    diary('"$projectDirectory"octave.ChARM.log');" >> $logName;
 	echo "\t|\t    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
 	echo "\t|\t    ChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $logName;
 	echo "\t|\tend" >> $logName;
@@ -164,7 +168,7 @@ else
 	$matlab_exec $outputName;
 	cd $script_dir;
 	echo "\tOCTAVE log from ChARM analysis." >> $logName;
-	sed 's/^/\t|/;' $projectDirectory"matlab.ChARM.log" >> $logName;
+	sed 's/^/\t|/;' $projectDirectory"octave.ChARM.log" >> $logName;
 fi
 
 ##==============================================================================
@@ -219,13 +223,15 @@ outputName=$projectDirectory"processing3.m";
 echo "\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing3()" > $outputName;
-echo "    diary('"$projectDirectory"matlab.SNP_analysis.log');" >> $outputName;
-echo "    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
-echo "    analyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+echo "\tpkg load matgeom;" >> $outputName;
+echo "\tdiary('"$projectDirectory"octave.SNP_analysis.log');" >> $outputName;
+echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
+echo "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 
 echo "\t|\tfunction [] = processing3()" >> $logName;
-echo "\t|\t    diary('"$projectDirectory"matlab.SNP_analysis.log');" >> $logName;
+echo "\t|\t    pkg load matgeom;" >> $logName;
+echo "\t|\t    diary('"$projectDirectory"octave.SNP_analysis.log');" >> $logName;
 echo "\t|\t    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
 echo "\t|\t    analyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 echo "\t|\tend" >> $logName;
@@ -239,7 +245,7 @@ cd $projectDirectory;
 $matlab_exec $outputName;
 cd $script_dir;
 echo "\tOCTAVE log from SNP analysis." >> $logName;
-sed 's/^/\t|/;' $projectDirectory"matlab.SNP_analysis.log" >> $logName;
+sed 's/^/\t|/;' $projectDirectory"octave.SNP_analysis.log" >> $logName;
 
 
 ##==============================================================================
@@ -255,13 +261,15 @@ outputName=$projectDirectory"processing4.m";
 echo "\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing4()" > $outputName;
-echo "\tdiary('"$projectDirectory"matlab.final_figs.log');" >> $outputName;
+echo "\tpkg load matgeom;" >> $outputName;
+echo "\tdiary('"$projectDirectory"octave.final_figs.log');" >> $outputName;
 echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 echo "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 
 echo "\t|\tfunction [] = processing4()" >> $logName;
-echo "\t|\t    diary('"$projectDirectory"matlab.final_figs.log');" >> $logName;
+echo "\t|\t    pkg load matgeom;" >> $logName;
+echo "\t|\t    diary('"$projectDirectory"octave.final_figs.log');" >> $logName;
 echo "\t|\t    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
 echo "\t|\t    analyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 echo "\t|\tend" >> $logName;
@@ -275,7 +283,7 @@ cd $projectDirectory;
 $matlab_exec $outputName;
 cd $script_dir;
 echo "\tOCTAVE log from final figure generation." >> $logName;
-sed 's/^/\t|/;' $projectDirectory"matlab.final_figs.log" >> $logName;
+sed 's/^/\t|/;' $projectDirectory"octave.final_figs.log" >> $logName;
 echo "finished all processing, moving to Cleaning up intermediate WGseq files" >> $condensedLog;
 
 
