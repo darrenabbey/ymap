@@ -1314,7 +1314,7 @@ for chr_to_draw  = 1:length(chr_order)
 				% configuration of chromosome cartoon curves.
 				res    = 64;
 				xcen   = (x1+x2)/2;
-				xScale = 15;   % arbitrary value that results in smooth curved cartoons.
+				xScale = 45;   % arbitrary value that results in smooth curved cartoons.
 
 				% White patches are being drawn after CNV bars, leading to data being cropped at the cartoon boundary.
 				% This makes sense to be done after SNP data is presented, but before CNV data.
