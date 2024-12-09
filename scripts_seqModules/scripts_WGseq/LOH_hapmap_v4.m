@@ -1101,7 +1101,7 @@ for chr_to_draw  = 1:length(chr_order)
 				% configuration of chromosome cartoon curves.
 				res    = 64;
 				xcen   = (x1+x2)/2;
-				xScale = 15;   % arbitrary value that results in smooth curved cartoons.
+				xScale = 10;   % arbitrary value that results in smooth curved cartoons.
 
 				% White patches are being drawn after CNV bars, leading to data being cropped at the cartoon boundary.
 				% This makes sense to be done after SNP data is presented, but before CNV data.
@@ -1143,7 +1143,7 @@ for chr_to_draw  = 1:length(chr_order)
 					plot(poly_cbr_x,poly_cbr_y, 'Color', [0 0 0]);
 				end;
 
-				dy     = cen_tel_Yindent2;
+				dy     = cen_tel_Yindent2/3*2;
 
 				% left-bottom.
 				poly1  = circleToPolygon([leftEnd+dy dy dy], res);
@@ -1314,7 +1314,7 @@ for chr_to_draw  = 1:length(chr_order)
 				% configuration of chromosome cartoon curves.
 				res    = 64;
 				xcen   = (x1+x2)/2;
-				xScale = 45;   % arbitrary value that results in smooth curved cartoons.
+				xScale = 30;   % arbitrary value that results in smooth curved cartoons.
 
 				% White patches are being drawn after CNV bars, leading to data being cropped at the cartoon boundary.
 				% This makes sense to be done after SNP data is presented, but before CNV data.
@@ -1356,7 +1356,7 @@ for chr_to_draw  = 1:length(chr_order)
 					plot(poly_cbr_x,poly_cbr_y, 'Color', [0 0 0]);
 				end;
 
-				dy     = cen_tel_Yindent2;
+				dy     = cen_tel_Yindent2/3*2;
 
 				% left-bottom.
 				poly1  = circleToPolygon([leftEnd+dy dy dy], res);
