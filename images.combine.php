@@ -1,21 +1,4 @@
 <?php
-//	input2:		[darren:ID5087:0:ID5087:75;
-//			darren:ID5088:1:ID5088:64;
-//			darren:ID5089:2:ID5089:16;
-//			darren:ID5115:3:ID5115:11;
-//			darren:ID5150:4:ID5150:5;
-//			darren:ID5166:5:ID5166:5;
-//			darren:ID5167:6:ID5167:5;
-//			darren:ID5171:7:ID5171:5;
-//			darren:ID5208:8:ID5208:5;
-//			darren:ID5219:9:ID5219:5;
-//			darren:ID5269:10:ID5269:5]
-
-	$_SESSION['logged_on']  = true;
-	$_SESSION['user']	= 'darren';
-
-echo "DDD";
-
 	session_start();
         error_reporting(E_ALL);
         require_once 'constants.php';
@@ -41,7 +24,6 @@ echo "DDD";
 		} else {
 			// Sanitize input strings.
 			$projectsShown = sanitizeProjectsShown_POST("projectsShown");
-			$projectsShown = 'darren:ID5087:0:ID5087:75;darren:ID5088:1:ID5088:64;darren:ID5089:2:ID5089:16;darren:ID5115:3:ID5115:11;darren:ID5150:4:ID5150:5;darren:ID5166:5:ID5166:5;darren:ID5167:6:ID5167:5;darren:ID5171:7:ID5171:5;darren:ID5208:8:ID5208:5;darren:ID5219:9:ID5219:5;darren:ID5269:10:ID5269:5]';
 			$projectsShown = substr($projectsShown, 0, -1);
 
 			// auxillary functions
@@ -197,11 +179,31 @@ echo "DDD";
 					$fig_CNV_SNP_alt = $fig_CNV_SNP;
 				}
 
-				// creating images for copy
-				if (file_exists($fig_CNV_SNP))		{   $image1 = imagecreatefrompng($fig_CNV_SNP);		} else {   $image1 = imagecreate($image_width,$image_height);	}
-				if (file_exists($fig_CNV))		{   $image2 = imagecreatefrompng($fig_CNV);		} else {   $image2 = imagecreate($image_width,$image_height);	}
-				if (file_exists($fig_SNP))		{   $image3 = imagecreatefrompng($fig_SNP);		} else {   $image3 = imagecreate($image_width,$image_height);	}
-				if (file_exists($fig_CNV_SNP_alt))	{   $image4 = imagecreatefrompng($fig_CNV_SNP_alt);	} else {   $image4 = imagecreate($image_width,$image_height);	}
+				// Loading existing images or making blank white images if source image doesn't exist in project.
+				if (file_exists($fig_CNV_SNP)) {
+					$image1 = imagecreatefrompng($fig_CNV_SNP);
+				} else {
+					$image1 = imagecreate($image_width,$image_height);
+					imagecolorallocate($image1, 255, 255, 255);
+				}
+				if (file_exists($fig_CNV)) {
+					$image2 = imagecreatefrompng($fig_CNV);
+				} else {
+					$image2 = imagecreate($image_width,$image_height);
+					imagecolorallocate($image2, 255, 255, 255);
+				}
+				if (file_exists($fig_SNP)) {
+					$image3 = imagecreatefrompng($fig_SNP);
+				} else {
+					 $image3 = imagecreate($image_width,$image_height);
+					imagecolorallocate($image3, 255, 255, 255);
+				}
+				if (file_exists($fig_CNV_SNP_alt)) {
+					$image4 = imagecreatefrompng($fig_CNV_SNP_alt);
+				} else {
+					$image4 = imagecreate($image_width,$image_height);
+					imagecolorallocate($image4, 255, 255, 255);
+				}
 
 				// getting sizes
 				$image1_size    = getimagesize($fig_CNV_SNP);
