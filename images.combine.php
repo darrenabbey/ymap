@@ -1,4 +1,21 @@
 <?php
+//	input2:		[darren:ID5087:0:ID5087:75;
+//			darren:ID5088:1:ID5088:64;
+//			darren:ID5089:2:ID5089:16;
+//			darren:ID5115:3:ID5115:11;
+//			darren:ID5150:4:ID5150:5;
+//			darren:ID5166:5:ID5166:5;
+//			darren:ID5167:6:ID5167:5;
+//			darren:ID5171:7:ID5171:5;
+//			darren:ID5208:8:ID5208:5;
+//			darren:ID5219:9:ID5219:5;
+//			darren:ID5269:10:ID5269:5]
+
+	$_SESSION['logged_on']  = true;
+	$_SESSION['user']	= 'darren';
+
+echo "DDD";
+
 	session_start();
         error_reporting(E_ALL);
         require_once 'constants.php';
@@ -24,6 +41,7 @@
 		} else {
 			// Sanitize input strings.
 			$projectsShown = sanitizeProjectsShown_POST("projectsShown");
+			$projectsShown = 'darren:ID5087:0:ID5087:75;darren:ID5088:1:ID5088:64;darren:ID5089:2:ID5089:16;darren:ID5115:3:ID5115:11;darren:ID5150:4:ID5150:5;darren:ID5166:5:ID5166:5;darren:ID5167:6:ID5167:5;darren:ID5171:7:ID5171:5;darren:ID5208:8:ID5208:5;darren:ID5219:9:ID5219:5;darren:ID5269:10:ID5269:5]';
 			$projectsShown = substr($projectsShown, 0, -1);
 
 			// auxillary functions
@@ -73,15 +91,22 @@
 				echo "<script type='text/javascript'> parent.location.reload(); </script>";
 			}
 
-			// Determine initial figure strings.
-			$fig_CNV_SNP     = "users/".$fig_user."/projects/".$fig_project."/fig.CNV-SNP-map.2.png";
-			$fig_CNV         = "users/".$fig_user."/projects/".$fig_project."/fig.CNV-map.2.png";
-			if (file_exists("users/".$fig_user."/projects/".$fig_project."/fig.allelic_ratio-map.c2.png")) {   // ddRADseq.
-				$fig_SNP = "users/".$fig_user."/projects/".$fig_project."/fig.allelic_ratio-map.c2.png";
-			} else { // other.
-				$fig_SNP = "users/".$fig_user."/projects/".$fig_project."/fig.SNP-map.2.png";
+			// load figure version from project.
+			if (file_exists($project_dir.'/figVer.txt')) {
+				$figVer  = 'v'.file_get_contents($project_dir.'/figVer.txt').'.';
+			} else {
+				$figVer  = '';
 			}
-			$fig_CNV_SNP_alt = "users/".$fig_user."/projects/".$fig_project."/fig.CNV-SNP-map.RedGreen.2.png";
+
+			// Determine initial figure strings.
+			$fig_CNV_SNP     = "users/".$fig_user."/projects/".$fig_project."/fig.CNV-SNP-map.2.".$figVer."png";
+			$fig_CNV         = "users/".$fig_user."/projects/".$fig_project."/fig.CNV-map.2.".$figVer."png";
+			if (file_exists("users/".$fig_user."/projects/".$fig_project."/fig.allelic_ratio-map.c2.".$figVer."png")) {   // ddRADseq.
+				$fig_SNP = "users/".$fig_user."/projects/".$fig_project."/fig.allelic_ratio-map.c2.".$figVer."png";
+			} else { // other.
+				$fig_SNP = "users/".$fig_user."/projects/".$fig_project."/fig.SNP-map.2.".$figVer."png";
+			}
+			$fig_CNV_SNP_alt = "users/".$fig_user."/projects/".$fig_project."/fig.CNV-SNP-map.RedGreen.2.".$figVer."png";
 			if (file_exists($fig_CNV_SNP))         { $initial_image = $fig_CNV_SNP; }
 			elseif (file_exists($fig_CNV_SNP_alt)) { $initial_image = $fig_CNV_SNP_alt; }
 			elseif (file_exists($fig_CNV))         { $initial_image = $fig_CNV; }
@@ -149,27 +174,34 @@
 					echo "<script type='text/javascript'> parent.location.reload(); </script>";
 				}
 
-				// Determine figure strings.
-				$fig_CNV_SNP     = "users/".$fig_user."/projects/".$fig_project."/fig.CNV-SNP-map.2.png";
-				$fig_CNV         = "users/".$fig_user."/projects/".$fig_project."/fig.CNV-map.2.png";
-				if (file_exists("users/".$fig_user."/projects/".$fig_project."/fig.allelic_ratio-map.c2.png")) {   // ddRADseq.
-					$fig_SNP = "users/".$fig_user."/projects/".$fig_project."/fig.allelic_ratio-map.c2.png";
-				} else { // other.
-					$fig_SNP = "users/".$fig_user."/projects/".$fig_project."/fig.SNP-map.2.png";
+				// load figure version from project.
+				if (file_exists($project_dir.'/figVer.txt')) {
+					$figVer  = 'v'.file_get_contents($project_dir.'/figVer.txt').'.';
+				} else {
+					$figVer  = '';
 				}
-				if (file_exists("users/".$fig_user."/projects/".$fig_project."/fig.CNV-SNP-map.RedGreen.2.png")) {
+
+				// Determine figure strings.
+				$fig_CNV_SNP     = "users/".$fig_user."/projects/".$fig_project."/fig.CNV-SNP-map.2.".$figVer."png";
+				$fig_CNV         = "users/".$fig_user."/projects/".$fig_project."/fig.CNV-map.2.".$figVer."png";
+				if (file_exists("users/".$fig_user."/projects/".$fig_project."/fig.allelic_ratio-map.c2.".$figVer."png")) {   // ddRADseq.
+					$fig_SNP = "users/".$fig_user."/projects/".$fig_project."/fig.allelic_ratio-map.c2.".$figVer."png";
+				} else { // other.
+					$fig_SNP = "users/".$fig_user."/projects/".$fig_project."/fig.SNP-map.2.".$figVer."png";
+				}
+				if (file_exists("users/".$fig_user."/projects/".$fig_project."/fig.CNV-SNP-map.RedGreen.2.".$figVer."png")) {
 					// File doesn't get made for basic analysis.
-					$fig_CNV_SNP_alt = "users/".$fig_user."/projects/".$fig_project."/fig.CNV-SNP-map.RedGreen.2.png";
+					$fig_CNV_SNP_alt = "users/".$fig_user."/projects/".$fig_project."/fig.CNV-SNP-map.RedGreen.2.".$figVer."png";
 				} else {
 					// Default to basic CNV-SNP plot if alternate color scheme file isn't found.
 					$fig_CNV_SNP_alt = $fig_CNV_SNP;
 				}
 
 				// creating images for copy
-				$image1      = imagecreatefrompng($fig_CNV_SNP);
-				$image2      = imagecreatefrompng($fig_CNV);
-				$image3      = imagecreatefrompng($fig_SNP);
-				$image4      = imagecreatefrompng($fig_CNV_SNP_alt);
+				if (file_exists($fig_CNV_SNP))		{   $image1 = imagecreatefrompng($fig_CNV_SNP);		} else {   $image1 = imagecreate($image_width,$image_height);	}
+				if (file_exists($fig_CNV))		{   $image2 = imagecreatefrompng($fig_CNV);		} else {   $image2 = imagecreate($image_width,$image_height);	}
+				if (file_exists($fig_SNP))		{   $image3 = imagecreatefrompng($fig_SNP);		} else {   $image3 = imagecreate($image_width,$image_height);	}
+				if (file_exists($fig_CNV_SNP_alt))	{   $image4 = imagecreatefrompng($fig_CNV_SNP_alt);	} else {   $image4 = imagecreate($image_width,$image_height);	}
 
 				// getting sizes
 				$image1_size    = getimagesize($fig_CNV_SNP);
@@ -198,7 +230,7 @@
 					imagecopy($working3, $image3, 0, $image_height + $linearCartoonHeight*($entry_key-1), 0, $image3_height - $linearCartoonHeight, $image_width, $linearCartoonHeight);
 					imagecopy($working4, $image4, 0, $image_height + $linearCartoonHeight*($entry_key-1), 0, $image4_height - $linearCartoonHeight, $image_width, $linearCartoonHeight);
 
-					// fill white in between.
+					// fill white in between./
 					imagefilledrectangle($working1, 50, $image_height + $linearCartoonHeight*($entry_key-1)-10, $image_width,  $image_height + $linearCartoonHeight*($entry_key-1)+4, $white);
 					imagefilledrectangle($working2, 50, $image_height + $linearCartoonHeight*($entry_key-1)-10, $image_width,  $image_height + $linearCartoonHeight*($entry_key-1)+4, $white);
 					imagefilledrectangle($working3, 50, $image_height + $linearCartoonHeight*($entry_key-1)-10, $image_width,  $image_height + $linearCartoonHeight*($entry_key-1)+4, $white);
