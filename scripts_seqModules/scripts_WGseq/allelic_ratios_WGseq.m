@@ -584,43 +584,91 @@ if (Make_figure == true)
 					end;
 				end;
 
-				% linear : show allelic ratio data as 2D-smoothed scatter-plot.
+				%% linear : show allelic ratio data as 2D-smoothed scatter-plot.
 				fprintf('\t|\t\t\tDraw 2D smoothed histogram of allelic ratio data in linear figure.\n');
-				% display only if processing succeeded (variables will no be
-				% present if the data is zero)
-				if (exist('imageX') && exist('imageY') && exist('imageC'))
+				chr_length                   = ceil(chr_size(chr)/bases_per_bin);
+				dataX                        = ceil(chr_SNP_data_positions{chr}/bases_per_bin)';
+				dataY1                       = chr_SNP_data_ratios{chr};
+				dataY2                       = (dataY1*maxY)';
+				dataX_CNVcorrection          = ones(1,chr_length);;
+				if (length(dataX) > 0)
+					% 2D smoothed hisogram with correction term.
+					fprintf(['\t|\t\tGenerating chr' num2str(chr) ' final smoothed 2D histogram.\n']);
+					[imageX{chr},imageY{chr},imageC{chr}, discard] = smoothhist2D_4_Xcorrected([dataX dataX 0 chr_length], [dataY2 (maxY-dataY2) 0 0], 0.5,[chr_length maxY],[chr_length maxY], dataX_CNVcorrection, mean_val, chr_mean_scaler(chr));
+
+					fprintf('\t|\t\t\tDe-emphasizing near-homozygous data.\n');
+					% Image correction method to de-emphasize the near homozygous data points.
+					%    The square factor correction was determined empirically, from the relative amounts of data near homozygous and heterozygous.
+					%    Improvements in sequencing technology that reduce sequencing error and reduce near-homozygous data will require adjusting this.
+					imageC_correction          = imageC{chr}*0;
+					for y = 1:maxY
+						imageC_correction(y,:) = 1-abs(y-maxY/2)/(maxY/2);
+					end;
+					imageC{chr} = imageC{chr}.*(1+imageC_correction.^2*16);
+
+					% reverse order of 2D histogram if chromosome is indicated as reversed in figure_definitions.txt file.
+					if (chr_figReversed(chr) == 1)
+						imageX{chr}   = fliplr(imageX{chr});
+					end;
+
+					fprintf('\t|\t\t\tDrawing 2D histogram to figure.\n');
 					image(imageX{chr}, imageY{chr}, imageC{chr});
 				end;
-				% linear : end show allelic ratio data.
+				%% linear : end show allelic ratio data.
 
-				% linear : show centromere.
+				%% linear : show centromere.
 				fprintf('\t|\t\t\tDraw centromere in linear figure.\n');
 				x1 = cen_start(chr)/bases_per_bin;
 				x2 = cen_end(chr)/bases_per_bin;
-				leftEnd  = 0.5*5000/bases_per_bin;
-				rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
+				leftEnd  = 0;
+				rightEnd = chr_size(chr)/bases_per_bin;
 				if (Centromere_format == 0)
+					% Minimal outline for examining very small sequence regions, such as C.albicans MTL locus.
+					plot([leftEnd   leftEnd   rightEnd   rightEnd   leftEnd], [0   maxY   maxY   0   0], 'Color',[0 0 0]);
+				elseif (Centromere_format == 1)
 					% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
-					dx = cen_tel_Xindent; %5*5000/bases_per_bin;
-					dy = cen_tel_Yindent; %maxY/10;
-					% draw white triangles at corners and centromere locations.
-					c_ = [1.0 1.0 1.0];
-					% top left corner.
-					x_ = [leftEnd   leftEnd   leftEnd+dx];        y_ = [maxY-dy   maxY      maxY        ];    f = fill(x_,y_,c_);    set(f,'linestyle','none');
-					% bottom left corner.
-					x_ = [leftEnd   leftEnd   leftEnd+dx];        y_ = [dy        0         0           ];    f = fill(x_,y_,c_);    set(f,'linestyle','none');
-					% top right corner.
-					x_ = [rightEnd   rightEnd   rightEnd-dx];     y_ = [maxY-dy    maxY       maxY      ];    f = fill(x_,y_,c_);    set(f,'linestyle','none');
-					% bottom right corner.
-					x_ = [rightEnd   rightEnd   rightEnd-dx];     y_ = [dy         0          0         ];    f = fill(x_,y_,c_);    set(f,'linestyle','none');
-					% top centromere.
-					x_ = [x1-dx   x1        x2        x2+dx];     y_ = [maxY    maxY-dy   maxY-dy   maxY];    f = fill(x_,y_,c_);    set(f,'linestyle','none');
-					% bottom centromere.
-					x_ = [x1-dx   x1   x2   x2+dx];               y_ = [0       dy   dy   0    ];             f = fill(x_,y_,c_);    set(f,'linestyle','none');
-					% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
-					plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
-					     [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy],...
-					      'Color',[0 0 0]);
+					Xscale = 4;
+					dx = cen_tel_Xindent*Xscale;
+					dy = cen_tel_Yindent;
+					xcen = (x1+x2)/2;
+
+					if (x1 != 0)
+						% draw white trapezoids for centromeres.
+						patch([x1-dx,  x1,  x2,  x2+dx], [maxY,  maxY-dy,  maxY-dy,  maxY], 'facecolor', 'w', 'edgecolor', 'w');
+						patch([x1-dx,  x1,  x2,  x2+dx], [0,     dy,       dy,       0   ], 'facecolor', 'w', 'edgecolor', 'w');
+					end;
+
+					% draw white triangles at corners.
+					patch([leftEnd,  leftEnd,  leftEnd+dx ], [maxY-dy, maxY, maxY], 'facecolor', 'w', 'edgecolor', 'w');
+					patch([leftEnd,  leftEnd,  leftEnd+dx ], [0,       dy,   0   ], 'facecolor', 'w', 'edgecolor', 'w');
+						patch([rightEnd, rightEnd, rightEnd-dx], [maxY-dy, maxY, maxY], 'facecolor', 'w', 'edgecolor', 'w');
+					patch([rightEnd, rightEnd, rightEnd-dx], [0,       dy,   0   ], 'facecolor', 'w', 'edgecolor', 'w');
+
+					% draw outlines of chromosome cartoon.
+					if (xcen != 0)
+						if (xcen < dx)
+							xdelta = xcen/2;
+							ydelta = xdelta/Xscale
+							plot([leftEnd   leftEnd   xcen-xdelta      xcen      xcen+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   xcen+dx   xcen   xcen-xdelta   leftEnd], ...
+							     [dy        maxY-dy   maxY-dy+ydelta   maxY-dy   maxY      maxY          maxY-dy    dy         0             0         dy     dy-ydelta     dy     ], ...
+							    'Color',[0 0 0]);
+						elseif (xcen > rightEnd-dx)
+							xdelta = (rightEnd-xcen)/2;
+							ydelta = xdelta/Xscale;
+							plot([leftEnd   leftEnd   leftEnd+dx   xcen-dx   xcen      xcen+xdelta      rightEnd   rightEnd   xcen+xdelta   xcen   xcen-dx   leftEnd+dx   leftEnd], ...
+							     [dy        maxY-dy   maxY         maxY      maxY-dy   maxY-dy+ydelta   maxY-dy    dy         dy-ydelta     dy     0         0            dy     ], ...
+							    'Color',[0 0 0]);
+						else
+							plot([leftEnd   leftEnd   leftEnd+dx   xcen-dx   xcen      xcen+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   xcen+dx   xcen   xcen-dx   leftEnd+dx   leftEnd], ...
+							     [dy        maxY-dy   maxY         maxY      maxY-dy   maxY      maxY          maxY-dy    dy         0             0         dy     0         0            dy     ], ...
+							    'Color',[0 0 0]);
+						end;
+					else
+						plot([leftEnd   leftEnd   leftEnd+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   leftEnd+dx   leftEnd], ...
+						     [dy        maxY-dy   maxY         maxY          maxY-dy    dy         0             0            dy     ], ...
+						    'Color',[0 0 0]);
+					end;
+				elseif (Centromere_format == 2)
 				end;
 				% linear : end show centromere.
 
