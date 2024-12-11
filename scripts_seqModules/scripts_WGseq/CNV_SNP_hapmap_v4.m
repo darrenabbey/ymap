@@ -51,7 +51,7 @@ end;
 %    scale_type                 : 'Ratio' or 'Log2Ratio' y-axis scaling of copy number.
 %                                 'Log2Ratio' does not properly scale CGH data by ploidy.
 %    Chr_max_width              : max width of chrs as fraction of figure width.
-Centromere_format_default   = 2;
+Centromere_format_default   = 1;
 Chr_max_width               = 0.8;
 colorBars                   = true;
 blendColorBars              = false;
@@ -934,141 +934,11 @@ for chr_to_draw  = 1:length(chr_order)
 			leftEnd  = 0;                                   % 0.5*(5000/bases_per_bin);
 			rightEnd = chr_size(chr)/bases_per_bin;         % chr_size(chr)/bases_per_bin-0.5*(5000/bases_per_bin);
 			if (Centromere_format == 0)
-				% Minimal outline for examining very small sequence regions, such as C.albicans MTL locus.
-				plot([leftEnd   leftEnd   rightEnd   rightEnd   leftEnd], [0   maxY   maxY   0   0], 'Color',[0 0 0]);
+				source('cartoon_stacked_0.m');
 			elseif (Centromere_format == 1)
-				% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
-				dx = cen_tel_Xindent;
-				dy = cen_tel_Yindent;
-
-				if (x1 != 0)
-					% draw white trapezoids for centromeres.
-					patch([x1-dx,  x1,  x2,  x2+dx], [maxY,  maxY-dy,  maxY-dy,  maxY], 'facecolor', 'w', 'edgecolor', 'w');
-					patch([x1-dx,  x1,  x2,  x2+dx], [0,     dy,       dy,       0   ], 'facecolor', 'w', 'edgecolor', 'w');
-				end;
-
-				% draw white triangles at corners.
-				patch([leftEnd,  leftEnd,  leftEnd+dx ], [maxY-dy, maxY, maxY], 'facecolor', 'w', 'edgecolor', 'w');
-				patch([leftEnd,  leftEnd,  leftEnd+dx ], [0,       dy,   0   ], 'facecolor', 'w', 'edgecolor', 'w');
-				patch([rightEnd, rightEnd, rightEnd-dx], [maxY-dy, maxY, maxY], 'facecolor', 'w', 'edgecolor', 'w');
-				patch([rightEnd, rightEnd, rightEnd-dx], [0,       dy,   0   ], 'facecolor', 'w', 'edgecolor', 'w');
-
-				% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
-				if (x1 != 0)
-					plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd], ...
-					     [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy     ], ...
-					    'Color',[0 0 0]);
-				else
-					plot([leftEnd   leftEnd   leftEnd+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   leftEnd+dx   leftEnd], ...
-					     [dy        maxY-dy   maxY         maxY          maxY-dy    dy         0             0            dy     ], ...
-					    'Color',[0 0 0]);
-				end;
-			elseif (Centromere_format == 2)   % sausage!
-				% DRAGON : attempting to manually generate appropriate tick marks and labels.
-				set(gca,'visible','off');
-
-				% Make my own x-axis tick labels
-				XTickValues = 0:(40*(5000/bases_per_bin)):(chr_size(chr)/bases_per_bin);   % limits tic values to size of chromosome in figure.
-				XTickValLength = length(XTickValues)
-				XTickLabels = {'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'};
-				for i = (XTickValLength+1):17   % 17 is the max length of the pre-defined labels above.
-					XTickLabels(end) = [];
-				endfor;
-				y = zeros(size(XTickValues));
-				text(XTickValues, y, XTickLabels, ...
-					'horizontalalignment', 'center', ...
-					'verticalalignment', 'top');
-
-				% Make my own x-axis ticks.
-
-				% configuration of chromosome cartoon curves.
-				res    = 64;
-				xcen   = (x1+x2)/2;
-				xScale = 10;   % arbitrary value that results in smooth curved cartoons.
-
-				% White patches are being drawn after CNV bars, leading to data being cropped at the cartoon boundary.
-				% This makes sense to be done after SNP data is presented, but before CNV data.
-
-				if (xcen != 0)
-					dy     = cen_tel_Yindent2/3*2;
-
-					% top-centromere-left
-					poly_ctl   = circleToPolygon([xcen-dy maxY-dy dy], res);
-					poly_ctl_x = (poly_ctl(1:(res/4+1),1)-xcen)*xScale+xcen;
-					poly_ctl_y =  poly_ctl(1:(res/4+1),2);
-
-					% top-centromere-right
-					poly_ctr   = circleToPolygon([xcen+dy maxY-dy dy], res);
-					poly_ctr_x = (poly_ctr((res/4+1):(res/2+1),1)-xcen)*xScale+xcen;
-					poly_ctr_y =  poly_ctr((res/4+1):(res/2+1),2);
-
-					patch([poly_ctl_x; poly_ctr_x], [poly_ctl_y; poly_ctr_y], 'facecolor', 'w', 'edgecolor', 'w');
-					plot(poly_ctl_x,poly_ctl_y, 'Color', [0 0 0]);
-					plot(poly_ctr_x,poly_ctr_y, 'Color', [0 0 0]);
-
-					% bottom-centromere-left
-					poly_cbl = circleToPolygon([xcen-dy dy dy], res);
-					poly_cbl_1        = poly_cbl(:,1);
-					poly_cbl_2        = poly_cbl(:,2);
-					poly_cbl_1(res+1) = poly_cbl_1(1);
-					poly_cbl_2(res+1) = poly_cbl_2(1);
-					poly_cbl_x        = (poly_cbl_1((res/4*3+1):(res+1))-xcen)*xScale+xcen;
-					poly_cbl_y        =  poly_cbl_2((res/4*3+1):(res+1));
-					plot(poly_cbl_x,poly_cbl_y, 'Color', [0 0 0]);
-
-					% bottom-centromere-right
-					poly_cbr   = circleToPolygon([xcen+dy dy dy], res);
-					poly_cbr_x = (poly_cbr((res/2+1):(res/4*3+1),1)-xcen)*xScale+xcen;
-					poly_cbr_y =  poly_cbr((res/2+1):(res/4*3+1),2);
-
-					patch([poly_cbl_x; poly_cbr_x], [poly_cbl_y; poly_cbr_y], 'facecolor', 'w', 'edgecolor', 'w');
-					plot(poly_cbl_x,poly_cbl_y, 'Color', [0 0 0]);
-					plot(poly_cbr_x,poly_cbr_y, 'Color', [0 0 0]);
-				end;
-
-				dy     = cen_tel_Yindent2/3*2;
-
-				% left-bottom.
-				poly1  = circleToPolygon([leftEnd+dy dy dy], res);
-				poly1x = poly1((res/2+1):(res/4*3+1),1)*xScale;
-				poly1y = poly1((res/2+1):(res/4*3+1),2);
-				patch([poly1x; leftEnd], [poly1y; 0], 'facecolor', 'w', 'edgecolor', 'w');
-				plot(poly1x,poly1y, 'Color', [0 0 0]);
-
-				% left-top.
-				poly2  = circleToPolygon([leftEnd+dy maxY-dy dy], res);
-				poly2x = poly2((res/4+1):(res/2+1),1)*xScale;
-				poly2y = poly2((res/4+1):(res/2+1),2);
-				patch([poly2x; leftEnd], [poly2y; maxY], 'facecolor', 'w', 'edgecolor', 'w');
-				plot(poly2x,poly2y, 'Color', [0 0 0]);
-
-				% right-bottom.
-				poly3          = circleToPolygon([rightEnd-dy dy dy], res);
-				poly3_1        = poly3(:,1);
-				poly3_2        = poly3(:,2);
-				poly3_1(res+1) = poly3_1(1);
-				poly3_2(res+1) = poly3_2(1);
-				poly3x         = (poly3_1((res/4*3+1):(res+1))-rightEnd)*xScale+rightEnd;
-				poly3y         = poly3_2((res/4*3+1):(res+1));
-				patch([poly3x; rightEnd], [poly3y; 0], 'facecolor', 'w', 'edgecolor', 'w');
-				plot(poly3x,poly3y, 'Color', [0 0 0]);
-
-				% right-top.
-				poly4          = circleToPolygon([rightEnd-dy maxY-dy dy], res);
-				poly4x         = (poly4(1:(res/4+1),1)-rightEnd)*xScale+rightEnd;
-				poly4y         = poly4(1:(res/4+1),2);
-				patch([poly4x; rightEnd], [poly4y; maxY], 'facecolor', 'w', 'edgecolor', 'w');
-				plot(poly4x,poly4y, 'Color', [0 0 0]);
-
-				if (xcen != 0)
-					plot([poly2x(1) poly_ctl_x(end)], [maxY maxY], 'Color', [0 0 0]);
-					plot([poly_ctr_x(1) poly4x(end)], [maxY maxY], 'Color', [0 0 0]);
-					plot([poly2x(1) poly_ctl_x(end)], [0 0], 'Color', [0 0 0]);
-					plot([poly_ctr_x(1) poly4x(end)], [0 0], 'Color', [0 0 0]);
-				else
-					plot([poly2x(1) poly4x(end)], [maxY maxY], 'Color', [0 0 0]);
-					plot([poly2x(1) poly4x(end)], [0 0], 'Color', [0 0 0]);
-				end;
+				source('cartoon_stacked_1.m');
+			elseif (Centromere_format == 2) % sausage! (standard plot)
+				source('cartoon_stacked_2.m');
 			end;
 			%% standard : end show centromere/outline.
 
@@ -1185,8 +1055,8 @@ for chr_to_draw  = 1:length(chr_order)
 
 			%% standard : show annotation locations
 			if (show_annotations) && (length(annotations) > 0)
-				plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 				hold on;
+				plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 				annotation_location = (annotation_start+annotation_end)./2;
 				for i = 1:length(annotation_location)
 					if (annotation_chr(i) == chr)
@@ -1361,129 +1231,11 @@ for chr_to_draw  = 1:length(chr_order)
 			leftEnd  = 0;                                   % 0.5*(5000/bases_per_bin);
 			rightEnd = chr_size(chr)/bases_per_bin;         % chr_size(chr)/bases_per_bin-0.5*(5000/bases_per_bin);
 			if (Centromere_format == 0)
-				% Minimal outline for examining very small sequence regions, such as C.albicans MTL locus.
-				plot([leftEnd   leftEnd   rightEnd   rightEnd   leftEnd], [0   maxY   maxY   0   0], 'Color',[0 0 0]);
+				source('cartoon_linear_0.m');
 			elseif (Centromere_format == 1)
-				% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
-				dx = cen_tel_Xindent;
-				dy = cen_tel_Yindent;
-
-				if (x1 != 0)
-					% draw white trapezoids for centromeres.
-					patch([x1-dx,  x1,  x2,  x2+dx], [maxY,  maxY-dy,  maxY-dy,  maxY], 'facecolor', 'w', 'edgecolor', 'w');
-					patch([x1-dx,  x1,  x2,  x2+dx], [0,     dy,       dy,       0   ], 'facecolor', 'w', 'edgecolor', 'w');
-				end;
-
-				% draw white triangles at corners.
-				patch([leftEnd,  leftEnd,  leftEnd+dx ], [maxY-dy, maxY, maxY], 'facecolor', 'w', 'edgecolor', 'w');
-				patch([leftEnd,  leftEnd,  leftEnd+dx ], [0,       dy,   0   ], 'facecolor', 'w', 'edgecolor', 'w');
-				patch([rightEnd, rightEnd, rightEnd-dx], [maxY-dy, maxY, maxY], 'facecolor', 'w', 'edgecolor', 'w');
-				patch([rightEnd, rightEnd, rightEnd-dx], [0,       dy,   0   ], 'facecolor', 'w', 'edgecolor', 'w');
-
-				% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
-				if (x1 != 0)
-					plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd], ...
-					     [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy     ], ...
-					    'Color',[0 0 0]);
-				else
-					plot([leftEnd   leftEnd   leftEnd+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   leftEnd+dx   leftEnd], ...
-					     [dy        maxY-dy   maxY         maxY          maxY-dy    dy         0             0            dy     ], ...
-					    'Color',[0 0 0]);
-				end;
-			elseif (Centromere_format == 2)   % sausage!
-				% DRAGON : attempting to manually generate appropriate tick marks and labels.
-				set(gca,'visible','off');
-
-				% Make my own x-axis ticks.
-
-				% configuration of chromosome cartoon curves.
-				res    = 64;
-				xcen   = (x1+x2)/2;
-				xScale = 30;   % arbitrary value that results in smooth curved cartoons.
-
-				% White patches are being drawn after CNV bars, leading to data being cropped at the cartoon boundary.
-				% This makes sense to be done after SNP data is presented, but before CNV data.
-
-				if (xcen != 0)
-					dy     = cen_tel_Yindent2/3*2;
-
-					% top-centromere-left
-					poly_ctl   = circleToPolygon([xcen-dy maxY-dy dy], res);
-					poly_ctl_x = (poly_ctl(1:(res/4+1),1)-xcen)*xScale+xcen;
-					poly_ctl_y =  poly_ctl(1:(res/4+1),2);
-
-					% top-centromere-right
-					poly_ctr   = circleToPolygon([xcen+dy maxY-dy dy], res);
-					poly_ctr_x = (poly_ctr((res/4+1):(res/2+1),1)-xcen)*xScale+xcen;
-					poly_ctr_y =  poly_ctr((res/4+1):(res/2+1),2);
-
-					patch([poly_ctl_x; poly_ctr_x], [poly_ctl_y; poly_ctr_y], 'facecolor', 'w', 'edgecolor', 'w');
-					plot(poly_ctl_x,poly_ctl_y, 'Color', [0 0 0]);
-					plot(poly_ctr_x,poly_ctr_y, 'Color', [0 0 0]);
-
-					% bottom-centromere-left
-					poly_cbl = circleToPolygon([xcen-dy dy dy], res);
-					poly_cbl_1        = poly_cbl(:,1);
-					poly_cbl_2        = poly_cbl(:,2);
-					poly_cbl_1(res+1) = poly_cbl_1(1);
-					poly_cbl_2(res+1) = poly_cbl_2(1);
-					poly_cbl_x        = (poly_cbl_1((res/4*3+1):(res+1))-xcen)*xScale+xcen;
-					poly_cbl_y        =  poly_cbl_2((res/4*3+1):(res+1));
-					plot(poly_cbl_x,poly_cbl_y, 'Color', [0 0 0]);
-
-					% bottom-centromere-right
-					poly_cbr   = circleToPolygon([xcen+dy dy dy], res);
-					poly_cbr_x = (poly_cbr((res/2+1):(res/4*3+1),1)-xcen)*xScale+xcen;
-					poly_cbr_y =  poly_cbr((res/2+1):(res/4*3+1),2);
-
-					patch([poly_cbl_x; poly_cbr_x], [poly_cbl_y; poly_cbr_y], 'facecolor', 'w', 'edgecolor', 'w');
-					plot(poly_cbl_x,poly_cbl_y, 'Color', [0 0 0]);
-					plot(poly_cbr_x,poly_cbr_y, 'Color', [0 0 0]);
-				end;
-
-				dy     = cen_tel_Yindent2/3*2;
-
-				% left-bottom.
-				poly1  = circleToPolygon([leftEnd+dy dy dy], res);
-				poly1x = poly1((res/2+1):(res/4*3+1),1)*xScale;
-				poly1y = poly1((res/2+1):(res/4*3+1),2);
-				patch([poly1x; leftEnd], [poly1y; 0], 'facecolor', 'w', 'edgecolor', 'w');
-				plot(poly1x,poly1y, 'Color', [0 0 0]);
-
-				% left-top.
-				poly2  = circleToPolygon([leftEnd+dy maxY-dy dy], res);
-				poly2x = poly2((res/4+1):(res/2+1),1)*xScale;
-				poly2y = poly2((res/4+1):(res/2+1),2);
-				patch([poly2x; leftEnd], [poly2y; maxY], 'facecolor', 'w', 'edgecolor', 'w');
-				plot(poly2x,poly2y, 'Color', [0 0 0]);
-
-				% right-bottom.
-				poly3          = circleToPolygon([rightEnd-dy dy dy], res);
-				poly3_1        = poly3(:,1);
-				poly3_2        = poly3(:,2);
-				poly3_1(res+1) = poly3_1(1);
-				poly3_2(res+1) = poly3_2(1);
-				poly3x         = (poly3_1((res/4*3+1):(res+1))-rightEnd)*xScale+rightEnd;
-				poly3y         = poly3_2((res/4*3+1):(res+1));
-				patch([poly3x; rightEnd], [poly3y; 0], 'facecolor', 'w', 'edgecolor', 'w');
-				plot(poly3x,poly3y, 'Color', [0 0 0]);
-
-				% right-top.
-				poly4          = circleToPolygon([rightEnd-dy maxY-dy dy], res);
-				poly4x         = (poly4(1:(res/4+1),1)-rightEnd)*xScale+rightEnd;
-				poly4y         = poly4(1:(res/4+1),2);
-				patch([poly4x; rightEnd], [poly4y; maxY], 'facecolor', 'w', 'edgecolor', 'w');
-				plot(poly4x,poly4y, 'Color', [0 0 0]);
-
-				if (xcen != 0)
-					plot([poly2x(1) poly_ctl_x(end)], [maxY maxY], 'Color', [0 0 0]);
-					plot([poly_ctr_x(1) poly4x(end)], [maxY maxY], 'Color', [0 0 0]);
-					plot([poly2x(1) poly_ctl_x(end)], [0 0], 'Color', [0 0 0]);
-					plot([poly_ctr_x(1) poly4x(end)], [0 0], 'Color', [0 0 0]);
-				else
-					plot([poly2x(1) poly4x(end)], [maxY maxY], 'Color', [0 0 0]);
-					plot([poly2x(1) poly4x(end)], [0 0], 'Color', [0 0 0]);
-				end;
+				source('cartoon_linear_1.m');
+			elseif (Centromere_format == 2) % sausage! (standard plot)
+				source('cartoon_linear_2.m');
 			end;
 			% linear : end show centromere/outline.
 
@@ -1528,8 +1280,8 @@ for chr_to_draw  = 1:length(chr_order)
 
 			% linear : show annotation locations
 			if (show_annotations) && (length(annotations) > 0)
-				plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 				hold on;
+				plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 				annotation_location = (annotation_start+annotation_end)./2;
 				for i = 1:length(annotation_location)
 					if (annotation_chr(i) == chr)

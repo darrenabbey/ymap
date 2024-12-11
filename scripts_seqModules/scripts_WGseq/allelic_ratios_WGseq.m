@@ -498,51 +498,18 @@ if (Make_figure == true)
 				leftEnd  = 0.5*5000/bases_per_bin;
 				rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
 				if (Centromere_format == 0)
-					% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
-					dx = cen_tel_Xindent; %5*5000/bases_per_bin;
-					dy = cen_tel_Yindent; %maxY/10;
-					% draw white triangles at corners and centromere locations.
-					% top left corner.
-					c_ = [1.0 1.0 1.0];
-					x_ = [leftEnd   leftEnd   leftEnd+dx];
-					y_ = [maxY-dy   maxY      maxY      ];
-					f = fill(x_,y_,c_);
-					set(f,'linestyle','none');
-					% bottom left corner.
-					x_ = [leftEnd   leftEnd   leftEnd+dx];
-					y_ = [dy        0         0         ];
-					f = fill(x_,y_,c_);
-					set(f,'linestyle','none');
-					% top right corner.
-					x_ = [rightEnd   rightEnd   rightEnd-dx];
-					y_ = [maxY-dy    maxY       maxY      ];
-					f = fill(x_,y_,c_);
-					set(f,'linestyle','none');
-					% bottom right corner.
-					x_ = [rightEnd   rightEnd   rightEnd-dx];
-					y_ = [dy         0          0         ];
-					f = fill(x_,y_,c_);
-					set(f,'linestyle','none');
-					% top centromere.
-					x_ = [x1-dx   x1        x2        x2+dx];
-					y_ = [maxY    maxY-dy   maxY-dy   maxY];
-					f = fill(x_,y_,c_);
-					set(f,'linestyle','none');
-					% bottom centromere.
-					x_ = [x1-dx   x1   x2   x2+dx];
-					y_ = [0       dy   dy   0    ];
-					f = fill(x_,y_,c_);
-					set(f,'linestyle','none');
-					% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
-					plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
-					     [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy     ],...
-					      'Color',[0 0 0]);
+					source('cartoon_stacked_0.m');
+				elseif (Centromere_format == 1)
+					source('cartoon_stacked_1.m');
+				elseif (Centromere_format == 2) % sausage! (standard plot)
+					source('cartoon_stacked_2.m');
 				end;
 				% standard : end show centromere.
 
 				%% standard : show annotation locations
 				fprintf('\t|\t\t\tShow annotation locations.\n');
 				if (show_annotations) && (length(annotations) > 0)
+					hold on;
 					plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 					annotation_location = (annotation_start+annotation_end)./2;
 					for i = 1:length(annotation_location)
@@ -623,58 +590,18 @@ if (Make_figure == true)
 				leftEnd  = 0;
 				rightEnd = chr_size(chr)/bases_per_bin;
 				if (Centromere_format == 0)
-					% Minimal outline for examining very small sequence regions, such as C.albicans MTL locus.
-					plot([leftEnd   leftEnd   rightEnd   rightEnd   leftEnd], [0   maxY   maxY   0   0], 'Color',[0 0 0]);
+					source('cartoon_linear_0.m');
 				elseif (Centromere_format == 1)
-					% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
-					Xscale = 4;
-					dx = cen_tel_Xindent*Xscale;
-					dy = cen_tel_Yindent;
-					xcen = (x1+x2)/2;
-
-					if (x1 != 0)
-						% draw white trapezoids for centromeres.
-						patch([x1-dx,  x1,  x2,  x2+dx], [maxY,  maxY-dy,  maxY-dy,  maxY], 'facecolor', 'w', 'edgecolor', 'w');
-						patch([x1-dx,  x1,  x2,  x2+dx], [0,     dy,       dy,       0   ], 'facecolor', 'w', 'edgecolor', 'w');
-					end;
-
-					% draw white triangles at corners.
-					patch([leftEnd,  leftEnd,  leftEnd+dx ], [maxY-dy, maxY, maxY], 'facecolor', 'w', 'edgecolor', 'w');
-					patch([leftEnd,  leftEnd,  leftEnd+dx ], [0,       dy,   0   ], 'facecolor', 'w', 'edgecolor', 'w');
-						patch([rightEnd, rightEnd, rightEnd-dx], [maxY-dy, maxY, maxY], 'facecolor', 'w', 'edgecolor', 'w');
-					patch([rightEnd, rightEnd, rightEnd-dx], [0,       dy,   0   ], 'facecolor', 'w', 'edgecolor', 'w');
-
-					% draw outlines of chromosome cartoon.
-					if (xcen != 0)
-						if (xcen < dx)
-							xdelta = xcen/2;
-							ydelta = xdelta/Xscale
-							plot([leftEnd   leftEnd   xcen-xdelta      xcen      xcen+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   xcen+dx   xcen   xcen-xdelta   leftEnd], ...
-							     [dy        maxY-dy   maxY-dy+ydelta   maxY-dy   maxY      maxY          maxY-dy    dy         0             0         dy     dy-ydelta     dy     ], ...
-							    'Color',[0 0 0]);
-						elseif (xcen > rightEnd-dx)
-							xdelta = (rightEnd-xcen)/2;
-							ydelta = xdelta/Xscale;
-							plot([leftEnd   leftEnd   leftEnd+dx   xcen-dx   xcen      xcen+xdelta      rightEnd   rightEnd   xcen+xdelta   xcen   xcen-dx   leftEnd+dx   leftEnd], ...
-							     [dy        maxY-dy   maxY         maxY      maxY-dy   maxY-dy+ydelta   maxY-dy    dy         dy-ydelta     dy     0         0            dy     ], ...
-							    'Color',[0 0 0]);
-						else
-							plot([leftEnd   leftEnd   leftEnd+dx   xcen-dx   xcen      xcen+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   xcen+dx   xcen   xcen-dx   leftEnd+dx   leftEnd], ...
-							     [dy        maxY-dy   maxY         maxY      maxY-dy   maxY      maxY          maxY-dy    dy         0             0         dy     0         0            dy     ], ...
-							    'Color',[0 0 0]);
-						end;
-					else
-						plot([leftEnd   leftEnd   leftEnd+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   leftEnd+dx   leftEnd], ...
-						     [dy        maxY-dy   maxY         maxY          maxY-dy    dy         0             0            dy     ], ...
-						    'Color',[0 0 0]);
-					end;
-				elseif (Centromere_format == 2)
+					source('cartoon_linear_1.m');
+				elseif (Centromere_format == 2) % sausage! (standard plot)
+					source('cartoon_linear_2.m');
 				end;
 				% linear : end show centromere.
 
 				% linear : show annotation locations.
 				if (show_annotations) && (length(annotations) > 0)
 					fprintf('\t|\t\t\tShow annotation locations in linear figure.\n');
+					hold on;
 					plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 					annotation_location = (annotation_start+annotation_end)./2;
 					for i = 1:length(annotation_location)
