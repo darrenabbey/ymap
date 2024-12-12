@@ -36,7 +36,7 @@ fprintf('\t|\tGenerating FirePlot of SNP allelic ratio data across genome.\n');
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
 %    bases_per_bin              : Controls bin sizes for SNP/CGH fractions of plot.
 %    Chr_max_width              : max width of chrs as fraction of figure width.
-Centromere_format           = 0;
+Centromere_format_default   = 0;
 Chr_max_width               = 0.8;
 colorBars                   = true;
 blendColorBars              = false;
@@ -315,7 +315,7 @@ if (Make_figure == true)
 	bases_per_bin    = max(chr_size)/700;
 	maxY             = 50;   % number of Y-bins in 2D smoothed histogram.
 	cen_tel_Xindent  = 5;
-	cen_tel_Yindent  = maxY/5;
+	cen_tel_Yindent  = maxY/10;
 	largestChr       = find(chr_width == max(chr_width));
 	largestChr       = largestChr(1);
 
@@ -492,6 +492,12 @@ if (Make_figure == true)
 				end;
 
 				% standard : show centromere outlines and horizontal marks.
+				if (chr_size(chr) < 100000)
+					Centromere_format = 0;
+				else
+					Centromere_format = Centromere_format_default;
+				end;
+
 				fprintf('\t|\t\t\tDraw centromere and horizontal lines.\n');
 				x1 = cen_start(chr)/bases_per_bin;
 				x2 = cen_end(chr)/bases_per_bin;
@@ -584,6 +590,12 @@ if (Make_figure == true)
 				%% linear : end show allelic ratio data.
 
 				%% linear : show centromere.
+				if (chr_size(chr) < 100000)
+					Centromere_format = 0;
+				else
+					Centromere_format = Centromere_format_default;
+				end;
+
 				fprintf('\t|\t\t\tDraw centromere in linear figure.\n');
 				x1 = cen_start(chr)/bases_per_bin;
 				x2 = cen_end(chr)/bases_per_bin;

@@ -160,8 +160,7 @@ TickSize         = -0.005;  %negative for outside, percentage of longest chr fig
 bases_per_bin    = max(chr_size)/700;
 maxY             = ploidyBase*2;
 cen_tel_Xindent  = 5;
-cen_tel_Yindent  = maxY/5;
-cen_tel_Yindent2 = maxY/2;
+cen_tel_Yindent  = maxY/4;
 
 fprintf(['\nGenerating CNV figure from ''' project ''' sequence data.\n']);
 
@@ -899,7 +898,7 @@ for chr_to_draw  = 1:length(chr_order)
 			if (chr_size(chr) < 100000)
 				Centromere_format = 0;
 			else
-				Centromere_format = 2;  % Centromere_format_default;
+				Centromere_format = Centromere_format_default;
 			end;
 			x1       = cen_start(chr)/bases_per_bin;
 			x2       = cen_end(chr)/bases_per_bin;
@@ -1157,7 +1156,7 @@ for chr_to_draw  = 1:length(chr_order)
 			if (chr_size(chr) < 100000)
 				Centromere_format = 0;
 			else
-				Centromere_format = 2;  %Centromere_format_default;
+				Centromere_format = Centromere_format_default;
 			end;
 			x1       = cen_start(chr)/bases_per_bin;
 			x2       = cen_end(chr)/bases_per_bin;

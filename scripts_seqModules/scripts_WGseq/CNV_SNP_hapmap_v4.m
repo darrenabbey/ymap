@@ -220,8 +220,7 @@ TickSize         = -0.005;  %negative for outside, percentage of longest chr fig
 bases_per_bin    = max(chr_size)/700;
 maxY             = ploidyBase*2;
 cen_tel_Xindent  = 5;
-cen_tel_Yindent  = maxY/5;
-cen_tel_Yindent2 = maxY/2;
+cen_tel_Yindent  = maxY/4;
 
 
 %%================================================================================================

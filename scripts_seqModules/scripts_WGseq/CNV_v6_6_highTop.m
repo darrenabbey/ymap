@@ -132,8 +132,7 @@ if (Make_figure == true)
 	bases_per_bin	= max(chr_size)/700;
 	maxY			 = ploidyBase*2;
 	cen_tel_Xindent  = 5;
-	cen_tel_Yindent  = maxY/5;
-	cen_tel_Yindent2 = maxY/2;
+	cen_tel_Yindent  = maxY/4;
 
 	fprintf(['\nGenerating horizontal CNV highTop figure from ''' project ''' sequence data.\n']);
 
@@ -252,8 +251,8 @@ if (Make_figure == true)
 				end;
 				x1       = cen_start(chr)/bases_per_bin;
 				x2       = cen_end(chr)/bases_per_bin;
-				leftEnd  = 0;                                   % 0.5*(5000/bases_per_bin);
-				rightEnd = chr_size(chr)/bases_per_bin;         % chr_size(chr)/bases_per_bin-0.5*(5000/bases_per_bin);
+				leftEnd  = 0;
+				rightEnd = chr_size(chr)/bases_per_bin;
 				if (Centromere_format == 0)
 					source('cartoon_stacked_0.m');
 				elseif (Centromere_format == 1)

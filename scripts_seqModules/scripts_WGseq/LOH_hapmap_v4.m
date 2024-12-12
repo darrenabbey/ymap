@@ -51,7 +51,6 @@ end;
 %                                 'Log2Ratio' does not properly scale CGH data by ploidy.
 %    Chr_max_width              : max width of chrs as fraction of figure width.
 fprintf('\t|\tSetup for processing.\n');
-Centromere_format              = 0;
 Centromere_format_default      = 1;
 Chr_max_width                  = 0.8;
 colorBars                      = true;
@@ -901,8 +900,7 @@ end;
 TickSize         = -0.005;  %negative for outside, percentage of longest chr figure.
 maxY             = ploidyBase*2;
 cen_tel_Xindent  = 5;
-cen_tel_Yindent  = maxY/5;
-cen_tel_Yindent2 = maxY/2;
+cen_tel_Yindent  = maxY/4;
 
 
 %%================================================================================================

@@ -1,6 +1,6 @@
 % standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
 dx = cen_tel_Xindent;
-dy = cen_tel_Yindent;
+dy = maxY/5;		%en_tel_Yindent;
 xcen = (x1+x2)/2
 
 if (x1 != 0)
