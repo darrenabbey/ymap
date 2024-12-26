@@ -19,8 +19,7 @@ for chr = 1:num_chrs
 			histAll_a = [];
 			histAll_b = [];
 			histAll2  = [];
-			% Look through all SNP data in every chr_bin, to determine if any are within the segment boundries.
-			% Speed up by only checking possible chr_bins has not been implmented.
+			% Look through all SNP data in every chr_bin_SNP, to determine if any are within the segment boundries.
 
 			fprintf( '^^^\n');
 			fprintf(['^^^ chrID         = ' num2str(chr)                                   '\n']);
@@ -31,15 +30,15 @@ for chr = 1:num_chrs
 			%% Construct and smooth a histogram of alleleic fraction data in the segment of interest.
 			% phased data is stored into arrays 'histAll_a' and 'histAll_b', since proper phasing is known.
 			% unphased data is stored inverted into the second array, since proper phasing is not known.
-			for chr_bin = 1:length(CNVplot2{chr})
+			for chr_bin_SNP = 1:length(chr_SNPdata{chr,1})
 				%   1 : phased SNP ratio data.
 				%   2 : unphased SNP ratio data.
 				%   3 : phased SNP position data.
 				%   4 : unphased SNP position data.
-				ratioData_phased        = chr_SNPdata{chr,1}{chr_bin};
-				ratioData_unphased      = chr_SNPdata{chr,2}{chr_bin};
-				coordinateData_phased   = chr_SNPdata{chr,3}{chr_bin};
-				coordinateData_unphased = chr_SNPdata{chr,4}{chr_bin};
+				ratioData_phased        = chr_SNPdata{chr,1}{chr_bin_SNP};
+				ratioData_unphased      = chr_SNPdata{chr,2}{chr_bin_SNP};
+				coordinateData_phased   = chr_SNPdata{chr,3}{chr_bin_SNP};
+				coordinateData_unphased = chr_SNPdata{chr,4}{chr_bin_SNP};
 				if (useHapmap)
 					if (length(ratioData_phased) > 0)
 						for SNP_in_bin = 1:length(ratioData_phased)
@@ -128,11 +127,6 @@ for chr = 1:num_chrs
 
 			%% Calculate Gaussian fitting details for segment.
 			segment_copyNum            = round(chrCopyNum{chr}(segment));  % copy number estimate of this segment.
-
-			% DRAGON
-			%if (segment_copyNum == 0)
-			%	segment_copyNum = 1;
-			%end;
 
 			segment_chrBreaks          = chr_breaks{chr}(segment);         % break points of this segment.
 			segment_smoothedHistogram  = smoothed;                         % whole chromosome allelic ratio histogram smoothed.

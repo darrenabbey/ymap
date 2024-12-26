@@ -67,7 +67,7 @@ elif (runMode == 'LOH'):
 
 childDatafile = main_dir+"users/"+projectUser+"/projects/"+project+"/SNP_CNV_v1.txt"
 
-t0 = time.process_time()
+t0 = time.process_time();
 
 
 #============================================================================================================
@@ -101,7 +101,7 @@ with open(logName, "a") as myfile:
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tLoading standard bin fragmented genome FASTA file.\n")
 # Open restriction-digested genome FASTA file.
-standardBins_FASTA_file = genomeDirectory + FastaName + ".standard_bins.fasta"
+standardBins_FASTA_file = genomeDirectory + FastaName + ".standard_bins.SNPs.fasta"
 standardBins_FASTA_data = open(standardBins_FASTA_file,'r')
 # Setup array and counter for tracking fragment definition data.
 fragments        = []

@@ -45,7 +45,7 @@
 <script type="text/javascript" src="js/jquery.form.js"></script>
 
 <hr width="100%">
-User account maintenance. <font size="2">(User quota is <?php $quota_ = getUserQuota($user); echo $quota; ?>GB.)</font><br><br>
+User account maintenance. <font size="2">(User quota is <?php $quota = getUserQuota($user); echo $quota; ?>GB.)</font><br><br>
 <table width="100%" cellpadding="0"><tr>
 <td width="100%" valign="top">
 	<?php

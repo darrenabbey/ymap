@@ -190,10 +190,21 @@ clear centromeres chr_sizes MRSs rDNA;
 
 % basic plot parameters not defined per genome.
 TickSize         = -0.005;  %negative for outside, percentage of longest chr figure.
-bases_per_bin    = max(chr_size)/700;
 maxY             = ploidyBase*2;
-cen_tel_Xindent  = 5; 
+cen_tel_Xindent  = 5;
 cen_tel_Yindent  = maxY/5;
+
+%% Load CNV and SNP figure resolutions.
+if (exist([genomeDir 'resolution.CNV.txt],'file') == 0)
+	bases_per_bin           = max(chr_size)/700;
+else
+	bases_per_bin           = max(chr_size)/str2num(fileread([genomeDir 'resolution.CNV.txt]));
+end;
+if (exist([genomeDir 'resolution.SNPs.txt],'file') == 0)
+	bases_per_bin_SNP       = max(chr_size)/700;
+else
+	bases_per_bin_SNP       = max(chr_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt]));
+end;
 
 
 %%=========================================================================
@@ -293,7 +304,6 @@ fprintf(['\nGenerating SNP figures from: ' strrep(raw_data_dir,'\','\\')]);
 % define number of and labels for chromosomes.
 chr_labels = {'Chr1','Chr2','Chr3','Chr4','Chr5','Chr6','Chr7','ChrR'};
 
-bases_per_bin = max(chr_size)/700;
 chr_length_scale_multiplier = 1/bases_per_bin;
 
 % Initialize linear view figure plot parameters.

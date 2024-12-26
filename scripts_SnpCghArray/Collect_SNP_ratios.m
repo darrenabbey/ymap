@@ -5,7 +5,20 @@ function [SNP_count, Ratio_sum] = Collect_SNP_ratios(chr, chr_size, probeset1, p
 %===========================================================================================
 fprintf(['\nCalculating SNP ratios from project "' projectName '" SNP data.\n']);
 SNP_probeset_length = length(probeset1);
-bases_per_bin       = max(chr_size)/700;
+
+%% Load CNV and SNP figure resolutions.
+if (exist([genomeDir 'resolution.CNV.txt],'file') == 0)
+	bases_per_bin           = max(chr_size)/700;
+else
+	bases_per_bin           = max(chr_size)/str2num(fileread([genomeDir 'resolution.CNV.txt]));
+end;
+if (exist([genomeDir 'resolution.SNPs.txt],'file') == 0)
+	bases_per_bin_SNP       = max(chr_size)/700;
+else
+	bases_per_bin_SNP       = max(chr_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt]));
+end;
+
+
 DataTypeToUse       = 1;   % (1)AllelicFraction; (2)Angle.
 show_unnassigned    = false;
 SNP_count           = zeros(1,ceil(chr_size(chr)/bases_per_bin));   % SNP count.

@@ -1,0 +1,92 @@
+			*================================================================*
+			| Log of 'genome_process_for_standard_bins_1.py'                 |
+			*----------------------------------------------------------------*
+			*================================================================*
+			| Log of 'genome_process_for_standard_bins_1.py'                 |
+			*----------------------------------------------------------------*
+
+			FASTA reformatted to single-line entries : datafile_g_0.2.fasta
+				Determining number of chromosomes of interest in genome.
+				Gathering name strings for chromosomes.
+					Chr1 = Contig005504_C_parapsilosis_CDC317
+					Chr2 = Contig005569_C_parapsilosis_CDC317
+					Chr3 = Contig005806_C_parapsilosis_CDC317
+					Chr4 = Contig005807_C_parapsilosis_CDC317
+					Chr5 = Contig005809_C_parapsilosis_CDC317
+					Chr6 = Contig006110_C_parapsilosis_CDC317
+					Chr7 = Contig006139_C_parapsilosis_CDC317
+					Chr8 = Contig006372_C_parapsilosis_CDC317
+					Chr9 = mito_C_parapsilosis_CDC317
+			#### Determine chromosome lengths.
+			####     max_chr_length         = 3023471 bp			*================================================================*
+			| Log of 'genome_process_for_standard_bins_1.py'                 |
+			*----------------------------------------------------------------*
+
+			FASTA reformatted to single-line entries : datafile_g_0.2.fasta
+				Determining number of chromosomes of interest in genome.
+				Gathering name strings for chromosomes.
+					Chr1 = Contig005504_C_parapsilosis_CDC317
+					Chr2 = Contig005569_C_parapsilosis_CDC317
+					Chr3 = Contig005806_C_parapsilosis_CDC317
+					Chr4 = Contig005807_C_parapsilosis_CDC317
+					Chr5 = Contig005809_C_parapsilosis_CDC317
+					Chr6 = Contig006110_C_parapsilosis_CDC317
+					Chr7 = Contig006139_C_parapsilosis_CDC317
+					Chr8 = Contig006372_C_parapsilosis_CDC317
+					Chr9 = mito_C_parapsilosis_CDC317
+			#### Determine chromosome lengths.
+			####     max_chr_length         = 3023471 bp			*================================================================*
+			| Log of 'genome_process_for_standard_bins_1.py'                 |
+			*----------------------------------------------------------------*
+
+			FASTA reformatted to single-line entries : datafile_g_0.2.fasta
+				Determining number of chromosomes of interest in genome.
+				Gathering name strings for chromosomes.
+					Chr1 = Contig005504_C_parapsilosis_CDC317
+					Chr2 = Contig005569_C_parapsilosis_CDC317
+					Chr3 = Contig005806_C_parapsilosis_CDC317
+					Chr4 = Contig005807_C_parapsilosis_CDC317
+					Chr5 = Contig005809_C_parapsilosis_CDC317
+					Chr6 = Contig006110_C_parapsilosis_CDC317
+					Chr7 = Contig006139_C_parapsilosis_CDC317
+					Chr8 = Contig006372_C_parapsilosis_CDC317
+					Chr9 = mito_C_parapsilosis_CDC317
+			#### Determine chromosome lengths.
+			####     max_chr_length         = 3023471 bp			*================================================================*
+			| Log of 'genome_process_for_standard_bins_1.py'                 |
+			*----------------------------------------------------------------*
+
+			FASTA reformatted to single-line entries : datafile_g_0.2.fasta
+				Determining number of chromosomes of interest in genome.
+				Gathering name strings for chromosomes.
+					Chr1 = Contig005504_C_parapsilosis_CDC317
+					Chr2 = Contig005569_C_parapsilosis_CDC317
+					Chr3 = Contig005806_C_parapsilosis_CDC317
+					Chr4 = Contig005807_C_parapsilosis_CDC317
+					Chr5 = Contig005809_C_parapsilosis_CDC317
+					Chr6 = Contig006110_C_parapsilosis_CDC317
+					Chr7 = Contig006139_C_parapsilosis_CDC317
+					Chr8 = Contig006372_C_parapsilosis_CDC317
+					Chr9 = mito_C_parapsilosis_CDC317
+			#### Determine chromosome lengths.
+			####     max_chr_length         = 3023471 bp
+			####     bases_per_standard_bin = 17277 bp
+			#### Start genome fragmentation.
+			####	0.00048662300000000547 seconds for this chr.
+			#### Fragmenting: Contig005504_C_parapsilosis_CDC317
+			####	0.0031048819999999963 seconds for this chr.
+			#### Fragmenting: Contig005569_C_parapsilosis_CDC317
+			####	0.0040082659999999964 seconds for this chr.
+			#### Fragmenting: Contig005806_C_parapsilosis_CDC317
+			####	0.002765305999999995 seconds for this chr.
+			#### Fragmenting: Contig005807_C_parapsilosis_CDC317
+			####	0.006105088999999994 seconds for this chr.
+			#### Fragmenting: Contig005809_C_parapsilosis_CDC317
+			####	0.005905173999999999 seconds for this chr.
+			#### Fragmenting: Contig006110_C_parapsilosis_CDC317
+			####	0.002188935000000003 seconds for this chr.
+			#### Fragmenting: Contig006139_C_parapsilosis_CDC317
+			####	0.003027487999999995 seconds for this chr.
+			#### Fragmenting: Contig006372_C_parapsilosis_CDC317
+			####	0.0027149709999999966 seconds for this chr.
+			#### Fragmenting: mito_C_parapsilosis_CDC317

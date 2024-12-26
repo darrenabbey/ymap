@@ -85,8 +85,7 @@
 			// getting the current size of the user folder in Gigabytes
 			$currentSize = getUserUsageSize($admin_as_user);
 			// getting user quota in Gigabytes
-			$quota_ = getUserQuota($admin_as_user);
-			if ($quota_ > $quota) {   $quota = $quota_;   }
+			$quota = getUserQuota($admin_as_user);
 			// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear
 			$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
 			if ($exceededSpace) {

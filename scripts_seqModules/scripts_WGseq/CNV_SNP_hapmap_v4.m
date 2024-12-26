@@ -47,7 +47,7 @@ end;
 
 %% ========================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
-%    bases_per_bin              : Controls bin sizes for SNP/CGH fractions of plot.
+%    bases_per_bin              : Controls bin sizes for CGH fractions of plot.
 %    scale_type                 : 'Ratio' or 'Log2Ratio' y-axis scaling of copy number.
 %                                 'Log2Ratio' does not properly scale CGH data by ploidy.
 %    Chr_max_width              : max width of chrs as fraction of figure width.
@@ -216,11 +216,22 @@ phased_and_unphased_color_definitions;
 
 
 % basic plot parameters not defined per genome.
-TickSize         = -0.005;  %negative for outside, percentage of longest chr figure.
-bases_per_bin    = max(chr_size)/700;
-maxY             = ploidyBase*2;
-cen_tel_Xindent  = 5;
-cen_tel_Yindent  = maxY/4;
+TickSize          = -0.005;  %negative for outside, percentage of longest chr figure.
+maxY              = ploidyBase*2;
+cen_tel_Xindent   = 5;
+cen_tel_Yindent   = maxY/4;
+
+%% Load CNV and SNP figure resolutions.
+if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
+	bases_per_bin           = max(chr_size)/700;
+else
+	bases_per_bin           = max(chr_size)/str2num(fileread([genomeDir 'resolution.CNV.txt']));
+end;
+if (exist([genomeDir 'resolution.SNPs.txt'],'file') == 0)
+	bases_per_bin_SNP       = max(chr_size)/700;
+else
+	bases_per_bin_SNP       = max(chr_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt']));
+end;
 
 
 %%================================================================================================
@@ -229,7 +240,7 @@ cen_tel_Yindent  = maxY/4;
 fprintf('\t|\tInitialize color tracking vectors.\n');
 % Initializes vectors used to hold allelic ratios for each chromosome segment.
 for chr = 1:length(chr_sizes)
-	% Build data structure for SNP information:  chr_SNPdata{chr,j}{chr_bin} = [];
+	% Build data structure for SNP information:  chr_SNPdata{chr,j}{chr_bin_SNP} = [];
 	%       1 : phased SNP ratio data.
 	%       2 : unphased SNP ratio data.
 	%       3 : phased SNP position data.
@@ -282,7 +293,7 @@ createCnvTrack(projectDir, project, CNVplot2, bases_per_bin, chr_name, ploidyBas
 %-------------------------------------------------------------------------------------------
 fprintf('\t|\tLoad SNP data.\n');
 load([projectDir 'SNP_' SNP_verString '.mat']);
-%    'chr_SNPdata{chr,i}(chr_bin)'
+%    'chr_SNPdata{chr,i}(chr_bin_SNP)'
 %        i = 1 : phased ratio data.
 %        i = 2 : unphased ratio data.
 %        i = 3 : phased coordinate data.
@@ -373,12 +384,12 @@ fprintf('\t|\tDetermine colors per SNP using hapmap.\n');
 %% =========================================================================================
 % Calculate allelic fraction cutoffs for each segment and populate data structure containing
 % SNP phasing information.
-%       chr_SNPdata{chr,1}{chr_bin} = phased SNP ratio data.
-%       chr_SNPdata{chr,2}{chr_bin} = unphased SNP ratio data.
-%       chr_SNPdata{chr,3}{chr_bin} = phased SNP position data.
-%       chr_SNPdata{chr,4}{chr_bin} = unphased SNP position data.
-%       chr_SNPdata{chr,5}{chr_bin} = phased SNP allele strings.   (baseCall:alleleA/alleleB)
-%       chr_SNPdata{chr,6}{chr_bin} = unphased SNP allele strings.
+%       chr_SNPdata{chr,1}{chr_bin_SNP} = phased SNP ratio data.
+%       chr_SNPdata{chr,2}{chr_bin_SNP} = unphased SNP ratio data.
+%       chr_SNPdata{chr,3}{chr_bin_SNP} = phased SNP position data.
+%       chr_SNPdata{chr,4}{chr_bin_SNP} = unphased SNP position data.
+%       chr_SNPdata{chr,5}{chr_bin_SNP} = phased SNP allele strings.   (baseCall:alleleA/alleleB)
+%       chr_SNPdata{chr,6}{chr_bin_SNP} = unphased SNP allele strings.
 %-------------------------------------------------------------------------------------------
 % Prepare data for "calculate_allelic_ratio_cutoffs.m".
 temp_holding = chr_SNPdata;
@@ -394,17 +405,16 @@ for chr = 1:num_chrs
 	% avoid running over chromosomes with empty copy number
 	if (chr_in_use(chr) == 1 && ~isempty(chrCopyNum{chr}))
 		chrName = chr_name{chr};
-		for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
+		for chr_bin_SNP = 1:ceil(chr_size(chr)/bases_per_bin_SNP)
 			%
 			% Determining colors for each SNP coordinate from calculated cutoffs.
 			%
-			localCopyEstimate                                     = round(CNVplot2{chr}(chr_bin)*ploidy*ploidyAdjust);
-			allelic_ratios                                        = [chr_SNPdata{chr,1}{chr_bin} chr_SNPdata{chr,2}{chr_bin}];
-			coordinates                                           = [chr_SNPdata{chr,3}{chr_bin} chr_SNPdata{chr,4}{chr_bin}];
-			if (length(chr_SNPdata{chr,1}{chr_bin}) == 1) && (length(chr_SNPdata{chr,2}{chr_bin}) == 1)
-				allele_strings                                = {chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}};
+			allelic_ratios                                        = [chr_SNPdata{chr,1}{chr_bin_SNP} chr_SNPdata{chr,2}{chr_bin_SNP}];
+			coordinates                                           = [chr_SNPdata{chr,3}{chr_bin_SNP} chr_SNPdata{chr,4}{chr_bin_SNP}];
+			if (length(chr_SNPdata{chr,1}{chr_bin_SNP}) == 1) && (length(chr_SNPdata{chr,2}{chr_bin_SNP}) == 1)
+				allele_strings                                = {chr_SNPdata{chr,5}{chr_bin_SNP} chr_SNPdata{chr,6}{chr_bin_SNP}};
 			else
-				allele_strings                                = [chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}];
+				allele_strings                                = [chr_SNPdata{chr,5}{chr_bin_SNP} chr_SNPdata{chr,6}{chr_bin_SNP}];
 			end;
 
 			if (length(allelic_ratios) > 0)
@@ -724,19 +734,16 @@ for chr = 1:num_chrs
 							end;
 						end;
 					end;
-					chr_SNPdata_colorsC{chr,1}(chr_bin) = chr_SNPdata_colorsC{chr,1}(chr_bin) + colorList(1);
-					chr_SNPdata_colorsC{chr,2}(chr_bin) = chr_SNPdata_colorsC{chr,2}(chr_bin) + colorList(2);
-					chr_SNPdata_colorsC{chr,3}(chr_bin) = chr_SNPdata_colorsC{chr,3}(chr_bin) + colorList(3);
-					chr_SNPdata_countC{ chr  }(chr_bin) = chr_SNPdata_countC{ chr  }(chr_bin) + 1;
+					chr_SNPdata_colorsC{chr,1}(chr_bin_SNP) = chr_SNPdata_colorsC{chr,1}(chr_bin_SNP) + colorList(1);
+					chr_SNPdata_colorsC{chr,2}(chr_bin_SNP) = chr_SNPdata_colorsC{chr,2}(chr_bin_SNP) + colorList(2);
+					chr_SNPdata_colorsC{chr,3}(chr_bin_SNP) = chr_SNPdata_colorsC{chr,3}(chr_bin_SNP) + colorList(3);
+					chr_SNPdata_countC{ chr  }(chr_bin_SNP) = chr_SNPdata_countC{ chr  }(chr_bin_SNP) + 1;
 
 					if (~all(colorList == colorNoData))
 						writeAlleleRatioLine(alleleRatiosFid, chrName, coordinate, ...
 							homologA, homologB, ...
 							colorList);
 					end
-
-					% Troubleshooting output.
-					% fprintf(['chr = ' num2str(chr) '; seg = ' num2str(segment) '; bin = ' num2str(chr_bin) '; ratioRegionID = ' num2str(ratioRegionID) '\n']);
 				end;
 			end;
 		end;
@@ -745,22 +752,22 @@ for chr = 1:num_chrs
 		% Average colors of SNPs found in bin.
         	%
 		fprintf('\t|\tDetermine average color for SNPs in chromosome bin.\n');
-		for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
-			allelic_ratios                                      = [chr_SNPdata{chr,1}{chr_bin} chr_SNPdata{chr,2}{chr_bin}];
+		for chr_bin_SNP = 1:ceil(chr_size(chr)/bases_per_bin_SNP)
+			allelic_ratios = [chr_SNPdata{chr,1}{chr_bin_SNP} chr_SNPdata{chr,2}{chr_bin_SNP}];
 			if (length(allelic_ratios) > 0)
-				if (chr_SNPdata_countC{chr}(chr_bin) > 0)
-					chr_SNPdata_colorsC{chr,1}(chr_bin) = chr_SNPdata_colorsC{chr,1}(chr_bin)/chr_SNPdata_countC{chr}(chr_bin);
-					chr_SNPdata_colorsC{chr,2}(chr_bin) = chr_SNPdata_colorsC{chr,2}(chr_bin)/chr_SNPdata_countC{chr}(chr_bin);
-					chr_SNPdata_colorsC{chr,3}(chr_bin) = chr_SNPdata_colorsC{chr,3}(chr_bin)/chr_SNPdata_countC{chr}(chr_bin);
+				if (chr_SNPdata_countC{chr}(chr_bin_SNP) > 0)
+					chr_SNPdata_colorsC{chr,1}(chr_bin_SNP) = chr_SNPdata_colorsC{chr,1}(chr_bin_SNP)/chr_SNPdata_countC{chr}(chr_bin_SNP);
+					chr_SNPdata_colorsC{chr,2}(chr_bin_SNP) = chr_SNPdata_colorsC{chr,2}(chr_bin_SNP)/chr_SNPdata_countC{chr}(chr_bin_SNP);
+					chr_SNPdata_colorsC{chr,3}(chr_bin_SNP) = chr_SNPdata_colorsC{chr,3}(chr_bin_SNP)/chr_SNPdata_countC{chr}(chr_bin_SNP);
 				else
-					chr_SNPdata_colorsC{chr,1}(chr_bin) = 1.0;
-					chr_SNPdata_colorsC{chr,2}(chr_bin) = 1.0;
-					chr_SNPdata_colorsC{chr,3}(chr_bin) = 1.0;
+					chr_SNPdata_colorsC{chr,1}(chr_bin_SNP) = 1.0;
+					chr_SNPdata_colorsC{chr,2}(chr_bin_SNP) = 1.0;
+					chr_SNPdata_colorsC{chr,3}(chr_bin_SNP) = 1.0;
 				end;
 			else
-				chr_SNPdata_colorsC{chr,1}(chr_bin) = 1.0;
-				chr_SNPdata_colorsC{chr,2}(chr_bin) = 1.0;
-				chr_SNPdata_colorsC{chr,3}(chr_bin) = 1.0;
+				chr_SNPdata_colorsC{chr,1}(chr_bin_SNP) = 1.0;
+				chr_SNPdata_colorsC{chr,2}(chr_bin_SNP) = 1.0;
+				chr_SNPdata_colorsC{chr,3}(chr_bin_SNP) = 1.0;
 			end;
 		end;
 	end;
@@ -783,28 +790,32 @@ system(['chmod 664 ' projectDir 'allele_ratios.' project  '.bed']);
 fprintf('\t|\tCount SNPs per chromosome bin.\n');
 % threshold for full color saturation in SNP/LOH figure.
 % synced to bases_per_bin as below, or defaulted to 50.
-full_data_threshold = floor(bases_per_bin/100);
+
+%DRAGON: Threshold set for good figures with Candida albicans. Other species with less SNPs may not be ideal.
+full_data_threshold = floor(bases_per_bin/100);		% C. albicans, highly heterozygous.
+full_data_threshold = floor(bases_per_bin/1000);	% C. parapsilosis, far less heterozygous.
+
 fig = figure(1);
 
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
-		for chr_bin = 1:length(chr_SNPdata{chr,1})
+		for chr_bin_SNP = 1:length(chr_SNPdata{chr,1})
 			% the number of heterozygous data points in this bin.
-			SNPs_count{chr}(chr_bin)                                     = length(chr_SNPdata{chr,1}{chr_bin}) + length(chr_SNPdata{chr,2}{chr_bin});
+			SNPs_count{chr}(chr_bin_SNP)                                 = length(chr_SNPdata{chr,1}{chr_bin_SNP}) + length(chr_SNPdata{chr,2}{chr_bin_SNP});
 
 			% divide by the threshold for full color saturation in SNP/LOH figure.
-			SNPs_to_fullData_ratio{chr}(chr_bin)                         = SNPs_count{chr}(chr_bin)/full_data_threshold;
+			SNPs_to_fullData_ratio{chr}(chr_bin_SNP)                     = SNPs_count{chr}(chr_bin_SNP)/full_data_threshold;
 
 			% any bins with more data than the threshold for full color saturation are limited to full saturation.
 			SNPs_to_fullData_ratio{chr}(SNPs_to_fullData_ratio{chr} > 1) = 1;
 
-			phased_plot{chr}(chr_bin)                                    = length(chr_SNPdata{chr,1}{chr_bin});             % phased data.
-			phased_plot2{chr}(chr_bin)                                   = phased_plot{chr}(chr_bin)/full_data_threshold;   %
-			phased_plot2{chr}(phased_plot2{chr} > 1)                     = 1;                                               %
+			phased_plot{chr}(chr_bin_SNP)                                = length(chr_SNPdata{chr,1}{chr_bin_SNP});             % phased data.
+			phased_plot2{chr}(chr_bin_SNP)                               = phased_plot{chr}(chr_bin_SNP)/full_data_threshold;   %
+			phased_plot2{chr}(phased_plot2{chr} > 1)                     = 1;                                                   %
 
-			unphased_plot{chr}(chr_bin)                                  = length(chr_SNPdata{chr,2}{chr_bin});             % unphased data.
-			unphased_plot2{chr}(chr_bin)                                 = unphased_plot{chr}(chr_bin)/full_data_threshold; %
-			unphased_plot2{chr}(unphased_plot2{chr} > 1)                 = 1;                                               %
+			unphased_plot{chr}(chr_bin_SNP)                              = length(chr_SNPdata{chr,2}{chr_bin_SNP});             % unphased data.
+			unphased_plot2{chr}(chr_bin_SNP)                             = unphased_plot{chr}(chr_bin_SNP)/full_data_threshold; %
+			unphased_plot2{chr}(unphased_plot2{chr} > 1)                 = 1;                                                   %
 		end;
 	end;
 end;
@@ -862,23 +873,23 @@ for chr_to_draw  = 1:length(chr_order)
 		colors = [];
 
 		%% determine color of each bin.
-		for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
-			c_tot_post = SNPs_to_fullData_ratio{chr}(chr_bin)+SNPs_to_fullData_ratio{chr}(chr_bin);
+		for chr_bin_SNP = 1:ceil(chr_size(chr)/bases_per_bin_SNP)
+			c_tot_post = SNPs_to_fullData_ratio{chr}(chr_bin_SNP)+SNPs_to_fullData_ratio{chr}(chr_bin_SNP);
 			if (c_tot_post == 0)
 				c_post = colorNoData;
 				fprintf('.');
-				if (mod(chr_bin,100) == 0);   fprintf('\n');   end;
+				if (mod(chr_bin_SNP,100) == 0);   fprintf('\n');   end;
 			else
 				% Average of SNP position colors defined earlier.
-				colorMix = [chr_SNPdata_colorsC{chr,1}(chr_bin) chr_SNPdata_colorsC{chr,2}(chr_bin) chr_SNPdata_colorsC{chr,3}(chr_bin)];
+				colorMix = [chr_SNPdata_colorsC{chr,1}(chr_bin_SNP) chr_SNPdata_colorsC{chr,2}(chr_bin_SNP) chr_SNPdata_colorsC{chr,3}(chr_bin_SNP)];
 
 				% Determine color to draw bin, accounting for limited data and data saturation.
-				c_post =   colorMix   *   min(1,SNPs_to_fullData_ratio{chr}(chr_bin)) + ...
-				           colorNoData*(1-min(1,SNPs_to_fullData_ratio{chr}(chr_bin)));
+				c_post =   colorMix   *   min(1,SNPs_to_fullData_ratio{chr}(chr_bin_SNP)) + ...
+				           colorNoData*(1-min(1,SNPs_to_fullData_ratio{chr}(chr_bin_SNP)));
 			end;
-			colors(chr_bin,1) = c_post(1);
-			colors(chr_bin,2) = c_post(2);
-			colors(chr_bin,3) = c_post(3);
+			colors(chr_bin_SNP,1) = c_post(1);
+			colors(chr_bin_SNP,2) = c_post(2);
+			colors(chr_bin_SNP,3) = c_post(3);
 		end;
 		% standard : end determine color of each bin.
 
@@ -901,12 +912,15 @@ for chr_to_draw  = 1:length(chr_order)
 			hold on;
 
 			%% standard : draw colorbars.
-			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
-				x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
+			for chr_bin_SNP = 1:ceil(chr_size(chr)/bases_per_bin_SNP)
+				%chr_bin = chr_bin_SNP*bases_per_bin_SNP/bases_per_bin;
+				%x_ = [chr_bin chr_bin (chr_bin-1) (chr_bin-1)];
+				x_ = [chr_bin_SNP*bases_per_bin_SNP/bases_per_bin chr_bin_SNP*bases_per_bin_SNP/bases_per_bin (chr_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin (chr_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin];
+
 				y_ = [0 maxY maxY 0];
-				c_post(1) = colors(chr_bin,1);
-				c_post(2) = colors(chr_bin,2);
-				c_post(3) = colors(chr_bin,3);
+				c_post(1) = colors(chr_bin_SNP,1);
+				c_post(2) = colors(chr_bin_SNP,2);
+				c_post(3) = colors(chr_bin_SNP,3);
 				% makes a colorBar for each bin, using local smoothing
 				if (c_(1) > 1); c_(1) = 1; end;
 				if (c_(2) > 1); c_(2) = 1; end;
@@ -1198,12 +1212,15 @@ for chr_to_draw  = 1:length(chr_order)
 			hold on;
 
 			%% linear : draw colorbars.
-			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
-				x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
+			for chr_bin_SNP = 1:ceil(chr_size(chr)/bases_per_bin_SNP)
+				%chr_bin = chr_bin_SNP*bases_per_bin_SNP/bases_per_bin;
+				%x_ = [chr_bin chr_bin (chr_bin-1) (chr_bin-1)];
+				x_ = [chr_bin_SNP*bases_per_bin_SNP/bases_per_bin chr_bin_SNP*bases_per_bin_SNP/bases_per_bin (chr_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin (chr_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin];
+
 				y_ = [0 maxY maxY 0];
-				c_post(1) = colors(chr_bin,1);
-				c_post(2) = colors(chr_bin,2);
-				c_post(3) = colors(chr_bin,3);
+				c_post(1) = colors(chr_bin_SNP,1);
+				c_post(2) = colors(chr_bin_SNP,2);
+				c_post(3) = colors(chr_bin_SNP,3);
 				% makes a colorBar for each bin, using local smoothing
 				if (c_(1) > 1); c_(1) = 1; end;
 				if (c_(2) > 1); c_(2) = 1; end;
@@ -1242,7 +1259,7 @@ for chr_to_draw  = 1:length(chr_order)
 			c_ = [0 0 0];
 			fprintf(['linear-plot : chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
-				x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
+				x_ = [chr_bin chr_bin (chr_bin-1) (chr_bin-1)];
 				CNVhistValue = CNVplot2{chr}(chr_bin);
 				% The CNV-histogram values were normalized to a median value of 1.
 				% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.

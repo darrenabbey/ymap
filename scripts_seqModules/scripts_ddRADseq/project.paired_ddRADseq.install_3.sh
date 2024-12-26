@@ -193,13 +193,7 @@ else
 		$samtools_exec view -@ $cores -bT $genomeDirectory$genomeFASTA $projectDirectory"data.sam" > $projectDirectory"data.temp.bam";
 		rm $projectDirectory"data.sam";
 		echo "\tSamtools : Bowtie-SAM converted into compressed format (BAM) file." >> $logName;
-
-		echo "\tPicard : Adding headers to Bowtie-BAM file." >> $logName;
-		echo "Standardizing BAM read group headers." >> $condensedLog;
-		echo "\nRunning picard:AddOrReplaceReadGroups.\n";
-		java -Xmx2g -jar $picardDirectory"AddOrReplaceReadGroups.jar" INPUT=$projectDirectory"data.temp.bam" OUTPUT=$projectDirectory"data.bam" RGID=1 RGLB=1 RGPL=ILLUMINA RGPU=1 RGSM=SM VALIDATION_STRINGENCY=SILENT;
-		rm $projectDirectory"data.temp.bam";
-		echo "\tPicard : Headers added to Bowtie-BAM file." >> $logName;
+		mv $projectDirectory"data.temp.bam" $projectDirectory"data.bam";
 
 		echo "[[=- Sorting/Indexing BAM files -=]]" >> $logName;
 		echo "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
@@ -236,10 +230,6 @@ else
 			$java7Directory"java" -Xmx16g -jar $abra2_exec --in $ABRA2inputFile --out $ABRA2outputFile --ref $referenceFile --threads $cores --targets $ABRA2bedFile --tmpdir $abra2TempDirectory > $projectDirectory"abra2.log";
 			echo "\tAbra2 : indel-realignment done." >> $logName;
 			rm -rf $abra2TempDirectory;
-			# abra2-2.24.jar is missing file libAbra.so, which can be found in abra2-2.23.jar from github.com mozack/abra2.
-			# example command-line from abra2 readme.
-			# java -Xmx16G -jar abra2.jar --in input.bam --out output-sorted-realigned.bam --ref hg38.fa --threads 8 --targets targets.bed --tmpdir /your/tmpdir > abra.log
-			# From paper: "Either the entire genome is traversed, or regions of interest can be specified via a bed file." in section 2.2.1 on page 2967.
 
 			#================================
 			# Sorting BAM file after Abra2.
@@ -269,14 +259,6 @@ else
 	fi
 
 	echo "Processing pileup for CNVs & SNPs." >> $condensedLog;
-
-	# ( echo "\tPython : Processing pileup for CNVs." >> $logName;
-	# $python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/counts_CNVs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_CNVs_v1.txt" 2>> $logName;
-	# echo "\tPython : Pileup processed for CNVs." >> $logName; ) &
-	#
-	# ( echo "\tPython : Processing pileup for INDELs." >> $logName;
-	# $python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/counts_INDELs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_INDELS_v1.txt" 2>> $logName;
-	# echo "\tPython : Pileup processed for INDELs." >> $logName; ) &
 
 	( echo "\tPython : Processing pileup for SNPs." >> $logName;
 	$python_exec $main_dir"scripts_seqModules/counts_SNPs_v5.py" $projectDirectory"data.pileup" > $projectDirectory"putative_SNPs_v4.txt" 2>> $logName;

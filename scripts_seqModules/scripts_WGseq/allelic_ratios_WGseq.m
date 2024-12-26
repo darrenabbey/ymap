@@ -312,12 +312,23 @@ if (Make_figure == true)
 	fprintf('\t|\tDefine basic figure parameters, not specific to genome.\n');
 	% basic plot parameters not defined per genome.
 	TickSize         = 0; % -0.005;  %negative for outside, percentage of longest chr figure.
-	bases_per_bin    = max(chr_size)/700;
 	maxY             = 50;   % number of Y-bins in 2D smoothed histogram.
 	cen_tel_Xindent  = 5;
 	cen_tel_Yindent  = maxY/10;
 	largestChr       = find(chr_width == max(chr_width));
 	largestChr       = largestChr(1);
+
+	%% Load CNV and SNP figure resolutions.
+	if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
+		bases_per_bin           = max(chr_size)/700;
+	else
+		bases_per_bin           = max(chr_size)/str2num(fileread([genomeDir 'resolution.CNV.txt']));
+	end;
+	if (exist([genomeDir 'resolution.SNPs.txt'],'file') == 0)
+		bases_per_bin_SNP       = max(chr_size)/700;
+	else
+		bases_per_bin_SNP       = max(chr_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt']));
+	end;
 
 
 	%%================================================================================================

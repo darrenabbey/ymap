@@ -19,6 +19,7 @@ FASTA2=$(echo $FASTA | sed 's/\.fasta/\.2\.fasta/g');					# Name of reformatted 
 #repetgenome=$reflocation$FASTAname".repetitiveness.txt";				# Name of repetitiveness profile for genome.
 #repetgenome_smoothed=$reflocation$FASTAname".repetitiveness_smoothed.txt";		# Name of Gaussian smoothed repetitiveness profile for genome.
 standard_bin_FASTA=$reflocation$FASTAname".standard_bins.fasta";			# Name of reference genome broken up into standard bins.
+standard_bin_SNPs_FASTA=$reflocation$FASTAname".standard_bins.SNPs.fasta";		# Name of reference genome broken up into standard bins for SNPs.
 ddRADseq_FASTA=$reflocation$FASTAname".MfeI_MboI.fasta";				# Name of digested reference for ddRADseq analysis.
 logName=$reflocation"process_log.txt";
 condensedLog=$reflocation"condensed_log.txt";
@@ -57,40 +58,6 @@ then
 else
 	echo "\tBowtie index for genome '$genome' found" >> $logName;
 fi
-
-#echo "\n\t============================================================================================== 2" >> $logName;
-#
-## Check if BLAST database has been made for selected genome. Generate database if not found.
-#if [ -e $reflocation$FASTA".nin" ]
-#then
-#	echo "\tBLAST database for genome '$genome' found." >> $logName;
-#else
-#	echo "Generating BLAST database for genome." >> $condensedLog;
-#	echo "\tBLAST database for genome '$genome' not found: Regenerating database." >> $logName;
-#	formatdb -i $reflocation$FASTA -p F -o T;
-#fi
-
-#echo "\n\t============================================================================================== 3" >> $logName;
-#
-### Check if GATK dictionary and index files have been made for selected genome. Generate these files if not found.
-#if [ -e $reflocation$FASTAname".dict" ]
-#then
-#	echo "\tFASTA dictionary file for genome '$genome' found." >> $logName;
-#else
-#	echo "Generating FASTA dictionary file for genome, step 1." >> $condensedLog;
-#	echo "\tFASTA dictionary file not found for genome '$genome': Regenerating using Picard-tools." >> $logName;
-#	echo "\tR="$reflocation$FASTA >> $logName;
-#	echo "\tO="$reflocation$FASTAname".dict" >> $logName;
-#
-#	## use for calling picard tools from installed package.
-#	# PicardCommandLine tools fail when reference fasta includes parentheses "()" in chromosome names. Replace with "*" to allow it to work.
-#	sed -i -e 's/(/*/g' $reflocation$FASTA;
-#	sed -i -e 's/)/*/g' $reflocation$FASTA;
-#	PicardCommandLine CreateSequenceDictionary -R $reflocation$FASTA -O $reflocation$FASTAname".dict";
-#
-#	### use for calling picard tools directly via java.
-#	#java -jar $picardDirectory"CreateSequenceDictionary.jar" R=$reflocation$FASTA O=$reflocation$FASTAname".dict";
-#fi
 
 echo "\n\t============================================================================================== 4" >> $logName;
 
@@ -145,6 +112,21 @@ fi
 
 echo "\n\t----------------------------------------------------------------------------------------------" >> $logName;
 
+if [ -e $standard_bin_SNPs_FASTA ]
+then
+	echo "\tGenome already fragmented into standard bins for SNPs." >> $logName;
+else
+	echo "Performing standard-bin fragmentation of genome for SNPs." >> $condensedLog;
+	echo "\tGenome being fragmentated into standard bins for SNPs." >> $logName;
+
+	## Perform reference genome fragmentation.
+	echo "" > $standard_bin_SNPs_FASTA;
+	$python_exec $main_dir"scripts_genomes/genome_process_for_standard_bins_1.SNPs.py" $user $genome $main_dir $logName >> $standard_bin_SNPs_FASTA 2>> $logName;
+fi
+
+echo "\n\t----------------------------------------------------------------------------------------------" >> $logName;
+
+
 if [ -e $ddRADseq_FASTA ]
 then
 	echo "\tSimulated restriction digest (MfeI & MboI) of genome already complete." >> $logName;
@@ -179,6 +161,7 @@ echo "\n\t======================================================================
 echo "Reformatting standard genome fragments FASTA file." >> $condensedLog;
 echo "\tReformatting digested FASTA file => single-line per sequence fragment." >> $logName;
 sh $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $standard_bin_FASTA;
+sh $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $standard_bin_SNPs_FASTA;
 
 outputFile=$reflocation$FASTAname".GC_ratios.standard_bins.txt";
 if [ -e $outputFile ]

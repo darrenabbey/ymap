@@ -10,12 +10,12 @@ function getUserQuota($userName) {
 	// load hardcoded quota from constants
 	require('constants.php');
 	// check if user has a personal quota if so overriding quota
-	if (file_exists("users/".$userName."/quota.txt")) {
-		$quota_ = trim(file_get_contents("users/".$userName."/quota.txt"));
+	if (file_exists($base_dir."/users/".$userName."/quota.txt")) {
+		$quota = trim(file_get_contents($base_dir."/users/".$userName."/quota.txt"));
 	} else {
-		$quota_ = $quota;
+		$quota = $quota_global;
 	}
-	return $quota_;
+	return $quota;
 }
 
 // YMAP logging function.

@@ -119,10 +119,51 @@ if [ -f $projectDirectory"putative_SNPs_v4.txt" ]
 then
 	echo "\tSNP data already decompressed." >> $logName;
 else
+	echo "Decompressing SNP data." >> $condensedLog;
 	echo "\tDecompressing SNP data." >> $logName;
 	cd $projectDirectory;
 	unzip -j -o putative_SNPs_v4.zip;
 	cd $local_dir;
+fi
+if [ -f $projectDirectory"SNP_CNV_v1.txt" ]
+then
+	echo "\tSNP data already decompressed." >> $logName;
+else
+	echo "Decompressing CNV/SNP data." >> $condensedLog;
+	echo "\tDecompressing SNP data." >> $logName;
+	cd $projectDirectory;
+	unzip -j -o SNP_CNV_v1.zip;
+	cd $local_dir;
+fi
+
+##==============================================================================
+## Preprocess CNV/SNPs if necessary.
+##------------------------------------------------------------------------------
+echo "#==========================#" >> $logName;
+echo "# Preprocessing CNV/SNPs.  #" >> $logName;
+echo "#==========================#" >> $logName;
+if [ -f $projectDirectory"preprocessed_CNVs.txt" ]
+then
+        echo "\tCNV data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
+else
+	echo "Preprocessing CNVs." >> $condensedLog;
+        echo "\tPreprocessing CNV data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
+        $python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.txt" 2>> $logName;
+        echo "\tpre-processing complete." >> $logName;
+
+        chmod 664 $projectDirectory"preprocessed_CNVs.txt";
+fi
+if [ -f $projectDirectory"preprocessed_SNPs.txt" ]
+then
+        echo "\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
+else
+	echo "Preprocessing SNPs." >> $condensedLog;
+        echo "\tPreprocessing SNP data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
+
+        $python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" $genome $genomeUser $project $user $project $user $main_dir $logName LOH > $projectDirectory"preprocessed_SNPs.txt" 2>> $logName;
+        echo "\tpre-processing complete." >> $logName;
+
+        chmod 664 $projectDirectory"preprocessed_SNPs.txt";
 fi
 
 

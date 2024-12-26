@@ -174,31 +174,19 @@ then
 	echo "\tdatafiles.txt" >> $logName;
 fi
 
-# Remove potential leftovers from upload restarts.
-#pattern="*.zip";
-#if [ "$(echo $pattern)" != "$pattern" ]; then rm *.zip; fi
-#pattern="*.gz";
-#if [ "$(echo $pattern)" != "$pattern" ]; then rm *.gz; fi
-#pattern="*.bam";
-#if [ "$(echo $pattern)" != "$pattern" ]; then rm *.bam; fi
-#pattern="*.sam";
-#if [ "$(echo $pattern)" != "$pattern" ]; then rm *.sam; fi
-#pattern="*.fastq";
-#if [ "$(echo $pattern)" != "$pattern" ]; then rm *.fastq; fi
-
 
 # Compress 'putative_SNPs_v1.txt' and 'SNP_CNVs_v1.txt'.
 if [ -f $projectDirectory"putative_SNPs_v4.txt" ]
 then
 	zip -9 $projectDirectory"putative_SNPs_v4.zip" $projectDirectory"putative_SNPs_v4.txt";
 	rm $projectDirectory"putative_SNPs_v4.txt";
-	echo "\tputative_SNPs_v4.txt (created putative_SNPs_v4.zip)" >> $logName;
+	echo "\tputative_SNPs_v4.txt => putative_SNPs_v4.zip" >> $logName;
 fi
 if [ -f $projectDirectory"SNP_CNV_v1.txt" ]
 then
 	zip -9 $projectDirectory"SNP_CNV_v1.zip" $projectDirectory"SNP_CNV_v1.txt";
 	rm $projectDirectory"SNP_CNV_v1.txt";
-	echo "\tSNP_CNV_v1.txt (created SNP_CNV_v1.zip)" >> $logName;
+	echo "\tSNP_CNV_v1.txt => SNP_CNV_v1.zip" >> $logName;
 fi
 
 

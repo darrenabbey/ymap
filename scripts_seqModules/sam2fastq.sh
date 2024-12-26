@@ -13,11 +13,6 @@ echo "#|---- sam2fastq.sh ---- begin." >> $logFile;
 # import locations of auxillary software for pipeline analysis.
 . $main_dir"local_installed_programs.sh";
 
-# #===================================================================================================================================
-# # Run picard-tools SamToFastq : This method requires large amounts of memory and will crash when it runs out of memory.
-# #-----------------------------------------------------------------------------------------------------------------------------------
-# java -Xmx16g -jar $picardDirectory"SamToFastq.jar" INPUT=$projectDirectory$inputFile FASTQ=$projectDirectory"data_r1.a.fastq" SECOND_END_FASTQ=$projectDirectory"data_r2.a.fastq";
-
 
 #===================================================================================================================================
 # Alternate method using generalized commandline tools with low memory footprint.

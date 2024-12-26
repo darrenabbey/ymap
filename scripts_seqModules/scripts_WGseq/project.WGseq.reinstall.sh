@@ -9,7 +9,7 @@
 #	unzip -j [fiel.zip]
 
 user="darren";
-project="ID5115";
+project="ID5089";
 main_dir=$(pwd)"/../../";
 local_dir=$(pwd);
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
@@ -29,6 +29,15 @@ else
         unzip -j -o putative_SNPs_v4.zip;
 	cd $local_dir;
 fi
+if [ -f $projectDirectory"SNP_CNV_v1.txt" ]
+then
+	echo "\tSNP data already decompressed." >> $logName;
+else
+	echo "\tDecompressing SNP data." >> $logName;
+	cd $projectDirectory;
+	unzip -j -o SNP_CNV_v1.zip;
+	cd $local_dir;
+fi
 
-
-sh project.WGseq.install_4.sh $user $project;
+#sh project.WGseq.install_4.sh $user $project;
+sh project.WGseq.update_2.sh $user $project;

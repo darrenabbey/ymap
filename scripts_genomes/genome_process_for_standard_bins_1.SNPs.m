@@ -27,10 +27,10 @@ end;
 testVar = inUse
 
 %% Load CNV and SNP figure resolutions.
-if (exist([genomeDir 'resolution.CNV.txt],'file') == 0)
-	bases_per_bin           = max(chr_size)/700;
+if (exist([genomeDir 'resolution.SNPs.txt],'file') == 0)
+	bases_per_bin_SNP		= max(chr_size)/700;
 else
-	bases_per_bin           = max(chr_size)/str2num(fileread([genomeDir 'resolution.CNV.txt]));
+	bases_per_bin_SNP		= max(chr_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt]));
 end;
 
 %% Initialize the cell arrays needed to contain chromosome sequences.
@@ -75,6 +75,7 @@ if (exist([workingDir FastaName '.standard_bins.fasta'],'file') == 0)
     %% ====================================================================
     % Fragment genome by standard bin size into new FASTA file.
     % ---------------------------------------------------------------------
+    % standard bin size is round(max(chr_lengths)/350);
 
     NewSequenceData = [];
     fragment = 1;
@@ -84,7 +85,7 @@ if (exist([workingDir FastaName '.standard_bins.fasta'],'file') == 0)
 			start_coordinate = 1;
 			fprintf(['\n\tFragmenting : ' allNames{chr} ]);
 			for bp = start_coordinate:length(sequences{chr})
-				if (mod(bp,bases_per_bin) == 0)
+				if (mod(bp,bases_per_bin_SNP) == 0)
 					% fragment chromosome at standard bin boundry.
 					header_string                      = ['>' genome '.chr' num2str(chr) ' (' num2str(start_coordinate) '..' num2str(bp) ')'];
 					sequence_string                    = sequences{chr}(start_coordinate:bp);

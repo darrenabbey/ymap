@@ -138,14 +138,13 @@ with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\t####     max_chr_length         = " + str(max(chr_lengths)) + " bp");
 
 # Calculate standard bin size.
-if os.path.isfile(workingDir+"/resolution.CNV.txt"):
-	txt = Path(workingDir+"/resolution.CNV.txt").read_text()
-	bases_per_bin = int(round(max(chr_lengths)/int(txt)));
+if os.path.isfile(workingDir+"/resolution.SNPs.txt"):
+	txt = Path(workingDir+"/resolution.SNPs.txt").read_text();
+	bases_per_bin_SNP = int(round(max(chr_lengths)/int(txt)));
 else:
-	bases_per_bin = int(round(max(chr_lengths)/700));
-
+	bases_per_bin_SNP = int(round(max(chr_lengths)/700));
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\t####     bases_per_standard_bin = " + str(bases_per_bin) + " bp");
+	myfile.write("\n\t\t\t####     bases_per_standard_bin = " + str(bases_per_bin_SNP) + " bp");
 
 # Reset timer.
 t0a = time.process_time();
@@ -194,12 +193,12 @@ while True:
 		# If the current chromosome is one of those in use...
 		if chr_name in chrName:
 			fragment_start = 1;
-			fragment_end   = bases_per_bin;
+			fragment_end   = bases_per_bin_SNP;
 			while fragment_start < len(line2):
 				fragment_string = line2[(fragment_start-1):(min(fragment_end,len(line2))-1)];
 				fragment_length = min(fragment_end,len(line2)) - fragment_start + 1;
 				print(">" + genomeName + ".chr" + str(chr_num) + " (" + str(fragment_start) + ".." + str(min(fragment_end,len(line2))) + ") (" + str(fragment_length) + "bp) [*]");
 				print(fragment_string);
-				fragment_start += bases_per_bin;
-				fragment_end   += bases_per_bin;
+				fragment_start += bases_per_bin_SNP;
+				fragment_end   += bases_per_bin_SNP;
 FASTA_data.close();
