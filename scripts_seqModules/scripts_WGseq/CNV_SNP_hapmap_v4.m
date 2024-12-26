@@ -792,8 +792,8 @@ fprintf('\t|\tCount SNPs per chromosome bin.\n');
 % synced to bases_per_bin as below, or defaulted to 50.
 
 %DRAGON: Threshold set for good figures with Candida albicans. Other species with less SNPs may not be ideal.
-full_data_threshold = floor(bases_per_bin/100);		% C. albicans, highly heterozygous.
-full_data_threshold = floor(bases_per_bin/1000);	% C. parapsilosis, far less heterozygous.
+full_data_threshold = floor(bases_per_bin_SNP/100);	% C. albicans, highly heterozygous.
+full_data_threshold = floor(bases_per_bin_SNP/1000);	% C. parapsilosis, far less heterozygous.
 
 fig = figure(1);
 
