@@ -864,8 +864,15 @@ largestChr          = find(chr_width == max(chr_width));
 largestChr          = largestChr(1);
 
 %Threshold set for good figures with Candida albicans. Other species with less SNPs may not be ideal.
-full_data_threshold = floor(bases_per_bin_SNP/100);	% C. albicans, highly heterozygous.
-full_data_threshold = floor(bases_per_bin_SNP/1000);	% C. parapsilosis, far less heterozygous.
+%full_data_threshold = 45;	%floor(bases_per_bin_SNP/100);	% C. albicans, highly heterozygous.
+%full_data_threshold = 4;	%floor(bases_per_bin_SNP/1000);	% C. parapsilosis, far less heterozygous.
+
+if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
+	% default if no threshold.SNPs.txt file is found; works well for Candida albicans or genomes with large numbers of SNPs.
+	full_data_threshold = 45;
+else
+	full_data_threshold = str2num(fileread([genomeDir 'threshold.SNPs.txt']));
+end;
 
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
@@ -990,10 +997,7 @@ for chr_to_draw  = 1:length(chr_order)
 		if (Standard_display == true)
 			%% standard : draw colorbars.
 			for chr_bin_SNP = 1:ceil(chr_size(chr)/bases_per_bin_SNP)
-				%chr_bin = chr_bin_SNP*bases_per_bin_SNP/bases_per_bin;
-				%x_ = [chr_bin chr_bin (chr_bin-1) (chr_bin-1)];
 				x_ = [chr_bin_SNP*bases_per_bin_SNP/bases_per_bin chr_bin_SNP*bases_per_bin_SNP/bases_per_bin (chr_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin (chr_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin];
-
 				y_ = [0 maxY maxY 0];
 				c_post(1) = colors(chr_bin_SNP,1);
 				c_post(2) = colors(chr_bin_SNP,2);
@@ -1115,10 +1119,7 @@ for chr_to_draw  = 1:length(chr_order)
 
 			%% linear : draw colorbars.
 			for chr_bin_SNP = 1:ceil(chr_size(chr)/bases_per_bin_SNP)
-				%chr_bin = chr_bin_SNP*bases_per_bin_SNP/bases_per_bin;
-				%x_ = [chr_bin chr_bin (chr_bin-1) (chr_bin-1)];
 				x_ = [chr_bin_SNP*bases_per_bin_SNP/bases_per_bin chr_bin_SNP*bases_per_bin_SNP/bases_per_bin (chr_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin (chr_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin];
-
 				y_ = [0 maxY maxY 0];
 				c_post(1) = colors(chr_bin_SNP,1);
 				c_post(2) = colors(chr_bin_SNP,2);
