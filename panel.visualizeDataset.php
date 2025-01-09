@@ -18,7 +18,8 @@
 		$projectsDir      = "users/".$user."/projects/";
 		$projectFolders   = array_diff(glob($projectsDir."*"), array('..', '.'));
 		// Sort directories by date, newest first.
-		array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
+		//array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
+		array_multisort(array_map('filemtime', $projectFolders), SORT_ASC, $projectFolders);
 		// Trim path from each folder string.
 		foreach($projectFolders as $key=>$folder) {   $projectFolders[$key] = str_replace($projectsDir,"",$folder);   }
 		// Split project list into ready/working/starting lists for sequential display.
@@ -117,7 +118,9 @@
 
 
         // Add projects not yet started to user interface.
-        foreach(array_reverse($projectFolders_starting) as $key_=>$project) {
+        //foreach($projectFolders_starting as $key_=>$project) {
+	//foreach(array_reverse($projectFolders_starting) as $key_=>$project) {
+	foreach($projectFolders_starting as $key_=>$project) {
             // Load colors for project.
             [$colorString1, $colorString2] = getColors($user,$project);
 
