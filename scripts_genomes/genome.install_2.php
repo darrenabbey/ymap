@@ -123,9 +123,9 @@
 		fwrite($output, "# Chr\tsize(bp)\tname\n");
 		for ($chr=0; $chr<$chr_count; $chr += 1) {
 			$chrID = $chr + 1;
-			if ($chr_draws[$chr] == 1) {
-				fwrite($output, $chrID."\t".$chr_lengths[$chr]."\t".$chr_shortNames[$chr]."\n");
-			}
+			//if ($chr_draws[$chr] == 1) {
+			fwrite($output, $chrID."\t".$chr_lengths[$chr]."\t".$chr_shortNames[$chr]."\n");
+			//}
 		}
 		fclose($output);
 	}
@@ -143,9 +143,9 @@
 		fwrite($output, "# Chr\tCEN-start\tCEN-end\n");
 		for ($chr=0; $chr<$chr_count; $chr += 1) {
 			$chrID    = $chr + 1;
-			if ($chr_draws[$chr] == 1) {
-				fwrite($output, $chrID."\t".$chr_cenStarts[$chr]."\t".$chr_cenEnds[$chr]."\n");
-			}
+			//if ($chr_draws[$chr] == 1) {
+			fwrite($output, $chrID."\t".$chr_cenStarts[$chr]."\t".$chr_cenEnds[$chr]."\n");
+			//}
 		}
 	}
 	fclose($output);
@@ -167,17 +167,13 @@
 		$output       = fopen($outputName, 'w');
 		fwrite($output, "# Chr\tUse\tLabel\tName\tposX\tposY\twidth\theight\tfigOrder\tfigReversed\n");
 		if ($chr_count != 0) {
-			$usedChrID = 0; // used to count the number of used chromosomes that will be drawn for positioning of the stacked figure
-			// setting figure height to be the same for all figures making them ocuppy 50 precent of the maximum height (50 precent for gap)
+			// setting figure height to be the same for all figures making them ocuppy 50 precent of the maximum height (50 precent for gap).
 			$fig_height = 0.5*(0.97/($chr_count_used + 0.5));
 			for ($chr=0; $chr<$chr_count; $chr += 1) {
 				$chrID = $chr + 1;
-				if ($chr_draws[$chr] == 1) { // if this chromosome should be drawn incrementing
-					$usedChrID += 1;
-				}
 				// standard chr cartoons placed at 0.15 from left side.
 				$fig_posX     = 0.15;
-				// title gets 0.03 of the space, and figures share the rest (+0.5 to avoid cutting in the end)
+				// title gets 0.03 of the space, and figures share the rest (+0.5 to avoid cutting in the end).
 				$fig_order    = $chr_figOrders[$chr];
 				$fig_posY     = 0.97-(0.97/($chr_count_used + 0.5))*$fig_order;
 				$fig_reversed = $chr_reverseds[$chr];
@@ -197,28 +193,28 @@
 	}
 
 // Generate "genome.bed" :
-	fwrite($logOutput, "\tGenerating 'genome.bed' file.\n");
-	$max_length       = max($chr_lengths);
-	$outputName       = $genome_dir."/genome.bed";
-	if (file_exists($outputName)) {
-		$fileContents = file_get_contents($outputName);
-		unlink($outputName);
-		$output       = fopen($outputName, 'w');
-		fwrite($output, $fileContents);
-	} else {
-		$output       = fopen($outputName, 'w');
-		fwrite($output, "# BED file to limit Abr2 to only indel-realigning used chromosomes.\n");
-		fwrite($output, "# [chr name]\t0\t[chr length]\n");
-		if ($chr_count != 0) {
-			for ($chr=0; $chr<$chr_count; $chr += 1) {
-				$chrID = $chr + 1;
-				if ($chr_draws[$chr] == 1) {
-					fwrite($output, $chr_names[$chr]."\t0\t".$chr_lengths[$chr]."\n");
-				}
-			}
-		}
-	}
-	fclose($output);
+//	fwrite($logOutput, "\tGenerating 'genome.bed' file.\n");
+//	$max_length       = max($chr_lengths);
+//	$outputName       = $genome_dir."/genome.bed";
+//	if (file_exists($outputName)) {
+//		$fileContents = file_get_contents($outputName);
+//		unlink($outputName);
+//		$output       = fopen($outputName, 'w');
+//		fwrite($output, $fileContents);
+//	} else {
+//		$output       = fopen($outputName, 'w');
+//		fwrite($output, "# BED file to limit Abr2 to only indel-realigning used chromosomes.\n");
+//		fwrite($output, "# [chr name]\t0\t[chr length]\n");
+//		if ($chr_count != 0) {
+//			for ($chr=0; $chr<$chr_count; $chr += 1) {
+//				$chrID = $chr + 1;
+//				if ($chr_draws[$chr] == 1) {
+//					fwrite($output, $chr_names[$chr]."\t0\t".$chr_lengths[$chr]."\n");
+//				}
+//			}
+//		}
+//	}
+//	fclose($output);
 
 // Generate "ploidy.txt" :
 	fwrite($logOutput, "\tGenerating 'ploidy.txt' file.\n");

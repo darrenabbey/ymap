@@ -13,9 +13,9 @@ umask 007;
 ##
 
 user="default";
-genome="Candida_parapsilosis_CDC317_s01-m03-r62_CGD";
+genome="Candida_haemulonii_B11899__GCF_002926055.2_RefSeq";
 
-echo "700" > /var/www/html/ymap/users/$user/genomes/$genome/resolution.SNPs.txt;
-rm /var/www/html/ymap/users/$user/genomes/$genome/datafile_g_0.standard_bins.SNPs.fasta;
+#echo "700" > /var/www/html/ymap/users/$user/genomes/$genome/resolution.SNPs.txt;
+#rm /var/www/html/ymap/users/$user/genomes/$genome/datafile_g_0.standard_bins.SNPs.fasta;
 
 sh genome.install_6.sh $user $genome;

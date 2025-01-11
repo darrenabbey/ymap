@@ -417,7 +417,7 @@ if (exist([projectDir 'SNP_' SNP_verString '.mat'],'file') == 0)
 				phased_alleles_string       = lineVariables{8}{1};
 				unphased_alleles_string     = lineVariables{9}{1};
 
-				% format = simple, one number per column.
+				% format = simple, one number per column. dragon
 				chr_length                  = ceil(chr_size(chr_num)/bases_per_bin_SNP);
 				chr_bin_SNP                 = ceil(fragment_start/bases_per_bin_SNP);
 
@@ -867,7 +867,7 @@ largestChr          = largestChr(1);
 %full_data_threshold = 45;	%floor(bases_per_bin_SNP/100);	% C. albicans, highly heterozygous.
 %full_data_threshold = 4;	%floor(bases_per_bin_SNP/1000);	% C. parapsilosis, far less heterozygous.
 
-if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
+if (exist([genomeDir 'threshold.SNPs.txt'],'file') == 0)
 	% default if no threshold.SNPs.txt file is found; works well for Candida albicans or genomes with large numbers of SNPs.
 	full_data_threshold = 45;
 else

@@ -795,7 +795,7 @@ fprintf('\t|\tCount SNPs per chromosome bin.\n');
 %full_data_threshold = 45;	%floor(bases_per_bin_SNP/100);	% C. albicans, highly heterozygous.
 %full_data_threshold = 4;	%floor(bases_per_bin_SNP/1000);	% C. parapsilosis, far less heterozygous.
 
-if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
+if (exist([genomeDir 'threshold.SNPs.txt'],'file') == 0)
 	% default if no threshold.SNPs.txt file is found; works well for Candida albicans or genomes with large numbers of SNPs.
 	full_data_threshold = 45;
 else
