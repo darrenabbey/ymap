@@ -168,7 +168,7 @@
 <body>
 <table width="100%"><tr>
 	<td width="25%" align="center" style="max-height:100%">
-		<table width="100%" height="300px"><tr valign="top"><td>
+		<table width="100%" height="300px"><tr valign="top" align="center"><td>
 		<img src="images/Logo_title.3.png" alt="YMAP; Yeast Mapping Analysis Pipeline"><br><br>
 		</td></tr><tr valign="bottom"><td align="middle">
 <font size='2'>
