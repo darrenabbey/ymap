@@ -23,6 +23,7 @@ $name      = $name_new;
 // If uploaded file is wrong file type, delete.
 $ext = strtolower($ext);
 if (($ext == "tdt") || ($ext == "sam") || ($ext == "bam") || ($ext == "fasta") || ($ext == "fna") || ($ext == "ffn") || ($ext == "faa") || ($ext == "frn") || ($ext == "fa") || ($ext == "fastq") || ($ext == "fq") || ($ext == "zip") || ($ext == "gz")) {
+	fwrite($logOutput, "\t\t| Compatible file format uploaded.\n");
 } else {
 	unlink($projectPath.$name);
 	fwrite($logOutput, "\t\t| Incompatible file format uploaded!!!\n");
@@ -245,6 +246,20 @@ if ($ext_new == "fastq") {
 	// Is this a fastq file?
 	if (($line_1[0] == '@') && ($line_3[0] == '+')) {
 		// It is a FASTQ file.
+		// Is this a short-read or long-read fastq file?
+		$null          = shell_exec("sed -r '/^@/d' ".$projectPath.$name_new." > ".$projectPath.$name_new.".temp");	// Discared FASTQ header lines.
+		$maxReadLength = (int)explode(" ",trim(shell_exec("wc -L ".$projectPath.$name_new.".temp")))[0];		// Get longest line length, will always be sequence/quality strings.
+		unlink($projectPath.$name_new.".temp");										// Delete temp file.
+		fwrite($logOutput, "\t\t| max read length = ".(string)$max_length."\n");
+		if ($maxReadLength <= 500) {
+			// short-reads: no problems.
+			fwrite($logOutput, "\t\t| Short-reads identified.\n");
+		} else {
+			// long-reads: generate error.
+			unlink($projectPath.$name_first);
+			fwrite($logOutput, "\t\t| Long-reads identified.\n");
+			$ext_new = "none4";
+		}
 	} else {
 		// format is wrong for a FASTQ file.
 		unlink($projectPath.$name_first);
@@ -355,32 +370,40 @@ if ($ext_new == "fastq") {
 	$paired = 1;
 } elseif ($ext_new == "none1") {
 	fwrite($logOutput, "\t\t| This archive did not contain a FASTQ.\n");
-	$errorFile = fopen("users/".$user."/projects/".$project."/error.txt", 'w');
-	fwrite($errorFile, "Error : Archive did not contain FASTQ file.");
+	$errorFile = fopen($projectPath."error.txt", 'w');
+	fwrite($errorFile, "Archive did not contain FASTQ file.");
 	fclose($errorFile);
 	chmod($errorFileName,0664);
 	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTQ not found in archive.");
 	exit;
 } elseif ($ext_new == "none2") {
         fwrite($logOutput, "\t\t| The FASTQ file was not formated properly.\n");
-        $errorFile = fopen("users/".$user."/projects/".$project."/error.txt", 'w');
-        fwrite($errorFile, "Error : FASTQ file formatting improperly.");
+        $errorFile = fopen($projectPath."error.txt", 'w');
+        fwrite($errorFile, "FASTQ file formatting improperly.");
         fclose($errorFile);
         chmod($errorFileName,0664);
 	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTQ file format errors.");
         exit;
 } elseif ($ext_new == "none3") {
 	fwrite($logOutput, "\t\t| The contents of this TDT file did not match expectations.\n");
-	$errorFile = fopen("users/".$user."/projects/".$project."/error.txt", 'w');
-	fwrite($errorFile, "Error : TDT file contents did not match expectations.");
+	$errorFile = fopen($projectPath."error.txt", 'w');
+	fwrite($errorFile, "TDT file contents did not match expectations.");
 	fclose($errorFile);
 	chmod($errorFileName,0664);
 	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: TDT file format errors.");
 	exit;
+} elseif ($ext_new == "none4") {
+	fwrite($logOutput, "\t\t| The contents of this FASTQ file are long-reads, which YMAP cannot process.\n");
+	$errorFile = fopen($projectPath."error.txt", 'w');
+	fwrite($errorFile, "YMAP is unable to process long-read sequence data.");
+	fclose($errorFile);
+	chmod($errorFileName,0664);
+	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTQ file includes long-read data.");
+	exit;
 } else {
 	fwrite($logOutput, "\t\t| This is an unknown file type.\n");
-	$errorFile = fopen("users/".$user."/projects/".$project."/error.txt", 'w');
-	fwrite($errorFile, "Error : Unknown file type as input.\nSee help tab for details of valid file types.");
+	$errorFile = fopen($projectPath."error.txt", 'w');
+	fwrite($errorFile, "Unknown file type as input.\nSee help tab for details of valid file types.");
 	fclose($errorFile);
 	chmod($errorFileName,0664);
 	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: Unknown file format.");
