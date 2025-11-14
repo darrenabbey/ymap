@@ -131,17 +131,6 @@ if ($ext == "zip") {
 
         // Extract archive.
 	if ($fileCount == 0) {
-		// Is not a tar.gz, so decompress with gzip.
-		chdir($projectPath);                   // move to projectDirectory.
-		$null = shell_exec("gzip -d ".$name);  // decompress archive.
-		chdir($currentDir);                    // move back to script's path.
-
-		// DRAGON: Needs to check for unexpected end of file using gunzip -t.
-		// if (gunzip -t fails) {
-		//	fwrite($logOutput, "\t\t| Unexpected end of GZ achive.\n");
-		//	$errorText = $errorText."Unexpected end of GZ achive. ";
-		// }
-
 		// Figure out filename contained in gz archive.
 		// If one file, then filename is same as archive, without gz.
 		$name_new   = str_replace(".gz","", $name);
@@ -152,6 +141,12 @@ if ($ext == "zip") {
 
 		$name_first = $name_new;
 		$name_ext   = pathinfo($name_final, PATHINFO_EXTENSION);
+
+		// Is not a tar.gz, so decompress with gzip.
+		chdir($projectPath);                   // move to projectDirectory.
+		//$null = shell_exec("gzip -d ".$name);  // decompress archive.
+		$null = shell_exec("gzip -dc ".$name." > ".$name_new); // decompress archive while keeping results in case of early file end error.
+		chdir($currentDir);
 	} else {
 		fwrite($logOutput,"\t\t| Files in tar.gz archive = ".$fileCount.".\n");
 
