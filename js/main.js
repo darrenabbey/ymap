@@ -5,7 +5,7 @@ $(function () {
 	// defines some variables in dom element "fileupload" (form defined in uploader.1.php).
 	$("#fileupload").html5Uploader({
 		url: 'php/uploader/index.php',
-		maxFileSize: 1024*1024*20 // 20MB
+		maxFileSize: 1024*1024*1024*200 // 20GB
 	});
 
 	// Load existing files and set user direcory.
