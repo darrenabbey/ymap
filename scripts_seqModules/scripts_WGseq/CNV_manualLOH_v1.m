@@ -1,5 +1,6 @@
 function [] = CNV_manualLOH_v1(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, ...
                                SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+graphics_toolkit gnuplot;
 addpath('../');
 
 % hide figures during construction.
@@ -20,9 +21,9 @@ end;
 
 %% ========================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
-%    bases_per_bin              : Controls bin sizes for SNP/CGH fractions of plot.
+%    bases_per_bin              : Controls bin sizes for SNP/CNV fractions of plot.
 %    scale_type                 : 'Ratio' or 'Log2Ratio' y-axis scaling of copy number.
-%                                 'Log2Ratio' does not properly scale CGH data by ploidy.
+%                                 'Log2Ratio' does not properly scale CNV data by ploidy.
 %    Chr_max_width              : max width of chrs as fraction of figure width.
 Linear_displayBREAKS   = false;
 
@@ -136,7 +137,7 @@ else
 	end;
 	num_chrs = length(chr_size);
 
-	%% This block is normally calculated in FindChrSizes_2 in CNV analysis.
+	%% This block is normally calculated in FindChrSizes during CNV analysis.
 	for usedChr = 1:num_chrs
 		if (chr_in_use(usedChr) == 1)
 			% determine where the endpoints of ploidy segments are.
@@ -196,10 +197,10 @@ else
 
 
 	%% =========================================================================================
-	% Load GC-bias corrected CGH data.
+	% Load GC-bias corrected CNV data.
 	%-------------------------------------------------------------------------------------------
 	load([projectDir 'Common_CNV.mat']);       % 'CNVplot2','genome_CNV'
-	[chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use)
+	[chr_breaks, chrCopyNum, ploidyAdjust, chrCopyRsquared] = FindChrSizes_4(workingDir, Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use, false)
 	largestChr = find(chr_width == max(chr_width));
 	largestChr = largestChr(1);
 
@@ -329,7 +330,7 @@ else
 		manualLOH(lines_analyzed).G       = manualLOH_G;
 		manualLOH(lines_analyzed).B       = manualLOH_B;
 		fprintf(['\t|     ' lineData '\n']);
-	end;
+	endwhile;
 	fclose(manualLOH_fid);
 	fprintf(['\t| manualLOH.txt loaded  \n']);
 	fprintf(['\t*----------------------*\n']);
@@ -401,7 +402,7 @@ else
 				end;
 			end;
 
-			%% standard : cgh plot section.
+			%% standard : CNV plot section.
 			c_ = [0 0 0];
 			fprintf(['\nmain-plot : chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 			fprintf(['ploidy     = ' num2str(ploidy)     '\n']);
@@ -430,7 +431,7 @@ else
 				line([0 x2], [maxY/(ploidyBase*2)*lineNum  maxY/(ploidyBase*2)*lineNum ],'Color',[0.85 0.85 0.85]);
 			end;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-			% standard : end cgh plot section.
+			% standard : end CNV plot section.
 
 			% standard : axes labels etc.
 			hold off;
@@ -550,7 +551,7 @@ else
 		    end;
 			% standard : end show annotation locations.
 
-			% standard : make CGH histograms to the right of the main chr cartoons.
+			% standard : make CNV histograms to the right of the main chr cartoons.
 			if (HistPlot == true)
 				width     = 0.020;
 				height    = chr_height(chr);
@@ -570,7 +571,7 @@ else
 						end;
 					end;
 
-					% make a histogram of CGH data, then smooth it for display.
+					% make a histogram of CNV data, then smooth it for display.
 					histogram_end                                    = 15;             % end point in copy numbers for the histogram, this should be way outside the expected range.
 					histAll{segment}(histAll{segment}<=0)            = [];
 					histAll{segment}(length(histAll{segment})+1)     = 0;              % endpoints added to ensure histogram bounds.
@@ -621,7 +622,7 @@ else
 					end;
 				end;
 			end;
-			% standard : end of CGH histograms at right.
+			% standard : end of CNV histograms at right.
 
 			% standard : places chr copy number to the right of the main chr cartoons.
 			if (ChrNum == true)
@@ -678,7 +679,7 @@ else
 					end;
 				end;
 
-				% linear : cgh plot section.
+				% linear : CNV plot section.
 				c_ = [0 0 0];
 				fprintf(['linear-plot : chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 				for chr_bin = 1:length(CNVplot2{chr});
@@ -704,7 +705,7 @@ else
 					line([0 x2], [maxY/(ploidyBase*2)*lineNum  maxY/(ploidyBase*2)*lineNum ],'Color',[0.85 0.85 0.85]);
 				end;
 				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-				% linear : end cgh plot section.
+				% linear : end CNV plot section.
 
 				% linear : show segmental anueploidy breakpoints.
 				if (Linear_displayBREAKS == true) && (show_annotations == true)

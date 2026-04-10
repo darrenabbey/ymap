@@ -12,29 +12,41 @@ user=$1;
 genome=$2;
 main_dir=$(pwd)"/../";
 
-reflocation=$main_dir"users/"$user"/genomes/"$genome"/";				# Directory where FASTA file is kept.
-FASTA=`sed -n 1,1'p' $reflocation"reference.txt"`;					# Name of FASTA file.
+genomeDirectory=$main_dir"users/"$user"/genomes/"$genome"/";
+FASTA=`sed -n 1,1'p' $genomeDirectory"reference.txt"`;					# Name of FASTA file.
 FASTAname=$(echo $FASTA | sed 's/\.fasta//g');						# Name of genome file, without file type.
 FASTA2=$(echo $FASTA | sed 's/\.fasta/\.2\.fasta/g');					# Name of reformatted genome file, to single-line entries.
-#repetgenome=$reflocation$FASTAname".repetitiveness.txt";				# Name of repetitiveness profile for genome.
-#repetgenome_smoothed=$reflocation$FASTAname".repetitiveness_smoothed.txt";		# Name of Gaussian smoothed repetitiveness profile for genome.
-standard_bin_FASTA=$reflocation$FASTAname".standard_bins.fasta";			# Name of reference genome broken up into standard bins.
-standard_bin_SNPs_FASTA=$reflocation$FASTAname".standard_bins.SNPs.fasta";		# Name of reference genome broken up into standard bins for SNPs.
-ddRADseq_FASTA=$reflocation$FASTAname".MfeI_MboI.fasta";				# Name of digested reference for ddRADseq analysis.
-logName=$reflocation"process_log.txt";
-condensedLog=$reflocation"condensed_log.txt";
+
+if [ -e $genomeDirectory"repeat_kmer_length.txt" ]; then
+	file=$genomeDirectory"repeat_kmer_length.txt";
+	repet_kmerLength=$(cat "$file")
+else
+	repet_kmerLength=23;								# 23 bp is long enough for most sequences to be unique in a yeast genome.
+fi
+
+skew_kmerLength=25001; # needs to be an odd number.					# https://berthub.eu/articles/skewdb/ uses a 4096 bp kmer; not clear ideal length.
+skew_kmerStep=100;
+	# 50 is way too small kmer length.
+	# 50000 seems right for yeast genomes.
+genomeRepetWIG=$genomeDirectory"datafile_g_0.2.wig";	# File containing repetitiveness data for genome.
+standard_bin_FASTA=$genomeDirectory$FASTAname".standard_bins.fasta";			# Name of reference genome broken up into standard bins.
+standard_bin_SNPs_FASTA=$genomeDirectory$FASTAname".standard_bins.SNPs.fasta";		# Name of reference genome broken up into standard bins for SNPs.
+ddRADseq_FASTA=$genomeDirectory$FASTAname".MfeI_MboI.fasta";				# Name of digested reference for ddRADseq analysis.
+logName=$genomeDirectory"process_log.txt";
+condensedLog=$genomeDirectory"condensed_log.txt";
 
 echo "\n\nRunning 'scripts_genomes/genome.install_6.sh'" >> $logName;
 echo "\tInput to shell script:" >> $logName;
-echo "\t\t\$1 (user)         = $1" >> $logName;
-echo "\t\t\$2 (genome)       = $2" >> $logName;
+echo "\t\t\$1 (user)          = $1" >> $logName;
+echo "\t\t\$2 (genome)        = $2" >> $logName;
 echo "" >> $logName;
 echo "\tImportant location variables in script:" >> $logName;
-echo "\t\t\$logName          = "$logName >> $logName;
-echo "\t\t\$reflocation      = "$reflocation >> $logName;
-echo "\t\t\$FASTA            = "$FASTA >> $logName;
-echo "\t\t\$FASTAname        = "$FASTAname >> $logName;
-echo "\t\t\$ddRADseq_FASTA   = "$ddRADseq_FASTA >> $logName;
+echo "\t\t\$logName           = "$logName >> $logName;
+echo "\t\t\$genomeDirectory   = "$genomeDirectory >> $logName;
+echo "\t\t\$FASTA             = "$FASTA >> $logName;
+echo "\t\t\$FASTAname         = "$FASTAname >> $logName;
+echo "\t\t\$ddRADseq_FASTA    = "$ddRADseq_FASTA >> $logName;
+echo "\t\t\$repet_kmerLenghth = "$repet_kmerLength >> $logName;
 echo "" >> $logName;
 echo "Setting up for processing." >> $condensedLog;
 
@@ -48,13 +60,13 @@ echo "Setting up for processing." >> $condensedLog;
 echo "\n\t============================================================================================== 1" >> $logName;
 
 ## Check is genome and index files for Bowtie are available: Exit if genome files not found; Generate index files if needed.
-if [ ! -e $reflocation"bowtie_index.4.bt2" ]
+if [ ! -e $genomeDirectory"bowtie_index.4.bt2" ]
 then
 	echo "Generating Bowtie2 index for genome." >> $condensedLog;
 	echo "\tBowtie index for genome '$genome' not found: Reindexing genome." >> $logName;
 	## Bowtie 2 commands:
-	echo "\t"$bowtie2Directory"bowtie2-build "$reflocation$FASTA" " $reflocation"bowtie_index" >> $logName;
-	$bowtie2Directory"bowtie2-build" $reflocation$FASTA $reflocation"bowtie_index";
+	echo "\t"$bowtie2Directory"bowtie2-build "$genomeDirectory$FASTA" " $genomeDirectory"bowtie_index" >> $logName;
+	$bowtie2Directory"bowtie2-build" $genomeDirectory$FASTA $genomeDirectory"bowtie_index";
 else
 	echo "\tBowtie index for genome '$genome' found" >> $logName;
 fi
@@ -62,39 +74,189 @@ fi
 echo "\n\t============================================================================================== 4" >> $logName;
 
 ## Check if Samtools FASTA index file is found.
-if [ -e $reflocation$FASTA".fai" ]
+if [ -e $genomeDirectory$FASTA".fai" ]
 then
 	echo "\tFASTA index file for genome '$genome' found." >> $logName;
 else
 	echo "Generatiing FASTA dictionary file for genome, step2." >> $condensedLog;
 	echo "\tFASTA index file not found for genome '$genome': Regenerating using SamTools." >> $logName;
-	$samtools_exec faidx $reflocation$FASTA;
+	$samtools_exec faidx $genomeDirectory$FASTA;
 fi
 
 echo "\n\t============================================================================================== 5" >> $logName;
 
 ## Generate version of FASTA genome file to have single-line entries.
 echo "\tReformatting genome FASTA file into single-line entries." >> $logName;
-cp $reflocation$FASTA $reflocation$FASTA2;
-sh $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $reflocation$FASTA2;
+bash $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $genomeDirectory$FASTA > $genomeDirectory$FASTA2;
 
-echo "\n\t============================================================================================== 5" >> $logName;
+echo "\n\t============================================================================================== 5a" >> $logName;
 
-### Check if repetitiveness analysis has been done for genome.
-#if [ -e $repetgenome ]
-#then
-#	echo "\tRepetitiveness file for genome '$genome' found." >> $logName;
-#else
-#	echo "Calculating repetitiveness of FASTA file for genome." >> $condensedLog;
-#	echo "\tRepetitiveness file not found for genome '$genome': Regenerating using Python script." >> $logName;
-#
-#	## Perform repetitiveness analysis on reference file for genome, then smooth the profile.
-#	echo "" > $repetgenome;
- #       $python_exec $main_dir"scripts_genomes/repetitiveness_1.py"      $user $genome $main_dir $logName     >> $repetgenome  2>> $logName;
-#	echo "" > $repetgenome_smoothed;
-#	$python_numpy_exec $main_dir"scripts_genomes/repetitiveness_smooth.py" $user $genome $main_dir $logName 128 >> $repetgenome_smoothed 2>> $logName;
-#	mv $repetgenome_smoothed $repetgenome;
-#fi
+## Check which figures are to be generated for genome.
+repetBool=$(head -n 2 $genomeDirectory"figure_options.txt" | tail -n 1);
+skewBool=$(head -n 3 $genomeDirectory"figure_options.txt" | tail -n 1);
+liftoffBool=$(head -n 4 $genomeDirectory"figure_options.txt" | tail -n 1);
+
+if [ "$repetBool" = "False" ]
+then
+	echo "\t###" >> $logName;
+	echo "\t### Genome is not being processed for repetitiveness." >> $logName;
+	echo "\t###" >> $logName;
+else
+	echo "\t###" >> $logName;
+	echo "\t### Genome is being processed for repetitiveness." >> $logName;
+	echo "\t###" >> $logName;
+	echo "Processing genome for repetitiveness." >> $condensedLog;
+
+	if [ ! -e $genomeDirectory"datafile_g_0.repetitiveness_"$repet_kmerLength".txt" ]
+	then
+		echo "\tGenerating repetitiveness dictionary." >> $logName;
+		echo "\t\t sh "$main_dir"scripts_genomes/FASTA_repetitiveness_dictionary.sh "$user" "$genome" "$main_dir" "$logName" "$repet_kmerlength" >> "$logName" 2>> "$logName";";
+		sh $main_dir"scripts_genomes/FASTA_repetitiveness_dictionary.sh"       $user $genome $main_dir $logName $repet_kmerLength >> $logName 2>> $logName;
+
+		echo "\tCleaning up repetitiveness dictionary." >> $logName;
+		echo "\t\t sh "$main_dir"scripts_genomes/FASTA_repetitiveness_dictionary_clean.sh "$user" "$genome" "$main_dir" "$logName" "$repet_kmerlength" >> "$logName" 2>> "$logName";";
+		sh $main_dir"scripts_genomes/FASTA_repetitiveness_dictionary_clean.sh" $user $genome $main_dir $logName $repet_kmerLength >> $logName 2>> $logName;
+	else
+		echo "\tRepetitiveness dictionary for genome '$genome' found" >> $logName;
+	fi
+	if [ ! -e $genomeDirectory"datafile_g_0.repetitiveness_"$repet_kmerLength".wig" ]
+	then
+		echo "\tMaking repetitiveness profile (*.wig)." >> $logName;
+		echo "\t\t sh "$main_dir"scripts_genomes/FASTA_repetitiveness-to-WIG.sh "$user" "$genome" "$main_dir" "$logName" "$repet_kmerlength" >> "$logName" 2>> "$logName";";
+		sh $main_dir"scripts_genomes/FASTA_repetitiveness-to-WIG.sh"           $user $genome $main_dir $logName $repet_kmerLength >> $logName 2>> $logName;
+	else
+		echo "\tRepetitiveness profile (*.wig) for genome '$genome' found" >> $logName;
+	fi
+
+	echo "#==================================#" >> $logName;
+	echo "# Generate repetitiveness figure.  #" >> $logName;
+	echo "#==================================#" >> $logName;
+	echo "Generating repetitiveness figure." >> $condensedLog;
+
+	echo "\tGenerating OCTAVE script to generate repetitiveness figure." >> $logName;
+	outputName=$genomeDirectory"processing1.m";
+	echo "\toutputName = "$outputName >> $logName;
+
+	echo "function [] = processing1()" > $outputName;
+	echo "\tpkg load matgeom;" >> $outputName;
+	echo "\tdiary('"$genomeDirectory"octave.repet.log');" >> $outputName;
+	echo "\tcd "$main_dir"scripts_genomes/;" >> $outputName;
+	echo "\trepetitiveness_plot('"$main_dir"','"$user"','"$genome"','"$repet_kmerLength"');" >> $outputName;
+	echo "end" >> $outputName;
+
+	echo "\t|\tfunction [] = processing1()" >> $logName;
+	echo "\t|\t    pkg load matgeom;" >> $logName;
+	echo "\t|\t    diary('"$genomeDirectory"octave.repet.log');" >> $logName;
+	echo "\t|\t    cd "$main_dir"scripts_genomes/;" >> $logName;
+	echo "\t|\t    repetitiveness_plot('"$main_dir"','"$user"','"$genome"','"$repet_kmerLength"');" >> $logName;
+	echo "\t|\tend" >> $logName;
+
+	echo "\tCalling OCTAVE.   (Log will be appended here after completion.)" >> $logName;
+	echo "================================================================================================";
+	echo "== Repetitiveness figure =======================================================================";
+	echo "================================================================================================";
+	cd $genomeDirectory;
+	$matlab_exec $outputName;
+	cd $script_dir;
+	echo "\tOCTAVE log from repetitiveness figure generation." >> $logName;
+	sed 's/^/\t|/;' $genomeDirectory"octave.repet.log" >> $logName;
+fi
+
+echo "\n\t============================================================================================== 5b" >> $logName;
+
+if [ "$skewBool" = "False" ]
+then
+	echo "\t###" >> $logName;
+        echo "\t### Genome is not being processed for GC-skew and AT-skew." >> $logName;
+	echo "\t###" >> $logName;
+else
+	echo "\t###" >> $logName;
+	echo "\t### Genome is being processed for GC-skew and AT-skew." >> $logName;
+	echo "\t###" >> $logName;
+
+	echo "Processing genome for GC-skew." >> $condensedLog;
+	echo "\tGenerating GC-skew dictionary." >> $logName;
+        sh $main_dir"scripts_genomes/FASTA_GCskew_dictionary.sh"       $user $genome $main_dir $logName $skew_kmerLength $skew_kmerStep >> $logName 2>> $logName;
+
+	echo "Processing genome for AT-skew." >> $condensedLog;
+	echo "\tGenerating AT-skew dictionary." >> $logName;
+	sh $main_dir"scripts_genomes/FASTA_ATskew_dictionary.sh"       $user $genome $main_dir $logName $skew_kmerLength $skew_kmerStep >> $logName 2>> $logName;
+
+	echo "#==============================#" >> $logName;
+	echo "# Generate GC/AT-skew figure.  #" >> $logName;
+	echo "#==============================#" >> $logName;
+	echo "Generating GC-skew figure." >> $condensedLog;
+
+	echo "\tGenerating OCTAVE script to generate GC/AT-skew figure." >> $logName;
+	outputName=$genomeDirectory"processing2.m";
+	echo "\toutputName = "$outputName >> $logName;
+
+	echo "function [] = processing2()" > $outputName;
+	echo "\tpkg load matgeom;" >> $outputName;
+	echo "\tdiary('"$genomeDirectory"octave.skew.log');" >> $outputName;
+	echo "\tcd "$main_dir"scripts_genomes/;" >> $outputName;
+	echo "\tGCskew_plot('"$main_dir"','"$user"','"$genome"','"$skew_kmerLength"','"$skew_kmerStep"');" >> $outputName;
+	echo "end" >> $outputName;
+
+	echo "\t|\tfunction [] = processing2()" >> $logName;
+	echo "\t|\t    pkg load matgeom;" >> $logName;
+	echo "\t|\t    diary('"$genomeDirectory"octave.skew.log');" >> $logName;
+	echo "\t|\t    cd "$main_dir"scripts_genomes/;" >> $logName;
+	echo "\t|\t    GCskew_plot('"$main_dir"','"$user"','"$genome"','"$skew_kmerLength"','"$skew_kmerStep"');" >> $logName;
+	echo "\t|\tend" >> $logName;
+
+	echo "\tCalling OCTAVE.   (Log will be appended here after completion.)" >> $logName;
+	echo "================================================================================================";
+	echo "== GC/AT-skew figure ===========================================================================";
+	echo "================================================================================================";
+	cd $genomeDirectory;
+	$matlab_exec $outputName;
+	cd $script_dir;
+	echo "\tOCTAVE log from GC/AT-skew figure generation." >> $logName;
+	sed 's/^/\t|/;' $genomeDirectory"octave.skew.log" >> $logName;
+fi
+
+echo "\n\t============================================================================================== 5b" >> $logName;
+
+if [ "$liftoffBool" = "False" ]
+then
+	echo "\t###" >> $logName;
+	echo "\t### Liftoff cartoon style figure is not bening made." >> $logName;
+	echo "\t###" >> $logName;
+else
+	echo "\t###" >> $logName;
+	echo "\t### Liftoff cartoon style figure is being made.." >> $logName;
+	echo "\t###" >> $logName;
+
+	echo "#===================================#" >> $logName;
+	echo "# Generate Liftoff Cartoon figure.  #" >> $logName;
+	echo "#===================================#" >> $logName;
+	echo "Generating Liftoff cartoon figure." >> $condensedLog;
+
+	echo "\tGenerating OCTAVE script to generate Liftoff cartoon figure." >> $logName;
+	outputName=$genomeDirectory"processing3.m";
+	echo "\toutputName = "$outputName >> $logName;
+
+	echo "function [] = processing3()" > $outputName;
+	echo "\tpkg load matgeom;" >> $outputName;
+	echo "\tdiary('"$genomeDirectory"octave.liftoffCartoon.log');" >> $outputName;
+	echo "\tcd "$main_dir"scripts_genomes/;" >> $outputName;
+	echo "\tLiftoff_cartoon('"$main_dir"','"$user"','"$genome"','"$skew_kmerLength"','"$skew_kmerStep"');" >> $outputName;
+	echo "end" >> $outputName;
+
+	scriptText=$(printf "%s " $(sed 's/^/\n\t|\t/' "$outputName"))
+	echo $scriptText >> $logName;
+
+	echo "\tCalling OCTAVE.   (Log will be appended here after completion.)" >> $logName;
+	echo "================================================================================================";
+	echo "== Liftoff cartoon figure ======================================================================";
+	echo "================================================================================================";
+	cd $genomeDirectory;
+	$matlab_exec $outputName;
+	cd $script_dir;
+	echo "\tOCTAVE log from Liftoff cartoon figure generation." >> $logName;
+	sed 's/^/\t|/;' $genomeDirectory"octave.liftoffCartoon.log" >> $logName;
+fi
 
 echo "\n\t============================================================================================== 6" >> $logName;
 
@@ -106,7 +268,6 @@ else
 	echo "\tGenome being fragmentated into standard bins." >> $logName;
 
 	## Perform reference genome fragmentation.
-	echo "" > $standard_bin_FASTA;
 	$python_exec $main_dir"scripts_genomes/genome_process_for_standard_bins_1.py" $user $genome $main_dir $logName >> $standard_bin_FASTA 2>> $logName;
 fi
 
@@ -120,7 +281,6 @@ else
 	echo "\tGenome being fragmentated into standard bins for SNPs." >> $logName;
 
 	## Perform reference genome fragmentation.
-	echo "" > $standard_bin_SNPs_FASTA;
 	$python_exec $main_dir"scripts_genomes/genome_process_for_standard_bins_1.SNPs.py" $user $genome $main_dir $logName >> $standard_bin_SNPs_FASTA 2>> $logName;
 fi
 
@@ -141,14 +301,14 @@ fi
 
 echo "\n\t============================================================================================== 7" >> $logName;
 
-inputFile=$reflocation"chromosome_features.txt";
-outputFile=$reflocation"chromosome_features_2.txt";
+inputFile=$genomeDirectory"chromosome_features.txt";
+outputFile=$genomeDirectory"chromosome_features_2.txt";
 if [ -e $inputFile ]
 then
 	echo "Simplifying and sorting chromosome_features file." >> $condensedLog;
 	## Simplifying and sorting chromosome_features file.
 	echo "\n\tSimplifying and sorting chromosome features file." >> $logName;
-	echo "\n\t\tfeatures file = "$reflocation"chromosome_features.txt" >> $logName;
+	echo "\n\t\tfeatures file = "$genomeDirectory"chromosome_features.txt" >> $logName;
 	echo "" > $outputFile;
 	$python_exec $main_dir"scripts_genomes/chromosome_features.simplify.py" $user $genome $main_dir $logName >> $outputFile 2>> $logName;
 else
@@ -160,10 +320,12 @@ echo "\n\t======================================================================
 ## Reformat standard-bin fragmented FASTA file to have single-line entries for each sequence fragment.
 echo "Reformatting standard genome fragments FASTA file." >> $condensedLog;
 echo "\tReformatting digested FASTA file => single-line per sequence fragment." >> $logName;
-sh $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $standard_bin_FASTA;
-sh $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $standard_bin_SNPs_FASTA;
+bash $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $standard_bin_FASTA > $standard_bin_FASTA.2;
+bash $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $standard_bin_SNPs_FASTA > $standard_bin_SNPs_FASTA.2;
+rm $standard_bin_FASTA;		mv $standard_bin_FASTA.2	$standard_bin_FASTA;
+rm $standard_bin_SNPs_FASTA;	mv $standard_bin_SNPs_FASTA.2	$standard_bin_SNPs_FASTA;
 
-outputFile=$reflocation$FASTAname".GC_ratios.standard_bins.txt";
+outputFile=$genomeDirectory$FASTAname".GC_ratios.standard_bins.txt";
 if [ -e $outputFile ]
 then
 	echo "\n\tGC-ratios per standard-bin fragment has been calculated." >> $logName
@@ -171,36 +333,20 @@ else
 	echo "Calculating GC ratios for genome standard-bin fragments." >> $condensedLog;
 	## Calculating GC_ratio of standard bin fragments.
 	echo "\n\tCalculating GC-ratios per each standard bin fragment." >> $logName;
-	echo "\n\t\treflocation = "$reflocation >> $logName;
+	echo "\n\t\treflocation = "$genomeDirectory >> $logName;
 	echo "" > $outputFile;
 	$python_exec $main_dir"scripts_genomes/genome_process_for_standard_bins.GC_bias_1.py" $user $genome $main_dir $logName >> $outputFile 2>> $logName;
 fi
-
-#if [ -e $repetgenome ]
-#then
-#	# This depends on whole genome repetitiveness analysis done previously.
-#	outputFile=$reflocation$FASTAname".repetitiveness.standard_bins.txt";
-#	if [ -e $outputFile ]
-#	then
-#		echo "\n\trepetitiveness per standard-bin fragment has been calculated." >> $logName
-#	else
-#		echo "Calculating repetitiveness of genome standard-bin fragments." >> $condensedLog;
-#		## Calculating repetitiveness of standard bin fragments.
-#		echo "\n\t\tCalculating repetitiveness per each digestion fragment." >> $logName;
-#		inputFile=$reflocation$FASTAname".repetitiveness.txt";
-#		echo "" > $outputFile;
-#		$python_exec $main_dir"scripts_genomes/genome_process_for_standard_bins.repetitiveness_2.py" $user $genome $main_dir $logName >> $outputFile 2>> $logName;
-#	fi
-#fi
 
 echo "\n\t----------------------------------------------------------------------------------------------" >> $logName;
 
 ## Reformat digested FASTA file to have single-line entries for each sequence fragment.
 echo "Reformatting digested genome fragments FASTA file." >> $condensedLog;
 echo "\tReformatting digested FASTA file => single-line per sequence fragment." >> $logName;
-sh $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $ddRADseq_FASTA;
+bash $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $ddRADseq_FASTA > $ddRADseq_FASTA.2;
+rm $ddRADseq_FASTA;		mv $ddRADseq_FASTA.2 		$ddRADseq_FASTA;
 
-outputFile=$reflocation$FASTAname".GC_ratios.MfeI_MboI.txt";
+outputFile=$genomeDirectory$FASTAname".GC_ratios.MfeI_MboI.txt";
 if [ -e $outputFile ]
 then
 	echo "\n\tGC-ratios per digestion fragment has been calculated." >> $logName
@@ -208,30 +354,16 @@ else
 	echo "Calculating GC ratios for digested genome fragments." >> $condensedLog;
 	## Calculating GC_ratio  of ddRADseq (MfeI & MboI) fragments.
 	echo "\n\tCalculating GC-ratios per each restriction digestion fragment." >> $logName;
-	echo "\n\t\treflocation = "$reflocation >> $logName;
+	echo "\n\t\treflocation = "$genomeDirectory >> $logName;
 	echo "" > $outputFile;
 	$python_exec $main_dir"scripts_genomes/genome_process_for_RADseq.GC_bias_1.py" $user $genome $main_dir $logName >> $outputFile 2>> $logName;
 fi
-
-#if [ -e $repetgenome ]
-#then
-#	# This depends on whole genome repetitiveness analysis done previously.
-#	outputFile=$reflocation$FASTAname".repetitiveness.MfeI_MboI.txt";
-#	if [ -e $outputFile ]
-#	then
-#		echo "\n\tRepetitiveness per digestion fragment has been calculated." >> $logName
-#	else
-#		echo "Calculating repetitiveness for digested genome fragments." >> $condensedLog;
-#		## Calculating repetitiveness of ddRADseq (MfeI & MboI) fragments.
-#		echo "\n\n\t\tCalculating repetitiveness per each digestion fragment." >> $logName;
-#		echo "" > $outputFile;
-#		$python_exec $main_dir"scripts_genomes/genome_process_for_RADseq.repetitiveness_2.py" $user $genome $main_dir $logName >> $outputFile 2>> $logName;
-#	fi
-#fi
 
 echo "\n\t============================================================================================== 8" >> $logName;
 
 ##==============================================================================
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
-sh $main_dir"scripts_genomes/cleaning_genome.sh" $user $genome $main_dir;
+sh $main_dir"scripts_genomes/cleaning_genome.sh" $user $genome $main_dir 2>> $logName;
+
+echo "\n\t============================================================================================== 9" >> $logName;

@@ -1,4 +1,6 @@
 function [dataout lowerLimit upperLimit xy] = smooth_lowess(Xinput,Yinput, f,wantplot,imagefile,xdata)
+graphics_toolkit gnuplot;
+
 %====================================================================================================
 %	Xinput     : Vector (n x 1).
 %	Yinput     : Vector (n x 1).
@@ -417,7 +419,6 @@ end
 % The second plot will plot the observed Y-data and the predicted Y-data.
 function customplot(lws,uplmt,lwrlmt,f,oldxy,newxy,imgfile)
 	figure1 = figure;
-    
 	try
 		rowcol = size(newxy);
 		if rowcol(2) == 5 % Users provided a sequence index e.g. Datenum

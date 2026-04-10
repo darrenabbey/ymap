@@ -1,17 +1,26 @@
-%% =========================================================================================
-% Calculate allelic fraction cutoffs.
-%-------------------------------------------------------------------------------------------
-% Initialize
+%%===========================================================================================
+%% Calculate allelic fraction cutoffs.
+%%-------------------------------------------------------------------------------------------
+%% Initialize vectors.
 for chr = num_chrs
 	if (chr_in_use(chr) == 1)
 		for segment = 1:length(chrCopyNum{chr})
 			chrSegment_peaks{              chr}{segment} = [];
 			chrSegment_mostLikelyGaussians{chr}{segment} = [];
+			chrSegment_Rsquared{           chr}{segment} = [];
 			chrSegment_actual_cutoffs{     chr}{segment} = [];
 			chrSegment_smoothed{           chr}{segment} = [];
 		end;
 	end;
 end;
+
+%% Initialize allelic_ratios.txt file in project directory.
+filename_allelic_ratios = [workingDir '/allelic_ratios.txt'];
+fid = fopen (filename_allelic_ratios, "w");
+fputs (fid, "### Chromosome_name, Chromosome_segment, allelic-ratio_cutoffs\n");
+fclose (fid);
+
+%% process individual chromosome segments.
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
 		chr_length = chr_size(chr);
@@ -42,7 +51,25 @@ for chr = 1:num_chrs
 				if (useHapmap)
 					if (length(ratioData_phased) > 0)
 						for SNP_in_bin = 1:length(ratioData_phased)
-							if ( (coordinateData_phased(SNP_in_bin) > chr_breaks{chr}(segment)*chr_length) && (coordinateData_phased(SNP_in_bin) <= chr_breaks{chr}(segment+1)*chr_length) )
+							%fprintf('^^^\n');
+							%fprintf(['^^^ 1st type   = ' typeinfo(coordinateData_phased(SNP_in_bin))		'\n']);
+							%fprintf(['^^^     length = ' num2str(length(coordinateData_phased(SNP_in_bin)))		'\n']);
+							%if (strcmp( typeinfo(coordinateData_phased(SNP_in_bin)) , 'cell' ) == 1)
+							%	fprintf(['^^^     value  = ' num2str(coordinateData_phased(SNP_in_bin){1})	'\n']);
+							%else
+							%	fprintf(['^^^     value  = ' num2str(coordinateData_phased(SNP_in_bin))		'\n']);
+							%end;
+							%fprintf(['^^^ 2nd type   = ' typeinfo(chr_breaks{chr}(segment)*chr_length)		'\n']);
+							%fprintf(['^^^     value  = ' num2str(chr_breaks{chr}(segment)*chr_length)		'\n']);
+
+							% if (typeinfo(coordinateData_phased(SNP_in_bin)) == 'cell')
+							if (strcmp( typeinfo(coordinateData_phased(SNP_in_bin)) , 'cell' ) == 1)
+								test1 = coordinateData_phased(SNP_in_bin){1};
+							else
+								test1 = coordinateData_phased(SNP_in_bin);
+							end;
+
+							if ( (test1 > chr_breaks{chr}(segment)*chr_length) && (test1 <= chr_breaks{chr}(segment+1)*chr_length) )
 								% Ratio data is phased, so it is added twice in its proper orientation (to match density of unphased data below).
 								if (isa(ratioData_phased(SNP_in_bin),'cell') == 1)
 									allelic_ratio                 = str2num(cell2mat(ratioData_phased(SNP_in_bin)));
@@ -132,8 +159,8 @@ for chr = 1:num_chrs
 			segment_smoothedHistogram  = smoothed;                         % whole chromosome allelic ratio histogram smoothed.
 
 			% Define cutoffs between Gaussian fits.
-			saveName   = ['allelic_ratios.chr_' num2str(chr) '.seg_' num2str(segment)];
-			[peaks,actual_cutoffs,mostLikelyGaussians] = FindGaussianCutoffs_3(workingDir,saveName, chr,segment, segment_copyNum,segment_smoothedHistogram, false);
+			descriptionString   = ['chr=' num2str(chr) '; seg=' num2str(segment)];
+			[peaks,actual_cutoffs,mostLikelyGaussians, Rsquared] = FindGaussianCutoffs_3(workingDir,descriptionString, chr,segment, segment_copyNum,segment_smoothedHistogram, makeFitFigures);
 
 			fprintf(['^^^ copyNum             = ' num2str(segment_copyNum          ) '\n']);
 			fprintf(['^^^ copyNum_raw         = ' num2str(chrCopyNum{chr}(segment) ) '\n']);
@@ -143,8 +170,27 @@ for chr = 1:num_chrs
 
 			chrSegment_peaks{              chr}{segment} = peaks;
 			chrSegment_mostLikelyGaussians{chr}{segment} = mostLikelyGaussians;
+			chrSegment_Rsquared{           chr}{segment} = Rsquared;
 			chrSegment_actual_cutoffs{     chr}{segment} = actual_cutoffs;
 			chrSegment_smoothed{           chr}{segment} = smoothed;
+
+			%% Save allelic ratio cutoffs to 'allelic_ratios.txt' file.
+			% chrName = chr_name{chr}
+			% segment = num2str(segment);
+			% cutoffs = chrSegment_actual_cutoffs{chr}{segment};
+			if (length(actual_cutoffs) > 0)
+				alleleic_ratio_string = [chr_name{chr} ' ' num2str(segment) ' [' num2str(actual_cutoffs(1)) ];
+				if (length(actual_cutoffs) > 1)
+					for ii = 2:length(actual_cutoffs)
+						alleleic_ratio_string = [alleleic_ratio_string ',' num2str(actual_cutoffs(ii)) ];
+					end;
+				end;
+				alleleic_ratio_string = [alleleic_ratio_string "]\n"];
+				fid = fopen (filename_allelic_ratios, "a");
+				fputs (fid, alleleic_ratio_string);
+				fclose (fid);
+			end;
 		end;
 	end;
 end;
+

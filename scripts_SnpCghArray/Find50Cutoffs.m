@@ -1,5 +1,6 @@
 function [raw,smoothed,x_peaks,actual_cutoffs,mostLikelyGaussians,chrCopyNum] = Find50Cutoffs(probeset1,chrCopyNum,chr_breaks,chr_size,dataset,chromosome,segment, ...
-    monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak,name,file_dir,MakeFigure,~,DataTypeToUse, workingDir)
+	monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak,name,file_dir,MakeFigure,~,DataTypeToUse, workingDir)
+graphics_toolkit gnuplot;
 
 %%=========================================================================
 % Load project figure version.

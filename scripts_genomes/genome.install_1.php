@@ -88,7 +88,11 @@
 	$name  = str_replace("\\", ",", $fileName);
 	$name1 = str_replace(".","-",pathinfo($name, PATHINFO_FILENAME)).".".pathinfo($name, PATHINFO_EXTENSION);
 	$name2 = strtolower($name1);
-	rename(getcwd()."/".$genomePath.$name1,getcwd()."/".$genomePath.$name2);
+	rename(getcwd()."/".$genomePath.$name1, getcwd()."/".$genomePath.$name2);
+
+	// Convert FASTA sequences to uppercase only.
+	$null = shell_exec("sh ".getcwd()."/../scripts_seqModules/FASTA_to-uppercase.sh ".getcwd()."/".$genomePath.$name2." > ".getcwd()."/".$genomePath."temp.fasta");
+	rename(getcwd()."/".$genomePath."temp.fasta", getcwd()."/".$genomePath.$name2);
 
 	// Process uploaded file.
 	$name        = $name2;
@@ -178,7 +182,7 @@
 	$_SESSION['fileName_'.$key]    = $fileName;
 	$_SESSION['chr_count_'.$key]   = $chr_count;
 
-// Information saved into file format not used by other pipeline modules. Why?
+// Information saved into file format not used by other pipeline modules. Why? Used in user interface, I think.
 	// saving all chr details in files to avoid overloading $_SESSION
 	file_put_contents("../users/".$user."/genomes/".$genome."/chr_names.json",json_encode($chr_names));
 	file_put_contents("../users/".$user."/genomes/".$genome."/chr_lengths.json",json_encode($chr_lengths));

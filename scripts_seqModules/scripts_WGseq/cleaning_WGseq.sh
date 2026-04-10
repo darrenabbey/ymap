@@ -9,16 +9,16 @@ umask 007;
 ### define script file locations.
 user=$1;
 project=$2;
-main_dir=$(pwd)"/../../";
+main_dir=$3; #$(pwd)"../../";
+
+projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
+logName=$projectDirectory"process_log.txt";
+condensedLog=$projectDirectory"condensed_log.txt";
 
 
 ##==============================================================================
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
-
-projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
-logName=$projectDirectory"process_log.txt";
-condensedLog=$projectDirectory"condensed_log.txt";
 
 . $main_dir"config.sh";
 if [ $debug -eq 1 ];
@@ -178,30 +178,40 @@ fi
 # Compress 'putative_SNPs_v1.txt' and 'SNP_CNVs_v1.txt'.
 if [ -f $projectDirectory"putative_SNPs_v4.txt" ]
 then
-	zip -9 $projectDirectory"putative_SNPs_v4.zip" $projectDirectory"putative_SNPs_v4.txt";
+	zip -j -9 $projectDirectory"putative_SNPs_v4.zip" $projectDirectory"putative_SNPs_v4.txt";
 	rm $projectDirectory"putative_SNPs_v4.txt";
 	echo "\tputative_SNPs_v4.txt => putative_SNPs_v4.zip" >> $logName;
 fi
 if [ -f $projectDirectory"SNP_CNV_v1.txt" ]
 then
-	zip -9 $projectDirectory"SNP_CNV_v1.zip" $projectDirectory"SNP_CNV_v1.txt";
+	zip -j -9 $projectDirectory"SNP_CNV_v1.zip" $projectDirectory"SNP_CNV_v1.txt";
 	rm $projectDirectory"SNP_CNV_v1.txt";
 	echo "\tSNP_CNV_v1.txt => SNP_CNV_v1.zip" >> $logName;
 fi
 
 
-## Generate "complete.txt" to indicate processing has completed normally.
-timestamp=$(date +%T);
+##==============================================================================
+## Generate ZIP archive of output files.
+##------------------------------------------------------------------------------
+cd $projectDirectory;
+if [ -f output_figures.zip ]
+then
+	rm output_figures.zip;
+fi
+zip -j output_figures.zip fig.*.eps fig.*.png *.bed *.gff3 -x "fig.Rsquared*" "fig.Charm*" @;
 
-	timesLogFile=$main_dir"completion_times.log";
-	if [ -f $timesLogFile ]
-	then
-		echo -n $user"("$project")[WGseq " >> $timesLogFile;
-		cat $projectDirectory"dataFormat.txt" >> $timesLogFile;
-		echo -n "]\t" >> $timesLogFile;
-		cat $projectDirectory"working.txt" >> $timesLogFile;
-		echo " -> "$timestamp >> $timesLogFile;
-	fi
+
+## Generate "complete.txt" to indicate processing has completed normally.
+timesLogFile=$projectDirectory"completion_times.log";
+timestamp=$(date +%T);
+if [ -f $timesLogFile ]
+then
+	echo -n $user"("$project")[WGseq " >> $timesLogFile;
+	cat $projectDirectory"dataFormat.txt" >> $timesLogFile;
+	echo -n "]\t" >> $timesLogFile;
+	cat $projectDirectory"working.txt" >> $timesLogFile;
+	echo " -> "$timestamp >> $timesLogFile;
+fi
 
 completeFile=$projectDirectory"complete.txt";
 echo "complete" > $completeFile;
@@ -214,3 +224,10 @@ then
 	mv $projectDirectory"working.txt" $projectDirectory"working_done.txt";
 	echo "\tworking.txt" >> $logName;
 fi
+
+
+##==============================================================================
+## Make sure all files produced from bulk-processing are owned by www-data:www-data.
+##------------------------------------------------------------------------------
+
+chown www-data:www-data $projectDirectory/*;

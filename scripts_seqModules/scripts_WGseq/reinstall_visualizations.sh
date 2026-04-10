@@ -115,18 +115,20 @@ echo "\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing_Rerun()" > $outputName;
 echo "\tpkg load matgeom;" >> $outputName;
+echo "\tpkg load statistics;" >> $outputName;
 echo "\tdiary('"$projectDirectory"octave.rerun_visualization.log');" >> $outputName;
 echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 
+echo     "\tChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $outputName;
 #echo     "\tanalyze_CNVs_1(         '$main_dir','$user','$genomeUser','$project',          '$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
-if [ -z "$hapmap" ]
-then
-	echo "\tanalyze_SNPs_hapmap(    '$main_dir','$user','$genomeUser','$project','$parent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
-#	echo "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$parent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
-else
-	echo "\tanalyze_SNPs_hapmap(    '$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
-#	echo "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
-fi
+#if [ -z "$hapmap" ]
+#then
+#	echo "\tanalyze_SNPs_hapmap(    '$main_dir','$user','$genomeUser','$project','$parent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+##	echo "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$parent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+#else
+#	echo "\tanalyze_SNPs_hapmap(    '$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+##	echo "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+#fi
 
 echo "end" >> $outputName;
 echo "end" >> $logName;

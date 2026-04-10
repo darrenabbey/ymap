@@ -1,4 +1,7 @@
-% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
+%%
+%% Standard chromosome cartoons from YMAP version 1, cleaned up a little.
+%%
+
 Xscale = 4;
 dx = cen_tel_Xindent*Xscale;
 dy = maxY/5;			 % cen_tel_Yindent;

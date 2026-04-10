@@ -168,10 +168,10 @@ fi
 
 
 ##==============================================================================
-## Perform CGH analysis, with GC-correction, on dataset.
+## Perform CNV analysis, with GC-correction, on dataset.
 ##------------------------------------------------------------------------------
 echo "#==========================#" >> $logName;
-echo "# CGH analysis of dataset. #" >> $logName;
+echo "# CNV analysis of dataset. #" >> $logName;
 echo "#==========================#" >> $logName;
 echo "Preprocessing CNV data.   (~10 min for 1.6 Gbase genome dataset.)" >> $condensedLog;
 echo "Analyzing and mapping CNVs." >> $condensedLog;
@@ -196,8 +196,10 @@ echo "\t|\t    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
 echo "\t|\t    analyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 echo "\t|\tend" >> $logName;
 
+###
+### Temporary comment out to speed up troubleshooting of CNV_LOH_check.m code.
+###
 echo "\tCalling OCTAVE." >> $logName;
-#$matlab_exec -nosplash -r "run "$outputName"; exit;" 2>> $logName;
 cd $projectDirectory;
 $matlab_exec $outputName;
 cd $script_dir;

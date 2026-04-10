@@ -11,6 +11,7 @@ user=$1;
 project=$2;
 hapmap=$3;
 main_dir=$(pwd)"/../../";
+script_dir=$(pwd);
 
 # load local installed program location variables.
 . $main_dir/local_installed_programs.sh;
@@ -78,10 +79,10 @@ chmod 664 $projectDirectory"colors.txt";
 
 
 ##==============================================================================
-## Perform CGH analysis, with GC-correction, on dataset.
+## Perform CNV analysis, with GC-correction, on dataset.
 ##------------------------------------------------------------------------------
 echo "#==========================#" >> $logName;
-echo "# CGH analysis of dataset. #" >> $logName;
+echo "# CNV analysis of dataset. #" >> $logName;
 echo "#==========================#" >> $logName;
 echo "Preprocessing CNV data." >> $condensedLog;
 

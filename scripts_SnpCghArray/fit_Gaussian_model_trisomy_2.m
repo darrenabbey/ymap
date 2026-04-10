@@ -1,11 +1,13 @@
 function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, skew_factor] = fit_Gaussian_model_trisomy_2(data,locations,init_width,fraction,skew_factor,func_type,show)
-% attempt to fit a single-gaussian model to data.
-%[G1_a, G1_b, G1_c, G2_a, G2_b, G2_c, S_a, S_c] = GaussianModel_G1SG2(tet_control,parameter,'fcs1','');
+	% attempt to fit a single-gaussian model to data.
+	%[G1_a, G1_b, G1_c, G2_a, G2_b, G2_c, S_a, S_c] = GaussianModel_G1SG2(tet_control,parameter,'fcs1','');
+graphics_toolkit gnuplot;
+
 	p1_a = nan;   p1_b = nan;   p1_c = nan;
 	p2_a = nan;   p2_b = nan;   p2_c = nan;
 	p3_a = nan;   p3_b = nan;   p3_c = nan;
 	p4_a = nan;   p4_b = nan;   p4_c = nan;
-    
+
 	if isnan(data)
 		% fitting variables
 		return
@@ -14,20 +16,20 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, skew_f
 	% find max height in data.
 	datamax = max(data);
 	%datamax(data ~= max(datamax)) = [];
-    
+
 	% if maxdata is final bin, then find next highest p
 	if (find(data == datamax) == length(data))
 		data(data == datamax) = 0;
 		datamax = data;
 		datamax(data ~= max(datamax)) = [];
 	end;
-    
+
 	% a = height; b = location; c = width.
 	p1_ai = datamax;   p1_bi = locations(1);   p1_ci = init_width;
 	p2_ai = datamax;   p2_bi = locations(2);   p2_ci = init_width;
 	p3_ai = datamax;   p3_bi = locations(3);   p3_ci = init_width;
 	p4_ai = datamax;   p4_bi = locations(3);   p4_ci = init_width;
-   
+
 	initial = [p1_ai,p1_ci,  p2_ai,  p3_ai,  p4_ai,  skew_factor];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',100000);
 	time    = 1:length(data);
@@ -177,6 +179,6 @@ end;
 			sse          = sum(Error_Vector.^2);
 		otherwise
 			error('Error: choice for fitting not implemented yet!');
-			sse          = 1;            
+			sse          = 1;
 	end;
 end

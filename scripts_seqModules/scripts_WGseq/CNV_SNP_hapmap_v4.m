@@ -1,5 +1,7 @@
 function [] = CNV_SNP_hapmap_v4(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+graphics_toolkit gnuplot;
 addpath('../');
+
 workingDir      = [main_dir 'users/' user '/projects/' project '/'];
 fprintf('\n\n\t*===============================================================*\n');
 fprintf(    '\t| Generate CNV/SNP/LOH plot in script "CNV_SNP_hapmap_v4.m".    |\n');
@@ -47,11 +49,11 @@ end;
 
 %% ========================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
-%    bases_per_bin              : Controls bin sizes for CGH fractions of plot.
+%    bases_per_bin              : Controls bin sizes for CNV fractions of plot.
 %    scale_type                 : 'Ratio' or 'Log2Ratio' y-axis scaling of copy number.
-%                                 'Log2Ratio' does not properly scale CGH data by ploidy.
+%                                 'Log2Ratio' does not properly scale CNV data by ploidy.
 %    Chr_max_width              : max width of chrs as fraction of figure width.
-Centromere_format_default   = 1;
+Centromere_format_default   = 2;
 Chr_max_width               = 0.8;
 colorBars                   = true;
 blendColorBars              = false;
@@ -163,17 +165,28 @@ for i = 1:length(figure_details)
 		chr_label      {figure_details(i).chr} = figure_details(i).label;
 		chr_name       {figure_details(i).chr} = figure_details(i).name;
 		chr_posX       (figure_details(i).chr) = figure_details(i).posX;
-		chr_posY       (figure_details(i).chr) = figure_details(i).posY;
+
+		%%% Place chromosome cartoons in correct order for standard figure.
+		figOrder                               = str2num(figure_details(i).figOrder)
+		if (figOrder == 0)
+			chr_posY_raw                   = 0;
+			chr_posY_real                  = 0;
+		else
+			chr_posY_raw                   = figure_details(i).posY;
+			chr_posY_real                  = figure_details(figOrder).posY;
+		end;
+		chr_posY       (figure_details(i).chr) = chr_posY_real;
+
 		chr_width      (figure_details(i).chr) = figure_details(i).width;
 		chr_height     (figure_details(i).chr) = figure_details(i).height;
 		chr_in_use     (figure_details(i).chr) = str2num(figure_details(i).useChr);
-		chr_figOrder   (figure_details(i).chr) = str2num(figure_details(i).figOrder);
+		chr_figOrder   (figure_details(i).chr) = figOrder;
 		chr_figReversed(figure_details(i).chr) = str2num(figure_details(i).figReversed);
 	end;
 end;
 num_chrs = length(chr_size);
 
-%% This block is normally calculated in FindChrSizes_2 in CNV analysis.
+%% This block is normally calculated in FindChrSizes during CNV analysis.
 for usedChr = 1:num_chrs
 	if (chr_in_use(usedChr) == 1)
 		% determine where the endpoints of ploidy segments are.
@@ -262,13 +275,12 @@ end;
 
 
 %% =========================================================================================
-% Load GC-bias corrected CGH data.
+% Load corrected CNV data.
 %-------------------------------------------------------------------------------------------
 fprintf('\t|\tLoad CNV data.\n');
 load([projectDir 'Common_CNV.mat']);       % 'CNVplot2','genome_CNV'
-[chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use);
+[chr_breaks, chrCopyNum, ploidyAdjust, chrCopyRsquared] = FindChrSizes_4(workingDir, Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use, false);
 
-fprintf('*** dragon 1\n');
 for chr = 1:length(chr_breaks)
 	for segment = 1:length(chrCopyNum{chr})
 		fprintf(['*** chr_breaks{' num2str(chr) '}(' num2str(segment) ')  = ' num2str(chr_breaks{chr}(segment)) '\n']);
@@ -281,12 +293,21 @@ for chr = 1:length(chrCopyNum)
 	end;
 end;
 
-
-
 largestChr = find(chr_width == max(chr_width));
 largestChr = largestChr(1);
 
 createCnvTrack(projectDir, project, CNVplot2, bases_per_bin, chr_name, ploidyBase*2, ploidy * ploidyAdjust);
+
+
+%% =========================================================================================
+% Save workspace variables for use in "CNV_SNP_hapmap_v4_RedGreen.m"
+%-------------------------------------------------------------------------------------------
+fprintf('\t|\tSave workspace variables for later use in RedGreen alternate plot.\n');
+save([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
+
+%% change permissions of file.
+system(['chmod 664 ' projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
+
 
 %% =========================================================================================
 % Load SNP/LOH data.
@@ -300,81 +321,6 @@ load([projectDir 'SNP_' SNP_verString '.mat']);
 %        i = 4 : unphased coordinate data.
 %        i = 5 : phased allele string.
 %        i = 6 : unphased allele string.
-
-
-%% =========================================================================================
-% Test adjacent segments for no change in copy number estimate.
-%...........................................................................................
-% Adjacent pairs of segments with the same copy number will be fused into a single segment.
-% Segments with a <= zero copy number will be fused to an adjacetn segment.
-%-------------------------------------------------------------------------------------------
-fprintf('\t|\tTest adjacent chromosome segments for no change in copy number estimate.\n');
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		if (length(chrCopyNum{chr}) > 1)  % more than one segment, so lets examine if adjacent segments have different copyNums.
-			%% Merge any adjacent segments with the same copy number.
-			% add break representing left end of chromosome.
-			breakCount_new         = 1;
-			chr_breaks_new{chr}    = [];
-			chrCopyNum_new{chr}    = [];
-			chr_breaks_new{chr}(1) = 0.0;
-
-			%fprintf(['\nlength(chrCopyNum{chr}) = ' num2str(length(chrCopyNum{chr})) '\n']);
-			%if (length(chrCopyNum{chr}) > 0)
-				%fprintf(['chrCopyNum{chr}(1) = ' num2str(chrCopyNum{chr}(1)) '\n']);
-
-				% dragon: attempt to clean up poor behavior with zero copy number estimates leading to no SNP/LOH data presented.
-				for segment = 1:(length(chrCopyNum{chr}))
-					if (round(chrCopyNum{chr}(segment)) == 0)
-						chrCopyNum{chr}(segment) = 1;
-					end;
-				end;
-
-				chrCopyNum_new{chr}(1) = chrCopyNum{chr}(1);
-				for segment = 1:(length(chrCopyNum{chr})-1)
-					if (round(chrCopyNum{chr}(segment)) == round(chrCopyNum{chr}(segment+1)))
-						% two adjacent segments have identical copyNum and should be fused into one; don't add boundry to new list.
-					else
-						% two adjacent segments have different copyNum; add boundry to new list.
-						breakCount_new                      = breakCount_new + 1;
-						chr_breaks_new{chr}(breakCount_new) = chr_breaks{chr}(segment+1);
-						chrCopyNum_new{chr}(breakCount_new) = chrCopyNum{chr}(segment+1);
-					end;
-				end;
-			%end;
-
-			% add break representing right end of chromosome.
-			breakCount_new = breakCount_new+1;
-			chr_breaks_new{chr}(breakCount_new) = 1.0;
-
-			% output status to log file.
-			fprintf(['@@@2 chr = ' num2str(chr) '\n']);
-			fprintf(['@@@2    chr_breaks_old = ' num2str(chr_breaks{chr})     '\n']);
-			fprintf(['@@@2    chrCopyNum_old = ' num2str(chrCopyNum{chr})     '\n']);
-			fprintf(['@@@2    chr_breaks_new = ' num2str(chr_breaks_new{chr}) '\n']);
-			fprintf(['@@@2    chrCopyNum_new = ' num2str(chrCopyNum_new{chr}) '\n']);
-
-			% copy new lists to old.
-			chr_breaks{chr} = chr_breaks_new{chr};
-			chrCopyNum{chr} = [];
-			chrCopyNum{chr} = chrCopyNum_new{chr};
-		else
-			% output status to log file.
-			fprintf(['@@@2 chr = ' num2str(chr) '\n']);
-			fprintf(['@@@2    Only one CNV segment on this chromosome\n']);
-		end;
-	end;
-end;
-
-
-%% =========================================================================================
-% Save workspace variables for use in "CNV_SNP_hapmap_v4_RedGreen.m"
-%-------------------------------------------------------------------------------------------
-fprintf('\t|\tSave workspace variables for later use in RedGreen alternate plot.\n');
-save([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
-
-%% change permissions of file.
-system(['chmod 664 ' projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
 
 
 %%================================================================================================
@@ -391,10 +337,12 @@ fprintf('\t|\tDetermine colors per SNP using hapmap.\n');
 %       chr_SNPdata{chr,5}{chr_bin_SNP} = phased SNP allele strings.   (baseCall:alleleA/alleleB)
 %       chr_SNPdata{chr,6}{chr_bin_SNP} = unphased SNP allele strings.
 %-------------------------------------------------------------------------------------------
-% Prepare data for "calculate_allelic_ratio_cutoffs.m".
+fprintf('\n\n### Calculate allelic ratio cutoffs using Gaussian fitting.\n');
 temp_holding = chr_SNPdata;
+makeFitFigures = false;
 calculate_allelic_ratio_cutoffs;
 chr_SNPdata = temp_holding;
+
 
 %% =========================================================================================
 % Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
@@ -403,73 +351,95 @@ alleleRatiosFid = openAlleleRatiosTrack(projectDir, project);
 
 for chr = 1:num_chrs
 	% avoid running over chromosomes with empty copy number
-	if (chr_in_use(chr) == 1 && ~isempty(chrCopyNum{chr}))
+	if ( (chr_in_use(chr) == 1) && (~isempty(chrCopyNum{chr})) )
 		chrName = chr_name{chr};
 		for chr_bin_SNP = 1:ceil(chr_size(chr)/bases_per_bin_SNP)
 			%
 			% Determining colors for each SNP coordinate from calculated cutoffs.
 			%
-			allelic_ratios                                        = [chr_SNPdata{chr,1}{chr_bin_SNP} chr_SNPdata{chr,2}{chr_bin_SNP}];
-			coordinates                                           = [chr_SNPdata{chr,3}{chr_bin_SNP} chr_SNPdata{chr,4}{chr_bin_SNP}];
-			if (length(chr_SNPdata{chr,1}{chr_bin_SNP}) == 1) && (length(chr_SNPdata{chr,2}{chr_bin_SNP}) == 1)
-				allele_strings                                = {chr_SNPdata{chr,5}{chr_bin_SNP} chr_SNPdata{chr,6}{chr_bin_SNP}};
+			allelic_ratios						= [chr_SNPdata{chr,1}{chr_bin_SNP} chr_SNPdata{chr,2}{chr_bin_SNP}];
+			coordinates						= [chr_SNPdata{chr,3}{chr_bin_SNP} chr_SNPdata{chr,4}{chr_bin_SNP}];
+
+			if (sizeof(chr_SNPdata{chr,5}{chr_bin_SNP}) == 0)
+				phased_alleles = '';
 			else
-				allele_strings                                = [chr_SNPdata{chr,5}{chr_bin_SNP} chr_SNPdata{chr,6}{chr_bin_SNP}];
+				phased_alleles = chr_SNPdata{chr,5}{chr_bin_SNP};
 			end;
+			if (sizeof(chr_SNPdata{chr,6}{chr_bin_SNP}) == 0)
+				unphased_alleles = '';
+			else
+				unphased_alleles = chr_SNPdata{chr,6}{chr_bin_SNP};
+			end;
+			allele_strings                                          = [phased_alleles unphased_alleles];
 
 			if (length(allelic_ratios) > 0)
 				for SNP = 1:length(allelic_ratios)
 					% Load phased SNP data from earlier defined structure.
 					if (isa(allelic_ratios(SNP),'cell') == 1)
-						allelic_ratio                 = str2num(cell2mat(allelic_ratios(SNP)));
+						if (isscalar(allelic_ratios(SNP){1}) == 1)
+							allelic_ratio		= allelic_ratios(SNP){1};
+						else
+							allelic_ratio		= str2num(cell2mat(allelic_ratios(SNP)));
+						end;
 					else
-						allelic_ratio                 = allelic_ratios(SNP);
+						allelic_ratio			= allelic_ratios(SNP);
 					end;
+
 					if (isa(coordinates(SNP),'cell') == 1)
-						coordinate                    = str2num(cell2mat(coordinates(SNP)));
+						if (isscalar(coordinates(SNP){1}) == 1)
+							coordinate		= coordinates(SNP){1};
+						else
+							coordinate		= str2num(cell2mat(coordinates(SNP)));
+						end;
 					else
-						coordinate                    = coordinates(SNP);
+						coordinate			= coordinates(SNP);
 					end;
-					if (length(allelic_ratios) > 1)
-						allele_string                 = allele_strings{SNP};
+
+					if (isa(allele_strings,'cell') == 1)
+						if (length(allelic_ratios) > 1)
+							allele_string           = allele_strings{SNP};
+						else
+							allele_string           = allele_strings;
+						end;
 					else
-						allele_string                 = allele_strings;
+						allele_string                   = allele_strings;
 					end;
-					baseCall                              = allele_string(1);
-					homologA                              = allele_string(3);
-					homologB                              = allele_string(5);
+
+					baseCall				= allele_string(1);
+					homologA				= allele_string(3);
+					homologB				= allele_string(5);
 
 					% identify the segment containing the SNP.
-					segmentID                             = 0;
+					segmentID				= 0;
 					for segment = 1:(length(chrCopyNum{chr}))
-						segment_start                 = chr_breaks{chr}(segment  )*chr_size(chr);
-						segment_end                   = chr_breaks{chr}(segment+1)*chr_size(chr);
+						segment_start			= chr_breaks{chr}(segment  )*chr_size(chr);
+						segment_end			= chr_breaks{chr}(segment+1)*chr_size(chr);
 						if (coordinate > segment_start) && (coordinate <= segment_end)
-							segmentID             = segment;
+							segmentID		= segment;
 						end;
 					end;
 
 					% Load cutoffs between Gaussian fits performed earlier.
-					segment_copyNum                       = round(chrCopyNum{              chr}(segmentID));
-					actual_cutoffs                        = chrSegment_actual_cutoffs{     chr}{segmentID};
-					mostLikelyGaussians                   = chrSegment_mostLikelyGaussians{chr}{segmentID};
+					segment_copyNum				= round(chrCopyNum{              chr}(segmentID));
+					actual_cutoffs				= chrSegment_actual_cutoffs{     chr}{segmentID};
+					mostLikelyGaussians			= chrSegment_mostLikelyGaussians{chr}{segmentID};
 
 					% Calculate allelic ratio on range of [1..200].
-					SNPratio_int                          = (allelic_ratio)*199+1;
+					SNPratio_int				= (allelic_ratio)*199+1;
 
 					% Identify the allelic ratio region containing the SNP.
-					cutoffs                               = [1 actual_cutoffs 200];
-					ratioRegionID                         = 0;
+					cutoffs					= [1 actual_cutoffs 200];
+					ratioRegionID				= 0;
 					for GaussianRegionID = 1:length(mostLikelyGaussians)
-						cutoff_start                  = cutoffs(GaussianRegionID  );
-						cutoff_end                    = cutoffs(GaussianRegionID+1);
+						cutoff_start			= cutoffs(GaussianRegionID  );
+						cutoff_end			= cutoffs(GaussianRegionID+1);
 						if (GaussianRegionID == 1)
 							if (SNPratio_int >= cutoff_start) && (SNPratio_int <= cutoff_end)
-								ratioRegionID = mostLikelyGaussians(GaussianRegionID);
+								ratioRegionID	= mostLikelyGaussians(GaussianRegionID);
 							end;
 						else
 							if (SNPratio_int > cutoff_start) && (SNPratio_int <= cutoff_end)
-								ratioRegionID = mostLikelyGaussians(GaussianRegionID);
+								ratioRegionID	= mostLikelyGaussians(GaussianRegionID);
 							end;
 						end;
 					end;
@@ -504,7 +474,7 @@ for chr = 1:num_chrs
 							else
 								if (ratioRegionID == 3);        colorList = noparent_color_2of2;
 								elseif (ratioRegionID == 2);    colorList = noparent_color_1of2;
-								else                            colorLost = noparent_color_2of2;
+								else                            colorList = noparent_color_2of2;
 								end;
 							end;
 						end;
@@ -734,6 +704,10 @@ for chr = 1:num_chrs
 							end;
 						end;
 					end;
+					% fprintf('\t|\n');
+					% fprintf(['\t| chr num         = ' num2str(chr)  '\n']);
+					% fprintf(['\t| segment_copyNum = ' num2str(segment_copyNum)  '\n']);
+					% fprintf('\t|\n');
 					chr_SNPdata_colorsC{chr,1}(chr_bin_SNP) = chr_SNPdata_colorsC{chr,1}(chr_bin_SNP) + colorList(1);
 					chr_SNPdata_colorsC{chr,2}(chr_bin_SNP) = chr_SNPdata_colorsC{chr,2}(chr_bin_SNP) + colorList(2);
 					chr_SNPdata_colorsC{chr,3}(chr_bin_SNP) = chr_SNPdata_colorsC{chr,3}(chr_bin_SNP) + colorList(3);
@@ -901,7 +875,7 @@ for chr_to_draw  = 1:length(chr_order)
 		end;
 		% standard : end determine color of each bin.
 
-		% reverse order of color and CGH bins if chromosome is indicated as reversed in figure_definitions.txt file.
+		% reverse order of color and CNV bins if chromosome is indicated as reversed in figure_definitions.txt file.
 		if (chr_figReversed(chr) == 1)
 			colors        = flipud(colors);
 			CNVplot2{chr} = fliplr(CNVplot2{chr});
@@ -960,7 +934,7 @@ for chr_to_draw  = 1:length(chr_order)
 			end;
 			%% standard : end show centromere/outline.
 
-			%% standard : cgh plot section.
+			%% standard : CNV plot section.
 			c_ = [0 0 0];
 			fprintf(['\nmain-plot : chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 			fprintf(['ploidy     = ' num2str(ploidy)     '\n']);
@@ -990,7 +964,7 @@ for chr_to_draw  = 1:length(chr_order)
 				line([0 x2], [maxY/(ploidyBase*2)*lineNum  maxY/(ploidyBase*2)*lineNum ],'Color',[0.85 0.85 0.85]);
 			end;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-			% standard : end cgh plot section.
+			% standard : end CNV plot section.
 
 			% standard : axes labels etc.
 			hold off;
@@ -1096,7 +1070,7 @@ for chr_to_draw  = 1:length(chr_order)
 			end;
 			% standard : end show annotation locations.
 
-			%% standard : make CGH histograms to the right of the main chr cartoons.
+			%% standard : make CNV histograms to the right of the main chr cartoons.
 			if (HistPlot)
 				width     = 0.020;
 				height    = chr_height(chr);
@@ -1118,7 +1092,7 @@ for chr_to_draw  = 1:length(chr_order)
 						end;
 					end;
 
-					% make a histogram of CGH data, then smooth it for display.
+					% make a histogram of CNV data, then smooth it for display.
 					histogram_end                                    = 15;             % end point in copy numbers for the histogram, this should be way outside the expected range.
 					histAll{segment}(histAll{segment}<=0)            = [];
 					histAll{segment}(length(histAll{segment})+1)     = 0;              % endpoints added to ensure histogram bounds.
@@ -1166,7 +1140,7 @@ for chr_to_draw  = 1:length(chr_order)
 					end;
 				end;
 			end;
-			% standard : end of CGH histograms at right.
+			% standard : end of CNV histograms at right.
 
 			% standard : places chr copy number to the right of the main chr cartoons.
 			if (ChrNum)
@@ -1257,7 +1231,7 @@ for chr_to_draw  = 1:length(chr_order)
 			end;
 			% linear : end show centromere/outline.
 
-			%% linear : cgh plot section.
+			%% linear : CNV plot section.
 			c_ = [0 0 0];
 			fprintf(['linear-plot : chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 			for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
@@ -1276,7 +1250,7 @@ for chr_to_draw  = 1:length(chr_order)
 				f = fill(x_,y_,c_);
 				set(f,'linestyle','none');
 			end;
-			% linear : end CGH plot section.
+			% linear : end CNV plot section.
 
 			%% linear : draw lines across plots for easier interpretation of CNV regions.
 			x2 = chr_size(chr)/bases_per_bin;
@@ -1284,7 +1258,7 @@ for chr_to_draw  = 1:length(chr_order)
 				line([0 x2], [maxY/(ploidyBase*2)*lineNum  maxY/(ploidyBase*2)*lineNum ],'Color',[0.85 0.85 0.85]);
 			end;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-			% linear : end cgh plot section.
+			% linear : end CNV plot section.
 
 			%% linear : show segmental anueploidy breakpoints.
 			if (Linear_displayBREAKS) && (show_annotations)

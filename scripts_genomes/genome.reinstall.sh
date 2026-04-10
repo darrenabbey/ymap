@@ -7,15 +7,29 @@ set -e;
 ## All created files will have permission 760
 umask 007;
 
-##
-## Script changes the chr_bin_SNP width used for figures using this genome.
-## After running this script, update figures for dataset of interest using YMAP:UI.
-##
+singleGenome=true;
+user='darren';
 
-user="default";
-genome="Candida_haemulonii_B11899__GCF_002926055.2_RefSeq";
+if [ "$singleGenome" = true ]; then
+	## reinstall single genomes in user account.
+	genome="Phaseolus_vulgaris_YP4";
+	sh genome.install_6.sh $user $genome;
+else
+	## reinstall all genomes in user account.
+	directory='/var/www/html/ymap/users/default/genomes';
+	cd $directory;
+	for file in *; do
+		cd '/var/www/html/ymap/scripts_genomes';
 
-#echo "700" > /var/www/html/ymap/users/$user/genomes/$genome/resolution.SNPs.txt;
-#rm /var/www/html/ymap/users/$user/genomes/$genome/datafile_g_0.standard_bins.SNPs.fasta;
-
-sh genome.install_6.sh $user $genome;
+		if [ -f "$file" ]; then
+			# item is a file, ignore.
+			echo "";
+		else
+			# item is a directory.
+			echo $file;
+			genome=$file;
+			sh genome.install_6.sh $user $genome;
+			echo "\tdone."
+		fi
+	done
+fi

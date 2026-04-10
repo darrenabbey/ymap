@@ -1,6 +1,7 @@
-function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, skew_factor] = fit_Gaussian_model_monosomy_2(workingDir, saveName, data,locations,init_width,func_type)
+function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, Rsquared] = fit_Gaussian_model_monosomy_2(workingDir, descriptionString, data,locations,init_width,func_type, makeFitFigures)
 	% attempt to fit a 2-gaussian model to data.
 	% peaks should be narrow, since only sequencing error noise is being examined.
+	graphics_toolkit gnuplot;
 
 	show = false;
 	p1_a = nan;   p1_b = nan;   p1_c = nan;
@@ -14,7 +15,6 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, skew_factor] = fit_Gaussian_model_mono
 
 	% find max height in data.
 	datamax = max(data);
-	%datamax(data ~= max(datamax)) = [];
 
 	% if maxdata is final bin, then find next highest p
 	if (find(data == datamax) == length(data))
@@ -58,12 +58,62 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, skew_factor] = fit_Gaussian_model_mono
 	skew_factor1 = 1;
 	skew_factor2 = 1;
 
-	if (skew_factor < 0); skew_factor = 0; end; if (skew_factor > 2); skew_factor = 2; end;
+	if (p1_c == 0); p1_c = 0.001; end
+	if (p2_c == 0); p2_c = 0.001; end
+	if (skew_factor1 < 0); skew_factor1 = 0; end; if (skew_factor1 > 2); skew_factor1 = 2; end;
+	if (skew_factor2 < 0); skew_factor2 = 0; end; if (skew_factor2 > 2); skew_factor2 = 2; end;
+	if (p1_c < 2);   p1_c = 2;   end;
+	if (p2_c < 2);   p2_c = 2;   end;
 
 	c1_  = p1_c/2 + p1_c*skew_factor1/(100.5-abs(100.5-p1_b))/2;
 	p1_c = p1_c*p1_c/c1_;
 	c2_  = p2_c/2 + p2_c*skew_factor2/(100.5-abs(100.5-p2_b))/2;
 	p2_c = p2_c*p2_c/c2_;
+
+	%%% Calculate R^2 for fit line.
+	%------------------------------------
+	time1_1 = 1:floor(p1_b);
+	time1_2 = ceil(p1_b):200;
+	if (time1_1(end) == time1_2(1));time1_1(end) = [];  end;
+	time2_1 = 1:floor(p2_b);
+	time2_2 = ceil(p2_b):200;
+	if (time2_1(end) == time2_2(1));time2_2(1) = [];end;
+	%------------------------------------
+	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
+	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor1/(100.5-abs(100.5-p1_b))) ).^2);
+	p2_fit_L = p2_a*exp(-0.5*((time2_1-p2_b)./p2_c/(skew_factor2/(100.5-abs(100.5-p2_b))) ).^2);
+	p2_fit_R = p2_a*exp(-0.5*((time2_2-p2_b)./p2_c).^2);
+	p1_fit = [p1_fit_L p1_fit_R];
+	p2_fit = [p2_fit_L p2_fit_R];
+	fitted = p1_fit+p2_fit;
+	%------------------------------------
+	SSres    = sum((data-fitted).^2);
+	dataMean = data*0+mean(data);
+	SStot    = sum((data-dataMean).^2);
+	Rsquared = 1 - SSres/SStot;
+
+	%----------------------------------------------------------------------
+	% show fitting result.
+	if (makeFitFigures)
+		fig = figure(123);
+		plot(data,'o' , 'color',[0.50 0.50 1.00]);
+		hold on;
+		title(['SNP Gaussian model monosomy; ' descriptionString]);
+		plot(p1_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+		plot(p2_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+		plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
+		text(100,0.5,['R^2 = ', num2str(Rsquared)],"interpreter", "latex");
+		hold off;
+		figVers = 1;
+		saveName = [workingDir 'SNP_GaussFit_monosomy.' num2str(figVers,'%03.f') '.png'];
+		while (exist(saveName,'file'))
+			figVers += 1;
+			saveName = [workingDir 'SNP_GaussFit_monosomy.' num2str(figVers,'%03.f') '.png'];
+		endwhile;
+		saveas(fig, saveName, 'png');
+		delete(fig);
+	end;
+	%----------------------------------------------------------------------
 end
 
 function sse = fiterror(params,time,data,func_type,locations,show)
@@ -102,21 +152,21 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p2_fit = [p2_fit_L p2_fit_R];
 	fitted = p1_fit+p2_fit;
 
-if (show ~= 0)
-%----------------------------------------------------------------------
-% show fitting in process.
-figure(show);
-% show data being fit.
-plot(data,'x-','color',[0.75 0.75 1]);
-hold on;
-title('monosomy');
-% show fit lines.
-plot(p1_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-plot(p2_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
-hold off;
-%----------------------------------------------------------------------
-end;
+	if (show ~= 0)
+	%----------------------------------------------------------------------
+	% show fitting in process.
+	figure(show);
+	% show data being fit.
+	plot(data,'x-','color',[0.75 0.75 1]);
+	hold on;
+	title('monosomy');
+	% show fit lines.
+	plot(p1_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+	plot(p2_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+	plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
+	hold off;
+	%----------------------------------------------------------------------
+	end;
 
 	width = 0.5;
 	switch(func_type)

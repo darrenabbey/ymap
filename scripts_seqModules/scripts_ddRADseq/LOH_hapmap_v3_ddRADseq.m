@@ -1,5 +1,6 @@
 function [] = LOH_hapmap_v3_ddRADseq(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, ...
                                      SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+graphics_toolkit gnuplot;
 addpath('../');
 
 %%=========================================================================

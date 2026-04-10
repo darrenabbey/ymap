@@ -13,6 +13,7 @@
         require_once '../../constants.php';
 	require_once '../../POST_validation.php';
 	require_once '../../SecureNewDirectory.php';
+	require_once '../../sharedFunctions.php';
         ini_set('display_errors', 1);
 
 	// If the user is not logged on, redirect to login page.
@@ -25,13 +26,15 @@
 	$user       = $_SESSION['user'];
 
 	// Validate input strings.
-	$hapmap          = sanitize_POST("hapmap");
-	$genome          = sanitize_POST("genome");
-	$referencePloidy = sanitizeFloat_POST("referencePloidy");
-	$parent          = sanitize_POST("parent");
-	$child           = sanitize_POST("child");
-	$parentHaploid1  = sanitize_POST("parentHaploid1");
-	$parentHaploid2  = sanitize_POST("parentHaploid2");
+	$hapmap            = sanitize_POST("hapmap");
+	$genome            = sanitize_POST("genome");
+	$HapmapSetupOption = sanitizeFloat_POST("HapmapSetupOption");
+	$parent            = sanitize_POST("parent");
+	$child             = sanitize_POST("child");
+	$parentHaploid1    = sanitize_POST("parentHaploid1");
+	$parentHaploid2    = sanitize_POST("parentHaploid2");
+	$parentHapmap      = sanitize_POST("parentHapmap");
+	$derived           = sanitize_POST("derived");
 
 	// a couple directories for later use.
 	$hapmap_dir1 = "../../users/".$user."/hapmaps/".$hapmap;
@@ -84,10 +87,27 @@
 		$parentHaploid2_dir1 = "../../users/".$user."/projects/".$parentHaploid2;
 		$parentHaploid2_dir2 = "../../users/default/projects/".$parentHaploid2;
 		if (!(is_dir($parentHaploid2_dir1) || is_dir($parentHaploid2_dir2))) {
-			// parentHaploid1 project doesn't exist, should never happen: Force logout.
+			// parentHaploid2 project doesn't exist, should never happen: Force logout.
 			session_destroy();
 			?><script type="text/javascript"> parent.location.reload(); </script><?php
 		}
+	}
+
+	if ($parentHapmap != '') {
+		// Confirm if requested parentHapmap project exists.
+		$parentHapmap_dir1 = "../../users/".$user."/hapmaps/".$parentHapmap;
+		$parentHapmap_dir2 = "../../users/default/hapmaps/".$parentHapmap;
+		if (!(is_dir($parentHapmap_dir1) || is_dir($parentHapmap_dir2))) {
+			// parentHapmap project doesn't exist, should never happen: Force logout.
+			session_destroy();
+			?><script type="text/javascript"> parent.location.reload(); </script><?php
+		}
+		if (is_dir($parentHapmap_dir1)) {
+			$parentHapmap_dir = $parentHapmap_dir1;
+		} else {
+			$parentHapmap_dir = $parentHapmap_dir2;
+		}
+
 	}
 
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
@@ -105,52 +125,86 @@
 		echo "Hapmap '".$hapmap."' directory already exists.";
 		exit;
 	} else {
-		// Make a form to generate a form to POST information to pass along to the next page in the process.
-		echo "<script type=\"text/javascript\">\n";
-		echo "\tvar autoSubmitForm = document.createElement('form');\n";
-		echo "\t\tautoSubmitForm.setAttribute('method','post');\n";
-		echo "\t\tautoSubmitForm.setAttribute('action','hapmap.install_2.php');\n";
+		if (($HapmapSetupOption == 2) || ($HapmapSetupOption == 1)) {
+			// Make a form to generate a form to POST information to pass along to the next page in the process.
+			echo "<script type=\"text/javascript\">\n";
+			echo "\tvar autoSubmitForm = document.createElement('form');\n";
+			echo "\t\tautoSubmitForm.setAttribute('method','post');\n";
+			echo "\t\tautoSubmitForm.setAttribute('action','hapmap.install_2.php');\n";
 
-		echo "\tvar input2 = document.createElement('input');\n";
-		echo "\t\tinput2.setAttribute('type','hidden');\n";
-		echo "\t\tinput2.setAttribute('name','hapmap');\n";
-		echo "\t\tinput2.setAttribute('value','{$hapmap}');\n";
-		echo "\t\tautoSubmitForm.appendChild(input2);\n";
+			echo "\tvar input2 = document.createElement('input');\n";
+			echo "\t\tinput2.setAttribute('type','hidden');\n";
+			echo "\t\tinput2.setAttribute('name','hapmap');\n";
+			echo "\t\tinput2.setAttribute('value','{$hapmap}');\n";
+			echo "\t\tautoSubmitForm.appendChild(input2);\n";
 
-		echo "\tvar input2 = document.createElement('input');\n";
-		echo "\t\tinput2.setAttribute('type','hidden');\n";
-		echo "\t\tinput2.setAttribute('name','genome');\n";
-		echo "\t\tinput2.setAttribute('value','{$genome}');\n";
-		echo "\t\tautoSubmitForm.appendChild(input2);\n";
+			echo "\tvar input2 = document.createElement('input');\n";
+			echo "\t\tinput2.setAttribute('type','hidden');\n";
+			echo "\t\tinput2.setAttribute('name','genome');\n";
+			echo "\t\tinput2.setAttribute('value','{$genome}');\n";
+			echo "\t\tautoSubmitForm.appendChild(input2);\n";
 
-		echo "\tvar input3 = document.createElement('input');\n";
-		echo "\t\tinput3.setAttribute('type','hidden');\n";
-		echo "\t\tinput3.setAttribute('name','referencePloidy');\n";
-		echo "\t\tinput3.setAttribute('value','{$referencePloidy}');\n";
-		echo "\t\tautoSubmitForm.appendChild(input3);\n";
+			echo "\tvar input3 = document.createElement('input');\n";
+			echo "\t\tinput3.setAttribute('type','hidden');\n";
+			echo "\t\tinput3.setAttribute('name','HapmapSetupOption');\n";
+			echo "\t\tinput3.setAttribute('value','{$HapmapSetupOption}');\n";
+			echo "\t\tautoSubmitForm.appendChild(input3);\n";
 
-		if ($referencePloidy == 2) {
-			$project1 = $parent;
-			$project2 = $child;
+			if ($HapmapSetupOption == 2) {
+				$project1 = $parent;
+				$project2 = $child;
+			} else if ($HapmapSetupOption == 1) {
+				$project1 = $parentHaploid1;
+				$project2 = $parentHaploid2;
+			}
+
+			echo "\tvar input4 = document.createElement('input');\n";
+			echo "\t\tinput4.setAttribute('type','hidden');\n";
+			echo "\t\tinput4.setAttribute('name','project1');\n";
+			echo "\t\tinput4.setAttribute('value','{$project1}');\n";
+			echo "\t\tautoSubmitForm.appendChild(input4);\n";
+
+			echo "\tvar input5 = document.createElement('input');\n";
+			echo "\t\tinput5.setAttribute('type','hidden');\n";
+			echo "\t\tinput5.setAttribute('name','project2');\n";
+			echo "\t\tinput5.setAttribute('value','{$project2}');\n";
+			echo "\t\tautoSubmitForm.appendChild(input5);\n";
+			echo "\t\tdocument.body.appendChild(autoSubmitForm);";
+			echo "\tautoSubmitForm.submit();\n";
+
+			echo "</script>";
 		} else {
-			$project1 = $parentHaploid1;
-			$project2 = $parentHaploid2;
+			// Pass control over to a shell script ('scripts_seqModules/scripts_hapmaps/hapmap.trim_1.sh') to continue processing.
+
+			// make new hapmap dir.
+			$hapmap_dir       = "../../users/".$user."/hapmaps/".$hapmap;
+			mkdir($hapmap_dir);
+
+			// Generate 'working.txt' file to let pipeline know processing is started.
+			$fileName   = $hapmap_dir."/working.txt";
+			$file       = fopen($fileName, 'w');
+			$startTimeString = date("Y-m-d H:i:s");
+			fwrite($file, $startTimeString);
+			fclose($file);
+			chmod($fileName,0664);
+
+			// migrate files from parentHapmap
+			copy($parentHapmap_dir."/index.php",$hapmap_dir."/index.php");
+			copy($parentHapmap_dir."/colors.txt",$hapmap_dir."/colors.txt");
+			copy($parentHapmap_dir."/genome.txt",$hapmap_dir."/genome.txt");
+
+			// generate name.txt file.
+			$fileName   = $hapmap_dir."/name.txt";
+			$file       = fopen($fileName, 'w');
+			$nameString = $parentHapmap." -> ".$hapmap;
+			fwrite($file, $nameString);
+			fclose($file);
+			chmod($fileName,0664);
+
+			// make trimmed hapmap.
+			$system_call_string = "sh hapmap.trim_1.sh ".$user." ".$hapmap." ".$parentHapmap." ".$derived." > /dev/null &";
+			system($system_call_string);
 		}
-
-		echo "\tvar input4 = document.createElement('input');\n";
-		echo "\t\tinput4.setAttribute('type','hidden');\n";
-		echo "\t\tinput4.setAttribute('name','project1');\n";
-		echo "\t\tinput4.setAttribute('value','{$project1}');\n";
-		echo "\t\tautoSubmitForm.appendChild(input4);\n";
-
-		echo "\tvar input5 = document.createElement('input');\n";
-		echo "\t\tinput5.setAttribute('type','hidden');\n";
-		echo "\t\tinput5.setAttribute('name','project2');\n";
-		echo "\t\tinput5.setAttribute('value','{$project2}');\n";
-		echo "\t\tautoSubmitForm.appendChild(input5);\n";
-		echo "\t\tdocument.body.appendChild(autoSubmitForm);";
-		echo "\tautoSubmitForm.submit();\n";
-		echo "</script>";
 	}
 
 	log_stuff($user,"",$hapmap,"","","H:CREATE success");

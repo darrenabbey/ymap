@@ -17,14 +17,14 @@
 	$user   = $_SESSION['user'];
 
 	// Validate input strings.
-	$hapmap          = sanitize_POST("hapmap");
-	$genome          = sanitize_POST("genome");
-	$project1        = sanitize_POST("project1");
-	$project2        = sanitize_POST("project2");
-	$colorA          = sanitizeColor_POST("homolog_a_color");
-	$colorB          = sanitizeColor_POST("homolog_b_color");
-	$referencePloidy = (float)sanitizeFloat_POST("referencePloidy");
-	if ($referencePloidy == 2) {
+	$hapmap            = sanitize_POST("hapmap");
+	$genome            = sanitize_POST("genome");
+	$project1          = sanitize_POST("project1");
+	$project2          = sanitize_POST("project2");
+	$colorA            = sanitizeColor_POST("homolog_a_color");
+	$colorB            = sanitizeColor_POST("homolog_b_color");
+	$HapmapSetupOption = (float)sanitizeFloat_POST("HapmapSetupOption");
+	if ($HapmapSetupOption == 2) {
 		// Validate hapmap description string.
 		$hapmap_description = sanitizeHapmap_POST("hapmap_description");
 	}
@@ -89,14 +89,14 @@
 		$logOutputName = $hapmap_dir."/process_log.txt";
 		$logOutput     = fopen($logOutputName, 'a');
 		fwrite($logOutput, "Running 'scripts_seqModules/scripts_hapmaps/hapmap.install_3.php'.\n");
-		fwrite($logOutput, "\tuser            = ".$user."\n");
-		fwrite($logOutput, "\thapmap          = ".$hapmap."\n");
-		fwrite($logOutput, "\tgenome          = ".$genome."\n");
-		fwrite($logOutput, "\treferencePloidy = ".$referencePloidy."\n");
-		fwrite($logOutput, "\tproject1        = ".$project1."\n");
-		fwrite($logOutput, "\tproject2        = ".$project2."\n");
-		fwrite($logOutput, "\tcolorA          = ".$colorA."\n");
-		fwrite($logOutput, "\tcolorB          = ".$colorB."\n");
+		fwrite($logOutput, "\tuser              = ".$user."\n");
+		fwrite($logOutput, "\thapmap            = ".$hapmap."\n");
+		fwrite($logOutput, "\tgenome            = ".$genome."\n");
+		fwrite($logOutput, "\tHapmapSetupOption = ".$HapmapSetupOption."\n");
+		fwrite($logOutput, "\tproject1          = ".$project1."\n");
+		fwrite($logOutput, "\tproject2          = ".$project2."\n");
+		fwrite($logOutput, "\tcolorA            = ".$colorA."\n");
+		fwrite($logOutput, "\tcolorB            = ".$colorB."\n");
 
 		// Create 'colors.txt' file to contain colors used in haplotype figures.
 		$handleName = $hapmap_dir."/colors.txt";
@@ -116,12 +116,12 @@
 			fclose($handle);
 		}
 
-		// Create 'parent.txt' file to contain parent genome used in haplotype.
+		// Create 'parent.txt' file to contain parent project used in haplotype.
 		$handleName = $hapmap_dir."/parent.txt";
 		if (file_exists($handleName)) {
 		} else {
 			$handle     = fopen($handleName, 'w');
-			if ($referencePloidy == 2) {
+			if ($HapmapSetupOption == 2) {
 				fwrite($handle, $project1);
 			} else {
 				fwrite($handle, $project1."\n".$project2);
@@ -130,7 +130,7 @@
 		}
 
 		// Initialize 'haplotype.txt' file to hold haplotype entry descriptions.
-		if ($referencePloidy == 2) {
+		if ($HapmapSetupOption == 2) {
 			$haplotypeFileName = $hapmap_dir."/haplotypeMap.txt";
 			$haplotypeFile     = fopen($haplotypeFileName, 'a');
 			fwrite($haplotypeFile, $project1."\n".$project2."\n".$hapmap_description."\n");
@@ -153,7 +153,7 @@
 		fclose($logOutput);
 
 		// Pass control over to a shell script ('scripts_seqModules/scripts_hapmaps/hapmap.install_4.sh') to continue processing and link with matlab.
-		$system_call_string = "sh hapmap.install_4.sh ".$user." ".$referencePloidy." ".$project1." ".$project2." ".$hapmap." > /dev/null &";
+		$system_call_string = "sh hapmap.install_4.sh ".$user." ".$HapmapSetupOption." ".$project1." ".$project2." ".$hapmap." > /dev/null &";
 		system($system_call_string);
 
 		log_stuff($user,"",$hapmap,"","","hapmap:CREATE success.");

@@ -9,12 +9,10 @@ require_once '../sharedFunctions.php';
 //$key				= "g_0";
 //$user				= "darren2";
 //$genome			= "test";
-//$output			= "Resource id #13";
-//$fasta_name			= "test.fasta";
-//$logOutputName		= "../users/".$user."/genomes/".$genome."/process_log.txt";
-//$logOutput			= fopen($logOutputName, 'w');
-//$condensedLogOutputName	= "../users/".$user."/genomes/".$genome."/condensed_log.txt";
-//$condensedLogOutput		= fopen($condensedLogOutputName, 'w');
+//$output             		= Resource id #11
+//$condensedLogOutput 		=
+//$logOutput          		= Resource id #2
+//$fasta_name         		= datafile_g_0.fasta
 
 
 fwrite($logOutput, "*========================================================================*\n");
@@ -114,11 +112,6 @@ if (strcmp($ext,"zip") == 0) {
 
 	// Extract archive.
 	if ($fileCount == 0) {
-		// Is not a tar.gz, so decompress with gzip.
-		chdir($genomePath);                   // move to genome directory.
-		$null = shell_exec("gzip -d ".$name);  // decompress archive.
-		chdir($currentDir);                    // move back to script's path.
-
 		// Figure out filename contained in gz archive.
 		// If one file, then filename is same as archive, without gz.
 		$name_new   = str_replace(".gz","", $name);
@@ -139,6 +132,11 @@ if (strcmp($ext,"zip") == 0) {
 
 		$name_first = $name_new;
 		$name_ext   = pathinfo($name_final, PATHINFO_EXTENSION);
+
+		// Is not a tar.gz, so decompress with gzip.
+                chdir($genomePath);                   // move to projectDirectory.
+                $null = shell_exec("gzip -dc ".$name." > ".$name_new); // decompress archive while keeping results in case of early file end error.
+                chdir($currentDir);                    // move back to script's path.
 	} else {
 		fwrite($logOutput,"\tFiles in tar.gz archive = ".$fileCount.".\n");
 

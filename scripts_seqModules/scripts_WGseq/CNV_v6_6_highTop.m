@@ -1,5 +1,6 @@
 function [] = CNV_v6_6_highTop(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString, ...
 							   CNV_verString,rDNA_verString,displayBREAKS, referenceCHR);
+graphics_toolkit gnuplot;
 addpath('../');
 
 % hide figures during construction.
@@ -34,7 +35,7 @@ if (Make_figure == true)
 
 
 	%% ========================================================================
-	Centromere_format_default	= 1;
+	Centromere_format_default	= 2;
 	Yscale_nearest_even_ploidy	= true;
 	HistPlot			= true;
 	ChrNum				= true;
@@ -149,7 +150,7 @@ if (Make_figure == true)
 
 
 	%%================================================================================================
-	% Load corrected CGH data for display.
+	% Load corrected CNV data for display.
 	%-------------------------------------------------------------------------------------------------
 	fprintf('\nCommon_CNV data file found, loading.\n');
 	load([projectDir 'Common_CNV.mat']);   %% 'CNVplot2','genome_CNV'.
@@ -159,7 +160,7 @@ if (Make_figure == true)
 	% Calculate chromosome copy number from ploidy estimatre.
 	%-------------------------------------------------------------------------------------------
 	ploidy = str2num(ploidyEstimateString);
-	[chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use);
+	[chr_breaks, chrCopyNum, ploidyAdjust, chrCopyRsquared] = FindChrSizes_4(workingDir, Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use, false);
 	fprintf('\n');
 
 	%% -----------------------------------------------------------------------------------------
@@ -204,7 +205,7 @@ if (Make_figure == true)
 	%% -----------------------------------------------------------------------------------------
 	% Median normalize CNV data before figure generation.
 	%-------------------------------------------------------------------------------------------
-	% Gather CGH data for LOWESS fitting.
+	% Gather CNV data for LOWESS fitting.
 	CNVdata_all = [];
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
@@ -274,7 +275,7 @@ if (Make_figure == true)
 				% standard : end show centromere.
 
 
-				%% standard : cgh plot section.
+				%% standard : CNV plot section.
 				c_ = [0 0 0];
 				fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 				for i = 1:length(CNVplot2{chr});
@@ -295,7 +296,7 @@ if (Make_figure == true)
 					f = fill(x_,y_,c_);
 					set(f,'linestyle','none');
 				end;
-				% standard : end of : cgh plot section.
+				% standard : end of : CNV plot section.
 
 				x2 = chr_size(chr)/bases_per_bin;
 				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
@@ -338,7 +339,7 @@ if (Make_figure == true)
 						line([0 x2], [maxY/8*lineNum  maxY/8*lineNum ],'Color',[0.85 0.85 0.85]);
 					end;
 				end;
-				%% standard : end cgh plot section.
+				%% standard : end CNV plot section.
 
 				% standard : axes labels etc.
 				hold off;
@@ -453,7 +454,7 @@ if (Make_figure == true)
 				end;
 				% standard : end show annotation locations.
 
-				% standard : make CGH histograms to the right of the main chr cartoons.
+				% standard : make CNV histograms to the right of the main chr cartoons.
 				if (HistPlot == true)
 					width	 = 0.020;
 					height	= chr_height(chr)*1.7;
@@ -475,7 +476,7 @@ if (Make_figure == true)
 							end;
 						end;
 
-						% make a histogram of CGH data, log-scale it to emphasize small peaks, then smooth it for display.
+						% make a histogram of CNV data, log-scale it to emphasize small peaks, then smooth it for display.
 						histogram_end                                    = maxY_highTop+4;
 						histAll{segment}(histAll{segment}<=0)            = [];
 						histAll{segment}(length(histAll{segment})+1)     = 0;			  % endpoints added to ensure histogram bounds.
@@ -563,7 +564,7 @@ if (Make_figure == true)
 				end;
 				% linear : end show centromere.
 
-				%% linear : cgh plot section.
+				%% linear : CNV plot section.
 				c_ = [0 0 0];
 				fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 				for i = 1:length(CNVplot2{chr});
@@ -625,7 +626,7 @@ if (Make_figure == true)
 							line([0 x2], [maxY/8*lineNum  maxY/8*lineNum ],'Color',[0.85 0.85 0.85]);
 						end;
 				end;
-				%% linear : end cgh plot section.
+				%% linear : end CNV plot section.
 
 				%% linear : show segmental anueploidy breakpoints.
 				if (Linear_displayBREAKS == true) && (show_annotations == true)

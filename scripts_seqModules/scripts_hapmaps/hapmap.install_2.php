@@ -15,11 +15,11 @@
 	$user       = $_SESSION['user'];
 
 	// Validate input strings.
-	$hapmap          = sanitize_POST("hapmap");
-	$genome          = sanitize_POST("genome");
-	$project1        = sanitize_POST("project1");
-	$project2        = sanitize_POST("project2");
-	$referencePloidy = sanitizeFloat_POST("referencePloidy");
+	$hapmap            = sanitize_POST("hapmap");
+	$genome            = sanitize_POST("genome");
+	$project1          = sanitize_POST("project1");
+	$project2          = sanitize_POST("project2");
+	$HapmapSetupOption = sanitizeFloat_POST("HapmapSetupOption");
 
 	$hapmap_dir = "../../users/".$user."/hapmaps/".$hapmap;
 
@@ -138,56 +138,84 @@
 <div class="tab">
 	Genome : <?php echo $genome; ?><br>
 	<?php
-	if ($referencePloidy == 2) {
+	if ($HapmapSetupOption == 2) {
 		echo "Reference dataset : ".$project1."<br>";
 	} else {
 		echo "Reference dataset 1 : ".$project1."<br>";
 	}
 	if (file_exists($project1_dir1)) {
-	    if (file_exists($project1_dir1."/fig.CNV-LOH-map.2.png")) {
-	        $imageUrl = $project1_dir1."/fig.CNV-LOH-map.2.png";
-	    } else {
-	        $imageUrl = $project1_dir1."/fig.CNV-SNP-map.2.png";
-	    }
-	    echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
-	} else {
-		if (file_exists($project1_dir2."/fig.CNV-LOH-map.2.png")) {
-			$imageUrl = $project1_dir2."/fig.CNV-LOH-map.2.png";
+		// load figure version from project.
+		if (file_exists($project1_dir1.'/figVer.txt')) {
+			$figVer1_  = '.v'.file_get_contents($project1_dir1.'/figVer.txt').'.png';
 		} else {
-			$imageUrl = $project1_dir2."/fig.CNV-SNP-map.2.png";
+			$figVer1_  = '.png';
+		}
+
+		if (file_exists($project1_dir1."/fig.CNV-LOH-map.2".$figVer1_)) {
+			$imageUrl = $project1_dir1."/fig.CNV-LOH-map.2".$figVer1_;
+		} else {
+			$imageUrl = $project1_dir1."/fig.CNV-SNP-map.2".$figVer1_;
+		}
+		echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
+	} else {
+		// load figure version from project.
+		if (file_exists($project1_dir2.'/figVer.txt')) {
+			$figVer2_  = '.v'.file_get_contents($project1_dir2.'/figVer.txt').'.png';
+		} else {
+			$figVer2_  = '.png';
+		}
+
+		if (file_exists($project1_dir2."/fig.CNV-LOH-map.2".$figVer2_)) {
+			$imageUrl = $project1_dir2."/fig.CNV-LOH-map.2".$figVer2_;
+		} else {
+			$imageUrl = $project1_dir2."/fig.CNV-SNP-map.2".$figVer2_;
 		}
 		echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
 	}
     ?><br>
 	<?php
-	if ($referencePloidy == 2) {
+	if ($HapmapSetupOption == 2) {
 		echo "Experimental dataset : ".$project2."<br>";
 	} else {
 		echo "Reference dataset 2 : ".$project2."<br>";
 	}
 	if (file_exists($project2_dir1)) {
-		if (file_exists($project2_dir1."/fig.CNV-LOH-map.2.png")) {
-			$imageUrl = $project2_dir1."/fig.CNV-LOH-map.2.png";
+		// load figure version from project.
+		if (file_exists($project2_dir1.'/figVer.txt')) {
+			$figVer1_  = '.v'.file_get_contents($project2_dir1.'/figVer.txt').'.png';
 		} else {
-			$imageUrl = $project2_dir1."/fig.CNV-SNP-map.2.png";
+			$figVer1_  = '.png';
+		}
+
+		if (file_exists($project2_dir1."/fig.CNV-LOH-map.2".$figVer1_)) {
+			$imageUrl = $project2_dir1."/fig.CNV-LOH-map.2".$figVer1_;
+		} else {
+			$imageUrl = $project2_dir1."/fig.CNV-SNP-map.2".$figVer1_;
 		}
 		echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
 		$CGD_annotations_url = $project2_dir1."/CGD_annotations.".$project2.".txt";
 		if (file_exists($project2_dir1."/CGD_annotations.".$project2.".txt")) {
-			if ($referencePloidy == 2) {
+			if ($HapmapSetupOption == 2) {
 				echo "<br><div class='tab'>Examine <button onclick=\"loadExternal('".$CGD_annotations_url."',50,  220);\">GBrowse annotation track</button> to determine precise breakpoints.</div><br>";
 			}
 		}
 	} else {
-		if (file_exists($project2_dir2."/fig.CNV-LOH-map.2.png")) {
-			$imageUrl = $project2_dir2."/fig.CNV-LOH-map.2.png";
+		// load figure version from project.
+		if (file_exists($project2_dir2.'/figVer.txt')) {
+			$figVer2_  = '.v'.file_get_contents($project2_dir2.'/figVer.txt').'.png';
 		} else {
-			$imageUrl = $project2_dir2."/fig.CNV-SNP-map.2.png";
+			$figVer2_  = '.png';
+		}
+
+		if (file_exists($project2_dir2."/fig.CNV-LOH-map.2".$figVer2_)) {
+			$imageUrl = $project2_dir2."/fig.CNV-LOH-map.2".$figVer2_;
+		} else {
+			$imageUrl = $project2_dir2."/fig.CNV-SNP-map.2".$figVer2_;
 		}
 		echo "<img src=\"{$imageUrl}\" width=\"50%\">\n";
 		$CGD_annotations_url = $project2_dir2."/CGD_annotations.".$project2.".txt";
 		if (file_exists($project2_dir2."/CGD_annotations.".$project2.".txt")) {
-			if ($referencePloidy == 2) {
+			if ($HapmapSetupOption == 2) {
 				echo "<button onclick=\"loadExternal('".$CGD_annotations_url."',50,  220);\">GBrowse</button><br>";
 			}
 		}
@@ -197,7 +225,7 @@
 </div>
 <table><tr><td>
 <?php
-if ($referencePloidy == 2) {
+if ($HapmapSetupOption == 2) {
 ?>
 	<div class="tab">
 		<table border="0">
@@ -252,7 +280,7 @@ if ($referencePloidy == 2) {
 ?>
 </td><td valign="top">
 <?php
-if ($referencePloidy == 2) {
+if ($HapmapSetupOption == 2) {
 ?>
     <div class="tab">
         <br>
@@ -369,7 +397,7 @@ if ($referencePloidy == 2) {
 	<script type="text/javascript">
 		GatherAndSubmitData=function() {
 <?php
-if ($referencePloidy == 2) {
+if ($HapmapSetupOption == 2) {
 ?>
 			var string_allData = "";
 			for (var chr=0;chr<chr_count; chr++) {
@@ -392,7 +420,7 @@ if ($referencePloidy == 2) {
 			autoSubmitForm.setAttribute('method','post');
 			autoSubmitForm.setAttribute('action','hapmap.install_3.php');
 <?php
-if ($referencePloidy == 2) {
+if ($HapmapSetupOption == 2) {
 ?>
 			var input1 = document.createElement('input');
 			    input1.setAttribute('type','hidden');
@@ -414,8 +442,8 @@ if ($referencePloidy == 2) {
 			    autoSubmitForm.appendChild(input3);
 			var input4 = document.createElement('input');
 			    input4.setAttribute('type','hidden');
-			    input4.setAttribute('name','referencePloidy');
-			    input4.setAttribute('value','<?php echo $referencePloidy; ?>');
+			    input4.setAttribute('name','HapmapSetupOption');
+			    input4.setAttribute('value','<?php echo $HapmapSetupOption; ?>');
 			    autoSubmitForm.appendChild(input4);
 			var input5 = document.createElement('input');
 			    input5.setAttribute('type','hidden');
@@ -448,7 +476,7 @@ if ($referencePloidy == 2) {
 </td><td valign="top">
 	<div class="tab">
 		<?php
-		if ($referencePloidy == 2) {
+		if ($HapmapSetupOption == 2) {
 			echo "Once you've described any LOH regions for this experimental dataset, click the ";
 			echo "'<i><b>Process haplotype entry...</b></i>' button to process this entry into the haplotype map.";
 		} else {

@@ -2,9 +2,10 @@ function [result_image_location, archive_data_location] = ...
     process_main_CNV_only(microarray_design, data_file, header_rows, probeName_col, data_col_ch1, ...
                  data_col_ch2, data_col_ratio, data_col_log2ratio, phasing_dataset, ploidy_estimate, ploidyBase, image_format, ...
                  experiment_name, workingDir, show_MRS_string)
-% PROCESS_MAIN wrapper around microarray analysis pipeline for integration into online tools and website.
-% This version does not load calibration data and generate a hapmap...   see 'calibration_setup.m' for relevant script.
-%
+		% PROCESS_MAIN wrapper around microarray analysis pipeline for integration into online tools and website.
+		% This version does not load calibration data and generate a hapmap...   see 'calibration_setup.m' for relevant script.
+	graphics_toolkit gnuplot;
+
 
 %%=========================================================================
 % Load project figure version.
@@ -146,7 +147,7 @@ Output_CGD_annotations           = true;
 Gaussian_fit_display             = false;
     DataTypeToUse                = 1;   % (1)AllelicFraction; (2)Angle.
     show_fitting                 = 0;   % (0)false; (~0)figure number to use.
-    
+
 % Analyze incidence of SNP interpretation runs.
 SNP_Runs_analysis                = false;
 
@@ -246,7 +247,7 @@ end;
 %info from design considerations.
 load(['designs/' microarray_design '/SNP_probeset_2.mat']);
 SNP_probeset_length = length(probeset_2);
-    
+
 % Assign SNP probes to homologs, based on calibration data collected earlier.
 if (no_calibration == 0)
     for i = 1:2:SNP_probeset_length
@@ -299,13 +300,13 @@ fprintf('\nDetermining chromsome copy numbers for microarray.');
 datasetDetails.chr_breaks = chr_breaks;
 datasetDetails.chrCopyNum = chrCopyNum;
 
- 
+
 %% ====================================================================
 % Save datasetDetails.
 %----------------------------------------------------------------------
 save([matlab_save_dir '/' experiment_name '.' microarray_design '.datasetDetails.mat'], 'datasetDetails');
 
-    
+
 %% ========================================================================
 % Plotting probes across genome by interpretation catagory after accounting
 % for polarity of SNP pairs.

@@ -1,5 +1,6 @@
-function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p5_b,p5_c, p6_a,p6_b,p6_c, skew_factor] = fit_Gaussian_model_pentasomy_2(workingDir, saveName, data,locations,init_width,func_type)
+function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p5_b,p5_c, p6_a,p6_b,p6_c, Rsquared] = fit_Gaussian_model_pentasomy_2(workingDir, descriptionString, data,locations,init_width,func_type, makeFitFigures)
 	% attempt to fit a 6-gaussian model to data.
+	graphics_toolkit gnuplot;
 
 	show = false;
 	p1_a = nan;   p1_b = nan;   p1_c = nan;
@@ -17,7 +18,6 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 
 	% find max height in data.
 	datamax = max(data);
-	%datamax(data ~= max(datamax)) = [];
 
 	% if maxdata is final bin, then find next highest p
 	if (find(data == datamax) == length(data))
@@ -111,6 +111,80 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	p5_c = p5_c*p5_c/c5_;
 	c6_  = p6_c/2 + p6_c*skew_factor6/(100.5-abs(100.5-p6_b))/2;
 	p6_c = p6_c*p6_c/c6_;
+
+
+	%%% Calculate R^2 for fit line.
+	%------------------------------------
+	time1_1 = 1:floor(p1_b);
+	time1_2 = ceil(p1_b):200;
+	if (time1_1(end) == time1_2(1));time1_1(end) = [];  end;
+	time2_1 = 1:floor(p2_b);
+	time2_2 = ceil(p2_b):200;
+	if (time2_1(end) == time2_2(1));time2_1(end) = [];  end;
+	time3_1 = 1:floor(p3_b);
+	time3_2 = ceil(p3_b):200;
+	if (time3_1(end) == time3_2(1));time3_2(1) = [];end;
+	time4_1 = 1:floor(p4_b);
+	time4_2 = ceil(p4_b):200;
+	if (time4_1(end) == time4_2(1));time4_2(1) = [];end;
+	time5_1 = 1:floor(p5_b);
+	time5_2 = ceil(p5_b):200;
+	if (time5_1(end) == time5_2(1));time5_2(1) = [];end;
+	time6_1 = 1:floor(p6_b);
+	time6_2 = ceil(p6_b):200;
+	if (time6_1(end) == time6_2(1));time6_2(1) = [];end;
+	%------------------------------------
+	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
+	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor1/(100.5-abs(100.5-p1_b))) ).^2);
+	p2_fit_L = p2_a*exp(-0.5*((time2_1-p2_b)./p2_c).^2);
+	p2_fit_R = p2_a*exp(-0.5*((time2_2-p2_b)./p2_c/(skew_factor2/(100.5-abs(100.5-p2_b))) ).^2);
+	p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c).^2);
+	p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c/(skew_factor3/(100.5-abs(100.5-p3_b))) ).^2);
+	p4_fit_L = p4_a*exp(-0.5*((time4_1-p4_b)./p4_c/(skew_factor4/(100.5-abs(100.5-p4_b))) ).^2);
+	p4_fit_R = p4_a*exp(-0.5*((time4_2-p4_b)./p4_c).^2);
+	p5_fit_L = p5_a*exp(-0.5*((time5_1-p5_b)./p5_c/(skew_factor5/(100.5-abs(100.5-p5_b))) ).^2);
+	p5_fit_R = p5_a*exp(-0.5*((time5_2-p5_b)./p5_c).^2);
+	p6_fit_L = p6_a*exp(-0.5*((time6_1-p6_b)./p6_c/(skew_factor6/(100.5-abs(100.5-p6_b))) ).^2);
+	p6_fit_R = p6_a*exp(-0.5*((time6_2-p6_b)./p6_c).^2);
+	p1_fit = [p1_fit_L p1_fit_R];
+	p2_fit = [p2_fit_L p2_fit_R];
+	p3_fit = [p3_fit_L p3_fit_R];
+	p4_fit = [p4_fit_L p4_fit_R];
+	p5_fit = [p5_fit_L p5_fit_R];
+	p6_fit = [p6_fit_L p6_fit_R];
+	fitted = p1_fit+p2_fit+p3_fit+p4_fit+p5_fit+p6_fit;
+	%------------------------------------
+	SSres    = sum((data-fitted).^2);
+	dataMean = data*0+mean(data);
+	SStot    = sum((data-dataMean).^2);
+	Rsquared = 1 - SSres/SStot;
+
+	%----------------------------------------------------------------------
+	% show fitting result.
+	if (makeFitFigures)
+		fig = figure(123);
+		plot(data,'o' , 'color',[0.50 0.50 1.00]);
+		hold on;
+		title(['SNP Gaussian model pentasomy; ' descriptionString]);
+		plot(p1_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+		plot(p2_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+		plot(p3_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+		plot(p4_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+		plot(p5_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+		plot(p6_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+		plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
+		text(100,0.5,['R^2 = ', num2str(Rsquared)],"interpreter", "latex");
+		hold off;
+		figVers = 1;
+		saveName = [workingDir 'SNP_GaussFit_pentasomy.' num2str(figVers,'%03.f') '.png'];
+		while (exist(saveName,'file'))
+			figVers += 1;
+			saveName = [workingDir 'SNP_GaussFit_pentasomy.' num2str(figVers,'%03.f') '.png'];
+		endwhile;
+		saveas(fig, saveName, 'png');
+		delete(fig);
+	end;
+	%----------------------------------------------------------------------
 end
 
 function sse = fiterror(params,time,data,func_type,locations,show)
@@ -221,25 +295,25 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p6_fit = [p6_fit_L p6_fit_R];
 	fitted = p1_fit+p2_fit+p3_fit+p4_fit+p5_fit+p6_fit;
 
-if (show ~= 0)
-%----------------------------------------------------------------------
-% show fitting in process.
-figure(show);
-% show data being fit.
-plot(data,'x-','color',[0.75 0.75 1]);
-hold on;
-title('pentasomy');
-% show fit curves.
-plot(p1_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-plot(p2_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-plot(p3_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-plot(p4_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-plot(p5_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-plot(p6_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
-hold off;
-%----------------------------------------------------------------------
-end;
+	if (show ~= 0)
+	%----------------------------------------------------------------------
+	% show fitting in process.
+	figure(show);
+	% show data being fit.
+	plot(data,'x-','color',[0.75 0.75 1]);
+	hold on;
+	title('pentasomy');
+	% show fit curves.
+	plot(p1_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+	plot(p2_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+	plot(p3_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+	plot(p4_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+	plot(p5_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+	plot(p6_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+	plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
+	hold off;
+	%----------------------------------------------------------------------
+	end;
 
 	width = 0.5;
 	switch(func_type)

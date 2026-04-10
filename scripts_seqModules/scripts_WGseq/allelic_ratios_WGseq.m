@@ -1,4 +1,5 @@
 function [] = allelic_ratios_WGseq(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+graphics_toolkit gnuplot;
 addpath('../');
 
 % hide figures during construction.
@@ -34,9 +35,9 @@ tic;
 fprintf('\t|\tGenerating FirePlot of SNP allelic ratio data across genome.\n');
 %% ========================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
-%    bases_per_bin              : Controls bin sizes for SNP/CGH fractions of plot.
+%    bases_per_bin              : Controls bin sizes for SNP/CNV fractions of plot.
 %    Chr_max_width              : max width of chrs as fraction of figure width.
-Centromere_format_default   = 0;
+Centromere_format_default   = 2;
 Chr_max_width               = 0.8;
 colorBars                   = true;
 blendColorBars              = false;
@@ -273,7 +274,7 @@ if (Make_figure == true)
 		end;
 		% read next line
 		dataLine = fgetl(data);
-	end;
+	endwhile;
 	fclose(data);
 
 	%%================================================================================================
@@ -406,11 +407,19 @@ if (Make_figure == true)
 			chr_mean_scaler(chr) = 0;
 		end;
 	end;
-	median_val = median(all_data(:));
-	mean_val   = mean(all_data(:));
-	mode_val   = mode(all_data(:));
-	min_val    = min(all_data(:));
-	max_val    = max(all_data(:));
+	if (isempty(all_data(:)) == true)
+		median_val = 0;
+		mean_val   = 0;
+		mode_val   = 0;
+		min_val    = 0;
+		max_val    = 0;
+	else
+		median_val = median(all_data(:));
+		mean_val   = mean(all_data(:));
+		mode_val   = mode(all_data(:));
+		min_val    = min(all_data(:));
+		max_val    = max(all_data(:));
+	end;
 
 
 	%% Generate chromosome figures.

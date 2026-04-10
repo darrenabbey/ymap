@@ -5,19 +5,17 @@ set(gca,'visible','off');
 % Make my own x-axis tick labels
 XTickValues = 0:(40*(5000/bases_per_bin)):(chr_size(chr)/bases_per_bin);   % limits tic values to size of chromosome in figure.
 XTickValLength = length(XTickValues)
-XTickLabels = {'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'};
-for i = (XTickValLength+1):17   % 17 is the max length of the pre-defined labels above.
-	XTickLabels(end) = [];
-endfor;
 tickPercent = 0.75;
 if (length(annotations) > 0)
 	y = zeros(size(XTickValues))-maxY/10*(1.5+tickPercent);
 else
 	y = zeros(size(XTickValues))-maxY/10*1.5;
 end;
-text(XTickValues, y, XTickLabels, ...
-	'horizontalalignment', 'center', ...
-	'verticalalignment', 'top');
+
+XTickLabels = cell(1,XTickValLength);
+for i = 1:XTickValLength
+	XTickLabels{i} = num2str((i-1)*0.2, "%5.1f");
+end;
 
 % Make my own x-axis ticks.
 if (length(annotations) > 0)

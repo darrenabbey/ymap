@@ -1,4 +1,5 @@
 function [] = ChARM_v4(project,user,genome,genomeUser,main_dir)
+graphics_toolkit gnuplot;
 addpath('../');
 
 %% =========================================================================================

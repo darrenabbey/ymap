@@ -219,7 +219,7 @@ else
 		echo "\tSamtools : Generating pileup.   (for SNP/CNV/INDEL analysis)" >> $logName;
 		echo "Generating pileup file." >> $condensedLog;
 		echo "\nRunning samtools:mpileup.\n";
-		$python_exec $main_dir"scripts_seqModules/parallel_mpileup.py" $samtools_exec $genomeDirectory$genomeFASTA $usedFile $logName $cores $genomeDirectory data.pileup 2>> $logName;
+		bash $main_dir"scripts_seqModules/parallel_mpileup.sh" $user $project >> $logName;
 		echo "\tSamtools : Pileup generated." >> $logName;
 	fi
 

@@ -1,15 +1,20 @@
+%%
+%% Rounded chromosome cartoons that will be the default for YMAP2.
+%%
+
 box off;
-% DRAGON. Still trying to finalize this.
 set(gca,'visible','off');
 
-% configuration of chromosome cartoon curves.
+%%cen_tel_Yindent  = maxY/4;
+
+%% Configuration of chromosome cartoon curves.
 res    = 64;
-Xscale = 40;  % Arbitrary value that leads to good looking curves on linear view. Standard view needs a different number.
+Xscale = 40;  % Arbitrary value that leads to good looking curves on linear view. Stacked view may need a different number.
 dy     = cen_tel_Yindent;
 dx     = dy*Xscale;
 xcen   = (x1+x2)/2;
 
-%% Calculate cartoon outlins and draw white patches to erase cartoon exterior.
+%% Calculate cartoon outlines and draw white patches to erase cartoon exterior.
 if (xcen != 0)
 	if (xcen-dx < dx)
 		xdelta = xcen/2;
@@ -110,13 +115,13 @@ if (xcen != 0)
 else
 	% left-bottom corner (curve).
 	poly1  = circleToPolygon([leftEnd+dy dy dy], res);
-	poly1x = poly1((res/2+1):(res/4*3+1),1)*Xscale;
+	poly1x = poly1((res/2+1):(res/4*3+1),1)*Xscale/maxY*4;
 	poly1y = poly1((res/2+1):(res/4*3+1),2);
 	patch([poly1x; leftEnd], [poly1y; 0], 'facecolor', 'w', 'edgecolor', 'w');
 
 	% left-top corner (curve).
 	poly2  = circleToPolygon([leftEnd+dy maxY-dy dy], res);
-	poly2x = poly2((res/4+1):(res/2+1),1)*Xscale;
+	poly2x = poly2((res/4+1):(res/2+1),1)*Xscale/maxY*4;
 	poly2y = poly2((res/4+1):(res/2+1),2);
 	patch([poly2x; leftEnd], [poly2y; maxY], 'facecolor', 'w', 'edgecolor', 'w');
 
@@ -126,13 +131,13 @@ else
 	poly3_2        = poly3(:,2);
 	poly3_1(res+1) = poly3_1(1);
 	poly3_2(res+1) = poly3_2(1);
-	poly3x         = (poly3_1((res/4*3+1):(res+1))-rightEnd)*Xscale+rightEnd;
+	poly3x         = (poly3_1((res/4*3+1):(res+1))-rightEnd)*Xscale/maxY*4+rightEnd;
 	poly3y         = poly3_2((res/4*3+1):(res+1));
 	patch([poly3x; rightEnd], [poly3y; 0], 'facecolor', 'w', 'edgecolor', 'w');
 
 	% right-top corner (curve).
 	poly4          = circleToPolygon([rightEnd-dy maxY-dy dy], res);
-	poly4x         = (poly4(1:(res/4+1),1)-rightEnd)*Xscale+rightEnd;
+	poly4x         = (poly4(1:(res/4+1),1)-rightEnd)*Xscale/maxY*4+rightEnd;
 	poly4y         = poly4(1:(res/4+1),2);
 	patch([poly4x; rightEnd], [poly4y; maxY], 'facecolor', 'w', 'edgecolor', 'w');
 end;

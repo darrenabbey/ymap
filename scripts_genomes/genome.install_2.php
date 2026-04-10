@@ -78,6 +78,7 @@
 	$annotation_count   = sanitizeInt_POST("annotation_count");
 	$expression_regions = sanitize_POST("expression_regions");
 
+	// chromosome specific options.
 	if ($chr_count != 0) {
 		for ($chr=0; $chr<$chr_count; $chr += 1) {
 			$chrID = $chr + 1;
@@ -110,6 +111,11 @@
 		$rDNA_chr = "null";
 	}
 
+	// optional figure selections.
+	$figure_1           = sanitizeBoolean_POST("fig_1");
+	$figure_2           = sanitizeBoolean_POST("fig_2");
+	$figure_3           = sanitizeBoolean_POST("fig_3");
+
 // Generate 'chromosome_sizes.txt' :
 	fwrite($logOutput, "\tGenerating 'chromosome_sizes.txt' file.\n");
 	$outputName       = $genome_dir."/chromosome_sizes.txt";
@@ -123,9 +129,9 @@
 		fwrite($output, "# Chr\tsize(bp)\tname\n");
 		for ($chr=0; $chr<$chr_count; $chr += 1) {
 			$chrID = $chr + 1;
-			//if ($chr_draws[$chr] == 1) {
-			fwrite($output, $chrID."\t".$chr_lengths[$chr]."\t".$chr_shortNames[$chr]."\n");
-			//}
+			if ($chr_draws[$chr] == 1) {
+				fwrite($output, $chrID."\t".$chr_lengths[$chr]."\t".$chr_shortNames[$chr]."\n");
+			}
 		}
 		fclose($output);
 	}
@@ -143,9 +149,9 @@
 		fwrite($output, "# Chr\tCEN-start\tCEN-end\n");
 		for ($chr=0; $chr<$chr_count; $chr += 1) {
 			$chrID    = $chr + 1;
-			//if ($chr_draws[$chr] == 1) {
-			fwrite($output, $chrID."\t".$chr_cenStarts[$chr]."\t".$chr_cenEnds[$chr]."\n");
-			//}
+			if ($chr_draws[$chr] == 1) {
+				fwrite($output, $chrID."\t".$chr_cenStarts[$chr]."\t".$chr_cenEnds[$chr]."\n");
+			}
 		}
 	}
 	fclose($output);
@@ -170,22 +176,24 @@
 			// setting figure height to be the same for all figures making them ocuppy 50 precent of the maximum height (50 precent for gap).
 			$fig_height = 0.5*(0.97/($chr_count_used + 0.5));
 			for ($chr=0; $chr<$chr_count; $chr += 1) {
-				$chrID = $chr + 1;
-				// standard chr cartoons placed at 0.15 from left side.
-				$fig_posX     = 0.15;
-				// title gets 0.03 of the space, and figures share the rest (+0.5 to avoid cutting in the end).
-				$fig_order    = $chr_figOrders[$chr];
-				$fig_posY     = 0.97-(0.97/($chr_count_used + 0.5))*$fig_order;
-				$fig_reversed = $chr_reverseds[$chr];
-				if ($chr_lengths[$chr] == $max_length) {
-					$fig_width = "0.8";
-				} else {
-					$fig_width = "*";
-				}
 				if ($chr_draws[$chr] == 1) {
+					$chrID = $chr + 1;
+					// standard chr cartoons placed at 0.15 from left side.
+					$fig_posX     = 0.15;
+					// title gets 0.03 of the space, and figures share the rest (+0.5 to avoid cutting in the end).
+					$fig_order    = $chr_figOrders[$chr];
+					$fig_posY     = 0.97-(0.97/($chr_count_used + 0.5))*$fig_order;
+					$fig_reversed = $chr_reverseds[$chr];
+					if ($chr_lengths[$chr] == $max_length) {
+						$fig_width = "0.8";
+					} else {
+						$fig_width = "*";
+					}
+
 					fwrite($output, $chrID."\t1\t".$chr_shortNames[$chr]."\t".$chr_names[$chr]."\t".$fig_posX."\t".$fig_posY."\t".$fig_width."\t".$fig_height."\t".$fig_order."\t".$fig_reversed."\n");
-				} else {
-					fwrite($output, $chrID."\t0\t".$chr_shortNames[$chr]."\t".$chr_names[$chr]."\t0\t0\t0\t0\t0\t0\n");
+				//} else {
+					// Unused contigs.
+					//fwrite($output, "-\t0\tunused\t".$chr_names[$chr]."\t0\t0\t0\t0\t0\t0\n");
 				}
 			}
 		}
@@ -237,6 +245,16 @@
 	$_SESSION['rDNA_end_'.$key]         = $rDNA_end;
 	$_SESSION['ploidyDefault_'.$key]    = $ploidyDefault;
 	$_SESSION['annotation_count_'.$key] = $annotation_count;
+
+// Create figure selections file.
+	$fileName = $genome_dir."/figure_options.txt";
+	$file     = fopen($fileName, 'w');
+		fwrite($file,"Figures\n");
+		if ($figure_1 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
+		if ($figure_2 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
+		if ($figure_3 != 1) { fwrite($file,"False"  ); } else { fwrite($file,"True"  ); }
+	fclose($file);
+	chmod($fileName,0664);
 
 // Debugging output of all variables.
 //	print_r($GLOBALS);

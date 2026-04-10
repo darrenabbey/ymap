@@ -2,9 +2,9 @@ function [result_image_location, archive_data_location] = ...
     process_main(microarray_design, data_file, header_rows, probeName_col, data_col_ch1, ...
                  data_col_ch2, data_col_ratio, data_col_log2ratio, phasing_dataset, ploidy_estimate, ploidyBase, image_format, ...
                  experiment_name, workingDir, show_MRS_string)
-% PROCESS_MAIN wrapper around microarray analysis pipeline for integration into online tools and website.
-% This version does not load calibration data and generate a hapmap...   see 'calibration_setup.m' for relevant script.
-%
+		% PROCESS_MAIN wrapper around microarray analysis pipeline for integration into online tools and website.
+		% This version does not load calibration data and generate a hapmap...   see 'calibration_setup.m' for relevant script.
+	graphics_toolkit gnuplot;
 
 %%=========================================================================
 % Load project figure version.

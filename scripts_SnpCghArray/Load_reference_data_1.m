@@ -1,4 +1,5 @@
 function [CGH_data_all SNP_data_all] = Load_reference_data_1()
+graphics_toolkit gnuplot;
 
 % Load currently used calibration data.
 load('cal_data.mat');
@@ -23,7 +24,7 @@ for ii = 1:length(dirs)
     if (exist([file_dir 'SNP_data.mat'],'file') == 0) || (exist([file_dir 'CGH_data.mat'],'file') == 0)
         files_found         = BlueFuse_file_load_4(file_dir);
     end;
-    
+
     % Load data files.
     load([file_dir 'SNP_data.mat']);
     load([file_dir 'CGH_data.mat']);

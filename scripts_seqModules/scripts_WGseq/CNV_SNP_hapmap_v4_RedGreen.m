@@ -1,5 +1,7 @@
 function [] = CNV_SNP_hapmap_v4_RedGreen(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+graphics_toolkit gnuplot;
 addpath('../');
+
 workingDir      = [main_dir 'users/' user '/projects/' project '/'];
 
 % hide figures during construction.
@@ -43,7 +45,7 @@ if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'f
 		Make_figure_standard = true;
 	end;
 
-	% Dragon : force script to not render figures.
+	% force script to not render figures.
 	Make_figure_linear   = false;
 	Make_figure_standard = false;
 else
@@ -82,6 +84,19 @@ if ((useHapmap) || (useParent))
 		%-------------------------------------------------------------------------------------------------
 
 		%% =========================================================================================
+		% Load SNP/LOH data.
+		%-------------------------------------------------------------------------------------------
+		fprintf('\t|\tLoad SNP data.\n');
+		load([projectDir 'SNP_' SNP_verString '.mat']);
+		%    'chr_SNPdata{chr,i}(chr_bin_SNP)'
+		%        i = 1 : phased ratio data.
+		%        i = 2 : unphased ratio data.
+		%        i = 3 : phased coordinate data.
+		%        i = 4 : unphased coordinate data.
+		%        i = 5 : phased allele string.
+		%        i = 6 : unphased allele string.
+
+		%% =========================================================================================
 		% Calculate allelic fraction cutoffs for each segment and populate data structure containing
 		% SNP phasing information.
 		%       chr_SNPdata{chr,1}{chr_bin} = phased SNP ratio data.
@@ -91,8 +106,9 @@ if ((useHapmap) || (useParent))
 		%       chr_SNPdata{chr,5}{chr_bin} = phased SNP allele strings.   (baseCall:alleleA/alleleB)
 		%       chr_SNPdata{chr,6}{chr_bin} = unphased SNP allele strings.
 		%-------------------------------------------------------------------------------------------
-		% Prepare data for "calculate_allelic_ratio_cutoffs.m".
+		fprintf('\n\n### Calculate allelic ratio cutoffs using Gaussian fitting.\n');
 		temp_holding = chr_SNPdata;
+		makeFitFigures = false;
 		calculate_allelic_ratio_cutoffs;
 		chr_SNPdata = temp_holding;
 
@@ -106,68 +122,87 @@ if ((useHapmap) || (useParent))
 					%
 					% Determining colors for each SNP coordinate from calculated cutoffs.
 					%
-					localCopyEstimate                               = round(CNVplot2{chr}(chr_bin)*ploidy*ploidyAdjust);
-					allelic_ratios                                  = [chr_SNPdata{chr,1}{chr_bin} chr_SNPdata{chr,2}{chr_bin}];
-					coordinates                                     = [chr_SNPdata{chr,3}{chr_bin} chr_SNPdata{chr,4}{chr_bin}];
+					localCopyEstimate					= round(CNVplot2{chr}(chr_bin)*ploidy*ploidyAdjust);
+					allelic_ratios						= [chr_SNPdata{chr,1}{chr_bin} chr_SNPdata{chr,2}{chr_bin}];
+					coordinates						= [chr_SNPdata{chr,3}{chr_bin} chr_SNPdata{chr,4}{chr_bin}];
+
 					if (length(chr_SNPdata{chr,1}{chr_bin}) == 1) && (length(chr_SNPdata{chr,2}{chr_bin}) == 1)
-						allele_strings                          = {chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}};
+						allele_strings					= {chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}};
 					else
-						allele_strings                          = [chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}];
+						allele_strings					= [chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}];
+						%% dragon : troubleshooting warning of implicit numerical conversion.
+						%fprintf('^^^ Troubleshooting warning of implicit numerical to char conversion.\n');
+						%printf(['^^^ ' allele_strings '\n']);
 					end;
+
+
+%## CODE BLOCK COPIED FROM 'CNV_SNP_hapmap_v4.m'.
+%#					if (sizeof(chr_SNPdata{chr,5}{chr_bin_SNP}) == 0)
+%#		                                phased_alleles = '';
+%#		                        else
+%#		                                phased_alleles = chr_SNPdata{chr,5}{chr_bin_SNP};
+%#		                        end;
+%#		                        if (sizeof(chr_SNPdata{chr,6}{chr_bin_SNP}) == 0)
+%#		                                unphased_alleles = '';
+%#		                        else
+%#		                                unphased_alleles = chr_SNPdata{chr,6}{chr_bin_SNP};
+%#		                        end;
+%#		                        allele_strings                                          = [phased_alleles unphased_alleles];
+
 
 					if (length(allelic_ratios) > 0)
 						for SNP = 1:length(allelic_ratios)
 							% Load phased SNP data from earlier defined structure.
 							if (isa(allelic_ratios(SNP),'cell') == 1)
-								allelic_ratio                 = str2num(cell2mat(allelic_ratios(SNP)));
+								allelic_ratio			= allelic_ratios(SNP){1};
 							else
-								allelic_ratio                 = allelic_ratios(SNP);
+								allelic_ratio			= allelic_ratios(SNP);
 							end;
 							if (isa(coordinates(SNP),'cell') == 1)
-								coordinate                    = str2num(cell2mat(coordinates(SNP)));
+								coordinate			= coordinates(SNP){1};
 							else
-								coordinate                    = coordinates(SNP);
+								coordinate			= coordinates(SNP);
 							end;
 							if (length(allelic_ratios) > 1)
-								allele_string           = allele_strings{SNP};
+								allele_string			= allele_strings{SNP};
 							else
-								allele_string           = allele_strings;
+								allele_string			= allele_strings;
 							end;
-							baseCall                        = allele_string(1);
-							homologA                        = allele_string(3);
-							homologB                        = allele_string(5);
+							baseCall				= allele_string(1);
+							homologA				= allele_string(3);
+							homologB				= allele_string(5);
 
 							% identify the segment containing the SNP.
-							segmentID                       = 0;
+							segmentID				= 0;
 							for segment = 1:(length(chrCopyNum{chr}))
-								segment_start           = chr_breaks{chr}(segment  )*chr_size(chr);
-								segment_end             = chr_breaks{chr}(segment+1)*chr_size(chr);
+								segment_start			= chr_breaks{chr}(segment  )*chr_size(chr);
+								segment_end			= chr_breaks{chr}(segment+1)*chr_size(chr);
 								if (coordinate > segment_start) && (coordinate <= segment_end)
-									segmentID       = segment;
+									segmentID		= segment;
 								end;
 							end;
 
 							% Load cutoffs between Gaussian fits performed earlier.
-							segment_copyNum                 = round(chrCopyNum{              chr}(segmentID));
-							actual_cutoffs                  = chrSegment_actual_cutoffs{     chr}{segmentID};
-							mostLikelyGaussians             = chrSegment_mostLikelyGaussians{chr}{segmentID};
+							segment_copyNum				= round(chrCopyNum{              chr}(segmentID));
+							actual_cutoffs				= chrSegment_actual_cutoffs{     chr}{segmentID};
+							mostLikelyGaussians			= chrSegment_mostLikelyGaussians{chr}{segmentID};
 
 							% Calculate allelic ratio on range of [1..200].
-							SNPratio_int                    = (allelic_ratio)*199+1;
+							SNPratio_int				= (allelic_ratio)*199+1;
 
 							% Identify the allelic ratio region containing the SNP.
-							cutoffs                         = [1 actual_cutoffs 200];
-							ratioRegionID                   = 0;
+							cutoffs					= [1 actual_cutoffs 200];
+							ratioRegionID				= 0;
 							for GaussianRegionID = 1:length(mostLikelyGaussians)
-								cutoff_start            = cutoffs(GaussianRegionID  );
-								cutoff_end              = cutoffs(GaussianRegionID+1);
+								cutoff_start			= cutoffs(GaussianRegionID  );
+								cutoff_end			= cutoffs(GaussianRegionID+1);
 								if (GaussianRegionID == 1)
 									if (SNPratio_int >= cutoff_start) && (SNPratio_int <= cutoff_end)
-										ratioRegionID = mostLikelyGaussians(GaussianRegionID);
+										ratioRegionID	= mostLikelyGaussians(GaussianRegionID);
 									end;
 								else
 									if (SNPratio_int > cutoff_start) && (SNPratio_int <= cutoff_end)
-										ratioRegionID = mostLikelyGaussians(GaussianRegionID);
+										ratioRegionID	= mostLikelyGaussians(GaussianRegionID);
 									end;
 								end;
 							end;
@@ -401,7 +436,7 @@ if ((useHapmap) || (useParent))
 				end;
 				% End determine color of each bin.
 
-				% reverse order of color and CGH bins if chromosome is indicated as reversed in figure_definitions.txt file.
+				% reverse order of color and CNV bins if chromosome is indicated as reversed in figure_definitions.txt file.
 				if (chr_figReversed(chr) == 1)
 					colors        = flipud(colors);
 					CNVplot2{chr} = fliplr(CNVplot2{chr});
@@ -460,7 +495,7 @@ if ((useHapmap) || (useParent))
 					end;
 					% standard : end show centromere/outlines.
 
-					%% standard : cgh plot section.
+					%% standard : CNV plot section.
 					c_ = [0 0 0];
 					fprintf(['\nmain-plot : chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 					fprintf(['ploidy     = ' num2str(ploidy)     '\n']);
@@ -489,7 +524,7 @@ if ((useHapmap) || (useParent))
 						line([0 x2], [maxY/(ploidyBase*2)*lineNum  maxY/(ploidyBase*2)*lineNum ],'Color',[0.85 0.85 0.85]);
 					end;
 					plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-					% standard : end cgh plot section.
+					% standard : end CNV plot section.
 
 					%% standard : axes labels etc.
 					hold off;
@@ -509,7 +544,7 @@ if ((useHapmap) || (useParent))
 					set(gca,'YTickLabel',[]);
 					set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 					set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
-					text(-50000/5000/2*3, maxY/2,     chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+					text(-50000/5000/2*3, maxY/2,     chr_label{chr}, 'rotation',90, 'horizontalAlignment', 'center', 'verticalAlignment', 'bottom', 'fontsize', stacked_chr_font_size);
 					switch ploidyBase
 						case 1
 							text(axisLabelPosition_vert, maxY/2,     '1','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
@@ -592,7 +627,7 @@ if ((useHapmap) || (useParent))
 					end;
 					% standard : end show annotation locations.
 
-					%% standard : make CGH histograms to the right of the main chr cartoons.
+					%% standard : make CNV histograms to the right of the main chr cartoons.
 					if (HistPlot == true)
 						width     = 0.020;
 						height    = chr_height(chr);
@@ -613,7 +648,7 @@ if ((useHapmap) || (useParent))
 								end;
 							end;
 
-							% make a histogram of CGH data, then smooth it for display.
+							% make a histogram of CNV data, then smooth it for display.
 							histogram_end                                    = 15;             % end point in copy numbers for the histogram, this should be way outside the expected range.
 							histAll{segment}(histAll{segment}<=0)            = [];
 							histAll{segment}(length(histAll{segment})+1)     = 0;              % endpoints added to ensure histogram bounds.
@@ -661,7 +696,7 @@ if ((useHapmap) || (useParent))
 							end;
 						end;
 					end;
-					% standard : end of CGH histograms at right.
+					% standard : end of CNV histograms at right.
 
 					%% standard : places chr copy number to the right of the main chr cartoons.
 					if (ChrNum == true)
@@ -752,7 +787,7 @@ if ((useHapmap) || (useParent))
 					end;
 					%% linear : end show centromere/outline.
 
-					%% linear : cgh plot section.
+					%% linear : CNV plot section.
 					c_ = [0 0 0];
 					fprintf(['linear-plot : chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 					for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
@@ -771,7 +806,7 @@ if ((useHapmap) || (useParent))
 						f = fill(x_,y_,c_);
 						set(f,'linestyle','none');
 					end;
-					% linear : end CGH plot section.
+					% linear : end CNV plot section.
 
 					%% linear : draw lines across plots for easier interpretation of CNV regions.
 					x2 = chr_size(chr)/bases_per_bin;
@@ -779,7 +814,7 @@ if ((useHapmap) || (useParent))
 						line([0 x2], [maxY/(ploidyBase*2)*lineNum  maxY/(ploidyBase*2)*lineNum ],'Color',[0.85 0.85 0.85]);
 					end;
 					plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-					% linear : end cgh plot section.
+					% linear : end CNV plot section.
 
 					%% linear : show segmental anueploidy breakpoints.
 					if (Linear_displayBREAKS == true) && (show_annotations == true)

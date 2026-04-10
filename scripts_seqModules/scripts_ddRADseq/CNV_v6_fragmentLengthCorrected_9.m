@@ -1,5 +1,6 @@
 function [] = CNV_v6_fragmentLengthCorrected_9(main_dir,user,genomeUser,project,parent,genome,ploidyEstimate,ploidyBase, ...
                                                CNV_verString,displayBREAKS);
+graphics_toolkit gnuplot;
 addpath('../');
 
 % Close all pre-existing figures.

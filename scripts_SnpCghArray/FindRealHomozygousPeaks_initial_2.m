@@ -1,6 +1,7 @@
 function [realHomozygous_peak, disomy_fit, skew_factor] = ...
-    FindRealHomozygousPeaks_initial_2(chrCopyNum,SNP_probeset_length,probeset1,chr_breaks,chr_size,show_unnassigned,DataTypeToUse,show_fitting, workingDir)
-% FindRealHomozygousPeakLocation determines where homozygous peaks are in the data for an experiment.
+	FindRealHomozygousPeaks_initial_2(chrCopyNum,SNP_probeset_length,probeset1,chr_breaks,chr_size,show_unnassigned,DataTypeToUse,show_fitting, workingDir)
+	% FindRealHomozygousPeakLocation determines where homozygous peaks are in the data for an experiment.
+graphics_toolkit gnuplot;
 
 %%=========================================================================
 % Load project figure version.

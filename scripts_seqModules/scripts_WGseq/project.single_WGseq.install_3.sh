@@ -80,7 +80,7 @@ then
 	fi
 	echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
 fi
-indelrealign_bool=$(echo $dataFormat | cut -c5-5);  # 0=no indel-realignment; 1=indel-realignment.
+#indelrealign_bool=$(echo $dataFormat | cut -c5-5);  # 0=no indel-realignment; 1=indel-realignment.
 
 # Determine location of genome being used.
 if [ -d $main_dir"users/"$user"/genomes/"$genome"/" ]
@@ -114,12 +114,12 @@ echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
 projectParent=$(head -n 1 $projectDirectory"parent.txt");
 echo "\tparentProject = '"$projectParent"'" >> $logName;
 
-if [ $indelrealign_bool = 1 ]
-then
-	# Define temporary directory for abra2 files.
-	abra2TempDirectory=$projectDirectory"abra2_temp/";
-	echo "\tabra2TempDirectory = '"$abra2TempDirectory"'" >> $logName;
-fi
+#if [ $indelrealign_bool = 1 ]
+#then
+#	# Define temporary directory for abra2 files.
+#	abra2TempDirectory=$projectDirectory"abra2_temp/";
+#	echo "\tabra2TempDirectory = '"$abra2TempDirectory"'" >> $logName;
+#fi
 
 echo "#============================================================================== 2" >> $logName;
 
@@ -127,7 +127,8 @@ echo "#=========================================================================
 if [ -f $projectDirectory"SNP_CNV_v1.txt" ]
 then
 	echo "\tDone: SAM -> BAM, new group headers, sorted." >> $logName;
-	echo "\tBAM.indelrealignment done; Samtools.pileup generated." >> $logName;
+#	echo "\tBAM.indelrealignment done; Samtools.pileup generated." >> $logName;
+	echo "\tSamtools.pileup generated." >> $logName;
 else
 	##==============================================================================
 	## Trimming/cleanup of FASTQ files.
@@ -188,7 +189,8 @@ else
 
 	if [ -f $projectDirectory"data.pileup" ]
 	then
-		echo "\tBAM.indelrealignment done; Samtools.pileup generated." >> $logName;
+#		echo "\tBAM.indelrealignment done; Samtools.pileup generated." >> $logName;
+		echo "\tSamtools.pileup generated." >> $logName;
 	else
 		echo "#============================================================================== 3" >> $logName;
 
@@ -197,7 +199,7 @@ else
 		echo "\tSamtools : Generating pileup.   (for SNP/CNV/INDEL analysis)" >> $logName;
 		echo "Generating pileup file." >> $condensedLog;
 		echo "\nRunning samtools:mpileup.\n";
-		$python_exec $main_dir"scripts_seqModules/parallel_mpileup.py" $samtools_exec $genomeDirectory$genomeFASTA $usedFile $logName $cores $genomeDirectory data.pileup 2>> $logName;
+		bash $main_dir"scripts_seqModules/parallel_mpileup.sh" $user $project >> $logName;
 		echo "\tSamtools : Pileup generated." >> $logName;
 	fi
 
@@ -213,6 +215,34 @@ else
 
 	wait;
 fi
+
+
+# Find genome size and add to readStats.txt file.
+sed -n '2~2p' $genomeDirectory"datafile_g_0.2.fasta" > $projectDirectory"reference.temp";
+referenceSeq=$(wc $projectDirectory"reference.temp");
+genomeChrCount=$(echo $referenceSeq=|cut -d' ' -f1);
+genomeLengthInit=$(echo $referenceSeq=|cut -d' ' -f3)
+genomeLength=$(expr $genomeLengthInit - $genomeChrCount);
+echo $genomeLength" (genome length)" >> $projectDirectory"readStats.txt";
+
+## Read in [read count] and [total read length] from readStats.txt file.
+readCount=$(head -n 1 $projectDirectory"readStats.txt" | awk '{print $1}');
+readTotalLength=$(head -n 2 $projectDirectory"readStats.txt" | tail -n 1 | awk '{print $1}');
+
+## Calculate expected average read depth and add to readStats.txt file.
+readDepthAverageExpected=$(echo "scale=3; $readTotalLength / $genomeLength" | bc);
+echo $readDepthAverageExpected" (Expected read depth)" >> $projectDirectory"readStats.txt";
+
+## Find average read depth and add to readStats.txt file.
+readDepthAverageFound=$(awk '{sum += $3; count++} END {if (count > 0) print sum/count}' $projectDirectory"SNP_CNV_v1.txt");
+echo $readDepthAverageFound" (Found read depth)" >> $projectDirectory"readStats.txt";
+
+## Calculate percentage mapped and add to readStats.txt file.
+percentageMapped1=$(echo "scale=6; ($readDepthAverageFound / $readDepthAverageExpected)*100" | bc);
+percentageMapped2=$(echo "scale=3; $percentageMapped1 / 1" | bc);
+echo $percentageMapped2" (Mapped read percentage)">> $projectDirectory"readStats.txt";
+
+
 if [ $hapmapInUse = 1 ]
 then
 	if [ -f $projectDirectory"trimmed_SNPs_v5.txt" ]
