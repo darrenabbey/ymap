@@ -66,7 +66,7 @@ function [G1_a, G1_b, G1_c, Rsquared] = fit_Gaussian_model2(workingDir, data, lo
 		G1_c = abs(Estimates(3));
 	end;
 
-	%%% Calculate R^2 for fit line.
+	%%% Calculate R² for fit line.
 	%------------------------------------
 	G1_fit   = G1_a*exp(-0.5*((time-G1_b)./G1_c).^2);
 	fitted   = G1_fit;
