@@ -77,7 +77,6 @@
 		$dataStrings             = explode(":",$dataFileStrings);
 		$dataType                = $dataStrings[0];
 		$readType                = $dataStrings[1];
-		$performIndelRealignment = $dataStrings[2];
 
 		// Figure out parent project name.
 		$parent                  = strip_tags(trim(file_get_contents("users/".$user."/projects/".$project."/parent.txt")));
@@ -89,7 +88,6 @@
 		$dataType			= 99;
 		$readType			= 99;
 		$exceededSpace			= true;
-		$performIndelRealignment	= false;
 		$ploidy				= "2.0";
 		$ploidy_baseline		= "2.0";
 	}
@@ -136,7 +134,8 @@
 						<?php
 							if ($dataType == 0)      { echo "SnpCgh microarray"; }
 							else if ($dataType == 1) { echo "Whole genome NGS (short-reads)"; }
-							else if ($dataType == 2) { echo "ddRADseq"; }
+							else if ($dataType == 2) { echo "Whole genome NGS (long-reads)"; }
+							else if ($dataType == 3) { echo "ddRADseq"; }
 						?>
 						</option>
 					</select>
@@ -147,23 +146,20 @@
 						<label for="readType">Read type : </label><select name="readType" id="readType" style="background-color:#CCCCFF">
 							<option value="<?php echo $readType; ?>">
 							<?php
-								if ($readType == 0)      { echo "single-end short-reads; FASTQ/ZIP/GZ file."; }
-								else if ($readType == 1) { echo "paired-end short-reads; FASTQ/ZIP/GZ files."; }
-								else if ($readType == 2) { echo "SAM/BAM file."; }
-								else if ($readType == 3) { echo "TXT file."; }
+								if ($dataType == 2) {
+									echo "long-reads; FASTQ/ZIP/GZ file.";
+								} else {
+									if ($readType == 0)      { echo "single-end short-reads; FASTQ/ZIP/GZ file."; }
+									else if ($readType == 1) { echo "paired-end short-reads; FASTQ/ZIP/GZ files."; }
+									else if ($readType == 2) { echo "SAM/BAM file."; }
+									else if ($readType == 3) { echo "TXT file."; }
+								}
 							?>
 							</option>
 						</select><br>
 					</div>
 				</td><td>
 					<div id="hiddenFormSection2" style="display:inline"></div>
-				</td></tr>
-				<tr bgcolor="#CCFFCC"><td>
-					<div id="hiddenFormSection2a" style="display:inline">
-						<input type="checkbox" name="indelrealign" value="<?php if ($performIndelRealignment == 0) { echo "False"; } else { echo "True"; } ?>" disabled="disabled">Perform Indel-realignment<br>
-					</div>
-				</td><td>
-					<div id="hiddenFormSection2b" style="display:inline"></div>
 				</td></tr>
 				<tr bgcolor="#CCFFCC"><td>
 					<div id="hiddenFormSection3" style="display:inline">
@@ -187,7 +183,11 @@
 				<tr bgcolor="#CCCCFF"><td>
 					<div id="hiddenFormSection5" style="display:inline">
 						<label for="hapmap">Haplotype map : </label><select name="hapmap" id="hapmap" readonly style="background-color:#CCCCFF">
-						<?php echo "\n\t\t\t\t\t<option value='".$hapmap."'>".$hapmap."</option>"; ?>
+						<?php 	if ($hapmap == "") {
+								echo "\n\t\t\t\t\t<option value='none'>none</option>";
+							} else {
+								echo "\n\t\t\t\t\t<option value='".$hapmap."'>".$hapmap."</option>";
+							} ?>
 						</select>
 					</div>
 				</td><td valign="top">
@@ -207,25 +207,48 @@
 				<tr bgcolor="#CCFFCC"><td>
 					<div id="hiddenFormSection9a" style="display:none">
 						<!-- SnpCgh array --!>
-						<input type="checkbox"      name="0_bias2" value="True" checked>GC-content bias<br>
-						<input type="checkbox"      name="0_bias4" value="True"        >chromosome-end bias
+						<input type="checkbox"      name="0_bias2" value="True" onchange="UpdateFigureSelections();" checked        >GC-content bias<br>
+						<input type="checkbox"      name="0_bias4" value="True" onchange="UpdateBiasWG(); UpdateFigureSelections();">chromosome-end bias
 					</div>
 					<div id="hiddenFormSection9b" style="display:inline">
 						<!-- WGseq --!>
-						<input type="checkbox"      id="1_bias2" name="1_bias2" value="True" checked>GC-content bias<br>
-						<input type="checkbox"      id="1_bias4" name="1_bias4" value="True"  onchange="UpdateBiasWG();">chromosome-end bias (forces using GC content bias)
+						<input type="checkbox"      id="1_bias2" name="1_bias2" value="True" onchange="UpdateFigureSelections();" checked        >GC-content bias<br>
+						<input type="checkbox"      id="1_bias4" name="1_bias4" value="True" onchange="UpdateBiasWG(); UpdateFigureSelections();">chromosome-end bias (forces using GC content bias)
 					</div>
 					<div id="hiddenFormSection9c" style="display:none">
 						<!-- ddRADseq --!>
 						<input type="checkbox"      name="2_bias1" value="True" checked>fragment-length bias<br>
-						<input type="checkbox"      name="2_bias2" value="True" checked>GC-content bias<br>
-						<input type="checkbox"      name="2_bias4" value="True"        >chromosome-end bias
+						<input type="checkbox"      name="2_bias2" value="True" onchange="UpdateFigureSelections();" checked        >GC-content bias<br>
+						<input type="checkbox"      name="2_bias4" value="True" onchange="UpdateBiasWG(); UpdateFigureSelections();">chromosome-end bias
 					</div>
 				</td><td>
 				GC% bias correction is almost always ideal.<br>
 				Use chromosome-end correction with care. <font size='2'>(Chr end bias in data can potentially reveal structural changes which alter the distance between<br>
 				a locus and a chromosome end vs in the reference genome. Correcting this bias can lead to confounding copy number artifacts in cases like this.)</font>
-				</td></tr></table><br>
+				</td></tr>
+				<tr bgcolor="#FFFFCC"><td>
+				<div id="hiddenFormSection9" style="display:inline">
+					<input type="checkbox" id="fig_bias_1"      name="fig_A1" value="True"         ><span id="label_bias_1" style="color:black">GC-content bias figure.</span><br>
+					<input type="checkbox" id="fig_bias_2"      name="fig_A2" value="True" disabled><span id="label_bias_2" style="color:grey">Chromosome-end bias figure.</span><br><br>
+
+					<input type="checkbox" id="fig_Cnv_1"       name="fig_B1" value="True"         >Linear CNV map figure.<br>
+					<input type="checkbox" id="fig_Cnv_2"       name="fig_B2" value="True"         >Full CNV map figure.<br>
+					<input type="checkbox" id="fig_CnvHigh"     name="fig_C"  value="True"         >Linear high-top CNV map figure.<br><br>
+
+					<input type="checkbox" id="fig_Snp_1"       name="fig_D1" value="True"         >Linear SNP/LOH map figure.<br>
+					<input type="checkbox" id="fig_Snp_2"       name="fig_D2" value="True"         >Full SNP/LOH map figure.<br>
+					<input type="checkbox" id="fig_fireplot_2"  name="fig_E"  value="True"         >Linear alleleic ratio (fire-plot) map figure.<br><br>
+
+					<input type="checkbox" id="fig_CnvSnp_1"    name="fig_F1" value="True" checked >Linear CNV/SNP/LOH map figure.<br>
+					<input type="checkbox" id="fig_CnvSnp_2"    name="fig_F2" value="True"         >Full CNV/SNP/LOH map figure.<br>
+					<input type="checkbox" id="fig_CnvSnpAlt_1" name="fig_G1" value="True"         >Linear CNV/SNP/LOH map figure with alternate color scheme.<br>
+					<input type="checkbox" id="fig_CnvSnpAlt_2" name="fig_G2" value="True"         >Full CNV/SNP/LOH map figure with alternate color scheme.
+				</div>
+				</td><td>
+				Select which figure types you would like generated for your dataset.
+				</td></tr>
+
+				</table><br>
 				<?php
 				if (!$exceededSpace) {
 					echo "<input type='submit' value='Regenerate Dataset Figures'>";
@@ -288,6 +311,26 @@
                                         document.getElementById("1_bias2").checked = true;
                                 }
                         }
+			UpdateFigureSelections=function() {
+				if (document.getElementById("1_bias2").checked) {
+					document.getElementById("fig_bias_1").disabled = false;
+					document.getElementById("fig_bias_1").checked  = false;
+					document.getElementById("label_bias_1").style.color="black";
+				} else {
+					document.getElementById("fig_bias_1").disabled = true;
+					document.getElementById("fig_bias_1").checked  = false;
+					document.getElementById("label_bias_1").style.color="grey";
+				}
+				if (document.getElementById("1_bias4").checked) {
+					document.getElementById("fig_bias_2").disabled = false;
+					document.getElementById("fig_bias_2").checked  = false;
+					document.getElementById("label_bias_2").style.color="black";
+				} else {
+					document.getElementById("fig_bias_2").disabled = true;
+					document.getElementById("fig_bias_2").checked  = false;
+					document.getElementById("label_bias_2").style.color="grey";
+				}
+			}
 			</script>
 		</p></div>
 	</body>

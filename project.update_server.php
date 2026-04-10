@@ -48,7 +48,7 @@
 		$logOutput     = fopen($logOutputName, 'a');
 		fwrite($logOutput, "Log file restarted.\n");
 		fwrite($logOutput, "#..............................................................................\n");
-		fwrite($logOutput, "Running 'scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php'.\n");
+		fwrite($logOutput, "Running 'project.update_server.php'.\n");
 		fwrite($logOutput, "Variables passed :\n");
 		fwrite($logOutput, "\tuser     = '".$user."'\n");
 		fwrite($logOutput, "\tproject  = '".$project."'\n");
@@ -159,6 +159,41 @@
 		}
 		fclose($file2);
 		chmod($fileName1,0664);
+		fwrite($logOutput, "\tUpdated 'dataBiases.txt' file.\n");
+
+		// Grab updated figure selections from post.
+		$fig_A1          = sanitizeBoolean_POST("fig_A1");
+		$fig_A2          = sanitizeBoolean_POST("fig_A2");
+		$fig_B1          = sanitizeBoolean_POST("fig_B1");
+		$fig_B2          = sanitizeBoolean_POST("fig_B2");
+		$fig_C           = sanitizeBoolean_POST("fig_C");
+		$fig_D1          = sanitizeBoolean_POST("fig_D1");
+		$fig_D2          = sanitizeBoolean_POST("fig_D2");
+		$fig_E           = sanitizeBoolean_POST("fig_E");
+		$fig_F1          = sanitizeBoolean_POST("fig_F1");
+		$fig_F2          = sanitizeBoolean_POST("fig_F2");
+		$fig_G1          = sanitizeBoolean_POST("fig_G1");
+		$fig_G2          = sanitizeBoolean_POST("fig_G2");
+		// Update figure selections file.
+		$fileName3 = "users/".$user."/projects/".$project."/figure_options.txt";
+		$file3     = fopen($fileName3, 'w');
+		fwrite($file3,"Figures\n");
+		if ($fig_A1 != 1) { fwrite($file3,"False\n"); } else { fwrite($file3,"True\n"); }
+		if ($fig_A2 != 1) { fwrite($file3,"False\n"); } else { fwrite($file3,"True\n"); }
+		if ($fig_B1 != 1) { fwrite($file3,"False\n"); } else { fwrite($file3,"True\n"); }
+		if ($fig_B2 != 1) { fwrite($file3,"False\n"); } else { fwrite($file3,"True\n"); }
+		if ($fig_C  != 1) { fwrite($file3,"False\n"); } else { fwrite($file3,"True\n"); }
+		if ($fig_D1 != 1) { fwrite($file3,"False\n"); } else { fwrite($file3,"True\n"); }
+		if ($fig_D2 != 1) { fwrite($file3,"False\n"); } else { fwrite($file3,"True\n"); }
+		if ($fig_E  != 1) { fwrite($file3,"False\n"); } else { fwrite($file3,"True\n"); }
+		if ($fig_F1 != 1) { fwrite($file3,"False\n"); } else { fwrite($file3,"True\n"); }
+		if ($fig_F2 != 1) { fwrite($file3,"False\n"); } else { fwrite($file3,"True\n"); }
+		if ($fig_G1 != 1) { fwrite($file3,"False\n"); } else { fwrite($file3,"True\n"); }
+		if ($fig_G2 != 1) { fwrite($file3,"False");   } else { fwrite($file3,"True"); }
+		fclose($file3);
+		chmod($fileName3,0664);
+		fwrite($logOutput, "\tUpdated 'figure_options.txt' file.\n");
+
 
 		// initiate project processing.
 		$conclusion_script = "";
@@ -166,11 +201,17 @@
 			case "0": //"SnpCghArray":
 				$conclusion_script = "scripts_SnpCghArray/project.SnpCgh.update.php";
 				break;
-			case "1": //"WGseq_single":
+			case "1": //"WGseq_short":
 				$conclusion_script = "scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
 				break;
-			case "2": //"ddRADseq_single":
+			case "2": //"WGseq_long";
+				$conclusion_script = "scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
+				break;
+			case "3": //"ddRADseq":
 				$conclusion_script = "scripts_seqModules/scripts_ddRADseq/project.ddRADseq.update_1.php";
+				break;
+			case "4": //"FASTA":
+				$conclusion_script = "scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
 				break;
 			}
 

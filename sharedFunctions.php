@@ -62,4 +62,20 @@ function log_stuff($user,$project,$hapmap,$genome,$filename,$message) {
 		file_put_contents($log_file, $line . PHP_EOL, FILE_APPEND);
 	}
 }
+
+function getColors($user,$project) {
+	//[$colorString1, $colorString2] = getColors($user,$project);
+	$colors_file  = $base_dir."/users/".$user."/projects/".$project."/colors.txt";
+	if (file_exists($colors_file)) {
+		$handle       = fopen($colors_file,'r');
+		$colorString1 = trim(fgets($handle));
+		$colorString2 = trim(fgets($handle));
+		fclose($handle);
+	} else {
+		$colorString1 = 'null';
+		$colorString2 = 'null';
+	}
+	return [$colorString1,$colorString2];
+}
+
 ?>

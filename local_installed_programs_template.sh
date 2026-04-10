@@ -14,6 +14,9 @@ seqtkDirectory=$userProgramsLocation"seqtk/";
 # Dependency executables:
 matlab_exec=$userProgramsLocation"Matlab_R2014b/bin/matlab";
 
+# the wigToBigWig executable:
+wigToBigWig_exec=$userProgramsLocation"wigToBigWig";
+
 
 
 #============================================================================
@@ -28,6 +31,3 @@ python_exec="python3";
 
 # The Python executable that also has numpy 1.8.0 installed:
 python_numpy_exec="python3";
-
-
-

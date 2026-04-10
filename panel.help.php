@@ -22,17 +22,13 @@
 <font size='2'>
 <p class="tab">
 <p>
-	<li class="tab">Large FASTQ files occassionally get clipped during file transfer processes, both here and elsewhere. YMAP checks for the resulting damage and will continue processing.</li>
-</p><p>
-	<li class="tab">Large BAM files can also be clipped during file transfer processes. YMAP doesn't check for this damage, but one example was seen where YMAP continued processing.
-	It was a sorted BAM file and the result was a large portion at the end of the genome had a copy number estimate of zero. On a second attempt, the file uploaded and processed perfectly.</li>
+	<li class="tab">Large files occassionally get clipped during file transfer processes, both here and elsewhere. YMAP checks for the resulting damage and will continue processing when possible.</li>
+	<li class="tab">FASTQ files and *.GZ archives that have been clipped are recoverable, though data loss may be visible if the reads had been sorted.</li>
+	<li class="tab">BAM files that are clipped can sometimes result in YMAP failing, but sometimes can be automatically recovered.</li>
 </p><p>
 	<li class="tab">Sometimes, datasets will show a strong chromosome-end bias to the sequence read depth. If there is a structural rearrangement in the genome within the impacted areas,
 	this bias in read depth can help you characterize the rearrangement. Using chromosome-end bias correction in these cases will lead to figures that are hard to interpret.</li>
-</p><p>
-	<li class="tab">Though YMAP can perform an indel-realignment step during processing, the step is very slow and is not recommended.</li>
 </p>
-
 </p>
 </font><br>
 <hr>
@@ -107,16 +103,7 @@
 	</ul>
 </p>
 <p>
-	<b>Uploaded files named with other file types will be discarded.</b>
-	<ul>
-		<li>*.tdt</li>
-		<li>*.fasta</li>
-		<li>*.fastq</li>
-		<li>*.fastq.zip</li>
-		<li>*.fastq.gz</li>
-		<li>*.sam</li>
-		<li>*.bam</li>
-	</ul>
+	<b>Uploaded files with unexpected file types will be discarded. YMAP will log you out of your account defensively in this case.</b>
 </p>
 <hr width="50%">
 <p>

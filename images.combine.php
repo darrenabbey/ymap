@@ -215,8 +215,9 @@
 				$image3_height  = $image_size[1];
 				$image4_height  = $image_size[1];
 
-				// loading white color for in between filling
+				// loading colors.
 				$white = imagecolorallocate($working1, 255, 255, 255);
+				$black = imagecolorallocate($working1,   0,   0,   0);
 
 				if ($entry_key == 0) {
 					// copy first figure entirely
@@ -224,6 +225,13 @@
 					imagecopy($working2, $image2, 0, 0, 0, 0,  $image_width, $image_height);
 					imagecopy($working3, $image3, 0, 0, 0, 0,  $image_width, $image_height);
 					imagecopy($working4, $image4, 0, 0, 0, 0,  $image_width, $image_height);
+
+					// add in project name.
+					imagestring($working1,4,0,$image1_height-153,$fig_project,$black);
+					imagestring($working2,4,0,$image1_height-153,$fig_project,$black);
+					imagestring($working3,4,0,$image1_height-153,$fig_project,$black);
+					imagestring($working4,4,0,$image1_height-153,$fig_project,$black);
+
 					echo "[] ".$entry_key." ".$fig_CNV_SNP."<br>\n";
 				} else {
 					// copy individual images together.
@@ -237,6 +245,13 @@
 					imagefilledrectangle($working2, 50, $image_height + $linearCartoonHeight*($entry_key-1)-10, $image_width,  $image_height + $linearCartoonHeight*($entry_key-1)+4, $white);
 					imagefilledrectangle($working3, 50, $image_height + $linearCartoonHeight*($entry_key-1)-10, $image_width,  $image_height + $linearCartoonHeight*($entry_key-1)+4, $white);
 					imagefilledrectangle($working4, 50, $image_height + $linearCartoonHeight*($entry_key-1)-10, $image_width,  $image_height + $linearCartoonHeight*($entry_key-1)+4, $white);
+
+					// add in project name.
+					imagestring($working1,4,0,$image1_height-153+139*$entry_key,$fig_project,$black);
+					imagestring($working2,4,0,$image1_height-153+139*$entry_key,$fig_project,$black);
+					imagestring($working3,4,0,$image1_height-153+139*$entry_key,$fig_project,$black);
+					imagestring($working4,4,0,$image1_height-153+139*$entry_key,$fig_project,$black);
+
 					echo "...   ".$entry_key." ".$fig_CNV_SNP."<br>\n";
 				}
 			}

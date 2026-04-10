@@ -35,7 +35,10 @@
 		// Validate additional inputs found when dealing with ddRADseq or WGseq data types.
 		if ($dataFormat != "0") {
 			// Validate input strings.
-			$readType            = sanitizeIntChar_POST("readType");
+			$readType_WGseq_short = sanitizeIntChar_POST("readTypeA");
+			$readType_FASTA       = sanitizeIntChar_POST("readTypeB");
+			$readType_WGseq_long  = sanitizeIntChar_POST("readTypeC");
+
 			$performIndelRealign = sanitize_POST("indelrealign");
 				if ($performIndelRealign == "True") {	$indelRealign = "1";
 				} else {				$indelRealign = "0";
@@ -167,7 +170,7 @@
 
 			// Generate 'dataFormat.txt' and 'dataBiases.txt' files.
 			// dataFormat.txt file: #:#:# where 1st # indicates type of data, 2nd # indicates format of input data, & 3rd # indicates if indel-realignment should be done.
-			// 1st #: 0=SnpCghArray; 1=WGseq; 2=ddRADseq.
+			// 1st #: 0=SnpCghArray; 1=WGseq (short-read); 2=WGseq (long-read); 3=ddRADseq; 4=FASTQ.
 			// 2nd #: 0=single-end-reads FASTQ/ZIP/GZ; 1=paired-end-reads FASTQ/ZIP/GZ; 2=SAM/BAM; 3=TXT.
 			// 3rd #: 0=False, no indel-realignment; 1=True, performe indel-realignment.
 			$fileName1 = $project_dir1."/dataFormat.txt";
@@ -181,15 +184,18 @@
 				if (strcmp($bias_GC ,"") == 0) { $bias_GC  = "False"; }
 				if (strcmp($bias_end,"") == 0) { $bias_end = "False"; }
 				fwrite($file2,"False\n".$bias_GC."\nFalse\n".$bias_end);
-			} else if ($dataFormat == "1") { // WGseq
-				fwrite($file1, $dataFormat.":".$readType.":".$indelRealign);
+			} else if ($dataFormat == "1") { // WGseq (short-read)
+				fwrite($file1, $dataFormat.":".$readType_WGseq_short.":".$indelRealign);
 				$bias_GC     = filter_input(INPUT_POST, "1_bias2", FILTER_SANITIZE_STRING);
 				$bias_end    = filter_input(INPUT_POST, "1_bias4", FILTER_SANITIZE_STRING);
 				if (strcmp($bias_GC ,"") == 0) { $bias_GC  = "False"; }
 				if (strcmp($bias_end,"") == 0) { $bias_end = "False"; } else {$bias_GC  = "True"; }
 				fwrite($file2,"False\n".$bias_GC."\nFalse\n".$bias_end);
-			} else if ($dataFormat == "2") { // ddRADseq
-				fwrite($file1, $dataFormat.":".$readType.":".$indelRealign);
+			} else if ($dataFormat == "2") { // WGseq (long-read)
+				fwrite($file1, $dataFormat);
+				fwrite($file2,"False\nFalse\nFalse\nFalse");
+			} else if ($dataFormat == "3") { // ddRADseq
+				fwrite($file1, $dataFormat.":".$readType_WGseq_short.":".$indelRealign);
 				$bias_length = filter_input(INPUT_POST, "2_bias1", FILTER_SANITIZE_STRING);
 				$bias_GC     = filter_input(INPUT_POST, "2_bias2", FILTER_SANITIZE_STRING);
 				$bias_end    = filter_input(INPUT_POST, "2_bias4", FILTER_SANITIZE_STRING);
@@ -197,6 +203,9 @@
 				if (strcmp($bias_GC    ,"") == 0) { $bias_GC     = "False"; }
 				if (strcmp($bias_end   ,"") == 0) { $bias_end    = "False"; }
 				fwrite($file2,$bias_length."\n".$bias_GC."\nFalse\n".$bias_end);
+			} else if ($dataFormat == "4") { // FASTA
+				fwrite($file1, $dataFormat);
+				fwrite($file2,"False\nFalse\nFalse\nFalse");
 			}
 			fclose($file1);
 			fclose($file2);
@@ -204,7 +213,7 @@
 			chmod($fileName2,0664);
 
 			// Generate 'restrictionEnzymes.txt' file, only for ddRADseq projects.
-			if ($dataFormat == "2") { // ddRADseq
+			if ($dataFormat == "3") { // ddRADseq
 				$fileName = $project_dir1."/restrictionEnzymes.txt";
 				$file     = fopen($fileName, 'w');
 				fwrite($file, $restrictionEnzymes);

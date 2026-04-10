@@ -192,8 +192,10 @@ body {font-family: arial;}
 		$intervalTime   = $currentTime - $startTime;
 		if (strcmp($dataFormat,"0") == 0) {
 			$timeLimit  = 60*60;   // 1 hour minutes for array analysis.
+		} else if (strcmp($dataFormat,"2") == 0) {
+			$timeLimit  = 60*60*10; // 10 hours for long-read data.
 		} else {
-			$timeLimit  = 60*60*6; // 6 hours
+			$timeLimit  = 60*60*6; // 6 hours for short-read data.
 		}
 		if ($intervalTime > $timeLimit) { // likely error.
 			?>

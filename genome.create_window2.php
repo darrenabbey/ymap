@@ -18,6 +18,15 @@
 <?php
 	if (isset($_SESSION['logged_on']) and isset($_SESSION['user'])) {
 		$user     = $_SESSION['user'];
+
+		// Check if logged in user has admin rights.
+		$admin_user_flag_file = "users/".$user."/admin.txt";
+		if (file_exists($admin_user_flag_file)) {
+			$admin = "true";
+		} else {
+			$admin = "false";
+		}
+
 		if (isset($_SESSION['genome']) and isset($_SESSION['key'])) {
 			$genome   = $_SESSION['genome'];
 			$key      = $_SESSION['key'];
@@ -105,14 +114,35 @@
 					echo "\t\t\t<td align=\"middle\"><input type=\"checkbox\" class=\"draw\" name=\"reversed_{$chrID}\" unchecked></td>\n";
 					echo "\t\t</tr>\n";
 				}
-
 				echo "</table><br>";
 				echo "<font size=\"2\">";
 				echo "Ploidy = <input type=\"text\" name=\"ploidy\" value=\"2.0\" size=\"6\"><br>";
 				echo "rDNA (start = <input type=\"text\" name=\"rDNAstart\" value=\"0\" size=\"6\">; end = <input type=\"text\" name=\"rDNAend\" value=\"0\" size=\"6\">)<br>";
 				echo "Further annotations to add to the genome? <input type=\"text\" name=\"annotation_count\" value=\"0\" size=\"6\"><br>";
-				echo "</font>";
-				echo "<br>";
+				echo "</font><br>";
+
+				// Optional figure types.
+				if ($admin == "true") {
+?>
+<div style="background-color:#FFDDDD;">
+<font color="black" size="2">
+<b>ADMIN functions</b>
+YMAP2 can generate a few different figures by analyzing the reference sequence.<br>
+These do not depend on later uploading sequencing datasets; they characterize the reference sequence itself.<br>
+Reduce figures to be generated for faster processing for general use.</font><br>
+<table>
+<tr bgcolor="#DDBBBB"><td>
+<div id="hiddenFormSection9" style="display:inline">
+<font color="black" size="2">
+<input type="checkbox" id="fig_1" name="fig_1" value="True" checked><span id="label_fig_1" style="color:#000000">Repetitiveness map.</span><br>
+<input type="checkbox" id="fig_2" name="fig_2" value="True" checked><span id="label_fig_2" style="color:#000000">GC-skew map.</span><br>
+<input type="checkbox" id="fig_3" name="fig_3" value="True" checked><span id="label_fig_3" style="color:#AA5555">Chromosome cartoons.</span><br>
+</font>
+</div>
+</td></tr></table></div><br>
+<?php
+				}
+
 				echo "<input type=\"submit\" value=\"Save genome details...\">";
 				echo "<input type=\"hidden\" id=\"key\" name=\"key\" value=\"".  $key . "\">";
 				echo "</form>";

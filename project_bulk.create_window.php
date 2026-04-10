@@ -33,7 +33,7 @@
 		<div id="loginControls"><p>
 		</p></div>
 			<b>Bulk data has to have been previously loaded into a "bulkdata/" directory in the admin user account.<br>
-			Once data processing settings have been made here, YMAP will automatically process through the datsets iteratively.</b>
+			Once data processing settings have been made here, YMAP will automatically process through the datsets iteratively.<br><br>
 		<div id="projectCreationInformation"><p>
 			<form id="bulk_submit" action="project_bulk.create_server.php" method="post">
 
@@ -77,7 +77,7 @@
 				</td><td>
 					<div id="hiddenFormSection2" style="display:inline">
 						Single-end or paired-end reads in FASTQ format can be compressed into ZIP or GZ archives or in SAM/BAM alignment files.<br>
-						Paired-end data files must be compressed separately and must end with "_R1" and "_R2".
+						Paired-end data files must be compressed separately and must end with ("_R1" or "_R1_001") and ("_R2" or "_R2_001").
 					</div>
 				</td></tr>
 				<tr bgcolor="#FFFFCC"><td>
@@ -250,7 +250,7 @@
 					</div>
 				</td><td>
 				Select which figure types you would like generated for each of your datasets.<br><br>
-				Reduce the number of figures to be generated to allow bulk processing to complete more quicklt.<br>
+				Reduce the number of figures to be generated to allow bulk processing to complete more quickly.<br>
 				Individual datasets can be reprocessed later to regenerate additional figures.
 				</td></tr>
 				</table><br>

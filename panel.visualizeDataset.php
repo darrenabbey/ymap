@@ -7,7 +7,7 @@
 		font-family: arial !important;
 	}
 </style>
-<font size='3'>View figures for installed datasets at bottom of page by selecting checkboxes.</font><br><br>
+<font size='3'>View figures for installed datasets by selecting checkboxes.</font><br><br>
 <table width="100%" cellpadding="0"><tr>
 <td width="65%" valign="top">
 	<?php
@@ -47,7 +47,8 @@
 		$projectFolders   = array_merge($projectFolders_working, $projectFolders_starting, $projectFolders_complete);
 		$userProjectCount = count($projectFolders);
 
-		echo "<b><font size='2'>User installed datasets:</font></b>\n\t\t";
+		echo "<font size='2'><b>User installed datasets:</b> (View all.";
+		echo "<input id='showAllUser' type='checkbox' onclick=\" openUserProjects(); window.top.hide_combined_fig_menu();\">)</font>";
 		echo "<br>\n\t\t";
 
 
@@ -61,7 +62,11 @@
 				[$colorString1, $colorString2] = getColors($user,$project);
 
 				// getting genome name for project.
-				$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."]</font>";
+				if (getHapmapName($user,$project) != "") {
+					$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."] & hapmap [".getHapmapName($user,$project)."]</font>";
+				} else {
+					$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."]</font>";
+				}
 				$genome_name = str_replace("+ ","",$genome_name);
 
 				// getting figure version for project.
@@ -126,7 +131,12 @@
 			[$colorString1, $colorString2] = getColors($user,$project);
 
 			// getting genome name for project.
-			$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."]</font>";
+			//$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."] vs [".getHapmapName($user,$project)."]</font>";
+			if (getHapmapName($user,$project) != "") {
+				$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."] & hapmap [".getHapmapName($user,$project)."]</font>";
+			} else {
+				$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."]</font>";
+			}
 			$genome_name = str_replace("+ ","",$genome_name);
 
 			// getting figure version for project.
@@ -197,7 +207,12 @@
 				[$colorString1, $colorString2] = getColors($user,$project);
 
 				// getting genome name for project.
-				$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."]</font>";
+				//$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."] vs [".getHapmapName($user,$project)."]</font>";
+				if (getHapmapName($user,$project) != "") {
+					$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."] & hapmap [".getHapmapName($user,$project)."]</font>";
+				} else {
+					$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."]</font>";
+				}
 				$genome_name = str_replace("+ ","",$genome_name);
 
 				// getting figure version for project.
@@ -261,7 +276,11 @@
 			[$colorString1, $colorString2] = getColors($user,$project);
 
 			// getting genome name for project.
-			$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."]</font>";
+			if (getHapmapName($user,$project) != "") {
+				$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."] & hapmap [".getHapmapName($user,$project)."]</font>";
+			} else {
+				$genome_name = "<font size='1'> vs genome [".getGenomeName($user,$project)."]</font>";
+			}
 			$genome_name = str_replace("+ ","",$genome_name);
 
 			// getting figure version for project.
@@ -300,8 +319,9 @@
 					$colorString2 = "magenta";
 				}
 
-				// Limit files list to valid output file types.
-				$projectFiles	= preg_grep('~\.(png|eps|bed|gff3)$~', scandir("users/$user/projects/$project/"));
+				// Collect output file names, passed to javascript function that builds user interface elements.
+				// Limit files to valid output file types.
+				$projectFiles	= preg_grep('~\.(png|eps|bed|gff3|zip)$~', scandir("users/$user/projects/$project/"));
 				sort($projectFiles);
 				$json_file_list	= json_encode($projectFiles);
 
@@ -336,6 +356,40 @@
 			}
 		}
 
+		//
+		// Define javascript function to show all complete projects.
+		//
+		echo "\n\n<script>\n";
+		echo "function openUserProjects() {\n";
+		foreach($projectFolders_complete as $key_=>$project) {
+			$nameFile        = "users/".$user."/projects/".$project."/name.txt";
+			$parent_file     = "users/".$user."/projects/".$project."/parent.txt";
+
+			$projectNameString = file_get_contents($nameFile);
+			$projectNameString = trim($projectNameString);
+
+			[$colorString1, $colorString2] = getColors($user,$project);
+
+			// Get parent.
+			$handle         = fopen($parent_file,'r');
+			$parentString   = trim(fgets($handle));
+			fclose($handle);
+
+			// getting figure version for project.
+			$versionFile    = "users/".$user."/projects/".$project."/figVer.txt";
+			$figVer         = 0;
+			if (file_exists($versionFile)) {
+				$figVer = intval(trim(file_get_contents($versionFile)));
+			}
+
+			$key = $key_ + $key_count3;
+			echo "\tdocument.getElementById('show_$key').checked = document.getElementById('showAllUser').checked;\n";
+			echo "\tparent.openProject('$user','$project','$key','$projectNameString','$colorString1','$colorString2','$parentString','$figVer');\n\n";
+		}
+		echo "\twindow.top.hide_combined_fig_menu();\n";
+		echo "}\n";
+		echo "</script>\n\n";
+
 	} else {
 		$userProjectCount_starting = 0;
 		$userProjectCount_working  = 0;
@@ -343,7 +397,7 @@
 	}
 
 	function getColors($user,$project) {
-		//[$colorStrin1, $colorStrin2] = getColors($user,$project);
+		//[$colorString1, $colorString2] = getColors($user,$project);
 		$colors_file  = "users/".$user."/projects/".$project."/colors.txt";
 		if (file_exists($colors_file)) {
 			$handle       = fopen($colors_file,'r');
@@ -366,7 +420,7 @@
 			$genome      = trim(fgets($handle));
 			fclose($handle);
 		} else {
-			$genome      = '';
+			$genome      = "";
 		}
 
 		// grab name.txt from genome.
@@ -391,6 +445,40 @@
 		return $genome_name;
 	}
 
+	function getHapmapName($user,$project) {
+		// grab genome.txt from project.
+		$genome_file = "users/".$user."/projects/".$project."/genome.txt";
+		if (file_exists($genome_file)) {
+			$handle      = fopen($genome_file,'r');
+			$genome      = trim(fgets($handle));
+			$hapmap      = trim(fgets($handle));
+			fclose($handle);
+		} else {
+			$hapmap      = "";
+		}
+
+		// grab name.txt from genome.
+		if ($hapmap != "") {
+			$hapmapName_file1 = "users/".$user."/hapmaps/".$hapmap."/name.txt";
+			$hapmapName_file2 = "users/default/hapmaps/".$hapmap."/name.txt";
+			if (file_exists($hapmapName_file1)) {
+				$handle      = fopen($hapmapName_file1,'r');
+				$hapmap_name = trim(fgets($handle));
+				fclose($handle);
+			} else if (file_exists($hapmapName_file2)) {
+				$handle      = fopen($hapmapName_file2,'r');
+				$hapmap_name = trim(fgets($handle));
+				fclose($handle);
+			} else {
+				$hapmap_name = "";
+			}
+		} else {
+			$hapmap_name = "";
+		}
+
+		return $hapmap_name;
+	}
+
 	?>
 </td><td width="35%" valign="top">
 	<br><?php
@@ -413,8 +501,11 @@
 		}
 	}
 	$systemProjectCount = count($systemProjectFolders);
-	echo "<b><font size='2'>Sample datasets:</font></b>\n\t\t";
+
+	echo "<font size='2'><b>Sample datasets:</b> (View all.";
+	echo "<input id='showAllDefault' type='checkbox' onclick=\" openDefaultProjects(); window.top.hide_combined_fig_menu();\">)</font>";
 	echo "<br>\n\t\t";
+
 	foreach ($systemProjectFolders as $key_=>$project) {
 		// Load colors for project.
 		$colors_file          = "users/default/projects/".$project."/colors.txt";
@@ -462,6 +553,41 @@
 		echo $projectNameString."</font>";
 		echo "<br>\n\t\t";
 	}
+
+	//
+	// Define javascript function to show all complete projects.
+	//
+	echo "\n\n<script>\n";
+	echo "function openDefaultProjects() {\n";
+	foreach($systemProjectFolders as $key_=>$project) {
+		$nameFile        = "users/default/projects/".$project."/name.txt";
+		$parent_file     = "users/default/projects/".$project."/parent.txt";
+
+		$projectNameString = file_get_contents($nameFile);
+		$projectNameString = trim($projectNameString);
+
+		[$colorString1, $colorString2] = getColors($user,$project);
+
+		// Get parent.
+		$handle         = fopen($parent_file,'r');
+		$parentString   = trim(fgets($handle));
+		fclose($handle);
+
+		// getting figure version for project.
+		$versionFile    = "users/default/projects/".$project."/figVer.txt";
+		$figVer         = 0;
+		if (file_exists($versionFile)) {
+			$figVer = intval(trim(file_get_contents($versionFile)));
+		}
+
+		$key = $key_ + $userProjectCount_starting + $userProjectCount_working + $userProjectCount_complete;
+		echo "\tdocument.getElementById('show_".$key."_sys').checked = document.getElementById('showAllDefault').checked;\n";
+		echo "\tparent.openProject('default','$project','".$key."_sys','$projectNameString','$colorString1','$colorString2','$parentString','$figVer');\n\n";
+	}
+	echo "\twindow.top.hide_combined_fig_menu();\n";
+	echo "}\n";
+	echo "</script>\n\n";
+
 	?>
 </td></tr></table>
 <script type="text/javascript">

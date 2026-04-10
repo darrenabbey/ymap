@@ -125,11 +125,17 @@
 				case "WGseq_paired":
 					$conclusion_script = "scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_1.php";
 					break;
+				case "WGseq_long":
+					$conclusion_script = "scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php";
+					break;
 				case "ddRADseq_single":
 					$conclusion_script = "scripts_seqModules/scripts_ddRADseq/project.single_ddRADseq.install_1.php";
 					break;
 				case "ddRADseq_paired":
 					$conclusion_script = "scripts_seqModules/scripts_ddRADseq/project.paired_ddRADseq.install_1.php";
+					break;
+				case "FASTA":
+					$conclusion_script = "scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php";
 					break;
 			}
 		} else if ($genome != "") {

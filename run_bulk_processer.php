@@ -8,13 +8,16 @@
 	// php bulk_processer.php user=darren ymaps=5 > /dev/null 2>&1 &
 
 
-	$system_call_string = "php bulk_processer.php user=".$user." ymaps=".$MAX_BULK_PARALLEL." > /dev/null 2>&1 &";
+	$system_call_string = "sudo php bulk_processer.php user=".$user." ymaps=".$MAX_BULK_PARALLEL." > /dev/null 2>&1 &";
 //	echo getcwd();
 	echo "<br>\n";
 	echo "To start bulk processor, run the following command from '".getcwd()."/'.<br>\n";
-	echo "<b>".$system_call_string."</b>";
+	echo "<b>".$system_call_string."</b><br>\n";
 	echo "<br>\n";
-	echo "<br>\nThis function has not yet been properly integrated into the user interface.\n";
+	echo "<br>Bulk processor will start ".$MAX_BULK_PARALLEL." YMAP processing threads, and then watch to see when\n";
+	echo "<br>they have completed so any further items left in the queque can be processed.<br>\n";
+	echo "<br>\n";
+	echo "Reload page to return to standard user interface.";
 //	system($system_call_string, $null);
 
 //	system("php bulk_processer.php", $retval);
