@@ -1,9 +1,9 @@
 # ymap
 YMAP - Yeast Mapping Analysis Pipeline : An online pipeline for the analysis of yeast genomic datasets.
 
-As I am no longer a member of the Berman lab, due to completing my PhD degree there and moving on to other things, I don't have direct access to the repo I used while there. I made this fork so that I could more easily work on the project when I feel inclinced to do so. Major changes will be communicated to the berman-lab and potentially incorporated into their repo. 
+I'm now working with the lab of Anna Selmecki at University of Minnesota. There I am supporting this project, as well as other research goals.
 
-The berman-lab/ymap repo (https://github.com/berman-lab/ymap) supports the tool running live at http://lovelace.cs.umn.edu/Ymap/ for use by the yeast research community. Availability and time to process datasets may vary depending on server availability issues outside my control.
+YMAP is running live at http://lovelace.cs.umn.edu/Ymap/ for use by the yeast research community. Availability and time to process datasets may vary depending on server availability issues outside my control.
 
 The pipeline can help you analyze your genomic datasets for non-yeast species, but the user interface and figures produced were designed with relatively small genome sizes in mind. (Candida albicans is about 14.7 Mbase in size.) If you want to experiment with using Ymap with larger genomes, I advise you to set up a local installation (https://github.com/darrenabbey/ymap/wiki/Setting-up-Ymap-locally). Genomes that are very small will also likely not produce very useful output.
 
