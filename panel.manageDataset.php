@@ -145,7 +145,8 @@
 		array_multisort($projectFolders_initiated,    SORT_ASC, $projectFolders_initiated   );
 		// Build new 'projectFolders' array;
 		$projectFolders   = array();
-		$projectFolders   = array_merge($projectFolders_complete, $projectFolders_bulk, $projectFolders_bulk_working, $projectFolders_working, $projectFolders_initiated);
+		$projectFolders   = array_merge($projectFolders_initiated, $projectFolders_bulk_working, $projectFolders_bulk, $projectFolders_working, $projectFolders_complete);
+		//$projectFolders   = array_merge($projectFolders_complete, $projectFolders_bulk, $projectFolders_bulk_working, $projectFolders_working, $projectFolders_initiated);
 		$userProjectCount = count($projectFolders);
 		// displaying size if it's bigger then 0
 		if ($currentSize > 0) {
