@@ -97,8 +97,7 @@ fprintf([  '$$ project    : ' project    '\n']);
 
 [centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 Aneuploidy = [];  % later loaded from Load_dataset_information(projectDir) after ChARM algorithm is used.
-
-num_chrs  = length(chr_sizes);
+num_chrs   = length(figure_details);  %previously chr_sizes.
 
 for i = 1:num_chrs
 	chr_size(i)  = 0;
@@ -188,7 +187,7 @@ end;
 
 fprintf(['\nGenerating CNV figure from ''' project ''' sequence data.\n']);
 
-% Initializes vectors used to hold copy number data.
+% Initializes vectors used to hold copy number data. dragon
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
 		% 1 category tracked : average read counts per bin.
