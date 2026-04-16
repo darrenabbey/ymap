@@ -97,7 +97,7 @@ fprintf([  '$$ project    : ' project    '\n']);
 
 [centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 Aneuploidy = [];  % later loaded from Load_dataset_information(projectDir) after ChARM algorithm is used.
-num_chrs   = length(figure_details);  %previously chr_sizes.
+num_chrs   = length(chr_sizes);
 
 for i = 1:num_chrs
 	chr_size(i)  = 0;
@@ -189,9 +189,11 @@ fprintf(['\nGenerating CNV figure from ''' project ''' sequence data.\n']);
 
 % Initializes vectors used to hold copy number data. dragon
 for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		% 1 category tracked : average read counts per bin.
-		chr_CNVdata{chr}= zeros(1,ceil(chr_size(chr)/bases_per_bin));
+	if (chr <= length(chr_in_use))
+		if (chr_in_use(chr) == 1)
+			% 1 category tracked : average read counts per bin.
+			chr_CNVdata{chr}= zeros(1,ceil(chr_size(chr)/bases_per_bin));
+		end;
 	end;
 end;
 
@@ -280,16 +282,20 @@ end;
 %-------------------------------------------------------------------------------------------
 % calculate CNV bin values.
 for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		CNVplot{chr} = chr_CNVdata{chr};
+	if (chr <= length(chr_in_use))
+		if (chr_in_use(chr) == 1)
+			CNVplot{chr} = chr_CNVdata{chr};
+		end;
 	end;
 end;
 
 % Gather CNV data for LOWESS fitting.
 CNVdata_all = [];
 for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		CNVdata_all = [CNVdata_all     CNVplot{chr}];
+	if (chr <= length(chr_in_use))
+		if (chr_in_use(chr) == 1)
+			CNVdata_all = [CNVdata_all     CNVplot{chr}];
+		end;
 	end;
 end;
 medianRawY = median(CNVdata_all)
@@ -297,11 +303,13 @@ medianRawY = median(CNVdata_all)
 % Gather median-normalized CNV data for LOWESS fitting.
 CNVdata_all = [];
 for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		if (medianRawY ~= 0)
-			CNVplot{chr} = CNVplot{chr}/medianRawY;
+	if (chr <= length(chr_in_use))
+		if (chr_in_use(chr) == 1)
+			if (medianRawY ~= 0)
+				CNVplot{chr} = CNVplot{chr}/medianRawY;
+			end;
+			CNVdata_all = [CNVdata_all CNVplot{chr}];
 		end;
-		CNVdata_all = [CNVdata_all CNVplot{chr}];
 	end;
 end;
 
@@ -321,8 +329,10 @@ if (performGCbiasCorrection)
 	fprintf(['\t' num2str(standard_bins_GC_ratios_fid) '\n']);
 	lines_analyzed = 0;
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			chr_GCratioData{chr} = zeros(1,ceil(chr_size(chr)/bases_per_bin));
+		if (chr <= length(chr_in_use))
+			if (chr_in_use(chr) == 1)
+				chr_GCratioData{chr} = zeros(1,ceil(chr_size(chr)/bases_per_bin));
+			end;
 		end;
 	end;
 	while not (feof(standard_bins_GC_ratios_fid))
@@ -349,17 +359,21 @@ end;
 if (performEndbiasCorrection)
 	%% Calculate distance from CNV bin fragment center to nearest end of chromosome.
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			chr_EndDistanceData{chr} = zeros(1,ceil(chr_size(chr)/bases_per_bin));
+		if (chr <= length(chr_in_use))
+			if (chr_in_use(chr) == 1)
+				chr_EndDistanceData{chr} = zeros(1,ceil(chr_size(chr)/bases_per_bin));
+			end;
 		end;
 	end;
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			for position = 1:ceil(chr_size(chr)/bases_per_bin)
-				frag_size                          = ceil(chr_size(chr)/bases_per_bin);
-				frag_center                        = position;
-				frag_nearestChrEnd                 = min(frag_center, frag_size - frag_center);
-				chr_EndDistanceData{chr}(position) = frag_nearestChrEnd;
+		if (chr <= length(chr_in_use))
+			if (chr_in_use(chr) == 1)
+				for position = 1:ceil(chr_size(chr)/bases_per_bin)
+					frag_size                          = ceil(chr_size(chr)/bases_per_bin);
+					frag_center                        = position;
+					frag_nearestChrEnd                 = min(frag_center, frag_size - frag_center);
+					chr_EndDistanceData{chr}(position) = frag_nearestChrEnd;
+				end;
 			end;
 		end;
 	end;
@@ -369,10 +383,12 @@ if (performEndbiasCorrection)
 	chr_EndDistanceData_extended = chr_EndDistanceData;
 	largest_chr_bin_count        = ceil(max(chr_size)/bases_per_bin);
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			chr_bin_count = ceil(chr_size(chr)/bases_per_bin);
-			for pos = 1:(largest_chr_bin_count - chr_bin_count)
-				chr_EndDistanceData_extended{chr}(end+1) = pos+chr_bin_count;
+		if (chr <= length(chr_in_use))
+			if (chr_in_use(chr) == 1)
+				chr_bin_count = ceil(chr_size(chr)/bases_per_bin);
+				for pos = 1:(largest_chr_bin_count - chr_bin_count)
+					chr_EndDistanceData_extended{chr}(end+1) = pos+chr_bin_count;
+				end;
 			end;
 		end;
 	end;
@@ -383,24 +399,28 @@ if (performEndbiasCorrection)
 	[largest_chr_size,largest_chr] = max(chr_size);
 	largest_chr_bin_count          = ceil(largest_chr_size/bases_per_bin);
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			chr_CNVdata_extended{chr} = CNVplot{chr};
+		if (chr <= length(chr_in_use))
+			if (chr_in_use(chr) == 1)
+				chr_CNVdata_extended{chr} = CNVplot{chr};
+			end;
 		end;
 	end;
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			chr_bin_count     = ceil(chr_size(chr)/bases_per_bin);
-			fprintf(['chr_bin_count(' num2str(chr) ') = ' num2str(chr_bin_count) '\n']);
+		if (chr <= length(chr_in_use))
+			if (chr_in_use(chr) == 1)
+				chr_bin_count     = ceil(chr_size(chr)/bases_per_bin);
+				fprintf(['chr_bin_count(' num2str(chr) ') = ' num2str(chr_bin_count) '\n']);
 
-			chr_middle_bin    = round(chr_bin_count/2);
-			fprintf(['chr_middle_bin   = ' num2str(chr_middle_bin) '\n']);
+				chr_middle_bin    = round(chr_bin_count/2);
+				fprintf(['chr_middle_bin   = ' num2str(chr_middle_bin) '\n']);
 
-			for pos = 1:(largest_chr_bin_count - chr_bin_count)
-				%% Results in chr end correction not being done well for center of large chromosomes.
-				%chr_CNVdata_extended{chr}(end+1) = center_median_CNV;
+				for pos = 1:(largest_chr_bin_count - chr_bin_count)
+					%% Results in chr end correction not being done well for center of large chromosomes.
+					%chr_CNVdata_extended{chr}(end+1) = center_median_CNV;
 
-				%% Results in chr end correction being done effectively for most areas; center of chr1 still fails for Candida albicans A21.
-				chr_CNVdata_extended{chr}(end+1) = chr_CNVdata_extended{largest_chr}(pos+chr_bin_count);
+					%% Results in chr end correction being done effectively for most areas; center of chr1 still fails for Candida albicans A21.
+					chr_CNVdata_extended{chr}(end+1) = chr_CNVdata_extended{largest_chr}(pos+chr_bin_count);
+				end;
 			end;
 		end;
 	end;
@@ -413,13 +433,15 @@ if (performEndbiasCorrection)
 	chr_CNVdata_extended_all         = [];
 	chr_EndDistanceData_extended_all = [];
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			CNVdata_all_n1                   = [CNVdata_all_n1                   CNVplot{chr}                     ];
-			GCratioData_all                  = [GCratioData_all                  chr_GCratioData{chr}             ];
-			chr_EndDistanceData_all          = [chr_EndDistanceData_all          chr_EndDistanceData{chr}         ];
+		if (chr <= length(chr_in_use))
+			if (chr_in_use(chr) == 1)
+				CNVdata_all_n1                   = [CNVdata_all_n1                   CNVplot{chr}                     ];
+				GCratioData_all                  = [GCratioData_all                  chr_GCratioData{chr}             ];
+				chr_EndDistanceData_all          = [chr_EndDistanceData_all          chr_EndDistanceData{chr}         ];
 
-			chr_CNVdata_extended_all         = [chr_CNVdata_extended_all         chr_CNVdata_extended{chr}        ];
-			chr_EndDistanceData_extended_all = [chr_EndDistanceData_extended_all chr_EndDistanceData_extended{chr}];
+				chr_CNVdata_extended_all         = [chr_CNVdata_extended_all         chr_CNVdata_extended{chr}        ];
+				chr_EndDistanceData_extended_all = [chr_EndDistanceData_extended_all chr_EndDistanceData_extended{chr}];
+			end;
 		end;
 	end;
 
@@ -462,28 +484,34 @@ if (performEndbiasCorrection)
 		% Correct data using normalization to LOWESS fitting
 		Y_target = 1;
 		for chr = 1:num_chrs
-			if (chr_in_use(chr) == 1)
-				fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
-				rawData_chr_X1{chr}        = chr_EndDistanceData{chr};
-				rawData_chr_Y1{chr}        = CNVplot{chr};
-				fitData_chr_Y1{chr}        = interp1(fitX1,fitY1,rawData_chr_X1{chr},'spline');
-				normalizedData_chr_Y1{chr} = rawData_chr_Y1{chr}./fitData_chr_Y1{chr}*Y_target;
-				% setting all NaN values to zero (since dividing by zero
-				% can occur in empty dataset)
-				normalizedData_chr_Y1{chr}(isnan(normalizedData_chr_Y1{chr}))=0;
+			if (chr <= length(chr_in_use))
+				if (chr_in_use(chr) == 1)
+					fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
+					rawData_chr_X1{chr}        = chr_EndDistanceData{chr};
+					rawData_chr_Y1{chr}        = CNVplot{chr};
+					fitData_chr_Y1{chr}        = interp1(fitX1,fitY1,rawData_chr_X1{chr},'spline');
+					normalizedData_chr_Y1{chr} = rawData_chr_Y1{chr}./fitData_chr_Y1{chr}*Y_target;
+					% setting all NaN values to zero (since dividing by zero
+					% can occur in empty dataset)
+					normalizedData_chr_Y1{chr}(isnan(normalizedData_chr_Y1{chr}))=0;
+				end;
 			end;
 		end;
 	else
 		for chr = 1:num_chrs
-			if (chr_in_use(chr) == 1)
-				normalizedData_chr_Y1{chr} = CNVplot{chr};
+			if (chr <= length(chr_in_use))
+				if (chr_in_use(chr) == 1)
+					normalizedData_chr_Y1{chr} = CNVplot{chr};
+				end;
 			end;
 		end;
 	end;
 else
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			normalizedData_chr_Y1{chr} = CNVplot{chr};
+		if (chr <= length(chr_in_use))
+			if (chr_in_use(chr) == 1)
+				normalizedData_chr_Y1{chr} = CNVplot{chr};
+			end;
 		end;
 	end;
 end;
@@ -494,9 +522,11 @@ if (performGCbiasCorrection)
 	GCratioData_all        = [];
 	CNVdata_all_n1         = [];
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			GCratioData_all        = [GCratioData_all        chr_GCratioData{chr}];
-			CNVdata_all_n1         = [CNVdata_all_n1         normalizedData_chr_Y1{chr}  ];
+		if (chr <= length(chr_in_use))
+			if (chr_in_use(chr) == 1)
+				GCratioData_all        = [GCratioData_all        chr_GCratioData{chr}];
+				CNVdata_all_n1         = [CNVdata_all_n1         normalizedData_chr_Y1{chr}  ];
+			end;
 		end;
 	end;
 	% Clean up data by:
@@ -521,29 +551,32 @@ if (performGCbiasCorrection)
 	% Correct data using normalization to LOWESS fitting
 	Y_target = 1;
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
-			rawData_chr_X2{chr}        = chr_GCratioData{chr};
-			rawData_chr_Y2{chr}        = normalizedData_chr_Y1{chr}; % CNVplot{chr};
-			fitData_chr_Y2{chr}        = interp1(fitX2,fitY2,rawData_chr_X2{chr},'spline');
+		if (chr <= length(chr_in_use))
+			if (chr_in_use(chr) == 1)
+				fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
+				rawData_chr_X2{chr}        = chr_GCratioData{chr};
+				rawData_chr_Y2{chr}        = normalizedData_chr_Y1{chr}; % CNVplot{chr};
+				fitData_chr_Y2{chr}        = interp1(fitX2,fitY2,rawData_chr_X2{chr},'spline');
 
-			% Filter by dividing out the fit curve.
-			normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
+				% Filter by dividing out the fit curve.
+				normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
 
-			% Filter by subtracting out the fit curve : no strong rationale for this.
-			%normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
+				% Filter by subtracting out the fit curve : no strong rationale for this.
+				%normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
 
-			%Filter by average of above two methods.
-			%try1                       = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
-			%try2                       = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
-			%normalizedData_chr_Y2{chr} = (try1+try2)/2;
-
+				%Filter by average of above two methods.
+				%try1                       = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
+				%try2                       = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
+				%normalizedData_chr_Y2{chr} = (try1+try2)/2;
+				end;
 			end;
 		end;
 	else
 		for chr = 1:num_chrs
-			if (chr_in_use(chr) == 1)
-				normalizedData_chr_Y2{chr} = normalizedData_chr_Y1{chr};
+			if (chr <= length(chr_in_use))
+				if (chr_in_use(chr) == 1)
+					normalizedData_chr_Y2{chr} = normalizedData_chr_Y1{chr};
+				end;
 			end;
 		end;
 		% disabling perform GC bias correction since data is invalid or empty and so the figure should not be created
@@ -551,8 +584,10 @@ if (performGCbiasCorrection)
 	end;
 else
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			normalizedData_chr_Y2{chr} = normalizedData_chr_Y1{chr};
+		if (chr <= length(chr_in_use))
+			if (chr_in_use(chr) == 1)
+				normalizedData_chr_Y2{chr} = normalizedData_chr_Y1{chr};
+			end;
 		end;
 	end;
 end;
@@ -560,8 +595,10 @@ end;
 
 % Move LOWESS-normalizd CNV data into display pipeline.
 for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		CNVplot{chr} = normalizedData_chr_Y2{chr};
+	if (chr <= length(chr_in_use))
+		if (chr_in_use(chr) == 1)
+			CNVplot{chr} = normalizedData_chr_Y2{chr};
+		end;
 	end;
 end;
 
@@ -576,8 +613,10 @@ if (Make_figure_bias_end)
 		subplot(1,2,1);
 		hold on;
 		for chr = 1:num_chrs
-			if (chr_in_use(chr) == 1)
-				plot(rawData_chr_X1{chr},rawData_chr_Y1{chr},'k.','markersize',1);        % raw data
+			if (chr <= length(chr_in_use))
+				if (chr_in_use(chr) == 1)
+					plot(rawData_chr_X1{chr},rawData_chr_Y1{chr},'k.','markersize',1);        % raw data
+				end;
 			end;
 		end;
 		plot(fitX1,fitY1,'r','LineWidth',2);                        % LOWESS fit curve.
@@ -592,8 +631,10 @@ if (Make_figure_bias_end)
 		subplot(1,2,2);
 		hold on;
 		for chr = 1:num_chrs
-			if (chr_in_use(chr) == 1)
-				plot(rawData_chr_X1{chr},normalizedData_chr_Y1{chr},'k.','markersize',1); % corrected data.
+			if (chr <= length(chr_in_use))
+				if (chr_in_use(chr) == 1)
+					plot(rawData_chr_X1{chr},normalizedData_chr_Y1{chr},'k.','markersize',1); % corrected data.
+				end;
 			end;
 		end;
 		plot([fitX1(1) fitX1(end)],[Y_target Y_target],'r','LineWidth',2);          % normalization line.
@@ -621,8 +662,10 @@ if (Make_figure_bias_GC)
 		subplot(1,2,1);
 		hold on;
 		for chr = 1:num_chrs
-			if (chr_in_use(chr) == 1)
-				plot(rawData_chr_X2{chr},rawData_chr_Y2{chr},'k.','markersize',1);		% raw data
+			if (chr <= length(chr_in_use))
+				if (chr_in_use(chr) == 1)
+					plot(rawData_chr_X2{chr},rawData_chr_Y2{chr},'k.','markersize',1);		% raw data
+				end;
 			end;
 		end;
 		plot(fitX2,fitY2,'r','LineWidth',2);						% LOWESS fit curve.
@@ -636,8 +679,10 @@ if (Make_figure_bias_GC)
 		subplot(1,2,2);
 		hold on;
 		for chr = 1:num_chrs
-			if (chr_in_use(chr) == 1)
-				plot(rawData_chr_X2{chr},normalizedData_chr_Y2{chr},'k.','markersize',1);	% corrected data.
+			if (chr <= length(chr_in_use))
+				if (chr_in_use(chr) == 1)
+					plot(rawData_chr_X2{chr},normalizedData_chr_Y2{chr},'k.','markersize',1);	% corrected data.
+				end;
 			end;
 		end;
 		plot([fitX2(1) fitX2(end)],[Y_target Y_target],'r','LineWidth',2);			% normalization line.
@@ -666,8 +711,10 @@ end;
 %----------------------------------------------------------------------
 fprintf('\nSaving "Common_CNV" data file.\n');
 for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		CNVplot2{chr} = CNVplot{chr};
+	if (chr <= length(chr_in_use))
+		if (chr_in_use(chr) == 1)
+			CNVplot2{chr} = CNVplot{chr};
+		end;
 	end;
 end;
 genome_CNV = genome;
@@ -719,8 +766,10 @@ stringChrCNVs = '';
 CNVdata_all = [];
 fprintf('CNV normalization step\n');
 for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		CNVdata_all = [CNVdata_all CNVplot2{chr}];
+	if (chr <= length(chr_in_use))
+		if (chr_in_use(chr) == 1)
+			CNVdata_all = [CNVdata_all CNVplot2{chr}];
+		end;
 	end;
 end;
 medianCNV = median(CNVdata_all)
@@ -728,15 +777,19 @@ medianCNV = median(CNVdata_all)
 fprintf(['    medianCNV = ' num2str(medianCNV) '\n']);
 if (medianCNV > 0)
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			CNVplot2{chr} = CNVplot2{chr}/medianCNV;
-			fprintf(['    chr' num2str(chr) ' :: ' num2str(median(CNVplot2{chr})) '\n']);
+		if (chr <= length(chr_in_use))
+			if (chr_in_use(chr) == 1)
+				CNVplot2{chr} = CNVplot2{chr}/medianCNV;
+				fprintf(['    chr' num2str(chr) ' :: ' num2str(median(CNVplot2{chr})) '\n']);
+			end;
 		end;
 	end;
 else
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			fprintf(['    chr' num2str(chr) ' :: ' num2str(median(CNVplot2{chr})) '\n']);
+		if (chr <= length(chr_in_use))
+			if (chr_in_use(chr) == 1)
+				fprintf(['    chr' num2str(chr) ' :: ' num2str(median(CNVplot2{chr})) '\n']);
+			end;
 		end;
 	end;
 end;
