@@ -190,20 +190,22 @@ end;
 
 %% This block is normally calculated in FindChrSizes during CNV analysis.
 for usedChr = 1:num_chrs
-	if (chr_in_use(usedChr) == 1)
-		% determine where the endpoints of ploidy segments are.
-		chr_breaks{usedChr}(1) = 0.0;
-		break_count = 1;
-		if (length(segmental_aneuploidy) > 0)	% Percentages across chromosome where CNV/ChARM breakpoint exists.
-			for i = 1:length(segmental_aneuploidy)
-				if (segmental_aneuploidy(i).chr == usedChr)
-					break_count = break_count+1;
-					chr_broken = true;
-					chr_breaks{usedChr}(break_count) = segmental_aneuploidy(i).break;
+	if (usedChr <= length(chr_in_use))
+		if (chr_in_use(usedChr) == 1)
+			% determine where the endpoints of ploidy segments are.
+			chr_breaks{usedChr}(1) = 0.0;
+			break_count = 1;
+			if (length(segmental_aneuploidy) > 0)	% Percentages across chromosome where CNV/ChARM breakpoint exists.
+				for i = 1:length(segmental_aneuploidy)
+					if (segmental_aneuploidy(i).chr == usedChr)
+						break_count = break_count+1;
+						chr_broken = true;
+						chr_breaks{usedChr}(break_count) = segmental_aneuploidy(i).break;
+					end;
 				end;
 			end;
+			chr_breaks{usedChr}(length(chr_breaks{usedChr})+1) = 1;
 		end;
-		chr_breaks{usedChr}(length(chr_breaks{usedChr})+1) = 1;
 	end;
 end;
 
@@ -497,13 +499,15 @@ while (chrCopyNum_changed == true)
 	CNVfit_Rsquared_vector = [];
 	SNPfit_Rsquared_vector = [];
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			for segment = 1:(length(chrCopyNum{chr}))
-				CNVfit_Rsquared_vector = [CNVfit_Rsquared_vector; CNVfit_Rsquared{chr}(segment)];
-				SNPfit_Rsquared_vector = [SNPfit_Rsquared_vector; SNPfit_Rsquared{chr}(segment)];
-			endfor;
-		endif;
-	endfor;
+		if (chr <= length(chr_in_use))
+			if (chr_in_use(chr) == 1)
+				for segment = 1:(length(chrCopyNum{chr}))
+					CNVfit_Rsquared_vector = [CNVfit_Rsquared_vector; CNVfit_Rsquared{chr}(segment)];
+					SNPfit_Rsquared_vector = [SNPfit_Rsquared_vector; SNPfit_Rsquared{chr}(segment)];
+				end;
+			end;
+		end;
+	end;
 	SNPfit_Rsquared_vector = cell2mat(SNPfit_Rsquared_vector);
 	CNVfit_Rsquared_vector
 	SNPfit_Rsquared_vector
@@ -538,234 +542,237 @@ while (chrCopyNum_changed == true)
 	chrCopyNum_new     = chrCopyNum;
 	fprintf(['\n### Looking at chr segment Rsquared values to assess quality of CNV estimates.\n']);
 	for chr = 1:num_chrs
-		%chr
-		%chr_in_use
-		%chrCopyNum{chr}
-		if (chr_in_use(chr) == 1)
-			for segment = 1:(length(chrCopyNum{chr}))
-				%%%
-				%%% Calculate initial Rsquared distance from ideal (1,1).
-				%%%
-				CNVfit_testRsquared = CNVfit_Rsquared{chr}(segment);
-				SNPfit_testRsquared = cell2mat(SNPfit_Rsquared{chr}(segment));
-				Rsquared_distance   = sqrt((1-CNVfit_testRsquared)^2 + (1-SNPfit_testRsquared)^2);
-
-				if (Rsquared_distance > 0.5)
-					fprintf(['\nchr ' num2str(chr) '.' num2str(segment) ' initial CNV/SNP fit failure.\n']);
+		if (chr <= length(chr_in_use))
+			if (chr_in_use(chr) == 1)
+				for segment = 1:(length(chrCopyNum{chr}))
 					%%%
-					%%% If initial Rsquared_distance from ideal (1,1) is bad, lets figure out what the CNV estimate should be for this segment.
+					%%% Calculate initial Rsquared distance from ideal (1,1).
 					%%%
-					Rsquared_CNVtest_vector = [];
-					Rsquared_SNPtest_vector = [];
-					for copyNum = 1:9
-						makeFitFigures          = false;
+					CNVfit_testRsquared = CNVfit_Rsquared{chr}(segment);
+					SNPfit_testRsquared = cell2mat(SNPfit_Rsquared{chr}(segment));
+					Rsquared_distance   = sqrt((1-CNVfit_testRsquared)^2 + (1-SNPfit_testRsquared)^2);
 
-						Rsquared_CNV            = testPloidyEstimate_CNV(workingDir, CNVplot2, chr_breaks, ploidy, chr, segment, copyNum, makeFitFigures);
-						Rsquared_CNVtest_vector = [Rsquared_CNVtest_vector Rsquared_CNV];
+					if (Rsquared_distance > 0.5)
+						fprintf(['\nchr ' num2str(chr) '.' num2str(segment) ' initial CNV/SNP fit failure.\n']);
+						%%%
+						%%% If initial Rsquared_distance from ideal (1,1) is bad, lets figure out what the CNV estimate should be for this segment.
+						%%%
+						Rsquared_CNVtest_vector = [];
+						Rsquared_SNPtest_vector = [];
+						for copyNum = 1:9
+							makeFitFigures          = false;
 
-						testPloidyEstimate_SNP;
-						Rsquared_SNP            = Rsquared;
-						if isnan(Rsquared_SNP)
-							Rsquared_SNP = -1;
-						endif;
-						Rsquared_SNPtest_vector = [Rsquared_SNPtest_vector Rsquared_SNP];
-					endfor;
+							Rsquared_CNV            = testPloidyEstimate_CNV(workingDir, CNVplot2, chr_breaks, ploidy, chr, segment, copyNum, makeFitFigures);
+							Rsquared_CNVtest_vector = [Rsquared_CNVtest_vector Rsquared_CNV];
 
-					%% Logging output of CNV test values.
-					fprintf('\tmax(Rsquared_CNVtest_vector) = ');
-					for i = 1:length(Rsquared_CNVtest_vector)
-						if (max(Rsquared_CNVtest_vector) == Rsquared_CNVtest_vector(i))
-							fprintf('[');
-						endif;
-						fprintf([num2str(Rsquared_CNVtest_vector(i))]);
-						if (max(Rsquared_CNVtest_vector) == Rsquared_CNVtest_vector(i))
-							fprintf(']');
-						endif;
-						fprintf(' ');
-					endfor;
-					fprintf('\n');
+							testPloidyEstimate_SNP;
+							Rsquared_SNP            = Rsquared;
+							if isnan(Rsquared_SNP)
+								Rsquared_SNP = -1;
+							endif;
+							Rsquared_SNPtest_vector = [Rsquared_SNPtest_vector Rsquared_SNP];
+						endfor;
 
-					%% Logging output of SNP test values..
-					fprintf('\tmax(Rsquared_SNPtest_vector) = ');
-					for i = 1:length(Rsquared_SNPtest_vector)
-						if (max(Rsquared_SNPtest_vector) == Rsquared_SNPtest_vector(i))
-							fprintf('[');
-						endif;
-						fprintf([num2str(Rsquared_SNPtest_vector(i))]);
-						if (max(Rsquared_SNPtest_vector) == Rsquared_SNPtest_vector(i))
-							fprintf(']');
-						endif;
-						fprintf(' ');
-					endfor;
-					fprintf('\n');
+						%% Logging output of CNV test values.
+						fprintf('\tmax(Rsquared_CNVtest_vector) = ');
+						for i = 1:length(Rsquared_CNVtest_vector)
+							if (max(Rsquared_CNVtest_vector) == Rsquared_CNVtest_vector(i))
+								fprintf('[');
+							endif;
+							fprintf([num2str(Rsquared_CNVtest_vector(i))]);
+							if (max(Rsquared_CNVtest_vector) == Rsquared_CNVtest_vector(i))
+								fprintf(']');
+							endif;
+							fprintf(' ');
+						endfor;
+						fprintf('\n');
 
-					Rsquared_distance_vector = sqrt((1-Rsquared_CNVtest_vector).^2 + (1-Rsquared_SNPtest_vector).^2);
+						%% Logging output of SNP test values..
+						fprintf('\tmax(Rsquared_SNPtest_vector) = ');
+						for i = 1:length(Rsquared_SNPtest_vector)
+							if (max(Rsquared_SNPtest_vector) == Rsquared_SNPtest_vector(i))
+								fprintf('[');
+							endif;
+							fprintf([num2str(Rsquared_SNPtest_vector(i))]);
+							if (max(Rsquared_SNPtest_vector) == Rsquared_SNPtest_vector(i))
+								fprintf(']');
+							endif;
+							fprintf(' ');
+						endfor;
+						fprintf('\n');
 
-					%% Logging output of combined CNV/SNP test values..
-					fprintf('\tmin(Rsquared_distance_vector) = ');
-					for i = 1:length(Rsquared_distance_vector)
-						if (min(Rsquared_distance_vector) == Rsquared_distance_vector(i))
-							fprintf('[');
-						endif;
-						fprintf([num2str(Rsquared_distance_vector(i))]);
-						if (min(Rsquared_distance_vector) == Rsquared_distance_vector(i))
-							fprintf(']');
-						endif;
-						fprintf(' ');
-					endfor;
-					fprintf('\n')
+						Rsquared_distance_vector = sqrt((1-Rsquared_CNVtest_vector).^2 + (1-Rsquared_SNPtest_vector).^2);
 
-					%%% Find best fit CNV estimate by looking at (the more reliable?) SNP ratios.
-					Rsquared_CNVtest_vector_min  = min(Rsquared_CNVtest_vector);
-					Rsquared_SNPtest_vector_min  = min(Rsquared_SNPtest_vector);
-					Rsquared_distance_vector_min = min(Rsquared_distance_vector);
+						%% Logging output of combined CNV/SNP test values..
+						fprintf('\tmin(Rsquared_distance_vector) = ');
+						for i = 1:length(Rsquared_distance_vector)
+							if (min(Rsquared_distance_vector) == Rsquared_distance_vector(i))
+								fprintf('[');
+							endif;
+							fprintf([num2str(Rsquared_distance_vector(i))]);
+							if (min(Rsquared_distance_vector) == Rsquared_distance_vector(i))
+								fprintf(']');
+							endif;
+							fprintf(' ');
+						endfor;
+						fprintf('\n')
 
-					for i = length(Rsquared_SNPtest_vector):1
-						% Find best fit.
-						if (Rsquared_SNPtest_vector_min == Rsquared_SNPtest_vector(i))
-							chrFitValues{chr}(segment)   = Rsquared_distance_vector_min;
-							chrCopyNum_new{chr}(segment) = i;
-						endif;
-					endfor;
-				else
-					fprintf(['\nchr ' num2str(chr) '.' num2str(segment) ' initial CNV/SNP fit success.\n']);
-					chrFitValues{chr}(segment)   = Rsquared_distance;
-					fprintf(['\tRsquared_distance = ' num2str(Rsquared_distance) '\n']);
-					chrCopyNum_new{chr}(segment) = round(chrCopyNum_new{chr}(segment));
-				endif;
-				fprintf(['\tchr' num2str(chr) '.' num2str(segment) ': ' num2str(chrCopyNum_new{chr}(segment)) '\n']);
+						%%% Find best fit CNV estimate by looking at (the more reliable?) SNP ratios.
+						Rsquared_CNVtest_vector_min  = min(Rsquared_CNVtest_vector);
+						Rsquared_SNPtest_vector_min  = min(Rsquared_SNPtest_vector);
+						Rsquared_distance_vector_min = min(Rsquared_distance_vector);
 
-				%%% If CNV estimate changed, update boolean.
-				if (chrCopyNum_new{chr}(segment) != chrCopyNum{chr}(segment))
-					chrCopyNum_changed = true;
-				endif;
-			endfor;
-		endif;
-	endfor;
+						for i = length(Rsquared_SNPtest_vector):1
+								% Find best fit.
+							if (Rsquared_SNPtest_vector_min == Rsquared_SNPtest_vector(i))
+								chrFitValues{chr}(segment)   = Rsquared_distance_vector_min;
+								chrCopyNum_new{chr}(segment) = i;
+							endif;
+						endfor;
+					else
+						fprintf(['\nchr ' num2str(chr) '.' num2str(segment) ' initial CNV/SNP fit success.\n']);
+						chrFitValues{chr}(segment)   = Rsquared_distance;
+						fprintf(['\tRsquared_distance = ' num2str(Rsquared_distance) '\n']);
+						chrCopyNum_new{chr}(segment) = round(chrCopyNum_new{chr}(segment));
+					endif;
+					fprintf(['\tchr' num2str(chr) '.' num2str(segment) ': ' num2str(chrCopyNum_new{chr}(segment)) '\n']);
+
+					%%% If CNV estimate changed, update boolean.
+					if (chrCopyNum_new{chr}(segment) != chrCopyNum{chr}(segment))
+						chrCopyNum_changed = true;
+					end;
+				end;
+			end;
+		end;
+	end;
 	chrCopyNum = chrCopyNum_new;
 
 	%%% Re-review to deal with poor best-fits (likely due to limited data on a segment).
 	fprintf(['\n### Dealing with bad best-fit segments.\n']);
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			for segment = (length(chrCopyNum{chr})):1
-				%%%
-				%%% Calculate initial Rsquared distance from ideal (1,1).
-				%%%
-				CNVfit_testRsquared = CNVfit_Rsquared{chr}(segment);
-				SNPfit_testRsquared = cell2mat(SNPfit_Rsquared{chr}(segment));
-				Rsquared_distance   = sqrt((1-CNVfit_testRsquared)^2 + (1-SNPfit_testRsquared)^2);
+		if (chr <= length(chr_in_use))
+			if (chr_in_use(chr) == 1)
+				for segment = (length(chrCopyNum{chr})):1
+					%%%
+					%%% Calculate initial Rsquared distance from ideal (1,1).
+					%%%
+					CNVfit_testRsquared = CNVfit_Rsquared{chr}(segment);
+					SNPfit_testRsquared = cell2mat(SNPfit_Rsquared{chr}(segment));
+					Rsquared_distance   = sqrt((1-CNVfit_testRsquared)^2 + (1-SNPfit_testRsquared)^2);
 
-				if (Rsquared_distance > 0.5)
-					if (chrFitValues{chr}(segment) > 1)
-						% Bad fit, need to fix by using best neighboring fit.
-						if (segment == 1)
-							prevFitVal  = chrFitValues{chr}(segment);
-							prevCopyNum = chrCopyNum{chr}(segment);
-						else
-							prevFitVal  = chrFitValues{chr}(segment-1);
-							prevCopyNum = chrCopyNum{chr}(segment-1);
-						endif;
-						if (segment == length(chrCopyNum{chr}))
-							nextFitVal  = chrFitValues{chr}(segment);
-							nextCopyNum = chrCopyNum{chr}(segment);
-						else
-							nextFitVal  = chrFitValues{chr}(segment+1);
-							nextCopyNum = chrCopyNum{chr}(segment+1);
-						endif;
-						if (prevFitVal < nextFitVal)
-							chrFitValues{chr}(segment)   = prevFitVal;
-							chrCopyNum_new{chr}(segment) = prevCopyNum;
-						else
-							chrFitValues{chr}(segment)   = nextFitVal;
-							chrCopyNum_new{chr}(segment) = nextCopyNum;
+					if (Rsquared_distance > 0.5)
+						if (chrFitValues{chr}(segment) > 1)
+							% Bad fit, need to fix by using best neighboring fit.
+							if (segment == 1)
+								prevFitVal  = chrFitValues{chr}(segment);
+								prevCopyNum = chrCopyNum{chr}(segment);
+							else
+								prevFitVal  = chrFitValues{chr}(segment-1);
+								prevCopyNum = chrCopyNum{chr}(segment-1);
+							endif;
+							if (segment == length(chrCopyNum{chr}))
+								nextFitVal  = chrFitValues{chr}(segment);
+								nextCopyNum = chrCopyNum{chr}(segment);
+							else
+								nextFitVal  = chrFitValues{chr}(segment+1);
+								nextCopyNum = chrCopyNum{chr}(segment+1);
+							endif;
+							if (prevFitVal < nextFitVal)
+								chrFitValues{chr}(segment)   = prevFitVal;
+								chrCopyNum_new{chr}(segment) = prevCopyNum;
+							else
+								chrFitValues{chr}(segment)   = nextFitVal;
+								chrCopyNum_new{chr}(segment) = nextCopyNum;
+							endif;
 						endif;
 					endif;
-				endif;
-			endfor;
-			chrCopyNum_new2{chr} = chrCopyNum_new{chr};
+				endfor;
+				chrCopyNum_new2{chr} = chrCopyNum_new{chr};
 
-			%% Repeat in reverse order to ensure best fits are used for all segments.
-			for segment = 1:(length(chrCopyNum{chr}))
-				%%%
-				%%% Calculate initial Rsquared distance from ideal (1,1).
-				%%%
-				CNVfit_testRsquared = CNVfit_Rsquared{chr}(segment);
-				SNPfit_testRsquared = cell2mat(SNPfit_Rsquared{chr}(segment));
-				Rsquared_distance   = sqrt((1-CNVfit_testRsquared)^2 + (1-SNPfit_testRsquared)^2);
+				%% Repeat in reverse order to ensure best fits are used for all segments.
+				for segment = 1:(length(chrCopyNum{chr}))
+					%%%
+					%%% Calculate initial Rsquared distance from ideal (1,1).
+					%%%
+					CNVfit_testRsquared = CNVfit_Rsquared{chr}(segment);
+					SNPfit_testRsquared = cell2mat(SNPfit_Rsquared{chr}(segment));
+					Rsquared_distance   = sqrt((1-CNVfit_testRsquared)^2 + (1-SNPfit_testRsquared)^2);
 
-				if (Rsquared_distance > 0.5)
-					if (chrFitValues{chr}(segment) > 1)
-						% Bad fit, need to fix by using best neighboring fit.
-						if (segment == 1)
-							prevFitVal  = chrFitValues{chr}(segment);
-							prevCopyNum = chrCopyNum_new{chr}(segment);
-						else
-							prevFitVal  = chrFitValues{chr}(segment-1);
-							prevCopyNum = chrCopyNum_new{chr}(segment-1);
-						endif;
-						if (segment == length(chrCopyNum{chr}))
-							nextFitVal  = chrFitValues{chr}(segment);
-							nextCopyNum = chrCopyNum_new{chr}(segment);
-						else
-							nextFitVal  = chrFitValues{chr}(segment+1);
-							nextCopyNum = chrCopyNum_new{chr}(segment+1);
-						endif;
-						if (prevFitVal < nextFitVal)
-							chrFitValues{chr}(segment) = prevFitVal;
-							chrCopyNum{chr}(segment)   = prevCopyNum;
-						else
-							chrFitValues{chr}(segment) = nextFitVal;
-							chrCopyNum_new2{chr}(segment)   = nextCopyNum;
-						endif;
+					if (Rsquared_distance > 0.5)
+						if (chrFitValues{chr}(segment) > 1)
+							% Bad fit, need to fix by using best neighboring fit.
+							if (segment == 1)
+								prevFitVal  = chrFitValues{chr}(segment);
+								prevCopyNum = chrCopyNum_new{chr}(segment);
+							else
+								prevFitVal  = chrFitValues{chr}(segment-1);
+								prevCopyNum = chrCopyNum_new{chr}(segment-1);
+							end;
+							if (segment == length(chrCopyNum{chr}))
+								nextFitVal  = chrFitValues{chr}(segment);
+								nextCopyNum = chrCopyNum_new{chr}(segment);
+							else
+								nextFitVal  = chrFitValues{chr}(segment+1);
+								nextCopyNum = chrCopyNum_new{chr}(segment+1);
+							end;
+							if (prevFitVal < nextFitVal)
+								chrFitValues{chr}(segment) = prevFitVal;
+								chrCopyNum{chr}(segment)   = prevCopyNum;
+							else
+								chrFitValues{chr}(segment) = nextFitVal;
+								chrCopyNum_new2{chr}(segment)   = nextCopyNum;
+							end;
+							chrCopyNum_changed = true;
+						end;
+					end;
+					fprintf(['\tchr' num2str(chr) '.' num2str(segment) ': ' num2str(chrCopyNum{chr}(segment)) ' => ' num2str(chrCopyNum_new2{chr}(segment)) '\n']);
+
+					%%% If CNV estimate changed, update boolean.
+					if (chrCopyNum_new2{chr}(segment) != chrCopyNum{chr}(segment))
 						chrCopyNum_changed = true;
-					endif;
-				endif;
-				fprintf(['\tchr' num2str(chr) '.' num2str(segment) ': ' num2str(chrCopyNum{chr}(segment)) ' => ' num2str(chrCopyNum_new2{chr}(segment)) '\n']);
-
-				%%% If CNV estimate changed, update boolean.
-				if (chrCopyNum_new2{chr}(segment) != chrCopyNum{chr}(segment))
-					chrCopyNum_changed = true;
-				endif;
-			endfor;
-		endif;
-	endfor;
+					end;
+				end;
+			end;
+		end;
+	end;
 	chrCopyNum = chrCopyNum_new2;
 
 	%%% Merge any adjacent segments that now have the same best estimate of copy number.
 	fprintf(['\n### Merging adjacent segments.\n']);
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			if (length(chrCopyNum{chr}) > 1)  % more than one segment, so lets examine if adjacent segments have different copyNums.
-				% Add break representing left end of chromosome.
-				breakCount_new         = 1;
-				chr_breaks_new{chr}    = [];
-				chrCopyNum_new{chr}    = [];
-				chr_breaks_new{chr}(1) = 0.0;
+		if (chr <= length(chr_in_use))
+			if (chr_in_use(chr) == 1)
+				if (length(chrCopyNum{chr}) > 1)  % more than one segment, so lets examine if adjacent segments have different copyNums.
+					% Add break representing left end of chromosome.
+					breakCount_new         = 1;
+					chr_breaks_new{chr}    = [];
+					chrCopyNum_new{chr}    = [];
+					chr_breaks_new{chr}(1) = 0.0;
 
-				chrCopyNum_new{chr}(1) = chrCopyNum{chr}(1);
-				for segment = 1:(length(chrCopyNum{chr})-1)
-					if (round(chrCopyNum{chr}(segment)) == round(chrCopyNum{chr}(segment+1)))
-						% two adjacent segments have identical copyNum and should be fused into one; don't add boundry to new list.
-					else
-						% two adjacent segments have different copyNum; add boundry to new list.
-						breakCount_new                      = breakCount_new + 1;
-						chr_breaks_new{chr}(breakCount_new) = chr_breaks{chr}(segment+1);
-						chrCopyNum_new{chr}(breakCount_new) = chrCopyNum{chr}(segment+1);
-					endif;
-				endfor;
+					chrCopyNum_new{chr}(1) = chrCopyNum{chr}(1);
+					for segment = 1:(length(chrCopyNum{chr})-1)
+						if (round(chrCopyNum{chr}(segment)) == round(chrCopyNum{chr}(segment+1)))
+							% two adjacent segments have identical copyNum and should be fused into one; don't add boundry to new list.
+						else
+							% two adjacent segments have different copyNum; add boundry to new list.
+							breakCount_new                      = breakCount_new + 1;
+							chr_breaks_new{chr}(breakCount_new) = chr_breaks{chr}(segment+1);
+							chrCopyNum_new{chr}(breakCount_new) = chrCopyNum{chr}(segment+1);
+						end;
+					end;
 
-				% add break representing right end of chromosome.
-				breakCount_new = breakCount_new+1;
-				chr_breaks_new{chr}(breakCount_new) = 1.0;
+					% add break representing right end of chromosome.
+					breakCount_new = breakCount_new+1;
+					chr_breaks_new{chr}(breakCount_new) = 1.0;
 
-				% copy new lists to old.
-				chr_breaks{chr} = chr_breaks_new{chr};
-				chrCopyNum{chr} = [];
-				chrCopyNum{chr} = chrCopyNum_new{chr};
-			endif;
-		endif;
-	endfor;
+					% copy new lists to old.
+					chr_breaks{chr} = chr_breaks_new{chr};
+					chrCopyNum{chr} = [];
+					chrCopyNum{chr} = chrCopyNum_new{chr};
+				end;
+			end;
+		end;
+	end;
 
 
 	%%================================================================================================
@@ -776,19 +783,21 @@ while (chrCopyNum_changed == true)
 	i = 0;
 	segmental_aneuploidy = [];
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			fprintf(['\t chr_breaks{' num2str(chr) '} = ']);
-			for i = 1:length(chr_breaks{chr})
-				fprintf([num2str(chr_breaks{chr}(i)) ' ']);
-			end;
-			fprintf('\n');
-			for edge = 1:length(chr_breaks{chr})
-				if (chr_breaks{chr}(edge) == 0) || (chr_breaks{chr}(edge) == 1)
-					% nothing is added to file for start and end coordinates; these edges are later assumed.
-				else
-					i = i+1;
-					segmental_aneuploidy(i).chr     = chr;                   % chromosome being examined.
-					segmental_aneuploidy(i).break   = chr_breaks{chr}(edge); % percent along chromosome of edge.
+		if (chr <= length(chr_in_use))
+			if (chr_in_use(chr) == 1)
+				fprintf(['\t chr_breaks{' num2str(chr) '} = ']);
+				for i = 1:length(chr_breaks{chr})
+					fprintf([num2str(chr_breaks{chr}(i)) ' ']);
+				end;
+				fprintf('\n');
+				for edge = 1:length(chr_breaks{chr})
+					if (chr_breaks{chr}(edge) == 0) || (chr_breaks{chr}(edge) == 1)
+						% nothing is added to file for start and end coordinates; these edges are later assumed.
+					else
+						i = i+1;
+						segmental_aneuploidy(i).chr     = chr;                   % chromosome being examined.
+						segmental_aneuploidy(i).break   = chr_breaks{chr}(edge); % percent along chromosome of edge.
+					end;
 				end;
 			end;
 		end;

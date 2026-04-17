@@ -139,20 +139,22 @@ else
 
 	%% This block is normally calculated in FindChrSizes during CNV analysis.
 	for usedChr = 1:num_chrs
-		if (chr_in_use(usedChr) == 1)
-			% determine where the endpoints of ploidy segments are.
-			chr_breaks{usedChr}(1) = 0.0;
-			break_count = 1;
-			if (length(Aneuploidy) > 0)
-				for i = 1:length(Aneuploidy)
-					if (Aneuploidy(i).chr == usedChr)
-						break_count = break_count+1;
-						chr_broken = true;
+		if (usedChr <= length(chr_in_use))
+			if (chr_in_use(usedChr) == 1)
+				% determine where the endpoints of ploidy segments are.
+				chr_breaks{usedChr}(1) = 0.0;
+				break_count = 1;
+				if (length(Aneuploidy) > 0)
+					for i = 1:length(Aneuploidy)
+						if (Aneuploidy(i).chr == usedChr)
+							break_count = break_count+1;
+							chr_broken = true;
 							chr_breaks{usedChr}(break_count) = Aneuploidy(i).break;
+						end;
+					end;
 				end;
-				end;
+				chr_breaks{usedChr}(length(chr_breaks{usedChr})+1) = 1;
 			end;
-			chr_breaks{usedChr}(length(chr_breaks{usedChr})+1) = 1;
 		end;
 	end;
 
@@ -212,37 +214,39 @@ else
 	% Segments with a <= zero copy number will be fused to an adjacetn segment.
 	%-------------------------------------------------------------------------------------------
 	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			if (length(chrCopyNum{chr}) > 1)  % more than one segment, so lets examine if adjacent segments have different copyNums.
-				%% Merge any adjacent segments with the same copy number.
-				% add break representing left end of chromosome.
-				breakCount_new         = 1;
-				chr_breaks_new{chr}    = [];
-				chrCopyNum_new{chr}    = [];
-				chr_breaks_new{chr}(1) = 0.0;
-				chrCopyNum_new{chr}(1) = chrCopyNum{chr}(1);
-				for segment = 1:(length(chrCopyNum{chr})-1)
-					if (round(chrCopyNum{chr}(segment)) == round(chrCopyNum{chr}(segment+1)))
-						% two adjacent segments have identical copyNum and should be fused into one; don't add boundry to new list.
-					else
-						% two adjacent segments have different copyNum; add boundry to new list.
-						breakCount_new                      = breakCount_new + 1;
-						chr_breaks_new{chr}(breakCount_new) = chr_breaks{chr}(segment+1);
-						chrCopyNum_new{chr}(breakCount_new) = chrCopyNum{chr}(segment+1);
+		if (chr <= length(chr_in_use))
+			if (chr_in_use(chr) == 1)
+				if (length(chrCopyNum{chr}) > 1)  % more than one segment, so lets examine if adjacent segments have different copyNums.
+					%% Merge any adjacent segments with the same copy number.
+					% add break representing left end of chromosome.
+					breakCount_new         = 1;
+					chr_breaks_new{chr}    = [];
+					chrCopyNum_new{chr}    = [];
+					chr_breaks_new{chr}(1) = 0.0;
+					chrCopyNum_new{chr}(1) = chrCopyNum{chr}(1);
+					for segment = 1:(length(chrCopyNum{chr})-1)
+						if (round(chrCopyNum{chr}(segment)) == round(chrCopyNum{chr}(segment+1)))
+							% two adjacent segments have identical copyNum and should be fused into one; don't add boundry to new list.
+						else
+							% two adjacent segments have different copyNum; add boundry to new list.
+							breakCount_new                      = breakCount_new + 1;
+							chr_breaks_new{chr}(breakCount_new) = chr_breaks{chr}(segment+1);
+							chrCopyNum_new{chr}(breakCount_new) = chrCopyNum{chr}(segment+1);
+						end;
 					end;
+					% add break representing right end of chromosome.
+					breakCount_new = breakCount_new+1;
+					chr_breaks_new{chr}(breakCount_new) = 1.0;
+					fprintf(['@@@ chr = ' num2str(chr) '\n']);
+					fprintf(['@@@    chr_breaks_old = ' num2str(chr_breaks{chr})     '\n']);
+					fprintf(['@@@    chrCopyNum_old = ' num2str(chrCopyNum{chr})     '\n']);
+					fprintf(['@@@    chr_breaks_new = ' num2str(chr_breaks_new{chr}) '\n']);
+					fprintf(['@@@    chrCopyNum_new = ' num2str(chrCopyNum_new{chr}) '\n']);
+					% copy new lists to old.
+					chr_breaks{chr} = chr_breaks_new{chr};
+					chrCopyNum{chr} = [];
+					chrCopyNum{chr} = chrCopyNum_new{chr};
 				end;
-				% add break representing right end of chromosome.
-				breakCount_new = breakCount_new+1;
-				chr_breaks_new{chr}(breakCount_new) = 1.0;
-				fprintf(['@@@ chr = ' num2str(chr) '\n']);
-				fprintf(['@@@    chr_breaks_old = ' num2str(chr_breaks{chr})     '\n']);
-				fprintf(['@@@    chrCopyNum_old = ' num2str(chrCopyNum{chr})     '\n']);
-				fprintf(['@@@    chr_breaks_new = ' num2str(chr_breaks_new{chr}) '\n']);
-				fprintf(['@@@    chrCopyNum_new = ' num2str(chrCopyNum_new{chr}) '\n']);
-				% copy new lists to old.
-				chr_breaks{chr} = chr_breaks_new{chr};
-				chrCopyNum{chr} = [];
-				chrCopyNum{chr} = chrCopyNum_new{chr};
 			end;
 		end;
 	end;

@@ -21,7 +21,7 @@ chrCopyRsquared_vector = [];
 %%% Precalculation of chromosome segment copy numbers.
 %%%------------------------------------------------------------------------------------------------
 for usedChr = 1:num_chrs
-	if (chr <= length(usedChr))
+	if (usedChr <= length(chr_in_use))
 		if (chr_in_use(usedChr) == 1)
 			% determine where the endpoints of ploidy segments are.
 			chr_breaks{usedChr}(1) = 0.0;
@@ -208,7 +208,7 @@ chrCopyNum_vector      = [];
 chrCopyRsquared_vector = [];
 
 for usedChr = 1:num_chrs
-	if (chr <= length(usedChr))
+	if (usedChr <= length(chr_in_use))
 		if (chr_in_use(usedChr) == 1)
 			for segment = 1:length(chr_breaks{usedChr})-1
 				smoothed         = [];
