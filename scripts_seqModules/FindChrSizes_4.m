@@ -21,85 +21,87 @@ chrCopyRsquared_vector = [];
 %%% Precalculation of chromosome segment copy numbers.
 %%%------------------------------------------------------------------------------------------------
 for usedChr = 1:num_chrs
-	if (chr_in_use(usedChr) == 1)
-		% determine where the endpoints of ploidy segments are.
-		chr_breaks{usedChr}(1) = 0.0;
-		break_count = 1;
+	if (chr <= length(usedChr))
+		if (chr_in_use(usedChr) == 1)
+			% determine where the endpoints of ploidy segments are.
+			chr_breaks{usedChr}(1) = 0.0;
+			break_count = 1;
 
-		if (length(Aneuploidy) > 0)
-			for i = 1:length(Aneuploidy)
-				%if (Aneuploidy(i).dataset == dataset) && (Aneuploidy(i).chr == usedChr)
-				if (Aneuploidy(i).chr == usedChr)
-					break_count = break_count+1;
-					chr_broken = true;
-					chr_breaks{usedChr}(break_count) = Aneuploidy(i).break;
+			if (length(Aneuploidy) > 0)
+				for i = 1:length(Aneuploidy)
+					%if (Aneuploidy(i).dataset == dataset) && (Aneuploidy(i).chr == usedChr)
+					if (Aneuploidy(i).chr == usedChr)
+						break_count = break_count+1;
+						chr_broken = true;
+						chr_breaks{usedChr}(break_count) = Aneuploidy(i).break;
+					end;
 				end;
 			end;
-		end;
-		chr_breaks{usedChr}(length(chr_breaks{usedChr})+1) = 1;
+			chr_breaks{usedChr}(length(chr_breaks{usedChr})+1) = 1;
 
-		fprintf(['chr' num2str(usedChr) ' : ' num2str(length(chr_breaks{usedChr})) '\n']);
-		for segment = 1:length(chr_breaks{usedChr})-1
-			smoothed = [];
-			smoothed2 = [];
-			segment_CGHdata = [];
-			segment_CGHdata2  = [];
-			% find set of CGH data for this segment of this chromosome.
-			for i = 1:length(CNVplot{usedChr})
-				% val = ploidy estimate adjusted copy number for each CGH probe.
-				if (i <= length(CNVplot{usedChr})*chr_breaks{usedChr}(segment+1)) && ...
-				   (i >= length(CNVplot{usedChr})*chr_breaks{usedChr}(segment))
-					val = CNVplot{usedChr}(i);
-					segment_CGHdata = [segment_CGHdata val];
+			fprintf(['chr' num2str(usedChr) ' : ' num2str(length(chr_breaks{usedChr})) '\n']);
+			for segment = 1:length(chr_breaks{usedChr})-1
+				smoothed = [];
+				smoothed2 = [];
+				segment_CGHdata = [];
+				segment_CGHdata2  = [];
+				% find set of CGH data for this segment of this chromosome.
+				for i = 1:length(CNVplot{usedChr})
+					% val = ploidy estimate adjusted copy number for each CGH probe.
+					if (i <= length(CNVplot{usedChr})*chr_breaks{usedChr}(segment+1)) && ...
+					   (i >= length(CNVplot{usedChr})*chr_breaks{usedChr}(segment))
+						val = CNVplot{usedChr}(i);
+						segment_CGHdata = [segment_CGHdata val];
+					end;
 				end;
+				if (Ploidy == 0)
+					segment_CGHdata = segment_CGHdata*2;
+				else
+					segment_CGHdata = segment_CGHdata*Ploidy;
+				end;
+				% make smoothed histogram of CGH data for this segment.
+				segment_CGHdata(segment_CGHdata==0) = [];
+				segment_CGHdata(length(segment_CGHdata)+1) = 0;   % endpoints added to ensure histogram bounds.
+				segment_CGHdata(length(segment_CGHdata)+1) = maxY;
+				% clearing
+				segment_CGHdata(segment_CGHdata<0) = [];
+				segment_CGHdata(segment_CGHdata>maxY) = [];
+				histogram_width = 200;
+				smoothed        = smooth_gaussian(hist(segment_CGHdata,histogram_width),5,20);
+
+				% make a smoothed version of just the endpoints used to ensure histogram bounds.
+				segment_CGHdata2(1) = 0;
+				segment_CGHdata2(2) = maxY;
+				smoothed2 = smooth_gaussian(hist(segment_CGHdata2,histogram_width),5,20);
+
+				% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
+				smoothed = smoothed - smoothed2;
+				smoothed = smoothed/max(smoothed);
+
+				% find initial estimage of peak location from smoothed segment CGH data.
+				peakLocation = find(smoothed==max(smoothed));
+				% fit Gaussian to segment CGH data.
+				show_fitting = 0;
+
+				%%% Perform Gaussian curve fitting to CNV data, to generate chromosome segment copy number estimates. (No fit figures made.)
+				descriptionString   = ['chr=' num2str(usedChr) '; seg=' num2str(segment)];
+				[CGHsegment_height, CGHsegment_location, CGHsegment_width, Rsquared] = fit_Gaussian_model2(workingDir, smoothed, peakLocation, 'cubic',show_fitting,20, false, descriptionString);
+				fprintf(['\n### fit_Gaussian_model2 description string = ' descriptionString '\n']);
+				fprintf(['!!! [raw] chrCopyNum{' num2str(usedChr) '}(' num2str(segment) ') = ' num2str(round(CGHsegment_location/(histogram_width/maxY)*10)/10) '\n']);
+
+				if (isnan(round(CGHsegment_location/(histogram_width/maxY)*10)/10))
+					chrCopyNum{usedChr}(segment)      = 1;
+				elseif (peakLocation > 1)
+					% calculate copy number from Gaussian location.
+					chrCopyNum{usedChr}(segment)      = round(CGHsegment_location/(histogram_width/maxY)*10)/10;
+				else
+					chrCopyNum{usedChr}(segment)      = 1;
+				end;
+				chrCopyRsquared{usedChr}(segment) = Rsquared;
+
+				chrCopyNum_vector      = [chrCopyNum_vector      chrCopyNum{usedChr}(segment)     ];
+				chrCopyRsquared_vector = [chrCopyRsquared_vector chrCopyRsquared{usedChr}(segment)];
 			end;
-			if (Ploidy == 0)
-				segment_CGHdata = segment_CGHdata*2;
-			else
-				segment_CGHdata = segment_CGHdata*Ploidy;
-			end;
-			% make smoothed histogram of CGH data for this segment.
-			segment_CGHdata(segment_CGHdata==0) = [];
-			segment_CGHdata(length(segment_CGHdata)+1) = 0;   % endpoints added to ensure histogram bounds.
-			segment_CGHdata(length(segment_CGHdata)+1) = maxY;
-			% clearing
-			segment_CGHdata(segment_CGHdata<0) = [];
-			segment_CGHdata(segment_CGHdata>maxY) = [];
-			histogram_width = 200;
-			smoothed        = smooth_gaussian(hist(segment_CGHdata,histogram_width),5,20);
-
-			% make a smoothed version of just the endpoints used to ensure histogram bounds.
-			segment_CGHdata2(1) = 0;
-			segment_CGHdata2(2) = maxY;
-			smoothed2 = smooth_gaussian(hist(segment_CGHdata2,histogram_width),5,20);
-
-			% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
-			smoothed = smoothed - smoothed2;
-			smoothed = smoothed/max(smoothed);
-
-			% find initial estimage of peak location from smoothed segment CGH data.
-			peakLocation = find(smoothed==max(smoothed));
-			% fit Gaussian to segment CGH data.
-			show_fitting = 0;
-
-			%%% Perform Gaussian curve fitting to CNV data, to generate chromosome segment copy number estimates. (No fit figures made.)
-			descriptionString   = ['chr=' num2str(usedChr) '; seg=' num2str(segment)];
-			[CGHsegment_height, CGHsegment_location, CGHsegment_width, Rsquared] = fit_Gaussian_model2(workingDir, smoothed, peakLocation, 'cubic',show_fitting,20, false, descriptionString);
-			fprintf(['\n### fit_Gaussian_model2 description string = ' descriptionString '\n']);
-			fprintf(['!!! [raw] chrCopyNum{' num2str(usedChr) '}(' num2str(segment) ') = ' num2str(round(CGHsegment_location/(histogram_width/maxY)*10)/10) '\n']);
-
-			if (isnan(round(CGHsegment_location/(histogram_width/maxY)*10)/10))
-				chrCopyNum{usedChr}(segment)      = 1;
-			elseif (peakLocation > 1)
-				% calculate copy number from Gaussian location.
-				chrCopyNum{usedChr}(segment)      = round(CGHsegment_location/(histogram_width/maxY)*10)/10;
-			else
-				chrCopyNum{usedChr}(segment)      = 1;
-			end;
-			chrCopyRsquared{usedChr}(segment) = Rsquared;
-
-			chrCopyNum_vector      = [chrCopyNum_vector      chrCopyNum{usedChr}(segment)     ];
-			chrCopyRsquared_vector = [chrCopyRsquared_vector chrCopyRsquared{usedChr}(segment)];
 		end;
 	end;
 end;
@@ -206,72 +208,74 @@ chrCopyNum_vector      = [];
 chrCopyRsquared_vector = [];
 
 for usedChr = 1:num_chrs
-	if (chr_in_use(usedChr) == 1)
-		for segment = 1:length(chr_breaks{usedChr})-1
-			smoothed         = [];
-			smoothed2        = [];
-			segment_CGHdata  = [];
-			segment_CGHdata2 = [];
+	if (chr <= length(usedChr))
+		if (chr_in_use(usedChr) == 1)
+			for segment = 1:length(chr_breaks{usedChr})-1
+				smoothed         = [];
+				smoothed2        = [];
+				segment_CGHdata  = [];
+				segment_CGHdata2 = [];
 
-			%%% Grab CGH data for this segment of this chromosome.
-			for i = 1:length(CNVplot{usedChr})
-				% val = ploidy estimate adjusted copy number for each CGH fragment.
-				if (i <= length(CNVplot{usedChr})*chr_breaks{usedChr}(segment+1)) && ...
-				   (i >= length(CNVplot{usedChr})*chr_breaks{usedChr}(segment))
-					val = CNVplot{usedChr}(i);
-					segment_CGHdata = [segment_CGHdata val];
+				%%% Grab CGH data for this segment of this chromosome.
+				for i = 1:length(CNVplot{usedChr})
+					% val = ploidy estimate adjusted copy number for each CGH fragment.
+					if (i <= length(CNVplot{usedChr})*chr_breaks{usedChr}(segment+1)) && ...
+					   (i >= length(CNVplot{usedChr})*chr_breaks{usedChr}(segment))
+						val = CNVplot{usedChr}(i);
+						segment_CGHdata = [segment_CGHdata val];
+					end;
 				end;
+				if (Ploidy == 0)
+					%%% Assumes diploid when ploidy value wasn't entered somehow.
+					segment_CGHdata = segment_CGHdata*2;
+				else
+					segment_CGHdata = segment_CGHdata*Ploidy;
+				end;
+
+				% make smoothed histogram of CGH data for this segment.
+				segment_CGHdata(segment_CGHdata==0) = [];
+				segment_CGHdata(length(segment_CGHdata)+1) = 0;   % endpoints added to ensure histogram bounds.
+				segment_CGHdata(length(segment_CGHdata)+1) = maxY;
+
+				% clearing
+				segment_CGHdata(segment_CGHdata<0) = [];
+				segment_CGHdata(segment_CGHdata>maxY) = [];
+				histogram_width = 200;
+				smoothed        = smooth_gaussian(hist(segment_CGHdata,histogram_width),5,20);
+
+				% make a smoothed version of just the endpoints used to ensure histogram bounds.
+				segment_CGHdata2(1) = 0;
+				segment_CGHdata2(2) = maxY;
+				smoothed2 = smooth_gaussian(hist(segment_CGHdata2,histogram_width),5,20);
+
+				% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
+				smoothed = smoothed - smoothed2;
+				smoothed = smoothed/max(smoothed);
+
+				% find initial estimage of peak location from smoothed segment CGH data.
+				peakLocation = find(smoothed==max(smoothed));
+				% fit Gaussian to segment CGH data.
+				show_fitting = 0;
+
+				%%% Perform Gaussian curve fitting to CNV data, to generate chromosome segment copy number estimates, after merging adjacent segments when needed. (Fit figures are made.)
+				descriptionString   = ['chr=' num2str(usedChr) '; seg=' num2str(segment)];
+				[CGHsegment_height, CGHsegment_location, CGHsegment_width, Rsquared] = fit_Gaussian_model2(workingDir, smoothed, peakLocation, 'cubic',show_fitting,20, makeFitFigures, descriptionString);
+				fprintf(['\n### fit_Gaussian_model2 description string = ' descriptionString '\n']);
+				fprintf(['!!! [raw] chrCopyNum{' num2str(usedChr) '}(' num2str(segment) ') = ' num2str(round(CGHsegment_location/(histogram_width/maxY)*10)/10) '\n']);
+
+				if (isnan(round(CGHsegment_location/(histogram_width/maxY)*10)/10))
+					chrCopyNum{usedChr}(segment)      = 1;
+				elseif (peakLocation > 1)
+					% calculate copy number from Gaussian location.
+					chrCopyNum{usedChr}(segment)      = round(CGHsegment_location/(histogram_width/maxY)*10)/10;
+				else
+					chrCopyNum{usedChr}(segment)      = 1;
+				end;
+				chrCopyRsquared{usedChr}(segment) = Rsquared;
+
+				chrCopyNum_vector      = [chrCopyNum_vector      chrCopyNum{usedChr}(segment)     ];
+				chrCopyRsquared_vector = [chrCopyRsquared_vector chrCopyRsquared{usedChr}(segment)];
 			end;
-			if (Ploidy == 0)
-				%%% Assumes diploid when ploidy value wasn't entered somehow.
-				segment_CGHdata = segment_CGHdata*2;
-			else
-				segment_CGHdata = segment_CGHdata*Ploidy;
-			end;
-
-			% make smoothed histogram of CGH data for this segment.
-			segment_CGHdata(segment_CGHdata==0) = [];
-			segment_CGHdata(length(segment_CGHdata)+1) = 0;   % endpoints added to ensure histogram bounds.
-			segment_CGHdata(length(segment_CGHdata)+1) = maxY;
-
-			% clearing
-			segment_CGHdata(segment_CGHdata<0) = [];
-			segment_CGHdata(segment_CGHdata>maxY) = [];
-			histogram_width = 200;
-			smoothed        = smooth_gaussian(hist(segment_CGHdata,histogram_width),5,20);
-
-			% make a smoothed version of just the endpoints used to ensure histogram bounds.
-			segment_CGHdata2(1) = 0;
-			segment_CGHdata2(2) = maxY;
-			smoothed2 = smooth_gaussian(hist(segment_CGHdata2,histogram_width),5,20);
-
-			% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
-			smoothed = smoothed - smoothed2;
-			smoothed = smoothed/max(smoothed);
-
-			% find initial estimage of peak location from smoothed segment CGH data.
-			peakLocation = find(smoothed==max(smoothed));
-			% fit Gaussian to segment CGH data.
-			show_fitting = 0;
-
-			%%% Perform Gaussian curve fitting to CNV data, to generate chromosome segment copy number estimates, after merging adjacent segments when needed. (Fit figures are made.)
-			descriptionString   = ['chr=' num2str(usedChr) '; seg=' num2str(segment)];
-			[CGHsegment_height, CGHsegment_location, CGHsegment_width, Rsquared] = fit_Gaussian_model2(workingDir, smoothed, peakLocation, 'cubic',show_fitting,20, makeFitFigures, descriptionString);
-			fprintf(['\n### fit_Gaussian_model2 description string = ' descriptionString '\n']);
-			fprintf(['!!! [raw] chrCopyNum{' num2str(usedChr) '}(' num2str(segment) ') = ' num2str(round(CGHsegment_location/(histogram_width/maxY)*10)/10) '\n']);
-
-			if (isnan(round(CGHsegment_location/(histogram_width/maxY)*10)/10))
-				chrCopyNum{usedChr}(segment)      = 1;
-			elseif (peakLocation > 1)
-				% calculate copy number from Gaussian location.
-				chrCopyNum{usedChr}(segment)      = round(CGHsegment_location/(histogram_width/maxY)*10)/10;
-			else
-				chrCopyNum{usedChr}(segment)      = 1;
-			end;
-			chrCopyRsquared{usedChr}(segment) = Rsquared;
-
-			chrCopyNum_vector      = [chrCopyNum_vector      chrCopyNum{usedChr}(segment)     ];
-			chrCopyRsquared_vector = [chrCopyRsquared_vector chrCopyRsquared{usedChr}(segment)];
 		end;
 	end;
 end;
