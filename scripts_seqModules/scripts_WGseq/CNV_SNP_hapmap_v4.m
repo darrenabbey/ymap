@@ -748,7 +748,7 @@ for chr = 1:num_chrs
 				end;
 			end;
 		end;
-]	end;
+	end;
 end;
 
 fclose(alleleRatiosFid);
