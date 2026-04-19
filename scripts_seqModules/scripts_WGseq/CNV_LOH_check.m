@@ -304,20 +304,24 @@ while (chrCopyNum_changed == true)
 	endif;
 
 	for chr = 1:num_chrs
-		fprintf(['\t chr_breaks{' num2str(chr) '} = ']);
-		for i = 1:length(chr_breaks{chr})
-			fprintf([num2str(chr_breaks{chr}(i)) ' ']);
+		if (chr <= length(chr_in_use))
+			fprintf(['\t chr_breaks{' num2str(chr) '} = ']);
+			for i = 1:length(chr_breaks{chr})
+				fprintf([num2str(chr_breaks{chr}(i)) ' ']);
+			end;
+			fprintf('\n');
 		end;
-		fprintf('\n');
 	end;
 	fprintf(['\n']);
 
 	for chr = 1:num_chrs
-		fprintf(['\t chrCopyNum{' num2str(chr) '} = ']);
-		for i = 1:length(chrCopyNum{chr})
-			fprintf([num2str(chrCopyNum{chr}(i)) ' ']);
+		if (chr <= length(chr_in_use))
+			fprintf(['\t chrCopyNum{' num2str(chr) '} = ']);
+			for i = 1:length(chrCopyNum{chr})
+				fprintf([num2str(chrCopyNum{chr}(i)) ' ']);
+			end;
+			fprintf('\n');
 		end;
-		fprintf('\n');
 	end;
 
 
