@@ -108,5 +108,6 @@ segment_chrBreaks          = chr_breaks{chr}(segment);         % break points of
 segment_smoothedHistogram  = smoothed;                         % whole chromosome allelic ratio histogram smoothed.
 
 % Define cutoffs between Gaussian fits.
-descriptionString   = ['testSNP=' num2str(copyNum) '; chr=' num2str(chr) '; seg=' num2str(segment)];
+descriptionString          = ['testSNP=' num2str(copyNum) '; chr=' num2str(chr) '; seg=' num2str(segment)];
+makeFitFigures             = false;
 [peaks_,actual_cutoffs_,mostLikelyGaussians_, Rsquared] = FindGaussianCutoffs_3(workingDir,descriptionString, chr,segment, segment_copyNum,segment_smoothedHistogram, makeFitFigures);
