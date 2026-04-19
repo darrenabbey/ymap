@@ -4,6 +4,7 @@
         $fileName = $_SESSION['fileName'];
         $genome   = $_SESSION['genome'];
         $key      = $_SESSION['key'];
+	$key      = 'g_0';
 
 // current directory
 	require_once '../constants.php';
