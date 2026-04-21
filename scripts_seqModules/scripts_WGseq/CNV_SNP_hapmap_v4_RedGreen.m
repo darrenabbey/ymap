@@ -116,25 +116,24 @@ if ((useHapmap) || (useParent))
 		% Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
 		%-------------------------------------------------------------------------------------------
 		for chr = 1:num_chrs
-			if (chr <= length(chr_in_use))
-				% avoid running over chromosomes with empty copy number
-				if (chr_in_use(chr) == 1 && ~isempty(chrCopyNum{chr}))
-					for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin);
-						%
-						% Determining colors for each SNP coordinate from calculated cutoffs.
-						%
-						localCopyEstimate					= round(CNVplot2{chr}(chr_bin)*ploidy*ploidyAdjust);
-						allelic_ratios						= [chr_SNPdata{chr,1}{chr_bin} chr_SNPdata{chr,2}{chr_bin}];
-						coordinates						= [chr_SNPdata{chr,3}{chr_bin} chr_SNPdata{chr,4}{chr_bin}];
+			% avoid running over chromosomes with empty copy number
+			if (chr_in_use(chr) == 1 && ~isempty(chrCopyNum{chr}))
+				for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin);
+					%
+					% Determining colors for each SNP coordinate from calculated cutoffs.
+					%
+					localCopyEstimate					= round(CNVplot2{chr}(chr_bin)*ploidy*ploidyAdjust);
+					allelic_ratios						= [chr_SNPdata{chr,1}{chr_bin} chr_SNPdata{chr,2}{chr_bin}];
+					coordinates						= [chr_SNPdata{chr,3}{chr_bin} chr_SNPdata{chr,4}{chr_bin}];
 
-						if (length(chr_SNPdata{chr,1}{chr_bin}) == 1) && (length(chr_SNPdata{chr,2}{chr_bin}) == 1)
-							allele_strings					= {chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}};
-						else
-							allele_strings					= [chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}];
-							%% dragon : troubleshooting warning of implicit numerical conversion.
-							%fprintf('^^^ Troubleshooting warning of implicit numerical to char conversion.\n');
-							%printf(['^^^ ' allele_strings '\n']);
-						end;
+					if (length(chr_SNPdata{chr,1}{chr_bin}) == 1) && (length(chr_SNPdata{chr,2}{chr_bin}) == 1)
+						allele_strings					= {chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}};
+					else
+						allele_strings					= [chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}];
+						%% dragon : troubleshooting warning of implicit numerical conversion.
+						%fprintf('^^^ Troubleshooting warning of implicit numerical to char conversion.\n');
+						%printf(['^^^ ' allele_strings '\n']);
+					end;
 
 
 %## CODE BLOCK COPIED FROM 'CNV_SNP_hapmap_v4.m'.
@@ -151,177 +150,172 @@ if ((useHapmap) || (useParent))
 %#			                        allele_strings                                          = [phased_alleles unphased_alleles];
 
 
-						if (length(allelic_ratios) > 0)
-							for SNP = 1:length(allelic_ratios)
-								% Load phased SNP data from earlier defined structure.
-								if (isa(allelic_ratios(SNP),'cell') == 1)
-									allelic_ratio			= allelic_ratios(SNP){1};
-								else
-									allelic_ratio			= allelic_ratios(SNP);
-								end;
-								if (isa(coordinates(SNP),'cell') == 1)
-									coordinate			= coordinates(SNP){1};
-								else
-									coordinate			= coordinates(SNP);
-								end;
-								if (length(allelic_ratios) > 1)
-									allele_string			= allele_strings{SNP};
-								else
-									allele_string			= allele_strings;
-								end;
-								baseCall				= allele_string(1);
-								homologA				= allele_string(3);
-								homologB				= allele_string(5);
-
-								% identify the segment containing the SNP.
-								segmentID				= 0;
-								for segment = 1:(length(chrCopyNum{chr}))
-									segment_start			= chr_breaks{chr}(segment  )*chr_size(chr);
-									segment_end			= chr_breaks{chr}(segment+1)*chr_size(chr);
-									if (coordinate > segment_start) && (coordinate <= segment_end)
-										segmentID		= segment;
-									end;
-								end;
-
-								% Load cutoffs between Gaussian fits performed earlier.
-								segment_copyNum				= round(chrCopyNum{              chr}(segmentID));
-								actual_cutoffs				= chrSegment_actual_cutoffs{     chr}{segmentID};
-								mostLikelyGaussians			= chrSegment_mostLikelyGaussians{chr}{segmentID};
-
-								% Calculate allelic ratio on range of [1..200].
-								SNPratio_int				= (allelic_ratio)*199+1;
-
-								% Identify the allelic ratio region containing the SNP.
-								cutoffs					= [1 actual_cutoffs 200];
-								ratioRegionID				= 0;
-								for GaussianRegionID = 1:length(mostLikelyGaussians)
-									cutoff_start			= cutoffs(GaussianRegionID  );
-									cutoff_end			= cutoffs(GaussianRegionID+1);
-									if (GaussianRegionID == 1)
-										if (SNPratio_int >= cutoff_start) && (SNPratio_int <= cutoff_end)
-											ratioRegionID	= mostLikelyGaussians(GaussianRegionID);
-										end;
-									else
-										if (SNPratio_int > cutoff_start) && (SNPratio_int <= cutoff_end)
-											ratioRegionID	= mostLikelyGaussians(GaussianRegionID);
-										end;
-									end;
-								end;
-
-								if (segment_copyNum <= 0);              colorList = colorNoData;
-								elseif (segment_copyNum == 1)
-									% allelic fraction cutoffs: [0.50000] => [A B]
-								                                    colorList = alternate_color_1of1;
-								elseif (segment_copyNum == 2)
-									%   allelic fraction cutoffs: [0.25000 0.75000] => [AA AB BB]
-									if (ratioRegionID == 3);            colorList = alternate_color_2of2;
-									elseif (ratioRegionID == 2);        colorList = alternate_color_1of2;
-									else                                colorList = alternate_color_2of2;
-									end;
-								elseif (segment_copyNum == 3)
-									% allelic fraction cutoffs: [0.16667 0.50000 0.83333] => [AAA AAB ABB BBB]
-									if (ratioRegionID == 4);            colorList = alternate_color_3of3;
-									elseif (ratioRegionID == 3);        colorList = alternate_color_2of3;
-								elseif (ratioRegionID == 2);        colorList = alternate_color_2of3;
-									else                                colorList = alternate_color_3of3;
-									end;
-								elseif (segment_copyNum == 4)
-									% allelic fraction cutoffs: [0.12500 0.37500 0.62500 0.87500] => [AAAA AAAB AABB ABBB BBBB]
-									if (ratioRegionID == 5);            colorList = alternate_color_4of4;
-									elseif (ratioRegionID == 4);        colorList = alternate_color_3of4;
-									elseif (ratioRegionID == 3);        colorList = alternate_color_2of4;
-									elseif (ratioRegionID == 2);        colorList = alternate_color_3of4;
-									else                                colorList = alternate_color_4of4;
-									end;
-								elseif (segment_copyNum == 5)
-									% allelic fraction cutoffs: [0.10000 0.30000 0.50000 0.70000 0.90000] => [AAAAA AAAAB AAABB AABBB ABBBB BBBBB]
-									if (ratioRegionID == 6);            colorList = alternate_color_5of5;
-									elseif (ratioRegionID == 5);        colorList = alternate_color_4of5;
-									elseif (ratioRegionID == 4);        colorList = alternate_color_3of5;
-									elseif (ratioRegionID == 3);        colorList = alternate_color_3of5;
-									elseif (ratioRegionID == 2);        colorList = alternate_color_4of5;
-									else                                colorList = alternate_color_5of5;
-									end;
-								elseif (segment_copyNum == 6)
-									% allelic fraction cutoffs: [0.08333 0.25000 0.41667 0.58333 0.75000 0.91667] => [AAAAAA AAAAAB AAAABB AAABBB AABBBB ABBBBB BBBBBB]
-									if (ratioRegionID == 7);            colorList = alternate_color_6of6;
-									elseif (ratioRegionID == 6);        colorList = alternate_color_5of6;
-									elseif (ratioRegionID == 5);        colorList = alternate_color_4of6;
-									elseif (ratioRegionID == 4);        colorList = alternate_color_3of6;
-									elseif (ratioRegionID == 3);        colorList = alternate_color_4of6;
-									elseif (ratioRegionID == 2);        colorList = alternate_color_5of6;
-									else                                colorList = alternate_color_6of6;
-									end;
-								elseif (segment_copyNum == 7)
-									% allelic fraction cutoffs: [0.07143 0.21429 0.35714 0.50000 0.64286 0.78571 0.92857] => [AAAAAAA AAAAAAB AAAAABB AAAABBB AAABBBB AABBBBB ABBBBBB BBBBBBB]
-									if (ratioRegionID == 8);            colorList = alternate_color_7of7;
-									elseif (ratioRegionID == 7);        colorList = alternate_color_6of7;
-									elseif (ratioRegionID == 6);        colorList = alternate_color_5of7;
-									elseif (ratioRegionID == 5);        colorList = alternate_color_4of7;
-									elseif (ratioRegionID == 3);        colorList = alternate_color_4of7;
-									elseif (ratioRegionID == 3);        colorList = alternate_color_5of7;
-									elseif (ratioRegionID == 2);        colorList = alternate_color_6of7;
-									else                                colorList = alternate_color_7of7;
-									end;
-								elseif (segment_copyNum == 8)
-									% allelic fraction cutoffs: [0.06250 0.18750 0.31250 0.43750 0.56250 0.68750 0.81250 0.93750] => [AAAAAAAA AAAAAAAB AAAAAABB AAAAABBB AAAABBBB AAABBBBB AABBBBBB ABBBBBBB BBBBBBBB]
-									if (ratioRegionID == 9);            colorList = alternate_color_8of8;
-									elseif (ratioRegionID == 8);        colorList = alternate_color_7of8;
-									elseif (ratioRegionID == 7);        colorList = alternate_color_6of8;
-									elseif (ratioRegionID == 6);        colorList = alternate_color_5of8;
-									elseif (ratioRegionID == 5);        colorList = alternate_color_4of8;
-									elseif (ratioRegionID == 4);        colorList = alternate_color_5of8;
-									elseif (ratioRegionID == 3);        colorList = alternate_color_6of8;
-									elseif (ratioRegionID == 2);        colorList = alternate_color_7of8;
-									else                                colorList = alternate_color_8of8;
-									end;
-								elseif (segment_copyNum >= 9)
-									% allelic fraction cutoffs: [0.05556 0.16667 0.27778 0.38889 0.50000 0.61111 0.72222 0.83333 0.94444] => [AAAAAAAAA AAAAAAAAB AAAAAAABB AAAAAABBB AAAAABBBB AAAABBBBB AAABBBBBB AABBB$
-									%                                                                                                         ABBBBBBBB BBBBBBBBB]
-									if (ratioRegionID == 10);           colorList = alternate_color_9of9;
-									elseif (ratioRegionID == 9);        colorList = alternate_color_8of9;
-									elseif (ratioRegionID == 8);        colorList = alternate_color_7of9;
-									elseif (ratioRegionID == 7);        colorList = alternate_color_6of9;
-									elseif (ratioRegionID == 6);        colorList = alternate_color_5of9;
-									elseif (ratioRegionID == 5);        colorList = alternate_color_5of9;
-									elseif (ratioRegionID == 4);        colorList = alternate_color_6of9;
-									elseif (ratioRegionID == 3);        colorList = alternate_color_7of9;
-									elseif (ratioRegionID == 2);        colorList = alternate_color_8of9;
-									else                                colorList = alternate_color_9of9;
-									end;
-								end;
-								chr_SNPdata_colorsC{chr,1}(chr_bin) = chr_SNPdata_colorsC{chr,1}(chr_bin) + colorList(1);
-								chr_SNPdata_colorsC{chr,2}(chr_bin) = chr_SNPdata_colorsC{chr,2}(chr_bin) + colorList(2);
-								chr_SNPdata_colorsC{chr,3}(chr_bin) = chr_SNPdata_colorsC{chr,3}(chr_bin) + colorList(3);
-								chr_SNPdata_countC{ chr  }(chr_bin) = chr_SNPdata_countC{ chr  }(chr_bin) + 1;
-
-								% Troubleshooting output.
-								% fprintf(['chr = ' num2str(chr) '; seg = ' num2str(segment) '; bin = ' num2str(chr_bin) '; ratioRegionID = ' num2str(ratioRegionID) '\n']);
+					if (length(allelic_ratios) > 0)
+						for SNP = 1:length(allelic_ratios)
+							% Load phased SNP data from earlier defined structure.
+							if (isa(allelic_ratios(SNP),'cell') == 1)
+								allelic_ratio			= allelic_ratios(SNP){1};
+							else
+								allelic_ratio			= allelic_ratios(SNP);
 							end;
+							if (isa(coordinates(SNP),'cell') == 1)
+								coordinate			= coordinates(SNP){1};
+							else
+								coordinate			= coordinates(SNP);
+							end;
+							if (length(allelic_ratios) > 1)
+								allele_string			= allele_strings{SNP};
+							else
+								allele_string			= allele_strings;
+							end;
+							baseCall				= allele_string(1);
+							homologA				= allele_string(3);
+							homologB				= allele_string(5);
+								% identify the segment containing the SNP.
+							segmentID				= 0;
+							for segment = 1:(length(chrCopyNum{chr}))
+								segment_start			= chr_breaks{chr}(segment  )*chr_size(chr);
+								segment_end			= chr_breaks{chr}(segment+1)*chr_size(chr);
+								if (coordinate > segment_start) && (coordinate <= segment_end)
+									segmentID		= segment;
+								end;
+							end;
+								% Load cutoffs between Gaussian fits performed earlier.
+							segment_copyNum				= round(chrCopyNum{              chr}(segmentID));
+							actual_cutoffs				= chrSegment_actual_cutoffs{     chr}{segmentID};
+							mostLikelyGaussians			= chrSegment_mostLikelyGaussians{chr}{segmentID};
+								% Calculate allelic ratio on range of [1..200].
+							SNPratio_int				= (allelic_ratio)*199+1;
+								% Identify the allelic ratio region containing the SNP.
+							cutoffs					= [1 actual_cutoffs 200];
+							ratioRegionID				= 0;
+							for GaussianRegionID = 1:length(mostLikelyGaussians)
+								cutoff_start			= cutoffs(GaussianRegionID  );
+								cutoff_end			= cutoffs(GaussianRegionID+1);
+								if (GaussianRegionID == 1)
+									if (SNPratio_int >= cutoff_start) && (SNPratio_int <= cutoff_end)
+										ratioRegionID	= mostLikelyGaussians(GaussianRegionID);
+									end;
+								else
+									if (SNPratio_int > cutoff_start) && (SNPratio_int <= cutoff_end)
+										ratioRegionID	= mostLikelyGaussians(GaussianRegionID);
+									end;
+								end;
+							end;
+
+							if (segment_copyNum <= 0);              colorList = colorNoData;
+							elseif (segment_copyNum == 1)
+								% allelic fraction cutoffs: [0.50000] => [A B]
+							                                    colorList = alternate_color_1of1;
+							elseif (segment_copyNum == 2)
+								%   allelic fraction cutoffs: [0.25000 0.75000] => [AA AB BB]
+								if (ratioRegionID == 3);            colorList = alternate_color_2of2;
+								elseif (ratioRegionID == 2);        colorList = alternate_color_1of2;
+								else                                colorList = alternate_color_2of2;
+								end;
+							elseif (segment_copyNum == 3)
+								% allelic fraction cutoffs: [0.16667 0.50000 0.83333] => [AAA AAB ABB BBB]
+								if (ratioRegionID == 4);            colorList = alternate_color_3of3;
+								elseif (ratioRegionID == 3);        colorList = alternate_color_2of3;
+							elseif (ratioRegionID == 2);        colorList = alternate_color_2of3;
+								else                                colorList = alternate_color_3of3;
+								end;
+							elseif (segment_copyNum == 4)
+								% allelic fraction cutoffs: [0.12500 0.37500 0.62500 0.87500] => [AAAA AAAB AABB ABBB BBBB]
+								if (ratioRegionID == 5);            colorList = alternate_color_4of4;
+								elseif (ratioRegionID == 4);        colorList = alternate_color_3of4;
+								elseif (ratioRegionID == 3);        colorList = alternate_color_2of4;
+								elseif (ratioRegionID == 2);        colorList = alternate_color_3of4;
+								else                                colorList = alternate_color_4of4;
+								end;
+							elseif (segment_copyNum == 5)
+								% allelic fraction cutoffs: [0.10000 0.30000 0.50000 0.70000 0.90000] => [AAAAA AAAAB AAABB AABBB ABBBB BBBBB]
+								if (ratioRegionID == 6);            colorList = alternate_color_5of5;
+								elseif (ratioRegionID == 5);        colorList = alternate_color_4of5;
+								elseif (ratioRegionID == 4);        colorList = alternate_color_3of5;
+								elseif (ratioRegionID == 3);        colorList = alternate_color_3of5;
+								elseif (ratioRegionID == 2);        colorList = alternate_color_4of5;
+								else                                colorList = alternate_color_5of5;
+								end;
+							elseif (segment_copyNum == 6)
+								% allelic fraction cutoffs: [0.08333 0.25000 0.41667 0.58333 0.75000 0.91667] => [AAAAAA AAAAAB AAAABB AAABBB AABBBB ABBBBB BBBBBB]
+								if (ratioRegionID == 7);            colorList = alternate_color_6of6;
+								elseif (ratioRegionID == 6);        colorList = alternate_color_5of6;
+								elseif (ratioRegionID == 5);        colorList = alternate_color_4of6;
+								elseif (ratioRegionID == 4);        colorList = alternate_color_3of6;
+								elseif (ratioRegionID == 3);        colorList = alternate_color_4of6;
+								elseif (ratioRegionID == 2);        colorList = alternate_color_5of6;
+								else                                colorList = alternate_color_6of6;
+								end;
+							elseif (segment_copyNum == 7)
+								% allelic fraction cutoffs: [0.07143 0.21429 0.35714 0.50000 0.64286 0.78571 0.92857] => [AAAAAAA AAAAAAB AAAAABB AAAABBB AAABBBB AABBBBB ABBBBBB BBBBBBB]
+								if (ratioRegionID == 8);            colorList = alternate_color_7of7;
+								elseif (ratioRegionID == 7);        colorList = alternate_color_6of7;
+								elseif (ratioRegionID == 6);        colorList = alternate_color_5of7;
+								elseif (ratioRegionID == 5);        colorList = alternate_color_4of7;
+								elseif (ratioRegionID == 3);        colorList = alternate_color_4of7;
+								elseif (ratioRegionID == 3);        colorList = alternate_color_5of7;
+								elseif (ratioRegionID == 2);        colorList = alternate_color_6of7;
+								else                                colorList = alternate_color_7of7;
+								end;
+							elseif (segment_copyNum == 8)
+								% allelic fraction cutoffs: [0.06250 0.18750 0.31250 0.43750 0.56250 0.68750 0.81250 0.93750] => [AAAAAAAA AAAAAAAB AAAAAABB AAAAABBB AAAABBBB AAABBBBB AABBBBBB ABBBBBBB BBBBBBBB]
+								if (ratioRegionID == 9);            colorList = alternate_color_8of8;
+								elseif (ratioRegionID == 8);        colorList = alternate_color_7of8;
+								elseif (ratioRegionID == 7);        colorList = alternate_color_6of8;
+								elseif (ratioRegionID == 6);        colorList = alternate_color_5of8;
+								elseif (ratioRegionID == 5);        colorList = alternate_color_4of8;
+								elseif (ratioRegionID == 4);        colorList = alternate_color_5of8;
+								elseif (ratioRegionID == 3);        colorList = alternate_color_6of8;
+								elseif (ratioRegionID == 2);        colorList = alternate_color_7of8;
+								else                                colorList = alternate_color_8of8;
+								end;
+							elseif (segment_copyNum >= 9)
+								% allelic fraction cutoffs: [0.05556 0.16667 0.27778 0.38889 0.50000 0.61111 0.72222 0.83333 0.94444] => [AAAAAAAAA AAAAAAAAB AAAAAAABB AAAAAABBB AAAAABBBB AAAABBBBB AAABBBBBB AABBB$
+								%                                                                                                         ABBBBBBBB BBBBBBBBB]
+								if (ratioRegionID == 10);           colorList = alternate_color_9of9;
+								elseif (ratioRegionID == 9);        colorList = alternate_color_8of9;
+								elseif (ratioRegionID == 8);        colorList = alternate_color_7of9;
+								elseif (ratioRegionID == 7);        colorList = alternate_color_6of9;
+								elseif (ratioRegionID == 6);        colorList = alternate_color_5of9;
+								elseif (ratioRegionID == 5);        colorList = alternate_color_5of9;
+								elseif (ratioRegionID == 4);        colorList = alternate_color_6of9;
+								elseif (ratioRegionID == 3);        colorList = alternate_color_7of9;
+								elseif (ratioRegionID == 2);        colorList = alternate_color_8of9;
+								else                                colorList = alternate_color_9of9;
+								end;
+							end;
+							chr_SNPdata_colorsC{chr,1}(chr_bin) = chr_SNPdata_colorsC{chr,1}(chr_bin) + colorList(1);
+							chr_SNPdata_colorsC{chr,2}(chr_bin) = chr_SNPdata_colorsC{chr,2}(chr_bin) + colorList(2);
+							chr_SNPdata_colorsC{chr,3}(chr_bin) = chr_SNPdata_colorsC{chr,3}(chr_bin) + colorList(3);
+							chr_SNPdata_countC{ chr  }(chr_bin) = chr_SNPdata_countC{ chr  }(chr_bin) + 1;
+
+							% Troubleshooting output.
+							% fprintf(['chr = ' num2str(chr) '; seg = ' num2str(segment) '; bin = ' num2str(chr_bin) '; ratioRegionID = ' num2str(ratioRegionID) '\n']);
 						end;
 					end;
+				end;
 
-					%
-					% Average colors of SNPs found in bin.
-					%
-					fprintf('\t|\tDetermine average color for SNPs in chromosome bin.\n');
-					for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
-						allelic_ratios                                      = [chr_SNPdata{chr,1}{chr_bin} chr_SNPdata{chr,2}{chr_bin}];
-						if (length(allelic_ratios) > 0)
-							if (chr_SNPdata_countC{chr}(chr_bin) > 0)
-								chr_SNPdata_colorsC{chr,1}(chr_bin) = chr_SNPdata_colorsC{chr,1}(chr_bin)/chr_SNPdata_countC{chr}(chr_bin);
-								chr_SNPdata_colorsC{chr,2}(chr_bin) = chr_SNPdata_colorsC{chr,2}(chr_bin)/chr_SNPdata_countC{chr}(chr_bin);
-								chr_SNPdata_colorsC{chr,3}(chr_bin) = chr_SNPdata_colorsC{chr,3}(chr_bin)/chr_SNPdata_countC{chr}(chr_bin);
-							else
-								chr_SNPdata_colorsC{chr,1}(chr_bin) = 1.0;
-								chr_SNPdata_colorsC{chr,2}(chr_bin) = 1.0;
-								chr_SNPdata_colorsC{chr,3}(chr_bin) = 1.0;
-							end;
+				%
+				% Average colors of SNPs found in bin.
+				%
+				fprintf('\t|\tDetermine average color for SNPs in chromosome bin.\n');
+				for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
+					allelic_ratios                                      = [chr_SNPdata{chr,1}{chr_bin} chr_SNPdata{chr,2}{chr_bin}];
+					if (length(allelic_ratios) > 0)
+						if (chr_SNPdata_countC{chr}(chr_bin) > 0)
+							chr_SNPdata_colorsC{chr,1}(chr_bin) = chr_SNPdata_colorsC{chr,1}(chr_bin)/chr_SNPdata_countC{chr}(chr_bin);
+							chr_SNPdata_colorsC{chr,2}(chr_bin) = chr_SNPdata_colorsC{chr,2}(chr_bin)/chr_SNPdata_countC{chr}(chr_bin);
+							chr_SNPdata_colorsC{chr,3}(chr_bin) = chr_SNPdata_colorsC{chr,3}(chr_bin)/chr_SNPdata_countC{chr}(chr_bin);
 						else
 							chr_SNPdata_colorsC{chr,1}(chr_bin) = 1.0;
 							chr_SNPdata_colorsC{chr,2}(chr_bin) = 1.0;
 							chr_SNPdata_colorsC{chr,3}(chr_bin) = 1.0;
 						end;
+					else
+						chr_SNPdata_colorsC{chr,1}(chr_bin) = 1.0;
+						chr_SNPdata_colorsC{chr,2}(chr_bin) = 1.0;
+						chr_SNPdata_colorsC{chr,3}(chr_bin) = 1.0;
 					end;
 				end;
 			end;
