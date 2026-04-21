@@ -4,7 +4,6 @@
         $fileName = $_SESSION['fileName'];
         $genome   = $_SESSION['genome'];
         $key      = $_SESSION['key'];
-	$key      = 'g_0';
 
 // current directory
 	require_once '../constants.php';
@@ -40,7 +39,7 @@
 
 	// Generate 'reference.txt' file containing:
 	//      one line; file name of reference FASTA file.
-	$fasta_name = "datafile_".$key.".fasta";
+	$fasta_name = "datafile_g_0.fasta";
 	fwrite($logOutput, "\tGenerating 'reference.txt' file.\n");
 	$outputName       = "../users/".$user."/genomes/".$genome."/reference.txt";
 	$output           = fopen($outputName, 'w');
@@ -121,7 +120,7 @@
 	fwrite($logOutput, "\tcondensedLogOutput : ".$coundensedLogOutput."\n");
 	fwrite($logOutput, "\tlogOutput          : ".$logOutput."\n");
 	fwrite($logOutput, "\tfasta_name         : ".$fasta_name."\n");
-	$fileName  = process_input_files_genome($ext,$name,$genomePath,$key,$user,$genome,$output, $condensedLogOutput,$logOutput, $fasta_name);
+	$fileName  = process_input_files_genome($ext,$name,$genomePath,'g_0',$user,$genome,$output, $condensedLogOutput,$logOutput, $fasta_name);
 	$file_path = "../users/".$user."/genomes/".$genome."/".$fileName;
 	fwrite($logOutput, "\n\tFile name & path: ".$file_path."\n");
 	fclose($condensedLogOutput);
