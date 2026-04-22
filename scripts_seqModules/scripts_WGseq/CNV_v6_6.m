@@ -302,6 +302,7 @@ for chr = 1:num_chrs
 			CNVplot{chr} = CNVplot{chr}/medianRawY;
 		end;
 		CNVdata_all = [CNVdata_all CNVplot{chr}];
+		end;
 	end;
 end;
 
@@ -417,7 +418,6 @@ if (performEndbiasCorrection)
 			CNVdata_all_n1                   = [CNVdata_all_n1                   CNVplot{chr}                     ];
 			GCratioData_all                  = [GCratioData_all                  chr_GCratioData{chr}             ];
 			chr_EndDistanceData_all          = [chr_EndDistanceData_all          chr_EndDistanceData{chr}         ];
-
 			chr_CNVdata_extended_all         = [chr_CNVdata_extended_all         chr_CNVdata_extended{chr}        ];
 			chr_EndDistanceData_extended_all = [chr_EndDistanceData_extended_all chr_EndDistanceData_extended{chr}];
 		end;
