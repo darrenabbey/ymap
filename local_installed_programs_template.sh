@@ -12,7 +12,7 @@ java7Directory=$userProgramsLocation"jdk1.8.0_112/jre/bin/";
 
 # Dependency executables:
 abra2_exec=$userProgramsLocation"abra2-2.24.jar";
-matlab_exec=$userProgramsLocation"Matlab_R2014b/bin/matlab";
+matlab_exec=$userProgramsLocation"[octave executable]";
 
 
 
