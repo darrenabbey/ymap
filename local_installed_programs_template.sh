@@ -9,7 +9,6 @@ userProgramsLocation="";
 # Dependency executable directories:
 bowtie2Directory=$userProgramsLocation"bowtie2-2.1.0/";
 java7Directory=$userProgramsLocation"jdk1.8.0_112/jre/bin/";
-seqtkDirectory=$userProgramsLocation"seqtk/";
 
 # Dependency executables:
 matlab_exec=$userProgramsLocation"Matlab_R2014b/bin/matlab";
