@@ -173,13 +173,7 @@ else
 		$samtools_exec view -@ $cores -bT $genomeDirectory$genomeFASTA $projectDirectory"data.sam" > $projectDirectory"data.temp.bam";
 		rm $projectDirectory"data.sam";
 		echo "\tSamtools : Bowtie-SAM converted into compressed format (BAM) file." >> $logName;
-
-		echo "\tPicard : Adding headers to Bowtie-BAM file." >> $logName;
-		echo "Standardizing BAM read group headers." >> $condensedLog;
-		echo "\nRunning picard:AddOrReplaceReadGroups.\n";
-		java -Xmx2g -jar $picardDirectory"AddOrReplaceReadGroups.jar" INPUT=$projectDirectory"data.temp.bam" OUTPUT=$projectDirectory"data.bam" RGID=1 RGLB=1 RGPL=ILLUMINA RGPU=1 RGSM=SM VALIDATION_STRINGENCY=SILENT;
-		rm $projectDirectory"data.temp.bam";
-		echo "\tPicard : Headers added to Bowtie-BAM file." >> $logName;
+		mv $projectDirectory"data.temp.bam" $projectDirectory"data.bam";
 
 		echo "[[=- Sorting/Indexing BAM files -=]]" >> $logName;
 		echo "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
