@@ -317,15 +317,6 @@ if ($ext_new == "fastq") {
 	$currentDir = getcwd();
 	chdir($projectPath . "/../../../../"); // ymap_root/users/user_name/projects/this_project
 
-	// Convert BAM to SAM file, if needed.
-	if (strcmp($ext_new,"bam") == 0) {
-		fwrite($condensedLogOutput, "Decompressing BAM file to SAM.\n");
-		$null = shell_exec("sh scripts_seqModules/bam2sam.sh ".$user." ".$project." ".$name_new);
-		unlink($absProjectPath.$name_new);
-		unlink($absProjectPath.$name_new.".bai");
-		$name_new = "data.sam";
-	}
-
 	// Convert SAM file to FASTQ files.
 	fwrite($condensedLogOutput, "Decompressing SAM file to FASTQ.\n");
 	$null       = shell_exec("sh scripts_seqModules/sam2fastq.sh ".$user." ".$project." ".$name_new);

@@ -10,7 +10,6 @@ userProgramsLocation="";
 bowtie2Directory=$userProgramsLocation"bowtie2-2.1.0/";
 java7Directory=$userProgramsLocation"jdk1.8.0_112/jre/bin/";
 picardDirectory=$userProgramsLocation"picard-tools-1.105/";
-seqtkDirectory=$userProgramsLocation"seqtk/";
 
 # Dependency executables:
 abra2_exec=$userProgramsLocation"abra2-2.24.jar";
