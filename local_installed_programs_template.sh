@@ -28,5 +28,5 @@ samtools_exec="samtools";
 # which PyPy doesn't necessarily have):
 python_exec="python3";
 
-# The Python executable that also has numpy 1.8.0 installed:
+# Python 3 executable that also has numpy installed. If not available, set to same as python_exec.
 python_numpy_exec="python3";
