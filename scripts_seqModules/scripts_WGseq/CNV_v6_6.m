@@ -302,7 +302,6 @@ for chr = 1:num_chrs
 			CNVplot{chr} = CNVplot{chr}/medianRawY;
 		end;
 		CNVdata_all = [CNVdata_all CNVplot{chr}];
-		end;
 	end;
 end;
 
@@ -339,7 +338,7 @@ if (performGCbiasCorrection)
 				chr_GCratioData{chr}(position) = GCratio;
 			end;
 		end;
-	endwhile;
+	end;
 	fclose(standard_bins_GC_ratios_fid);
 end;
 

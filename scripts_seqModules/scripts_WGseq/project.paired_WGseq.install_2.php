@@ -44,7 +44,7 @@
 
 // Initialize log file.
 	$logOutputName = "../../users/".$user."/projects/".$project."/process_log.txt";
-	$logOutput     = fopen($logOutputName, 'a');
+	$logOutput = fopen($logOutputName, 'a');
 	fwrite($logOutput, "#..............................................................................\n");
 	fwrite($logOutput, "Running 'scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_2.php'.\n");
 	fwrite($logOutput, "Variables passed via command-line from 'scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_1.php' :\n");
@@ -55,8 +55,7 @@
 
 // Manage condensed log file.
 	$condensedLogOutputName = "../../users/".$user."/projects/".$project."/condensed_log.txt";
-	$condensedLogOutput     = fopen($condensedLogOutputName, 'a');
-//	fclose($condensedLogOutput);
+	$condensedLogOutput = fopen($condensedLogOutputName, 'a');
 
 // Generate 'datafiles.txt' file containing: name of all data files.
 // Identify format of uploaded file and decompress as needed (*.ZIP; *.GZ).
