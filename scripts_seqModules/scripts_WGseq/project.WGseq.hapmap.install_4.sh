@@ -120,7 +120,6 @@ echo "\t|\t    analyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$gen
 echo "\t|\tend" >> $logName;
 
 echo "\t\tCalling OCTAVE." >> $logName;
-#$matlab_exec -nosplash -r "run "$outputName"; exit;" 2>> $logName;
 cd $projectDirectory;
 $matlab_exec $outputName;
 cd $script_dir;
@@ -162,7 +161,6 @@ else
 	echo "================================================================================================";
 	echo "== ChARM analysis ==============================================================================";
 	echo "================================================================================================";
-	#$matlab_exec -nosplash -r "run "$outputName"; exit;" 2>> $logName;
 	cd $projectDirectory;
 	$matlab_exec $outputName;
 	cd $script_dir;
@@ -222,7 +220,6 @@ echo "\t\tCalling OCTAVE." >> $logName;
 echo "================================================================================================";
 echo "== SNP analysis ================================================================================";
 echo "================================================================================================";
-#$matlab_exec -nosplash -r "run "$outputName"; exit;" 2>> $logName;
 cd $projectDirectory;
 $matlab_exec $outputName;
 cd $script_dir;
@@ -260,7 +257,6 @@ echo "\t\tCalling OCTAVE.   (Log will be appended here after completion.)" >> $l
 echo "================================================================================================";
 echo "== CNV/SNP/LOH figure generation ===============================================================";
 echo "================================================================================================";
-#$matlab_exec -nosplash -r "run "$outputName"; exit;" 2>> $logName;
 cd $projectDirectory;
 $matlab_exec $outputName;
 cd $script_dir;

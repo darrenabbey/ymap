@@ -118,7 +118,6 @@ echo "\t|\t    analyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$gen
 echo "\t|\tend" >> $logName;
 
 echo "\tCalling OCTAVE." >> $logName;
-#$matlab_exec -nosplash -r "run "$outputName"; exit;" 2>> $logName;
 cd $projectDirectory;
 $matlab_exec $outputName;
 cd $script_dir;
@@ -163,7 +162,6 @@ else
 	echo "================================================================================================";
 	echo "== ChARM analysis ==============================================================================";
 	echo "================================================================================================";
-	#$matlab_exec -nosplash -r "run "$outputName"; exit;" 2>> $logName;
 	cd $projectDirectory;
 	$matlab_exec $outputName;
 	cd $script_dir;
@@ -240,7 +238,6 @@ echo "\tCalling OCTAVE." >> $logName;
 echo "================================================================================================";
 echo "== SNP analysis ================================================================================";
 echo "================================================================================================";
-#$matlab_exec -nosplash -r "run "$outputName"; exit;" 2>> $logName;
 cd $projectDirectory;
 $matlab_exec $outputName;
 cd $script_dir;
@@ -278,7 +275,6 @@ echo "\tCalling OCTAVE.   (Log will be appended here after completion.)" >> $log
 echo "================================================================================================";
 echo "== Final figures ===============================================================================";
 echo "================================================================================================";
-#$matlab_exec -nosplash -r "run "$outputName"; exit;" 2>> $logName;
 cd $projectDirectory;
 $matlab_exec $outputName;
 cd $script_dir;
@@ -292,11 +288,3 @@ echo "finished all processing, moving to Cleaning up intermediate WGseq files" >
 ##------------------------------------------------------------------------------
 echo "running: " $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir >> $logName;
 sh $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir 2>> $logName;
-
-
-##==============================================================================
-## Adjust permissions of output png/eps files so apache2 can serve them.
-##------------------------------------------------------------------------------
-#chmod 0666 $main_dir"users/"$user"/projects/"$project"/*.png";
-#chmod 0666 $main_dir"users/"$user"/projects/"$project"/*.eps";
-

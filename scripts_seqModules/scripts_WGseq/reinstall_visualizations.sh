@@ -134,7 +134,6 @@ echo "end" >> $outputName;
 echo "end" >> $logName;
 
 echo "\tCalling OCTAVE." >> $logName;
-#$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;" 2>> $logName;
 cd $projectDirectory;
 $matlab_exec $outputName;
 cd $script_dir;
