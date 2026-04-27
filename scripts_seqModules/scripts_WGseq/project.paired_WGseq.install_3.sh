@@ -207,14 +207,6 @@ else
 
 	echo "Processing pileup for CNVs & SNPs." >> $condensedLog;
 
-	# ( echo "\tPython : Processing pileup for CNVs." >> $logName;
-	# $python_exec $main_dir"scripts_seqModules/counts_CNVs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_CNVs_v1.txt" 2>> $logName;
-	# echo "\tPython : Pileup processed for CNVs." >> $logName; ) &
-	#
-	# ( echo "\tPython : Processing pileup for INDELs." >> $logName;
-	# $python_exec $main_dir"scripts_seqModules/counts_INDELs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_INDELS_v1.txt" 2>> $logName;
-	# echo "\tPython : Pileup processed for INDELs." >> $logName; ) &
-
 	( echo "\tPython : Processing pileup for SNPs." >> $logName;
 	$python_exec $main_dir"scripts_seqModules/counts_SNPs_v5.py" $projectDirectory"data.pileup" > $projectDirectory"putative_SNPs_v4.txt" 2>> $logName;
 	echo "\tPython : Pileup processed for SNPs." >> $logName; ) &
