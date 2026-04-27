@@ -1,5 +1,7 @@
-function [] = CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString, ...
-                       CNV_verString,rDNA_verString,displayBREAKS, referenceCHR);
+function [] = CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,rDNA_verString,displayBREAKS, referenceCHR);
+	%% rDNA_verString is not used.
+	%% referenceCHR is not used.
+graphics_toolkit gnuplot;
 addpath('../');
 
 % hide figures during construction.
