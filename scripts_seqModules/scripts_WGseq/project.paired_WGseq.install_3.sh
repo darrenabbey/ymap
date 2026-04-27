@@ -80,7 +80,6 @@ then
 	fi
 	echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
 fi
-indelrealign_bool=$(echo $dataFormat | cut -c5-5);  # 0=no indel-realignment; 1=indel-realignment.
 
 # Determine location of genome being used.
 if [ -d $main_dir"users/"$user"/genomes/"$genome"/" ]
@@ -117,13 +116,6 @@ echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
 # Get parent name from "parent.txt" in project directory.
 projectParent=$(head -n 1 $projectDirectory"parent.txt");
 echo "\tparentProject = '"$projectParent"'" >> $logName;
-
-if [ $indelrealign_bool = 1 ]
-then
-	# Define temporary directory for abra2 files.
-	abra2TempDirectory=$projectDirectory"abra2_temp/";
-	echo "\tabra2TempDirectory = '"$abra2TempDirectory"'" >> $logName;
-fi
 
 echo "#============================================================================== 2" >> $logName;
 

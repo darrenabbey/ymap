@@ -22,15 +22,16 @@ end;
 
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
-	figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
-	option         = figure_options{9,1};
+	figure_options = importdata([main_dir 'users/' user '/projects/' project '/figure_options.txt'],'\t',1);
+
+	option         = figure_options{10,1};
 	if strcmp(option,'False')
 		Make_figure_linear = false;
 	else
 		Make_figure_linear = true;
 	end;
 
-	option         = figure_options{10,1};
+	option         = figure_options{11,1};
 	if strcmp(option,'False')
 		Make_figure_standard = false;
 	else
@@ -40,7 +41,6 @@ else
 	Make_figure_linear   = true;
 	Make_figure_standard = true;
 end;
-
 
 
 %% ========================================================================

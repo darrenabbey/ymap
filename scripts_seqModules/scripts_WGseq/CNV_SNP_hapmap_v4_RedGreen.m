@@ -26,22 +26,23 @@ load([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
 
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
-	figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
-	option         = figure_options{11,1};
+	figure_options = importdata([main_dir 'users/' user '/projects/' project '/figure_options.txt'],'\t',1);
+
+	option         = figure_options{12,1};
 	if strcmp(option,'False')
 		Make_figure_linear = false;
 	else
 		Make_figure_linear = true;
 	end;
 
-	option         = figure_options{12,1};
+	option         = figure_options{13,1};
 	if strcmp(option,'False')
 		Make_figure_standard = false;
 	else
 		Make_figure_standard = true;
 	end;
 
-	% Dragon : force script to not render figures.
+	% force script to not render figures.
 	Make_figure_linear   = false;
 	Make_figure_standard = false;
 else
