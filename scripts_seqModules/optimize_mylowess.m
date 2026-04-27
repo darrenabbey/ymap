@@ -8,7 +8,7 @@ if (length(spans) > 5)
 	numFits  = 5;
 end;
 sse              = zeros(size(spans));
-cp               = cvpartition(numDat,'k',10);
+cp               = cvpartition(numDat, 'KFold', 10);
 X                = rawData_X';
 Y                = rawData_Y';
 final_length     = 250;     % length of resulting fitted lowess vector.
