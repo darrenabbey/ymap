@@ -8,7 +8,7 @@ set(0,'DefaultFigureVisible','off');
 %% =========================================================================================
 % Analyze CNV information for copy number changes.   Code based on algorithms
 % described in:
-% 	Accurate detection of aneuploidies in array CGH and gene expression microarray data 
+% 	Accurate detection of aneuploidies in array CNV and gene expression microarray data 
 %	Chad L. Myers, Maitreya J. Dunham, S.Y. Kung, Olga G. Troyanskaya (2004)
 %===========================================================================================
 

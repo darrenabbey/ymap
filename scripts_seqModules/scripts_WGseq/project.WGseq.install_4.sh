@@ -72,10 +72,10 @@ echo "\tprojectParentDirectory = '"$projectParentDirectory"'" >> $logName;
 
 
 ##==============================================================================
-## Perform CGH analysis, with GC-correction, on dataset.
+## Perform CNV analysis, with GC-correction, on dataset.
 ##------------------------------------------------------------------------------
 echo "#==========================#" >> $logName;
-echo "# CGH analysis of dataset. #" >> $logName;
+echo "# CNV analysis of dataset. #" >> $logName;
 echo "#==========================#" >> $logName;
 echo "Preprocessing CNV data.   (~10 min for 1.6 Gbase genome dataset.)" >> $condensedLog;
 

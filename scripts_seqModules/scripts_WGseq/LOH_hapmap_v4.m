@@ -45,9 +45,9 @@ end;
 
 %% ========================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
-%    bases_per_bin              : Controls bin sizes for SNP/CGH fractions of plot.
+%    bases_per_bin              : Controls bin sizes for SNP/CNV fractions of plot.
 %    scale_type                 : 'Ratio' or 'Log2Ratio' y-axis scaling of copy number.
-%                                 'Log2Ratio' does not properly scale CGH data by ploidy.
+%                                 'Log2Ratio' does not properly scale CNV data by ploidy.
 %    Chr_max_width              : max width of chrs as fraction of figure width.
 fprintf('\t|\tSetup for processing.\n');
 Centromere_format              = 0;

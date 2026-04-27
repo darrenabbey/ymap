@@ -427,7 +427,7 @@ if ((useHapmap) || (useParent))
 					end;
 					% standard : end draw colorbars.
 
-					%% standard : cgh plot section.
+					%% standard : CNV plot section.
 					c_ = [0 0 0];
 					fprintf(['\nmain-plot : chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 					fprintf(['ploidy     = ' num2str(ploidy)     '\n']);
@@ -456,7 +456,7 @@ if ((useHapmap) || (useParent))
 						line([0 x2], [maxY/(ploidyBase*2)*lineNum  maxY/(ploidyBase*2)*lineNum ],'Color',[0.85 0.85 0.85]);
 					end;
 					plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-					% standard : end cgh plot section.
+					% standard : end CNV plot section.
 
 					%% standard : axes labels etc.
 					hold off;
@@ -571,7 +571,7 @@ if ((useHapmap) || (useParent))
 					end;
 					% standard : end show annotation locations.
 
-					%% standard : make CGH histograms to the right of the main chr cartoons.
+					%% standard : make CNV histograms to the right of the main chr cartoons.
 					if (HistPlot == true)
 						width     = 0.020;
 						height    = chr_height(chr);
@@ -591,7 +591,7 @@ if ((useHapmap) || (useParent))
 								end;
 							end;
 
-							% make a histogram of CGH data, then smooth it for display.
+							% make a histogram of CNV data, then smooth it for display.
 							histogram_end                                    = 15;             % end point in copy numbers for the histogram, this should be way outside the expected range.
 							histAll{segment}(histAll{segment}<=0)            = [];
 							histAll{segment}(length(histAll{segment})+1)     = 0;              % endpoints added to ensure histogram bounds.
@@ -643,7 +643,7 @@ if ((useHapmap) || (useParent))
 							end;
 						end;
 					end;
-					% standard : end of CGH histograms at right.
+					% standard : end of CNV histograms at right.
 
 					%% standard : places chr copy number to the right of the main chr cartoons.
 					if (ChrNum == true)
@@ -715,7 +715,7 @@ if ((useHapmap) || (useParent))
 					end;
 					% linear : end draw colorbars.
 
-					%% linear : cgh plot section.
+					%% linear : CNV plot section.
 					c_ = [0 0 0];
 					fprintf(['linear-plot : chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 					for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
@@ -734,7 +734,7 @@ if ((useHapmap) || (useParent))
 						f = fill(x_,y_,c_);
 						set(f,'linestyle','none');
 					end;
-					% linear : end CGH plot section.
+					% linear : end CNV plot section.
 
 					%% linear : draw lines across plots for easier interpretation of CNV regions.
 					x2 = chr_size(chr)/bases_per_bin;
@@ -742,7 +742,7 @@ if ((useHapmap) || (useParent))
 						line([0 x2], [maxY/(ploidyBase*2)*lineNum  maxY/(ploidyBase*2)*lineNum ],'Color',[0.85 0.85 0.85]);
 					end;
 					plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-					% linear : end cgh plot section.
+					% linear : end CNV plot section.
 
 					%% linear : show segmental anueploidy breakpoints.
 					if (Linear_displayBREAKS == true) && (show_annotations == true)

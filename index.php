@@ -438,8 +438,8 @@ function blank_and_content_tab() {
 			var CGD_CNV_track                    = file_prefix + "cnv."+project+".";
 			var CGD_SNP_track                    = file_prefix + "allele_ratios."+project+".";
 
-			var CNV_bias_SnpCghArray_GCcontent   = file_prefix + "fig_GCratio_vs_CGH." + figVer_;
-			var CNV_bias_SnpCghArray_end         = file_prefix + "fig_EndDistance_vs_CGH." + figVer_;
+			var CNV_bias_SnpCghArray_GCcontent   = file_prefix + "fig_GCratio_vs_CNV." + figVer_;
+			var CNV_bias_SnpCghArray_end         = file_prefix + "fig_EndDistance_vs_CNV." + figVer_;
 
 			var CNV_bias_WGseq_end               = file_prefix + "fig.bias_chr_end." + figVer_;
 			var CNV_bias_WGseq_GCcontent         = file_prefix + "fig.bias_GC_content." + figVer_;
