@@ -39,7 +39,7 @@ function [dataout lowerLimit upperLimit xy] = smooth_lowess(Xinput,Yinput, f,wan
 %    to predict y-values for the supplied x-values.
 %
 %    10/22/2009 - modified the second user provided X-data for obtaining
-%    predictions.  Matlab function unique sorts by default.  It really was
+%    predictions.  octave function unique sorts by default.  It really was
 %    not needed in the section of code to perform linear interpolations of
 %    the x-data using the y-predicted LOWESS results.  If the user does not
 %    supply a second x-data set, it will assume to use the supplied x-y
@@ -93,9 +93,9 @@ function [dataout lowerLimit upperLimit xy] = smooth_lowess(Xinput,Yinput, f,wan
 % from of the residual from the previous regression.
 %
 % The conceptual of these functions and subfunctions follow the USGS
-% Kendall.exe routines. Because matlab is 8-byte precision, there are
-% some very small differences between FORTRAN compiled and matlab.
-% Maybe 64-bit OS's has 16-byte precision in matlab?
+% Kendall.exe routines. Because octave is 8-byte precision, there are
+% some very small differences between FORTRAN compiled and octave.
+% Maybe 64-bit OS's has 16-byte precision in octave?
 %
 % There is a very simple subfunction to create a plot of the data and
 % regression if the user so choses with a flag in the call to the lowess
@@ -293,7 +293,7 @@ function [dataout lowerLimit upperLimit xy] = smooth_lowess(Xinput,Yinput, f,wan
 	%% Generate predicted XY data
 	% Using linear interpolation to estimate y from the lowess regression
 	% Any x-values beyond the range given to generate the lowess will be
-	% ignorged.  Matlab unique function sorts the data, thus a modified
+	% ignorged.  octave unique function sorts the data, thus a modified
 	% unique function (usunique) was developed to return an unsorted vector.
 	%
 	% This limiting of the interpolation is done because if there are data
@@ -393,7 +393,7 @@ function [yy] = rwlreg(x,y,n,d,r,xx)
 end
 
 %% Weighted least squares
-% This subfunction does not require any toolboxes in matlab to execute.
+% This subfunction does not require any toolboxes in octave to execute.
 function[a b] = wlsq(x,y,w)
 	sumw = abs(1-sum(w));
 	if sumw > 1e-10

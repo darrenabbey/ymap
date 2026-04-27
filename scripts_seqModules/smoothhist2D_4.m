@@ -1,7 +1,7 @@
 function [imageX, imageY, imageC] = smoothhist2D_4(x,y,lambda,nbins,rangeMax,outliercutoff)
 
 %
-%  This version allows user control of the colormap in use.   Only standard matlab colormaps are valid.
+%  This version allows user control of the colormap in use.   Only standard octave colormaps are valid.
 %
 if (nargin<7) || isempty(colormap_)
 	colormap_ = 'hot';
@@ -40,7 +40,7 @@ end;
 %	Copyright 2009 The MathWorks, Inc.
 %	Revision: 1.0  Date: 2006/12/12
 %
-%	Requires MATLABÆ R14.
+%	Requires octaveÆ R14.
 
 if (nargin < 6) || (isempty(outliercutoff))
 	outliercutoff = 0;   %.02;

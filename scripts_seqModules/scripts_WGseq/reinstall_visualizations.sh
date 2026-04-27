@@ -103,18 +103,18 @@ FASTAname=$(echo $FASTA | sed 's/.fasta//g');                                  #
 
 
 ##==============================================================================
-## Generate script to re-run terminal visualization Matlab code.
+## Generate script to re-run terminal visualization Octave code.
 ##------------------------------------------------------------------------------
 echo "#======================================#" >> $logName;
 echo "# Re-perform visualization of dataset. #" >> $logName;
 echo "#======================================#" >> $logName;
 
-echo "\tGenerating MATLAB script to perform CNV analysis of dataset, with GC-correction." >> $logName;
+echo "\tGenerating Octave script to perform CNV analysis of dataset, with GC-correction." >> $logName;
 outputName=$projectDirectory"processing_Rerun.m";
 echo "\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing_Rerun()" > $outputName;
-echo "\tdiary('"$projectDirectory"matlab.rerun_visualization.log');" >> $outputName;
+echo "\tdiary('"$projectDirectory"octave.rerun_visualization.log');" >> $outputName;
 echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 
 #echo     "\tanalyze_CNVs_1(         '$main_dir','$user','$genomeUser','$project',          '$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
@@ -130,7 +130,7 @@ fi
 echo "end" >> $outputName;
 echo "end" >> $logName;
 
-echo "\tCalling MATLAB." >> $logName;
-$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;" 2>> $logName;
-echo "\tMATLAB log from redo of visualization.." >> $logName;
-sed 's/^/\t\t|/;' $projectDirectory"matlab.rerun_visualization.log" >> $logName;
+echo "\tCalling Octave." >> $logName;
+$octave_exec $outputName 2>> $logName;
+echo "\tOctave log from redo of visualization.." >> $logName;
+sed 's/^/\t\t|/;' $projectDirectory"octave.rerun_visualization.log" >> $logName;

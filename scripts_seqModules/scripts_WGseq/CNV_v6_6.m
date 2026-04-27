@@ -19,7 +19,7 @@ end;
 
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
-	figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
+	figure_options = importdata([main_dir 'users/' user '/projects/' project '/figure_options.txt'],'\t',1);
 
 	option         = figure_options{1,1};
 	if strcmp(option,'False')
@@ -514,7 +514,7 @@ if (performGCbiasCorrection)
 	rawData_X2     = GCratioData_clean;
 	rawData_Y2     = CGHdata_clean;
 	% perform correction only if the data has more then one value since
-	% otherwise inner functions of matlab will cause crash
+	% otherwise inner functions of octave will cause crash
 	if (size(rawData_X2,2) > 1 && size(rawData_Y2,2) > 1)
 	fprintf(['Lowess X:Y size : [' num2str(size(rawData_X2,1)) ',' num2str(size(rawData_X2,2)) ']:[' num2str(size(rawData_Y2,1)) ',' num2str(size(rawData_Y2,2)) ']\n']);
 	[fitX2, fitY2] = optimize_mylowess(rawData_X2,rawData_Y2,10, 0);
@@ -587,7 +587,7 @@ if (performRepetbiasCorrection)
 	rawData_X3     = repetitivenessData_clean;
 	rawData_Y3     = CGHdata_clean;
 	% perform correction only if the data has more then one value since
-	% otherwise inner functions of matlab will cause crash
+	% otherwise inner functions of octave will cause crash
 	if (size(rawData_X3,2) > 1 && size(rawData_Y3,2) > 1)
 		fprintf(['Lowess X:Y size : [' num2str(size(rawData_X3,1)) ',' num2str(size(rawData_X3,2)) ']:[' num2str(size(rawData_Y3,1)) ',' num2str(size(rawData_Y3,2)) ']\n']);
 		[fitX3, fitY3] = optimize_mylowess(rawData_X3,rawData_Y3,10, 0);
