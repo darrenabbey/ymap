@@ -399,8 +399,8 @@ if ($ext_new == "fastq") {
 	fwrite($output, "data_r2.fastq\n");
 
 	// delete original archive.
-//	unlink($absProjectPath.$name_new);
-//	fwrite($logOutput, "\t\t| File converted to paired-FASTQ files, original deleted.\n");
+	unlink($absProjectPath.$name_new);
+	fwrite($logOutput, "\t\t| File converted to paired-FASTQ files, original deleted.\n");
 
 	$paired = 1;
 	chdir($currentDir);
