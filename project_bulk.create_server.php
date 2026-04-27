@@ -246,11 +246,20 @@
 					// Replace any "."s in string with "_"s.
 					$project = str_replace(".","_",$project);
 
-					// Check if file is one of paired reads. (Name ends in "_R1" or "_R2".)
-					// Strip suffix off name if found and skip next filename.
-					if ((substr($project,-3) == "_R1") || (substr($project,-3) == "_R2")) {
-						$project = substr($project,0,-3);
-						$skip = 1;
+					// Check if file is one of paired reads. (Name ends in "_R1" or "_R1_001".)
+					// Strip suffix off name if found and skip the next filename if it is a R2 name.
+					if (substr($project,-3) == "_R1") {
+						$project      = substr($project,0,-3);
+						$next_project = $project."_R2".$ext;
+						if (in_array($next_project,$bulkdata_files)) {
+							$skip = 1;
+						}
+					} elseif (substr($project,-7) == "_R1_001") {
+						$project = substr($project,0,-7);
+						$next_project = $project."_R2_001".$ext;
+						if (in_array($next_project,$bulkdata_files)) {
+							$skip = 1;
+						}
 					}
 
 					// Define a couple directories for later use.
@@ -336,7 +345,17 @@
 						$fileName_     = pathinfo($filename_key, PATHINFO_FILENAME);
 						$fileType_     = pathinfo($filename_key, PATHINFO_EXTENSION);
 						$filename_new1 = str_replace(".","-",$fileName_).".".$fileType_;
-						copy($projects_bulkdata."/".$filename_key, $project_dir1."/".$filename_new1);
+						// DRAGON
+						$exec_command = "mv ".$base_dir."/".$projects_bulkdata."/".$filename_key." ".$base_dir."/".$project_dir1."/".$filename_new1." 2>&1";
+						log_stuff("","","","","","1: ".$exec_command);
+						exec($exec_command,$output,$retval);
+						if ($retval == false) {
+							log_stuff($user,$project,"","","","bulkdata:MOVE project data from bulkdata to project FAIL.");
+							ob_flush();
+							ob_start();
+							var_dump($output);
+							log_stuff("","","","","","2: ".ob_get_flush());
+						}
 
 						// Make txt file containing raw data file name(s).
 						$fileName = $project_dir1."/datafiles.txt";
@@ -372,11 +391,21 @@
 
 							// Check if file is one of paired reads. (Name ends in "_R1" or "_R2".)
 							// Strip suffix off name if found and skip next filename.
-							if (substr($project2,-3) == "_R2") {
+							if ((substr($project2,-3) == "_R2") || (substr($project2,-7) == "_R2_001")) {
 								$fileName_     = pathinfo($filename_key2, PATHINFO_FILENAME);
 								$fileType_     = pathinfo($filename_key2, PATHINFO_EXTENSION);
 								$filename_new2 = str_replace(".","-",$fileName_).".".$fileType_;
-								copy($projects_bulkdata."/".$filename_key2, $project_dir1."/".$filename_new2);
+								// DRAGON
+								$exec_command = "mv ".$base_dir."/".$projects_bulkdata."/".$filename_key2." ".$base_dir."/".$project_dir1."/".$filename_new2." 2>&1";
+								log_stuff("","","","","","2: ".$exec_command);
+								exec($exec_command,$output,$retval);
+								if ($retval == false) {
+									log_stuff($user,$project,"","","","bulkdata:MOVE project data from bulkdata to project FAIL.");
+									ob_flush();
+									ob_start();
+									var_dump($output);
+									log_stuff("","","","","","2: ".ob_get_flush());
+								}
 
 								// Make txt file containing raw data file name(s).
 								$fileName = $project_dir1."/datafiles.txt";

@@ -1,7 +1,7 @@
 <?php
 	//======================================================
 	// To run php script, but don't wait for it to conclude:
-	//	exec("php script.php > /dev/null &");
+	//	exec("php bulk_processer.php user=darren ymaps=5 > /dev/null 2>&1 &");
 	//------------------------------------------------------
 
 	if (!isset($_SERVER["HTTP_HOST"])) {
@@ -23,7 +23,7 @@
 				$user = '';
 				$YMAP_instances = "";
 				echo "*-------------------------*\n";
-				echo "| YMAP command-line tool. |\n";
+				echo "| YMAP2 command-line tool. |\n";
 				echo "*------------------------------------*------------------------------------------------------*\n";
 				echo "| Use : php bulk_processer.php user=[user] ymaps=[number] > /dev/null 2>&1 &                |\n";
 				echo "|    To run bulk process manager, but not output stdout.                                    |\n";
@@ -47,7 +47,7 @@
 			$user = "";
 			$YMAP_instances = "";
 			echo "*-------------------------*\n";
-			echo "| YMAP command-line tool. |\n";
+			echo "| YMAP2 command-line tool. |\n";
 			echo "*------------------------------------*------------------------------------------------------*\n";
 			echo "| Use : php bulk_processer.php user=[user] ymaps=[number] > /dev/null 2>&1 &                |\n";
 			echo "|    To run bulk process manager, but not output stdout.                                    |\n";
@@ -151,7 +151,7 @@
 
 
 			//=============================================================================================
-			// Loop over bulk dataset project directories, firing off new procssess until they're all done.
+			// Loop over bulk dataset project directories, firing off new processes until they're all done.
 			//---------------------------------------------------------------------------------------------
 			while ($count_bulk_remaining > 0) {
 				log_stuff($user,"","","","","[1a] bulk:TEST bulk_processer.php while loop.");
