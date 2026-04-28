@@ -90,8 +90,7 @@ fprintf([  '$$ genome     : ' genome     '\n']);
 fprintf([  '$$ project    : ' project    '\n']);
 
 [centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
-Aneuploidy = [];
-
+Aneuploidy = [];  % later loaded from Load_dataset_information(projectDir) after ChARM algorithm is used.
 num_chrs  = length(chr_sizes);
 
 for i = 1:num_chrs
@@ -105,18 +104,18 @@ for i = 1:num_chrs
     cen_end(centromeres(i).chr)   = centromeres(i).end;
 end;
 if (length(annotations) > 0)
-    fprintf(['\nAnnotations for ' genome '.\n']);
-    for i = 1:length(annotations)
-        annotation_chr(i)       = annotations(i).chr;
-        annotation_type{i}      = annotations(i).type;
-        annotation_start(i)     = annotations(i).start;
-        annotation_end(i)       = annotations(i).end;
-        annotation_fillcolor{i} = annotations(i).fillcolor;
-        annotation_edgecolor{i} = annotations(i).edgecolor;
-        annotation_size(i)      = annotations(i).size;
-        fprintf(['\t[' num2str(annotations(i).chr) ':' annotations(i).type ':' num2str(annotations(i).start) ':' num2str(annotations(i).end) ':' annotations(i).fillcolor ':' ...
-            annotations(i).edgecolor ':' num2str(annotations(i).size) ']\n']);
-    end;
+	fprintf(['\nAnnotations for ' genome '.\n']);
+	for i = 1:length(annotations)
+		annotation_chr(i)       = annotations(i).chr;
+		annotation_type{i}      = annotations(i).type;
+		annotation_start(i)     = annotations(i).start;
+		annotation_end(i)       = annotations(i).end;
+		annotation_fillcolor{i} = annotations(i).fillcolor;
+		annotation_edgecolor{i} = annotations(i).edgecolor;
+		annotation_size(i)      = annotations(i).size;
+		fprintf(['\t[' num2str(annotations(i).chr) ':' annotations(i).type ':' num2str(annotations(i).start) ':' num2str(annotations(i).end) ':' annotations(i).fillcolor ':' ...
+			annotations(i).edgecolor ':' num2str(annotations(i).size) ']\n']);
+	end;
 end;
 for i = 1:length(figure_details)
 	if (figure_details(i).chr == 0)
@@ -131,15 +130,25 @@ for i = 1:length(figure_details)
 		chr_label      {figure_details(i).chr} = figure_details(i).label;
 		chr_name       {figure_details(i).chr} = figure_details(i).name;
 		chr_posX       (figure_details(i).chr) = figure_details(i).posX;
-		chr_posY       (figure_details(i).chr) = figure_details(i).posY;
+
+		%%% Place chromosome cartoons in correct order for standard figure.
+		figOrder                               = str2num(figure_details(i).figOrder)
+		if (figOrder == 0)
+			chr_posY_raw                   = 0;
+			chr_posY_real                  = 0;
+		else
+			chr_posY_raw                   = figure_details(i).posY;
+			chr_posY_real                  = figure_details(figOrder).posY;
+		end;
+		chr_posY       (figure_details(i).chr) = chr_posY_real;
+
 		chr_width      (figure_details(i).chr) = figure_details(i).width;
 		chr_height     (figure_details(i).chr) = figure_details(i).height;
 		chr_in_use     (figure_details(i).chr) = str2num(figure_details(i).useChr);
-		chr_figOrder   (figure_details(i).chr) = str2num(figure_details(i).figOrder);
+		chr_figOrder   (figure_details(i).chr) = figOrder;
 		chr_figReversed(figure_details(i).chr) = str2num(figure_details(i).figReversed);
 	end;
 end;
-
 
 %%=========================================================================
 %%= No further control variables below. ===================================
@@ -153,14 +162,25 @@ fprintf(['\nEuploid base = "' num2str(ploidyBase) '"\n']);
 
 % basic plot parameters not defined per genome.
 TickSize         = -0.005;  %negative for outside, percentage of longest chr figure.
-bases_per_bin    = max(chr_size)/700;
 maxY             = ploidyBase*2;
 cen_tel_Xindent  = 5;
-cen_tel_Yindent  = maxY/5;
+cen_tel_Yindent  = maxY/4;
+
+%% Load CNV and SNP figure resolutions.
+if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
+	bases_per_bin           = max(chr_size)/700;
+else
+	bases_per_bin           = max(chr_size)/str2num(fileread([genomeDir 'resolution.CNV.txt']));
+end;
+if (exist([genomeDir 'resolution.SNPs.txt'],'file') == 0)
+	bases_per_bin_SNP       = max(chr_size)/700;
+else
+	bases_per_bin_SNP       = max(chr_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt']));
+end;
 
 fprintf(['\nGenerating CNV figure from ''' project ''' sequence data.\n']);
 
-% Initializes vectors used to hold copy number data.
+% Initializes vectors used to hold copy number data. dragon
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
 		% 1 category tracked : average read counts per bin.
@@ -187,11 +207,12 @@ if (exist([projectDir 'CNV_' CNV_verString '.mat'],'file') == 0)
 				fragment_end               = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1)   = []; end;    fragment_end   = str2num(fragment_end);
 				readAverage                = sscanf(dataLine, '%s',4);  for i = 1:size(sscanf(dataLine,'%s',3),2);      readAverage(1)    = []; end;    readAverage    = str2num(readAverage);
 				position                   = ceil(fragment_start/bases_per_bin);
-					% defining position with fragment_end results in much fuzzier data.
+
+				% defining position with fragment_end results in much fuzzier data.
 				chr_CNVdata{chr}(position) = readAverage;
 			end;
 		end;
-	end;
+	endwhile;
 	fclose(data);
 
 	save([projectDir 'CNV_' CNV_verString '.mat'],'chr_CNVdata');
@@ -210,30 +231,34 @@ end;
 datafile = [projectDir 'dataBiases.txt'];
 if (exist(datafile,'file') == 0)
 	performGCbiasCorrection    = true;
-	performRepetbiasCorrection = false;
 	performEndbiasCorrection   = true;
 else
 	biases_fid = fopen(datafile, 'r');
-	bias1      = fgetl(biases_fid);
-	bias2      = fgetl(biases_fid);
-	bias3      = fgetl(biases_fid);
-	bias4      = fgetl(biases_fid);
+	bias1      = fgetl(biases_fid);	% performLengthbiasCorrection
+	bias2      = fgetl(biases_fid);	% performGCbiasCorrection
+	bias3      = fgetl(biases_fid);	% performRepetbiasCorrection
+	bias4      = fgetl(biases_fid);	% performEndbiasCorrection
 	fclose(biases_fid);
 
-	% performLengthbiasCorrection is meaningless for this data format.
+	fprintf('%%%% Load data bias correction selections:\n');
+	fprintf(['%%%%   bias1 = ' bias1 '\n']);
+	fprintf(['%%%%   bias2 = ' bias2 '\n']);
+	fprintf(['%%%%   bias3 = ' bias3 '\n']);
+	fprintf(['%%%%   bias4 = ' bias4 '\n']);
+	fprintf('%%%%\n');
+
+	%%% Perform fragment length bias correction is meaningless for this data format, so ignore.
+
+	%%% Perform %GC bias correction.
 	if (strcmp(bias2,'True') == 1)
 		performGCbiasCorrection    = true;
 	else
 		performGCbiasCorrection    = false;
 	end;
 
-	if (strcmp(bias3,'True') == 1)
-		performRepetbiasCorrection = false;
-		performGCbiasCorrection    = true; % needed since repet bias use gc data
-	else
-		performRepetbiasCorrection = false;
-	end;
+	%%% Repetitiveness bias ended up being a meaningless concept.
 
+	%%% Perform chromosome end bias correction.
 	if (strcmp(bias4,'True') == 1)
 		performEndbiasCorrection   = true;
 		performGCbiasCorrection    = true; % needed since end bias use gc data
@@ -241,10 +266,6 @@ else
 		performEndbiasCorrection   = false;
 	end;
 end;
-
-% performGCbiasCorrection
-% performRepetbiasCorrection
-% performEndbiasCorrection
 
 
 %% -----------------------------------------------------------------------------------------
@@ -316,40 +337,10 @@ end;
 
 
 %%================================================================================================
-% Load pre-processed standard bin repetitiveness data for genome.
-%-------------------------------------------------------------------------------------------------
-if (performRepetbiasCorrection)
-	fprintf(['standard_bins_repetitiveness_file :\n\t' main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.repetitiveness.standard_bins.txt\n']);
-	standard_bins_repetitiveness_fid = fopen([main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.repetitiveness.standard_bins.txt'], 'r');
-	fprintf(['\t' num2str(standard_bins_repetitiveness_fid) '\n']);
-	lines_analyzed = 0;
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			chr_repetitivenessData{chr} = zeros(1,ceil(chr_size(chr)/bases_per_bin));
-		end;
-	end;
-	while not (feof(standard_bins_repetitiveness_fid))
-		dataLine = fgetl(standard_bins_repetitiveness_fid);
-		if (length(dataLine) > 0)
-			if (dataLine(1) ~= '#')
-				% The number of valid lines found so far...  the number of usable standard fragments with data so far.
-				chr            = str2num(sscanf(dataLine, '%s',1));
-				fragment_start = sscanf(dataLine, '%s',2);  for i = 1:size(sscanf(dataLine,'%s',1),2);      fragment_start(1) = []; end;    fragment_start = str2num(fragment_start);
-				fragment_end   = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1)   = []; end;    fragment_end   = str2num(fragment_end);
-				repetitiveness = sscanf(dataLine, '%s',4);  for i = 1:size(sscanf(dataLine,'%s',3),2);      repetitiveness(1) = []; end;    repetitiveness = str2num(repetitiveness);
-				position       = ceil(fragment_start/bases_per_bin);
-				chr_repetitivenessData{chr}(position) = repetitiveness;
-			end;
-		end;
-	end;
-	fclose(standard_bins_repetitiveness_fid);
-end;
-
-
-%%================================================================================================
-% Calculate distance from fragment center to nearest end of chromosome.
+% Perform bias corrections.
 %-------------------------------------------------------------------------------------------------
 if (performEndbiasCorrection)
+	%% Calculate distance from CNV bin fragment center to nearest end of chromosome.
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			chr_EndDistanceData{chr} = zeros(1,ceil(chr_size(chr)/bases_per_bin));
@@ -366,28 +357,24 @@ if (performEndbiasCorrection)
 		end;
 	end;
 
-	% Extend EndDistance data for shorter chromosomes to length of the midpoint of the longest chromosome.
+
+	%% Extend EndDistance data for shorter chromosomes to length of the midpoint of the longest chromosome.
 	chr_EndDistanceData_extended = chr_EndDistanceData;
 	largest_chr_bin_count        = ceil(max(chr_size)/bases_per_bin);
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			chr_bin_count = ceil(chr_size(chr)/bases_per_bin);
 			for pos = 1:(largest_chr_bin_count - chr_bin_count)
-				bin_center                               = pos + chr_bin_count/2;
-				chr_EndDistanceData_extended{chr}(end+1) = min(bin_center, largest_chr_bin_count - bin_center);
+				chr_EndDistanceData_extended{chr}(end+1) = pos+chr_bin_count;
 			end;
 		end;
 	end;
-end;
 
 
-%%================================================================================================
-% Perform bias corrections.
-%-------------------------------------------------------------------------------------------------
-if (performEndbiasCorrection)
-	% Extend CNV data for shorter chromosomes to length of the midpoint of the longest chromosome.
-	chr_CNVdata_extended  = [];
-	largest_chr_bin_count = ceil(max(chr_size)/bases_per_bin);
+	%% Extend CNV data for shorter chromosomes to length of the midpoint of the longest chromosome.
+	chr_CNVdata_extended           = [];
+	[largest_chr_size,largest_chr] = max(chr_size);
+	largest_chr_bin_count          = ceil(largest_chr_size/bases_per_bin);
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			chr_CNVdata_extended{chr} = CNVplot{chr};
@@ -397,17 +384,22 @@ if (performEndbiasCorrection)
 		if (chr_in_use(chr) == 1)
 			chr_bin_count     = ceil(chr_size(chr)/bases_per_bin);
 			fprintf(['chr_bin_count(' num2str(chr) ') = ' num2str(chr_bin_count) '\n']);
+
 			chr_middle_bin    = round(chr_bin_count/2);
 			fprintf(['chr_middle_bin   = ' num2str(chr_middle_bin) '\n']);
-			median_range = min(20, chr_bin_count/4); % Bin length could be less than 40, so taking a range of 20 crashes the analysis.
-			center_median_CNV = mean(chr_CNVdata_extended{chr}((chr_middle_bin-median_range):(chr_middle_bin+median_range)));
+
 			for pos = 1:(largest_chr_bin_count - chr_bin_count)
-				chr_CNVdata_extended{chr}(end+1) = center_median_CNV;
+				%% Results in chr end correction not being done well for center of large chromosomes.
+				%chr_CNVdata_extended{chr}(end+1) = center_median_CNV;
+
+				%% Results in chr end correction being done effectively for most areas; center of chr1 still fails for Candida albicans A21.
+				chr_CNVdata_extended{chr}(end+1) = chr_CNVdata_extended{largest_chr}(pos+chr_bin_count);
 			end;
 		end;
 	end;
 
-	% Gather data for LOWESS fitting 3 : Chr end bias.
+
+	%% Gather data for LOWESS fitting 3 : Chr end bias.
 	CNVdata_all_n1                   = [];
 	GCratioData_all                  = [];
 	chr_EndDistanceData_all          = [];
@@ -418,11 +410,11 @@ if (performEndbiasCorrection)
 			CNVdata_all_n1                   = [CNVdata_all_n1                   CNVplot{chr}                     ];
 			GCratioData_all                  = [GCratioData_all                  chr_GCratioData{chr}             ];
 			chr_EndDistanceData_all          = [chr_EndDistanceData_all          chr_EndDistanceData{chr}         ];
-
 			chr_CNVdata_extended_all         = [chr_CNVdata_extended_all         chr_CNVdata_extended{chr}        ];
 			chr_EndDistanceData_extended_all = [chr_EndDistanceData_extended_all chr_EndDistanceData_extended{chr}];
 		end;
 	end;
+
 
 	% Clean up data by:
 	%    deleting GC ratio data near zero.
@@ -486,8 +478,6 @@ else
 			normalizedData_chr_Y1{chr} = CNVplot{chr};
 		end;
 	end;
-	% disabling perform End bias correction since data is invalid or empty and so the figure should not be created
-	performEndbiasCorrection = 0;
 end;
 
 
@@ -516,7 +506,7 @@ if (performGCbiasCorrection)
 	rawData_X2     = GCratioData_clean;
 	rawData_Y2     = CNVdata_clean;
 	% perform correction only if the data has more then one value since
-	% otherwise inner functions of octave will cause crash
+	% otherwise inner functions of matlab will cause crash
 	if (size(rawData_X2,2) > 1 && size(rawData_Y2,2) > 1)
 	fprintf(['Lowess X:Y size : [' num2str(size(rawData_X2,1)) ',' num2str(size(rawData_X2,2)) ']:[' num2str(size(rawData_Y2,1)) ',' num2str(size(rawData_Y2,2)) ']\n']);
 	[fitX2, fitY2] = optimize_mylowess(rawData_X2,rawData_Y2,10, 0);
@@ -539,7 +529,6 @@ if (performGCbiasCorrection)
 			%try1                       = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
 			%try2                       = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
 			%normalizedData_chr_Y2{chr} = (try1+try2)/2;
-
 			end;
 		end;
 	else
@@ -549,7 +538,7 @@ if (performGCbiasCorrection)
 			end;
 		end;
 		% disabling perform GC bias correction since data is invalid or empty and so the figure should not be created
-		performGCbiasCorrection = 0; 
+		performGCbiasCorrection = 0;
 	end;
 else
 	for chr = 1:num_chrs
@@ -560,77 +549,18 @@ else
 end;
 
 
-% Gather data for LOWESS fitting 2 : Repetitiveness bias.
-if (performRepetbiasCorrection)
-	CNVdata_all_n2         = [];
-	repetitivenessData_all = [];
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			CNVdata_all_n2         = [CNVdata_all_n2         normalizedData_chr_Y2{chr} ];
-			repetitivenessData_all = [repetitivenessData_all chr_repetitivenessData{chr}];
-		end;
-	end;
-	% Clean up data by:
-	%    deleting GC ratio data near zero.
-	%    deleting CNV data beyond 3* the median value.  (rDNA, etc.)
-	CNVdata_clean                                       = CNVdata_all_n2;
-	GCratioData_clean                                   = GCratioData_all;
-	repetitivenessData_clean                            = repetitivenessData_all;
-	repetitivenessData_clean(GCratioData_clean <  0.01) = [];
-	CNVdata_clean(           GCratioData_clean <  0.01) = [];
-	GCratioData_clean(       GCratioData_clean <  0.01) = [];
-	repetitivenessData_clean(CNVdata_clean     >  6   ) = [];
-	GCratioData_clean(       CNVdata_clean     >  6   ) = [];
-	CNVdata_clean(           CNVdata_clean     >  6   ) = [];
-	repetitivenessData_clean(CNVdata_clean     == 0   ) = [];
-	GCratioData_clean(       CNVdata_clean     == 0   ) = [];
-	CNVdata_clean(           CNVdata_clean     == 0   ) = [];
-	% Perform LOWESS fitting : Repetitiveness bias.
-	rawData_X3     = repetitivenessData_clean;
-	rawData_Y3     = CNVdata_clean;
-	% perform correction only if the data has more then one value since
-	% otherwise inner functions of octave will cause crash
-	if (size(rawData_X3,2) > 1 && size(rawData_Y3,2) > 1)
-		fprintf(['Lowess X:Y size : [' num2str(size(rawData_X3,1)) ',' num2str(size(rawData_X3,2)) ']:[' num2str(size(rawData_Y3,1)) ',' num2str(size(rawData_Y3,2)) ']\n']);
-		[fitX3, fitY3] = optimize_mylowess(rawData_X3,rawData_Y3,10, 0);
-		% Correct data using normalization to LOWESS fitting
-		Y_target = 1;
-		for chr = 1:num_chrs
-			if (chr_in_use(chr) == 1)
-				fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
-				rawData_chr_X3{chr}        = chr_repetitivenessData{chr};
-				rawData_chr_Y3{chr}        = normalizedData_chr_Y2{chr}; % CNVplot{chr};
-				fitData_chr_Y3{chr}        = interp1(fitX3,fitY3,rawData_chr_X3{chr},'spline');
-				normalizedData_chr_Y3{chr} = rawData_chr_Y3{chr}./fitData_chr_Y3{chr}*Y_target;
-			end;
-		end;
-	else
-		for chr = 1:num_chrs
-			if (chr_in_use(chr) == 1)
-				normalizedData_chr_Y3{chr} = normalizedData_chr_Y2{chr};
-			end;
-		end;
-		% disabling perform Repet bias correction since data is invalid or empty and so the figure should not be created
-		performRepetbiasCorrection = 0; 
-	end;
-else
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			normalizedData_chr_Y3{chr} = normalizedData_chr_Y2{chr};
-		end;
-	end;
-end;
-
-
 % Move LOWESS-normalizd CNV data into display pipeline.
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
-		CNVplot{chr} = normalizedData_chr_Y3{chr};
+		CNVplot{chr} = normalizedData_chr_Y2{chr};
 	end;
 end;
 
 
-if (Make_figure_bias_end == true)
+%%================================================================================================
+% Generate bias correction figures.
+%-------------------------------------------------------------------------------------------------
+if (Make_figure_bias_end)
 	%% Generate figure showing subplots of LOWESS fittings.
 	if (performEndbiasCorrection)
 		bias_end_fig = figure();
@@ -643,9 +573,10 @@ if (Make_figure_bias_end == true)
 		end;
 		plot(fitX1,fitY1,'r','LineWidth',2);                        % LOWESS fit curve.
 		hold off;
+
 		xlabel('NearestEnd');
 		ylabel('CNV data');
-		xlim([0 200]);
+		xlim([0 largest_chr_bin_count/2]);
 		ylim([0 4]);
 		axis square;
 		title('Reads vs. NearestEnd');
@@ -660,7 +591,7 @@ if (Make_figure_bias_end == true)
 		hold off;
 		xlabel('NearestEnd');
 		ylabel('corrected CNV data');
-		xlim([0 200]);
+		xlim([0 largest_chr_bin_count/2]);
 		ylim([0 4]);
 		axis square;
 		title('NearestEnd Corrected');
@@ -675,7 +606,7 @@ if (Make_figure_bias_end == true)
 		system(['chmod 664 ' projectDir 'fig.bias_chr_end.' figVer 'png']);
 	end;
 end;
-if (Make_figure_bias_GC == true)
+if (Make_figure_bias_GC)
 	if (performGCbiasCorrection)
 		bias_GC_fig = figure();
 		subplot(1,2,1);
@@ -719,48 +650,6 @@ if (Make_figure_bias_GC == true)
 		system(['chmod 664 ' projectDir 'fig.bias_GC_content.' figVer 'png']);
 	end;
 end;
-if (performRepetbiasCorrection)
-	bias_repet_fig = figure();
-	subplot(1,2,1);
- 	hold on;
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			plot(rawData_chr_X3{chr},rawData_chr_Y3{chr},'k.','markersize',1);        % raw data
-		end;
-	end;
-	plot(fitX3,fitY3,'r','LineWidth',2);                        % LOWESS fit curve.
-	hold off;
-	xlabel('Repetitiveness');
-	ylabel('CNV data');
-	xlim([0 5*10^5]);
-	ylim([0 4]);
-	axis square;
-	title('Reads vs. Repetitiveness');
-	subplot(1,2,2);
-	hold on;
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			plot(rawData_chr_X3{chr},normalizedData_chr_Y3{chr},'k.','markersize',1); % corrected data.
-		end;
-	end;
-	plot([fitX3(1) fitX3(end)],[Y_target Y_target],'r','LineWidth',2);          % normalization line.
-	hold off;
-	xlabel('Repetitiveness');
-	ylabel('corrected CNV data');
-	xlim([0 5*10^5]);
-	ylim([0 4]);
-	axis square;
-	title('Repetitiveness Corrected');
-
-	set(bias_repet_fig,'PaperPosition',[0 0 6 3]*2);
-	saveas(bias_repet_fig, [projectDir 'fig.bias_repetitiveness.' figVer 'eps'], 'epsc');
-	saveas(bias_repet_fig, [projectDir 'fig.bias_repetitiveness.' figVer 'png'], 'png');
-	delete(bias_repet_fig);
-
-	%% change permissions of figures.
-	system(['chmod 664 ' projectDir 'fig.bias_repetitiveness.' figVer 'eps']);
-	system(['chmod 664 ' projectDir 'fig.bias_repetitiveness.' figVer 'png']);
-end;
 
 
 %% ====================================================================
@@ -779,7 +668,7 @@ save([projectDir 'Common_CNV.mat'], 'CNVplot2','genome_CNV');
 system(['chmod 664 ' projectDir 'Common_CNV.mat']);
 
 ploidy = str2num(ploidyEstimateString);
-[chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use);
+[chr_breaks, chrCopyNum, ploidyAdjust, CNVfit_Rsquared] = FindChrSizes_4(workingDir, Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use, false);
 
 largestChr = find(chr_width == max(chr_width));
 largestChr = largestChr(1);
@@ -816,20 +705,41 @@ stringChrCNVs = '';
 % Median normalize CNV data before figure generation.
 %-------------------------------------------------------------------------------------------
 CNVdata_all = [];
+fprintf('CNV normalization step\n');
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
-		CNVdata_all = [CNVdata_all   CNVplot2{chr}];
+		CNVdata_all = [CNVdata_all CNVplot2{chr}];
 	end;
 end;
 medianCNV = median(CNVdata_all)
 % avoid divding by zero
-if (medianCNV ~= 0)
+fprintf(['    medianCNV = ' num2str(medianCNV) '\n']);
+if (medianCNV > 0)
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			CNVplot2{chr} = CNVplot2{chr}/medianCNV;
+			fprintf(['    chr' num2str(chr) ' :: ' num2str(median(CNVplot2{chr})) '\n']);
+		end;
+	end;
+else
+	for chr = 1:num_chrs
+		if (chr_in_use(chr) == 1)
+			fprintf(['    chr' num2str(chr) ' :: ' num2str(median(CNVplot2{chr})) '\n']);
 		end;
 	end;
 end;
+
+%% When analyzing a short FASTA representing a partial chromosome, this happens.
+%        |    medianCNV = 0
+%        |    chr2 :: 0.99517
+%        |    chr3 :: 0
+%        |    chr4 :: 0
+%        |    chr5 :: 0
+%        |    chr6 :: 0
+%        |    chr7 :: 0
+%        |    chr8 :: 0
+%        |    chr9 :: 0
+
 
 
 %% -----------------------------------------------------------------------------------------
