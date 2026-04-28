@@ -1,7 +1,8 @@
 function [linear_fig_height,linear_fig_width,linear_left_padding,linear_chr_gap,linear_chr_max_width,linear_height...
             ,linear_base,rotate,linear_chr_font_size,linear_axis_font_size,linear_gca_font_size,stacked_fig_height,stacked_fig_width,...
             stacked_chr_font_size,stacked_title_size,stacked_axis_font_size,gca_stacked_font_size,stacked_copy_font_size,max_chrom_label_size] = Load_size_info(chr_in_use,num_chrs,chr_label,chr_size)
-fprintf('\n---------------------------------Load_size_info.m started---------------------------------------------------\n');
+	fprintf('\n---------------------------------Load_size_info.m started---------------------------------------------------\n');
+
 
 %%%%
 %%%% Calculating data used to determine size.
@@ -27,13 +28,12 @@ fprintf('\n---------------------------------Load_size_info.m started------------
 			end;
 		end;
 	end;
-	fprintf('max_chrom_label_size - %d\n',max_chrom_label_size)
+	fprintf('max_chrom_label_size - %d\n',max_chrom_label_size);
 
 
 	%% global definitions
 	system_dpi = 150;
 	fprintf('using %d dpi\n',system_dpi);
-
 
 
 %%%%
@@ -58,7 +58,7 @@ fprintf('\n---------------------------------Load_size_info.m started------------
 	linear_cartoon_height_px = 111;            % the size of the chromosome cartoon in pixles (without y-axis) for proper scaling
 	linear_chr_gap           = linear_total_gap/(num_chrs-1);  % gaps between chr subfigures.
 	linear_chr_max_width     = 1 - linear_total_gap - linear_left_padding - linear_right_padding;  % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
-	linear_height            = linear_cartoon_height_px/ linear_fig_height_px; % the size
+	linear_height            = linear_cartoon_height_px/ linear_fig_height_px; % the size 
 	linear_base              = 0.1;
 
 	% setting rotation

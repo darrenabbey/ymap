@@ -561,65 +561,97 @@ chr_SNPdata = temp_holding;
 fprintf('\t|\tDetermine display color for each SNP.\n');
 for chr = 1:num_chrs
 	% avoid running over chromosomes with empty copy number
-	if (chr_in_use(chr) == 1 && ~isempty(chrCopyNum{chr}))
-		for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
+	if ( (chr_in_use(chr) == 1) && (~isempty(chrCopyNum{chr})) )
+		for chr_bin_SNP = 1:ceil(chr_size(chr)/bases_per_bin_SNP)
 			%
 			% Determining colors for each SNP coordinate from calculated cutoffs.
 			%
-			localCopyEstimate                       = round(CNVplot2{chr}(chr_bin)*ploidy*ploidyAdjust);
-			allelic_ratios                          = [chr_SNPdata{chr,1}{chr_bin} chr_SNPdata{chr,2}{chr_bin}];
-			coordinates                             = [chr_SNPdata{chr,3}{chr_bin} chr_SNPdata{chr,4}{chr_bin}];
-			if (length(chr_SNPdata{chr,1}{chr_bin}) == 1) && (length(chr_SNPdata{chr,2}{chr_bin}) == 1)
-				allele_strings                  = {chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}};
+			allelic_ratios						= [chr_SNPdata{chr,1}{chr_bin_SNP} chr_SNPdata{chr,2}{chr_bin_SNP}];
+			coordinates						= [chr_SNPdata{chr,3}{chr_bin_SNP} chr_SNPdata{chr,4}{chr_bin_SNP}];
+			if (sizeof(chr_SNPdata{chr,5}{chr_bin_SNP}) == 0)
+				phased_alleles = '';
 			else
-				allele_strings                  = [chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}];
+				phased_alleles = chr_SNPdata{chr,5}{chr_bin_SNP};
 			end;
+			if (sizeof(chr_SNPdata{chr,6}{chr_bin_SNP}) == 0)
+				unphased_alleles = '';
+			else
+				unphased_alleles = chr_SNPdata{chr,6}{chr_bin_SNP};
+			end;
+			allele_strings						= [phased_alleles unphased_alleles];
 
 			if (length(allelic_ratios) > 0)
 				for SNP = 1:length(allelic_ratios)
 					% Load phased SNP data from earlier defined structure.
-					allelic_ratio                         = allelic_ratios(SNP);
-					coordinate                            = coordinates(SNP);
-					if (length(allelic_ratios) > 1)
-						allele_string                 = allele_strings{SNP};
+					if (isa(allelic_ratios(SNP),'cell') == 1)
+						if (isscalar(allelic_ratios(SNP){1}) == 1)
+							allelic_ratio		= allelic_ratios(SNP){1};
+						else
+							allelic_ratio		= str2num(cell2mat(allelic_ratios(SNP)));
+						end;
 					else
-						allele_string                 = allele_strings;
+						allelic_ratio			= allelic_ratios(SNP);
 					end;
-					baseCall                              = allele_string(1);
-					homologA                              = allele_string(3);
-					homologB                              = allele_string(5);
+
+					if (isa(coordinates(SNP),'cell') == 1)
+						if (isscalar(coordinates(SNP){1}) == 1)
+							coordinate		= coordinates(SNP){1};
+						else
+							coordinate		= str2num(cell2mat(coordinates(SNP)));
+						end;
+					else
+						coordinate			= coordinates(SNP);
+					end;
+
+					if (isa(allele_strings,'cell') == 1)
+						if (length(allelic_ratios) > 1)
+							allele_string           = allele_strings{SNP};
+						else
+							allele_string           = allele_strings;
+						end;
+					else
+						allele_string                   = allele_strings;
+					end;
+
+					baseCall				= allele_string(1);
+					homologA				= allele_string(3);
+					homologB				= allele_string(5);
 
 					% identify the segment containing the SNP.
 					segmentID                             = 0;
 					for segment = 1:(length(chrCopyNum{chr}))
-						segment_start                 = chr_breaks{chr}(segment  )*chr_size(chr);
-						segment_end                   = chr_breaks{chr}(segment+1)*chr_size(chr);
+						segment_start			= chr_breaks{chr}(segment  )*chr_size(chr);
+						segment_end			= chr_breaks{chr}(segment+1)*chr_size(chr);
+
+						%fprintf(['#### class(coordinate)      = ' class(coordinate)	'\n' ]);
+						%fprintf(['####   class(segment_start) = ' class(segment_start)	'\n' ]);
+						%fprintf(['####   class(segment_end)   = ' class(segment_end)	'\n' ]);
 						if (coordinate > segment_start) && (coordinate <= segment_end)
 							segmentID             = segment;
 						end;
 					end;
 
 					% Load cutoffs between Gaussian fits performed earlier.
-					segment_copyNum                       = round(chrCopyNum{              chr}(segmentID));
-					actual_cutoffs                        = chrSegment_actual_cutoffs{     chr}{segmentID};
-					mostLikelyGaussians                   = chrSegment_mostLikelyGaussians{chr}{segmentID};
+					segment_copyNum				= round(chrCopyNum{              chr}(segmentID));
+					actual_cutoffs				= chrSegment_actual_cutoffs{     chr}{segmentID};
+					mostLikelyGaussians			= chrSegment_mostLikelyGaussians{chr}{segmentID};
 
 					% Calculate allelic ratio on range of [1..200].
 					SNPratio_int                          = (allelic_ratio)*199+1;
 
 					% Identify the allelic ratio region containing the SNP.
-					cutoffs                               = [1 actual_cutoffs 200];
-					ratioRegionID                         = 0;
+					cutoffs					= [1 actual_cutoffs 200];
+					ratioRegionID				= 0;
 					for GaussianRegionID = 1:length(mostLikelyGaussians)
-						cutoff_start                  = cutoffs(GaussianRegionID  );
-						cutoff_end                    = cutoffs(GaussianRegionID+1);
+						cutoff_start			= cutoffs(GaussianRegionID  );
+						cutoff_end			= cutoffs(GaussianRegionID+1);
 						if (GaussianRegionID == 1)
 							if (SNPratio_int >= cutoff_start) && (SNPratio_int <= cutoff_end)
-								ratioRegionID = mostLikelyGaussians(GaussianRegionID);
+								ratioRegionID	= mostLikelyGaussians(GaussianRegionID);
 							end;
 						else
 							if (SNPratio_int > cutoff_start) && (SNPratio_int <= cutoff_end)
-								ratioRegionID = mostLikelyGaussians(GaussianRegionID);
+								ratioRegionID	= mostLikelyGaussians(GaussianRegionID);
 							end;
 						end;
 					end;
@@ -725,7 +757,7 @@ for chr = 1:num_chrs
 					elseif (segment_copyNum == 7)
 						% allelic fraction cutoffs: [0.07143 0.21429 0.35714 0.50000 0.64286 0.78571 0.92857] => [AAAAAAA AAAAAAB AAAAABB AAAABBB AAABBBB AABBBBB ABBBBBB BBBBBBB]
 						if ((baseCall == homologA) || (baseCall == homologB))
-							if (ratioRegionID == 8);            colorList = colorBBBBBBB;
+						if (ratioRegionID == 8);            colorList = colorBBBBBBB;
 							elseif (ratioRegionID == 7);        colorList = colorABBBBBB;
 							elseif (ratioRegionID == 6);        colorList = colorAABBBBB;
 							elseif (ratioRegionID == 5);        colorList = colorAAABBBB;
@@ -799,13 +831,13 @@ for chr = 1:num_chrs
 							end;
 						end;
 					end;
-					chr_SNPdata_colorsC{chr,1}(chr_bin) = chr_SNPdata_colorsC{chr,1}(chr_bin) + colorList(1);
-					chr_SNPdata_colorsC{chr,2}(chr_bin) = chr_SNPdata_colorsC{chr,2}(chr_bin) + colorList(2);
-					chr_SNPdata_colorsC{chr,3}(chr_bin) = chr_SNPdata_colorsC{chr,3}(chr_bin) + colorList(3);
-					chr_SNPdata_countC{ chr  }(chr_bin) = chr_SNPdata_countC{ chr  }(chr_bin) + 1;
+					chr_SNPdata_colorsC{chr,1}(chr_bin_SNP) = chr_SNPdata_colorsC{chr,1}(chr_bin_SNP) + colorList(1);
+					chr_SNPdata_colorsC{chr,2}(chr_bin_SNP) = chr_SNPdata_colorsC{chr,2}(chr_bin_SNP) + colorList(2);
+					chr_SNPdata_colorsC{chr,3}(chr_bin_SNP) = chr_SNPdata_colorsC{chr,3}(chr_bin_SNP) + colorList(3);
+					chr_SNPdata_countC{ chr  }(chr_bin_SNP) = chr_SNPdata_countC{ chr  }(chr_bin_SNP) + 1;
 
 					% Troubleshooting output.
-					% fprintf(['chr = ' num2str(chr) '; seg = ' num2str(segment) '; bin = ' num2str(chr_bin) '; ratioRegionID = ' num2str(ratioRegionID) '\n']);
+					% fprintf(['chr = ' num2str(chr) '; seg = ' num2str(segment) '; bin = ' num2str(chr_bin_SNP) '; ratioRegionID = ' num2str(ratioRegionID) '\n']);
 				end;
 			end;
 		end;
@@ -814,26 +846,27 @@ for chr = 1:num_chrs
 		% Average colors of SNPs found in bin.
 		%
 		fprintf('\t|\tDetermine average color for SNPs in chromosome bin.\n');
-		for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
-			allelic_ratios                                      = [chr_SNPdata{chr,1}{chr_bin} chr_SNPdata{chr,2}{chr_bin}];
+		for chr_bin_SNP = 1:ceil(chr_size(chr)/bases_per_bin_SNP)
+			allelic_ratios = [chr_SNPdata{chr,1}{chr_bin_SNP} chr_SNPdata{chr,2}{chr_bin_SNP}];
 			if (length(allelic_ratios) > 0)
-				if (chr_SNPdata_countC{chr}(chr_bin) > 0)
-					chr_SNPdata_colorsC{chr,1}(chr_bin) = chr_SNPdata_colorsC{chr,1}(chr_bin)/chr_SNPdata_countC{chr}(chr_bin);
-					chr_SNPdata_colorsC{chr,2}(chr_bin) = chr_SNPdata_colorsC{chr,2}(chr_bin)/chr_SNPdata_countC{chr}(chr_bin);
-					chr_SNPdata_colorsC{chr,3}(chr_bin) = chr_SNPdata_colorsC{chr,3}(chr_bin)/chr_SNPdata_countC{chr}(chr_bin);
+				if (chr_SNPdata_countC{chr}(chr_bin_SNP) > 0)
+					chr_SNPdata_colorsC{chr,1}(chr_bin_SNP) = chr_SNPdata_colorsC{chr,1}(chr_bin_SNP)/chr_SNPdata_countC{chr}(chr_bin_SNP);
+					chr_SNPdata_colorsC{chr,2}(chr_bin_SNP) = chr_SNPdata_colorsC{chr,2}(chr_bin_SNP)/chr_SNPdata_countC{chr}(chr_bin_SNP);
+					chr_SNPdata_colorsC{chr,3}(chr_bin_SNP) = chr_SNPdata_colorsC{chr,3}(chr_bin_SNP)/chr_SNPdata_countC{chr}(chr_bin_SNP);
 				else
-					chr_SNPdata_colorsC{chr,1}(chr_bin) = 1.0;
-					chr_SNPdata_colorsC{chr,2}(chr_bin) = 1.0;
-					chr_SNPdata_colorsC{chr,3}(chr_bin) = 1.0;
+					chr_SNPdata_colorsC{chr,1}(chr_bin_SNP) = 1.0;
+					chr_SNPdata_colorsC{chr,2}(chr_bin_SNP) = 1.0;
+					chr_SNPdata_colorsC{chr,3}(chr_bin_SNP) = 1.0;
 				end;
 			else
-				chr_SNPdata_colorsC{chr,1}(chr_bin)         = 1.0;
-				chr_SNPdata_colorsC{chr,2}(chr_bin)         = 1.0;
-				chr_SNPdata_colorsC{chr,3}(chr_bin)         = 1.0;
+				chr_SNPdata_colorsC{chr,1}(chr_bin_SNP)         = 1.0;
+				chr_SNPdata_colorsC{chr,2}(chr_bin_SNP)         = 1.0;
+				chr_SNPdata_colorsC{chr,3}(chr_bin_SNP)         = 1.0;
 			end;
 		end;
 	end;
 end;
+
 
 
 %%================================================================================================
