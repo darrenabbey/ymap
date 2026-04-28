@@ -99,9 +99,9 @@ for i = 1:num_chrs
 	cen_end(i)   = 0;
 end;
 for i = 1:num_chrs
-    chr_size(chr_sizes(i).chr)    = chr_sizes(i).size;
-    cen_start(centromeres(i).chr) = centromeres(i).start;
-    cen_end(centromeres(i).chr)   = centromeres(i).end;
+	chr_size(chr_sizes(i).chr)    = chr_sizes(i).size;
+	cen_start(centromeres(i).chr) = centromeres(i).start;
+	cen_end(centromeres(i).chr)   = centromeres(i).end;
 end;
 if (length(annotations) > 0)
 	fprintf(['\nAnnotations for ' genome '.\n']);
@@ -148,6 +148,12 @@ for i = 1:length(figure_details)
 		chr_figOrder   (figure_details(i).chr) = figOrder;
 		chr_figReversed(figure_details(i).chr) = str2num(figure_details(i).figReversed);
 	end;
+end;
+
+% log output of chr_in_use status for troubleshooting.
+fprintf(['\n$$ chr_in_use data for genome : \n']);
+for i = 1:num_chrs
+	fprintf(['$$\tchr_in_use(' num2str(i) ') = ' num2str(chr_in_use(i)) ' \n']);
 end;
 
 %%=========================================================================
