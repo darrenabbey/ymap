@@ -1,33 +1,40 @@
-function [G1_a, G1_b, G1_c] = fit_Gaussian_model2(data, location, func_type, show_fitting, ploidy1x)
-	% Attempt to fit a single-gaussian model to data.
-	% Used to help determine copy number estimates for regions.
+function [G1_a, G1_b, G1_c, Rsquared] = fit_Gaussian_model2(workingDir, data, location, func_type, show_fitting, ploidy1x, makeFitFigures, descriptionString)
+	graphics_toolkit gnuplot;
 
-	time  = 1:length(data);
-	G1_a = nan;
-	G1_b = nan;
-	G1_c = nan;
+	%%%================================================================================================
+	%%% Attempt to fit a single-gaussian model to data.
+	%%% Used to help determine copy number estimates for chromosome segments.
+	%%%------------------------------------------------------------------------------------------------
+
+	time     = 1:length(data);
+	G1_a     = nan;
+	G1_b     = nan;
+	G1_c     = nan;
+	Rsquared = nan;
 
 	if isnan(data)
 		% fitting variables
 		return
 	end
 
-	% find max height in data.
+	%%% find max height in data as initial copy number guess.
 	datamax = max(data);
 	%datamax(data ~= max(datamax)) = [];
 
-	% if maxdata is final bin, then find next highest p
+	%%% if maxdata is final bin, then find next highest bin.
 	if (find(data == datamax) == length(data))
 		data(data == datamax) = 0;
 		datamax = data;
 		datamax(data ~= max(datamax)) = [];
 	end;
 
-	% a = height; b = location; c = width.
+	%%% a = height
+	%%% b = location
+	%%% c = width.
 	G1_ai = datamax;
 	G1_bi = location;
 
-	%find G1_ci; width of G1 at halfmax.
+	%%% find G1_ci; width of G1 at halfmax.
 	dd = data;
 	dd(data < max(data)/2) = 0;
 	c1 = find(dd,1,'first');
@@ -58,6 +65,37 @@ function [G1_a, G1_b, G1_c] = fit_Gaussian_model2(data, location, func_type, sho
 		G1_b = Estimates(2);
 		G1_c = abs(Estimates(3));
 	end;
+
+	%%% Calculate R² for fit line.
+	%------------------------------------
+	G1_fit   = G1_a*exp(-0.5*((time-G1_b)./G1_c).^2);
+	fitted   = G1_fit;
+	%------------------------------------
+	SSres    = sum((data-fitted).^2);
+	dataMean = data*0+mean(data);
+	SStot    = sum((data-dataMean).^2);
+	Rsquared = 1 - SSres/SStot;
+
+	%----------------------------------------------------------------------
+	% show fitting result.
+	if (makeFitFigures)
+		fig = figure(123);
+		plot(data,'o' , 'color',[0.50 0.50 1.00]);
+		hold on;
+		title(['CNV Gaussian model; ' descriptionString]);
+		plot(fitted,'-','color',[0.00 0.50 0.50],'lineWidth',2);
+		text(100,0.5,['R² = ', num2str(Rsquared)],"interpreter", "latex");
+		hold off;
+		figVers = 1;
+		saveName = [workingDir 'CNV_GaussFit.' num2str(figVers,'%03.f') '.png'];
+		while (exist(saveName,'file'))
+			figVers += 1;
+			saveName = [workingDir 'CNV_GaussFit.' num2str(figVers,'%03.f') '.png'];
+		end;
+		saveas(fig, saveName, 'png');
+		delete(fig);
+	end;
+	%----------------------------------------------------------------------
 end
 
 function sse = fiterror(params,time,data,func_type, show_fitting,ploidy1x)
@@ -119,4 +157,3 @@ function sse = fiterror(params,time,data,func_type, show_fitting,ploidy1x)
 			sse = 1;
 	end;
 end
-

@@ -58,7 +58,7 @@ else
 end;
 
 %% ========================================================================
-Centromere_format_default   = 0;
+Centromere_format_default   = 1;
 Yscale_nearest_even_ploidy  = true;
 HistPlot                    = true;
 ChrNum                      = true;
@@ -827,7 +827,9 @@ for chr_to_draw  = 1:length(chr_order)
 				ylim([0,maxY]);
 			end;
 
-			set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
+			%set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
+			set(gca,'TickLength',[TickSize 0]);
+
 			set(gca,'YTick',[]);
 			set(gca,'YTickLabel',[]);
 			set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
@@ -893,66 +895,24 @@ for chr_to_draw  = 1:length(chr_order)
 			end;
 			% standard : end of : show segmental aneuploidy breakpoints.
 
-			%% show centromere.
+
+			%% standard : show centromere.
 			if (chr_size(chr) < 100000)
-				Centromere_format = 1;
+				Centromere_format = 0;
 			else
 				Centromere_format = Centromere_format_default;
 			end;
-			x1 = cen_start(chr)/bases_per_bin;
-			x2 = cen_end(chr)/bases_per_bin;
-			leftEnd  = 0.5*(5000/bases_per_bin);
-			rightEnd = chr_size(chr)/bases_per_bin-0.5*(5000/bases_per_bin);
+			x1       = cen_start(chr)/bases_per_bin;
+			x2       = cen_end(chr)/bases_per_bin;
+			leftEnd  = 0;                                   % 0.5*(5000/bases_per_bin);
+			rightEnd = chr_size(chr)/bases_per_bin;         % chr_size(chr)/bases_per_bin-0.5*(5000/bases_per_bin);
 			if (Centromere_format == 0)
-				% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
-				dx = cen_tel_Xindent;
-				dy = cen_tel_Yindent;
-				% draw white triangles at corners and centromere locations.
-				% top left corner.
-				c_ = [1.0 1.0 1.0];
-				x_ = [leftEnd   leftEnd   leftEnd+dx];
-				y_ = [maxY-dy   maxY      maxY      ];
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-				% bottom left corner.
-				x_ = [leftEnd   leftEnd   leftEnd+dx];
-				y_ = [dy        0         0         ];
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-				% top right corner.
-				x_ = [rightEnd   rightEnd   rightEnd-dx];
-				y_ = [maxY-dy    maxY       maxY      ];
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-				% bottom right corner.
-				x_ = [rightEnd   rightEnd   rightEnd-dx];
-				y_ = [dy         0          0         ];
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-				% top centromere.
-				x_ = [x1-dx   x1        x2        x2+dx];
-				y_ = [maxY    maxY-dy   maxY-dy   maxY];
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-				% bottom centromere.
-				x_ = [x1-dx   x1   x2   x2+dx];
-				y_ = [0       dy   dy   0    ];
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-
-				% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are 
-				% not interrupted by horiz lines.
-				plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
-				     [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy     ],...
-				    'Color',[0 0 0]);
+				source('cartoon_stacked_0.m');
 			elseif (Centromere_format == 1)
-				leftEnd  = 0;
-				rightEnd = chr_size(chr)/bases_per_bin;
-
-				% Minimal outline for examining very small sequence regions, such as C.albicans MTL locus.
-				plot([leftEnd   leftEnd   rightEnd   rightEnd   leftEnd], [0   maxY   maxY   0   0], 'Color',[0 0 0]);
+				source('cartoon_stacked_1.m');
 			end;
-			%end show centromere.
+			%% standard : end show centromere.
+
 
 			%show annotation locations
 			if (show_annotations) && (length(annotations) > 0)
@@ -980,22 +940,21 @@ for chr_to_draw  = 1:length(chr_order)
 			%end show annotation locations.
 
 			% make CNV histograms to the right of the main chr cartoons.
-			if (HistPlot == true)
+			if (HistPlot)
 				width     = 0.020;
 				height    = chr_height(chr);
 				bottom    = chr_posY(chr);
-				chr_CNVdata;
 				histAll   = [];
 				histAll2  = [];
 				smoothed  = [];
 				smoothed2 = [];
 				fprintf(['chr = ' num2str(chr) '\n']);
 				for segment = 1:length(chrCopyNum{chr})
-					subplot('Position',[(left+chr_width(chr)+0.005)+width*(segment-1) bottom width height]);
+					subplot('Position',[(left+chr_width(chr)+0.005)+width*(segment-1) bottom-0.007 width height+0.007]);
 
 					% The CNV-histogram values were normalized to a median value of 1.
 					for i = round(1+length(CNVplot2{chr})*chr_breaks{chr}(segment)):round(length(CNVplot2{chr})*chr_breaks{chr}(segment+1))
-						if (Low_quality_ploidy_estimate == true)
+						if (Low_quality_ploidy_estimate)
 							histAll{segment}(i) = CNVplot2{chr}(i)*ploidy*ploidyAdjust;
 						else
 							histAll{segment}(i) = CNVplot2{chr}(i)*ploidy;
@@ -1003,12 +962,15 @@ for chr_to_draw  = 1:length(chr_order)
 					end;
 
 					% make a histogram of CNV data, then smooth it for display.
-					histogram_end                                    = 15;             % end point in copy numbers for the histogram, this should be way outside the expected range.
-					histAll{segment}(histAll{segment}<=0)            = [];
-					histAll{segment}(length(histAll{segment})+1)     = 0;              % endpoints added to ensure histogram bounds.
+					histogram_end                                    = 15;   % end point in copy numbers for the histogram, this should be way outside the expected range.
+					histAll{segment}(histAll{segment}<=0)            = [];   % clears any zero data. If ploidyAdjust is somehow zero, this causes on CNV histogram data to exist.
+					% endpoints added to ensure histogram bounds.
+					histAll{segment}(length(histAll{segment})+1)     = 0;
 					histAll{segment}(length(histAll{segment})+1)     = histogram_end;
-					histAll{segment}(histAll{segment}<0)             = [];             % crop off any copy data outside the range.
+					% crop off any copy data outside the range.
+					histAll{segment}(histAll{segment}<0)             = [];
 					histAll{segment}(histAll{segment}>histogram_end) = [];
+
 					smoothed{segment}                                = smooth_gaussian(hist(histAll{segment},histogram_end*20),2,10);
 
 					% make a smoothed version of just the endpoints used to ensure histogram bounds.
@@ -1021,39 +983,36 @@ for chr_to_draw  = 1:length(chr_order)
 					smoothed{segment}                                = smoothed{segment}/max(smoothed{segment});
 
 					% draw lines to mark whole copy number changes.
-					plot([0;       0      ],[0; 1],'color',[0.00 0.00 0.00]);
+					plot([0;300], [0;       0      ],'color',[0.00 0.00 0.00]);
 					hold on;
 					for i = 1:15
-						plot([20*i;  20*i],[0; 1],'color',[0.75 0.75 0.75]);
+						plot([0;300],[20*i;  20*i],'color',[0.75 0.75 0.75]);
 					end;
 
 					% draw histogram.
-					area(smoothed{segment},'FaceColor',[0 0 0]);
+					area(smoothed{segment},1:300,'FaceColor',[0 0 0]);
 
 					% Draw red ticks between histplot segments
-					if (displayBREAKS == true) && (show_annotations == true)
+					if (displayBREAKS) && (show_annotations)
 						if (segment > 1)
-							plot([-maxY*20/10*1.5 0],[0 0],  'Color',[1 0 0],'LineWidth',2);
+							plot([0 0], [-maxY*20/10*1.5 0],  'Color',[1 0 0],'LineWidth',2);
 						end;
 					end;
-
-					% Flip subfigure around the origin.
-					view(-90,90);
-					set(gca,'YDir','Reverse');
 
 					% ensure subplot axes are consistent with main chr plots.
 					hold off;
 					axis off;
 					set(gca,'YTick',[]);
 					set(gca,'XTick',[]);
-					ylim([0,1]);
-					if (show_annotations == true)
-						xlim([-maxY*20/10*1.5,maxY*20]);
+					xlim([0,1]);
+					if (show_annotations)
+						ylim([-maxY*20/10*1.5,maxY*20]);
 					else
-						xlim([0,maxY*20]);
+						ylim([0,maxY*20]);
 					end;
 				end;
 			end;
+			% standard : end of CNV histograms at right.
 
 			% places chr copy number to the right of the main chr cartoons.
 			if (ChrNum == true)
@@ -1224,7 +1183,10 @@ for chr_to_draw  = 1:length(chr_order)
 			else
 				ylim([0,maxY]);
 			end;
-			set(gca,'TickLength',[(Linear_TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
+
+			%set(gca,'TickLength',[(Linear_TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
+			set(gca,'TickLength',[TickSize 0]);
+
 			set(gca,'YTick',[]);
 			set(gca,'YTickLabel',[]);
 			set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
