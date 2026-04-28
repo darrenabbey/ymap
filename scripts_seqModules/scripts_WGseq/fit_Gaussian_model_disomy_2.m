@@ -1,15 +1,16 @@
-function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gaussian_model_disomy_2(workingDir, saveName, data,locations,init_width,func_type)
+function [p1_a, p1_b, p1_c, p2_a, p2_b, p2_c, p3_a, p3_b, p3_c, Rsquared] = fit_Gaussian_model_disomy_2(workingDir, descriptionString, data,locations,init_width,func_type, makeFitFigures)
 	% attempt to fit a 3-gaussian model to data.
+	graphics_toolkit gnuplot;
 
 %%=========================================================================
 % Load project figure version.
 %--------------------------------------------------------------------------
-versionFile = [workingDir 'figVer.txt'];
-if exist(versionFile, 'file') == 2
-	figVer = ['v' fileread(versionFile) '.'];
-else
-	figVer = '';
-end;
+	versionFile = [workingDir 'figVer.txt'];
+	if exist(versionFile, 'file') == 2
+		figVer = ['v' fileread(versionFile) '.'];
+	else
+		figVer = '';
+	end;
 
 	show = true;
 	p1_a = nan;   p1_b = nan;   p1_c = nan;
@@ -24,7 +25,6 @@ end;
 
 	% find max height in data.
 	datamax = max(data);
-	%datamax(data ~= max(datamax)) = [];
 
 	% if maxdata is final bin, then find next highest p
 	if (find(data == datamax) == length(data))
@@ -41,8 +41,6 @@ end;
 	initial = [p1_ai,p1_ci,p2_ai,p2_ci,p3_ai];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',200000);
 	time    = 1:length(data);
-
-	saveFileName = [workingDir saveName '.' figVer 'png']
 
 	[Estimates,~,exitflag] = fminsearch(@fiterror, ...   % function to be fitted.
 	                                    initial, ...     % initial values.
@@ -87,10 +85,60 @@ end;
 	if (skew_factor1 < 0); skew_factor1 = 0; end; if (skew_factor1 > 2); skew_factor1 = 2; end;
 	if (skew_factor2 < 0); skew_factor2 = 0; end; if (skew_factor2 > 2); skew_factor2 = 2; end;
 	if (skew_factor3 < 0); skew_factor3 = 0; end; if (skew_factor3 > 2); skew_factor3 = 2; end;
+
 	c1_ = p1_c/2 + p1_c*skew_factor1/(100.5-abs(100.5-p1_b))/2;
 	p1_c = p1_c*p1_c/c1_;
 	c3_ = p3_c/2 + p3_c*skew_factor3/(100.5-abs(100.5-p3_b))/2;
 	p3_c = p3_c*p3_c/c3_;
+
+
+	%%% Calculate R^2 for fit line.
+	%------------------------------------
+	time1_1 = 1:floor(p1_b);
+	time1_2 = ceil(p1_b):200;
+	if (time1_1(end) == time1_2(1));    time1_1(end) = [];  end;
+	time2   = time;
+	time3_1 = 1:floor(p3_b);
+	time3_2 = ceil(p3_b):200;
+	if (time3_1(end) == time3_2(1));    time3_2(1) = [];    end;
+	%------------------------------------
+	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
+	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor1/(100.5-abs(100.5-p1_b))) ).^2);
+	p2_fit   = p2_a*exp(-0.5*((time2  -p2_b)./p2_c).^2);
+	p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c/(skew_factor3/(100.5-abs(100.5-p3_b))) ).^2);
+	p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c).^2);
+	p1_fit = [p1_fit_L p1_fit_R];
+	p3_fit = [p3_fit_L p3_fit_R];
+	fitted = p1_fit+p2_fit+p3_fit;
+	%------------------------------------
+	SSres    = sum((data-fitted).^2);
+	dataMean = data*0+mean(data);
+	SStot    = sum((data-dataMean).^2);
+	Rsquared = 1 - SSres/SStot;
+
+	%----------------------------------------------------------------------
+	% show fitting result.
+	if (makeFitFigures)
+		fig = figure(123);
+		plot(data,'o' , 'color',[0.50 0.50 1.00]);
+		hold on;
+		title(['SNP Gaussian model disomy; ' descriptionString]);
+		plot(p1_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+		plot(p2_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+		plot(p3_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+		plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
+		text(100,0.5,['R^2 = ', num2str(Rsquared)],"interpreter", "latex");
+		hold off;
+		figVers = 1;
+		saveName = [workingDir 'SNP_GaussFit_disomy.' num2str(figVers,'%03.f') '.png'];
+		while (exist(saveName,'file'))
+			figVers += 1;
+			saveName = [workingDir 'SNP_GaussFit_disomy.' num2str(figVers,'%03.f') '.png'];
+		endwhile;
+		saveas(fig, saveName, 'png');
+		delete(fig);
+	end;
+	%----------------------------------------------------------------------
 end
 
 function sse = fiterror(params,time,data,func_type,locations,show)
