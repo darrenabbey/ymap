@@ -55,15 +55,9 @@
 	// getting the current size of the user folder in Gigabytes
 	$currentSize = shell_exec("du -scm ../../users/".$user."/ | awk 'END{print $1}'") / (1000);
 	// getting user quota in Gigabytes
-	$quota_ = trim(getUserQuota("../../users/".$user));
-	if ($quota_ > $quota) { $quota = $quota_; }
+	$quota = getUserQuota($user);
 	// Setting boolean variable that will indicate whether the user has exceeded it's allocated space.
 	$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
-
-//	//troubleshooting log output:
-//	$myfile = "../../users/".$user."/projects/".$project."/newfile.txt";
-//	$txt    = "[currentSize = ".$currentSize."]\n"."[quota = ".$quota."]\n"."[exceededSpace = ".$exceededSpace."]\n";
-//	file_put_contents($myfile, $txt);
 
 	// Only allow uploading to proceed if user quota is not exceeded.
 	if ($exceededSpace) {
