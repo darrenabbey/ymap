@@ -30,6 +30,7 @@ if (Make_figure == true)
 		figVer = '';
 	end;
 
+
 	%% ========================================================================
 	Centromere_format_default	= 1;
 	Yscale_nearest_even_ploidy	= true;
@@ -37,7 +38,7 @@ if (Make_figure == true)
 	ChrNum				= true;
 	show_annotations		= true;
 	analyze_rDNA			= true;
-	Standard_display                = false;
+	Standard_display                = false;	%% Not shown to user, so lets not make it.
 	Linear_display			= true;
 	Linear_displayBREAKS		= false;
 	Low_quality_ploidy_estimate	= true;
@@ -125,11 +126,10 @@ if (Make_figure == true)
 	fprintf(['\nEuploid base = "' num2str(ploidyBase) '"\n']);
 
 	% basic plot parameters not defined per genome.
-	TickSize	= -0.005;  %negative for outside, percentage of longest chr figure.
-	bases_per_bin	= max(chr_size)/700;
-	maxY		= ploidyBase*2;
-	cen_tel_Xindent = 5;
-	cen_tel_Yindent = maxY/5;
+	TickSize		= -0.005;  %negative for outside, percentage of longest chr figure.
+	maxY			= ploidyBase*2;
+	cen_tel_Xindent		= 5;
+	cen_tel_Yindent		= maxY/4;
 
 	%% Load CNV and SNP figure resolutions.
 	if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
@@ -160,6 +160,7 @@ if (Make_figure == true)
 	[chr_breaks, chrCopyNum, ploidyAdjust, chrCopyRsquared] = FindChrSizes_4(workingDir, Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use, false);
 	fprintf('\n');
 
+
 	%% -----------------------------------------------------------------------------------------
 	% Setup for main figure generation.
 	%------------------------------------------------------------------------------------------
@@ -183,17 +184,17 @@ if (Make_figure == true)
 	% Setup for linear-view figure generation.
 	%-------------------------------------------------------------------------------------------
 	if (Linear_display == true)
-		Linear_fig		= figure();
-		Linear_genome_size	= sum(chr_size);
-		Linear_TickSize		= -0.01;		% negative for outside, percentage of longest chr figure.
-		maxY			= ploidyBase*2;		% maximum y-axis of chromosome cartoons.
-		maxY_highTop		= ploidyBase*2*3;	% maximum y-axis of region above chromosome cartoons.
-		Linear_left		= Linear_left_start;	% used to track left end of current chromosome.
-		axisLabelPosition_horiz	= 0.01125;
+		Linear_fig		   = figure();
+		Linear_genome_size   = sum(chr_size);
+		Linear_TickSize	  = -0.01;			  % negative for outside, percentage of longest chr figure.
+		maxY				 = ploidyBase*2;	   % maximum y-axis of chromosome cartoons.
+		maxY_highTop		 = ploidyBase*2*3;	 % maximum y-axis of region above chromosome cartoons.
+		Linear_left		  = Linear_left_start;  % used to track left end of current chromosome.
+		axisLabelPosition_horiz = 0.01125;
 	end;
-	axisLabelPosition_vert		= 0.01125;
+	axisLabelPosition_vert = 0.01125;
 
-	maxY_highTop			= ploidyBase*2*3;
+	maxY_highTop		   = ploidyBase*2*3;
 
 	%% Initialize copy numbers string.
 	stringChrCNVs = '';
@@ -210,7 +211,7 @@ if (Make_figure == true)
 		end;
 	end;
 	medianCNV = median(CNVdata_all)
-	% avoid divding by zero
+	% avoid dividing by zero
 	if (medianCNV ~= 0)
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
@@ -231,6 +232,7 @@ if (Make_figure == true)
 		chr_pos = find(chr_figOrder==test_chr);
 		chr_order = [chr_order chr_pos];
 	end;
+
 
 	% Draw chromosomes in order defined in figure_definitions.txt file.
 	for chr_to_draw  = 1:length(chr_order)
@@ -269,6 +271,7 @@ if (Make_figure == true)
 				end;
 				% standard : end show centromere.
 
+
 				%% standard : CNV plot section.
 				c_ = [0 0 0];
 				fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
@@ -291,6 +294,7 @@ if (Make_figure == true)
 					set(f,'linestyle','none');
 				end;
 				% standard : end of : CNV plot section.
+
 
 				x2 = chr_size(chr)/bases_per_bin;
 				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
@@ -413,6 +417,7 @@ if (Make_figure == true)
 				hold on;
 				% standard : end axes labels etc.
 
+
 				%% standard : show segmental anueploidy breakpoints.
 				if (displayBREAKS == true) && (show_annotations == true)
 					chr_length = ceil(chr_size(chr)/bases_per_bin);
@@ -422,6 +427,7 @@ if (Make_figure == true)
 					end;
 				end;
 				% standard : end of : show segmental aneuploidy breakpoints.
+
 
 				% standard : show annotation locations
 				if (show_annotations) && (length(annotations) > 0)
@@ -447,6 +453,7 @@ if (Make_figure == true)
 					hold off;
 				end;
 				% standard : end show annotation locations.
+
 
 				% standard : make CNV histograms to the right of the main chr cartoons.
 				if (HistPlot == true)
@@ -541,7 +548,7 @@ if (Make_figure == true)
 
 				% linear : show centromere.
 				if (chr_size(chr) < 100000)
-					Centromere_format = 1;
+					Centromere_format = 0;
 				else
 					Centromere_format = Centromere_format_default;
 				end;
@@ -553,10 +560,9 @@ if (Make_figure == true)
 					source('cartoon_linear_0.m');
 				elseif (Centromere_format == 1)
 					source('cartoon_linear_1.m');
-				elseif (Centromere_format == 2) % sausage! (standard plot)
-					source('cartoon_linear_2.m');
 				end;
 				% linear : end show centromere.
+
 
 				%% linear : CNV plot section.
 				c_ = [0 0 0];
@@ -581,6 +587,7 @@ if (Make_figure == true)
 				end;
 				x2 = chr_size(chr)/bases_per_bin;
 				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
+
 
 				%% linear : draw lines across plots for easier interpretation of CNV regions.
 				switch ploidyBase
@@ -622,15 +629,17 @@ if (Make_figure == true)
 				end;
 				%% linear : end CNV plot section.
 
+
 				%% linear : show segmental anueploidy breakpoints.
 				if (Linear_displayBREAKS == true) && (show_annotations == true)
 					chr_length = ceil(chr_size(chr)/bases_per_bin);
-									for segment = 2:length(chr_breaks{chr})-1
-											bP = chr_breaks{chr}(segment)*chr_length;
-											plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
-									end;
-							end;
+					for segment = 2:length(chr_breaks{chr})-1
+						bP = chr_breaks{chr}(segment)*chr_length;
+						plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+					end;
+				end;
 				% linear : end of : show segmental aneuploidy breakpoints.
+
 
 				%% linear : show annotation locations
 				if (show_annotations) && (length(annotations) > 0)
@@ -644,8 +653,8 @@ if (Make_figure == true)
 							annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 							if (strcmp(annotation_type{i},'dot') == 1)
 								plot(annotationLoc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
-																	  'MarkerFaceColor',annotation_fillcolor{i}, ...
-																	  'MarkerSize',	 annotation_size(i));
+												      'MarkerFaceColor',annotation_fillcolor{i}, ...
+												      'MarkerSize',	 annotation_size(i));
 							elseif (strcmp(annotation_type{i},'block') == 1)
 								fill([annotationStart annotationStart annotationEnd annotationEnd], ...
 									 [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
@@ -657,8 +666,10 @@ if (Make_figure == true)
 				end;
 				% linear : end show annotation locations.
 
+
 				%% linear : Final formatting stuff.
 				xlim([0,chr_size(chr)/bases_per_bin]);
+
 
 				%% linear : modify y axis limits to show annotation locations if any are provided.
 				if (length(annotations) > 0)
@@ -720,6 +731,8 @@ if (Make_figure == true)
 				end;
 				set(gca,'FontSize',linear_gca_font_size);
 				% linear : end final reformatting.
+
+
 				% adding title in the middle of the cartoon
 				% note: adding title is done in the end since if placed upper
 				% in the code somehow the plot function changes the title position
