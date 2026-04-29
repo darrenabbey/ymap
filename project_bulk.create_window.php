@@ -62,7 +62,7 @@
 				</td></tr>
 				<tr bgcolor="#FFFFCC"><td>
 					<label for="dataFormat">Data type : </label><select name="dataFormat" id="dataFormat" onchange="UpdateForm();">
-						<option value="1" selected>Whole genome NGS (short-reads)</option>
+						<option value="1" selected>Whole genome NGS (short or long-reads)</option>
 					</select>
 				</td><td>
 					The type of data to be processed.
