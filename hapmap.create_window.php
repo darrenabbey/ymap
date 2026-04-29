@@ -60,7 +60,7 @@
 		$genomeFolders  = array_merge($genomeFolders1,$genomeFolders2);
 		sort($genomeFolders);   //sort alphabetical.
 		foreach ($genomeFolders as $key=>$genome) {
-			echo "\n\t\t\t\t\t<option value='".$genome."'>".$genome."</option>";
+			echo "\n\t\t\t\t\t<option value='".$genome."'>".$genome."</opction>";
 		}
 	}
 		?>
@@ -68,27 +68,39 @@
 				</td><td valign="top">
 					Reference genome used to construct hapmap.
 				</td></tr><tr bgcolor="#CCCCFF"><td>
-					<label for="referencePloidy">Construct a hapmap from </label><select name="referencePloidy" id="referencePloidy" onchange="UpdateForm();">
+					<label for="HapmapSetupOption">Construct a hapmap from </label>
+					<select name="HapmapSetupOption" id="HapmapSetupOption" onchange="UpdateForm();">
 					<option value="2">one diploid</option>
 					<option value="1">two haploid</option>
 					</select>
-					<label for="referencePloidy"> strains.</label>
+					<label for="HapmapSetupOption"> strain(s).</label>
 				</td><td>
-					One heterozygous diploid or two haploids (or homozygous diploids)  can be used to define the SNPs of a hapmap.
+					Two options to define the SNPs of a hapmap.<br>
+					1. One heterozygous diploid and derived strains with homozygous regions.<br>
+					2. Two haploids (or homozygous diploids).<br>
 				</td></tr><tr bgcolor="#CCFFCC"><td>
 					<div id="hiddenFormSection1" style="display:inline">
 <?php
 	if (!$user == "") {
-		// figure out which hapmaps have been defined for this species, if any.
+		// figure out which projects have been defined for this species, if any.
 		$projectsDir1       = "users/default/projects/";
 		$projectsDir2       = "users/".$user."/projects/";
 		$projectFolders1    = array_diff(glob($projectsDir1."*"), array('..', '.'));
 		$projectFolders2    = array_diff(glob($projectsDir2."*"), array('..', '.'));
 		$projectFolders_raw = array_merge($projectFolders1,$projectFolders2);
-		// Go through each $projectFolder and look at 'genome.txt' and 'dataFormat.txt'; build javascript array of prejectName:genome:dataFormat triplets.
+		// Go through each $projectFolder and look at 'genome.txt' and 'dataFormat.txt'; build javascript array of projectName:genome:dataFormat triplets.
+
+		// figure out which hapmaps have been defined for this species, if any.
+		$hapmapsDir1       = "users/default/hapmaps/";
+		$hapmapsDir2       = "users/".$user."/hapmaps/";
+		$hapmapFolders1    = array_diff(glob($hapmapsDir1."*"), array('..', '.'));
+		$hapmapFolders2    = array_diff(glob($hapmapsDir2."*"), array('..', '.'));
+		$hapmapFolders_raw = array_merge($hapmapFolders1,$hapmapFolders2);
+		// Go through each $hapmapFolder and look at 'genome.txt'; build javascript array of hapmapName:genome doublets.
 	}
 ?>
-						Parental strain : <select id="parent" name="parent"><option>[choose]</option></select>
+
+
 <script type="text/javascript">
 var projectGenomeDataFormat_entries = [['project','genome','dataFormat']<?php
 	if (!$user == "") {
@@ -115,14 +127,32 @@ var projectGenomeDataFormat_entries = [['project','genome','dataFormat']<?php
 		}
 	}
 ?>];
+var hapmapGenomeDataFormat_entries = [['hapmap','genome']<?php
+	if (!$user == "") {
+		foreach ($hapmapFolders_raw as $key=>$folder) {
+			if (!str_contains($folder, "index.php")) {
+				$genome_filename = $folder."/genome.txt";
+				$genome_string = "";
+				if (file_exists($genome_filename)) {
+					$handle1         = fopen($genome_filename, "r");
+					$genome_string   = trim(fgets($handle1));
+					fclose($handle1);
+				}
+				$hapmapName     = $folder;
+				$hapmapName     = str_replace($hapmapsDir1,"",$hapmapName);
+				$hapmapName     = str_replace($hapmapsDir2,"",$hapmapName);
+				echo ",['{$hapmapName}','{$genome_string}']";
+			}
+		}
+	}
+?>];
 function UpdateProjectList() {
-	var selectedGenome   = document.getElementById("genome").value;     // grab genome.
-	var selectedDataFormat = 1
-	var select           = document.getElementById("parent");     // grab select list.
+	var selectedGenome   = document.getElementById("genome").value;		// grab genome.
+	var select           = document.getElementById("parent");		// grab select_list to add entries to.
 	select.innerHTML     = '';
 	for (var i = 1; i < projectGenomeDataFormat_entries.length; i++) {
 		var item = projectGenomeDataFormat_entries[i];
-		if (selectedGenome == item[1] && selectedDataFormat == item[2]) {
+		if ((item[1] == selectedGenome) && (item[2] == 1 || item[2] == 2 || item[2] == 4)) {
 			var el         = document.createElement("option");
 			el.textContent = item[0];
 			el.value       = item[0];
@@ -134,7 +164,7 @@ function UpdateProjectList() {
 	select.innerHTML     = '';
 	for (var i = 1; i < projectGenomeDataFormat_entries.length; i++) {
 		var item = projectGenomeDataFormat_entries[i];
-		if (selectedGenome == item[1] && selectedDataFormat == item[2]) {
+		if ((item[1] == selectedGenome) && (item[2] == 1 || item[2] == 2 || item[2] == 4)) {
 			var el         = document.createElement("option");
 			el.textContent = item[0];
 			el.value       = item[0];
@@ -146,7 +176,7 @@ function UpdateProjectList() {
 	select.innerHTML     = '';
 	for (var i = 1; i < projectGenomeDataFormat_entries.length; i++) {
 		var item = projectGenomeDataFormat_entries[i];
-		if (selectedGenome == item[1] && selectedDataFormat == item[2]) {
+		if ((item[1] == selectedGenome) && (item[2] == 1 || item[2] == 2 || item[2] == 4)) {
 			var el         = document.createElement("option");
 			el.textContent = item[0];
 			el.value       = item[0];
@@ -158,7 +188,31 @@ function UpdateProjectList() {
 	select.innerHTML     = '';
 	for (var i = 1; i < projectGenomeDataFormat_entries.length; i++) {
 		var item = projectGenomeDataFormat_entries[i];
-		if (selectedGenome == item[1] && selectedDataFormat == item[2]) {
+		if ((item[1] == selectedGenome) && (item[2] == 1 || item[2] == 2 || item[2] == 4)) {
+			var el         = document.createElement("option");
+			el.textContent = item[0];
+			el.value       = item[0];
+			select.appendChild(el);
+		}
+	}
+
+	var select           = document.getElementById("parentHapmap");
+	select.innerHTML     = '';
+	for (var i = 1; i < hapmapGenomeDataFormat_entries.length; i++) {
+		var item = hapmapGenomeDataFormat_entries[i];
+		if (selectedGenome == item[1]) {
+			var el         = document.createElement("option");
+			el.textContent = item[0];
+			el.value       = item[0];
+			select.appendChild(el);
+		}
+	}
+
+	var select           = document.getElementById("derived");
+	select.innerHTML     = '';
+	for (var i = 1; i < projectGenomeDataFormat_entries.length; i++) {
+		var item = projectGenomeDataFormat_entries[i];
+		if ((item[1] == selectedGenome) && (item[2] == 1 || item[2] == 2 || item[2] == 4)) {
 			var el         = document.createElement("option");
 			el.textContent = item[0];
 			el.value       = item[0];
@@ -167,6 +221,7 @@ function UpdateProjectList() {
 	}
 }
 </script>
+						Parental strain : <select id="parent" name="parent"><option>[choose]</option></select>
 					</div>
 				</td><td valign="top">
 					<div id="hiddenFormSection2" style="display:inline">
@@ -175,12 +230,13 @@ function UpdateProjectList() {
 				</td></tr><tr bgcolor="#CCCCFF"><td valign="top">
 					<div id="hiddenFormSection3" style="display:inline">
 						First strain : <select id="child" name="child"><option>[choose]</option></select>
-					</div<
+					</div>
 				</td><td valign="top">
 					<div id="hiddenFormSection4" style="display:inline">
 						The first dataset used to construct the hapmap. (Others can be added later...)<br>
 						Each strain used to construct the hapmap should have large loss of heterozygosity regions.
 					</div>
+<!-- second option. -->
 				</td></tr><tr bgcolor="#CCFFCC"><td valign="top">
 					<div id="hiddenFormSection5" style="display:none">
 						Parental strain 1 : <select id="parentHaploid1" name="parentHaploid1"><option>[choose]</option></select>
@@ -197,7 +253,8 @@ function UpdateProjectList() {
 				</td><td valign="top">
 					<div id="hiddenFormSection8" style="display:none">
 						This strain will form haplotype 'b'.
-					</div<
+					</div>
+
 				</td></tr></table><br>
 	<?php
 	if (!$user == "") {
@@ -213,24 +270,34 @@ function UpdateProjectList() {
 
 <script type="text/javascript">
 function UpdateForm() {
-	if (document.getElementById("referencePloidy").value == 2) {
-		document.getElementById("hiddenFormSection1").style.display  = 'inline';
-		document.getElementById("hiddenFormSection2").style.display  = 'inline';
-		document.getElementById("hiddenFormSection3").style.display  = 'inline';
-		document.getElementById("hiddenFormSection4").style.display  = 'inline';
-		document.getElementById("hiddenFormSection5").style.display  = 'none';
-		document.getElementById("hiddenFormSection6").style.display  = 'none';
-		document.getElementById("hiddenFormSection7").style.display  = 'none';
-		document.getElementById("hiddenFormSection8").style.display  = 'none';
-	} else { // haploid.
-		document.getElementById("hiddenFormSection1").style.display  = 'none';
-		document.getElementById("hiddenFormSection2").style.display  = 'none';
-		document.getElementById("hiddenFormSection3").style.display  = 'none';
-		document.getElementById("hiddenFormSection4").style.display  = 'none';
-		document.getElementById("hiddenFormSection5").style.display  = 'inline';
-		document.getElementById("hiddenFormSection6").style.display  = 'inline';
-		document.getElementById("hiddenFormSection7").style.display  = 'inline';
-		document.getElementById("hiddenFormSection8").style.display  = 'inline';
+	if (document.getElementById("HapmapSetupOption").value == 2) {
+		// One diploid parent strain and one or more derived strains with homozygous regions.
+		document.getElementById("hiddenFormSection1").style.display   = 'inline';
+		document.getElementById("hiddenFormSection2").style.display   = 'inline';
+		document.getElementById("hiddenFormSection3").style.display   = 'inline';
+		document.getElementById("hiddenFormSection4").style.display   = 'inline';
+		document.getElementById("hiddenFormSection5").style.display   = 'none';
+		document.getElementById("hiddenFormSection6").style.display   = 'none';
+		document.getElementById("hiddenFormSection7").style.display   = 'none';
+		document.getElementById("hiddenFormSection8").style.display   = 'none';
+		document.getElementById("hiddenFormSection9").style.display   = 'none';
+		document.getElementById("hiddenFormSection10").style.display  = 'none';
+		document.getElementById("hiddenFormSection11").style.display  = 'none';
+		document.getElementById("hiddenFormSection12").style.display  = 'none';
+	} else if (document.getElementById("HapmapSetupOption").value == 1) {
+		// Two haploid strains.
+		document.getElementById("hiddenFormSection1").style.display   = 'none';
+		document.getElementById("hiddenFormSection2").style.display   = 'none';
+		document.getElementById("hiddenFormSection3").style.display   = 'none';
+		document.getElementById("hiddenFormSection4").style.display   = 'none';
+		document.getElementById("hiddenFormSection5").style.display   = 'inline';
+		document.getElementById("hiddenFormSection6").style.display   = 'inline';
+		document.getElementById("hiddenFormSection7").style.display   = 'inline';
+		document.getElementById("hiddenFormSection8").style.display   = 'inline';
+		document.getElementById("hiddenFormSection9").style.display   = 'none';
+		document.getElementById("hiddenFormSection10").style.display  = 'none';
+		document.getElementById("hiddenFormSection11").style.display  = 'none';
+		document.getElementById("hiddenFormSection12").style.display  = 'none';
 	}
 }
 </script>
