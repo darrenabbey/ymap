@@ -1165,6 +1165,7 @@ for chr_to_draw  = 1:length(chr_order)
 			set(gca,'YTickLabel',[]);
 			set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 			set(gca,'XTickLabel',[]);
+
 			if (first_chr)
 				% This section sets the Y-axis labelling.
 				switch ploidyBase
