@@ -266,8 +266,7 @@ if ($ext_new == "fastq") {
 			// long-reads: generate error.
 			unlink($projectPath.$name_first);
 			fwrite($logOutput, "\t\t| Long-reads identified.\n");
-			//$ext_new = "none4"; //YMAP1 doesn't process long-reads, so error code.
-			$ext_new = "fastq-l"; //YMAP2 does process long-reads, so file type.
+			$ext_new = "none4"; //YMAP1 doesn't process long-reads, so error code.
 		}
 	} else {
 		// format is wrong for a FASTQ file.
@@ -338,28 +337,6 @@ if ($ext_new == "fastq") {
 	fwrite($logOutput, "\t\t| This is a FASTQ file with short-read data, no further pre-processing is needed.\n");
 	fwrite($output, $name_new."\n");
 	$paired = 0;
-} else if ($ext_new == "fastq-l") {
-	fwrite($logOutput, "\t\t| This is a FASTQ file with long-read data, pre-process into simulated illumina FASTQ data.\n");
-
-	// Convert FASTQ to simulated-Illumina FASTQ.
-	$currentDir = getcwd();
-	chdir("../../users/".$user."/projects/".$project."/");
-	$newDir = getcwd();
-
-	fwrite($logOutput, "\t\t|\n");
-	fwrite($logOutput, "\t\t| calling directory : ".$currentDir."\n");
-	fwrite($logOutput, "\t\t| working directory : ".$newDir."/temp\n");
-	fwrite($logOutput, "\t\t| data file         : ".$newDir."/".$name_new."\n");
-	fwrite($logOutput, "\t\t|\n");
-	$null = shell_exec("sh ../../../../scripts_seqModules/FASTQ_to_Illumina.sh ".$newDir."/".$name_new." ".$newDir."/temp");
-
-	// delete original file.
-	unlink($newDir."/".$name_new);
-	fwrite($logOutput, "\t\t| File converted to simulated-Illumina FASTQ file, original deleted.\n");
-
-	fwrite($output, "output.fastq\n");
-	$paired = 0;
-	chdir($currentDir);
 } else if ($ext_new == "fasta") {
 	fwrite($logOutput, "\t\t| This is a FASTA file, pre-process into simulated illumina FASTQ data.\n");
 
