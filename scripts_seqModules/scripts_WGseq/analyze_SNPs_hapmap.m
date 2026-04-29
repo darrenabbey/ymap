@@ -18,9 +18,6 @@ LOH_verString          = 'v2';
 displayBREAKS          = true;
 referenceCHR           = 1;
 
-% Generate fittings Rsquared scatter plot figure.
-CNV_LOH_check(main_dir,user,genomeUser,project,parent_or_hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
-
 % Generate main SNP/LOH figure.
 LOH_hapmap_v4(main_dir,user,genomeUser,project,parent_or_hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 
@@ -29,7 +26,6 @@ hapmap = parent_or_hapmap;
 
 % Generate fireplot.
 allelic_ratios_WGseq(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
-
 
 fprintf('*--- End of ''analyze_SNPs.m'' was reached. ---*\n');
 end
