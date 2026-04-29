@@ -41,7 +41,7 @@ if (Make_figure == true)
 	ChrNum				= true;
 	show_annotations		= true;
 	analyze_rDNA			= true;
-	Standard_display                = true; %% not shown to user.
+	Standard_display                = false; %% not shown to user.
 	Linear_display			= true;
 	Linear_displayBREAKS		= false;
 	Low_quality_ploidy_estimate	= true;
@@ -186,12 +186,12 @@ if (Make_figure == true)
 	% Setup for linear-view figure generation.
 	%-------------------------------------------------------------------------------------------
 	if (Linear_display == true)
-		Linear_fig		   = figure();
-		Linear_genome_size   = sum(chr_size);
-		Linear_TickSize	  = -0.01;			  % negative for outside, percentage of longest chr figure.
-		maxY				 = ploidyBase*2;	   % maximum y-axis of chromosome cartoons.
-		maxY_highTop		 = ploidyBase*2*3;	 % maximum y-axis of region above chromosome cartoons.
-		Linear_left		  = Linear_left_start;  % used to track left end of current chromosome.
+		Linear_fig		= figure();
+		Linear_genome_size	= sum(chr_size);
+		Linear_TickSize		= -0.01;			  % negative for outside, percentage of longest chr figure.
+		maxY			= ploidyBase*2;	   % maximum y-axis of chromosome cartoons.
+		maxY_highTop		= ploidyBase*2*3;	 % maximum y-axis of region above chromosome cartoons.
+		Linear_left		= Linear_left_start;  % used to track left end of current chromosome.
 		axisLabelPosition_horiz = 0.01125;
 	end;
 	axisLabelPosition_vert = 0.01125;
