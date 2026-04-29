@@ -205,7 +205,6 @@ else
 
 	wait;
 fi
-fi
 if [ $hapmapInUse = 1 ]
 then
 	if [ -f $projectDirectory"trimmed_SNPs_v5.txt" ]
