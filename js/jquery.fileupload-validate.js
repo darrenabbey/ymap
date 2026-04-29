@@ -37,7 +37,7 @@
             always: true,
             // Options taken from the global options map:
             acceptFileTypes: '@',
-            maxFileSize: 20000000000,	// 20 GB = 20 000 000 000 bytes.
+            maxFileSize: 214748364800; // 200 GB.       // 20 GB = 20 000 000 bytes.
             minFileSize: '@',
             maxNumberOfFiles: '@',
             disabled: '@disableValidation'
@@ -85,8 +85,7 @@
                     settings = this.options,
                     file = data.files[data.index],
                     numberOfFiles = settings.getNumberOfFiles();
-                
-                
+
                 if (numberOfFiles && $.type(options.maxNumberOfFiles) === 'number' &&
                         numberOfFiles + data.files.length > options.maxNumberOfFiles) {
                     file.error = settings.i18n('maxNumberOfFiles');
