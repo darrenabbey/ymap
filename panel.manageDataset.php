@@ -353,19 +353,11 @@ if (isset($_SESSION['logged_on'])) {
 			// WGseq (short-read): [SAM/BAM/TXT]
 			echo "p_js.display_string[0] = 'Add : WGseq data (SAM/BAM/TXT)...';\n";
 			echo "p_js.dataFormat        = 'WGseq_single';\n";
-		} else if (($dataFormat == '2') || ($dataFormat == '2:0:0') || ($dataFormat == '2:0:1')) {
-			// WGseq (long-read): [FASTQ/ZIP/GZ]
-			echo "p_js.display_string[0] = 'Add : WGseq long-read data (FASTQ/ZIP/GZ)...';\n";
-			echo "p_js.dataFormat        = 'WGseq_long';\n";
-		} else if (($dataFormat == '2:2:0') || ($dataFormat == '2:2:1') || ($dataFormat == '2:3:0') || ($dataFormat == '2:3:1')) {
-			// WGseq (long-read): [SAM/BAM/TXT]
-			echo "p_js.display_string[0] = 'Add : WGseq data (SAM/BAM)...';\n";
-			echo "p_js.dataFormat        = 'WGseq_long';\n";
-		} else if (($dataFormat == '3:0:0') || ($dataFormat == '3:0:1')) {
+		} else if (($dataFormat == '2:0:0') || ($dataFormat == '2:0:1')) {
 			// ddRADseq : single-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Single-end-read ddRADseq data (FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.dataFormat        = 'ddRADseq_single';\n";
-		} else if (($dataFormat == '3:1:0') || ($dataFormat == '3:1:1')) {
+		} else if (($dataFormat == '2:1:0') || ($dataFormat == '2:1:1')) {
 			// ddRADseq : paired-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Paired-end-read ddRADseq data (1/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.display_string[1] = 'Add : Paired-end-read ddRADseq data (2/2; FASTQ/ZIP/GZ)...';\n";
@@ -374,10 +366,6 @@ if (isset($_SESSION['logged_on'])) {
 			// ddRADseq : [SAM/BAM/TXT]
 			echo "p_js.display_string[0] = 'Add : ddRADseq data (SAM/BAM/TXT)...';\n";
 			echo "p_js.dataFormat        = 'ddRADseq_single';\n";
-		} else if ($dataFormat == '4') {
-			// FASTA
-			echo "p_js.display_string[0] = 'Add : FASTA data...';\n";
-			echo "p_js.dataFormat        = 'FASTA';\n";
 		}
 	}
 	foreach($projectFolders_bulk_working as $key_=>$project) {      // frameContainer.p5_[$key] : in bulk-processing queue.
