@@ -8,7 +8,7 @@
 	// 	10 projects is double what is shown on-screen at once time.
 	//	User will need to reload page to refresh once those 10 are done.
 	$bulk_ui_projects_showAll = False;
-	$bulk_ui_projects_limit   = 10;
+	$bulk_ui_projects_limit   = 11;
 ?>
 <style type="text/css">
 	html * {
@@ -32,8 +32,7 @@
 		// getting the current size of the user folder in Gigabytes
 		$currentSize = getUserUsageSize($user);
 		// getting user quota in Gigabytes
-		$quota_ = getUserQuota($user);
-		if ($quota_ > $quota) {   $quota = $quota_;   }
+		$quota = getUserQuota($user);
 		// Setting boolean variable that will indicate whether the user has exceeded it's allocated space, if true the button to add new dataset will not appear
 		$exceededSpace = $quota > $currentSize ? FALSE : TRUE;
 		if ($exceededSpace) {
@@ -111,34 +110,43 @@
 		// Trim path from each folder string.
 		foreach($projectFolders as $key=>$folder) {   $projectFolders[$key] = str_replace($projectsDir,"",$folder);   }
 
-		// Split project list into ready/working/starting lists for sequential display.
-		$projectFolders_starting = array();
-		$projectFolders_bulk     = array();
-		$projectFolders_working  = array();
-		$projectFolders_complete = array();
+		// Split project list into ready/working/initiated lists for sequential display.
+		$projectFolders_complete     = array();
+		$projectFolders_bulk         = array();
+		$projectFolders_bulk_working = array();
+		$projectFolders_working      = array();
+		$projectFolders_initiated    = array();
 		foreach($projectFolders as $key=>$project) {
 			if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
 				array_push($projectFolders_complete,$project);
 			} else if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
-				array_push($projectFolders_bulk, $project);
+				if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
+					array_push($projectFolders_bulk_working, $project);
+				} else {
+					array_push($projectFolders_bulk, $project);
+				}
 			} else if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
 				array_push($projectFolders_working, $project);
 			} else if (is_dir("users/".$user."/projects/".$project)) {
-				array_push($projectFolders_starting,$project);
+				array_push($projectFolders_initiated,$project);
 			}
 		}
-		$userProjectCount_starting = count($projectFolders_starting);
-		$userProjectCount_bulk     = count($projectFolders_bulk);
-		$userProjectCount_working  = count($projectFolders_working);
-		$userProjectCount_complete = count($projectFolders_complete);
+		$userProjectCount_complete     = count($projectFolders_complete);
+		$userProjectCount_bulk         = count($projectFolders_bulk);
+		$userProjectCount_bulk_working = count($projectFolders_bulk_working);
+		$userProjectCount_working      = count($projectFolders_working);
+		$userProjectCount_initiated    = count($projectFolders_initiated);
 
 		// Sort bulk, working, and complete projects alphabetically.
-		array_multisort($projectFolders_bulk,     SORT_ASC, $projectFolders_bulk    );
-		array_multisort($projectFolders_working,  SORT_ASC, $projectFolders_working );
-		array_multisort($projectFolders_complete, SORT_ASC, $projectFolders_complete);
+		array_multisort($projectFolders_complete,     SORT_ASC, $projectFolders_complete    );
+		array_multisort($projectFolders_bulk,         SORT_ASC, $projectFolders_bulk        );
+		array_multisort($projectFolders_bulk_working, SORT_ASC, $projectFolders_bulk_working);
+		array_multisort($projectFolders_working,      SORT_ASC, $projectFolders_working     );
+		array_multisort($projectFolders_initiated,    SORT_ASC, $projectFolders_initiated   );
 		// Build new 'projectFolders' array;
 		$projectFolders   = array();
-		$projectFolders   = array_merge($projectFolders_starting, $projectFolders_bulk, $projectFolders_working, $projectFolders_complete);
+		$projectFolders   = array_merge($projectFolders_initiated, $projectFolders_bulk_working, $projectFolders_bulk, $projectFolders_working, $projectFolders_complete);
+		//$projectFolders   = array_merge($projectFolders_complete, $projectFolders_bulk, $projectFolders_bulk_working, $projectFolders_working, $projectFolders_initiated);
 		$userProjectCount = count($projectFolders);
 		// displaying size if it's bigger then 0
 		if ($currentSize > 0) {
@@ -149,34 +157,43 @@
 		echo "<br>\n\t\t\t\t";
 
 
-		foreach($projectFolders_starting as $key_=>$project) {
-			// add starting bulk/other projects to user interface.
+		// 1: project complete.
+		// 2: project working.
+		// 3: project initiated, quota not filled.
+		// 4: project initiated, quota filled.
+		// 5: project in bulk-processing-queue.
+		foreach($projectFolders_initiated as $key_=>$project) {
+			// add initiated bulk/other projects to user interface.
 			if (!$exceededSpace) {
 				printProjectInfo("3", $key_, "CC0000", "FFFFFF", $user, $project);
 			} else {
 				printProjectInfo("4", $key_, "888888", "FFFFFF", $user, $project);
 			}
+		} //dragon
+		foreach($projectFolders_bulk_working as $key_=>$project) {
+			// add working bulk projects to user interface.
+			printProjectInfo("5", $key_ + $userProjectCount_initiated, "000000", "CCCCCC", $user, $project);
 		}
 		foreach($projectFolders_bulk as $key_=>$project) {
 			// add working bulk projects to user interface.
-			printProjectInfo("5", $key_ + count($projectFolders_starting), "000000", "CCCCCC", $user, $project);
+			printProjectInfo("5", $key_ + $userProjectCount_initiated + $userProjectCount_bulk_working, "000000", "CCCCCC", $user, $project);
 		}
 		foreach($projectFolders_working as $key_=>$project) {
 			// add other working projects to user interface.
-			printProjectInfo("2", $key_ + count($projectFolders_bulk) + count($projectFolders_starting), "BB9900", "FFFFFF", $user, $project);
+			printProjectInfo("2", $key_ + $userProjectCount_initiated + $userProjectCount_bulk_working + $userProjectCount_bulk, "BB9900", "FFFFFF", $user, $project);
 		}
 		foreach($projectFolders_complete as $key_=>$project) {
 			// add complete bulk/other projects to user interface.
 			if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
-				printProjectInfo("1", $key_ + count($projectFolders_bulk)+ count($projectFolders_starting) + count($projectFolders_working), "000000", "CCFFCC", $user, $project);
+				printProjectInfo("1", $key_ + $userProjectCount_initiated + $userProjectCount_bulk_working + $userProjectCount_bulk + $userProjectCount_working, "000000", "CCFFCC", $user, $project);
 			} else {
-				printProjectInfo("1", $key_ + count($projectFolders_bulk)+ count($projectFolders_starting) + count($projectFolders_working), "00CC00", "FFFFFF", $user, $project);
+				printProjectInfo("1", $key_ + $userProjectCount_initiated + $userProjectCount_bulk_working + $userProjectCount_bulk + $userProjectCount_working, "00CC00", "FFFFFF", $user, $project);
 			}
 		}
 		// 1: project complete.
 		// 2: project working.
-		// 3: project starting, quota not filled.
-		// 4: project starting, quota filled.
+		// 3: project initiated, quota not filled.
+		// 4: project initiated, quota filled.
 		// 5: project in bulk-processing-queue.
 		echo "\n";
 ?>
@@ -192,8 +209,8 @@
 		// $frameContainerIx values:
 		//	1: project complete.
 		//	2: project working.
-		//	3: project starting, quota not filled.
-		//	4: project starting, quota filled.
+		//	3: project initiated, quota not filled.
+		//	4: project initiated, quota filled.
 		//	5: project in bulk-processing-queue.
 
 		$projectNameFile = "users/".$user."/projects/".$project."/name.txt";
@@ -210,7 +227,7 @@
 				echo "<button id='project_minimize_".$key."' type='button' onclick=\"parent.minimizeProjectConfirmation('".$project."','".$key."');\">Minimize</button>";
 			}
 		}
-		echo $projectNameString;
+		echo " <div style='display: inline-block'> ".$projectNameString." </div>";
 
 		// checks condensed log to see if initial processing is done.
 		if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
@@ -294,7 +311,7 @@ var systemProjectCount = "<?php echo $systemProjectCount; ?>";
 //| Uploading data |
 //'----------------'
 if (isset($_SESSION['logged_on'])) {
-	foreach($projectFolders_starting as $key_=>$project) {	// frameContainer.p3_[$key] : starting.
+	foreach($projectFolders_initiated as $key_=>$project) {	// frameContainer.p3_[$key] : initiated.
 		$key      = $key_;
 		$project  = $projectFolders[$key];
 		// Read in dataFormat string for project.
@@ -324,35 +341,68 @@ if (isset($_SESSION['logged_on'])) {
 			echo "p_js.display_string[0] = 'Add : SnpCgh array data...';\n";
 			echo "p_js.dataFormat        = 'SnpCghArray';\n";
 		} else if (($dataFormat == '1:0:0') || ($dataFormat == '1:0:1')) {
-			// WGseq : single-end [FASTQ/ZIP/GZ]
+			// WGseq (short-read): single-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Single-end-read WGseq data (FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.dataFormat        = 'WGseq_single';\n";
 		} else if (($dataFormat == '1:1:0') || ($dataFormat == '1:1:1')) {
-			// WGseq : paired-end [FASTQ/ZIP/GZ]
+			// WGseq (short-read): paired-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Paired-end-read WGseq data (1/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.display_string[1] = 'Add : Paired-end-read WGseq data (2/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.dataFormat        = 'WGseq_paired';\n";
 		} else if (($dataFormat == '1:2:0') || ($dataFormat == '1:2:1') || ($dataFormat == '1:3:0') || ($dataFormat == '1:3:1')) {
-			// WGseq : [SAM/BAM/TXT]
+			// WGseq (short-read): [SAM/BAM/TXT]
 			echo "p_js.display_string[0] = 'Add : WGseq data (SAM/BAM/TXT)...';\n";
 			echo "p_js.dataFormat        = 'WGseq_single';\n";
-		} else if (($dataFormat == '2:0:0') || ($dataFormat == '2:0:1')) {
+		} else if (($dataFormat == '2') || ($dataFormat == '2:0:0') || ($dataFormat == '2:0:1')) {
+			// WGseq (long-read): [FASTQ/ZIP/GZ]
+			echo "p_js.display_string[0] = 'Add : WGseq long-read data (FASTQ/ZIP/GZ)...';\n";
+			echo "p_js.dataFormat        = 'WGseq_long';\n";
+		} else if (($dataFormat == '2:2:0') || ($dataFormat == '2:2:1') || ($dataFormat == '2:3:0') || ($dataFormat == '2:3:1')) {
+			// WGseq (long-read): [SAM/BAM/TXT]
+			echo "p_js.display_string[0] = 'Add : WGseq data (SAM/BAM)...';\n";
+			echo "p_js.dataFormat        = 'WGseq_long';\n";
+		} else if (($dataFormat == '3:0:0') || ($dataFormat == '3:0:1')) {
 			// ddRADseq : single-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Single-end-read ddRADseq data (FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.dataFormat        = 'ddRADseq_single';\n";
-		} else if (($dataFormat == '2:1:0') || ($dataFormat == '2:1:1')) {
+		} else if (($dataFormat == '3:1:0') || ($dataFormat == '3:1:1')) {
 			// ddRADseq : paired-end [FASTQ/ZIP/GZ]
 			echo "p_js.display_string[0] = 'Add : Paired-end-read ddRADseq data (1/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.display_string[1] = 'Add : Paired-end-read ddRADseq data (2/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.dataFormat        = 'ddRADseq_paired';\n";
-		} else if (($dataFormat == '2:2:0') || ($dataFormat == '2:2:1') || ($dataFormat == '2:3:0') || ($dataFormat == '2:3:1')) {
+		} else if (($dataFormat == '3:2:0') || ($dataFormat == '3:2:1') || ($dataFormat == '3:3:0') || ($dataFormat == '3:3:1')) {
 			// ddRADseq : [SAM/BAM/TXT]
 			echo "p_js.display_string[0] = 'Add : ddRADseq data (SAM/BAM/TXT)...';\n";
 			echo "p_js.dataFormat        = 'ddRADseq_single';\n";
+		} else if ($dataFormat == '4') {
+			// FASTA
+			echo "p_js.display_string[0] = 'Add : FASTA data...';\n";
+			echo "p_js.dataFormat        = 'FASTA';\n";
 		}
 	}
+	foreach($projectFolders_bulk_working as $key_=>$project) {      // frameContainer.p5_[$key] : in bulk-processing queue.
+		$key      = $key_ + $userProjectCount_initiated;
+		$project  = $projectFolders[$key];
+		echo "\n// javascript for project #".$key.", '".$project."'\n";
+		echo "var el_p            = document.getElementById('frameContainer.p5_".$key."');\n";
+		if ($bulk_ui_projects_showAll) {
+			echo "el_p.innerHTML      = '<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+			echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
+		} else {
+			if ($key_ < $bulk_ui_projects_limit) {
+				echo "el_p.innerHTML      = '<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+				echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
+			} else {
+			}
+		}
+		echo "var p_iframe        = document.getElementById('p_".$key."');\n";
+		echo "var p_js            = p_iframe.contentWindow;\n";
+		echo "p_js.user           = \"".$user."\";\n";
+		echo "p_js.project        = \"".$project."\";\n";
+		echo "p_js.key            = \"p_".$key."\";\n";
+	}
 	foreach($projectFolders_bulk as $key_=>$project) {      // frameContainer.p5_[$key] : in bulk-processing queue.
-		$key      = $key_ + $userProjectCount_starting;
+		$key      = $key_ + $userProjectCount_initiated + $userProjectCount_bulk_working;
 		$project  = $projectFolders[$key];
 		echo "\n// javascript for project #".$key.", '".$project."'\n";
 		echo "var el_p            = document.getElementById('frameContainer.p5_".$key."');\n";
@@ -373,7 +423,7 @@ if (isset($_SESSION['logged_on'])) {
 		echo "p_js.key            = \"p_".$key."\";\n";
 	}
 	foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.
-		$key      = $key_ + $userProjectCount_starting + $userProjectCount_bulk;
+		$key      = $key_ + $userProjectCount_initiated + $userProjectCount_bulk_working + $userProjectCount_bulk;
 		$project  = $projectFolders[$key];
 		echo "\n// javascript for project #".$key.", '".$project."'\n";
 		echo "var el_p            = document.getElementById('frameContainer.p2_".$key."');\n";
