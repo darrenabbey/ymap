@@ -362,7 +362,7 @@ if (isset($_SESSION['logged_on'])) {
 			echo "p_js.display_string[0] = 'Add : Paired-end-read ddRADseq data (1/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.display_string[1] = 'Add : Paired-end-read ddRADseq data (2/2; FASTQ/ZIP/GZ)...';\n";
 			echo "p_js.dataFormat        = 'ddRADseq_paired';\n";
-		} else if (($dataFormat == '3:2:0') || ($dataFormat == '3:2:1') || ($dataFormat == '3:3:0') || ($dataFormat == '3:3:1')) {
+		} else if (($dataFormat == '2:2:0') || ($dataFormat == '2:2:1') || ($dataFormat == '2:3:0') || ($dataFormat == '2:3:1')) {
 			// ddRADseq : [SAM/BAM/TXT]
 			echo "p_js.display_string[0] = 'Add : ddRADseq data (SAM/BAM/TXT)...';\n";
 			echo "p_js.dataFormat        = 'ddRADseq_single';\n";
