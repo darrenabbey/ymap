@@ -83,16 +83,6 @@
 					</div>
 				</td></tr>
 				<tr bgcolor="#CCFFCC"><td>
-                                        <div id="hiddenFormSection2a" style="display:inline">
-                                                <input type="checkbox" name="indelrealign" value="False" disabled="disabled">Perform Indel-realignment <font color="red" size="2"><b>(Disabled, pending testing.)</b></font><br>
-                                        </div>
-				</td><td>
-					<div id="hiddenFormSection2b" style="display:inline">
-						Enable only if required, after testing without.<br>
-						Disabled resulted in 1% spurious SNPs in test case, with no visual impact, but shortened analysis by ~3 hours.
-					</div>
-				</td></tr>
-				<tr bgcolor="#CCFFCC"><td>
 					<div id="hiddenFormSection3" style="display:inline">
 						<label for="genome">Reference genome : </label><select name="genome" id="genome" onchange="UpdateHapmap(); UpdateHapmapList(); UpdateParentList()">
 					<?php
