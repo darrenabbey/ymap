@@ -25,7 +25,7 @@
 		}
 	</style>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
-	<title>YMAP2</title>
+	<title>YMAP</title>
 
 <!-- Used by secondary pages to update page on completion of processing. --!>
 	<script type="text/javascript">
