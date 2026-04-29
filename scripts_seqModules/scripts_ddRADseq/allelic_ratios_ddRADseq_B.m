@@ -1,7 +1,5 @@
 function [] = allelic_ratios_ddRADseq_B(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
-graphics_toolkit gnuplot;
 addpath('../');
-
 workingDir = [main_dir 'users/' user '/projects/' project '/'];
 
 %%=========================================================================
@@ -178,21 +176,10 @@ fprintf(['\nEuploid base = "' num2str(ploidyBase) '"\n']);
 
 % basic plot parameters not defined per genome.
 TickSize         = -0.005;  %negative for outside, percentage of longest chr figure.
+bases_per_bin    = max(chr_size)/700;
 maxY             = 1; % ploidyBase*2;
 cen_tel_Xindent  = 5;
 cen_tel_Yindent  = maxY/5;
-
-%% Load CNV and SNP figure resolutions.
-if (exist([genomeDir 'resolution.CNV.txt],'file') == 0)
-	bases_per_bin           = max(chr_size)/700;
-else
-	bases_per_bin           = max(chr_size)/str2num(fileread([genomeDir 'resolution.CNV.txt]));
-end;
-if (exist([genomeDir 'resolution.SNPs.txt],'file') == 0)
-	bases_per_bin_SNP       = max(chr_size)/700;
-else
-	bases_per_bin_SNP       = max(chr_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt]));
-end;
 
 
 %% =========================================================================================

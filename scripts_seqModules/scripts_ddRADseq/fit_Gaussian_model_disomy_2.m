@@ -1,6 +1,5 @@
 function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c] = fit_Gaussian_model_disomy_2(workingDir, saveName, data,locations,init_width,func_type)
 	% attempt to fit a 3-gaussian model to data.
-graphics_toolkit gnuplot;
 
 %%=========================================================================
 % Load project figure version.

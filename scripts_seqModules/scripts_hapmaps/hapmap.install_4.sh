@@ -5,7 +5,7 @@ umask 007;
 
 ### define script file locations.
 user=$1;
-HapmapSetupOption=$2;
+referencePloidy=$2;
 project1=$3;
 project2=$4;
 hapmap=$5;
@@ -35,7 +35,7 @@ echo "" >> $logName;
 echo "Running 'scripts_seqModules/scripts_hapmaps/hapmap.install_4.sh'" >> $logName;
 echo "Variables passed via command-line from 'scripts_seqModules/scripts_hapmaps/hapmap.install_3.php' :" >> $logName;
 echo "    user                        = "$user >> $logName;
-echo "    HapmapSetupOption           = "$HapmapSetupOption >> $logName;
+echo "    referencePloidy             = "$referencePloidy >> $logName;
 echo "    project1 (parent)           = "$project1 >> $logName;
 echo "    project2 (child)            = "$project2 >> $logName;
 echo "    hapmap                      = "$hapmap >> $logName;
@@ -95,9 +95,9 @@ echo "    genome directory            = '"$genomeDirectory"'" >> $logName;
 # Get reference FASTA file name from "reference.txt";
 genomeFASTA=$(head -n 1 $genomeDirectory"reference.txt");
 echo "    genome FASTA file           = '"$genomeFASTA"'" >> $logName;
-echo "    hapmap setup option         = '"$HapmapSetupOption"'" >> $logName;
+echo "    reference ploidy            = '"$referencePloidy"'" >> $logName;
 
-if [ "$HapmapSetupOption" = "2" ]
+if [ "$referencePloidy" = "2" ]
 then
 	##==============================================================================
 	## For a diploid reference hapmap : Move parent SNP data to hapmap directory and

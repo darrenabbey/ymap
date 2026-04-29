@@ -100,18 +100,18 @@ ddRADseq_FASTA=$FASTAname"."$RestrctionEnzymes".fasta";                        #
 
 
 ##==============================================================================
-## Generate script to re-run terminal visualization Matlab code.
+## Generate script to re-run terminal visualization octave code.
 ##------------------------------------------------------------------------------
 echo "#======================================#" >> $logName;
 echo "# Re-perform visualization of dataset. #" >> $logName;
 echo "#======================================#" >> $logName;
 
-echo "\tGenerating MATLAB script to perform CNV analysis of dataset, with GC-correction." >> $logName;
+echo "\tGenerating octave script to perform CNV analysis of dataset, with GC-correction." >> $logName;
 outputName=$projectDirectory"processing_Rerun.m";
 echo "\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing_Rerun()" > $outputName;
-echo "\tdiary('"$projectDirectory"matlab.rerun_visualization.log');" >> $outputName;
+echo "\tdiary('"$projectDirectory"octave.rerun_visualization.log');" >> $outputName;
 echo "\tcd "$main_dir"scripts_seqModules/scripts_ddRADseq;" >> $outputName;
 
 
@@ -124,7 +124,7 @@ echo "\tanalyze_CNV_SNPs_RADseq('$main_dir','$user','$genomeUser','$project','$p
 
 echo "end" >> $outputName;
 
-echo "\tCalling MATLAB." >> $logName;
-$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;"  2>> $logName;
-echo "\tMATLAB log from redo of visualization.." >> $logName;
-sed 's/^/\t\t|/;' $projectDirectory"matlab.rerun_visualization.log" >> $logName;
+echo "\tCalling octave." >> $logName;
+$octave_exec $outputName  2>> $logName;
+echo "\toctave log from redo of visualization.." >> $logName;
+sed 's/^/\t\t|/;' $projectDirectory"octave.rerun_visualization.log" >> $logName;

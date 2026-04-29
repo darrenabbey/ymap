@@ -1,5 +1,4 @@
 function [] = ChARM_v4(project,user,genome,genomeUser,main_dir)
-graphics_toolkit gnuplot;
 addpath('../');
 
 %% =========================================================================================
@@ -96,18 +95,8 @@ end;
 
 num_chrs = length(chr_size);
 
-%% Load CNV and SNP figure resolutions.
-if (exist([genomeDir 'resolution.CNV.txt],'file') == 0)
-	bases_per_bin           = max(chr_size)/700;
-else
-	bases_per_bin           = max(chr_size)/str2num(fileread([genomeDir 'resolution.CNV.txt]));
-end;
-if (exist([genomeDir 'resolution.SNPs.txt],'file') == 0)
-	bases_per_bin_SNP       = max(chr_size)/700;
-else
-	bases_per_bin_SNP       = max(chr_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt]));
-end;
-
+%bases_per_bin              = 5000;
+bases_per_bin               = max(chr_size)/700;
 chr_length_scale_multiplier	= 1/bases_per_bin;
 
 

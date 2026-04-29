@@ -11,8 +11,7 @@ def processLine(entry_line):
 	#       ChrA_C_glabrata_CBS138   47      38      A     38   0    0    0
 	#       ChrA_C_glabrata_CBS138   48      39      A     39   0    0    0
 
-#	parent_line = string.strip(entry_line);
-	parent_line = entry_line.strip();
+	parent_line = string.strip(entry_line);
 	parent_line = parent_line.split('\t');
 	P_chr_name  = parent_line[0];   # chr name of bp.          : Ca21chrR_C_albicans_SC5314
 	P_position  = parent_line[1];   # chr position of bp.      : 2286371
@@ -189,10 +188,10 @@ current_fragment = 0;
 log_count        = 0;
 log_offset       = 0;
 
-print ('### Chromosomes of interest : ');
+print '### Chromosomes of interest : '
 for x in range(0,chrCount):
 	if (chrNums[x] != 0):
-		print ('### \t' + str(x+1) + ' : ' + str(chrName[x]));
+		print '### \t' + str(x+1) + ' : ' + str(chrName[x]);
 
 with open(logName, "a") as myfile:
 	myfile.write("|\tGathering read coverage data for each fragment.\n");
@@ -201,7 +200,7 @@ with open(logName, "a") as myfile:
 data1 = open(inputFile1,"r");
 data2 = open(inputFile2,"r");
 
-print ('### Data lines for each het locus in parent : [chromosome_name, bp_coordinate, allele_1, allele_2]');
+print '### Data lines for each het locus in parent : [chromosome_name, bp_coordinate, allele_1, allele_2]'
 
 # Process 'SNP_CNV_v1.txt' file for both parents, line by line... while checking for missing data.
 line1 = data1.readline();
@@ -228,18 +227,18 @@ while (error_endOfFile == False):
 	P1_chrID,P1_chrName,P1_position,P1_countA,P1_countT,P1_countG,P1_countC = processLine(line1);
 	P2_chrID,P2_chrName,P2_position,P2_countA,P2_countT,P2_countG,P2_countC = processLine(line2);
 
-#	print ('A ' + P1_chrName +'\t'+ str(P1_position) +'\t'+ P1_countA +':'+ P1_countT +':'+ P1_countG +':'+ P1_countC);
-#	print ('A ' + P2_chrName +'\t'+ str(P2_position) +'\t'+ P2_countA +':'+ P2_countT +':'+ P2_countG +':'+ P2_countC);
+#	print 'A ' + P1_chrName +'\t'+ str(P1_position) +'\t'+ P1_countA +':'+ P1_countT +':'+ P1_countG +':'+ P1_countC
+#	print 'A ' + P2_chrName +'\t'+ str(P2_position) +'\t'+ P2_countA +':'+ P2_countT +':'+ P2_countG +':'+ P2_countC
 
 	## Ensure that we're at the same chromosome in each file.
 	#  Files are sorted by chromosome, with increasing chromosome IDs.
 	#  If file load line hits the end of the file, then break out of the loops, as we're
 	#      done with file processing.
-#	print ('place 1');
-	while (P1_chrID != P2_chrID):
-#		print ('place 2');
+#	print 'place 1'
+	while (P1_chrID <> P2_chrID):
+#		print 'place 2'
 		while (P1_chrID < P2_chrID):
-	#		print ('place 3');
+	#		print 'place 3'
 			# load a line from inputFile1.
 			line1 = data1.readline();
 			if not line1: # EOF 1
@@ -247,7 +246,7 @@ while (error_endOfFile == False):
 				break;
 			P1_chrID,P1_chrName,P1_position,P1_countA,P1_countT,P1_countG,P1_countC = processLine(line1);
 		while (P2_chrID < P1_chrID):
-	#		print ('place 4');
+	#		print 'place 4'
 			# load a line from inputFile2.
 			line2 = data2.readline();
 			if not line2: # EOF 2
@@ -266,29 +265,29 @@ while (error_endOfFile == False):
 	#  If file load line hits a new chromosome, then break
 	error_endOfFile = False;
 	error_endOfChr  = False;
-	# print ('place 5');
-	while (P1_position != P2_position):
-	#	print ('place 6');
+	# print 'place 5'
+	while (P1_position <> P2_position):
+	#	print 'place 6'
 		while (P1_position < P2_position):
-	#		print ('place 7');
+	#		print 'place 7'
 			# load a line from inputFile1.
 			line1 = data1.readline();
 			if not line1: # endOfFile 1
 				error_endOfFile = True;
 				break;
 			P1_chrID,P1_chrName,P1_position,P1_countA,P1_countT,P1_countG,P1_countC = processLine(line1);
-			if (P1_chrID != P2_chrID): # endOfChr 1
+			if (P1_chrID <> P2_chrID): # endOfChr 1
 				error_endOfChr = True;
 				break;
 		while (P2_position < P1_position):
-	#		print ('place 8');
+	#		print 'place 8'
 			# load a line from inputFile2.
 			line2 = data2.readline();
 			if not line2: # endOfFile 2
 				loop_eror = True;
 				break;
 			P2_chrID,P2_chrName,P2_position,P2_countA,P2_countT,P2_countG,P2_countC = processLine(line2);
-			if (P1_chrID != P2_chrID): # endOfChr 2
+			if (P1_chrID <> P2_chrID): # endOfChr 2
 				error_endOfChr = True;
 				break;
 		if error_endOfFile:
@@ -296,7 +295,7 @@ while (error_endOfFile == False):
 		if error_endOfChr:
 			break;
 	# End of while loop that registers file pointer to coordinate along chromosome.
-	# print ('place 9');
+	# print 'place 9'
 	if error_endOfFile:
 		break;
 
@@ -317,7 +316,7 @@ while (error_endOfFile == False):
 	else:
 		P2_allelicRatio = max(P2_list)/float(sum(P2_list));
 	if not ((P1_allelicRatio < 0.5) or (P2_allelicRatio < 0.5)):
-	#	print ('place 10');
+	#	print 'place 10'
 		# At this time, any loci which appear to be heterozygous in either haploid parent will have
 		# been excluded. Such sites are problematic and likely due to duplicated genes/regions within
 		# the genome. Such 'SNPs' aren't useful in defining the haplotype map.
@@ -329,7 +328,7 @@ while (error_endOfFile == False):
 		P2_sortedAlleles = sorted(P2_alleleData, key=lambda alleleDatum: alleleDatum[0]); # sort alleles by copy number.
 		P2_majorAllele   = P2_sortedAlleles[3][1];
 		if not (P1_majorAllele == P2_majorAllele):
-	#		print ('place 11');
+	#		print 'place 11'
 			# At this point, any loci which are homozygous and identical in both haploid parents will have
 			# been excluded. Such sites are of no use in defining the haplotype map differences between the
 			# haploid parents.
@@ -341,9 +340,9 @@ while (error_endOfFile == False):
 			#	2) baseCall_1    : allele in haplotype 'a', from dataset1.
 			#	3) baseCall_2    : allele in haplotype 'b', from dataset2.
 			if P1_chrID!=0:
-				print (P1_chrName + '\t' + str(P1_position) + '\t' + P1_majorAllele + '\t' + P2_majorAllele + '\t0');
-				# print (P1_chrName +'\t'+ str(P1_position) +'\t['+ str(P1_countA) +','+ str(P1_countT) +','+ str(P1_countG) +','+ str(P1_countC) +']:['+ str(P2_countA) +','+ str(P2_countT) +','+ str(P2_countG) +','+ str(P2_countC) +']\t'+ P1_majorAllele +'\t'+ P2_majorAllele);
-				# print ('{'+ P1_sortedAlleles[0][1] +','+ P1_sortedAlleles[1][1] +','+ P1_sortedAlleles[2][1] +','+ P1_sortedAlleles[3][1] +'}:{'+ P2_sortedAlleles[0][1] +','+ P2_sortedAlleles[1][1] +','+ P2_sortedAlleles[2][1] +','+ P2_sortedAlleles[3][1] +'}');
+				print P1_chrName + '\t' + str(P1_position) + '\t' + P1_majorAllele + '\t' + P2_majorAllele + '\t0';
+				# print P1_chrName +'\t'+ str(P1_position) +'\t['+ str(P1_countA) +','+ str(P1_countT) +','+ str(P1_countG) +','+ str(P1_countC) +']:['+ str(P2_countA) +','+ str(P2_countT) +','+ str(P2_countG) +','+ str(P2_countC) +']\t'+ P1_majorAllele +'\t'+ P2_majorAllele
+				# print '{'+ P1_sortedAlleles[0][1] +','+ P1_sortedAlleles[1][1] +','+ P1_sortedAlleles[2][1] +','+ P1_sortedAlleles[3][1] +'}:{'+ P2_sortedAlleles[0][1] +','+ P2_sortedAlleles[1][1] +','+ P2_sortedAlleles[2][1] +','+ P2_sortedAlleles[3][1] +'}'
 				# Final column of '0' is added to indicate no need to correct phasing.
 	line1 = data1.readline();
 	if not line1: # EOF 1
@@ -358,7 +357,7 @@ while (error_endOfFile == False):
 # End of code section to output information about parental heterozygous loci. 
 #============================================================================================================
 
-print ('### End of preprocessed parental SNP data.');
+print '### End of preprocessed parental SNP data.'
 
 with open(logName, "a") as myfile:
 	myfile.write("|\tTime to process = " + str(time.process_time()-t0) + "\n")

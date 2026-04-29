@@ -1,5 +1,4 @@
 function [] = allelic_ratios_ddRADseq_D(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
-graphics_toolkit gnuplot;
 addpath('../');
 
 

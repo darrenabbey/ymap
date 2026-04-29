@@ -138,26 +138,26 @@ echo "#==========================#" >> $logName;
 echo "Performing CGH analysis." >> $condensedLog;
 echo "Analyzing and mapping CNVs." >> $condensedLog;
 
-echo "\tGenerating MATLAB script to perform CNV analysis of dataset, with GC-correction." >> $logName;
+echo "\tGenerating octave script to perform CNV analysis of dataset, with GC-correction." >> $logName;
 outputName=$projectDirectory"processing1.m";
 echo "\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing1()" > $outputName;
-echo "\tdiary('"$projectDirectory"matlab.CNV_and_GCbias.log');" >> $outputName;
+echo "\tdiary('"$projectDirectory"octave.CNV_and_GCbias.log');" >> $outputName;
 echo "\tcd "$main_dir"scripts_seqModules/scripts_ddRADseq;" >> $outputName;
 echo "\tanalyze_CNVs_RADseq_3('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 
 echo "\t|\tfunction [] = processing1()" >> $logName;
-echo "\t|\t\tdiary('"$projectDirectory"matlab.CNV_and_GCbias.log');" >> $logName;
+echo "\t|\t\tdiary('"$projectDirectory"octave.CNV_and_GCbias.log');" >> $logName;
 echo "\t|\t\tcd "$main_dir"scripts_seqModules/scripts_ddRADseq;" >> $logName;
 echo "\t|\t\tanalyze_CNVs_RADseq_3('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 echo "\t|\tend" >> $logName;
 
-echo "\tCalling MATLAB." >> $logName;
-$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;" 2>> $logName;
-echo "\tMATLAB log from CNV analysis." >> $logName;
-sed 's/^/\t\t|/;' $projectDirectory"matlab.CNV_and_GCbias.log" >> $logName;
+echo "\tCalling octave." >> $logName;
+$octave_exec $outputName 2>> $logName;
+echo "\toctave log from CNV analysis." >> $logName;
+sed 's/^/\t\t|/;' $projectDirectory"octave.CNV_and_GCbias.log" >> $logName;
 
 
 ##==============================================================================
@@ -175,29 +175,29 @@ else
 fi
 
 echo "Mapping SNPs." >> $condensedLog;
-echo "\tGenerating MATLAB script to perform SNP analysis of dataset." >> $logName;
+echo "\tGenerating octave script to perform SNP analysis of dataset." >> $logName;
 outputName=$projectDirectory"processing3.m";
 echo "\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing3()" > $outputName;
-echo "\tdiary('"$projectDirectory"matlab.SNP_analysis.log');" >> $outputName;
+echo "\tdiary('"$projectDirectory"octave.SNP_analysis.log');" >> $outputName;
 echo "\tcd "$main_dir"scripts_seqModules/scripts_ddRADseq;" >> $outputName;
 echo "\tanalyze_SNPs_RADseq('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 
 echo "\t|\tfunction [] = processing3()" >> $logName;
-echo "\t|\t\tdiary('"$projectDirectory"matlab.SNP_analysis.log');" >> $logName;
+echo "\t|\t\tdiary('"$projectDirectory"octave.SNP_analysis.log');" >> $logName;
 echo "\t|\t\tcd "$main_dir"scripts_seqModules/scripts_ddRADseq;" >> $logName;
 echo "\t|\t\tanalyze_SNPs_RADseq('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 echo "\t|\tend" >> $logName;
 
-echo "\tCalling MATLAB." >> $logName;
+echo "\tCalling octave." >> $logName;
 echo "================================================================================================";
 echo "== SNP analysis ================================================================================";
 echo "================================================================================================";
-$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;" 2>> $logName;
-echo "\tMATLAB log from SNP analysis." >> $logName;
-sed 's/^/\t\t|/;' $projectDirectory"matlab.SNP_analysis.log" >> $logName;
+$octave_exec $outputName 2>> $logName;
+echo "\toctave log from SNP analysis." >> $logName;
+sed 's/^/\t\t|/;' $projectDirectory"octave.SNP_analysis.log" >> $logName;
 
 
 #===============================================================================
@@ -208,25 +208,25 @@ echo "# Generate final combined figures. #" >> $logName;
 echo "#==================================#" >> $logName;
 echo "Generating final figures." >> $condensedLog;
 
-echo "\tGenerating MATLAB script to generate combined CNV and SNP analysis figures from previous calculations." >> $logName;
+echo "\tGenerating octave script to generate combined CNV and SNP analysis figures from previous calculations." >> $logName;
 outputName=$projectDirectory"processing4.m";
 echo "\toutputName = "$outputName >> $logName;
 
 echo "function [] = processing4()" > $outputName;
-echo "\tdiary('"$projectDirectory"matlab.final_figs.log');" >> $outputName;
+echo "\tdiary('"$projectDirectory"octave.final_figs.log');" >> $outputName;
 echo "\tcd "$main_dir"scripts_seqModules/scripts_ddRADseq;" >> $outputName;
 echo "\tanalyze_CNV_SNPs_RADseq('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 
 echo "\t|\tfunction [] = processing4()" >> $logName;
-echo "\t|\t\tdiary('"$projectDirectory"matlab.final_figs.log');" >> $logName;
+echo "\t|\t\tdiary('"$projectDirectory"octave.final_figs.log');" >> $logName;
 echo "\t|\t\tcd "$main_dir"scripts_seqModules/scripts_ddRADseq;" >> $logName;
 echo "\t|\t\tanalyze_CNV_SNPs_RADseq('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 echo "\t|\tend" >> $logName;
 
-echo "\tCalling MATLAB.   (Log will be appended here after completion.)" >> $logName;
-$matlab_exec -nosplash -nodesktop -r "run "$outputName"; exit;" 2>> $logName;
-sed 's/^/\t\t|/;' $projectDirectory"matlab.final_figs.log" >> $logName;
+echo "\tCalling octave.   (Log will be appended here after completion.)" >> $logName;
+$octave_exec $outputName 2>> $logName;
+sed 's/^/\t\t|/;' $projectDirectory"octave.final_figs.log" >> $logName;
 
 
 ##==============================================================================
