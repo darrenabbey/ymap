@@ -41,7 +41,7 @@ if (Make_figure == true)
 	ChrNum				= true;
 	show_annotations		= true;
 	analyze_rDNA			= true;
-	Standard_display                = false;
+	Standard_display                = true; %% not shown to user.
 	Linear_display			= true;
 	Linear_displayBREAKS		= false;
 	Low_quality_ploidy_estimate	= true;
