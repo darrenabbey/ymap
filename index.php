@@ -25,7 +25,7 @@
 		}
 	</style>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
-	<title>Y-MAP</title>
+	<title>YMAP2</title>
 
 <!-- Used by secondary pages to update page on completion of processing. --!>
 	<script type="text/javascript">
@@ -168,11 +168,11 @@
 <body>
 <table width="100%"><tr>
 	<td width="25%" align="center" style="max-height:100%">
-		<table width="100%" height="300px"><tr valign="top"><td>
+		<table width="100%" height="300px"><tr valign="top" align="center"><td>
 		<img src="images/Logo_title.3.png" alt="YMAP; Yeast Mapping Analysis Pipeline"><br><br>
 		</td></tr><tr valign="bottom"><td align="middle">
 <font size='2'>
-	For support, please contact us at <a href="mailto:darrenabbey.ymap@gmail.com">darrenabbey.ymap@gmail.com</a><br/><br/>
+	For support, please contact us at <a href="mailto:<?php print($admin_email) ?>"><?php print($admin_email) ?></a><br/><br/>
 	<button onclick="Generate_combined_figure(); document.getElementById('combined_fig_options').style.display = 'inline';">Combine figures viewed below.</button><br>
 <?php
 	// Defines the filenames for combined figures.
@@ -391,22 +391,23 @@ function blank_and_content_tab() {
 	}
 	function openProject(user,project,key,projectName,color1,color2,parent,figVer) {
 		if (key.includes("_admin")) {
-			var visualize_iframe    = document.getElementById('panel_super1_iframe');
-			var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
+			var visualize_iframe     = document.getElementById('panel_super1_iframe');
+			var show_button_element  = visualize_iframe.contentDocument.getElementById("show_"+key);
+			var show_button_element2 = visualize_iframe.contentDocument.getElementById("showAllUser");
 		} else {
-			var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
-			var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
+			var visualize_iframe     = document.getElementById('panel_visualizeDataset_iframe');
+			var show_button_element  = visualize_iframe.contentDocument.getElementById("show_"+key);
+			var show_button_element2 = visualize_iframe.contentDocument.getElementById("showAllUser");
 		}
 		closeProject_viewOnly(key);
-		console.log('#     parent.openProject : "'+user+':'+project+':'+key+':'+projectName+':'+figVer+'"');
+		console.log('#     parent.openProject : "'+user+':'+project+':'+key+':'+projectName+':'+figVer+':'+color1+':'+color2	+'"');
 
 		if (show_button_element.checked == false) {
 			closeProject(user,project,key,projectName,color1,color2,parent,figVer);
 		} else {
-			var file_list   = JSON.parse(show_button_element.getAttribute('data-file-list'));
 			var file_prefix = "users/"+user+"/projects/"+project+"/";
-			// Prefix all files with their folder path, so that we won't have to
-			// manually add it in in every URL during HTML construction:
+			var file_list   = JSON.parse(show_button_element.getAttribute('data-file-list'));
+			// Prefix all files with their folder path, so that we won't have to manually add it in in every URL during HTML construction.
 			for (fileIx = 0; fileIx < file_list.length; fileIx++) {
 				file_list[fileIx] = file_prefix + file_list[fileIx];
 			}
@@ -438,8 +439,8 @@ function blank_and_content_tab() {
 			var CGD_CNV_track                    = file_prefix + "cnv."+project+".";
 			var CGD_SNP_track                    = file_prefix + "allele_ratios."+project+".";
 
-			var CNV_bias_SnpCghArray_GCcontent   = file_prefix + "fig_GCratio_vs_CNV." + figVer_;
-			var CNV_bias_SnpCghArray_end         = file_prefix + "fig_EndDistance_vs_CNV." + figVer_;
+			var CNV_bias_SnpCghArray_GCcontent   = file_prefix + "fig_GCratio_vs_CGH." + figVer_;
+			var CNV_bias_SnpCghArray_end         = file_prefix + "fig_EndDistance_vs_CGH." + figVer_;
 
 			var CNV_bias_WGseq_end               = file_prefix + "fig.bias_chr_end." + figVer_;
 			var CNV_bias_WGseq_GCcontent         = file_prefix + "fig.bias_GC_content." + figVer_;
@@ -450,144 +451,145 @@ function blank_and_content_tab() {
 
 			var fig_linear_SNPratio_histogram    = file_prefix + "fig.allelic_fraction_histogram." + figVer_;
 			var fig_linear_SNPratio_fireplot     = file_prefix + "fig.allelic_ratio-map.b2." + figVer_;
+			var output_figures_archive           = file_prefix + "output_figures.zip";
+
 			var visible_list                     = document.getElementById("visible_list");
 			var string1 = "<div id='figure_"+key+"'><table border='0' align='center' width='100%'><tr><td width='35%' align='left'>";
-			string1     = string1 + "<table><tr><td valign='top'>";
-			string1     = string1 + projectName+" ";
-			string1     = string1 + "</td><td valign='bottom'>";
-			string1     = string1 + "<div id='userProjectA_"+key+"'   style='display:inline'></div>";
-			string1     = string1 + "<div id='userProjectHET_"+key+"' style='display:inline'></div>";
-			string1     = string1 + "<div id='userProjectB_"+key+"'   style='display:inline'></div>";
-			string1     = string1 + "<div id='userProjectHOM_"+key+"' style='display:inline'></div>";
-			string1     = string1 + "</td></tr></table>";
-			string1     = string1 + "</td><td width='60%' align='left'><font size='-1'>";
+			string1 += "<table><tr><td valign='top'>";
+			string1 += projectName+" ";
+			string1 += "</td><td valign='bottom'>";
+			string1 += "<div id='userProjectA_"+key+"'   style='display:inline'></div>";
+			string1 += "<div id='userProjectHET_"+key+"' style='display:inline'></div>";
+			string1 += "<div id='userProjectB_"+key+"'   style='display:inline'></div>";
+			string1 += "<div id='userProjectHOM_"+key+"' style='display:inline'></div>";
+			string1 += "</td></tr></table>";
+			string1 += "</td><td width='60%' align='left'><font size='-1'>";
 
+			// only? fig.CNV-SNP-map.1.png
 			if (file_list.indexOf(fig_linear_CNV_SNP+"png") != -1) {
 				mainFigure1 = fig_linear_CNV_SNP;
 			} else if (file_list.indexOf(fig_linear_CNV+"png") != -1) {
 				mainFigure1 = fig_linear_CNV;
 			} else if (file_list.indexOf(fig_linear_SNP+"png") != -1) {
 				mainFigure1 = fig_linear_SNP;
-			}
-			console.log("## "+figVer_);
-			console.log("## "+fig_linear_CNV_SNP+"png");
-			console.log("## "+fig_linear_CNV+"png");
-			console.log("## "+fig_linear_SNP+"png");
+			} //else if (file_list.indexOf(fig_linear_SNP+"png") != -1) {
+
+			//console.log("## "+figVer_);
+			//console.log("## "+fig_linear_CNV_SNP+"png");
+			//console.log("## "+fig_linear_CNV+"png");
+			//console.log("## "+fig_linear_SNP+"png");
 
 			if (file_list.indexOf(fig_linear_CNV_SNP+"png") != -1) {
-				string1 = string1 + "<b>CNV and SNP/LOH</b> (linear ";
-				string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_SNP+"png\",\"100\")'> ";
-				string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_linear_CNV_SNP+"eps\")'>";
-				string1 = string1 + " or standard ";
-				string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_CNV_SNP+"png\",\"50\")'> ";
-				string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_standard_CNV_SNP+"eps\")'>";
-				if (file_list.indexOf(fig_linear_manual+"png") != -1) {
-					string1 = string1 + " or Linear-Manual ";
-					string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_manual+"png\",\"100\")'> ";
-					string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_linear_manual+"eps\")'>";
+				string1 += "<b>CNV and SNP/LOH</b> (linear ";
+				string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_SNP+"png\",\"100\")'> ";
+				string1 += "<a href='"+fig_linear_CNV_SNP+"eps' download='"+project+".linear.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
+				if (file_list.indexOf(fig_standard_CNV_SNP+"png") != -1) {
+					string1 += " or standard ";
+					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_CNV_SNP+"png\",\"50\")'> ";
+					string1 += "<a href='"+fig_standard_CNV_SNP+"eps' download='"+project+".full.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
 				}
-				string1 = string1 + ")";
-				//if ((file_list.indexOf(fig_linear_CNV+"png") != -1) || (file_list.indexOf(fig_linear_SNP+"png") != -1)) {
-				//	string1 = string1 + " ";
-				//}
+				if (file_list.indexOf(fig_linear_manual+"png") != -1) {
+					string1 += " or Linear-Manual ";
+					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_manual+"png\",\"100\")'> ";
+					string1 += "<a href='"+fig_linear_manual+"eps' download='"+project+".linear-manual.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
+				}
+				string1 += ")";
 			}
 			if (file_list.indexOf(fig_linear_CNV_SNP_RedGreen+"png") != -1) {
-				string1 = string1 + "; alternate colors (lin. ";
-				string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_SNP_RedGreen+"png\",\"100\")'> ";
-				string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_linear_CNV_SNP_RedGreen+"eps\")'>";
-				string1 = string1 + " or sta. ";
-				string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_CNV_SNP_RedGreen+"png\",\"50\")'> ";
-				string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_standard_CNV_SNP_RedGreen+"eps\")'>";
-				string1 = string1 + ")";
-				if ((file_list.indexOf(fig_linear_CNV+"png") != -1) || (file_list.indexOf(fig_linear_SNP+"png") != -1)) {
-					string1 = string1 + " ";
+				string1 += "; alternate colors (lin. ";
+				string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_SNP_RedGreen+"png\",\"100\")'> ";
+				string1 += "<a href='"+fig_linear_CNV_SNP_RedGreen+"eps' download='"+project+".linear-alt.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
+				if (file_list.indexOf(fig_standard_CNV_SNP_RedGreen+"png") != -1) {
+					string1 += " or std. ";
+					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_CNV_SNP_RedGreen+"png\",\"50\")'> ";
+					string1 += "<a href='"+fig_standard_CNV_SNP_RedGreen+"eps' download='"+project+".full-alt.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
 				}
+				string1 += ")";
 			}
 			if (file_list.indexOf(fig_linear_CNV+"png") != -1) {
-				string1 = string1 + "<br><b>CNV only</b> (lin. ";
-				string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV+"png\",\"100\")'> ";
-				string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_linear_CNV+"eps\")'>";
-				string1 = string1 + " or sta. ";
-				string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_CNV+"png\",\"50\")'> ";
-				string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_standard_CNV+"eps\")'>";
-				string1 = string1 + ")";
-				if (file_list.indexOf(fig_linear_SNP+"png") != -1) {
-					string1 = string1 + "";
+				string1 += "<br><b>CNV only</b> (lin. ";
+				string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV+"png\",\"100\")'> ";
+				string1 += "<a href='"+fig_linear_CNV+"eps' download='"+project+".linar-CNV.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
+				if (file_list.indexOf(fig_standard_CNV+"png") != -1) {
+					string1 += " or std. ";
+					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_CNV+"png\",\"50\")'> ";
+					string1 += "<a href='"+fig_standard_CNV+"eps' download='"+project+".full-CNV.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
 				}
+				string1 += ")";
 			}
-
-			var CGD_tracks_present = false;
 
 			// Show CNV bias figure for SnpCghArray, WGseq, and ddRADseq.
 			if ((file_list.indexOf(CNV_bias_SnpCghArray_GCcontent+"png") != -1) || (file_list.indexOf(CNV_bias_SnpCghArray_end+"png") != -1)) {
-				string1 = string1 + "; CNV biases ";
+				string1 += "; CNV biases ";
 				if (file_list.indexOf(CNV_bias_SnpCghArray_GCcontent+"png") != -1) {
-					 string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_SnpCghArray_GCcontent+"png\",\"50\")'>%GC</button>";
+					 string1 += "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_SnpCghArray_GCcontent+"png\",\"50\")'>%GC</button>";
 				}
 				if (file_list.indexOf(CNV_bias_SnpCghArray_end+"png") != -1) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_SnpCghArray_end+"png\",\"50\")'>chr end</button>";
+					string1 += "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_SnpCghArray_end+"png\",\"50\")'>chr end</button>";
 				}
 			}
 			if ((file_list.indexOf(CNV_bias_WGseq_end+"png") != -1) || (file_list.indexOf(CNV_bias_WGseq_GCcontent+"png") != -1)) {
-				string1 = string1 + "; CNV biases ";
-				if (file_list.indexOf(CNV_bias_WGseq_GCcontent+"png") != -1) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_GCcontent+"png\",\"50\")'>%GC</button>";
-				}
+				string1 += "; CNV biases ";
 				if (file_list.indexOf(CNV_bias_WGseq_end+"png") != -1) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_end+"png\",\"50\")'>chr end</button>";
+					string1 += "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_end+"png\",\"50\")'>chr end</button>";
+				}
+				if (file_list.indexOf(CNV_bias_WGseq_GCcontent+"png") != -1) {
+					string1 += "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_GCcontent+"png\",\"50\")'>%GC</button>";
 				}
 			}
 			if (file_list.indexOf(fig_linear_CNV_highTop+"png") != -1) {
-				string1 = string1 + "; CNV ";
-				string1 = string1 +  "<button onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_highTop+"png\",\"100\")'>high top</button>";
+				string1 += "; CNV ";
+				string1 +=  "<button onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_highTop+"png\",\"100\")'>high top</button>";
 			}
 			if ((file_list.indexOf(CNV_bias_ddRADseq_1+"png") != -1) || (file_list.indexOf(CNV_bias_ddRADseq_2+"png") != -1) || (file_list.indexOf(CNV_bias_ddRADseq_3+"png") != -1)) {
-				string1 = string1 + "; CNV biases ";
+				string1 += "; CNV biases ";
 				if (file_list.indexOf(CNV_bias_ddRADseq_1) != -1) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_1+"png\",\"100\")'>fragment length</button>";
+					string1 += "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_1+"png\",\"100\")'>fragment length</button>";
 				}
 				if (file_list.indexOf(CNV_bias_ddRADseq_2) != -1) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_2+"png\",\"100\")'>%GC</button>";
+					string1 += "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_2+"png\",\"100\")'>%GC</button>";
 				}
 				if (file_list.indexOf(CNV_bias_ddRADseq_3) != -1) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_3+"png\",\"100\")'>chr end</button>";
+					string1 += "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_3+"png\",\"100\")'>chr end</button>";
 				}
 			}
 			if (file_list.indexOf(CGD_CNV_track+"gff3") != -1) {
-				string1 += "; <a href=\"" + CGD_CNV_track + "gff3\" target=\"_blank\">GBrowse CNV track</a>";
-				CGD_tracks_present = true;
+				string1 += "; <a href=\"" + CGD_CNV_track + "gff3\" target=\"_blank\">GFF3 format CNV track</a>";
 			}
 			if (file_list.indexOf(fig_linear_SNP+"png") != -1) {
-				string1 = string1 + "<br><b>SNP/LOH only</b> (lin. ";
-				string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_SNP+"png\",\"100\")'> ";
-				string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_linear_SNP+"eps\")'>";
-				string1 = string1 + " or sta. ";
-				string1 = string1 + "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_SNP+"png\",\"50\")'> ";
-				string1 = string1 + "<img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center' onclick='loadExternal(\""+fig_standard_SNP+"eps\")'>";
-				string1 = string1 + ")";
+				string1 += "<br><b>SNP/LOH only</b> (lin. ";
+				string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_SNP+"png\",\"100\")'> ";
+				string1 += "<a href='"+fig_linear_SNP+"eps' download='"+project+".linear-SNP.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
+				if (file_list.indexOf(fig_standard_SNP+"png") != -1) {
+					string1 += " or std. ";
+					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_SNP+"png\",\"50\")'> ";
+					string1 += "<a href='"+fig_standard_SNP+"eps' download='"+project+".full-SNP.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
+				}
+				string1 += ")";
 			}
 
 			// Show allelic ratio plot version for ddRADseq and WGseq.
 			if ((file_list.indexOf(fig_linear_SNPratio_histogram+"png") != -1) || (file_list.indexOf(fig_linear_SNPratio_fireplot+"png") != -1)) {
-				string1 = string1 + "; SNP ratios ";
+				string1 += "; SNP ratios ";
 				if (file_list.indexOf(fig_linear_SNPratio_histogram+"png") != -1) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_linear_SNPratio_histogram+"png\",\"100\")'>histogram</button>";
+					string1 += "<button onclick='loadImage(\""+key+"\",\""+fig_linear_SNPratio_histogram+"png\",\"100\")'>histogram</button>";
 				}
 				if (file_list.indexOf(fig_linear_SNPratio_fireplot+"png") != -1) {
-					string1 = string1 + "<button onclick='loadImage(\""+key+"\",\""+fig_linear_SNPratio_fireplot+"png\",\"100\")'>fire plot</button>";
+					string1 += "<button onclick='loadImage(\""+key+"\",\""+fig_linear_SNPratio_fireplot+"png\",\"100\")'>fire plot</button>";
 				}
 			}
 
 			if (file_list.indexOf(CGD_SNP_track+"bed") != -1) {
-				string1 += "; <a href=\"" + CGD_SNP_track + "bed\" target=\"_blank\">GBrowse allele ratio track</a>";
-				CGD_tracks_present = true;
+				string1 += "; <a href=\"" + CGD_SNP_track + "bed\" target=\"_blank\">BED format allele ratio track</a>";
 			}
 
-			if (CGD_tracks_present)	{
-				string1 += "<br><a href=\"https://github.com/berman-lab/ymap/wiki/How-to-import-Ymap-generated-tracks-into-CGD's-GBrowse\" target=\"_blank\">(Help on importing tracks into GBrowse)</a>";
+//dragon
+			if (file_list.indexOf(output_figures_archive) != -1) {
+				string1 += "; Output file archive <a href='"+output_figures_archive+"' download='figures."+project+".zip'><img src='images/icon_zip_15b.png' alt-text='[ZIP] button' align='center''></a>";
 			}
 
-			string1 = string1 + "</font>";
+
+			string1 += "</font>";
 
 			var string2 = "</td><td width='5%' align='right'><div onclick=\'closeProject(\""+user+"\",\""+project+"\",\""+key+"\",\""+projectName+"\",\""+color1+"\",\""+color2+"\",\""+parent+"\",\""+figVer+"\");' style='display:inline-block;'><b>[X]</b></div></td></tr>";
 			var string3 = "<tr><td align='center' colspan='3'>";
@@ -610,16 +612,17 @@ function blank_and_content_tab() {
 
 			var projectsShown = localStorage.getItem("projectsShown");
 			if (projectsShown != null) {
-				projectsShown = projectsShown.replace(user+":"+project+":"+key+":"+projectName);
+				// If project being opened is already displayed, remove it first!
+				projectsShown = projectsShown.replace(user+":"+project+":"+key+":"+projectName+":"+figVer+':'+color1+':'+color2+";","");
 			} else {
 				projectsShown = "";
 			}
-			projectsShown = projectsShown+user+":"+project+":"+key+":"+projectName+":"+figVer+";";
+			projectsShown = projectsShown+user+":"+project+":"+key+":"+projectName+":"+figVer+':'+color1+':'+color2+";";
 			projectsShown = projectsShown.replace("  "," ");   // remove duplicate " " characters.
 			while (projectsShown.charAt(0) == " ")
 				projectsShown = projectsShown.slice(1);      // remove leading " " character.
 			localStorage.setItem("projectsShown", projectsShown);
-			console.log('#     Add to projectsShown : "'+user+':'+project+':'+key+':'+projectName+':'+figVer+'"');
+			console.log('#     Add to projectsShown : "'+user+':'+project+':'+key+':'+projectName+':'+figVer+':'+color1+':'+color2+'"');
 			console.log('#         projectsShown = "'+projectsShown+'"');
 		}
 	}
@@ -639,12 +642,12 @@ function blank_and_content_tab() {
 			figure_element.remove();
 		}
 		var projectsShown = localStorage.getItem("projectsShown");
-		projectsShown = projectsShown.replace(user+":"+project+":"+key+":"+projectName+":"+figVer+";","");
+		projectsShown = projectsShown.replace(user+":"+project+":"+key+":"+projectName+":"+figVer+':'+color1+':'+color2+";","");
 		projectsShown = projectsShown.replace("  "," ");  // remove duplicate " " characters.
 		while (projectsShown.charAt(0) == " ")
 			projectsShown = projectsShown.slice( 1 );     // remove leading " " characater.
 		localStorage.setItem("projectsShown", projectsShown);
-		console.log('#     Remove from projectsShown : "'+user+':'+project+':'+key+':'+projectName+":"+figVer+'"');
+		console.log('#     Remove from projectsShown : "'+user+':'+project+':'+key+':'+projectName+":"+figVer+':'+color1+':'+color2+'"');
 		console.log('#         projectsShown = "'+projectsShown+'"');
 	}
 	function closeProject_viewOnly(key) {
@@ -816,7 +819,7 @@ function update_projectsShown_after_new_project() {
 			var entry_parts    = currentProject.split(':');
 			projID = parseInt(entry_parts[2])+1;
 			projID.toString();
-			new_project = entry_parts[0]+":"+entry_parts[1]+":"+projID+":"+entry_parts[3]+":"+entry_parts[4]+":"+entry_parts[5];
+			new_project = entry_parts[0]+":"+entry_parts[1]+":"+projID+":"+entry_parts[3]+":"+entry_parts[4]+":"+entry_parts[5]+":"+entry_parts[6];
 			console.log('## old_project = "'+currentProject+'"');
 			console.log('## new_project = "'+new_project+'"');
 			projectsShown = projectsShown.replace(currentProject, new_project);
@@ -844,15 +847,15 @@ function update_projectsShown_after_project_delete(deletedProjectKey) {
 				projID = parseInt(entry_parts[2]);
 				if (projID < deletedProjectID) {
 					projID.toString();
-					new_projectsShown = new_projectsShown + entry_parts[0]+":"+entry_parts[1]+":"+projID+":"+entry_parts[3]+":"+entry_parts[4]+":"+entry_parts[5]+" ";
+					new_projectsShown = new_projectsShown + entry_parts[0]+":"+entry_parts[1]+":"+projID+":"+entry_parts[3]+":"+entry_parts[4]+":"+entry_parts[5]+":"+entry_parts[6]+" ";
 				} else if (projID == deletedProjectID) {
 					Deleted_entry_parts = entry_parts;
 					// Remove deleted entry from active area.
-					closeProject(Deleted_entry_parts[0],Deleted_entry_parts[1],Deleted_entry_parts[2],Deleted_entry_parts[3],Deleted_entry_parts[4],Deleted_entry_parts[5]);
+					closeProject(Deleted_entry_parts[0],Deleted_entry_parts[1],Deleted_entry_parts[2],Deleted_entry_parts[3],Deleted_entry_parts[4],Deleted_entry_parts[5],Deleted_entry_parts[6]);
 				} else {  // if (projID > deletedProjectID) {
 					projID = projID-1;
 					projID.toString();
-					new_projectsShown = new_projectsShown + entry_parts[0]+":"+entry_parts[1]+":"+projID+":"+entry_parts[3]+":"+entry_parts[4]+":"+entry_parts[5]+" ";
+					new_projectsShown = new_projectsShown + entry_parts[0]+":"+entry_parts[1]+":"+projID+":"+entry_parts[3]+":"+entry_parts[4]+":"+entry_parts[5]+":"+entry_parts[6]+" ";
 				}
 			}
 		}
@@ -905,13 +908,15 @@ function restore_shown_figures() {
 					key             = entry_parts[2];
 					projectNameText = entry_parts[3];
 					figVer          = entry_parts[4];
+					colorString1    = entry_parts[5];
+					colorString2    = entry_parts[6];
 
 					if (!key.includes("_admin")) {
 						console.log('#:    Project '+i+' = '+currentProject);
 						var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
 						show_button_element.checked = true;
 						// Open projects previously shown, except for admin_as_user projects.
-						openProject(userName,projectName,key,projectNameText, 'null', 'null', 'null', figVer);
+						openProject(userName,projectName,key,projectNameText, colorString1, colorString2, 'null', figVer);
 						projectsShown_new = projectsShown_new + currentProject+";";
 					}
 				}
