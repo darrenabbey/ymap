@@ -185,6 +185,9 @@ if ($ext == "zip") {
 	}
 	$oldName = $name_new;
 
+        // Delete original archive.
+        unlink($projectPath.$name);
+
 	// rename decompressed file.
 	$rename_target = "datafile_".$key.".".$name_ext;
 	rename($projectPath.$name_first,$projectPath.$rename_target);
@@ -338,27 +341,14 @@ if ($ext_new == "fastq") {
 	fwrite($output, $name_new."\n");
 	$paired = 0;
 } else if ($ext_new == "fasta") {
-	fwrite($logOutput, "\t\t| This is a FASTA file, pre-process into simulated illumina FASTQ data.\n");
-
-	// Convert FASTA to simulated-Illumina FASTQ.
-	$currentDir = getcwd();
-	chdir("../../users/".$user."/projects/".$project."/");
-	$newDir = getcwd();
-
-	fwrite($logOutput, "\t\t|\n");
-	fwrite($logOutput, "\t\t| calling directory : ".$currentDir."\n");
-	fwrite($logOutput, "\t\t| working directory : ".$newDir."/temp\n");
-	fwrite($logOutput, "\t\t| data file         : ".$newDir."/".$name_new."\n");
-	fwrite($logOutput, "\t\t|\n");
-	$null = shell_exec("sh ../../../../scripts_seqModules/FASTA_to_Illumina.sh ".$newDir."/".$name_new." ".$newDir."/temp");
-
-	// delete original file.
-	unlink($newDir."/".$name_new);
-	fwrite($logOutput, "\t\t| File converted to simulated-Illumina FASTQ file, original deleted.\n");
-
-	fwrite($output, "output.fastq\n");
-	$paired = 0;
-	chdir($currentDir);
+	fwrite($logOutput, "\t\t| This is a FASTA file, only useful for genome installation.\n");
+	// should not be uploaded via here.
+	$errorFile = fopen("users/".$user."/projects/".$project."/error.txt", 'w');
+	fwrite($errorFile, "Error : FASTA file uploaded as input. Upload FASTQ, or ZIP or GZ archives.");
+	fclose($errorFile);
+	chmod($errorFileName,0664);
+	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTA file not accepted.");
+	exit;
 } else if (($ext_new == "sam") || ($ext_new == "bam")) {
 	fwrite($logOutput, "\t\t| This is a SAM/BAM file.\n");
 
