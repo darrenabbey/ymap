@@ -1050,6 +1050,24 @@ for chr_to_draw  = 1:length(chr_order)
 			Linear_left = Linear_left + Linear_width + Linear_chr_gap;
 			hold on;
 
+
+			%% linear : show centromere/outline.
+			if (chr_size(chr) < 100000)
+				Centromere_format = 0;
+			else
+				Centromere_format = Centromere_format_default;
+			end;
+			x1       = cen_start(chr)/bases_per_bin;
+			x2       = cen_end(chr)/bases_per_bin;
+			leftEnd  = 0;                                   % 0.5*(5000/bases_per_bin);
+			rightEnd = chr_size(chr)/bases_per_bin;         % chr_size(chr)/bases_per_bin-0.5*(5000/bases_per_bin);
+			if (Centromere_format == 0)
+				source('cartoon_linear_0.m');
+			elseif (Centromere_format == 1)
+				source('cartoon_linear_1.m');
+			end;
+			%% linear : end show centromere/outline.
+
 			%% CNV plot section.
 			c_ = [0 0 0];
 			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
@@ -1060,7 +1078,7 @@ for chr_to_draw  = 1:length(chr_order)
 				% The CNV-histogram values were normalized to a median value of 1.
 				% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
 				startY = maxY/2;
-				if (Low_quality_ploidy_estimate == true)
+				if (Low_quality_ploidy_estimate)
 					endY = CNVhistValue*ploidy*ploidyAdjust;
 				else
 					endY = CNVhistValue*ploidy;
@@ -1089,66 +1107,6 @@ for chr_to_draw  = 1:length(chr_order)
                                         plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
                                 end;
                         end;
-
-			%show centromere.
-			if (chr_size(chr) < 100000)
-				Centromere_format = 1;
-			else
-				Centromere_format = Centromere_format_default;
-			end;
-			x1 = cen_start(chr)/bases_per_bin;
-			x2 = cen_end(chr)/bases_per_bin;
-			leftEnd  = 0.5*(5000/bases_per_bin);
-			rightEnd = chr_size(chr)/bases_per_bin-0.5*(5000/bases_per_bin);
-			if (Centromere_format == 0)
-				% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
-				dx = cen_tel_Xindent;
-				dy = cen_tel_Yindent;
-				% draw white triangles at corners and centromere locations.
-				% top left corner.
-				c_ = [1.0 1.0 1.0];
-				x_ = [leftEnd   leftEnd   leftEnd+dx];
-				y_ = [maxY-dy   maxY      maxY      ];
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-				% bottom left corner.
-				x_ = [leftEnd   leftEnd   leftEnd+dx];
-				y_ = [dy        0         0         ];
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-				% top right corner.
-				x_ = [rightEnd   rightEnd   rightEnd-dx];
-				y_ = [maxY-dy    maxY       maxY      ];
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-				% bottom right corner.
-				x_ = [rightEnd   rightEnd   rightEnd-dx];
-				y_ = [dy         0          0         ];
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-				% top centromere.
-				x_ = [x1-dx   x1        x2        x2+dx];
-				y_ = [maxY    maxY-dy   maxY-dy   maxY];
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-				% bottom centromere.
-				x_ = [x1-dx   x1   x2   x2+dx];
-				y_ = [0       dy   dy   0    ];
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-
-				% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
-				plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
-				     [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy     ],...
-				     'Color',[0 0 0]);
-			elseif (Centromere_format == 1)
-				leftEnd  = 0;
-				rightEnd = chr_size(chr)/bases_per_bin;
-
-				% Minimal outline for examining very small sequence regions, such as C.albicans MTL locus.
-				plot([leftEnd   leftEnd   rightEnd   rightEnd   leftEnd], [0   maxY   maxY   0   0], 'Color',[0 0 0]);
-			end;
-			%end show centromere.
 
 			%show annotation locations
 			if (show_annotations) && (length(annotations) > 0)

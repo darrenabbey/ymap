@@ -50,7 +50,7 @@ end;
 %                                 'Log2Ratio' does not properly scale CNV data by ploidy.
 %    Chr_max_width              : max width of chrs as fraction of figure width.
 fprintf('\t|\tSetup for processing.\n');
-Centromere_format              = 0;
+Centromere_format              = 1;
 Chr_max_width                  = 0.8;
 colorBars                      = true;
 blendColorBars                 = false;
@@ -165,17 +165,28 @@ for i = 1:length(figure_details)
 		chr_label      {figure_details(i).chr} = figure_details(i).label;
 		chr_name       {figure_details(i).chr} = figure_details(i).name;
 		chr_posX       (figure_details(i).chr) = figure_details(i).posX;
-		chr_posY       (figure_details(i).chr) = figure_details(i).posY;
+
+		%%% Place chromosome cartoons in correct order for standard figure.
+		figOrder                               = str2num(figure_details(i).figOrder)
+		if (figOrder == 0)
+			chr_posY_raw                   = 0;
+			chr_posY_real                  = 0;
+		else
+			chr_posY_raw                   = figure_details(i).posY;
+			chr_posY_real                  = figure_details(figOrder).posY;
+		end;
+		chr_posY       (figure_details(i).chr) = chr_posY_real;
+
 		chr_width      (figure_details(i).chr) = figure_details(i).width;
 		chr_height     (figure_details(i).chr) = figure_details(i).height;
 		chr_in_use     (figure_details(i).chr) = str2num(figure_details(i).useChr);
-		chr_figOrder   (figure_details(i).chr) = str2num(figure_details(i).figOrder);
+		chr_figOrder   (figure_details(i).chr) = figOrder;
 		chr_figReversed(figure_details(i).chr) = str2num(figure_details(i).figReversed);
 	end;
 end;
 num_chrs = length(chr_size);
 
-%% This block is normally calculated in FindChrSizes_2 in CNV analysis.
+%% This block is normally calculated in FindChrSizes during CNV analysis.
 for usedChr = 1:num_chrs
 	if (chr_in_use(usedChr) == 1)
 		% determine where the endpoints of ploidy segments are.
@@ -268,9 +279,8 @@ end;
 %-------------------------------------------------------------------------------------------------
 fprintf('\t|\tLoading "Common_CNV" data file, to be used in copy number estimation.\n');
 load([projectDir 'Common_CNV.mat']);   % 'CNVplot2', 'genome_CNV'
-[chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use);
+[chr_breaks, chrCopyNum, ploidyAdjust, chrCopyRsquared] = FindChrSizes_4(workingDir, Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use, false);
 
-fprintf('*** dragon 2\n');
 for chr = 1:length(chr_breaks)
 	for segment = 1:length(chrCopyNum{chr})
 		fprintf(['*** chr_breaks{' num2str(chr) '}(' num2str(segment) ')  = ' num2str(chr_breaks{chr}(segment)) '\n']);
@@ -282,7 +292,6 @@ for chr = 1:length(chrCopyNum)
 		fprintf(['*** chrCopyNum{' num2str(chr) '}(' num2str(segment) ')  = ' num2str(chrCopyNum{chr}(segment)) '\n']);
 	end;
 end;
-
 
 
 %% =========================================================================================
@@ -561,9 +570,9 @@ end;
 %        chr_SNPdata{chr,5}{chr_bin_SNP} = phased SNP allele strings.   (baseCall:alleleA/alleleB)
 %        chr_SNPdata{chr,6}{chr_bin_SNP} = unphased SNP allele strings.
 %-------------------------------------------------------------------------------------------
-
 fprintf('\n\n### Calculate allelic ratio cutoffs using Gaussian fitting.\n');
 temp_holding = chr_SNPdata;
+makeFitFigures = false;
 calculate_allelic_ratio_cutoffs;
 chr_SNPdata = temp_holding;
 
@@ -579,6 +588,22 @@ for chr = 1:num_chrs
 			%
 			% Determining colors for each SNP coordinate from calculated cutoffs.
 			%
+
+%fprintf(['\t|\t\ttest1 = ' num2str(chr) '\n']);
+%fprintf(['\t|\t\ttest2 = ' num2str(chr_bin_SNP) '\n']);
+%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,1}{chr_bin_SNP}) '\n']);
+%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,1}{chr_bin_SNP})) '\n']);
+%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,2}{chr_bin_SNP}) '\n']);
+%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,2}{chr_bin_SNP})) '\n']);
+%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,3}{chr_bin_SNP}) '\n']);
+%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,3}{chr_bin_SNP})) '\n']);
+%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,4}{chr_bin_SNP}) '\n']);
+%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,4}{chr_bin_SNP})) '\n']);
+%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,5}{chr_bin_SNP}) '\n']);
+%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,5}{chr_bin_SNP})) '\n']);
+%fprintf(['\t|\t\ttest4 = type:' typeinfo(chr_SNPdata{chr,6}{chr_bin_SNP}) '\n']);
+%fprintf(['\t|\t\ttest4 = ' num2str(sizeof(chr_SNPdata{chr,6}{chr_bin_SNP})) '\n']);
+
 			allelic_ratios						= [chr_SNPdata{chr,1}{chr_bin_SNP} chr_SNPdata{chr,2}{chr_bin_SNP}];
 			coordinates						= [chr_SNPdata{chr,3}{chr_bin_SNP} chr_SNPdata{chr,4}{chr_bin_SNP}];
 			if (sizeof(chr_SNPdata{chr,5}{chr_bin_SNP}) == 0)
@@ -881,7 +906,6 @@ for chr = 1:num_chrs
 end;
 
 
-
 %%================================================================================================
 % Setup for main figure generation.
 %-------------------------------------------------------------------------------------------------
@@ -1061,9 +1085,9 @@ for chr_to_draw  = 1:length(chr_order)
 			set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 			set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
 			if (chr_figReversed(chr) == 0)
-				text(-50000/5000/2*3, maxY/2,chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+				text(-50000/5000/2*3, maxY/2,chr_label{chr}, 'rotation', 90, 'horizontalalignment', 'center', 'verticalalignment', 'bottom', 'fontsize', stacked_chr_font_size);
 			else
-				text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+				text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'rotation', 90, 'horizontalalignment', 'center', 'verticalalignment', 'bottom', 'fontsize', stacked_chr_font_size);
 			end;
 
 			set(gca,'FontSize',gca_stacked_font_size);
@@ -1082,54 +1106,22 @@ for chr_to_draw  = 1:length(chr_order)
 	                        end;
 	                end;
 
-			% show centromere outlines and horizontal marks.
+			%% standard : show centromere/outlines.
+			if (chr_size(chr) < 100000)
+				Centromere_format = 0;
+			else
+				Centromere_format = Centromere_format_default;
+			end;
 			x1 = cen_start(chr)/bases_per_bin;
 			x2 = cen_end(chr)/bases_per_bin;
-			leftEnd  = 0.5*5000/bases_per_bin;
-			rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
+			leftEnd  = 0;					% 0.5*5000/bases_per_bin;
+			rightEnd = chr_size(chr)/bases_per_bin;		% (chr_size(chr) - 0.5*5000)/bases_per_bin;
 			if (Centromere_format == 0)
-			        % standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
-			        dx = cen_tel_Xindent; %5*5000/bases_per_bin;
-			        dy = cen_tel_Yindent; %maxY/10;
-			        % draw white triangles at corners and centromere locations.
-			        % top left corner.
-			        c_ = [1.0 1.0 1.0];
-			        x_ = [leftEnd   leftEnd   leftEnd+dx];
-			        y_ = [maxY-dy   maxY      maxY      ];
-			        f = fill(x_,y_,c_);
-			        set(f,'linestyle','none');
-			        % bottom left corner.
-			        x_ = [leftEnd   leftEnd   leftEnd+dx];
-			        y_ = [dy        0         0         ];
-		        	f = fill(x_,y_,c_);
-			        set(f,'linestyle','none');
-			        % top right corner.
-		        	x_ = [rightEnd   rightEnd   rightEnd-dx];
-			        y_ = [maxY-dy    maxY       maxY      ];
-			        f = fill(x_,y_,c_);
-		        	set(f,'linestyle','none');
-			        % bottom right corner.
-			        x_ = [rightEnd   rightEnd   rightEnd-dx];
-		        	y_ = [dy         0          0         ];
-			        f = fill(x_,y_,c_);
-			        set(f,'linestyle','none');
-		        	% top centromere.
-			        x_ = [x1-dx   x1        x2        x2+dx];
-			        y_ = [maxY    maxY-dy   maxY-dy   maxY];
-		        	f = fill(x_,y_,c_);
-			        set(f,'linestyle','none');
-			        % bottom centromere.
-		        	x_ = [x1-dx   x1   x2   x2+dx];
-			        y_ = [0       dy   dy   0    ];
-			        f = fill(x_,y_,c_);
-		        	set(f,'linestyle','none');
-
-				% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
-				plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
-				     [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy     ],...
-				     'Color',[0 0 0]);
+				source('cartoon_stacked_0.m');
+			elseif (Centromere_format == 1)
+				source('cartoon_stacked_1.m');
 			end;
-			%end show centromere.
+			%standard : end show centromere.
 
 			%show annotation locations
 			if (show_annotations) && (length(annotations) > 0)
@@ -1207,54 +1199,22 @@ for chr_to_draw  = 1:length(chr_order)
 				end;
 			end;
 
-			%% linear : show centromere.
+			%% linear : show centromere/outlines.
+			if (chr_size(chr) < 100000)
+				Centromere_format = 0;
+			else
+				Centromere_format = Centromere_format_default;
+			end;
 			x1 = cen_start(chr)/bases_per_bin;
 			x2 = cen_end(chr)/bases_per_bin;
-			leftEnd  = 0.5*5000/bases_per_bin;
-			rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
+			leftEnd  = 0;					% 0.5*5000/bases_per_bin;
+			rightEnd = chr_size(chr)/bases_per_bin;		% (chr_size(chr) - 0.5*5000)/bases_per_bin;
 			if (Centromere_format == 0)
-				% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
-				dx = cen_tel_Xindent; %5*5000/bases_per_bin;
-				dy = cen_tel_Yindent; %maxY/10;
-				% draw white triangles at corners and centromere locations.
-				% top left corner.
-				c_ = [1.0 1.0 1.0];
-				x_ = [leftEnd   leftEnd   leftEnd+dx];
-				y_ = [maxY-dy   maxY      maxY      ];
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-				% bottom left corner.
-				x_ = [leftEnd   leftEnd   leftEnd+dx];
-				y_ = [dy        0         0         ];
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-				% top right corner.
-				x_ = [rightEnd   rightEnd   rightEnd-dx];
-				y_ = [maxY-dy    maxY       maxY      ];
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-				% bottom right corner.
-				x_ = [rightEnd   rightEnd   rightEnd-dx];
-				y_ = [dy         0          0         ];
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-				% top centromere.
-				x_ = [x1-dx   x1        x2        x2+dx];
-				y_ = [maxY    maxY-dy   maxY-dy   maxY];
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-				% bottom centromere.
-				x_ = [x1-dx   x1   x2   x2+dx];
-				y_ = [0       dy   dy   0    ];
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-
-				% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
-				plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
-				     [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy],...
-				     'Color',[0 0 0]);
+				source('cartoon_linear_0.m');
+			elseif (Centromere_format == 1)
+				source('cartoon_linear_1.m');
 			end;
-			% linear : end show centromere.
+			% linear : end show centromere/outlines.
 
 			%% linear : show annotation locations
 			if (show_annotations) && (length(annotations) > 0)
@@ -1308,9 +1268,9 @@ for chr_to_draw  = 1:length(chr_order)
 				end;
 			else
 				if (chr_figReversed(chr) == 0)
-					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'interpreter', 'none', 'fontsize', linear_chr_font_size, 'rotation', rotate);
 				else
-					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
+					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'interpreter', 'tex' ,'fontsize', linear_chr_font_size, 'rotation', rotate);
 				end;
 			end;
 		end;
