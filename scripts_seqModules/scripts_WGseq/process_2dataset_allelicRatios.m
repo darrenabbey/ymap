@@ -62,7 +62,7 @@ while not (feof(C_data))
 			C_chr_count             {C_chr_num}(C_chr_lines_analyzed(C_chr_num)) = sum(C_count_vector);
 		end;
 	end;
-end;
+endwhile;
 fclose(C_data);
 
 
@@ -96,7 +96,7 @@ while not (feof(P_data))
 			P_chr_count             {P_chr_num}(P_chr_lines_analyzed(P_chr_num)) = sum(P_count_vector);
 		end;
 	end;
-end;
+endwhile;
 fclose(P_data);
 
 

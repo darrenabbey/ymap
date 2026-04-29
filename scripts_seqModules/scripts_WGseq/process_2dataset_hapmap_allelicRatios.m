@@ -96,7 +96,6 @@ while not (feof(C_data))
 				end;
 				C_chr_baseCall{          C_chr_num}{C_chr_lines_analyzed(C_chr_num)} = C_chr_read_id;
 				old_chr = C_chr_num;
-				
 			else
 				old_chr = 0;
 			end;

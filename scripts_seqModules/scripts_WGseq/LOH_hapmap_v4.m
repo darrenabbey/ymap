@@ -1,5 +1,7 @@
 function [] = LOH_hapmap_v4(main_dir,user,genomeUser,project,parent_or_hapmap,genome,ploidyEstimateString,ploidyBaseString, SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+graphics_toolkit gnuplot;
 addpath('../');
+
 workingDir = [main_dir 'users/' user '/projects/' project '/'];
 fprintf('\n\n\t*===============================================================*\n');
 fprintf(    '\t| Generate SNP/LOH only plot in script "LOH_hapmap_v4.m".       |\n');
@@ -22,6 +24,7 @@ end;
 
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
+	%%figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
 	figure_options = importdata([main_dir 'users/' user '/projects/' project '/figure_options.txt'],'\t',1);
 
         option         = figure_options{7,1};
@@ -50,7 +53,7 @@ end;
 %                                 'Log2Ratio' does not properly scale CNV data by ploidy.
 %    Chr_max_width              : max width of chrs as fraction of figure width.
 fprintf('\t|\tSetup for processing.\n');
-Centromere_format_default      = 2;
+Centromere_format_default      = 1;
 Chr_max_width                  = 0.8;
 colorBars                      = true;
 blendColorBars                 = false;
@@ -62,6 +65,7 @@ Linear_displayBREAKS           = false;
 AnglePlot                      = true;   % Show histogram of alleleic fraction at the left end of standard figure chromosomes.
 FillColors                     = true;   %     Fill histogram using colors.
 show_uncalibrated              = false;  %     Fill with single color instead of ratio call colors.
+
 
 
 %%=========================================================================
@@ -204,7 +208,6 @@ for usedChr = 1:num_chrs
 	end;
 end;
 
-
 %% Load CNV and SNP figure resolutions.
 if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
 	bases_per_bin		= max(chr_size)/700;
@@ -293,71 +296,6 @@ for chr = 1:length(chrCopyNum)
 end;
 
 
-%% =========================================================================================
-% Test adjacent segments for no change in copy number estimate.
-%...........................................................................................
-% Adjacent pairs of segments with the same copy number will be fused into a single segment.
-% Segments with a <= zero copy number will be fused to an adjacent segment.
-%-------------------------------------------------------------------------------------------
-fprintf(['\n### Examining if adjacent segments have same copy number estimate => fuse if so.\n']);
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		if (length(chrCopyNum{chr}) > 1)  % more than one segment, so lets examine if adjacent segments have different copyNums.
-			%% Merge any adjacent segments with the same copy number.
-			% add break representing left end of chromosome.
-			breakCount_new         = 1;
-			chr_breaks_new{chr}    = [];
-			chrCopyNum_new{chr}    = [];
-			chr_breaks_new{chr}(1) = 0.0;
-
-			%fprintf(['\nlength(chrCopyNum{chr}) = ' num2str(length(chrCopyNum{chr})) '\n']);
-			%if (length(chrCopyNum{chr}) > 0)
-				%fprintf(['chrCopyNum{chr}(1) = ' num2str(chrCopyNum{chr}(1)) '\n']);
-
-				% dragon: attempt to clean up poor behavior with zero copy number estimates leading to no SNP/LOH data presented.
-				for segment = 1:(length(chrCopyNum{chr}))
-					if (round(chrCopyNum{chr}(segment)) == 0)
-						chrCopyNum{chr}(segment) = 1;
-					end;
-				end;
-
-				chrCopyNum_new{chr}(1) = chrCopyNum{chr}(1);
-				for segment = 1:(length(chrCopyNum{chr})-1)
-					if (round(chrCopyNum{chr}(segment)) == round(chrCopyNum{chr}(segment+1)))
-						% two adjacent segments have identical copyNum and should be fused into one; don't add boundry to new list.
-					else
-						% two adjacent segments have different copyNum; add boundry to new list.
-						breakCount_new                      = breakCount_new + 1;
-						chr_breaks_new{chr}(breakCount_new) = chr_breaks{chr}(segment+1);
-						chrCopyNum_new{chr}(breakCount_new) = chrCopyNum{chr}(segment+1);
-					end;
-				end;
-			%end;
-
-			% add break representing right end of chromosome.
-			breakCount_new = breakCount_new+1;
-			chr_breaks_new{chr}(breakCount_new) = 1.0;
-
-			% output status to log file.
-			fprintf(['@@@1 chr = ' num2str(chr) '\n']);
-			fprintf(['@@@1    chr_breaks_old = ' num2str(chr_breaks{chr})     '\n']);
-			fprintf(['@@@1    chrCopyNum_old = ' num2str(chrCopyNum{chr})     '\n']);
-			fprintf(['@@@1    chr_breaks_new = ' num2str(chr_breaks_new{chr}) '\n']);
-			fprintf(['@@@1    chrCopyNum_new = ' num2str(chrCopyNum_new{chr}) '\n']);
-
-			% copy new lists to old.
-			chr_breaks{chr} = chr_breaks_new{chr};
-			chrCopyNum{chr} = [];
-			chrCopyNum{chr} = chrCopyNum_new{chr};
-		else
-			% output status to log file.
-			fprintf(['@@@1 chr = ' num2str(chr) '\n']);
-			fprintf(['@@@1    Only one CNV segment on this chromosome\n']);
-		end;
-	end;
-end;
-
-
 %%================================================================================================
 % Load SNP/LOH data.
 %.................................................................................................
@@ -416,18 +354,18 @@ if (exist([projectDir 'SNP_' SNP_verString '.mat'],'file') == 0)
 		if (length(dataLine) > 0)
 			if (dataLine(1) ~= '#')
 				% process the loaded line into data channels.
-				lineVariables = textscan(dataLine, '%f %f %f %s %s %s %s %s %s');
-				chr_num = lineVariables{1};
-				fragment_start = lineVariables{2};
-				fragment_end = lineVariables{3};
-				phased_ratio_data_string = lineVariables{4}{1};
-				unphased_ratio_data_string = lineVariables{5}{1};
-				phased_coordinates_string = lineVariables{6}{1};
+				lineVariables               = textscan(dataLine, '%f %f %f %s %s %s %s %s %s');
+				chr_num                     = lineVariables{1};
+				fragment_start              = lineVariables{2};
+				fragment_end                = lineVariables{3};
+				phased_ratio_data_string    = lineVariables{4}{1};
+				unphased_ratio_data_string  = lineVariables{5}{1};
+				phased_coordinates_string   = lineVariables{6}{1};
 				unphased_coordinates_string = lineVariables{7}{1};
-				phased_alleles_string = lineVariables{8}{1};
-				unphased_alleles_string = lineVariables{9}{1};
+				phased_alleles_string       = lineVariables{8}{1};
+				unphased_alleles_string     = lineVariables{9}{1};
 
-				% format = simple, one number per column.
+				% format = simple, one number per column. dragon
 				chr_length                  = ceil(chr_size(chr_num)/bases_per_bin_SNP);
 				chr_bin_SNP                 = ceil(fragment_start/bases_per_bin_SNP);
 
@@ -532,19 +470,19 @@ if (exist([projectDir 'SNP_' SNP_verString '.mat'],'file') == 0)
 				end;
 
 				% add phased and unphased data to storage arrays.
-				chr_SNPdata{chr_num,1}{chr_bin_SNP}      = phased_ratio_data;
-				chr_SNPdata{chr_num,2}{chr_bin_SNP}      = unphased_ratio_data;
+				chr_SNPdata{chr_num,1}{chr_bin_SNP}          = phased_ratio_data;
+				chr_SNPdata{chr_num,2}{chr_bin_SNP}          = unphased_ratio_data;
 
 				% add phased and unphased data coordinates to storage arrays.
-				chr_SNPdata{chr_num,3}{chr_bin_SNP}      = phased_coordinates;
-				chr_SNPdata{chr_num,4}{chr_bin_SNP}      = unphased_coordinates;
+				chr_SNPdata{chr_num,3}{chr_bin_SNP}          = phased_coordinates;
+				chr_SNPdata{chr_num,4}{chr_bin_SNP}          = unphased_coordinates;
 
 				% add phased and unphased data allele strings to storage arrays.
-				chr_SNPdata{chr_num,5}{chr_bin_SNP}      = phased_alleles;
-				chr_SNPdata{chr_num,6}{chr_bin_SNP}      = unphased_alleles;
+				chr_SNPdata{chr_num,5}{chr_bin_SNP}          = phased_alleles;
+				chr_SNPdata{chr_num,6}{chr_bin_SNP}          = unphased_alleles;
 			end;
 		end;
-	end;
+	endwhile;
 	fclose(data);
 
 	save([projectDir 'SNP_' SNP_verString '.mat'],'chr_SNPdata');
@@ -955,7 +893,6 @@ fprintf('\n');
     stacked_fig_width,stacked_chr_font_size,stacked_title_size,stacked_axis_font_size,...
     gca_stacked_font_size,stacked_copy_font_size,max_chrom_label_size] = Load_size_info(chr_in_use,num_chrs,chr_label,chr_size);
 
-
 %%================================================================================================
 % Setup for main-view figure generation.
 %-------------------------------------------------------------------------------------------------
@@ -968,7 +905,7 @@ end;
 TickSize         = -0.005;  %negative for outside, percentage of longest chr figure.
 maxY             = ploidyBase*2;
 cen_tel_Xindent  = 5;
-cen_tel_Yindent  = maxY/5;
+cen_tel_Yindent  = maxY/4;
 
 
 %%================================================================================================
@@ -1091,7 +1028,11 @@ for chr_to_draw  = 1:length(chr_order)
 
 			set(gca,'FontSize',gca_stacked_font_size);
 			if (chr == find(chr_posY == max(chr_posY)))
-				title([ project ' vs. (hapmap)' hapmap ' SNP/LOH map'],'Interpreter','none','FontSize',stacked_title_size);
+				if (length(hapmap) == 0)
+					title([ project ' vs. SNP/LOH map'],'Interpreter','none','FontSize',stacked_title_size);
+				else
+					title([ project ' vs. ' hapmap ' SNP/LOH map'],'Interpreter','none','FontSize',stacked_title_size);
+				end;
 			end;
 			hold on;
 			% standard : end axes labels etc.
@@ -1124,8 +1065,8 @@ for chr_to_draw  = 1:length(chr_order)
 
 			%show annotation locations
 			if (show_annotations) && (length(annotations) > 0)
-				plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 				hold on;
+				plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 				annotation_location = (annotation_start+annotation_end)./2;
 				for annoteID = 1:length(annotation_location)
 					if (annotation_chr(annoteID) == chr)
@@ -1217,8 +1158,8 @@ for chr_to_draw  = 1:length(chr_order)
 
 			%% linear : show annotation locations
 			if (show_annotations) && (length(annotations) > 0)
-				plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 				hold on;
+				plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 				annotation_location = (annotation_start+annotation_end)./2;
 				for annoteID = 1:length(annotation_location)
 					if (annotation_chr(annoteID) == chr)
@@ -1310,4 +1251,5 @@ end;
 %% ========================================================================
 % end stuff
 %==========================================================================
+
 end

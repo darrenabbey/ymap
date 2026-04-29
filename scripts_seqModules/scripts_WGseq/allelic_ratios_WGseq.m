@@ -1,4 +1,5 @@
 function [] = allelic_ratios_WGseq(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+graphics_toolkit gnuplot;
 addpath('../');
 
 % hide figures during construction.
@@ -35,10 +36,8 @@ fprintf('\t|\tGenerating FirePlot of SNP allelic ratio data across genome.\n');
 %% ========================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
 %    bases_per_bin              : Controls bin sizes for SNP/CNV fractions of plot.
-%    scale_type                 : 'Ratio' or 'Log2Ratio' y-axis scaling of copy number.
-%                                 'Log2Ratio' does not properly scale CNV data by ploidy.
 %    Chr_max_width              : max width of chrs as fraction of figure width.
-Centromere_format           = 0;
+Centromere_format_default   = 1;
 Chr_max_width               = 0.8;
 colorBars                   = true;
 blendColorBars              = false;
@@ -53,6 +52,7 @@ genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
 
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
+	%%figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
 	figure_options = importdata([main_dir 'users/' user '/projects/' project '/figure_options.txt'],'\t',1);
 
 	option         = figure_options{9,1};
@@ -209,21 +209,21 @@ if (Make_figure == true)
 		% Load only putative SNP data corresponding to hapmap loci.
 		fprintf('\t|\tLoad SNP information from "trimmed_SNPs_v5.txt" file for project.\n');
 		fprintf('\t|\t\t');
-		datafile   = [projectDir 'trimmed_SNPs_v5.txt'];
+		datafile   = [projectDir '/trimmed_SNPs_v5.txt'];
 	else
 		% Load all putative SNP data.
 		fprintf('\t|\tLoad SNP information from "putative_SNPs_v4.txt" file for project.\n');
 		fprintf('\t|\t\t');
-		datafile   = [projectDir 'putative_SNPs_v4.txt'];
+		datafile   = [projectDir '/putative_SNPs_v4.txt'];
 	end;
 
-	data       = fopen(datafile, 'r');
+	data       = fopen(datafile,'r');
 	count      = 0;
 	old_chr    = 0;
 	gap_string = '';
-	% reading the line before checking for end of file to avoid reading empty
-	% file
-	dataLine = fgetl(data);
+	% reading the line before checking for end of file to avoid reading empty file.
+
+	dataLine = fgetl(data);  % failing here means the file isn't present, likely because it was compressed into a zip archive.
 	while not (feof(data))
 		if (length(dataLine) > 0)
 			% process the loaded line into data channels.
@@ -274,7 +274,7 @@ if (Make_figure == true)
 		end;
 		% read next line
 		dataLine = fgetl(data);
-	end;
+	endwhile;
 	fclose(data);
 
 	%%================================================================================================
@@ -313,12 +313,23 @@ if (Make_figure == true)
 	fprintf('\t|\tDefine basic figure parameters, not specific to genome.\n');
 	% basic plot parameters not defined per genome.
 	TickSize         = 0; % -0.005;  %negative for outside, percentage of longest chr figure.
-	bases_per_bin    = max(chr_size)/700;
 	maxY             = 50;   % number of Y-bins in 2D smoothed histogram.
 	cen_tel_Xindent  = 5;
-	cen_tel_Yindent  = maxY/5;
+	cen_tel_Yindent  = maxY/10;
 	largestChr       = find(chr_width == max(chr_width));
 	largestChr       = largestChr(1);
+
+	%% Load CNV and SNP figure resolutions.
+	if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
+		bases_per_bin           = max(chr_size)/700;
+	else
+		bases_per_bin           = max(chr_size)/str2num(fileread([genomeDir 'resolution.CNV.txt']));
+	end;
+	if (exist([genomeDir 'resolution.SNPs.txt'],'file') == 0)
+		bases_per_bin_SNP       = max(chr_size)/700;
+	else
+		bases_per_bin_SNP       = max(chr_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt']));
+	end;
 
 
 	%%================================================================================================
@@ -396,11 +407,19 @@ if (Make_figure == true)
 			chr_mean_scaler(chr) = 0;
 		end;
 	end;
-	median_val = median(all_data(:));
-	mean_val   = mean(all_data(:));
-	mode_val   = mode(all_data(:));
-	min_val    = min(all_data(:));
-	max_val    = max(all_data(:));
+	if (isempty(all_data(:)) == true)
+		median_val = 0;
+		mean_val   = 0;
+		mode_val   = 0;
+		min_val    = 0;
+		max_val    = 0;
+	else
+		median_val = median(all_data(:));
+		mean_val   = mean(all_data(:));
+		mode_val   = mode(all_data(:));
+		min_val    = min(all_data(:));
+		max_val    = max(all_data(:));
+	end;
 
 
 	%% Generate chromosome figures.
@@ -493,57 +512,28 @@ if (Make_figure == true)
 				end;
 
 				% standard : show centromere outlines and horizontal marks.
+				if (chr_size(chr) < 100000)
+					Centromere_format = 0;
+				else
+					Centromere_format = Centromere_format_default;
+				end;
+
 				fprintf('\t|\t\t\tDraw centromere and horizontal lines.\n');
 				x1 = cen_start(chr)/bases_per_bin;
 				x2 = cen_end(chr)/bases_per_bin;
 				leftEnd  = 0.5*5000/bases_per_bin;
 				rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
 				if (Centromere_format == 0)
-					% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
-					dx = cen_tel_Xindent; %5*5000/bases_per_bin;
-					dy = cen_tel_Yindent; %maxY/10;
-					% draw white triangles at corners and centromere locations.
-					% top left corner.
-					c_ = [1.0 1.0 1.0];
-					x_ = [leftEnd   leftEnd   leftEnd+dx];
-					y_ = [maxY-dy   maxY      maxY      ];
-					f = fill(x_,y_,c_);
-					set(f,'linestyle','none');
-					% bottom left corner.
-					x_ = [leftEnd   leftEnd   leftEnd+dx];
-					y_ = [dy        0         0         ];
-					f = fill(x_,y_,c_);
-					set(f,'linestyle','none');
-					% top right corner.
-					x_ = [rightEnd   rightEnd   rightEnd-dx];
-					y_ = [maxY-dy    maxY       maxY      ];
-					f = fill(x_,y_,c_);
-					set(f,'linestyle','none');
-					% bottom right corner.
-					x_ = [rightEnd   rightEnd   rightEnd-dx];
-					y_ = [dy         0          0         ];
-					f = fill(x_,y_,c_);
-					set(f,'linestyle','none');
-					% top centromere.
-					x_ = [x1-dx   x1        x2        x2+dx];
-					y_ = [maxY    maxY-dy   maxY-dy   maxY];
-					f = fill(x_,y_,c_);
-					set(f,'linestyle','none');
-					% bottom centromere.
-					x_ = [x1-dx   x1   x2   x2+dx];
-					y_ = [0       dy   dy   0    ];
-					f = fill(x_,y_,c_);
-					set(f,'linestyle','none');
-					% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
-					plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
-					     [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy     ],...
-					      'Color',[0 0 0]);
+					source('cartoon_stacked_0.m');
+				elseif (Centromere_format == 1)
+					source('cartoon_stacked_1.m');
 				end;
 				% standard : end show centromere.
 
 				%% standard : show annotation locations
 				fprintf('\t|\t\t\tShow annotation locations.\n');
 				if (show_annotations) && (length(annotations) > 0)
+					hold on;
 					plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 					annotation_location = (annotation_start+annotation_end)./2;
 					for i = 1:length(annotation_location)
@@ -585,49 +575,61 @@ if (Make_figure == true)
 					end;
 				end;
 
-				% linear : show allelic ratio data as 2D-smoothed scatter-plot.
+				%% linear : show allelic ratio data as 2D-smoothed scatter-plot.
 				fprintf('\t|\t\t\tDraw 2D smoothed histogram of allelic ratio data in linear figure.\n');
-				% display only if processing succeeded (variables will no be
-				% present if the data is zero)
-				if (exist('imageX') && exist('imageY') && exist('imageC'))
+				chr_length                   = ceil(chr_size(chr)/bases_per_bin);
+				dataX                        = ceil(chr_SNP_data_positions{chr}/bases_per_bin)';
+				dataY1                       = chr_SNP_data_ratios{chr};
+				dataY2                       = (dataY1*maxY)';
+				dataX_CNVcorrection          = ones(1,chr_length);;
+				if (length(dataX) > 0)
+					% 2D smoothed hisogram with correction term.
+					fprintf(['\t|\t\tGenerating chr' num2str(chr) ' final smoothed 2D histogram.\n']);
+					[imageX{chr},imageY{chr},imageC{chr}, discard] = smoothhist2D_4_Xcorrected([dataX dataX 0 chr_length], [dataY2 (maxY-dataY2) 0 0], 0.5,[chr_length maxY],[chr_length maxY], dataX_CNVcorrection, mean_val, chr_mean_scaler(chr));
+
+					fprintf('\t|\t\t\tDe-emphasizing near-homozygous data.\n');
+					% Image correction method to de-emphasize the near homozygous data points.
+					%    The square factor correction was determined empirically, from the relative amounts of data near homozygous and heterozygous.
+					%    Improvements in sequencing technology that reduce sequencing error and reduce near-homozygous data will require adjusting this.
+					imageC_correction          = imageC{chr}*0;
+					for y = 1:maxY
+						imageC_correction(y,:) = 1-abs(y-maxY/2)/(maxY/2);
+					end;
+					imageC{chr} = imageC{chr}.*(1+imageC_correction.^2*16);
+
+					% reverse order of 2D histogram if chromosome is indicated as reversed in figure_definitions.txt file.
+					if (chr_figReversed(chr) == 1)
+						imageX{chr}   = fliplr(imageX{chr});
+					end;
+
+					fprintf('\t|\t\t\tDrawing 2D histogram to figure.\n');
 					image(imageX{chr}, imageY{chr}, imageC{chr});
 				end;
-				% linear : end show allelic ratio data.
+				%% linear : end show allelic ratio data.
 
-				% linear : show centromere.
+				%% linear : show centromere.
+				if (chr_size(chr) < 100000)
+					Centromere_format = 0;
+				else
+					Centromere_format = Centromere_format_default;
+				end;
+
 				fprintf('\t|\t\t\tDraw centromere in linear figure.\n');
 				x1 = cen_start(chr)/bases_per_bin;
 				x2 = cen_end(chr)/bases_per_bin;
-				leftEnd  = 0.5*5000/bases_per_bin;
-				rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
+				leftEnd  = 0;
+				rightEnd = chr_size(chr)/bases_per_bin;
 				if (Centromere_format == 0)
-					% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
-					dx = cen_tel_Xindent; %5*5000/bases_per_bin;
-					dy = cen_tel_Yindent; %maxY/10;
-					% draw white triangles at corners and centromere locations.
-					c_ = [1.0 1.0 1.0];
-					% top left corner.
-					x_ = [leftEnd   leftEnd   leftEnd+dx];        y_ = [maxY-dy   maxY      maxY        ];    f = fill(x_,y_,c_);    set(f,'linestyle','none');
-					% bottom left corner.
-					x_ = [leftEnd   leftEnd   leftEnd+dx];        y_ = [dy        0         0           ];    f = fill(x_,y_,c_);    set(f,'linestyle','none');
-					% top right corner.
-					x_ = [rightEnd   rightEnd   rightEnd-dx];     y_ = [maxY-dy    maxY       maxY      ];    f = fill(x_,y_,c_);    set(f,'linestyle','none');
-					% bottom right corner.
-					x_ = [rightEnd   rightEnd   rightEnd-dx];     y_ = [dy         0          0         ];    f = fill(x_,y_,c_);    set(f,'linestyle','none');
-					% top centromere.
-					x_ = [x1-dx   x1        x2        x2+dx];     y_ = [maxY    maxY-dy   maxY-dy   maxY];    f = fill(x_,y_,c_);    set(f,'linestyle','none');
-					% bottom centromere.
-					x_ = [x1-dx   x1   x2   x2+dx];               y_ = [0       dy   dy   0    ];             f = fill(x_,y_,c_);    set(f,'linestyle','none');
-					% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
-					plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
-					     [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy],...
-					      'Color',[0 0 0]);
+					source('cartoon_linear_0.m');
+				elseif (Centromere_format == 1)
+					source('cartoon_linear_1.m');
 				end;
 				% linear : end show centromere.
 
 				% linear : show annotation locations.
 				if (show_annotations) && (length(annotations) > 0)
 					fprintf('\t|\t\t\tShow annotation locations in linear figure.\n');
+					hold on;
 					plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 					annotation_location = (annotation_start+annotation_end)./2;
 					for i = 1:length(annotation_location)

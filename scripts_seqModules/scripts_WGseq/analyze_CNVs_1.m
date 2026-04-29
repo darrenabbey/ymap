@@ -1,4 +1,4 @@
-function  analyze_CNVs_1(main_dir, user, genomeUser, project, genome, ploidyEstimateString,ploidyBaseString)
+kfunction  analyze_CNVs_1(main_dir, user, genomeUser, project, genome, ploidyEstimateString,ploidyBaseString)
 % analyze_CNVS(<Project Name>,<Project File>,<Ploidy Estimate)
 % A componant of the sequence analysis pipeline, analyzing CNVs only.
 %    <main_dir>             : the main pipeline directory.

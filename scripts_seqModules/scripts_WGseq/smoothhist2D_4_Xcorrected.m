@@ -1,6 +1,6 @@
 function [imageX, imageY, imageC, imageD] = smoothhist2D_4_Xcorrected(x,y,lambda,nbins,rangeMax, XcorrectionVector, mean_val, scaler)
 %
-%  This version allows user control of the colormap in use.   Only standard octave colormaps are valid.
+%  This version allows user control of the colormap in use.   Only standard matlab colormaps are valid.
 %  This version also allows the user to apply a x-correction to the datapoints before smoothing.
 %
 colormap_ = 'hot';
@@ -38,7 +38,7 @@ colormap_ = 'hot';
 %	Copyright 2009 The MathWorks, Inc.
 %	Revision: 1.0  Date: 2006/12/12
 %
-%	Requires octaveÆ R14.
+%	Requires MATLABÆ R14.
 
 outliercutoff = 0;
 if (nargin < 6) || (isempty(outliercutoff))

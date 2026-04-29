@@ -1,5 +1,6 @@
-WRfunction [] = CNV_manualLOH_v1(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, ...
+function [] = CNV_manualLOH_v1(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, ...
                                SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+graphics_toolkit gnuplot;
 addpath('../');
 
 % hide figures during construction.
@@ -19,7 +20,7 @@ end;
 
 
 %% ========================================================================
-%    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
+%    Centromere_format_default  : Controls how centromeres are depicted.   [0..1]   '2' is pinched cartoon default.
 %    bases_per_bin              : Controls bin sizes for SNP/CNV fractions of plot.
 %    scale_type                 : 'Ratio' or 'Log2Ratio' y-axis scaling of copy number.
 %                                 'Log2Ratio' does not properly scale CNV data by ploidy.
@@ -33,7 +34,7 @@ if (exist(manualLOH_file,'file') == 0)
 else
 	fprintf(['\nA MANUAL LOH BOX FILE WAS FOUND, DRAWING FIGURE.\n']);
 
-	Centromere_format           = 0;
+	Centromere_format_default   = 1;
 	Chr_max_width               = 0.8;
 	colorBars                   = true;
 	blendColorBars              = false;
@@ -136,7 +137,7 @@ else
 	end;
 	num_chrs = length(chr_size);
 
-	%% This block is normally calculated in FindChrSizes_2 in CNV analysis.
+	%% This block is normally calculated in FindChrSizes during CNV analysis.
 	for usedChr = 1:num_chrs
 		if (chr_in_use(usedChr) == 1)
 			% determine where the endpoints of ploidy segments are.
@@ -147,8 +148,8 @@ else
 					if (Aneuploidy(i).chr == usedChr)
 						break_count = break_count+1;
 						chr_broken = true;
-							chr_breaks{usedChr}(break_count) = Aneuploidy(i).break;
-				end;
+						chr_breaks{usedChr}(break_count) = Aneuploidy(i).break;
+					end;
 				end;
 			end;
 			chr_breaks{usedChr}(length(chr_breaks{usedChr})+1) = 1;
@@ -176,10 +177,21 @@ else
 
 	% basic plot parameters not defined per genome.
 	TickSize         = -0.005;  %negative for outside, percentage of longest chr figure.
-	bases_per_bin    = max(chr_size)/700;
 	maxY             = ploidyBase*2;
 	cen_tel_Xindent  = 5;
 	cen_tel_Yindent  = maxY/5;
+
+	%% Load CNV and SNP figure resolutions.
+	if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
+		bases_per_bin           = max(chr_size)/700;
+	else
+		bases_per_bin           = max(chr_size)/str2num(fileread([genomeDir 'resolution.CNV.txt']));
+	end;
+	if (exist([genomeDir 'resolution.SNPs.txt'],'file') == 0)
+		bases_per_bin_SNP       = max(chr_size)/700;
+	else
+		bases_per_bin_SNP       = max(chr_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt']));
+	end;
 
 	fprintf(['\nGenerating LOH-map figure from ''' project ''' vs. (hapmap)''' hapmap ''' data.\n']);
 
@@ -188,7 +200,7 @@ else
 	% Load GC-bias corrected CNV data.
 	%-------------------------------------------------------------------------------------------
 	load([projectDir 'Common_CNV.mat']);       % 'CNVplot2','genome_CNV'
-	[chr_breaks, chrCopyNum, ploidyAdjust] = FindChrSizes_4(Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use)
+	[chr_breaks, chrCopyNum, ploidyAdjust, chrCopyRsquared] = FindChrSizes_4(workingDir, Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use, false)
 	largestChr = find(chr_width == max(chr_width));
 	largestChr = largestChr(1);
 
@@ -318,7 +330,7 @@ else
 		manualLOH(lines_analyzed).G       = manualLOH_G;
 		manualLOH(lines_analyzed).B       = manualLOH_B;
 		fprintf(['\t|     ' lineData '\n']);
-	end;
+	endwhile;
 	fclose(manualLOH_fid);
 	fprintf(['\t| manualLOH.txt loaded  \n']);
 	fprintf(['\t*----------------------*\n']);
@@ -491,28 +503,22 @@ else
                                 end;
                         end;
 
-			% standard : show centromere outlines and horizontal marks.
-			x1 = cen_start(chr)/bases_per_bin;
-			x2 = cen_end(chr)/bases_per_bin;
-			leftEnd  = 0.5*5000/bases_per_bin;
-			rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
-			if (Centromere_format == 0)
-				% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
-				dx = cen_tel_Xindent; %5*5000/bases_per_bin;
-				dy = cen_tel_Yindent; %maxY/10;
-				% draw white triangles at corners and centromere locations.
-				fill([leftEnd   leftEnd   leftEnd+dx ],       [maxY-dy   maxY      maxY],         [1.0 1.0 1.0], 'LineStyle', 'none');    % top left corner.
-				fill([leftEnd   leftEnd   leftEnd+dx ],       [dy        0         0   ],         [1.0 1.0 1.0], 'LineStyle', 'none');    % bottom left corner.
-				fill([rightEnd  rightEnd  rightEnd-dx],       [maxY-dy   maxY      maxY],         [1.0 1.0 1.0], 'LineStyle', 'none');    % top right corner.
-				fill([rightEnd  rightEnd  rightEnd-dx],       [dy        0         0   ],         [1.0 1.0 1.0], 'LineStyle', 'none');    % bottom right corner.
-				fill([x1-dx     x1        x2           x2+dx],[maxY      maxY-dy   maxY-dy  maxY],[1.0 1.0 1.0], 'LineStyle', 'none');    % top centromere.
-				fill([x1-dx     x1        x2           x2+dx],[0         dy        dy       0   ],[1.0 1.0 1.0], 'LineStyle', 'none');    % bottom centromere.
-				% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
-				plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx    rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
-				     [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY     maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy     ],...
-				      'Color',[0 0 0]);
-			end;
-			% standard : end show centromere.
+                        %% standard : show centromere.
+                        if (chr_size(chr) < 100000)
+                                Centromere_format = 0;
+                        else
+                                Centromere_format = Centromere_format_default;
+                        end;
+                        x1       = cen_start(chr)/bases_per_bin;
+                        x2       = cen_end(chr)/bases_per_bin;
+                        leftEnd  = 0;                                   % 0.5*(5000/bases_per_bin);
+                        rightEnd = chr_size(chr)/bases_per_bin;         % chr_size(chr)/bases_per_bin-0.5*(5000/bases_per_bin);
+                        if (Centromere_format == 0)
+                                source('cartoon_stacked_0.m');
+                        elseif (Centromere_format == 1)
+                                source('cartoon_stacked_1.m');
+                        end;
+                        %% standard : end show centromere.
 
 			% standard : show annotation locations
 		    if (show_annotations) && (length(annotations) > 0)
@@ -704,28 +710,22 @@ else
         	                        end;
 	                        end;
 
-				% linear : show centromere.
-				x1 = cen_start(chr)/bases_per_bin;
-				x2 = cen_end(chr)/bases_per_bin;
-				leftEnd  = 0.5*5000/bases_per_bin;
-				rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
-				if (Centromere_format == 0)
-					% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
-					dx = cen_tel_Xindent; %5*5000/bases_per_bin;
-					dy = cen_tel_Yindent; %maxY/10;
-					% draw white triangles at corners and centromere locations.
-					fill([leftEnd   leftEnd   leftEnd+dx ],       [maxY-dy   maxY      maxY],         [1.0 1.0 1.0], 'linestyle', 'none');  % top left corner.
-					fill([leftEnd   leftEnd   leftEnd+dx ],       [dy        0         0   ],         [1.0 1.0 1.0], 'linestyle', 'none');  % bottom left corner.
-					fill([rightEnd  rightEnd  rightEnd-dx],       [maxY-dy   maxY      maxY],         [1.0 1.0 1.0], 'linestyle', 'none');  % top right corner.
-					fill([rightEnd  rightEnd  rightEnd-dx],       [dy        0         0   ],         [1.0 1.0 1.0], 'linestyle', 'none');  % bottom right corner.
-					fill([x1-dx     x1        x2           x2+dx],[maxY      maxY-dy   maxY-dy  maxY],[1.0 1.0 1.0], 'linestyle', 'none');  % top centromere.
-					fill([x1-dx     x1        x2           x2+dx],[0         dy        dy       0   ],[1.0 1.0 1.0], 'linestyle', 'none');  % bottom centromere.
-					% draw outlines of chromosome cartoon.   (drawn after horizontal lines to that cartoon edges are not interrupted by horiz lines.
-					plot([leftEnd   leftEnd   leftEnd+dx   x1-dx   x1        x2        x2+dx   rightEnd-dx   rightEnd   rightEnd   rightEnd-dx   x2+dx   x2   x1   x1-dx   leftEnd+dx   leftEnd],...
-					      [dy        maxY-dy   maxY         maxY    maxY-dy   maxY-dy   maxY    maxY          maxY-dy    dy         0             0       dy   dy   0       0            dy],...
-					      'Color',[0 0 0]);
-				end;
-				% linear : end show centromere.
+                        %% linear : show centromere/outline.
+                        if (chr_size(chr) < 100000)
+                                Centromere_format = 0;
+                        else
+                                Centromere_format = Centromere_format_default;
+                        end;
+                        x1       = cen_start(chr)/bases_per_bin;
+                        x2       = cen_end(chr)/bases_per_bin;
+                        leftEnd  = 0;                                   % 0.5*(5000/bases_per_bin);
+                        rightEnd = chr_size(chr)/bases_per_bin;         % chr_size(chr)/bases_per_bin-0.5*(5000/bases_per_bin);
+                        if (Centromere_format == 0)
+                                source('cartoon_linear_0.m');
+                        elseif (Centromere_format == 1)
+                                source('cartoon_linear_1.m');
+                        end;
+                        %% linear : end show centromere/outline.
 
 		        % linear : show annotation locations
 		        if (show_annotations) && (length(annotations) > 0)

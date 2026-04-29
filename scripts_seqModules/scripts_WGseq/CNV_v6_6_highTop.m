@@ -1,4 +1,6 @@
-function [] = CNV_v6_6_highTop(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,rDNA_verString,displayBREAKS, referenceCHR);
+function [] = CNV_v6_6_highTop(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString, ...
+							   CNV_verString,rDNA_verString,displayBREAKS, referenceCHR);
+graphics_toolkit gnuplot;
 addpath('../');
 
 % hide figures during construction.
@@ -6,6 +8,7 @@ set(0,'DefaultFigureVisible','off');
 
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
+	%%figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
 	figure_options = importdata([main_dir 'users/' user '/projects/' project '/figure_options.txt'],'\t',1);
 
         option         = figure_options{6,1};
@@ -38,7 +41,7 @@ if (Make_figure == true)
 	ChrNum				= true;
 	show_annotations		= true;
 	analyze_rDNA			= true;
-	Standard_display                = false;	%% Not shown to user, so lets not make it.
+	Standard_display                = false;
 	Linear_display			= true;
 	Linear_displayBREAKS		= false;
 	Low_quality_ploidy_estimate	= true;
@@ -160,7 +163,6 @@ if (Make_figure == true)
 	[chr_breaks, chrCopyNum, ploidyAdjust, chrCopyRsquared] = FindChrSizes_4(workingDir, Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use, false);
 	fprintf('\n');
 
-
 	%% -----------------------------------------------------------------------------------------
 	% Setup for main figure generation.
 	%------------------------------------------------------------------------------------------
@@ -211,8 +213,8 @@ if (Make_figure == true)
 		end;
 	end;
 	medianCNV = median(CNVdata_all)
-	% avoid dividing by zero
-	if (medianCNV ~= 0)
+	% avoid divding by zero
+	if (medianCNV > 0)
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
 				CNVplot2{chr} = CNVplot2{chr}/medianCNV;
@@ -232,7 +234,6 @@ if (Make_figure == true)
 		chr_pos = find(chr_figOrder==test_chr);
 		chr_order = [chr_order chr_pos];
 	end;
-
 
 	% Draw chromosomes in order defined in figure_definitions.txt file.
 	for chr_to_draw  = 1:length(chr_order)
@@ -294,7 +295,6 @@ if (Make_figure == true)
 					set(f,'linestyle','none');
 				end;
 				% standard : end of : CNV plot section.
-
 
 				x2 = chr_size(chr)/bases_per_bin;
 				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
@@ -360,9 +360,9 @@ if (Make_figure == true)
 				set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 				set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
 				if (chr_figReversed(chr) == 0)
-					text(-50000/5000/2*3, maxY*3/2,chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+					text(-50000/5000/2*3, maxY*3/2,chr_label{chr}, 'rotation',90, 'horizontalalignment', 'center', 'verticalalignment', 'bottom', 'fontsize', stacked_chr_font_size);
 				else
-					text(-50000/5000/2*3, maxY*3/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+					text(-50000/5000/2*3, maxY*3/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'rotation',90, 'horizontalalignment', 'center', 'verticalalignment', 'bottom', 'fontsize', stacked_chr_font_size);
 				end;
 
 				% standard : This section sets the Y-axis labelling.
@@ -411,12 +411,11 @@ if (Make_figure == true)
 
 				set(gca,'FontSize',gca_stacked_font_size/2);
 				if (chr == find(chr_posY == max(chr_posY)))
-					title([ project ' CNV map'],'Interpreter','none','FontSize',stacked_title_size);
+					title([ project ' CNV only'],'Interpreter','none','FontSize',stacked_title_size);
 				end;
 
 				hold on;
 				% standard : end axes labels etc.
-
 
 				%% standard : show segmental anueploidy breakpoints.
 				if (displayBREAKS == true) && (show_annotations == true)
@@ -428,11 +427,10 @@ if (Make_figure == true)
 				end;
 				% standard : end of : show segmental aneuploidy breakpoints.
 
-
 				% standard : show annotation locations
 				if (show_annotations) && (length(annotations) > 0)
-					plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 					hold on;
+					plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 					annotation_location = (annotation_start+annotation_end)./2;
 					for i = 1:length(annotation_location)
 						if (annotation_chr(i) == chr)
@@ -441,8 +439,8 @@ if (Make_figure == true)
 							annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 							if (strcmp(annotation_type{i},'dot') == 1)
 								plot(annotationLoc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
-												      'MarkerFaceColor',annotation_fillcolor{i}, ...
-												      'MarkerSize',	annotation_size(i));
+																	  'MarkerFaceColor',annotation_fillcolor{i}, ...
+																	  'MarkerSize',	 annotation_size(i));
 							elseif (strcmp(annotation_type{i},'block') == 1)
 								fill([annotationStart annotationStart annotationEnd annotationEnd], ...
 									 [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
@@ -453,7 +451,6 @@ if (Make_figure == true)
 					hold off;
 				end;
 				% standard : end show annotation locations.
-
 
 				% standard : make CNV histograms to the right of the main chr cartoons.
 				if (HistPlot == true)
@@ -548,7 +545,7 @@ if (Make_figure == true)
 
 				% linear : show centromere.
 				if (chr_size(chr) < 100000)
-					Centromere_format = 0;
+					Centromere_format = 1;
 				else
 					Centromere_format = Centromere_format_default;
 				end;
@@ -562,7 +559,6 @@ if (Make_figure == true)
 					source('cartoon_linear_1.m');
 				end;
 				% linear : end show centromere.
-
 
 				%% linear : CNV plot section.
 				c_ = [0 0 0];
@@ -588,7 +584,6 @@ if (Make_figure == true)
 				x2 = chr_size(chr)/bases_per_bin;
 				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
 
-
 				%% linear : draw lines across plots for easier interpretation of CNV regions.
 				switch ploidyBase
 					case 1
@@ -611,7 +606,7 @@ if (Make_figure == true)
 						line([0 x2], [maxY/6*4 maxY/6*4],'Color',[0.85 0.85 0.85]);
 						line([0 x2], [maxY/6*5 maxY/6*5],'Color',[0.85 0.85 0.85]);
 						% above chr bounds.
-						for lineNum = 7:18   
+						for lineNum = 7:18
 							line([0 x2], [maxY/6*lineNum  maxY/6*lineNum ],'Color',[0.85 0.85 0.85]);
 						end;
 					case 4
@@ -623,28 +618,26 @@ if (Make_figure == true)
 						line([0 x2], [maxY/8*6 maxY/8*6],'Color',[0.85 0.85 0.85]);
 						line([0 x2], [maxY/8*7 maxY/8*7],'Color',[0.85 0.85 0.85]);
 						% above chr bounds.
-						for lineNum = 9:24   
+						for lineNum = 9:24
 							line([0 x2], [maxY/8*lineNum  maxY/8*lineNum ],'Color',[0.85 0.85 0.85]);
 						end;
 				end;
 				%% linear : end CNV plot section.
 
-
 				%% linear : show segmental anueploidy breakpoints.
 				if (Linear_displayBREAKS == true) && (show_annotations == true)
 					chr_length = ceil(chr_size(chr)/bases_per_bin);
 					for segment = 2:length(chr_breaks{chr})-1
-						bP = chr_breaks{chr}(segment)*chr_length;
-						plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+							bP = chr_breaks{chr}(segment)*chr_length;
+							plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
 					end;
 				end;
 				% linear : end of : show segmental aneuploidy breakpoints.
 
-
 				%% linear : show annotation locations
 				if (show_annotations) && (length(annotations) > 0)
-					plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 					hold on;
+					plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 					annotation_location = (annotation_start+annotation_end)./2;
 					for i = 1:length(annotation_location)
 						if (annotation_chr(i) == chr)
@@ -653,8 +646,8 @@ if (Make_figure == true)
 							annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 							if (strcmp(annotation_type{i},'dot') == 1)
 								plot(annotationLoc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
-												      'MarkerFaceColor',annotation_fillcolor{i}, ...
-												      'MarkerSize',	 annotation_size(i));
+																	  'MarkerFaceColor',annotation_fillcolor{i}, ...
+																	  'MarkerSize',	 annotation_size(i));
 							elseif (strcmp(annotation_type{i},'block') == 1)
 								fill([annotationStart annotationStart annotationEnd annotationEnd], ...
 									 [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
@@ -666,10 +659,8 @@ if (Make_figure == true)
 				end;
 				% linear : end show annotation locations.
 
-
 				%% linear : Final formatting stuff.
 				xlim([0,chr_size(chr)/bases_per_bin]);
-
 
 				%% linear : modify y axis limits to show annotation locations if any are provided.
 				if (length(annotations) > 0)
@@ -730,8 +721,7 @@ if (Make_figure == true)
 					end;
 				end;
 				set(gca,'FontSize',linear_gca_font_size);
-				% linear : end final reformatting.
-
+				%% linear : end final reformatting.
 
 				% adding title in the middle of the cartoon
 				% note: adding title is done in the end since if placed upper
