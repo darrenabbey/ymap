@@ -45,12 +45,12 @@ end;
 
 %% ========================================================================
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
-%    bases_per_bin              : Controls bin sizes for SNP/CNV fractions of plot.
+%    bases_per_bin                Controls bin sizes for CNV fraction of plot.
 %    scale_type                 : 'Ratio' or 'Log2Ratio' y-axis scaling of copy number.
 %                                 'Log2Ratio' does not properly scale CNV data by ploidy.
 %    Chr_max_width              : max width of chrs as fraction of figure width.
 fprintf('\t|\tSetup for processing.\n');
-Centromere_format              = 1;
+Centromere_format_default      = 2;
 Chr_max_width                  = 0.8;
 colorBars                      = true;
 blendColorBars                 = false;
@@ -62,7 +62,6 @@ Linear_displayBREAKS           = false;
 AnglePlot                      = true;   % Show histogram of alleleic fraction at the left end of standard figure chromosomes.
 FillColors                     = true;   %     Fill histogram using colors.
 show_uncalibrated              = false;  %     Fill with single color instead of ratio call colors.
-
 
 
 %%=========================================================================
