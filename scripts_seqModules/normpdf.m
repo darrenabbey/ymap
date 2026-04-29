@@ -36,4 +36,3 @@ catch
     error('stats:normpdf:InputSizeMismatch',...
           'Non-scalar arguments must match in size.');
 end
-

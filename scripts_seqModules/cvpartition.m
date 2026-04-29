@@ -1,626 +1,1501 @@
+## Copyright (C) 2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Avanish Salunke <avanishsalunke16@gmail.com>
+##
+## This file is part of the statistics package for GNU Octave.
+##
+## This program is free software; you can redistribute it and/or modify it under
+## the terms of the GNU General Public License as published by the Free Software
+## Foundation; either version 3 of the License, or (at your option) any later
+## version.
+##
+## This program is distributed in the hope that it will be useful, but WITHOUT
+## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+## FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+## details.
+##
+## You should have received a copy of the GNU General Public License along with
+## this program; if not, see <http://www.gnu.org/licenses/>.
+
 classdef cvpartition
-    %CVPARTITION Create a cross-validation partition for data.
-    %   An object of the CVPARTITION class defines a random partition on a
-    %   set of data of a specified size.  This partition can be used to
-    %   define test and training sets for validating a statistical model
-    %   using cross-validation.
-    %
-    %   C = CVPARTITION(N,'Kfold',K) creates a CVPARTITION object C
-    %   defining a random partition for K-fold cross-validation on N
-    %   observations. The partition divides N observations into K disjoint
-    %   subsamples (folds), chosen randomly but with roughly equal size.
-    %   The default value of K is 10.
-    %
-    %   C = CVPARTITION(GROUP,'Kfold',K) creates a CVPARTITION object C
-    %   defining a random partition for a stratified K-fold
-    %   cross-validation. GROUP is a vector indicating the class
-    %   information for each observation. GROUP can be a categorical
-    %   variable, a numeric vector, a string array, or a cell array of
-    %   strings. Each subsample has roughly equal size and roughly the same
-    %   class proportions as in GROUP. CVPARTITION treats NaNs or empty
-    %   strings in GROUP as missing values.
-    %
-    %   C = CVPARTITION(N,'Holdout',P) creates a CVPARTITION object C
-    %   defining a random partition for holdout validation on N
-    %   observations. This partition divides N observations into a training
-    %   set and a test (holdout) set. P must be a scalar. When 0<P<1,
-    %   CVPARTITION randomly selects approximately P*N observations for the
-    %   test set. When P is an integer, it randomly selects P observations
-    %   for the test set. The default value of P is 1/10.
-    %
-    %   C = CVPARTITION(GROUP,'Holdout',P) randomly partitions observations
-    %   into a training set and a test set with stratification, using the
-    %   class information in GROUP, i.e., both training and test sets have
-    %   roughly the same class proportions as in GROUP.
-    %
-    %   C = CVPARTITION(N,'Leaveout') creates an object C defining a random
-    %   partition for Leave-one-out cross-validation on N observations.
-    %   Leave-one-out is a special case of K-fold in which the number of
-    %   folds is equal to the number of observations N.
-    %
-    %   C = CVPARTITION(N,'Resubstitution') creates a CVPARTITION object C
-    %   which does not partition the data. Both the training set and the
-    %   test set contain all of the original N observations.
-    %
-    %   C has the following properties:
-    %
-    %      Type         The type of validation partition. It is 'kfold',
-    %                   'holdout', 'leaveout' or 'resubstitution'.
-    %      N            The number of observations (including observations
-    %                   with missing GROUP values if GROUP is provided).
-    %      NumTestSets  The number of test sets. Its value is the
-    %                   number of folds in K-fold and Leave-one-out, 1 in
-    %                   Holdout and Resubstitution.
-    %      TrainSize    The size of each training set. It is a vector in
-    %                   K-fold and Leave-one-out, a scalar in Holdout and
-    %                   Resubstitution.
-    %      TestSize     The size of each test set. It is a vector in K-fold
-    %                   and Leave-one-out or a scalar in Holdout and
-    %                   Resubstitution.
-    %
-    %   Example: Use 10-fold stratified cross-validation to compute the
-    %   mis-classification error for CLASSIFY on iris data.
-    %
-    %     load('fisheriris');
-    %     CVO = cvpartition(species,'k',10);
-    %     err = zeros(CVO.NumTestSets,1);
-    %     for i = 1:CVO.NumTestSets
-    %         trIdx = CVO.training(i);
-    %         teIdx = CVO.test(i);
-    %         ytest = classify(meas(teIdx,:),meas(trIdx,:),species(trIdx,:));
-    %         err(i) = sum(~strcmp(ytest,species(teIdx)));
-    %     end
-    %     cvErr = sum(err)/sum(CVO.TestSize);
-    %
-    %   See also CVPARTITION/TEST, CVPARTITION/TRAINING, CVPARTITION/REPARTITION, CROSSVAL.
-    %   Copyright 2007-2009 The MathWorks, Inc.
-    %   $Revision: 1.1.6.8 $  $Date: 2009/07/18 15:55:08 $
+  ## -*- texinfo -*-
+  ## @deftp {statistics} cvpartition
+  ##
+  ## Partition data for cross-validation
+  ##
+  ## The @code{cvpartition} class generates a partitioning scheme on a dataset
+  ## to facilitate cross-validation of statistical models utilizing training and
+  ## testing subsets of the dataset.
+  ##
+  ## @seealso{crossval}
+  ## @end deftp
 
-    properties(GetAccess = 'public', SetAccess = 'protected')
-        Type = '';
-        N = [];
-        NumTestSets = [];
-        TrainSize = [];
-        TestSize = [];
-    end
+  properties (GetAccess = public, SetAccess = private)
+    ## -*- texinfo -*-
+    ## @deftp {cvpartition} {property} NumObservations
+    ##
+    ## Number of observations
+    ##
+    ## A positive integer scalar specifying the number of observations in the
+    ## dataset (including any missing data, where applicable).  This property
+    ## is read-only.
+    ##
+    ## @end deftp
+    NumObservations = [];
 
-    properties(GetAccess = 'protected', SetAccess = 'protected')
-        indices = [];
-        Group = [];
-        holdoutT = [];
-    end
+    ## -*- texinfo -*-
+    ## @deftp {cvpartition} {property} NumTestSets
+    ##
+    ## Number of test sets
+    ##
+    ## A positive integer scalar specifying the number of folds for partition
+    ## types @qcode{'kfold'} and @qcode{'leaveout'}.  When partition type is
+    ## @qcode{'holdout'} and @qcode{'resubstitution'}, then @qcode{NumTestSets}
+    ## is 1.  This property is read-only.
+    ##
+    ## @end deftp
+    NumTestSets     = [];
 
-    methods(Access = 'public')
-        function cv = cvpartition(N,method,T,varargin)
-            
-            if isempty(varargin)
-                s = RandStream.getGlobalStream;
-                stdargin = nargin;
+    ## -*- texinfo -*-
+    ## @deftp {cvpartition} {property} TrainSize
+    ##
+    ## Size of each train set
+    ##
+    ## A positive integer scalar specifying the size of the train set for
+    ## partition types @qcode{'holdout'} and @qcode{'resubstitution'} or a
+    ## vector of positive integers specifying the size of each training set for
+    ## partition types @qcode{'kfold'} and @qcode{'leaveout'}.  This property
+    ## is read-only.
+    ##
+    ## @end deftp
+    TrainSize       = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {cvpartition} {property} TestSize
+    ##
+    ## Size of each test set
+    ##
+    ## A positive integer scalar specifying the size of the test set for
+    ## partition types @qcode{'holdout'} and @qcode{'resubstitution'} or a
+    ## vector of positive integers specifying the size of each testing set for
+    ## partition types @qcode{'kfold'} and @qcode{'leaveout'}.  This property
+    ## is read-only.
+    ##
+    ## @end deftp
+    TestSize        = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {cvpartition} {property} Type
+    ##
+    ## Type of validation partition
+    ##
+    ## A character vector specifying the type of the @qcode{cvpartition} object.
+    ## It can be @qcode{kfold}, @qcode{holdout}, @qcode{leaveout}, or
+    ## @qcode{resubstitution}.  This property is read-only.
+    ##
+    ## @end deftp
+    Type            = '';
+
+    ## -*- texinfo -*-
+    ## @deftp {cvpartition} {property} IsCustom
+    ##
+    ## Flag for custom partition
+    ##
+    ## A logical scalar specifying whether the @qcode{cvpartition} object
+    ## was created using custom partition partitioning (@qcode{true}) or
+    ## not (@qcode{false}).  This property is read-only.
+    ##
+    ## @end deftp
+    IsCustom        = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {cvpartition} {property} IsGrouped
+    ##
+    ## Flag for grouped partition
+    ##
+    ## A logical scalar specifying whether the @qcode{cvpartition} object was
+    ## created using grouping variables (@qcode{true}) or not (@qcode{false}).
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    IsGrouped       = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {cvpartition} {property} IsStratified
+    ##
+    ## Flag for stratified partition
+    ##
+    ## A logical scalar specifying whether the @qcode{cvpartition} object was
+    ## created with a @qcode{'stratify'} value of @qcode{true}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    IsStratified    = [];
+
+  endproperties
+
+  properties (Access = private, Hidden)
+    missidx = [];
+    indices = [];
+    cvptype = '';
+    classes = [];
+    classID = [];
+    grpvars = [];
+  endproperties
+
+  methods (Hidden)
+
+    ## Custom display
+    function display (this)
+      in_name = inputname (1);
+      if (! isempty (in_name))
+        fprintf ('%s =\n', in_name);
+      endif
+      disp (this);
+    endfunction
+
+    ## Custom display
+    function disp (this)
+      fprintf ("\n%s\n", this.cvptype);
+      ## Print selected properties
+      fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
+      fprintf ("%+25s: %d\n", 'NumTestSets', this.NumTestSets);
+      vlen = numel (this.TrainSize);
+      if (vlen <= 10)
+        str = repmat ({"%d"}, 1, vlen);
+        str = strcat ('[', strjoin (str, ' '), ']');
+        str1 = sprintf (str, this.TrainSize);
+        str2 = sprintf (str, this.TestSize);
+      else
+        str = repmat ({"%d"}, 1, 10);
+        str = strcat ('[', strjoin (str, ' '), ' ... ]');
+        str1 = sprintf (str, this.TrainSize(1:10));
+        str2 = sprintf (str, this.TestSize(1:10));
+      endif
+      fprintf ("%+25s: %s\n", 'TrainSize', str1);
+      fprintf ("%+25s: %s\n", 'TestSize', str2);
+      fprintf ("%+25s: %d\n", 'IsCustom', this.IsCustom);
+      fprintf ("%+25s: %d\n", 'IsGrouped', this.IsGrouped);
+      fprintf ("%+25s: %d\n\n", 'IsStratified', this.IsStratified);
+    endfunction
+
+    ## Class specific subscripted reference
+    function varargout = subsref (this, s)
+      chain_s = s(2:end);
+      s = s(1);
+      t = "Invalid %s indexing for referencing values in a cvpartition object.";
+      switch (s.type)
+        case '()'
+          error (t, '()');
+        case '{}'
+          error (t, '{}');
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("cvpartition.subsref: '.' indexing", ...
+                           " argument must be a character vector."));
+          endif
+          try
+            out = this.(s.subs);
+          catch
+            error ("cvpartition.subref: unrecognized property: '%s'", s.subs);
+          end_try_catch
+      endswitch
+      ## Chained references
+      if (! isempty (chain_s))
+        out = subsref (out, chain_s);
+      endif
+      varargout{1} = out;
+    endfunction
+
+    ## Class specific subscripted assignment
+    function this = subsasgn (this, s, val)
+      if (numel (s) > 1)
+        error (strcat ("cvpartition.subsasgn:", ...
+                       " chained subscripts not allowed."));
+      endif
+      t = "Invalid %s indexing for assigning values to a cvpartition object.";
+      switch s.type
+        case '()'
+          error (t, '()');
+        case '{}'
+          error (t, '{}');
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("cvpartition.subsasgn: '.' indexing", ...
+                           " argument must be a character vector."));
+          endif
+          error (strcat ("cvpartition.subsasgn: unrecognized", ...
+                         " or read-only property: '%s'"), s.subs);
+      endswitch
+    endfunction
+
+  endmethods
+
+  methods (Access = public)
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {cvpartition} {@var{C} =} cvpartition (@var{n}, @qcode{'KFold'})
+    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{n}, @qcode{'KFold'}, @var{k})
+    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{n}, @qcode{'KFold'}, @var{k}, @qcode{'GroupingVariables'}, @var{grpvars})
+    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{n}, @qcode{'Holdout'})
+    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{n}, @qcode{'Holdout'}, @var{p})
+    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{n}, @qcode{'Leaveout'})
+    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{n}, @qcode{'Resubstitution'})
+    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'KFold'})
+    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'KFold'}, @var{k})
+    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'KFold'}, @var{k}, @qcode{'Stratify'}, @var{opt})
+    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'Holdout'})
+    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'Holdout'}, @var{p})
+    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'Holdout'}, @var{p}, @qcode{'Stratify'}, @var{opt})
+    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@qcode{'CustomPartition'}, @var{testSets})
+    ##
+    ## Repartition data for cross-validation.
+    ##
+    ## @code{@var{C} = cvpartition (@var{n}, @qcode{'KFold'})} creates a
+    ## @qcode{cvpartition} object @var{C}, which defines a random nonstratified
+    ## partition for k-fold cross-validation on @var{n} observations with each
+    ## fold (subsample) having approximately the same number of observations.
+    ## The default number of folds is 10 for @code{@var{n} >= 10} or equal to
+    ## @var{n} otherwise.
+    ##
+    ## @code{@var{C} = cvpartition (@var{n}, @qcode{'KFold'}, @var{k})} also
+    ## creates a nonstratified random partition for k-fold cross-validation with
+    ## the number of folds defined by @var{k}, which must be a positive integer
+    ## scalar smaller than the number of observations @var{n}.
+    ##
+    ## @code{@var{C} = cvpartition (@var{n}, @qcode{'KFold'}, @var{k},
+    ## @qcode{'GroupingVariables'}, @var{grpvars})} creates a @qcode{cvpartition}
+    ## object @var{C} that defines a random partition for k-fold cross-validation
+    ## with each fold containing the same combination of group labels as defined
+    ## by @var{grpvars}.  The grouping variables specified in @var{grpvars} can
+    ## be one of the following:
+    ##
+    ## @itemize
+    ## @item A numeric vector, logical vector, categorical vector, character
+    ## array, string array, or cell array of character vectors containing one
+    ## grouping variable.
+    ## @item A numeric matrix or cell array containing two or more grouping
+    ## variables. Each column in the matrix or array must correspond to one
+    ## grouping variable.
+    ## @end itemize
+    ##
+    ## @code{@var{C} = cvpartition (@var{n}, @qcode{'Holdout'})} creates a
+    ## @qcode{cvpartition} object @var{C}, which defines a random nonstratified
+    ## partition for holdout validation on @var{n} observations.  90% of the
+    ## observations are assigned to the training set and the remaining 10% to
+    ## the test set.
+    ##
+    ## @code{@var{C} = cvpartition (@var{n}, @qcode{'Holdout'}, @var{p})} also
+    ## creates a nonstratified random partition for holdout validation with the
+    ## percentage of training and test sets defined by @var{p}, which can be a
+    ## scalar value in the range @math{(0,1)} or a positive integer scalar in
+    ## the range @math{[1,@var{n})}.
+    ##
+    ## @code{@var{C} = cvpartition (@var{n}, @qcode{'Leaveout'})} creates a
+    ## @qcode{cvpartition} object @var{C}, which defines a random partition for
+    ## leave-one-out cross-validation on @var{n} observations.  This is a
+    ## special case of k-fold cross-validation with the number of folds equal to
+    ## the number of observations.
+    ##
+    ## @code{@var{C} = cvpartition (@var{n}, @qcode{'Resubstitution'})} creates
+    ## a @qcode{cvpartition} object @var{C} without partitioning the data and
+    ## both training and test sets containing all observations @var{n}.
+    ##
+    ## @code{@var{C} = cvpartition (@var{X}, @qcode{'KFold'})} creates a
+    ## @qcode{cvpartition} object @var{C}, which defines a stratified random
+    ## partition for k-fold cross-validation according to the class proportions
+    ## in @var{Χ}.  @var{X} can be a numeric, logical, categorical, or string
+    ## vector, or a character array or a cell array of character vectors.
+    ## Missing values in @var{X} are discarded.  The default number of folds is
+    ## 10 for @code{numel (@var{X}) >= 10} or equal to @code{numel (@var{X})}
+    ## otherwise.
+    ##
+    ## @code{@var{C} = cvpartition (@var{X}, @qcode{'KFold'}, @var{k})} also
+    ## creates a stratified random partition for k-fold cross-validation with
+    ## the number of folds defined by @var{k}, which must be a positive integer
+    ## scalar smaller than the number of observations in @var{X}.
+    ##
+    ## @code{@var{C} = cvpartition (@var{X}, @qcode{'KFold'}, @var{k},
+    ## @qcode{'Stratify'}, @var{opt})} creates a random partition for k-fold
+    ## cross-validation, which is stratified if @var{opt} is @qcode{true}, or
+    ## nonstratified if @var{opt} is @qcode{false}.
+    ##
+    ## @code{@var{C} = cvpartition (@var{X}, @qcode{'Holdout'})} creates a
+    ## @qcode{cvpartition} object @var{C}, which defines a stratified random
+    ## partition for holdout validation while maintaining the class proportions
+    ## in @var{Χ}.  90% of the observations are assigned to the training set and
+    ## the remaining 10% to the test set.
+    ##
+    ## @code{@var{C} = cvpartition (@var{X}, @qcode{'Holdout'}, @var{p})} also
+    ## creates a stratified random partition for holdout validation with the
+    ## percentage of training and test sets defined by @var{p}, which can be a
+    ## scalar value in the range @math{(0,1)} or a positive integer scalar in
+    ## the range @math{[1,@var{n})}.
+    ##
+    ## @code{@var{C} = cvpartition (@var{X}, @qcode{'Holdout'}, @var{p},
+    ## @qcode{'Stratify'}, @var{opt})} creates a random partition for holdout
+    ## validation, which is stratified if @var{opt} is @qcode{true}, or
+    ## nonstratified if @var{opt} is @qcode{false}.
+    ##
+    ## @code{@var{C} = cvpartition (@qcode{'CustomPartition'}, @var{testSets})}
+    ## creates a custom partition according to @var{testSets}, which can be a
+    ## positive integer vector, a logical vector, or a logical matrix according
+    ## to the following options:
+    ## @itemize
+    ## @item A positive integer vector of length @math{N} with values in the
+    ## range @math{[1,K]}, where @math{K < N}, will specify a K-fold
+    ## cross-validation partition, in which each value indicates the test set
+    ## of each observation.  Alternatively, the same vector with values in the
+    ## range @math{[1,N]} will specify a leave-one-out cross-validation.
+    ## @item A logical vector will specify a holdout validation, in which the
+    ## @qcode{true} elements correspond to the test set and the @qcode{false}
+    ## elements correspond to the training set.
+    ## @item A logical matrix with @math{K} columns will specify a K-fold
+    ## cross-validation partition, in which each column corresponds to a fold
+    ## and each row to an observation.  Alternatively, an @math{NxN} logical
+    ## matrix will specify a leave-one-out cross-validation, where @math{N} is
+    ## the number of observations.  @qcode{true} elements correspond to the
+    ## test set and the @qcode{false} elements correspond to the training set.
+    ## @end itemize
+    ##
+    ## @seealso{cvpartition, summary, test, training}
+    ## @end deftypefn
+
+    function this = cvpartition (X, varargin)
+
+      ## Check for appropriate number of input arguments
+      if (nargin < 2)
+        error ("cvpartition: too few input arguments.");
+      endif
+      if (nargin > 5)
+        error ("cvpartition: too many input arguments.");
+      endif
+
+      ## Check for custom partition
+      if (strcmpi (X, "CustomPartition"))
+        testSets = varargin{1};
+        ## Check for valid test set
+        if (! (isnumeric (testSets) || islogical (testSets)))
+          error ("cvpartition: TESTSETS must be numeric of logical.");
+        endif
+        if (isnumeric (testSets))
+          if (! isvector (testSets))
+            error ("cvpartition: TESTSETS must be a numeric vector.");
+          endif
+          [~, idx, inds] = unique (testSets);
+          this.NumObservations = numel (testSets);
+          this.NumTestSets = numel (idx);
+          nvec = this.NumObservations * ones (1, this.NumTestSets);
+          if (this.NumTestSets < this.NumObservations)
+            this.indices = inds;
+            for i = 1:this.NumTestSets
+              this.TestSize(i) = sum (inds == i);
+            endfor
+            this.TrainSize = nvec - this.TestSize;
+            this.Type = 'kfold';
+            this.cvptype = 'K-fold cross validation partition';
+          else
+            this.TrainSize = nvec - 1;
+            this.TestSize = nvec - this.TrainSize;
+            this.Type = 'leaveout';
+            this.cvptype = 'Leave-one-out cross validation partition';
+          endif
+        else  # logical vector of matrix
+          if (! ismatrix (testSets))
+            error ("cvpartition: TESTSETS must be a logical vector or matrix.");
+          elseif (isvector (testSets))
+            this.NumObservations = numel (testSets);
+            this.NumTestSets = 1;
+            this.indices = testSets;
+            this.TrainSize = sum (! testSets);
+            this.TestSize = sum (testSets);
+            this.Type = 'holdout';
+            this.cvptype = 'Hold-out cross validation partition';
+          else  # logical matrix
+            ## Each observation must be present in exactly one test set
+            if (any (sum (testSets, 2) > 1))
+              error (strcat ("cvpartition: each observation in TESTSETS", ...
+                             " must be exactly one in each row."));
+            endif
+            [this.NumObservations, this.NumTestSets] = size (testSets);
+            nvec = this.NumObservations * ones (1, this.NumTestSets);
+            if (this.NumTestSets < this.NumObservations)
+              this.indices = zeros (this.NumObservations, 1);
+              for i = 1:this.NumTestSets
+                this.TestSize(i) = sum (testSets(:,i));
+                this.indices(testSets(:,i)) = i;
+              endfor
+              this.TrainSize = nvec - this.TestSize;
+              this.Type = 'kfold';
+              this.cvptype = 'K-fold cross validation partition';
+            elseif (this.NumTestSets == this.NumObservations)
+              this.TrainSize = nvec - 1;
+              this.TestSize = nvec - this.TrainSize;
+              this.Type = 'leaveout';
+              this.cvptype = 'Leave-one-out cross validation partition';
             else
-                if length(varargin)>1
-                    error('stats:cvpartition:cvpartition', ...
-                        'CVPARTITION can have at most one optional argument');
+              error (strcat ("cvpartition: a logical matrix in TESTSETS", ...
+                             " must not have more columns that rows."));
+            endif
+          endif
+        endif
+        this.IsCustom = true;
+        this.IsGrouped = false;
+        this.IsStratified = false;
+
+      ## Check first input being a scalar value
+      elseif (isscalar (X))
+        if (! (isnumeric (X) && X > 0 && fix (X) == X))
+          error ("cvpartition: X must be a scalar positive integer value.");
+        endif
+        ## Get number of observations and partition type
+        this.NumObservations = X;
+        type = varargin{1};
+        this.IsCustom = false;
+        this.IsStratified = false;
+
+        ## "Resubstitution"
+        if (strcmpi (type, 'resubstitution'))
+          this.NumTestSets = 1;
+          this.TrainSize = X;
+          this.TestSize = X;
+          this.Type = 'resubstitution';
+          this.cvptype = 'Resubstitution (no partition of data)';
+          this.IsGrouped = false;
+
+        ## "Leaveout"
+        elseif (strcmpi (type, 'leaveout'))
+          this.NumTestSets = X;
+          this.TrainSize = (X - 1) * ones (1, X);
+          this.TestSize = ones (1, X);
+          this.Type = 'leaveout';
+          this.cvptype = 'Leave-one-out cross validation partition';
+          this.IsGrouped = false;
+
+        ## "Holdout"
+        elseif (strcmpi (type, 'holdout'))
+          if (nargin > 2)
+            p = varargin{2};
+            if (! isnumeric (p) || ! isscalar (p))
+              error (strcat ("cvpartition: P value for 'holdout'", ...
+                             " must be a numeric scalar."));
+            endif
+            if (! ((p > 0 && p < 1) || (p == fix (p) && p > 0 && p < X)))
+              error (strcat ("cvpartition: P value for 'holdout' must be", ...
+                             " a scalar in the range (0,1) or an integer", ...
+                             " scalar in the range [1, N)."));
+            endif
+          else
+            p = 0.1;
+          endif
+          this.NumTestSets = 1;
+          if (p < 1)            # target fraction to sample
+            p = round (p * X);  # number of samples
+          endif
+          inds = false (X, 1);
+          inds(randsample (X, p)) = true;  # indices for test set
+          this.indices = inds;
+          this.TrainSize = sum (! inds);
+          this.TestSize = sum (inds);
+          this.Type = 'holdout';
+          this.cvptype = 'Hold-out cross validation partition';
+          this.IsGrouped = false;
+
+        ## "KFold"
+        elseif (strcmpi (type, 'kfold'))
+          this.Type = 'kfold';
+          if (nargin > 2)
+            k = varargin{2};
+            if (! isnumeric (k) || ! isscalar (k))
+              error (strcat ("cvpartition: K value for 'kfold'", ...
+                             " must be a numeric scalar."));
+            endif
+          else
+            if (X < 10)
+              k = X;
+            else
+              k = 10;
+            endif
+          endif
+          ## No grouping variables
+          if (nargin < 4)
+            if (! (k == fix (k) && k > 0 && k <= X))
+              error (strcat ("cvpartition: K value for 'kfold' must be", ...
+                             " an integer scalar in the range [1, N]."));
+            endif
+            this.NumTestSets = k;
+            indices = floor ((0:(X - 1))' * (k / X)) + 1;
+            indices = randsample (indices, X);
+            nvec = X * ones (1, k);
+            for i = 1:k
+              this.TestSize(i) = sum (indices == i);
+            endfor
+            this.indices = indices;
+            this.TrainSize = nvec - this.TestSize;
+            this.cvptype = 'K-fold cross validation partition';
+            this.IsGrouped = false;
+          else  # with grouping variables
+            if (! strcmpi (varargin{3}, 'groupingvariables'))
+              error (strcat ("cvpartition: invalid optional paired", ...
+                             " argument for 'GroupingVariables'."));
+            endif
+            if (nargin < 5)
+              error (strcat ("cvpartition: missing value for optional", ...
+                             " paired argument 'GroupingVariables'."));
+            endif
+            grpvars = varargin{4};
+            if (isvector (grpvars))
+              ## Remove any missing values
+              this.missidx = ismissing (grpvars);
+              if (any (this.missidx))
+                grpvars(this.missidx) = [];
+                X -= sum (this.missidx);
+              endif
+              ## Get indices for each group
+              if (isa (grpvars, 'categorical'))
+                [~, idx, inds] = unique (grpvars, 'stable');
+              else
+                [~, idx, inds] = __unique__ (grpvars, 'stable');
+              endif
+            elseif (ismatrix (grpvars))
+              ## Remove any missing values
+              this.missidx = any (ismissing (grpvars), 2);
+              if (any (this.missidx))
+                grpvars(this.missidx, :) = [];
+                X -= sum (this.missidx);
+              endif
+              ## Get indices for each group
+              if (isa (grpvars, 'categorical'))
+                [~, idx, inds] = unique (grpvars, 'rows', 'stable');
+              else
+                [~, idx, inds] = __unique__ (grpvars, 'rows', 'stable');
+              endif
+            else
+              error (strcat ("cvpartition: invalid value for optional", ...
+                             " paired argument 'GroupingVariables'."));
+            endif
+            if (X != numel (inds))
+              error (strcat ("cvpartition: grouping variable does", ...
+                             " not match the number of observations."));
+            endif
+            this.grpvars = grpvars;
+            ## Get number of groups and group sizes
+            NumGroups = numel (idx);
+            for i = 1:NumGroups
+              GroupSize(i) = sum (inds == i);
+            endfor
+            ## Compare k-fold to number of groups and reduce K accordingly
+            if (k > NumGroups)
+              warning (strcat ("cvpartition: number of folds K is greater", ...
+                               " than the groups in 'GroupingVariables'.", ...
+                               " K is set to the number of groups."));
+                k = NumGroups;
+            endif
+            ## If k == NumGroups, then each group becomes a test in a fold.
+            ## If k < NumGroups, then cluster NumGroups to k folds.
+            indices = zeros (X, 1);
+            if (k == NumGroups)
+              for i = 1:k
+                indices(inds == i) = i;
+              endfor
+            else
+              [GroupIdx, ~, GroupSz] = multiway (GroupSize, k, 'completeKK');
+              for i = 1:k
+                idxGV = find (GroupIdx == i);
+                vecGV = arrayfun(@(x) x == inds, idxGV, "UniformOutput", false);
+                index = vecGV{1};
+                if (numel (vecGV) > 1)
+                  for j = 2:numel (vecGV)
+                    index = index | vecGV{j};
+                  endfor
+                endif
+                indices(index) = i;
+              endfor
+            endif
+            ## Randomize the order of folds
+            random_idx = randsample ([1:k], k);
+            randomized = zeros (size (inds));
+            for i = 1:k
+              randomized(indices == i) = random_idx(i);
+            endfor
+            ## Save values to properties
+            this.indices = randomized;
+            this.NumTestSets = k;
+            nvec = X * ones (1, k);
+            for i = 1:k
+              this.TestSize(i) = sum (this.indices == i);
+            endfor
+            this.TrainSize = nvec - this.TestSize;
+            this.cvptype = 'Group K-fold cross validation partition';
+            this.IsGrouped = true;
+          endif
+
+        ## Invalid paired argument
+        else
+          error ("cvpartition: invalid optional paired argument.");
+        endif
+
+      ## Check first input being a vector for stratification
+      elseif (isvector (X))
+        ## Get number of observations (including missing values)
+        this.NumObservations = numel (X);
+
+        ## Remove missing values from partitioning.
+        ## Keep missing index to include them in the test indices.
+        this.missidx = ismissing (X);
+        X(this.missidx) = [];
+
+        ## Get stratify option
+        if (nargin < 4)
+          this.IsStratified = true;
+        else
+          if (! strcmpi (varargin{3}, 'stratify'))
+              error (strcat ("cvpartition: invalid optional paired", ...
+                             " argument for stratification."));
+          endif
+          if (nargin < 5)
+            error (strcat ("cvpartition: missing value for optional", ...
+                           " paired argument 'stratify'."));
+          endif
+          if (! isscalar (varargin{4}) || ! islogical (varargin{4}))
+            error (strcat ("cvpartition: invalid value for optional", ...
+                           " paired argument 'stratify'."));
+          endif
+          this.IsStratified = varargin{4};
+        endif
+
+        ## Handle stratification
+        if (this.IsStratified)
+          [classID, idx, classes] = unique (X);
+          NumClasses = numel (idx);
+          for i = 1:NumClasses
+            ClassSize(i) = sum (classes == i);
+          endfor
+          this.classes = classes;
+          this.classID = classID;
+        endif
+        X = numel (X);
+
+        ## Get partition type
+        type = varargin{1};
+        this.IsCustom = false;
+        this.IsGrouped = false;
+
+        ## "Holdout"
+        if (strcmpi (type, 'holdout'))
+          this.Type = 'holdout';
+          if (nargin > 2)
+            p = varargin{2};
+            if (! isnumeric (p) || ! isscalar (p))
+              error (strcat ("cvpartition: P value for 'holdout'", ...
+                             " must be a numeric scalar."));
+            endif
+            if (! ((p > 0 && p < 1) || (p == fix (p) && p > 0 && p < X)))
+              error (strcat ("cvpartition: P value for 'holdout' must be", ...
+                             " a scalar in the range (0,1) or an integer", ...
+                             " scalar in the range [1, N), where N is the", ...
+                             " number of nonmissing observations in X."));
+            endif
+          else
+            p = 0.1;
+          endif
+          this.NumTestSets = 1;
+          if (this.IsStratified)
+            if (p < 1)
+              f = p;              # target fraction to sample
+              p = round (p * X);  # number of test samples
+            else
+              f = p / X;
+            endif
+            inds = zeros (X, 1, "logical");
+            k_check = 0;
+            for i = 1:NumClasses
+              ki = round (f * ClassSize(i));
+              inds(find (classes == i)(randsample (ClassSize(i), ki))) = true;
+              k_check += ki;
+            endfor
+            if (k_check < p)      # add random elements to test set to make it p
+              inds(find (! inds)(randsample (X - k_check, p - k_check))) = true;
+            elseif (k_check > p)  # remove random elements from test set
+              inds(find (inds)(randsample (k_check, k_check - p))) = false;
+            endif
+            this.cvptype = 'Stratified hold-out cross validation partition';
+          else
+            if (p < 1)            # target fraction to sample
+              p = round (p * X);  # number of samples
+            endif
+            inds = false (X, 1);
+            inds(randsample (X, p)) = true;  # indices for test set
+            this.cvptype = 'Hold-out cross validation partition';
+          endif
+          this.indices = inds;
+          this.TrainSize = sum (! inds);
+          this.TestSize = sum (inds);
+
+        ## "KFold"
+        elseif (strcmpi (type, 'kfold'))
+          this.Type = 'kfold';
+          if (nargin > 2)
+            k = varargin{2};
+            if (! isnumeric (k) || ! isscalar (k))
+              error (strcat ("cvpartition: K value for 'kfold'", ...
+                             " must be a numeric scalar."));
+            endif
+            if (! (k == fix (k) && k > 0 && k <= X))
+              error (strcat ("cvpartition: K value for 'kfold' must be", ...
+                             " an integer scalar in the range [1, N],", ...
+                             " where N is the number of nonmissing", ...
+                             " observations in X."));
+            endif
+          else
+            if (X < 10)
+              k = X;
+            else
+              k = 10;
+            endif
+          endif
+          this.NumTestSets = k;
+          if (this.IsStratified)
+            inds = nan (X, 1);
+            pooled_idx = false (X, 1);
+            do_warn = true;
+            do_ceil = false;
+            for i = 1:NumClasses
+              cls_size = ClassSize(i);
+              cls_k_eq = fix (cls_size / k) == (cls_size / k);
+              ## Check that the elements in each class exceed the number of
+              ## requested folds, otherwise emit a warning and add the class
+              ## elements into a pooled class
+              if (cls_size < k)
+                if (do_warn)
+                  warning (strcat ("One or more of the unique class values", ...
+                                   " in the stratification variable is not", ...
+                                   " present in one or more folds."));
+                  do_warn = false;
+                endif
+                pooled_idx = pooled_idx | classes == i;
+              elseif (fix (X / k) == X / k)
+                ## Make sure that when X / k = integer, all
+                ## test/training sizes must be equal across all folds
+                if (do_ceil && ! cls_k_eq)
+                  idx = ceil ((0:(cls_size - 1))' * (k / cls_size));
+                  idx(idx == 0) = max (idx);
+                  do_ceil = false;
                 else
-                    stdargin = nargin-1;
-                    s = varargin{1};
-                    if ~isa(s,'RandStream')
-                        error('stats:cvpartition:cvpartition', ...
-                            'CVPARTITION optional argument must be a RandStream object');
-                    end
-                end
-            end
-            
-            if stdargin < 2
-                error('stats:cvpartition:TooFewInputs',...
-                    'At least two arguments are needed.');
-            end
-
-            if ischar(method) && size(method,1) == 1
-                methodNames = {'kfold','holdout','leaveout','resubstitution'};
-                j = strmatch(lower(method),methodNames);
-                if length(j) > 1
-                    error('stats:cvpartition:AmbiguousMethod', ...
-                        'The second input has an ambiguous value:  %s.', method);
-                elseif isempty(j)
-                    error('stats:cvpartition:UnknownMethod', ...
-                        'The second input must be either ''Kfold'', ''Holdout'',''Leaveout'' or ''Resubstitution''.');
-                end
-            else
-                error('stats:cvpartition:InvalidType', ...
-                    'The second input must be a string.');
-            end
-
-            cv.Type = methodNames{j};
-
-            if isscalar(N)
-                if ~isnumeric(N) || N <= 1 || N ~= round(N) || ~isfinite(N)
-                    error('stats:cvpartition:BadN',...
-                        'The number of observations must be a positive integer greater than one.');
-                end
-                cv.N = N;
-            else
-                cv.Group = grp2idx(N);
-                cv.N = length(cv.Group); % the number of observations including NaNs
-                [ignore,wasnan,cv.Group] = statremovenan(cv.Group);
-                hadNaNs = any(wasnan);
-                if hadNaNs
-                    warning('stats:cvpartition:MissingGroupsRemoved',...
-                        'Ignoring rows in GROUP with missing values.');
-                    if length (cv.Group) <= 1
-                        error('stats:cvpartition:BadN',...
-                            'The number of rows in GROUP with non-missing values must be greater than one.');
-                    end
-                end
-            end
-
-            dftK = 10; % the default number of subsamples(folds) for Kfold
-            P  = 1/10; % the default holdout ratio
-
-            switch cv.Type
-                case 'kfold'
-                    if stdargin == 2 || isempty(T)
-                        T = dftK;
-                    elseif ~isscalar(T) || ~isnumeric(T) || T <= 1 || ...
-                            T ~= round(T) || ~isfinite(T)
-                        error('stats:cvpartition:BadK',...
-                            'For K-fold, the number of folds must be an integer greater than one.');
-                    end
-
-                    if  isempty(cv.Group) && T > cv.N
-                        warning('stats:cvpartition:KfoldTooLarge',...
-                            ['The number of folds K is greater than ',...
-                            'the number of observations N. ',...
-                            'K will be set to the value of N.']);
-                        T = cv.N;
-                    elseif ~isempty(cv.Group) && T > length(cv.Group)
-                        warning('stats:cvpartition:KfoldTooLarge',...
-                            ['The number of folds K is greater than the number of observations with non-missing'...
-                            'group values. K will be set to the number of '...
-                            'observations with non-missing group values.']);
-                        T = length(cv.Group);
-                    end
-
-                    cv.NumTestSets = T; %set the number of fold
-                    cv = cv.rerandom(s);
-
-                case 'leaveout'
-                    if stdargin > 2 && T ~= 1
-                        error('stats:cvpartition:UnsupportedLeaveout',...
-                            'Currently the only supported value of leave-out is 1.');
-                    end
-
-                    if isempty(cv.Group)
-                        cv.NumTestSets = cv.N;
-                    else
-                        cv.NumTestSets = length(cv.Group);
-                    end
-
-                    [~,cv.indices] = sort(rand(s,cv.NumTestSets,1));
-
-                    cv.TrainSize = (cv.NumTestSets-1) * ones(1,cv.NumTestSets);
-                    cv.TestSize = ones(1,cv.NumTestSets);
-
-                case 'resubstitution'
-                    if stdargin > 2 
-                        error('stats:cvpartition:UnsupportedCV',...
-                            'Only two inputs are accepted when the second input is ''resubstitution''.');
-                    end
-
-                    if isempty(cv.Group)
-                        numObs = N;
-                    else
-                        numObs = length(cv.Group);
-                    end
-
-                    cv.indices = (1: numObs)';
-                    cv.NumTestSets = 1;
-                    cv.TrainSize =  numObs;
-                    cv.TestSize =  numObs;
-
-                case 'holdout'
-                    if stdargin == 2 || isempty(T)
-                        T = P;
-                    elseif ~isscalar(T) || ~ isnumeric(T) || T <= 0 || ~isfinite(T)
-                        error('stats:cvpartition:BadP',...
-                            'For holdout, the third input must be a non-negative numeric scalar.');
-                    end
-
-                    if T >= 1 %hold-T observations out
-                        if T ~=round(T)
-                            error('stats:cvpartition:BadP',...
-                                ['For holdout, the third input must be either a scalar in the range of ',...
-                                '(0,1) or a positive integer.']);
-                        end
-                        if isempty(cv.Group)
-                            if T >= cv.N
-                                error('stats:cvpartition:BadP',...
-                                    ['The number of observations for testing (holdout) should be ',...
-                                    'smaller than the number of observations.']);
-                            end
-                        else
-                            if T>= length(cv.Group)
-                                error('stats:cvpartition:BadP',...
-                                    ['The number of observations for testing (holdout) should be ',...
-                                    'smaller than the number of observations with non-missing group values.']);
-                            end
-                        end
-                    else
-                        if (isempty(cv.Group) && floor(cv.N *T) == 0) ||...
-                                (~isempty(cv.Group) && floor(length(cv.Group) * T) == 0)
-                            error('stats:cvpartition:BadP',...
-                                'P is too small to have a non-empty test set.');
-
-                        end
-                    end
-
-                    cv.holdoutT = T;
-                    cv = cv.rerandom(s);
-                    cv.NumTestSets = 1;
-            end
-
-            %add NaNs back
-            if ~isempty(cv.Group) && hadNaNs
-                [cv.indices, cv.Group] =...
-                    statinsertnan(wasnan, cv.indices, cv.Group);
-            end
-        end % cvpartition constructor
-
-        function  cv = repartition(cv,varargin)
-        %REPARTITION Rerandomize a cross-validation partition. 
-        %   D = REPARTITION(C) creates a new random cross-validation partition D
-        %   of the same type and size as C.  Use REPARTITION to perform multiple
-        %   Monte-Carlo repetitions of cross-validation.
-        %   D = REPARTITION(C,S) uses the RandStream object S as its
-        %   random number generator.
-        %   
-        %   See also CVPARTITION.
-
-            if isempty(varargin)
-                s = RandStream.getGlobalStream;
-            else
-                if length(varargin)>1
-                    error('stats:cvpartition:Repartition', ...
-                        'REPARTITION can only at most one optional argument');
+                  idx = floor ((0:(cls_size - 1))' * (k / cls_size)) + 1;
+                  tmp = arrayfun (@(x) numel (find (x == idx)), [1:k]);
+                  if (any (diff (tmp)))
+                    do_ceil = true;
+                  endif
+                endif
+                inds(classes == i) = randsample (idx, cls_size);
+              else
+                ## Alternate ordering over classes so that
+                ## the subsets are more nearly the same size
+                if (! do_ceil || cls_k_eq)
+                  idx = floor ((0:(cls_size - 1))' * (k / cls_size)) + 1;
+                  if (! cls_k_eq)
+                    do_ceil = true;
+                  endif
                 else
-                    s = varargin{1};
-                    if ~isa(s,'RandStream')
-                        error('stats:cvpartition:Repartition', ...
-                            'REPARTITION optional argument must be a RandStream object');
-                    end
-                end
-            end
-        
-            if strcmp(cv.Type,'resubstitution')
-                warning('stats:cvpartition:RepartNone',...
-                    'C keeps the same test and training sets as before if the ''Type'' is ''resubstitution''.');
-                return;
-            end
-            %remove NaNs from cv.Group
-            if ~isempty(cv.Group)
-                [ignore,wasnan,cv.Group] = statremovenan(cv.Group);
-                hadNaNs = any(wasnan);
-            end
+                  idx = floor (((cls_size - 1):-1:0)' * (k / cls_size)) + 1;
+                  do_ceil = false;
+                endif
+                inds(classes == i) = randsample (idx, cls_size);
+              endif
+            endfor
+            ## Stratify pooled classes (if any).  They must be distributed
+            ## in a way to make the test/training sizes as equal as possible
+            ## across folds.
+            pooled_inds = find (pooled_idx);
+            while (numel (pooled_inds) > 0)
+              tmp = arrayfun (@(x) numel (find (x == inds)), [1:k]);
+              [min_cls, min_idx] = min (tmp);
+              [max_cls, max_idx] = max (tmp);
+              if (min_cls != max_cls)
+                inds(pooled_inds(1)) = min_idx;
+              else
+                inds(pooled_inds(1)) = randsample (k, 1);
+              endif
+              pooled_inds(1) = [];
+            endwhile
+            this.cvptype = 'Stratified K-fold cross validation partition';
+          else
+            inds = floor ((0:(X - 1))' * (k / X)) + 1;
+            inds = randsample (inds, X);
+            this.cvptype = 'K-fold cross validation partition';
+          endif
+          this.indices = inds;
+          nvec = X * ones (1, k);
+          for i = 1:k
+            this.TestSize(i) = sum (inds == i);
+          endfor
+          this.TrainSize = nvec - this.TestSize;
 
-            %  regenerate the data partition
-            cv = cv.rerandom(s);
+        ## Invalid paired argument
+        else
+          error ("cvpartition: invalid optional paired argument.");
+        endif
 
-            %add NaNs back into cv.indices and cv.Group
-            if ~isempty(cv.Group) && hadNaNs
-                [cv.indices, cv.Group] =...
-                    statinsertnan(wasnan, cv.indices, cv.Group);
-            end
-        end % repartition
-       
-        function trainIndices = training(cv,i)
-        %TRAINING Training set for a cross-validation partition.
-        %   TRIDX = TRAINING(C) returns a logical vector TRIDX that selects
-        %   the observations in the training set for the hold-out
-        %   cross-validation partition C.  C may also be a partition for
-        %   resubstitution, in which case TRIDX is a logical vector that
-        %   selects all observations.
-        %
-        %   TRIDX = TRAINING(C,I) returns a logical vector TRIDX that selects
-        %   the observations in the I-th training set for a K-fold or
-        %   leave-one-out cross-validation partition C.  In K-fold
-        %   cross-validation, C divides a data set into K disjoint folds with
-        %   roughly equal size.  The I-th training set consists of all
-        %   observations not contained in the I-th fold.  In leave-one-out
-        %   cross-validation, the I-th training set consists of the entire
-        %   data set except the I-th observation.
-        %
-        %   See also CVPARTITION, CVPARTITION/TEST.
-            switch cv.Type
-                case {'kfold', 'leaveout'}
-                    if nargin ~= 2
-                        error('stats:cvpartition:WrongNumInputs', ...
-                            'Requires two input arguments.');
-                    end
-                    checkindex(i,cv.NumTestSets);
-                    trainIndices = (cv.indices ~= i & ~isnan(cv.indices));
+      ## Otherwise first input is invalid
+      else
+        error ("cvpartition: invalid first input argument.");
+      endif
 
-                case 'holdout'
-                    if nargin == 2 && i~=1
-                        error('stats:cvpartition:InvalidIndex',...
-                            'I must be 1 for Holdout validation.');
-                    end
-                    trainIndices = (cv.indices == 1);
-                case 'resubstitution'
-                    if nargin == 2 && i~= 1
-                        error('stats:cvpartition:InvalidIndex',...
-                            'I must be 1 if cv.Type is ''resubstitution''.');
-                    end
-                    trainIndices = ~isnan(cv.indices);
-            end
-        end
+    endfunction
 
-        function testIndices = test(cv,i)
-        %TEST Test set for a cross-validation partition.
-        %   TEIDX = TEST(C) returns a logical vector TEIDX that selects the
-        %   observations in the test set for the hold-out cross-validation
-        %   partition C.  C may also be a partition for resubstitution, in
-        %   which case TEIDX is a logical vector that selects all
-        %   observations.
-        %
-        %   TEIDX = TEST(C,I) returns a logical vector TEIDX that selects the
-        %   observations in the I-th test set for a K-fold or leave-one-out
-        %   cross-validation partition C.  In K-fold cross-validation, C
-        %   divides a data set into K disjoint folds with roughly equal size.
-        %   The I-th test set consists of the I-th fold.  In leave-one-out
-        %   cross-validation, the I-th test set consists of the I-th
-        %   observation.
-        %
-        %   See also CVPARTITION, CVPARTITION/TRAINING.
-            switch cv.Type
-                case {'kfold','leaveout'}
-                    if nargin ~= 2
-                        error('stats:cvpartition:WrongNumInputs', ...
-                            'Requires two input arguments.');
-                    end
-                    checkindex(i,cv.NumTestSets);
+    ## -*- texinfo -*-
+    ## @deftypefn  {cvpartition} {@var{Cnew} =} repartition (@var{C})
+    ## @deftypefnx {cvpartition} {@var{Cnew} =} repartition (@var{C}, @var{sval})
+    ## @deftypefnx {cvpartition} {@var{Cnew} =} repartition (@var{C}, @qcode{'legacy'})
+    ##
+    ## Repartition data for cross-validation.
+    ##
+    ## @code{@var{Cnew} = repartition (@var{C})} creates a @qcode{cvpartition}
+    ## object @var{Cnew} that defines a new random partition of the same type as
+    ## the @qcode{cvpartition} @var{C}.
+    ##
+    ## @code{@var{Cnew} = repartition (@var{C}, @var{sval})} also uses the value
+    ## of @var{sval} to set the state of the random generator used in
+    ## repartitioning @var{C}.  If @var{sval} is a vector, then the random
+    ## generator is set using the @qcode{"state"} keyword as in
+    ## @code{rand ("state", @var{sval})}.  If @var{sval} is a scalar, then the
+    ## @qcode{"seed"} keyword is used as in @code{rand ("seed", @var{sval})} to
+    ## specify that old generators should be used.
+    ##
+    ## @code{@var{Cnew} = repartition (@var{C}, @qcode{'legacy'})} only applies
+    ## to @qcode{cvpartition} objects @var{C} that use k-fold partitioning and
+    ## it will repartition @var{C} in the same non-random manner that was
+    ## previously used by the old-style @qcode{cvpartition} class of the
+    ## statistics package.  The @qcode{'legacy'} option does not apply to
+    ## stratified or grouped partitions.
+    ##
+    ## @seealso{cvpartition, summary, test, training}
+    ## @end deftypefn
 
-                    testIndices = (cv.indices == i);
+    function this = repartition (this, sval = [])
 
-                case 'holdout'
-                    if nargin == 2 && i~= 1
-                        error('stats:cvpartition:InvalidIndex',...
-                            'I must be 1 for Holdout validation.');
-                    end
-                    testIndices = (cv.indices == 2);
-                case 'resubstitution'
-                    if nargin == 2 && i ~= 1
-                        error('stats:cvpartition:InvalidIndex',...
-                            'I must be 1 if cv.Type is ''resubstitution''.');
-                    end
-                    testIndices = ~isnan(cv.indices);
-            end
-        end
+      ## Emit error for custom partitions
+      if (this.IsCustom)
+        error ("cvpartition.repartition: cannot repartition a custom partition.");
+      endif
 
-        % Display methods
-        function display(cv)
-            isLoose = strcmp(get(0,'FormatSpacing'),'loose');
+      ## Handle legacy code with no randomization of kfold option
+      if (strcmpi (sval, "legacy"))
+        if (strcmpi (this.Type, "kfold"))
+          X = this.NumObservations;
+          k = this.NumTestSets;
+          if (! (this.IsGrouped || this.IsStratified))
+            inds = floor ((0:(X - 1))' * (k / X)) + 1;
+            this.indices = inds;
+            nvec = X * ones (1, k);
+            for i = 1:k
+              this.TestSize(i) = sum (inds == i);
+            endfor
+            this.TrainSize = nvec - this.TestSize;
+          else  # legacy option does not apply for grouped or stratified
+            error (strcat ("cvpartition.repartition: 'legacy' flag does", ...
+                           " not apply to stratified or grouped 'kfold'", ...
+                           " partitioned objects."));
+          endif
+          return;
+        else
+          error (strcat ("cvpartition.repartition: 'legacy' flag is only", ...
+                         " valid for 'kfold' partitioned objects."));
+        endif
+      endif
 
-            objectname = inputname(1);
-            if isempty(objectname)
-                objectname = 'ans';
-            end
+      ## Check sval
+      if (! isempty (sval))
+        if (! (isvector (sval) && isnumeric (sval) && isreal (sval)))
+          error (strcat ("cvpartition.repartition: SVAL must be", ...
+                         " a real scalar or vector."));
+        endif
+        if (isscalar (sval))
+          rand ("sval", sval);
+        else
+          rand ("state", sval);
+        endif
+      endif
 
-            if (isLoose)
-                fprintf('\n');
-            end
-            fprintf('%s = \n', objectname);
-            disp(cv);
-        end
-        function disp(cv)
-            isLoose = strcmp(get(0,'FormatSpacing'),'loose');
+      ## Handle repartitioning of randomized holdout and kfold options
+      if (strcmpi (this.Type, "holdout"))
+        p = this.TestSize;
+        if (this.IsStratified)
+          X = sum (! this.missidx);
+          inds = false (X, 1);
+          NumClasses = numel (this.classID);
+          classes = this.classes;
+          for i = 1:NumClasses
+            ClassSize(i) = sum (classes == i);
+          endfor
+          f = p / X;
+          k_check = 0;
+          for i = 1:NumClasses
+            ki = round (f * ClassSize(i));
+            inds(find (classes == i)(randsample (ClassSize(i), ki))) = true;
+            k_check += ki;
+          endfor
+          if (k_check < p)      # add random elements to test set to make it p
+            inds(find (! inds)(randsample (X - k_check, p - k_check))) = true;
+          elseif (k_check > p)  # remove random elements from test set
+            inds(find (inds)(randsample (k_check, k_check - p))) = false;
+          endif
+        else
+          X = this.NumObservations;
+          inds = false (X, 1);
+          inds(randsample (X, p)) = true;  # indices for test set
+        endif
+        this.indices = inds;
 
-            if (isLoose)
-                fprintf('\n');
-            end
-            switch cv.Type
-                case 'kfold'
-                    disp('K-fold cross validation partition');
-                case 'holdout'
-                    disp('Hold-out cross validation partition');
-                case 'leaveout'
-                    disp('Leave-one-out cross validation partition');
-                case 'resubstitution'
-                    disp ('Resubstitution (no partition of data)');
-            end
-            disp(['             N: ' num2str(cv.N)]);
-            disp(['   NumTestSets: ' num2str(cv.NumTestSets)]);
-            Ndisp = 10;
-            if cv.NumTestSets <= Ndisp
-                disp(['     TrainSize: ' num2str(cv.TrainSize )]);
-                disp(['      TestSize: ' num2str(cv.TestSize )]);
+      elseif (strcmpi (this.Type, "kfold"))
+        k = this.NumTestSets;
+        if (! (this.IsGrouped || this.IsStratified))
+          X = this.NumObservations;
+          inds = floor ((0:(X - 1))' * (k / X)) + 1;
+          inds = randsample (inds, X);
+          this.indices = inds;
+          nvec = X * ones (1, k);
+          for i = 1:k
+            this.TestSize(i) = sum (inds == i);
+          endfor
+          this.TrainSize = nvec - this.TestSize;
+        elseif (this.IsGrouped)
+          ## We only need resample the order of folds in this case
+          ## Randomize the order of folds
+          random_idx = randsample ([1:k], k);
+          randomized = zeros (size (this.indices));
+          for i = 1:k
+            randomized(this.indices == i) = random_idx(i);
+          endfor
+          ## Save values to properties
+          this.indices = randomized;
+          this.NumTestSets = k;
+          nvec = sum (! this.missidx) * ones (1, k);
+          for i = 1:k
+            this.TestSize(i) = sum (this.indices == i);
+          endfor
+          this.TrainSize = nvec - this.TestSize;
+        else  # is stratified
+          X = sum (! this.missidx);
+          NumClasses = numel (this.classID);
+          classes = this.classes;
+          for i = 1:NumClasses
+            ClassSize(i) = sum (classes == i);
+          endfor
+          inds = nan (X, 1);
+          pooled_idx = false (X, 1);
+          do_warn = true;
+          do_ceil = false;
+          for i = 1:NumClasses
+            cls_size = ClassSize(i);
+            cls_k_eq = fix (cls_size / k) == (cls_size / k);
+            ## Check that the elements in each class exceed the number of
+            ## requested folds, otherwise emit a warning and add the class
+            ## elements into a pooled class
+            if (cls_size < k)
+              if (do_warn)
+                warning (strcat ("One or more of the unique class values", ...
+                                 " in the stratification variable is not", ...
+                                 " present in one or more folds."));
+                do_warn = false;
+              endif
+              pooled_idx = pooled_idx | classes == i;
+            elseif (fix (X / k) == X / k)
+              ## Make sure that when X / k = integer, all
+              ## test/training sizes must be equal across all folds
+              if (do_ceil && ! cls_k_eq)
+                idx = ceil ((0:(cls_size - 1))' * (k / cls_size));
+                idx(idx == 0) = max (idx);
+                do_ceil = false;
+              else
+                idx = floor ((0:(cls_size - 1))' * (k / cls_size)) + 1;
+                tmp = arrayfun (@(x) numel (find (x == idx)), [1:k]);
+                if (any (diff (tmp)))
+                  do_ceil = true;
+                endif
+              endif
+              inds(classes == i) = randsample (idx, cls_size);
             else
-                disp(['     TrainSize: ' num2str(cv.TrainSize(1:Ndisp)), ' ...']);
-                disp(['      TestSize: ' num2str(cv.TestSize(1:Ndisp)), ' ...']);
-            end
-            %             end
-        end
-    end % public methods block
+              ## Alternate ordering over classes so that
+              ## the subsets are more nearly the same size
+              if (! do_ceil || cls_k_eq)
+                idx = floor ((0:(cls_size - 1))' * (k / cls_size)) + 1;
+                if (! cls_k_eq)
+                  do_ceil = true;
+                endif
+              else
+                idx = floor (((cls_size - 1):-1:0)' * (k / cls_size)) + 1;
+                do_ceil = false;
+              endif
+              inds(classes == i) = randsample (idx, cls_size);
+            endif
+          endfor
+          ## Stratify pooled classes (if any).  They must be distributed
+          ## in a way to make the test/training sizes as equal as possible
+          ## across folds.
+          pooled_inds = find (pooled_idx);
+          while (numel (pooled_inds) > 0)
+            tmp = arrayfun (@(x) numel (find (x == inds)), [1:k]);
+            [min_cls, min_idx] = min (tmp);
+            [max_cls, max_idx] = max (tmp);
+            if (min_cls != max_cls)
+              inds(pooled_inds(1)) = min_idx;
+            else
+              inds(pooled_inds(1)) = randsample (k, 1);
+            endif
+            pooled_inds(1) = [];
+          endwhile
+          this.indices = inds;
+          nvec = X * ones (1, k);
+          for i = 1:k
+            this.TestSize(i) = sum (inds == i);
+          endfor
+          this.TrainSize = nvec - this.TestSize;
+        endif
+      endif
 
+    endfunction
 
-    methods(Access = 'private')
-        %re-generate the data partition using the RandStream object s
-        function cv = rerandom(cv,s)
+    ## -*- texinfo -*-
+    ## @deftypefn {cvpartition} {@var{tbl} =} summary (@var{c})
+    ##
+    ## Summarize stratified or grouped cross-validation partitions.
+    ##
+    ## @code{@var{tbl} = summary (@var{c})} returns a summary table @var{tbl} of
+    ## the validation partition contained in the @code{cvpartition} object
+    ## @var{c}.
+    ##
+    ## This method calculates the distribution of classes (if stratified) or
+    ## groups (if grouped) across the entire dataset, as well as within every
+    ## training and test set generated by the partition.
+    ##
+    ## @subheading Inputs
+    ## @itemize
+    ## @item @var{c}
+    ## A @code{cvpartition} object.  The object must satisfy two conditions:
+    ## @enumerate
+    ## @item The partition type (@code{c.Type}) must be @qcode{"kfold"} or
+    ## @qcode{"holdout"}.
+    ## @item The partition must be created with a stratification or grouping
+    ## variable (i.e., @code{c.IsStratified} or @code{c.IsGrouped} must be
+    ## @code{true}).
+    ## @end enumerate
+    ## @end itemize
+    ##
+    ## @subheading Outputs
+    ## @itemize
+    ## @item @var{tbl}
+    ## A @code{table} object containing the summary statistics.  The table
+    ## contains one row for every unique label/group in every set (all, train,
+    ## test).  The columns are:
+    ## @table @code
+    ## @item Set
+    ## The specific subset being described.  Values include @qcode{"all"} (the
+    ## full dataset), @qcode{"train1"}, @qcode{"test1"}, etc.
+    ## @item SetSize
+    ## The total number of observations in that specific set.
+    ## @item Label
+    ## The class or group identifier.  If @code{c.IsStratified} is true, this
+    ## column is named @code{StratificationLabel}.  If @code{c.IsGrouped} is
+    ## true, it is named @code{GroupLabel}.
+    ## @item Count
+    ## The number of observations of that label within the set.  If stratified,
+    ## this column is named @code{StratificationCount}; otherwise,
+    ## @code{GroupCount}.
+    ## @item PercentInSet
+    ## The percentage of the set composed of that specific label.
+    ## @end table
+    ## @end itemize
+    ##
+    ## @seealso{cvpartition, repartition, test, training}
+    ## @end deftypefn
 
-            switch cv.Type
-                case 'kfold'
-                    if isempty(cv.Group)
-                        if cv.NumTestSets == cv.N
-                            %special case of K-fold -- loocv
-                            [~,cv.indices] = sort(rand(s,cv.NumTestSets,1)); % randperm 
-                            cv.TestSize = ones(1,cv.NumTestSets);
-                        else
-                            cv.indices = kfoldcv(cv.N,cv.NumTestSets,s);
-                            cv.TestSize = accumarray(cv.indices,1)';
-                        end
-                    else
-                        if cv.NumTestSets == length(cv.Group)
-                            %special case of K-fold -- loocv
-                            [~,cv.indices] = sort(rand(s,cv.NumTestSets,1)); % randperm
-                            cv.TestSize = ones(1,cv.NumTestSets);
-                        else
-                            cv.indices = stra_kfoldcv(cv.Group,cv.NumTestSets,s);
-                            cv.TestSize = accumarray(cv.indices,1)';
-                        end
-                    end
+   function tbl = summary (this)
 
-                    cv.TrainSize = size(cv.indices,1) - cv.TestSize;
+      ## Validation Checks
+      if (! (this.IsStratified || this.IsGrouped))
+        error ("cvpartition.summary: partition must be stratified or grouped.");
+      endif
 
-                case 'holdout'
-                    if cv.holdoutT >= 1
-                        if isempty(cv.Group)
-                            cv.indices = holdoutcv(cv.N,cv.holdoutT,s);
-                            cv.TestSize = cv.holdoutT;
-                            cv.TrainSize = cv.N-cv.TestSize;
-                        else
-                            cv.indices = stra_holdoutcv(cv.Group, cv.holdoutT/length(cv.Group), s);
-                            cv.TestSize = sum(cv.indices == 2);
-                            cv.TrainSize = sum(cv.indices == 1);
-                        end
-                    else %hold cv.holdoutT*N out
-                        if isempty(cv.Group)
-                            cv.TestSize = floor(cv.N * cv.holdoutT);
-                            cv.TrainSize = cv.N-cv.TestSize;
-                            cv.indices = holdoutcv(cv.N,cv.TestSize,s);
-                        else
-                            cv.indices = stra_holdoutcv(cv.Group,cv.holdoutT,s);
-                            cv.TestSize = sum(cv.indices == 2);
-                            cv.TrainSize = sum(cv.indices == 1);
-                        end
-                    end
+      if (! (strcmpi (this.Type, 'kfold') || strcmpi (this.Type, 'holdout')))
+        error ("cvpartition.summary: partition type must be 'kfold' or 'holdout'.");
+      endif
 
-                case 'leaveout'
-                    [~,cv.indices] = sort(rand(s,cv.NumTestSets,1));
-            end
-        end
-    end % private methods block
-    
-    methods(Hidden = true)
-        function b = fieldnames(a)
-            b = properties(a);
-        end
-        
-        % Methods that we inherit, but do not want
-        function a = fields(varargin),     throwUndefinedError(); end
-        function a = ctranspose(varargin), throwUndefinedError(); end
-        function a = transpose(varargin),  throwUndefinedError(); end
-        function a = permute(varargin),    throwUndefinedError(); end
-        function a = reshape(varargin),    throwUndefinedError(); end
-        function a = cat(varargin),        throwNoCatError(); end
-        function a = horzcat(varargin),    throwNoCatError(); end
-        function a = vertcat(varargin),    throwNoCatError(); end
-    end
-    methods(Hidden = true, Static = true)
-        function a = empty(varargin)
-            error(['stats:' mfilename ':NoEmptyAllowed'], ...
-                  'Creation of empty %s objects is not allowed.',upper(mfilename));
-        end
-    end
-   
-end % classdef
+      ## Prepare Labels and Data Map
+      if (this.IsStratified)
+        LabelVarName = 'StratificationLabel';
+        CountVarName = 'StratificationCount';
+        UniqueLabels = this.classID;
+        DataMap = this.classes;
+      else
+        ## Grouped
+        LabelVarName = 'GroupLabel';
+        CountVarName = 'GroupCount';
+        ## Use __unique__ internal helper to ensure stable rows
+        if (isa (this.grpvars, 'categorical'))
+          [UniqueLabels, ~, DataMap] = unique (this.grpvars, 'rows', 'stable');
+        else
+          [UniqueLabels, ~, DataMap] = __unique__ (this.grpvars, 'rows', 'stable');
+        endif
+      endif
 
-function throwNoCatError()
-error(['stats:' mfilename ':NoCatAllowed'], ...
-      'Concatenation of %s objects is not allowed.  Use a cell array to contain multiple objects.',upper(mfilename));
-end
+      ## Calculate dimensions for preallocation
+      NumLabels = size (UniqueLabels, 1);
+      NumSets = 1 + (2 * this.NumTestSets); ## 1 ("all") + 2 * K (Train/Test)
+      TotalRows = NumLabels * NumSets;
 
-function throwUndefinedError()
-st = dbstack;
-name = regexp(st(2).name,'\.','split');
-error(['stats:' mfilename ':UndefinedFunction'], ...
-      'Undefined function or method ''%s'' for input arguments of type ''%s''.',name{2},mfilename);
-end
+      ## Preallocate Columns
+      col_Set = cell (TotalRows, 1);
+      col_SetSize = zeros (TotalRows, 1);
+      col_Count = zeros (TotalRows, 1);
+      col_Percent = zeros (TotalRows, 1);
 
-%----------------------------------------------------
-%stratified k-fold cross-validation
-function cvid=stra_kfoldcv(group,nfold,s)
-size_groups = accumarray(group(:),1);
-if any(size_groups < nfold & size_groups > 0)
-    warning('stats:cvpartition:TestZero',...
-        'One or more folds do not contain points from all the groups.');
-end
-N = size(group,1);
-cvid = 1 + mod((1:N)',nfold);
-idrand = group + rand(s,N,1);
-[ignore,idx] = sort(idrand);
-cvid = cvid(idx);
-end
+      ## Determine if Label column is text or numeric
+      if (iscell (UniqueLabels) || isstring (UniqueLabels) ||
+                                   ischar (UniqueLabels))
+        col_Label = cell (TotalRows, 1);
+        is_text_label = true;
+      else
+        col_Label = zeros (TotalRows, 1);
+        is_text_label = false;
+      endif
 
-%----------------------------------------------------
-%kfold cross-validation without stratification
-function cvid = kfoldcv(N,nfold,s)
-cvid = 1 + mod((1:N)',nfold);
-[~,indices] = sort(rand(s,1,N)); % randperm
-cvid = cvid(indices);
-end
+      ## Helper for populating data
+      curr_idx = 1;
 
-%-----------------------------------------------------
-%holdout without stratification
-function  idx= holdoutcv(N,num_test,s)
-idx = 2*ones(N,1);
-idx(1:N-num_test) = 1;
-[~,indices] = sort(rand(s,1,N)); % randperm
-idx = idx(indices);
-end
+      ## Inline helper function to calculate stats
+      function [c_set, c_size, c_lbl, c_cnt, c_pct, idx_next] = ...
+               fill_rows (name, mask, map, u_lbl, n_lbl, ...
+                          c_set, c_size, c_lbl, c_cnt, c_pct, idx_start, is_txt)
 
-%-----------------------------------------------------
-%stratified holdout
-function idx = stra_holdoutcv(group,test_ratio,s)
-N = length(group);
-size_groups = accumarray(group(:),1);
-num_test = floor(size_groups * test_ratio);
+        subset_map = map(mask);
+        subset_size = numel (subset_map);
 
-test_diff = floor(N * test_ratio) - sum(num_test);
-%add 1 for groups which are not in the test set
-if any(num_test == 0)
-    v=(num_test == 0);
-    v(cumsum(v) > test_diff) = false;
-    num_test(v) = num_test(v) + 1;
-    test_diff = test_diff - sum(v);
-end
+        for u = 1:n_lbl
+          count = sum (subset_map == u);
 
+          c_set{idx_start} = name;
+          c_size(idx_start) = subset_size;
 
-if test_diff > 0
-    ng= numel(size_groups);
-    wasfull  =(num_test == size_groups);
-    full_len = sum(wasfull);
-    add = [ones(test_diff,1);zeros(ng - test_diff - full_len,1)];
-    [~,indices] =  sort(rand(s,1,(ng-full_len))); % randperm
-    add = add(indices);
-    x = zeros(size(wasfull));
-    x(~wasfull,:) = add;
-    num_test = num_test + x;
+          if (is_txt)
+            if (iscell (u_lbl))
+              c_lbl{idx_start} = u_lbl{u};
+            elseif (isstring (u_lbl))
+              ## Convert string object to char for cell storage
+              c_lbl{idx_start} = char (u_lbl(u));
+            else
+              c_lbl{idx_start} = u_lbl(u, :);
+            endif
+          else
+            c_lbl(idx_start) = u_lbl(u);
+          endif
 
-end
+          c_cnt(idx_start) = count;
+          c_pct(idx_start) = (count / subset_size) * 100;
 
-if any(num_test == 0)
-    warning('stats:cvpartition:testZero',...
-        'The test set does not contain points from all groups.');
-end
+          idx_start = idx_start + 1;
+        endfor
+        idx_next = idx_start;
+      endfunction
 
-if any(num_test == size_groups)
-    warning('stats:cvpartition:testZero',...
-        'The training set does not contain points from all groups.');
-end
+      ## Calculate Statistics
 
-idx = 2*ones(N,1);
-for i = 1:numel(size_groups)
-    g_idx = find(group == i);
-    idx(g_idx(1:size_groups(i)-num_test(i))) = 1;
-    [~,indices] = sort(rand(s,1,(size_groups(i)))); % randperm
-    idx(g_idx) = idx(g_idx( indices ));
-end
+      ## --- Set: "all" ---
+      all_mask = true (size (DataMap));
+      [col_Set, col_SetSize, col_Label, col_Count, col_Percent, curr_idx] = ...
+          fill_rows ('all', all_mask, DataMap, UniqueLabels, NumLabels, ...
+                     col_Set, col_SetSize, col_Label, col_Count, col_Percent, ...
+                     curr_idx, is_text_label);
 
-end
+      ## --- Set: Folds ---
+      for k = 1:this.NumTestSets
+        if (strcmpi (this.Type, 'holdout'))
+          test_mask = this.indices;
+        else
+          test_mask = (this.indices == k);
+        endif
 
-%-----------------------------
-function checkindex(i,imax)
-if ~(isnumeric(i) && isscalar(i) && i == round(i) && 1 <= i && i <= imax)
-    error('stats:cvpartition:InvalidIndex', ...
-        'Index must be a positive integer less than or equal to %d.',imax);
-end
-end
+        train_name = sprintf ('train%d', k);
+        [col_Set, col_SetSize, col_Label, col_Count, col_Percent, curr_idx] = ...
+          fill_rows (train_name, !test_mask, DataMap, UniqueLabels, NumLabels, ...
+                     col_Set, col_SetSize, col_Label, col_Count, col_Percent, ...
+                     curr_idx, is_text_label);
 
+        test_name = sprintf ('test%d', k);
+        [col_Set, col_SetSize, col_Label, col_Count, col_Percent, curr_idx] = ...
+          fill_rows (test_name, test_mask, DataMap, UniqueLabels, NumLabels, ...
+                     col_Set, col_SetSize, col_Label, col_Count, col_Percent, ...
+                     curr_idx, is_text_label);
+      endfor
+
+      ## Construct Table
+      if (exist ('string', 'class'))
+        col_Set = string (col_Set);
+        if (is_text_label)
+          col_Label = string (col_Label);
+        endif
+      endif
+
+      tbl = table (col_Set, col_SetSize, col_Label, col_Count, col_Percent, ...
+                   'VariableNames', {'Set', 'SetSize', LabelVarName, ...
+                                     CountVarName, 'PercentInSet'});
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {cvpartition} {@var{idx} =} test (@var{C})
+    ## @deftypefnx {cvpartition} {@var{idx} =} test (@var{C}, @var{i})
+    ## @deftypefnx {cvpartition} {@var{idx} =} test (@var{C}, @qcode{"all"})
+    ##
+    ## Test indices for cross-validation.
+    ##
+    ## @code{@var{idx} = test (@var{C})} returns a logical vector @var{idx} with
+    ## @qcode{true} values indicating the elements corresponding to the test
+    ## set defined in the @qcode{cvpartition} object @var{C}.  For K-fold and
+    ## leave-one-out partitions, the indices corresponding to the first test set
+    ## are returned.
+    ##
+    ## @code{@var{idx} = test (@var{C}, @var{i})} returns a logical vector or
+    ## matrix with the indices of the test set indicated by @var{i}.  If @var{i}
+    ## is a scalar, then @var{idx} is a logical vector with the indices of the
+    ## @math{i-th} set.  If @var{i} is a vector, then @var{idx} is a logical
+    ## matrix in which @code{@var{idx}(:,j)} specified the observations in the
+    ## test set @code{@var{i}(j)}.  The value(s) in @var{i} must not exceed the
+    ## number of tests in the @qcode{cvpartition} object @var{C}.
+    ##
+    ## @code{@var{idx} = test (@var{C}, @qcode{"all"})} returns a logical vector
+    ## or matrix for all test sets defined in the @qcode{cvpartition} object
+    ## @var{C}.  For holdout and resubstitution partition types, a vector is
+    ## returned.  For K-fold and leave-one-out, a matrix is returned.
+    ##
+    ## @seealso{cvpartition, repartition, summary, training}
+    ## @end deftypefn
+
+    function idx = test (this, varargin)
+
+      ## Check for sufficient input arguments
+      if (nargin > 2)
+        error ("cvpartition.test: too many input arguments.");
+      elseif (nargin == 2)
+        i = varargin{1};
+        if (strcmpi (i, "all"))
+          idx = logical ([]);
+          switch (this.Type)
+            case "kfold"
+              for i = 1:this.NumTestSets
+                if (this.IsStratified || this.IsGrouped)
+                  cid = false (this.NumObservations, 1);
+                  cid(! this.missidx) = this.indices == i;
+                else
+                  cid = this.indices == i;
+                endif
+                idx = [idx, cid];
+              endfor
+            case "leaveout" # no stratification
+              for i = 1:this.NumTestSets
+                cid = false (this.NumObservations, 1);
+                cid(i) = true;
+                idx = [idx, cid];
+              endfor
+            case "holdout"
+              if (this.IsStratified)
+                idx = false (this.NumObservations, 1);
+                idx(! this.missidx) = this.indices;
+              else
+                idx = this.indices;
+              endif
+              idx = this.indices;
+            case "resubstitution" # no stratification
+              idx = true (this.NumObservations, 1);
+          endswitch
+          return
+        elseif (isempty (i))
+          i = 1;
+        endif
+      else
+        i = 1;
+      endif
+
+      if (! (isvector (i) && isnumeric (i) &&
+             all (fix (i) == i) && all (i > 0)))
+        error ("cvpartition.test: set index must be a positive integer vector.");
+      elseif (any (i > this.NumTestSets))
+        error ("cvpartition.test: set index exceeds 'NumTestSets'.");
+      endif
+
+      switch (this.Type)
+        case  "kfold"
+          if (isscalar (i))
+            if (this.IsStratified || this.IsGrouped)
+              idx = false (this.NumObservations, 1);
+              idx(! this.missidx) = this.indices == i;
+            else
+              idx = this.indices == i;
+            endif
+          else
+            idx = logical ([]);
+            for j = i
+              if (this.IsStratified || this.IsGrouped)
+                cid = false (this.NumObservations, 1);
+                cid(! this.missidx) = this.indices == i;
+              else
+                cid = this.indices == i;
+              endif
+              idx = [idx, cid];
+            endfor
+          endif
+        case "leaveout" # no stratification
+          if (isscalar (i))
+            idx = false (this.NumObservations, 1);
+            idx(i) = true;
+          else
+            idx = logical ([]);
+            for j = i
+              new = false (this.NumObservations, 1);
+              new(j) = true;
+              idx = [idx, new];
+            endfor
+          endif
+        case "holdout"
+          if (this.IsStratified)
+            idx = false (this.NumObservations, 1);
+            idx(! this.missidx) = this.indices;
+          else
+            idx = this.indices;
+          endif
+        case "resubstitution" # no stratification
+          idx = true (this.NumObservations, 1);
+      endswitch
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {cvpartition} {@var{idx} =} training (@var{C})
+    ## @deftypefnx {cvpartition} {@var{idx} =} training (@var{C}, @var{i})
+    ## @deftypefnx {cvpartition} {@var{idx} =} training (@var{C}, @qcode{"all"})
+    ##
+    ## Training indices for cross-validation.
+    ##
+    ## @code{@var{idx} = training (@var{C})} returns a logical vector @var{idx}
+    ## with @qcode{true} values indicating the elements corresponding to the
+    ## training set defined in the @qcode{cvpartition} object @var{C}.  For
+    ## K-fold and leave-one-out partitions, the indices corresponding to the
+    ## first training set are returned.
+    ##
+    ## @code{@var{idx} = training (@var{C}, @var{i})} returns a logical vector
+    ## or matrix with the indices of the training set indicated by @var{i}.  If
+    ## @var{i} is a scalar, then @var{idx} is a logical vector with the indices
+    ## of the @math{i-th} set.  If @var{i} is a vector, then @var{idx} is a
+    ## logical matrix in which @code{@var{idx}(:,j)} specified the observations
+    ## in the training set @code{@var{i}(j)}.  The value(s) in @var{i} must not
+    ## exceed the number of tests in the @qcode{cvpartition} object @var{C}.
+    ##
+    ## @code{@var{idx} = training (@var{C}, @qcode{"all"})} returns a logical
+    ## vector or matrix for all training sets defined in the @qcode{cvpartition}
+    ## object @var{C}.  For holdout and resubstitution partition types, a vector
+    ## is returned.  For K-fold and leave-one-out, a matrix is returned.
+    ##
+    ## @seealso{cvpartition, repartition, summary, test}
+    ## @end deftypefn
+
+    function idx = training (this, varargin)
+
+      ## Check for sufficient input arguments
+      if (nargin > 2)
+        error ("cvpartition.training: too many input arguments.");
+      elseif (nargin == 2)
+        i = varargin{1};
+        if (strcmpi (i, "all"))
+          idx = logical ([]);
+          switch (this.Type)
+            case "kfold"
+              for i = 1:this.NumTestSets
+                if (this.IsStratified || this.IsGrouped)
+                  cid = false (this.NumObservations, 1);
+                  cid(! this.missidx) = this.indices != i;
+                else
+                  cid = this.indices != i;
+                endif
+                idx = [idx, cid];
+              endfor
+            case "leaveout" # no stratification
+              for i = 1:this.NumTestSets
+                cid = true (this.NumObservations, 1);
+                cid(i) = false;
+                idx = [idx, cid];
+              endfor
+            case "holdout"
+              if (this.IsStratified)
+                idx = false (this.NumObservations, 1);
+                idx(! this.missidx) = ! this.indices;
+              else
+                idx = ! this.indices;
+              endif
+            case "resubstitution" # no stratification
+              idx = true (this.NumObservations, 1);
+          endswitch
+          return
+        elseif (isempty (i))
+          i = 1;
+        endif
+      else
+        i = 1;
+      endif
+
+      if (! (isvector (i) && isnumeric (i) &&
+             all (fix (i) == i) && all (i > 0)))
+        error (strcat ("cvpartition.training: set index must", ...
+                       " be a positive integer vector."));
+      elseif (any (i > this.NumTestSets))
+        error ("cvpartition.training: set index exceeds 'NumTestSets'.");
+      endif
+
+      switch (this.Type)
+        case  "kfold"
+          if (isscalar (i))
+            if (this.IsStratified || this.IsGrouped)
+              idx = false (this.NumObservations, 1);
+              idx(! this.missidx) = this.indices != i;
+            else
+              idx = this.indices != i;
+            endif
+          else
+            idx = logical ([]);
+            for j = i
+              if (this.IsStratified || this.IsGrouped)
+                cid = false (this.NumObservations, 1);
+                cid(! this.missidx) = this.indices != i;
+              else
+                cid = this.indices != i;
+              endif
+              idx = [idx, cid];
+            endfor
+          endif
+        case "leaveout" # no stratification
+          if (isscalar (i))
+            idx = true (this.NumObservations, 1);
+            idx(i) = false;
+          else
+            idx = logical ([]);
+            for j = i
+              new = true (this.NumObservations, 1);
+              new(j) = false;
+              idx = [idx, new];
+            endfor
+          endif
+        case "holdout"
+          if (this.IsStratified)
+            idx = false (this.NumObservations, 1);
+            idx(! this.missidx) = ! this.indices;
+          else
+            idx = ! this.indices;
+          endif
+        case "resubstitution" # no stratification
+          idx = true (this.NumObservations, 1);
+      endswitch
+
+    endfunction
+
+  endmethods
+
+endclassdef

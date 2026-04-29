@@ -72,4 +72,3 @@ function [which] = FindHighestGaussian_2(G)
 		end;
 	end;
 end
-
