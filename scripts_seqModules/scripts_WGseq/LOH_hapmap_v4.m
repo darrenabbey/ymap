@@ -526,21 +526,6 @@ for chr = 1:num_chrs
 			% Determining colors for each SNP coordinate from calculated cutoffs.
 			%
 
-%fprintf(['\t|\t\ttest1 = ' num2str(chr) '\n']);
-%fprintf(['\t|\t\ttest2 = ' num2str(chr_bin_SNP) '\n']);
-%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,1}{chr_bin_SNP}) '\n']);
-%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,1}{chr_bin_SNP})) '\n']);
-%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,2}{chr_bin_SNP}) '\n']);
-%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,2}{chr_bin_SNP})) '\n']);
-%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,3}{chr_bin_SNP}) '\n']);
-%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,3}{chr_bin_SNP})) '\n']);
-%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,4}{chr_bin_SNP}) '\n']);
-%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,4}{chr_bin_SNP})) '\n']);
-%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,5}{chr_bin_SNP}) '\n']);
-%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,5}{chr_bin_SNP})) '\n']);
-%fprintf(['\t|\t\ttest4 = type:' typeinfo(chr_SNPdata{chr,6}{chr_bin_SNP}) '\n']);
-%fprintf(['\t|\t\ttest4 = ' num2str(sizeof(chr_SNPdata{chr,6}{chr_bin_SNP})) '\n']);
-
 			allelic_ratios						= [chr_SNPdata{chr,1}{chr_bin_SNP} chr_SNPdata{chr,2}{chr_bin_SNP}];
 			coordinates						= [chr_SNPdata{chr,3}{chr_bin_SNP} chr_SNPdata{chr,4}{chr_bin_SNP}];
 			if (sizeof(chr_SNPdata{chr,5}{chr_bin_SNP}) == 0)
@@ -1015,7 +1000,10 @@ for chr_to_draw  = 1:length(chr_order)
 			else
 				ylim([0,maxY]);
 			end;
-			set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
+
+			%set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
+			set(gca,'TickLength',[TickSize 0]);
+
 			set(gca,'YTick',[]);
 			set(gca,'YTickLabel',[]);
 			set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
@@ -1189,7 +1177,10 @@ for chr_to_draw  = 1:length(chr_order)
 			else
 				ylim([0,maxY]);
 			end;
-			set(gca,'TickLength',[(Linear_TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
+
+			%set(gca,'TickLength',[(Linear_TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
+			set(gca,'TickLength',[Linear_TickSize 0]);
+
 			set(gca,'YTick',[]);
         		set(gca,'YTickLabel',[]);
 			set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
