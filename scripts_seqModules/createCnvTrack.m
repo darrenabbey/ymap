@@ -35,6 +35,6 @@ end
 fclose(cnvTrackFid);
 
 %% change permissions of file.
-system(['chmod 664 ' outputDir 'cnv.' projectName '.gff3']);
+system(['chmod 774 ' outputDir 'cnv.' projectName '.gff3']);
 
 end

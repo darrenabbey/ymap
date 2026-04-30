@@ -475,7 +475,7 @@ while (chrCopyNum_changed == true)
 		save([projectDir 'SNP_' SNP_verString '.mat'],'chr_SNPdata');
 
 		%% change permissions of file.
-		system(['chmod 664 ' projectDir 'SNP_' SNP_verString '.mat']);
+		system(['chmod 774 ' projectDir 'SNP_' SNP_verString '.mat']);
 	else
 		fprintf('\t|\t\tMAT file found, loading.\n');
 		load([projectDir 'SNP_' SNP_verString '.mat']);
@@ -529,7 +529,7 @@ while (chrCopyNum_changed == true)
 	delete(Rsquared_fig);
 
 	%%% change permissions of figure.
-	system(['chmod 664 ' projectDir 'fig.Rsquared.' figVer num2str(countIters) '.png']);
+	system(['chmod 774 ' projectDir 'fig.Rsquared.' figVer num2str(countIters) '.png']);
 
 
 	%%================================================================================================

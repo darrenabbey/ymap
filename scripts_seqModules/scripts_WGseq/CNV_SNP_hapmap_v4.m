@@ -306,7 +306,7 @@ fprintf('\t|\tSave workspace variables for later use in RedGreen alternate plot.
 save([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
 
 %% change permissions of file.
-system(['chmod 664 ' projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
+system(['chmod 774 ' projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
 
 
 %% =========================================================================================
@@ -748,7 +748,7 @@ end;
 fclose(alleleRatiosFid);
 
 %% change file permissions.
-system(['chmod 664 ' projectDir 'allele_ratios.' project  '.bed']);
+system(['chmod 774 ' projectDir 'allele_ratios.' project  '.bed']);
 
 %% =========================================================================================
 % Setup for main figure generation.
@@ -1391,8 +1391,8 @@ if (Standard_display)
 	delete(fig);
 
 	%% change permissions of figures.
-	system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.1.' figVer 'eps']);
-	system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.1.' figVer 'png']);
+	system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.1.' figVer 'eps']);
+	system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.1.' figVer 'png']);
 end;
 
 if (Linear_display)
@@ -1403,8 +1403,8 @@ if (Linear_display)
 	delete(Linear_fig);
 
 	%% change permissions of figures.
-	system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.2.' figVer 'eps']);
-	system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.2.' figVer 'png']);
+	system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.2.' figVer 'eps']);
+	system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.2.' figVer 'png']);
 end;
 
 end

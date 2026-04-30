@@ -280,7 +280,7 @@ if ($ext_new == "fasta") {
 	$errorFile = fopen("users/".$user."/genomes/".$genome."/error.txt", 'w');
 	fwrite($errorFile, "Error : Archive did not contain FASTA file.");
 	fclose($errorFile);
-	chmod($errorFileName,0664);
+	chmod($errorFileName,0774);
 	log_stuff($user,"","",$genome,$genomePath.$name_new.".".$ext_new,"UPLOAD fail: No fasta present.");
 	exit;
 } elseif ($ext_new == "none2") {
@@ -288,7 +288,7 @@ if ($ext_new == "fasta") {
 	$errorFile = fopen("users/".$user."/genomes/".$genome."/error.txt", 'w');
 	fwrite($errorFile, "Error : FASTA file formatting improperly.");
 	fclose($errorFile);
-	chmod($errorFileName,0664);
+	chmod($errorFileName,0774);
 	log_stuff($user,"","",$genome,$genomePath.$name_new.".".$ext_new,"UPLOAD fail: FASTA with wrong formatting.");
 	exit;
 } else {
@@ -296,7 +296,7 @@ if ($ext_new == "fasta") {
 	$errorFile = fopen("users/".$user."/genomes/".$genome."/error.txt", 'w');
 	fwrite($errorFile, "Error : Unknown file type as input.\nSee help tab for details of valid file types.");
 	fclose($errorFile);
-	chmod($errorFileName,0664);
+	chmod($errorFileName,0774);
 	log_stuff($user,"","",$genome,$genomePath.$name_new.".".$ext_new,"UPLOAD fail: unknown file type.");
 	exit;
 }

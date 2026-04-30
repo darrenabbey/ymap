@@ -38,7 +38,7 @@ function log_stuff($user,$project,$hapmap,$genome,$filename,$message) {
 		$myfile = fopen($log_file, "w");
 		fwrite($myfile, "Initiate log file: ".date('Y-m-d H:i:s')."\n");
 		fclose($myfile);
-		chmod($log_file, 0664);
+		chmod($log_file, 0774);
 	}
 
 	// add comment to log file.

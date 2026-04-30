@@ -436,8 +436,8 @@ if (Make_figure_repet)
 		delete(Standard_fig);
 
 		%% change permissions of figures.
-		system(['chmod 664 ' genomeDir 'fig.repet-map.1.eps']);
-		system(['chmod 664 ' genomeDir 'fig.repet-map.1.png']);
+		system(['chmod 774 ' genomeDir 'fig.repet-map.1.eps']);
+		system(['chmod 774 ' genomeDir 'fig.repet-map.1.png']);
 	end;
 
 	if (Linear_display)
@@ -448,8 +448,8 @@ if (Make_figure_repet)
 		delete(Linear_fig);
 
 		%% change permissions of figures.
-		system(['chmod 664 ' genomeDir 'fig.repet-map.2.eps']);
-		system(['chmod 664 ' genomeDir 'fig.repet-map.2.png']);
+		system(['chmod 774 ' genomeDir 'fig.repet-map.2.eps']);
+		system(['chmod 774 ' genomeDir 'fig.repet-map.2.png']);
 	end;
 else
 	fprintf([  '$$$ Not making repetitiveness figures.\n']);

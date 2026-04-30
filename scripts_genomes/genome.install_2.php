@@ -67,7 +67,7 @@
 	$startTimeString = date("Y-m-d H:i:s");
 	fwrite($output, $startTimeString);
 	fclose($output);
-	chmod($outputName,0664);
+	chmod($outputName,0774);
 	fwrite($logOutput, "\tGenerated 'working2.txt' file.\n");
 
 // process POST data.
@@ -254,7 +254,7 @@
 		if ($figure_2 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
 		if ($figure_3 != 1) { fwrite($file,"False"  ); } else { fwrite($file,"True"  ); }
 	fclose($file);
-	chmod($fileName,0664);
+	chmod($fileName,0774);
 
 // Debugging output of all variables.
 //	print_r($GLOBALS);

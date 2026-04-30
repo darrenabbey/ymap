@@ -147,7 +147,7 @@
 				$output       = fopen($totalSizeFile, 'w');
 				fwrite($output, $genomeSizeStr);
 				fclose($output);
-				chmod($totalSizeFile, 0664);
+				chmod($totalSizeFile, 0774);
 			}
 			// printing total size
 			echo " <font color='black' size='1'>(". $genomeSizeStr .")</font>";

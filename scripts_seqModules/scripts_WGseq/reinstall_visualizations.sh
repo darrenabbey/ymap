@@ -60,7 +60,7 @@ else
 		hapmapUser=$user;
 		hapmapInUse=1;
 
-		chmod 664 $projectDirectory"colors.txt";
+		chmod 774 $projectDirectory"colors.txt";
 	elif [ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]
 	then
 		hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
@@ -70,7 +70,7 @@ else
 		hapmapUser="default";
 		hapmapInUse=1;
 
-		chmod 664 $projectDirectory"colors.txt";
+		chmod 774 $projectDirectory"colors.txt";
 	else
 		hapmapInUse=0;
 	fi
@@ -118,6 +118,7 @@ echo "\tpkg load matgeom;" >> $outputName;
 echo "\tpkg load statistics;" >> $outputName;
 echo "\tdiary('"$projectDirectory"octave.rerun_visualization.log');" >> $outputName;
 echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
+chmod 774 $outputName;
 
 echo     "\tChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $outputName;
 #echo     "\tanalyze_CNVs_1(         '$main_dir','$user','$genomeUser','$project',          '$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;

@@ -8,7 +8,7 @@
 	// php bulk_processer.php user=darren ymaps=5 > /dev/null 2>&1 &
 
 
-	$system_call_string = "sudo php bulk_processer.php user=".$user." ymaps=".$MAX_BULK_PARALLEL." > /dev/null 2>&1 &";
+	$system_call_string = "php bulk_processer.php user=".$user." ymaps=".$MAX_BULK_PARALLEL." > /dev/null 2>&1 &";
 //	echo getcwd();
 	echo "<br>\n";
 	echo "To start bulk processor, run the following command from '".getcwd()."/'.<br>\n";

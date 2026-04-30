@@ -92,7 +92,7 @@ else
 	$python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.txt" 2>> $logName;
 	echo "\tpre-processing complete." >> $logName;
 
-	chmod 664 $projectDirectory"preprocessed_CNVs.txt";
+	chmod 774 $projectDirectory"preprocessed_CNVs.txt";
 fi
 
 echo "Analyzing and mapping CNVs." >> $condensedLog;
@@ -108,6 +108,8 @@ echo "\tdiary('"$projectDirectory"octave.CNV_and_GCbias.log');" >> $outputName;
 echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 echo "\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
+chmod 774 $outputName;
+
 
 echo "\t|\tfunction [] = processing1()" >> $logName;
 echo "\t|\t    pkg load statistics;" >> $logName;
@@ -150,6 +152,7 @@ else
 	echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 	echo "\tChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $outputName;
 	echo "end" >> $outputName;
+	chmod 774 $outputName;
 
 	echo "\t|\tfunction [] = processing2()" >> $logName;
 	echo "\t|\t    pkg load matgeom;" >> $logName;
@@ -212,7 +215,7 @@ else
 	$python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" $genome $genomeUser $projectParent $projectParentUser $project $user $main_dir $logName LOH > $projectDirectory"preprocessed_SNPs.txt" 2>> $logName;
 	echo "\tpre-processing complete." >> $logName;
 
-	chmod 664 $projectDirectory"preprocessed_SNPs.txt";
+	chmod 774 $projectDirectory"preprocessed_SNPs.txt";
 fi
 
 echo "Mapping SNPs." >> $condensedLog;
@@ -226,6 +229,7 @@ echo "\tdiary('"$projectDirectory"octave.SNP_analysis.log');" >> $outputName;
 echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 echo "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
+chmod 774 $outputName;
 
 echo "\t|\tfunction [] = processing3()" >> $logName;
 echo "\t|\t    pkg load matgeom;" >> $logName;
@@ -263,6 +267,7 @@ echo "\tdiary('"$projectDirectory"octave.final_figs.log');" >> $outputName;
 echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 echo "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
+chmod 774 $outputName;
 
 echo "\t|\tfunction [] = processing4()" >> $logName;
 echo "\t|\t    pkg load matgeom;" >> $logName;
@@ -286,5 +291,6 @@ echo "finished all processing, moving to Cleaning up intermediate WGseq files" >
 ##==============================================================================
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
+chmod 774 $projectDirectory*;
 echo "running: " $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir >> $logName;
 sh $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir 2>> $logName;

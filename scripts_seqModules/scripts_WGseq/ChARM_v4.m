@@ -303,8 +303,8 @@ if (temp_figures == true)
 	saveas(fig,[projectDir 'fig.ChARM_test.1.' figVer 'png'], 'png');
 
 	%% change permissions of file.
-	system(['chmod 664 ' projectDir 'fig.ChARM_test.1.' figVer 'eps']);
-	system(['chmod 664 ' projectDir 'fig.ChARM_test.1.' figVer 'png']);
+	system(['chmod 774 ' projectDir 'fig.ChARM_test.1.' figVer 'eps']);
+	system(['chmod 774 ' projectDir 'fig.ChARM_test.1.' figVer 'png']);
 
 	delete(fig);
 	fprintf('\nFigure test.2\n');
@@ -335,8 +335,8 @@ if (temp_figures == true)
 	saveas(fig,[projectDir 'fig.ChARM_test.2.' figVer 'png'], 'png');
 
 	%% change permissions.
-	system(['chmod 664 ' projectDir 'fig.ChARM_test.2.' figVer 'eps']);
-	system(['chmod 664 ' projectDir 'fig.ChARM_test.2.' figVer 'png']);
+	system(['chmod 774 ' projectDir 'fig.ChARM_test.2.' figVer 'eps']);
+	system(['chmod 774 ' projectDir 'fig.ChARM_test.2.' figVer 'png']);
 
 	delete(fig);
 	fprintf('\nFigure test.3\n');
@@ -367,8 +367,8 @@ if (temp_figures == true)
 	saveas(fig,[projectDir 'fig.ChARM_test.3.' figVer 'png'], 'png');
 
 	%% change permissions.
-	system(['chmod 664 ' projectDir 'fig.ChARM_test.3.' figVer 'eps']);
-	system(['chmod 664 ' projectDir 'fig.ChARM_test.3.' figVer 'png']);
+	system(['chmod 774 ' projectDir 'fig.ChARM_test.3.' figVer 'eps']);
+	system(['chmod 774 ' projectDir 'fig.ChARM_test.3.' figVer 'png']);
 
 	delete(fig);
 	fprintf('\nFigure test.4\n');
@@ -411,8 +411,8 @@ if (temp_figures == true)
 	delete(fig);
 
 	%% change permissions.
-	system(['chmod 664 ' projectDir 'fig.ChARM_test.4.' figVer 'eps']);
-	system(['chmod 664 ' projectDir 'fig.ChARM_test.4.' figVer 'png']);
+	system(['chmod 774 ' projectDir 'fig.ChARM_test.4.' figVer 'eps']);
+	system(['chmod 774 ' projectDir 'fig.ChARM_test.4.' figVer 'png']);
 
 end;
 
@@ -857,8 +857,8 @@ if (temp_figures == true)
 	delete(fig);
 
 	%% change permissions.
-	system(['chmod 664 ' projectDir 'fig.ChARM_test.5.' figVer 'eps']);
-	system(['chmod 664 ' projectDir 'fig.ChARM_test.5.' figVer 'png']);
+	system(['chmod 774 ' projectDir 'fig.ChARM_test.5.' figVer 'eps']);
+	system(['chmod 774 ' projectDir 'fig.ChARM_test.5.' figVer 'png']);
 
 end;
 
@@ -894,7 +894,7 @@ end;
 save(dataFile, 'segmental_aneuploidy');
 
 %% change permissions of figures.
-system(['chmod 664 ' dataFile]);
+system(['chmod 774 ' dataFile]);
 
 fprintf('\n\n#===========================#\n');
 fprintf(    '|END OF "ChARM_v4.m" script.|\n');

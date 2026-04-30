@@ -488,7 +488,7 @@ if (exist([projectDir 'SNP_' SNP_verString '.mat'],'file') == 0)
 	save([projectDir 'SNP_' SNP_verString '.mat'],'chr_SNPdata');
 
 	%% change permissions of file.
-	system(['chmod 664 ' projectDir 'SNP_' SNP_verString '.mat']);
+	system(['chmod 774 ' projectDir 'SNP_' SNP_verString '.mat']);
 else
 	fprintf('\t|\t\tMAT file found, loading.\n');
 	load([projectDir 'SNP_' SNP_verString '.mat']);
@@ -1237,8 +1237,8 @@ if (Standard_display == true)
 	delete(fig);
 
 	%% change permissions of figures.
-	system(['chmod 664 ' projectDir 'fig.SNP-map.1.' figVer 'eps']);
-	system(['chmod 664 ' projectDir 'fig.SNP-map.1.' figVer 'png']);
+	system(['chmod 774 ' projectDir 'fig.SNP-map.1.' figVer 'eps']);
+	system(['chmod 774 ' projectDir 'fig.SNP-map.1.' figVer 'png']);
 end;
 
 if (Linear_display == true)
@@ -1248,8 +1248,8 @@ if (Linear_display == true)
 	delete(Linear_fig);
 
 	%% change permissions of figures.
-	system(['chmod 664 ' projectDir 'fig.SNP-map.2.' figVer 'eps']);
-	system(['chmod 664 ' projectDir 'fig.SNP-map.2.' figVer 'png']);
+	system(['chmod 774 ' projectDir 'fig.SNP-map.2.' figVer 'eps']);
+	system(['chmod 774 ' projectDir 'fig.SNP-map.2.' figVer 'png']);
 end;
 
 %% ========================================================================

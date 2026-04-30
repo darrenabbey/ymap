@@ -82,7 +82,7 @@
 	$startTimeString = date("Y-m-d H:i:s");
 	fwrite($output, $startTimeString);
 	fclose($output);
-	chmod($outputName,0664);
+	chmod($outputName,0774);
 	fwrite($logOutput, "\tGenerated 'working.txt' file.\n");
 
 	// Installation continues with next php script... strings recieved as POST are forwarded to next script.

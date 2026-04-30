@@ -65,7 +65,7 @@
 			$output       = fopen($outputName, 'w');
 			fwrite($output, $genome);
 			fclose($output);
-			chmod($outputName,0664);
+			chmod($outputName,0774);
 
 			$_SESSION['pending_install_genome_count'] += 1;
 			log_stuff($user,"","",$genome,"","genome:CREATE success");

@@ -85,7 +85,7 @@
 		$fh     = fopen($pwFile, 'w');
 		fwrite($fh, $pw);
 		fclose($fh);
-		chmod($pwFile, 0664);
+		chmod($pwFile, 0774);
 	}
 	function doesUserDirectoryExist($user){
 		$dir = "users/".$user."/";
@@ -101,7 +101,7 @@
 		fwrite($fileHandle, "Secondary Name: ".$secondaryName."\n");
 		fwrite($fileHandle, "Secondary Email: ".$secondaryEmail."\n");
 		fclose($fileHandle);
-		chmod($secondaryInformationFile, 0664);
+		chmod($secondaryInformationFile, 0774);
 	}
 
 //=========================================================

@@ -230,7 +230,7 @@
 				$output       = fopen($totalSizeFile, 'w');
 				fwrite($output, $projectSizeStr);
 				fclose($output);
-				chmod($totalSizeFile, 0664);
+				chmod($totalSizeFile, 0774);
 			}
 			// Print total size.
 			echo " <font color='black' size='1'><b>(". $projectSizeStr .")</b></font>";

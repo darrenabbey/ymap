@@ -31,7 +31,7 @@ then
 	timestamp=$(date +%T);
 	echo $timestamp >> $completeFile;
 	echo "\tGenerated 'complete.txt' file." >> $logName;
-	chmod 0666 $completeFile;
+	chmod 0774 $completeFile;
 
 	## changing working.txt to working_done.txt
 	if [ -f $projectDirectory"working.txt" ]
@@ -217,7 +217,7 @@ completeFile=$projectDirectory"complete.txt";
 echo "complete" > $completeFile;
 echo $timestamp >> $completeFile;
 echo "\tGenerated 'complete.txt' file." >> $logName;
-chmod 0666 $completeFile;
+chmod 0774 $completeFile;
 
 if [ -f $projectDirectory"working.txt" ]
 then

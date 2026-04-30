@@ -225,7 +225,7 @@ if (exist([projectDir 'CNV_' CNV_verString '.mat'],'file') == 0)
 	save([projectDir 'CNV_' CNV_verString '.mat'],'chr_CNVdata');
 
 	%% change permissions of file.
-	system(['chmod 664 ' projectDir 'CNV_' CNV_verString '.mat']);
+	system(['chmod 774 ' projectDir 'CNV_' CNV_verString '.mat']);
 else
 	fprintf('\nMAT file found, loading.\n');
 	load([projectDir 'CNV_' CNV_verString '.mat']);
@@ -609,8 +609,8 @@ if (Make_figure_bias_end)
 		delete(bias_end_fig);
 
 		%% change permissions of figures.
-		system(['chmod 664 ' projectDir 'fig.bias_chr_end.' figVer 'eps']);
-		system(['chmod 664 ' projectDir 'fig.bias_chr_end.' figVer 'png']);
+		system(['chmod 774 ' projectDir 'fig.bias_chr_end.' figVer 'eps']);
+		system(['chmod 774 ' projectDir 'fig.bias_chr_end.' figVer 'png']);
 	end;
 end;
 if (Make_figure_bias_GC)
@@ -653,8 +653,8 @@ if (Make_figure_bias_GC)
 		delete(bias_GC_fig);
 
 		%% change permissions of figures.
-		system(['chmod 664 ' projectDir 'fig.bias_GC_content.' figVer 'eps']);
-		system(['chmod 664 ' projectDir 'fig.bias_GC_content.' figVer 'png']);
+		system(['chmod 774 ' projectDir 'fig.bias_GC_content.' figVer 'eps']);
+		system(['chmod 774 ' projectDir 'fig.bias_GC_content.' figVer 'png']);
 	end;
 end;
 
@@ -672,7 +672,7 @@ genome_CNV = genome;
 save([projectDir 'Common_CNV.mat'], 'CNVplot2','genome_CNV');
 
 %% change permissions of file.
-system(['chmod 664 ' projectDir 'Common_CNV.mat']);
+system(['chmod 774 ' projectDir 'Common_CNV.mat']);
 
 
 
@@ -1235,8 +1235,8 @@ if (Standard_display)
 	delete(Standard_fig);
 
 	%% change permissions of figures.
-	system(['chmod 664 ' projectDir 'fig.CNV-map.1.' figVer 'eps']);
-	system(['chmod 664 ' projectDir 'fig.CNV-map.1.' figVer 'png']);
+	system(['chmod 774 ' projectDir 'fig.CNV-map.1.' figVer 'eps']);
+	system(['chmod 774 ' projectDir 'fig.CNV-map.1.' figVer 'png']);
 end;
 
 if (Linear_display)
@@ -1247,8 +1247,8 @@ if (Linear_display)
 	delete(Linear_fig);
 
 	%% change permissions of figures.
-	system(['chmod 664 ' projectDir 'fig.CNV-map.2.' figVer 'eps']);
-	system(['chmod 664 ' projectDir 'fig.CNV-map.2.' figVer 'png']);
+	system(['chmod 774 ' projectDir 'fig.CNV-map.2.' figVer 'eps']);
+	system(['chmod 774 ' projectDir 'fig.CNV-map.2.' figVer 'png']);
 end;
 
 % Output chromosome copy number estimates.
@@ -1259,6 +1259,6 @@ fprintf(textFileID,stringChrCNVs);
 fclose(textFileID);
 
 %% change permissions of figures.
-system(['chmod 664 ' projectDir 'txt.CNV-map.3.txt']);
+system(['chmod 774 ' projectDir 'txt.CNV-map.3.txt']);
 
 end

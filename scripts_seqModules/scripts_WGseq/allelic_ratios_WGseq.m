@@ -304,7 +304,7 @@ if (Make_figure == true)
 	save([projectDir 'SNP_' SNP_verString '.all1.mat'],'chr_SNP_data_ratios','chr_SNP_data_positions','chr_count');
 
 	%% change permissions of file.
-	system(['chmod 664 ' projectDir 'SNP_' SNP_verString '.all1.mat']);
+	system(['chmod 774 ' projectDir 'SNP_' SNP_verString '.all1.mat']);
 
 
 	%%================================================================================================
@@ -717,8 +717,8 @@ if (Make_figure == true)
 		saveas(fig,        [projectDir 'fig.allelic_ratio-map.b1.' figVer' png'], 'png');
 
 		%% change permissions of figures.
-		system(['chmod 664 ' projectDir 'fig.allelic_ratio-map.b1.' figVer 'eps']);
-		system(['chmod 664 ' projectDir 'fig.allelic_ratio-map.b1.' figVer 'png']);
+		system(['chmod 774 ' projectDir 'fig.allelic_ratio-map.b1.' figVer 'eps']);
+		system(['chmod 774 ' projectDir 'fig.allelic_ratio-map.b1.' figVer 'png']);
 		delete(fig);
 	end;
 
@@ -730,8 +730,8 @@ if (Make_figure == true)
 		saveas(Linear_fig, [projectDir 'fig.allelic_ratio-map.b2.' figVer 'png'], 'png');
 
 		%% change permissions of figures.
-		system(['chmod 664 ' projectDir 'fig.allelic_ratio-map.b2.' figVer 'eps']);
-		system(['chmod 664 ' projectDir 'fig.allelic_ratio-map.b2.' figVer 'png']);
+		system(['chmod 774 ' projectDir 'fig.allelic_ratio-map.b2.' figVer 'eps']);
+		system(['chmod 774 ' projectDir 'fig.allelic_ratio-map.b2.' figVer 'png']);
 		delete(Linear_fig);
 	end;
 else

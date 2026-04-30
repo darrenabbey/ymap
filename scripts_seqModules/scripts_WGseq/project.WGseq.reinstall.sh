@@ -10,6 +10,7 @@
 
 user="darren";
 project="ID5089";
+
 main_dir=$(pwd)"/../../";
 local_dir=$(pwd);
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
@@ -39,5 +40,5 @@ else
 	cd $local_dir;
 fi
 
-#sh project.WGseq.install_4.sh $user $project;
+chmod 774 $projectDirectory*;
 sh project.WGseq.update_2.sh $user $project;

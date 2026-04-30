@@ -111,7 +111,7 @@
 				if ($fig_G1 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
 				if ($fig_G2 != 1) { fwrite($file,"False");   } else { fwrite($file,"True"); }
 			fclose($file);
-			chmod($fileName,0664);
+			chmod($fileName,0774);
 
 			// Generate 'ploidy.txt' file.
 			$fileName = $projects_bulksettings."/ploidy.txt";
@@ -132,7 +132,7 @@
 				}
 			}
 			fclose($file);
-			chmod($fileName,0664);
+			chmod($fileName,0774);
 
 			// Generate 'dataBiases.txt' files.
 			// dataFormat.txt file: #:#:# where 1st # indicates type of data, 2nd # indicates format of input data, & 3rd # indicates if indel-realignment should be done.
@@ -159,14 +159,14 @@
 				fwrite($file2,"False\n".$bias_GC."\nFalse\n".$bias_end);
 			}
 			fclose($file2);
-			chmod($fileName2,0664);
+			chmod($fileName2,0774);
 
 			// Generate 'snowAnnotations.txt' file.
 			$fileName = $projects_bulksettings."/showAnnotations.txt";
 			$file     = fopen($fileName, 'w');
 			fwrite($file, $showAnnotations);
 			fclose($file);
-			chmod($fileName,0664);
+			chmod($fileName,0774);
 
 			// Generate 'genome.txt' file : containing genome used.
 			//	1st line : (String) genome name.
@@ -179,7 +179,7 @@
 				fwrite($file, $genome."\n".$hapmap);
 			}
 			fclose($file);
-			chmod($fileName,0664);
+			chmod($fileName,0774);
 
 			// Generate 'manualLOH.txt' file : contains manual LOH annotation information.
 			// one entry per line...  if input was provided.
@@ -195,7 +195,7 @@
 				$file     = fopen($fileName, 'w');
 				fwrite($file, $manualLOH);
 				fclose($file);
-				chmod($fileName,0664);
+				chmod($fileName,0774);
 			}
 
 			log_stuff($user,"[BULKDATA]","","","","bulkdata:CREATE settings success.");
@@ -285,7 +285,7 @@
 						$output       = fopen($outputName, 'w');
 						fwrite($output, $project);
 						fclose($output);
-						chmod($outputName,0664);
+						chmod($outputName,0774);
 
 						// Copy files from $projects_bulksettings to $project_dir1:
 						//      ploidy.txt
@@ -308,21 +308,21 @@
 						$parent   = $project;
 						fwrite($file, $parent);
 						fclose($file);
-						chmod($fileName,0664);
+						chmod($fileName,0774);
 
 						// Generate 'bulk.txt' file.
 						$fileName = $project_dir1."/bulk.txt";
 						$file     = fopen($fileName, 'w');
 						fwrite($file, "initiated");
 						fclose($file);
-						chmod($fileName,0664);
+						chmod($fileName,0774);
 
 						// Generate 'condensed_log.txt' file.
 						$fileName = $project_dir1."/condensed_log.txt";
 						$file     = fopen($fileName, 'w');
 						fwrite($file, "");
 						fclose($file);
-						chmod($fileName,0664);
+						chmod($fileName,0774);
 
 						// Generate dataFormat.txt files.
 						$fileName1 = $project_dir1."/dataFormat.txt";
@@ -339,7 +339,7 @@
 						}
 						fwrite($file1, "1:".$readType.":0");
 						fclose($file1);
-						chmod($fileName1,0664);
+						chmod($fileName1,0774);
 
 						// Copy raw data to project directories. Rename raw file as we go.
 						$fileName_     = pathinfo($filename_key, PATHINFO_FILENAME);
@@ -362,7 +362,7 @@
 						$file     = fopen($fileName, 'w');
 						fwrite($file, $filename_new1."\n");
 						fclose($file);
-						chmod($fileName,0664);
+						chmod($fileName,0774);
 
 						// If filename ends with "_R1", copy next file in table if the name includes "_R2".
 						if ($skip == 1) {
@@ -412,7 +412,7 @@
 								$file     = fopen($fileName, 'a');
 								fwrite($file, "\n".$filename_new2);
 								fclose($file);
-								chmod($fileName,0664);
+								chmod($fileName,0774);
 							}
 						}
 ?>

@@ -428,8 +428,8 @@ if (Make_liftoff_cartoon)
 		delete(Standard_fig);
 
 		%% change permissions of figures.
-		system(['chmod 664 ' genomeDir 'fig.liftoff-cartoon.1.eps']);
-		system(['chmod 664 ' genomeDir 'fig.liftoff-cartoon.1.png']);
+		system(['chmod 774 ' genomeDir 'fig.liftoff-cartoon.1.eps']);
+		system(['chmod 774 ' genomeDir 'fig.liftoff-cartoon.1.png']);
 	end;
 
 	if (Linear_display)
@@ -440,8 +440,8 @@ if (Make_liftoff_cartoon)
 		delete(Linear_fig);
 
 		%% change permissions of figures.
-		system(['chmod 664 ' genomeDir 'fig.liftoff-cartoon.2.eps']);
-		system(['chmod 664 ' genomeDir 'fig.liftoff-cartoon.2.png']);
+		system(['chmod 774 ' genomeDir 'fig.liftoff-cartoon.2.eps']);
+		system(['chmod 774 ' genomeDir 'fig.liftoff-cartoon.2.png']);
 	end;
 else
 	fprintf([  '$$$ Not making Liftoff-cartoon figures.\n']);

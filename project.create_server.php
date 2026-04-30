@@ -132,7 +132,7 @@
 			$output       = fopen($outputName, 'w');
 			fwrite($output, $project);
 			fclose($output);
-			chmod($outputName,0664);
+			chmod($outputName,0774);
 
 			$_SESSION['pending_install_project_count'] += 1;
 
@@ -155,7 +155,7 @@
 				}
 			}
 			fclose($file);
-			chmod($fileName,0664);
+			chmod($fileName,0774);
 
 			// Generate 'parent.txt' file.
 			$fileName = $project_dir1."/parent.txt";
@@ -166,7 +166,7 @@
 				fwrite($file, $parent);
 			}
 			fclose($file);
-			chmod($fileName,0664);
+			chmod($fileName,0774);
 
 			// Generate 'dataFormat.txt' and 'dataBiases.txt' files.
 			// dataFormat.txt file: #:#:# where 1st # indicates type of data, 2nd # indicates format of input data, & 3rd # indicates if indel-realignment should be done.
@@ -209,8 +209,8 @@
 			}
 			fclose($file1);
 			fclose($file2);
-			chmod($fileName1,0664);
-			chmod($fileName2,0664);
+			chmod($fileName1,0774);
+			chmod($fileName2,0774);
 
 			// Generate 'restrictionEnzymes.txt' file, only for ddRADseq projects.
 			if ($dataFormat == "3") { // ddRADseq
@@ -218,7 +218,7 @@
 				$file     = fopen($fileName, 'w');
 				fwrite($file, $restrictionEnzymes);
 				fclose($file);
-				chmod($fileName,0664);
+				chmod($fileName,0774);
 			}
 
 			// Generate 'snowAnnotations.txt' file.
@@ -226,7 +226,7 @@
 			$file     = fopen($fileName, 'w');
 			fwrite($file, $showAnnotations);
 			fclose($file);
-			chmod($fileName,0664);
+			chmod($fileName,0774);
 
 			// Generate 'genome.txt' file : containing genome used.
 			//	1st line : (String) genome name.
@@ -239,7 +239,7 @@
 				fwrite($file, $genome."\n".$hapmap);
 			}
 			fclose($file);
-			chmod($fileName,0664);
+			chmod($fileName,0774);
 
 			// Generate 'manualLOH.txt' file : contains manual LOH annotation information.
 			// one entry per line...  if input was provided.
@@ -255,7 +255,7 @@
 				$file     = fopen($fileName, 'w');
 				fwrite($file, $manualLOH);
 				fclose($file);
-				chmod($fileName,0664);
+				chmod($fileName,0774);
 			}
 
 			log_stuff($user,$project,"","","","project:CREATE success");

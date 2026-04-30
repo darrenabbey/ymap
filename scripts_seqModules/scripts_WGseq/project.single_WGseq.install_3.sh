@@ -175,12 +175,14 @@ else
 		rm $projectDirectory"data.sam";
 		echo "\tSamtools : Bowtie-SAM converted into compressed format (BAM) file." >> $logName;
 		mv $projectDirectory"data.temp.bam" $projectDirectory"data.bam";
+		chmod 774 $projectDirectory"data.bam"
 
 		echo "[[=- Sorting/Indexing BAM files -=]]" >> $logName;
 		echo "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
 		echo "Sorting BAM file." >> $condensedLog;
 		echo "\nRunning samtools:sort.\n";
 		$samtools_exec sort -@ $cores $projectDirectory"data.bam" -o $projectDirectory"data_sorted.bam" -T $projectDirectory;
+
 		echo "Indexing BAM file." >> $condensedLog;
 		echo "\nRunning samtools:index.\n";
 		$samtools_exec index $projectDirectory"data_sorted.bam";
@@ -262,10 +264,11 @@ then
 		$python_exec $main_dir"scripts_seqModules/putative_SNPs_from_hapmap_in_child.py" $genome $genomeUser $project $user $hapmap $hapmapUser $main_dir > $projectDirectory"trimmed_SNPs_v5.txt" 2>> $logName;
 		echo "\t\tDone." >> $logName;
 
-		chmod 664 $projectDirectory"trimmed_SNPs_v5.txt";
+		chmod 774 $projectDirectory"trimmed_SNPs_v5.txt";
 	fi
 fi
 
+chmod 774 $projectDirectory*;
 echo "Pileup processing is complete." >> $condensedLog;
 echo "\nPileup processing complete.\n" >> $logName;
 echo   "=========================================================================\n" >> $logName;
@@ -273,16 +276,10 @@ echo   "========================================================================
 if [ $hapmapInUse = 0 ]
 then
 	echo "Passing processing on to 'scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh' for final analysis." >> $logName;
-	echo "\t"$main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh "$user" "$project >> $logName;
-	echo "Script executed from: ${PWD}" >> $logName;
-
 	echo   "=========================================================================\n" >> $logName;
 	sh $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" $user $project 2>> $logName;
 else
 	echo "Passing processing on to 'scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh' for final analysis." >> $logName;
-	echo "\t"$main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh "$user" "$project" "$hapmap >> $logName;
-	echo "Script executed from: ${PWD}" >> $logName;
-
 	echo "=========================================================================\n" >> $logName;
 	sh $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh" $user $project $hapmap 2>> $logName;
 fi

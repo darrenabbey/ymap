@@ -422,7 +422,7 @@ if ($ext_new == "fastq") {
 	$errorFile = fopen($projectPath."error.txt", 'w');
 	fwrite($errorFile, "Archive did not contain FASTQ file.");
 	fclose($errorFile);
-	chmod($errorFileName,0664);
+	chmod($errorFileName,0774);
 	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTQ not found in archive.");
 	exit;
 } elseif ($ext_new == "none2") {
@@ -430,7 +430,7 @@ if ($ext_new == "fastq") {
 	$errorFile = fopen($projectPath."error.txt", 'w');
         fwrite($errorFile, "FASTQ file formatting improperly.");
         fclose($errorFile);
-        chmod($errorFileName,0664);
+        chmod($errorFileName,0774);
 	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTQ file format errors.");
         exit;
 } elseif ($ext_new == "none3") {
@@ -438,7 +438,7 @@ if ($ext_new == "fastq") {
 	$errorFile = fopen($projectPath."error.txt", 'w');
 	fwrite($errorFile, "TDT file contents did not match expectations.");
 	fclose($errorFile);
-	chmod($errorFileName,0664);
+	chmod($errorFileName,0774);
 	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: TDT file format errors.");
 	exit;
 } elseif ($ext_new == "none4") {
@@ -446,7 +446,7 @@ if ($ext_new == "fastq") {
         $errorFile = fopen($projectPath."error.txt", 'w');
         fwrite($errorFile, "YMAP is unable to process long-read sequence data.");
         fclose($errorFile);
-        chmod($errorFileName,0664);
+        chmod($errorFileName,0774);
         log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTQ file includes long-read data.");
         exit;
 } else {
@@ -454,7 +454,7 @@ if ($ext_new == "fastq") {
 	$errorFile = fopen($projectPath."error.txt", 'w');
 	fwrite($errorFile, "Unknown file type as input.\nSee help tab for details of valid file types.");
 	fclose($errorFile);
-	chmod($errorFileName,0664);
+	chmod($errorFileName,0774);
 	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: Unknown file format.");
 	exit;
 }

@@ -934,8 +934,8 @@ if ((useHapmap) || (useParent))
 		delete(fig);
 
 		%% change permissions of figures.
-		system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.RedGreen.1.' figVer 'eps']);
-		system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.RedGreen.1.' figVer 'png']);
+		system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.RedGreen.1.' figVer 'eps']);
+		system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.RedGreen.1.' figVer 'png']);
 	end;
 
 	if (Linear_display == true)
@@ -946,8 +946,8 @@ if ((useHapmap) || (useParent))
 		delete(Linear_fig);
 
 		%% change permissions of figures.
-		system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.RedGreen.2.' figVer 'eps']);
-		system(['chmod 664 ' projectDir 'fig.CNV-SNP-map.RedGreen.2.' figVer 'png']);
+		system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.RedGreen.2.' figVer 'eps']);
+		system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.RedGreen.2.' figVer 'png']);
 	end;
 elseif (useParent)
 	% Dataset was compared to a parent, so don't draw a Red/Green alternate colors plot.

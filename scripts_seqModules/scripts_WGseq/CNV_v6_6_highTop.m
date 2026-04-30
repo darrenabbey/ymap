@@ -765,8 +765,8 @@ if (Make_figure == true)
 		saveas(Standard_fig, [projectDir 'fig.CNV-map.highTop.1.' figVer 'png'], 'png');
 
 		%% change permissions of figures.
-		system(['chmod 664 ' projectDir 'fig.CNV-map.highTop.1.' figVer 'eps']);
-		system(['chmod 664 ' projectDir 'fig.CNV-map.highTop.1.' figVer 'png']);
+		system(['chmod 774 ' projectDir 'fig.CNV-map.highTop.1.' figVer 'eps']);
+		system(['chmod 774 ' projectDir 'fig.CNV-map.highTop.1.' figVer 'png']);
 		delete(Standard_fig);
 	end;
 
@@ -779,8 +779,8 @@ if (Make_figure == true)
 		delete(Linear_fig);
 
 		%% change permissions of figures.
-		system(['chmod 664 ' projectDir 'fig.CNV-map.highTop.2.' figVer 'eps']);
-		system(['chmod 664 ' projectDir 'fig.CNV-map.highTop.2.' figVer 'png']);
+		system(['chmod 774 ' projectDir 'fig.CNV-map.highTop.2.' figVer 'eps']);
+		system(['chmod 774 ' projectDir 'fig.CNV-map.highTop.2.' figVer 'png']);
 	end;
 end;
 
