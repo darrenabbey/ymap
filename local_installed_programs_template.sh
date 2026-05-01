@@ -11,7 +11,7 @@ bowtie2Directory=$userProgramsLocation"bowtie2-2.1.0/";
 java7Directory=$userProgramsLocation"jdk1.8.0_112/jre/bin/";
 
 # Dependency executables:
-matlab_exec=$userProgramsLocation"Matlab_R2014b/bin/matlab";
+octave_exec=$userProgramsLocation"octave -qf --no-gui";
 
 # the wigToBigWig executable:
 wigToBigWig_exec=$userProgramsLocation"wigToBigWig";

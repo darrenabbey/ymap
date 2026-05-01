@@ -136,7 +136,7 @@ echo "end" >> $logName;
 
 echo "\tCalling OCTAVE." >> $logName;
 cd $projectDirectory;
-$matlab_exec $outputName;
+$octave_exec $outputName;
 cd $script_dir;
 echo "\tOCTAVE log from redo of visualization.." >> $logName;
 sed 's/^/\t\t|/;' $projectDirectory"octave.rerun_visualization.log" >> $logName;

@@ -8,8 +8,8 @@
 # Use this command.
 #	unzip -j [fiel.zip]
 
-user="darren";
-project="ID5089";
+user="darrenLW";
+project="test2";
 
 main_dir=$(pwd)"/../../";
 local_dir=$(pwd);

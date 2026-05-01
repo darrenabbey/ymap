@@ -186,7 +186,7 @@ echo "\tpkg load matgeom;" >> $outputName;
 echo "\tdiary('"$projectDirectory"octave.CNV_and_GCbias.log');" >> $outputName;
 echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 echo "\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
-echo "end" >> $outputName;
+echo "endfunction" >> $outputName;
 chmod 774 $outputName;
 
 echo "\t|\tfunction [] = processing1()" >> $logName;
@@ -202,7 +202,7 @@ echo "\t|\tend" >> $logName;
 ###
 echo "\tCalling OCTAVE." >> $logName;
 cd $projectDirectory;
-$matlab_exec $outputName;
+$octave_exec $outputName;
 cd $script_dir;
 echo "\tOCTAVE log from CNV analysis." >> $logName;
 sed 's/^/\t|/;' $projectDirectory"octave.CNV_and_GCbias.log" >> $logName;
@@ -249,7 +249,7 @@ then
 	echo "== SNP analysis ================================================================================";
 	echo "================================================================================================";
 	cd $projectDirectory;
-	$matlab_exec $outputName;
+	$octave_exec $outputName;
 	cd $script_dir;
 	echo "\tOCTAVE log from SNP analysis." >> $logName;
 	sed 's/^/\t|/;' $projectDirectory"octave.SNP_analysis.log" >> $logName;
@@ -287,7 +287,7 @@ then
 	echo "== Final figures ===============================================================================";
 	echo "================================================================================================";
 	cd $projectDirectory;
-	$matlab_exec $outputName;
+	$octave_exec $outputName;
 	cd $script_dir;
 	echo "\tOCTAVE log from final figure generation." >> $logName;
 	sed 's/^/\t|/;' $projectDirectory"octave.final_figs.log" >> $logName;
@@ -332,7 +332,7 @@ else
 	echo "== SNP analysis ================================================================================";
 	echo "================================================================================================";
 	cd $projectDirectory;
-	$matlab_exec $outputName;
+	$octave_exec $outputName;
 	cd $script_dir;
 	echo "\t\tOCTAVE log from SNP analysis." >> $logName;
 	sed 's/^/\t\t\t|/;' $projectDirectory"octave.SNP_analysis.log" >> $logName;
@@ -370,7 +370,7 @@ else
 	echo "== CNV/SNP/LOH figure generation ===============================================================";
 	echo "================================================================================================";
 	cd $projectDirectory;
-	$matlab_exec $outputName;
+	$octave_exec $outputName;
 	cd $script_dir;
 	echo "\t\tOCTAVE log from final figure generation." >> $logName;
 	sed 's/^/\t\t|/;' $projectDirectory"octave.final_figs.log" >> $logName;

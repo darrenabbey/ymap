@@ -513,7 +513,7 @@ if (performGCbiasCorrection)
 	rawData_X2     = GCratioData_clean;
 	rawData_Y2     = CNVdata_clean;
 	% perform correction only if the data has more then one value since
-	% otherwise inner functions of matlab will cause crash
+	% otherwise inner functions of octave will cause crash
 	if (size(rawData_X2,2) > 1 && size(rawData_Y2,2) > 1)
 	fprintf(['Lowess X:Y size : [' num2str(size(rawData_X2,1)) ',' num2str(size(rawData_X2,2)) ']:[' num2str(size(rawData_Y2,1)) ',' num2str(size(rawData_Y2,2)) ']\n']);
 	[fitX2, fitY2] = optimize_mylowess(rawData_X2,rawData_Y2,10, 0);

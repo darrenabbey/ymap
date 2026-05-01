@@ -101,17 +101,18 @@ echo "\tGenerating OCTAVE script to perform CNV analysis of dataset, with GC-cor
 outputName=$projectDirectory"processing1.m";
 echo "\toutputName = "$outputName >> $logName;
 
-echo "function [] = processing1()" > $outputName;
+##echo "function [] = processing1 ()" > $outputName;
+echo "function processing1" > $outputName;
 echo "\tpkg load statistics;" >> $outputName;
 echo "\tpkg load matgeom;" >> $outputName;
-echo "\tdiary('"$projectDirectory"octave.CNV_and_GCbias.log');" >> $outputName;
+echo "\tdiary '"$projectDirectory"octave.CNV_and_GCbias.log';" >> $outputName;
 echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 echo "\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo "end" >> $outputName;
 chmod 774 $outputName;
 
-
-echo "\t|\tfunction [] = processing1()" >> $logName;
+echo "\t|\tfunction [] = processing1" >> $logName;
+##echo "\t|\tfunction processing1" >> $logName;
 echo "\t|\t    pkg load statistics;" >> $logName;
 echo "\t|\t    pkg load matgeom;" >> $logName;
 echo "\t|\t    diary('"$projectDirectory"octave.CNV_and_GCbias.log');" >> $logName;
@@ -121,7 +122,7 @@ echo "\t|\tend" >> $logName;
 
 echo "\tCalling OCTAVE." >> $logName;
 cd $projectDirectory;
-$matlab_exec $outputName;
+$octave_exec $projectDirectory$outputName;
 cd $script_dir;
 
 
@@ -146,7 +147,8 @@ else
 	outputName=$projectDirectory"processing2.m";
 	echo "\toutputName = "$outputName >> $logName;
 
-	echo "function [] = processing2()" > $outputName;
+	##echo "function [] = processing2()" > $outputName;
+	echo "function processing2" > $outputName;
 	echo "\tpkg load matgeom;" >> $outputName;
 	echo "\tdiary('"$projectDirectory"octave.ChARM.log');" >> $outputName;
 	echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
@@ -154,7 +156,8 @@ else
 	echo "end" >> $outputName;
 	chmod 774 $outputName;
 
-	echo "\t|\tfunction [] = processing2()" >> $logName;
+	##echo "\t|\tfunction [] = processing2()" >> $logName;
+	echo "\t|\tfunction processing2" >> $logName;
 	echo "\t|\t    pkg load matgeom;" >> $logName;
 	echo "\t|\t    diary('"$projectDirectory"octave.ChARM.log');" >> $logName;
 	echo "\t|\t    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
@@ -166,7 +169,7 @@ else
 	echo "== ChARM analysis ==============================================================================";
 	echo "================================================================================================";
 	cd $projectDirectory;
-	$matlab_exec $outputName;
+	$octave_exec $outputName;
 	cd $script_dir;
 	echo "\tOCTAVE log from ChARM analysis." >> $logName;
 	sed 's/^/\t|/;' $projectDirectory"octave.ChARM.log" >> $logName;
@@ -223,7 +226,8 @@ echo "\tGenerating OCTAVE script to perform SNP analysis of dataset." >> $logNam
 outputName=$projectDirectory"processing3.m";
 echo "\toutputName = "$outputName >> $logName;
 
-echo "function [] = processing3()" > $outputName;
+##echo "function [] = processing3()" > $outputName;
+echo "function processing3" > $outputName;
 echo "\tpkg load matgeom;" >> $outputName;
 echo "\tdiary('"$projectDirectory"octave.SNP_analysis.log');" >> $outputName;
 echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
@@ -231,7 +235,8 @@ echo "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$proje
 echo "end" >> $outputName;
 chmod 774 $outputName;
 
-echo "\t|\tfunction [] = processing3()" >> $logName;
+##echo "\t|\tfunction [] = processing3()" >> $logName;
+echo "\t|\tfunction processing3" >> $logName;
 echo "\t|\t    pkg load matgeom;" >> $logName;
 echo "\t|\t    diary('"$projectDirectory"octave.SNP_analysis.log');" >> $logName;
 echo "\t|\t    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
@@ -243,7 +248,7 @@ echo "==========================================================================
 echo "== SNP analysis ================================================================================";
 echo "================================================================================================";
 cd $projectDirectory;
-$matlab_exec $outputName;
+$octave_exec $outputName;
 cd $script_dir;
 echo "\tOCTAVE log from SNP analysis." >> $logName;
 sed 's/^/\t|/;' $projectDirectory"octave.SNP_analysis.log" >> $logName;
@@ -261,7 +266,8 @@ echo "\tGenerating OCTAVE script to generate combined CNV and SNP analysis figur
 outputName=$projectDirectory"processing4.m";
 echo "\toutputName = "$outputName >> $logName;
 
-echo "function [] = processing4()" > $outputName;
+##echo "function [] = processing4()" > $outputName;
+echo "function processing4" > $outputName;
 echo "\tpkg load matgeom;" >> $outputName;
 echo "\tdiary('"$projectDirectory"octave.final_figs.log');" >> $outputName;
 echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
@@ -269,7 +275,8 @@ echo "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$p
 echo "end" >> $outputName;
 chmod 774 $outputName;
 
-echo "\t|\tfunction [] = processing4()" >> $logName;
+##echo "\t|\tfunction [] = processing4()" >> $logName;
+echo "\t|\tfunction processing4" >> $logName;
 echo "\t|\t    pkg load matgeom;" >> $logName;
 echo "\t|\t    diary('"$projectDirectory"octave.final_figs.log');" >> $logName;
 echo "\t|\t    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
@@ -281,7 +288,7 @@ echo "==========================================================================
 echo "== Final figures ===============================================================================";
 echo "================================================================================================";
 cd $projectDirectory;
-$matlab_exec $outputName;
+$octave_exec $outputName;
 cd $script_dir;
 echo "\tOCTAVE log from final figure generation." >> $logName;
 sed 's/^/\t|/;' $projectDirectory"octave.final_figs.log" >> $logName;

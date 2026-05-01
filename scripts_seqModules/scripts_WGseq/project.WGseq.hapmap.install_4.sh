@@ -122,7 +122,7 @@ echo "\t|\tend" >> $logName;
 
 echo "\t\tCalling OCTAVE." >> $logName;
 cd $projectDirectory;
-$matlab_exec $outputName;
+$octave_exec $outputName;
 cd $script_dir;
 echo "\t\tOCTAVE log from CNV analysis." >> $logName;
 sed 's/^/\t\t\t|/;' $projectDirectory"octave.CNV_and_GCbias.log" >> $logName;
@@ -164,7 +164,7 @@ else
 	echo "== ChARM analysis ==============================================================================";
 	echo "================================================================================================";
 	cd $projectDirectory;
-	$matlab_exec $outputName;
+	$octave_exec $outputName;
 	cd $script_dir;
 	echo "\t\tOCTAVE log from ChARM analysis." >> $logName;
 	sed 's/^/\t\t\t|/;' $projectDirectory"octave.ChARM.log" >> $logName;
@@ -224,7 +224,7 @@ echo "==========================================================================
 echo "== SNP analysis ================================================================================";
 echo "================================================================================================";
 cd $projectDirectory;
-$matlab_exec $outputName;
+$octave_exec $outputName;
 cd $script_dir;
 echo "\t\tOCTAVE log from SNP analysis." >> $logName;
 sed 's/^/\t\t\t|/;' $projectDirectory"octave.SNP_analysis.log" >> $logName;
@@ -262,7 +262,7 @@ echo "==========================================================================
 echo "== CNV/SNP/LOH figure generation ===============================================================";
 echo "================================================================================================";
 cd $projectDirectory;
-$matlab_exec $outputName;
+$octave_exec $outputName;
 cd $script_dir;
 echo "\t\tOCTAVE log from final figure generation." >> $logName;
 sed 's/^/\t\t|/;' $projectDirectory"octave.final_figs.log" >> $logName;
