@@ -189,10 +189,11 @@ else
 		echo "Sorting BAM file." >> $condensedLog;
 		echo "\nRunning samtools:sort.\n";
 		$samtools_exec sort -@ $cores $projectDirectory"data.bam" -o $projectDirectory"data_sorted.bam" -T $projectDirectory;
+		chmod 774 $projectDirectory"data_sorted.bam";
 		echo "Indexing BAM file." >> $condensedLog;
 		echo "\nRunning samtools:index.\n";
 		$samtools_exec index $projectDirectory"data_sorted.bam";
-		chmod 774 $projectDirectory"data_sorted.bam*";
+		chmod 774 $projectDirectory"data_sorted.bam.bai";
 		echo "\tSamtools : Bowtie-BAM sorted & indexed." >> $logName;
 	fi;
 

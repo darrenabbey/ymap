@@ -166,6 +166,7 @@ else
 			# -p : number of threads to use.
 			# -1 : dataset.
 		    # --very-sensitive : a default set of configurations.
+		chmod 774 $projectDirectory"data.sam";
 		echo "\tBowtie : single-end reads aligned into SAM file." >> $logName;
 
 		echo "\tSamtools : converting Bowtie-SAM into compressed format (BAM) file." >> $logName;
@@ -182,10 +183,12 @@ else
 		echo "Sorting BAM file." >> $condensedLog;
 		echo "\nRunning samtools:sort.\n";
 		$samtools_exec sort -@ $cores $projectDirectory"data.bam" -o $projectDirectory"data_sorted.bam" -T $projectDirectory;
+		chmod 774 $projectDirectory"data_sorted.bam";
 
 		echo "Indexing BAM file." >> $condensedLog;
 		echo "\nRunning samtools:index.\n";
 		$samtools_exec index $projectDirectory"data_sorted.bam";
+		chmod 774 $projectDirectory"data_sorted.bam.bai";
 		echo "\tSamtools : Bowtie-BAM sorted & indexed." >> $logName;
 	fi
 
@@ -202,6 +205,7 @@ else
 		echo "Generating pileup file." >> $condensedLog;
 		echo "\nRunning samtools:mpileup.\n";
 		bash $main_dir"scripts_seqModules/parallel_mpileup.sh" $user $project >> $logName;
+		chmod 774 $projectDirectory"data.pileup";
 		echo "\tSamtools : Pileup generated." >> $logName;
 	fi
 
@@ -209,10 +213,12 @@ else
 
 	( echo "\tPython : Processing pileup for SNPs." >> $logName;
 	$python_exec $main_dir"scripts_seqModules/counts_SNPs_v5.py" $projectDirectory"data.pileup" > $projectDirectory"putative_SNPs_v4.txt" 2>> $logName;
+	chmod 774 $projectDirectory"putative_SNPs_v4.txt";
 	echo "\tPython : Pileup processed for SNPs." >> $logName; ) &
 
 	( echo "\tPython : Processing pileup for SNP-CNV." >> $logName;
 	$python_exec $main_dir"scripts_seqModules/counts_CNVs-SNPs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"SNP_CNV_v1.txt" 2>> $logName;
+	chmod 774 $projectDirectory"SNP_CNV_v1.txt";
 	echo "\tPython : Pileup processed for SNP-CNV." >> $logName; ) &
 
 	wait;
