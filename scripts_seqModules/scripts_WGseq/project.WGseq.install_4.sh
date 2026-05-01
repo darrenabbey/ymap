@@ -100,9 +100,7 @@ echo "Analyzing and mapping CNVs." >> $condensedLog;
 echo "\tGenerating OCTAVE script to perform CNV analysis of dataset, with GC-correction." >> $logName;
 outputName=$projectDirectory"processing1.m";
 echo "\toutputName = "$outputName >> $logName;
-
-##echo "function [] = processing1 ()" > $outputName;
-echo "function processing1" > $outputName;
+echo "function [] = processing1()" > $outputName;
 echo "\tpkg load statistics;" >> $outputName;
 echo "\tpkg load matgeom;" >> $outputName;
 echo "\tdiary '"$projectDirectory"octave.CNV_and_GCbias.log';" >> $outputName;
@@ -111,8 +109,7 @@ echo "\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$
 echo "end" >> $outputName;
 chmod 774 $outputName;
 
-echo "\t|\tfunction [] = processing1" >> $logName;
-##echo "\t|\tfunction processing1" >> $logName;
+echo "\t|\tfunction [] = processing1()" >> $logName;
 echo "\t|\t    pkg load statistics;" >> $logName;
 echo "\t|\t    pkg load matgeom;" >> $logName;
 echo "\t|\t    diary('"$projectDirectory"octave.CNV_and_GCbias.log');" >> $logName;
@@ -122,7 +119,7 @@ echo "\t|\tend" >> $logName;
 
 echo "\tCalling OCTAVE." >> $logName;
 cd $projectDirectory;
-$octave_exec $projectDirectory$outputName;
+$octave_exec $outputName;
 cd $script_dir;
 
 
