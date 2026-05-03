@@ -248,7 +248,7 @@ for chr = 1:num_chrs
 		[pks2{chr},locs2{chr}] = findpeaks(-CNV_differentiated_smoothed{chr});
 		locs{chr} = sort([locs1{chr} locs2{chr}]);
 
-		fprintf(['\nPeak positions on chr : "' num2str(chr) '"\n']);
+		fprintf(['    Peak positions on chr : "' num2str(chr) '"\n']);
 		fprintf('\t[');
 		for edge = 1:(length(locs{chr})-1)
 			fprintf([num2str(locs{chr}(edge)) ', ']);
