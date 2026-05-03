@@ -165,18 +165,6 @@ for i = 1:length(figure_details)
 		chr_label      {figure_details(i).chr} = figure_details(i).label;
 		chr_name       {figure_details(i).chr} = figure_details(i).name;
 		chr_posX       (figure_details(i).chr) = figure_details(i).posX;
-
-		%%% Place chromosome cartoons in correct order for standard figure.
-		figOrder                               = str2num(figure_details(i).figOrder)
-		if (figOrder == 0)
-			chr_posY_raw                   = 0;
-			chr_posY_real                  = 0;
-		else
-			chr_posY_raw                   = figure_details(i).posY;
-			chr_posY_real                  = figure_details(figOrder).posY;
-		end;
-		chr_posY       (figure_details(i).chr) = chr_posY_real;
-
 		chr_width      (figure_details(i).chr) = figure_details(i).width;
 		chr_height     (figure_details(i).chr) = figure_details(i).height;
 		chr_in_use     (figure_details(i).chr) = str2num(figure_details(i).useChr);
