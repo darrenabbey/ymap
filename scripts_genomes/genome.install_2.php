@@ -176,8 +176,8 @@
 			// setting figure height to be the same for all figures making them ocuppy 50 precent of the maximum height (50 precent for gap).
 			$fig_height = 0.5*(0.97/($chr_count_used + 0.5));
 			for ($chr=0; $chr<$chr_count; $chr += 1) {
+				$chrID = $chr + 1;
 				if ($chr_draws[$chr] == 1) {
-					$chrID = $chr + 1;
 					// standard chr cartoons placed at 0.15 from left side.
 					$fig_posX     = 0.15;
 					// title gets 0.03 of the space, and figures share the rest (+0.5 to avoid cutting in the end).
@@ -191,9 +191,9 @@
 					}
 
 					fwrite($output, $chrID."\t1\t".$chr_shortNames[$chr]."\t".$chr_names[$chr]."\t".$fig_posX."\t".$fig_posY."\t".$fig_width."\t".$fig_height."\t".$fig_order."\t".$fig_reversed."\n");
-				//} else {
+				} else {
 					// Unused contigs.
-					//fwrite($output, "-\t0\tunused\t".$chr_names[$chr]."\t0\t0\t0\t0\t0\t0\n");
+					fwrite($output, $chrID."\t0\tunused\t".$chr_names[$chr]."\t0\t0\t0\t0\t0\t0\n");
 				}
 			}
 		}

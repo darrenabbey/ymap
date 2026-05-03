@@ -87,7 +87,7 @@ function [linear_fig_height,linear_fig_width,linear_left_padding,linear_chr_gap,
 	linear_gca_font_size = 12;
 	linear_chr_font_size = 12;
 
-	fprintf('linear figure paramters:\n');
+	fprintf('linear figure parameters:\n');
 	fprintf('height:%d px, width:%d px, rotate:%d\n',linear_fig_height_px,linear_fig_width_px,rotate);
 	fprintf('chr font size:%d, axis font size:%d px, gca font size:%d\n',linear_chr_font_size,linear_axis_font_size,linear_gca_font_size);
 
@@ -111,7 +111,7 @@ function [linear_fig_height,linear_fig_width,linear_left_padding,linear_chr_gap,
 	stacked_chr_font_size = 16;
 	stacked_copy_font_size = 20;
 
-	fprintf('stacked figure paramters:\n');
+	fprintf('stacked figure parameters:\n');
 	fprintf('height:%d px, width:%d px, title size:%d\n',stacked_fig_height_px,stacked_fig_width_px,stacked_title_size);
 	fprintf('chr font size:%d, axis font size:%d px, gca font size:%d\n',stacked_chr_font_size,stacked_axis_font_size,gca_stacked_font_size);
 

@@ -808,11 +808,13 @@ endwhile;
 
 fprintf('\n');
 for chr = 1:num_chrs
-	fprintf(['\t chrCopyNum{' num2str(chr) '} = ']);
-	for i = 1:length(chrCopyNum{chr})
-		fprintf([num2str(chrCopyNum{chr}(i)) ' ']);
+	if (chr_in_use(chr) == 1)
+		fprintf(['\t chrCopyNum{' num2str(chr) '} = ']);
+		for i = 1:length(chrCopyNum{chr})
+			fprintf([num2str(chrCopyNum{chr}(i)) ' ']);
+		end;
+		fprintf('\n');
 	end;
-	fprintf('\n');
 end;
 
 %%==========================================================================

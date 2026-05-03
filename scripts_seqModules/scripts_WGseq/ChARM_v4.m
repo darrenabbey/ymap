@@ -56,48 +56,48 @@ vars = who('-file',dataFile)
 [centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 
 for i = 1:length(chr_sizes)
-    chr_size(i) = 0;
+	chr_size(i) = 0;
 end;
 for i = 1:length(chr_sizes)
-    chr_size(chr_sizes(i).chr)    = chr_sizes(i).size;
+	chr_size(chr_sizes(i).chr)    = chr_sizes(i).size;
 end;
 for i = 1:length(centromeres)
-    cen_start(centromeres(i).chr) = centromeres(i).start;
-    cen_end(centromeres(i).chr)   = centromeres(i).end;
+	cen_start(centromeres(i).chr) = centromeres(i).start;
+	cen_end(centromeres(i).chr)   = centromeres(i).end;
 end;
 if (length(annotations) > 0)
-    fprintf(['\nAnnotations for ' genome '.\n']);
-    for i = 1:length(annotations)
-        annotation_chr(i)       = annotations(i).chr;
-        annotation_type{i}      = annotations(i).type;
-        annotation_start(i)     = annotations(i).start;
-        annotation_end(i)       = annotations(i).end;
-        annotation_fillcolor{i} = annotations(i).fillcolor;
-        annotation_edgecolor{i} = annotations(i).edgecolor;
-        annotation_size(i)      = annotations(i).size;
-        fprintf(['\t[' num2str(annotations(i).chr) ':' annotations(i).type ':' num2str(annotations(i).start) ':' num2str(annotations(i).end) ':' annotations(i).fillcolor ':' annotations(i).edgecolor ':' num2str(annotations(i).size) ']\n']);
-    end;
+	fprintf(['\nAnnotations for ' genome '.\n']);
+	for i = 1:length(annotations)
+		annotation_chr(i)       = annotations(i).chr;
+		annotation_type{i}      = annotations(i).type;
+		annotation_start(i)     = annotations(i).start;
+		annotation_end(i)       = annotations(i).end;
+		annotation_fillcolor{i} = annotations(i).fillcolor;
+		annotation_edgecolor{i} = annotations(i).edgecolor;
+		annotation_size(i)      = annotations(i).size;
+		fprintf(['\t[' num2str(annotations(i).chr) ':' annotations(i).type ':' num2str(annotations(i).start) ':' num2str(annotations(i).end) ':' annotations(i).fillcolor ':' annotations(i).edgecolor ':' num2str(annotations(i).size) ']\n']);
+	end;
 end;
 for i = 1:length(figure_details)
-    if (figure_details(i).chr == 0)
-	if (strcmp(figure_details(i).label,'Key') == 1)
-	    key_posX   = figure_details(i).posX;
-	    key_posY   = figure_details(i).posY;
-	    key_width  = figure_details(i).width;
-	    key_height = figure_details(i).height;
+	if (figure_details(i).chr == 0)
+		if (strcmp(figure_details(i).label,'Key') == 1)
+			key_posX   = figure_details(i).posX;
+			key_posY   = figure_details(i).posY;
+			key_width  = figure_details(i).width;
+			key_height = figure_details(i).height;
+		end;
+	else
+		chr_id         (figure_details(i).chr) = figure_details(i).chr;
+		chr_label      {figure_details(i).chr} = figure_details(i).label;
+		chr_name       {figure_details(i).chr} = figure_details(i).name;
+		chr_posX       (figure_details(i).chr) = figure_details(i).posX;
+		chr_posY       (figure_details(i).chr) = figure_details(i).posY;
+		chr_width      (figure_details(i).chr) = figure_details(i).width;
+		chr_height     (figure_details(i).chr) = figure_details(i).height;
+		chr_in_use     (figure_details(i).chr) = str2num(figure_details(i).useChr);
+		chr_figOrder   (figure_details(i).chr) = str2num(figure_details(i).figOrder);
+		chr_figReversed(figure_details(i).chr) = str2num(figure_details(i).figReversed);
 	end;
-    else
-        chr_id         (figure_details(i).chr) = figure_details(i).chr;
-        chr_label      {figure_details(i).chr} = figure_details(i).label;
-        chr_name       {figure_details(i).chr} = figure_details(i).name;
-        chr_posX       (figure_details(i).chr) = figure_details(i).posX;
-        chr_posY       (figure_details(i).chr) = figure_details(i).posY;
-        chr_width      (figure_details(i).chr) = figure_details(i).width;
-        chr_height     (figure_details(i).chr) = figure_details(i).height;
-        chr_in_use     (figure_details(i).chr) = str2num(figure_details(i).useChr);
-	chr_figOrder   (figure_details(i).chr) = str2num(figure_details(i).figOrder);
-	chr_figReversed(figure_details(i).chr) = str2num(figure_details(i).figReversed);
-    end;
 end;
 
 num_chrs = length(chr_size);
@@ -248,14 +248,14 @@ for chr = 1:num_chrs
 		[pks2{chr},locs2{chr}] = findpeaks(-CNV_differentiated_smoothed{chr});
 		locs{chr} = sort([locs1{chr} locs2{chr}]);
 
-		fprintf(['Peak positions on chr : "' num2str(chr) '"\n']);
+		fprintf(['\nPeak positions on chr : "' num2str(chr) '"\n']);
 		fprintf('\t[');
 		for edge = 1:(length(locs{chr})-1)
 			fprintf([num2str(locs{chr}(edge)) ', ']);
 			if (mod(edge,30) == 0);   fprintf('\n\t');   end;
 		end;
 		right_edge = length(locs{chr});
-		% fprintf([num2str(locs{chr}(right_edge)) '] (' num2str(length(locs{chr})) ')\n']);
+		fprintf([num2str(locs{chr}(right_edge)) '] (' num2str(length(locs{chr})) ' edges)\n']);
 	end;
 end;
 
@@ -295,8 +295,10 @@ if (temp_figures == true)
 			x2 = chr_size(chr)*chr_length_scale_multiplier;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
 			hold off;
-			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);    ylim([0,maxY]);
-			set(gca,'YTick',[0 maxY/2 maxY]);    set(gca,'YTickLabel',{'','',''});
+			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
+			ylim([0,maxY]);
+			set(gca,'YTick',[0 maxY/2 maxY]);
+			set(gca,'YTickLabel',{'','',''});
 		end;
 	end;
 	saveas(fig,[projectDir 'fig.ChARM_test.1.' figVer 'eps'], 'epsc');
@@ -312,23 +314,35 @@ if (temp_figures == true)
 	set(gcf, 'Position', [0 70 1024 600]);
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
-			left   = chr_posX(chr);    bottom = chr_posY(chr);
-			width  = chr_width(chr);   height = chr_height(chr);
+			left   = chr_posX(chr);
+			bottom = chr_posY(chr);
+			width  = chr_width(chr);
+			height = chr_height(chr);
 			subplot('Position',[left bottom width height]);
 			hold on;
 			c_ = [0 0 0];
 			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 			for i = 1:length(dataShow{chr});
 				x_ = [i i i-1 i-1];
-				if (dataShow{chr}(i) == 0);    CNVhistValue = 0;    else;    CNVhistValue = dataShow{chr}(i);    end;
-				startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
+				%if (dataShow{chr}(i) == 0)
+				%	CNVhistValue = 0;
+				%else
+				%	CNVhistValue = dataShow{chr}(i);
+				%end;
+				CNVhistValue = dataShow{chr}(i);
+				startY = maxY/2;
+				endY = CNVhistValue;
+				y_ = [startY endY endY startY];
+				f = fill(x_,y_,c_);
 				set(f,'linestyle','none');
 			end;
 			x2 = chr_size(chr)*chr_length_scale_multiplier;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
 			hold off;
-			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);    ylim([0,maxY]);
-			set(gca,'YTick',[0 maxY/2 maxY]);    set(gca,'YTickLabel',{'','',''});
+			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
+			ylim([0,maxY]);
+			set(gca,'YTick',[0 maxY/2 maxY]);
+			set(gca,'YTickLabel',{'','',''});
 		end;
 	end;
 	saveas(fig,[projectDir 'fig.ChARM_test.2.' figVer 'eps'], 'epsc');
@@ -344,23 +358,35 @@ if (temp_figures == true)
 	set(gcf, 'Position', [0 70 1024 600]);
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
-			left   = chr_posX(chr);    bottom = chr_posY(chr);
-			width  = chr_width(chr);   height = chr_height(chr);
+			left   = chr_posX(chr);
+			bottom = chr_posY(chr);
+			width  = chr_width(chr);
+			height = chr_height(chr);
 			subplot('Position',[left bottom width height]);
 			hold on;
 			c_ = [0 0 0];
 			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
 			for i = 1:length(dataShow{chr});
 				x_ = [i i i-1 i-1];
-				if (dataShow{chr}(i) == 0);    CNVhistValue = 1;    else;    CNVhistValue = dataShow{chr}(i);    end;
-				startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
+				%if (dataShow{chr}(i) == 0)
+				%	CNVhistValue = 1;
+				%else
+				%	CNVhistValue = dataShow{chr}(i);
+				%end;
+				CNVhistValue = dataShow{chr}(i);
+				startY = maxY/2;
+				endY = CNVhistValue;
+				y_ = [startY endY endY startY];
+				f = fill(x_,y_,c_);
 				set(f,'linestyle','none');
 			end;
 			x2 = chr_size(chr)*chr_length_scale_multiplier;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
 			hold off;
-			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);    ylim([0,maxY]);
-			set(gca,'YTick',[0 maxY/2 maxY]);    set(gca,'YTickLabel',{'','',''});
+			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
+			ylim([0,maxY]);
+			set(gca,'YTick',[0 maxY/2 maxY]);
+			set(gca,'YTickLabel',{'','',''});
 		end;
 	end;
 	saveas(fig,[projectDir 'fig.ChARM_test.3.' figVer 'eps'], 'epsc');
@@ -377,8 +403,10 @@ if (temp_figures == true)
 	set(gcf, 'Position', [0 70 1024 600]);
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
-			left   = chr_posX(chr);    bottom = chr_posY(chr);
-			width  = chr_width(chr);   height = chr_height(chr);
+			left   = chr_posX(chr);
+			bottom = chr_posY(chr);
+			width  = chr_width(chr);
+			height = chr_height(chr);
 			subplot('Position',[left bottom width height]);
 			hold on;
 			c_ = [0 0 0];
@@ -464,7 +492,7 @@ end;
 for t = 1:1; % num_permutations
 	%% ###################################################################################################
 	%=====================================================================================================
-	% Update membership (E-step).   DRAGON, this is killing valid edges.
+	% Update membership (E-step).
 	%-----------------------------------------------------------------------------------------------------
 	%% Calculate Conditional probabilities that a data point is in the left vs. right distributions adjacent to each edge.
 	fprintf('\nUpdate Membership (E-step)\n');
@@ -485,27 +513,37 @@ for t = 1:1; % num_permutations
                                 	% [defined elsewhere] max_ROI             = 20;
                                 	% [defined elsewhere] percent_window_size = 0.5;
 
-                                	% The radius of influence is determined as follows: min(percent_window_size*window_size,max_ROI).
+                                	% The radius of influence is determined as... min(percent_window_size*window_size,max_ROI).
 					L_windowSize(edge)   = min(ceil(percent_window_size*(position(edge  )-position(edge-1))),max_ROI);
 					R_windowSize(edge)   = min(ceil(percent_window_size*(position(edge+1)-position(edge  ))),max_ROI);
-					L_dist{edge}         = data((pos-L_windowSize(edge)):(pos));
-					R_dist{edge}         = data((pos):(pos+R_windowSize(edge)));
+					L_dist{edge}         = data( max(1, pos-L_windowSize(edge)):pos );			% L_dist can't start before first data point.
+					R_dist{edge}         = data( pos:min(pos+R_windowSize(edge), length(CNVplot2{chr})) );	% R-dist can't extend past last data point.
 
        	                        	% Anything outside these ranges has a zero chance of being on either side of the edge.
                                 	% This means that though the conditional probability is calculated for all positions relative to each edge,
                                 	%    only a small area around each edge has to be stored.
-					L_distMean(edge)     = mean(L_dist{edge});
-					R_distMean(edge)     = mean(R_dist{edge});
-					L_distStdev(edge)    = std(L_dist{edge});
-					R_distStdev(edge)    = std(R_dist{edge});
+					if (length(mean(L_dist{edge})) == 0)
+						L_distMean(edge)  = 0;
+						L_distStdev(edge) = 0;
+					else
+						L_distMean(edge)  = mean(L_dist{edge});
+						L_distStdev(edge) = std(L_dist{edge});
+					end;
+					if (length(mean(R_dist{edge})) == 0)
+						R_distMean(edge)  = 0;
+						R_distStdev(edge) = 0;
+					else
+						R_distMean(edge)  = mean(R_dist{edge});
+						R_distStdev(edge) = std(R_dist{edge});
+					end;
 
 					cP_dist_is_L{edge}   = zeros(1,length(data));
 					cP_dist_is_R{edge}   = zeros(1,length(data));
-					for loc = (pos-L_windowSize(edge)):(pos)
+					for loc = max( 1, pos-L_windowSize(edge) ):(pos)
 						cP_dist_is_L{edge}(loc) = normpdf(L_dist{edge}(loc-(pos-L_windowSize(edge))+1),L_distMean(edge),L_distStdev(edge));
 						cP_dist_is_R{edge}(loc) = normpdf(L_dist{edge}(loc-(pos-L_windowSize(edge))+1),R_distMean(edge),R_distStdev(edge));
 					end;
-					for loc = (pos):(pos+R_windowSize(edge))
+					for loc = (pos):min( pos+R_windowSize(edge), length(CNVplot2{chr}) )
 						cP_dist_is_L{edge}(loc) = normpdf(R_dist{edge}(loc-(pos)+1)  ,L_distMean(edge),L_distStdev(edge));
 						cP_dist_is_R{edge}(loc) = normpdf(R_dist{edge}(loc-(pos)+1)  ,R_distMean(edge),R_distStdev(edge));
 					end;
@@ -651,28 +689,33 @@ for t = 1:1; % num_permutations
 					end;
 					[minVal,minIndex]  = min(new_edge_pos);
 					new_pos = pos_start+minIndex-1;
-					try
-						new_position(edge) = new_pos;
-					catch
-						fprintf(['\n\tDragon : minVal                 = ' num2str(minVal)             ]);
-						fprintf(['\n\tDragon : minIndex               = ' num2str(minIndex)           ]);
-						fprintf(['\n\tDragon : pos_start              = ' num2str(pos_start)          ]);
-						fprintf(['\n\tDragon : pos_end                = ' num2str(pos_end)            ]);
-						fprintf(['\n\tDragon : num_edges              = ' num2str(num_edges)          ]);
-						fprintf(['\n\tDragon : edge                   = ' num2str(edge)               ]);
-						fprintf(['\n\tDragon : old new_position(edge) = ' num2str(new_position(edge)) ]);
-						fprintf(['\n\tDragon : new_pos                = ' num2str(new_pos)            ]);
-						fprintf('\n');
-						new_position(edge) = new_pos;
+					if (new_position(edge) == 0)
+						%% no change.
+						new_pos = 0;
+					else
+						try
+							new_position(edge) = new_pos;
+						catch
+							fprintf(['\n\tDragon : minVal                 = ' num2str(minVal)             ]);
+							fprintf(['\n\tDragon : minIndex               = ' num2str(minIndex)           ]);
+							fprintf(['\n\tDragon : pos_start              = ' num2str(pos_start)          ]);
+							fprintf(['\n\tDragon : pos_end                = ' num2str(pos_end)            ]);
+							fprintf(['\n\tDragon : num_edges              = ' num2str(num_edges)          ]);
+							fprintf(['\n\tDragon : edge                   = ' num2str(edge)               ]);
+							fprintf(['\n\tDragon : old new_position(edge) = ' num2str(new_position(edge)) ]);
+							fprintf(['\n\tDragon : new_pos                = ' num2str(new_pos)            ]);
+							fprintf('\n');
+							new_position(edge) = new_pos;
+						end;
 					end;
 				end;
-				pos_change{chr}         = new_position - position;
-				new_locs{chr}           = new_position;
+				pos_change{chr} = new_position - position;
+				new_locs{chr}   = sort(new_position);
 				fprintf(['\n\tchr' num2str(chr) ' : ' num2str(pos_change{chr}) ]);
 			else
 				fprintf('\nchr %d has no edges\n', chr);
 				% setting new locs to be the same
-				new_locs{chr}           = locs{chr};
+				new_locs{chr} = sort(locs{chr});
 			end;
 	    	else
 	        	fprintf('\nchr %d is not used\n', chr);
@@ -681,6 +724,7 @@ for t = 1:1; % num_permutations
 	%% Update positions of edges.
 	locs = new_locs;
 end;
+
 
 %% ###################################################################################################
 %=====================================================================================================
@@ -696,7 +740,7 @@ fprintf(    '----------------------\n');
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
 		% running over chromosomes and performing similarity test, also
-		% avoiding etering if all of the data is empty  DRAGON
+		% avoiding etering if all of the data is empty
 		if (chr_in_use(chr) == 1) % && chr <= length(locs))
 			fprintf(['[Window similarity test]:chr' num2str(chr) '\n']);
 			test_edge = 2;
@@ -734,9 +778,12 @@ for chr = 1:num_chrs
 				fprintf(['\t&&&& chr=' num2str(chr) '; t=' num2str(t) '; num_edges=' num2str(num_edges) '.\n']);
 				if (num_edges > 1)
 					for edge = 2:(num_edges-1)
-						pos_L        = position(edge-1);
+						pos_L        = max( 1, position(edge-1) );
 						pos          = position(edge);
-						pos_R        = position(edge+1);
+						pos_R        = min( position(edge+1), length(CNVplot2{chr}) );
+						% printf(['tpos_L = ' num2str(pos_L) '\n']);
+						% printf(['tpos   = ' num2str(pos) '\n']);
+						% printf(['tpos_R = ' num2str(pos_R) '\n']);
 
 						% Better results are produced by calculating the median this way.
 						if (length(data(pos_L:pos)) == 0)
@@ -744,7 +791,7 @@ for chr = 1:num_chrs
 						else
 							med_j1 = median(data(pos_L:pos));
 						end;
-						if (length(data(pos:pos_R)) == 0);  %dragon
+						if (length(data(pos:pos_R)) == 0);
 							med_j2 = 0;
 						else
 							med_j2 = median(data(pos:pos_R));
@@ -760,7 +807,7 @@ for chr = 1:num_chrs
 
 						n_j1            = length(pos_L:pos);
 						n_j2            = length(pos:pos_R);
-							numer           = abs(med_j1-med_j2)*(n_j1+n_j2);
+						numer           = abs(med_j1-med_j2)*(n_j1+n_j2);
 						denom           = sum(abs(data(pos_L:pos)-med_j1)) + sum(abs(data(pos:pos_R)-med_j2));
 						SNR(edge)       = numer/denom;
 						med_delta(edge) = abs(med_j2-med_j1);
