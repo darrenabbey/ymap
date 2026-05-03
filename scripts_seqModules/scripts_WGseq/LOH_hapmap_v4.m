@@ -156,26 +156,28 @@ if (length(annotations) > 0)
 	end;
 end;
 for i = 1:length(figure_details)
-	if (figure_details(i).chr == 0)
-		if (strcmp(figure_details(i).label,'Key') == 1)
-			key_posX   = figure_details(i).posX;
-			key_posY   = figure_details(i).posY;
-			key_width  = figure_details(i).width;
-			key_height = figure_details(i).height;
-		end;
-	else
-		chr_id         (figure_details(i).chr) = figure_details(i).chr;
-		chr_label      {figure_details(i).chr} = figure_details(i).label;
-		chr_name       {figure_details(i).chr} = figure_details(i).name;
-		chr_posX       (figure_details(i).chr) = figure_details(i).posX;
-		chr_width      (figure_details(i).chr) = figure_details(i).width;
-		chr_height     (figure_details(i).chr) = figure_details(i).height;
-		chr_in_use     (figure_details(i).chr) = str2num(figure_details(i).useChr);
-		chr_figOrder   (figure_details(i).chr) = figOrder;
-		chr_figReversed(figure_details(i).chr) = str2num(figure_details(i).figReversed);
-	end;
+        if (figure_details(i).chr == 0)
+                if (strcmp(figure_details(i).label,'Key') == 1)
+                        key_posX   = figure_details(i).posX;
+                        key_posY   = figure_details(i).posY;
+                        key_width  = figure_details(i).width;
+                        key_height = figure_details(i).height;
+                end;
+        else
+                chr_id         (figure_details(i).chr) = figure_details(i).chr;
+                chr_label      {figure_details(i).chr} = figure_details(i).label;
+                chr_name       {figure_details(i).chr} = figure_details(i).name;
+                chr_posX       (figure_details(i).chr) = figure_details(i).posX;
+                chr_posY       (figure_details(i).chr) = figure_details(i).posY;
+                chr_width      (figure_details(i).chr) = figure_details(i).width;
+                chr_height     (figure_details(i).chr) = figure_details(i).height;
+                chr_in_use     (figure_details(i).chr) = str2num(figure_details(i).useChr);
+                chr_figOrder   (figure_details(i).chr) = str2num(figure_details(i).figOrder);
+                chr_figReversed(figure_details(i).chr) = str2num(figure_details(i).figReversed);
+        end;
 end;
 num_chrs = length(chr_size);
+
 
 %% This block is normally calculated in FindChrSizes during CNV analysis.
 for usedChr = 1:num_chrs
