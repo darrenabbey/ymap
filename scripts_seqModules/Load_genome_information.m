@@ -9,7 +9,7 @@ centromeres          = [];
 centromere_fid       = fopen([genomeDir 'centromere_locations.txt'], 'r');
 discard              = fgetl(centromere_fid);
 lines_analyzed       = 0;
-fprintf(['\t' genomeDir '/centromere_locations.txt\n']);
+fprintf(['\t' genomeDir 'centromere_locations.txt\n']);
 while not (feof(centromere_fid))
 	lineData       = fgetl(centromere_fid);
 	lines_analyzed = lines_analyzed+1;
@@ -39,10 +39,10 @@ end;
 %    The two columns hold the start and end bp for the centromeres, with
 %       respect to each chromosome.
 chrSize        = [];
-chrSize_fid    = fopen([genomeDir '/chromosome_sizes.txt'],'r');
+chrSize_fid    = fopen([genomeDir 'chromosome_sizes.txt'],'r');
 discard        = fgetl(chrSize_fid);
 lines_analyzed = 0;
-fprintf(['\t' genomeDir '/chromosome_sizes.txt\n']);
+fprintf(['\t' genomeDir 'chromosome_sizes.txt\n']);
 while not (feof(chrSize_fid))
 	lineData          = fgetl(chrSize_fid);
 	lines_analyzed    = lines_analyzed+1;
@@ -71,11 +71,11 @@ end;
 %    The two columns hold the start and end bp for the centromeres, with
 %       respect to each chromosome.
 annotations       = [];
-annotations_fid   = fopen([genomeDir '/annotations.txt'], 'r');
+annotations_fid   = fopen([genomeDir 'annotations.txt'], 'r');
 discard           = fgetl(annotations_fid);
 lines_analyzed    = 0;
 annotations_count = 0;
-fprintf(['\t' genomeDir '/annotations.txt\n']);
+fprintf(['\t' genomeDir 'annotations.txt\n']);
 while not (feof(annotations_fid))
 	lineData = fgetl(annotations_fid);
 	if (strcmp(lineData(1),'#') == 0)
@@ -136,10 +136,10 @@ fclose(annotations_fid);
 %    Chr figOrder : The ordering of the chromosomes used during figure generation.
 figInfo_ploidy_default = 2.0;
 figure_details         = [];
-figInfo_fid            = fopen([genomeDir '/figure_definitions.txt'], 'r');
+figInfo_fid            = fopen([genomeDir 'figure_definitions.txt'], 'r');
 discard                = fgetl(figInfo_fid);
 lines_analyzed         = 0;
-fprintf(['\t' genomeDir '/figure_definitions.txt\n']);
+fprintf(['\t' genomeDir 'figure_definitions.txt\n']);
 while not (feof(figInfo_fid))
 	lineData       = fgetl(figInfo_fid);
 	if (~isempty(lineData))
