@@ -879,10 +879,12 @@ fprintf('\n');
 
 % Make figure showing histogram of SNPs_count across genome; dragon4
 SNP_count_all = [];
+count = 1;
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
 		for chr_bin_SNP = 1:ceil(chr_size(chr)/bases_per_bin_SNP)
-			SNP_count_all += [SNP_count_all, SNPs_count{chr}(chr_bin_SNP)];
+			SNP_count_all(count) = SNPs_count{chr}(chr_bin_SNP);
+			count = count+1;
 		end;
 	end;
 end;
