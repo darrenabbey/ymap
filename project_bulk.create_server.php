@@ -225,8 +225,9 @@
 			foreach ($bulkdata_files as $key=>$filename_key) {
 				if ($skip == 0) {
 					// Strip extensions off filenames.
-					$project = pathinfo($filename_key, PATHINFO_FILENAME);
-					$ext1 = strtolower(pathinfo($filename_key, PATHINFO_EXTENSION));
+					$project     = pathinfo($filename_key, PATHINFO_FILENAME);
+					$project_raw = $project;
+					$ext1        = strtolower(pathinfo($filename_key, PATHINFO_EXTENSION));
 					if ($ext1 == "gz") {
 						$ext2 = strtolower(pathinfo($project, PATHINFO_EXTENSION));
 					} else {
@@ -248,15 +249,32 @@
 
 					// Check if file is one of paired reads. (Name ends in "_R1" or "_R1_001".)
 					// Strip suffix off name if found and skip the next filename if it is a R2 name.
+					$project_head = "";
+					$project_tail = "";
 					if (substr($project,-3) == "_R1") {
 						$project      = substr($project,0,-3);
 						$next_project = $project."_R2".$ext;
+						$project2     = $next_project;
 						if (in_array($next_project,$bulkdata_files)) {
 							$skip = 1;
 						}
 					} elseif (substr($project,-7) == "_R1_001") {
-						$project = substr($project,0,-7);
+						$project      = substr($project,0,-7);
 						$next_project = $project."_R2_001".$ext;
+						$project2     = $next_project;
+						if (in_array($next_project,$bulkdata_files)) {
+							$skip = 1;
+						}
+					} elseif (str_contains($project,"_R1")) {
+						$project_head = substr($project_raw,0,strpos($project,"_R1"));
+						$project_tail = substr($project_raw,strpos($project,"_R1")+3);
+
+						if ($ext2 == "" ) {
+							$next_project = $project_head."_R2".$project_tail;
+						} else {
+							$next_project = $project_head."_R2".$project_tail.".".$ext1;
+						}
+						$project2     = $next_project;
 						if (in_array($next_project,$bulkdata_files)) {
 							$skip = 1;
 						}
@@ -345,7 +363,6 @@
 						$fileName_     = pathinfo($filename_key, PATHINFO_FILENAME);
 						$fileType_     = pathinfo($filename_key, PATHINFO_EXTENSION);
 						$filename_new1 = str_replace(".","-",$fileName_).".".$fileType_;
-						// DRAGON
 						$exec_command = "mv ".$base_dir."/".$projects_bulkdata."/".$filename_key." ".$base_dir."/".$project_dir1."/".$filename_new1." 2>&1";
 						log_stuff("","","","","","1: ".$exec_command);
 						exec($exec_command,$output,$retval);
@@ -356,6 +373,18 @@
 							var_dump($output);
 							log_stuff("","","","","","2: ".ob_get_flush());
 						}
+
+//// Generate 'testing.txt' file for testing the bulk-data file recognition process.
+//$fileName = $project_dir1."/testing.txt";
+//$file     = fopen($fileName, 'w');
+//fwrite($file, $project_raw."\n");
+//fwrite($file, $project."\n");
+//fwrite($file, $project_head."\n");
+//fwrite($file, $project_tail."\n");
+//fwrite($file, $filename_key."\n");
+//fwrite($file, $project2."\n");
+//fclose($file);
+//chmod($fileName,0774);
 
 						// Make txt file containing raw data file name(s).
 						$fileName = $project_dir1."/datafiles.txt";
@@ -391,11 +420,11 @@
 
 							// Check if file is one of paired reads. (Name ends in "_R1" or "_R2".)
 							// Strip suffix off name if found and skip next filename.
-							if ((substr($project2,-3) == "_R2") || (substr($project2,-7) == "_R2_001")) {
+							if (str_contains($project2,"_R2")) {
+							//if ((substr($project2,-3) == "_R2") || (substr($project2,-7) == "_R2_001")) {
 								$fileName_     = pathinfo($filename_key2, PATHINFO_FILENAME);
 								$fileType_     = pathinfo($filename_key2, PATHINFO_EXTENSION);
 								$filename_new2 = str_replace(".","-",$fileName_).".".$fileType_;
-								// DRAGON
 								$exec_command = "mv ".$base_dir."/".$projects_bulkdata."/".$filename_key2." ".$base_dir."/".$project_dir1."/".$filename_new2." 2>&1";
 								log_stuff("","","","","","2: ".$exec_command);
 								exec($exec_command,$output,$retval);

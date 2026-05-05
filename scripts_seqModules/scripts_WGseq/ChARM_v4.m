@@ -254,7 +254,11 @@ for chr = 1:num_chrs
 			fprintf([num2str(locs{chr}(edge)) ', ']);
 			if (mod(edge,30) == 0);   fprintf('\n\t');   end;
 		end;
-		right_edge = length(locs{chr});
+		if (length(locs{chr}) == 0)
+			right_edge = 1;
+		else
+			right_edge = length(locs{chr});
+		end;
 		fprintf([num2str(locs{chr}(right_edge)) '] (' num2str(length(locs{chr})) ' edges)\n']);
 	end;
 end;
@@ -685,7 +689,7 @@ for t = 1:1; % num_permutations
 					for pos = pos_start:(pos_end-1)
 						count = count+1;
 						new_edge_pos(count) = -(sum(log10(pP_dist_is_L{edge}(pos_start:pos))) + sum(log10(pP_dist_is_R{edge}((pos+1):pos_end))));
-						%fprintf(['\n\tDragon : new_edge_pos(' num2str(count) ') = ' num2str(new_edge_pos(count)) ]);
+						%fprintf(['\n\tDragon1 : new_edge_pos(' num2str(count) ') = ' num2str(new_edge_pos(count)) ]);
 					end;
 					[minVal,minIndex]  = min(new_edge_pos);
 					new_pos = pos_start+minIndex-1;
@@ -696,14 +700,14 @@ for t = 1:1; % num_permutations
 						try
 							new_position(edge) = new_pos;
 						catch
-							fprintf(['\n\tDragon : minVal                 = ' num2str(minVal)             ]);
-							fprintf(['\n\tDragon : minIndex               = ' num2str(minIndex)           ]);
-							fprintf(['\n\tDragon : pos_start              = ' num2str(pos_start)          ]);
-							fprintf(['\n\tDragon : pos_end                = ' num2str(pos_end)            ]);
-							fprintf(['\n\tDragon : num_edges              = ' num2str(num_edges)          ]);
-							fprintf(['\n\tDragon : edge                   = ' num2str(edge)               ]);
-							fprintf(['\n\tDragon : old new_position(edge) = ' num2str(new_position(edge)) ]);
-							fprintf(['\n\tDragon : new_pos                = ' num2str(new_pos)            ]);
+							fprintf(['\n\tDragon2 : minVal                 = ' num2str(minVal)             ]);
+							fprintf(['\n\tDragon2 : minIndex               = ' num2str(minIndex)           ]);
+							fprintf(['\n\tDragon2 : pos_start              = ' num2str(pos_start)          ]);
+							fprintf(['\n\tDragon2 : pos_end                = ' num2str(pos_end)            ]);
+							fprintf(['\n\tDragon2 : num_edges              = ' num2str(num_edges)          ]);
+							fprintf(['\n\tDragon2 : edge                   = ' num2str(edge)               ]);
+							fprintf(['\n\tDragon2 : old new_position(edge) = ' num2str(new_position(edge)) ]);
+							fprintf(['\n\tDragon2 : new_pos                = ' num2str(new_pos)            ]);
 							fprintf('\n');
 							new_position(edge) = new_pos;
 						end;
