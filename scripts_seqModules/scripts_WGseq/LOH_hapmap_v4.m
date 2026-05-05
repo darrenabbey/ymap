@@ -494,7 +494,7 @@ end;
 %        chr_SNPdata{chr,2}{chr_bin_SNP} = unphased SNP ratio data.
 %        chr_SNPdata{chr,3}{chr_bin_SNP} = phased SNP position data.
 %        chr_SNPdata{chr,4}{chr_bin_SNP} = unphased SNP position data.
-%        chr_SNPdata{chr,5}{chr_bin_SNP} = phased SNP allele strings.   (baseCall:alleleA/alleleB)
+%        chr_SNPdata{chr,5}{chr_bin_SNP} = phased SNP allele strings.   (baseCall : alleleA/alleleB)
 %        chr_SNPdata{chr,6}{chr_bin_SNP} = unphased SNP allele strings.
 %-------------------------------------------------------------------------------------------
 fprintf('\n\n### Calculate allelic ratio cutoffs using Gaussian fitting.\n');
@@ -516,32 +516,32 @@ for chr = 1:num_chrs
 			% Determining colors for each SNP coordinate from calculated cutoffs.
 			%
 
-%fprintf(['\t|\t\ttest1 = ' num2str(chr) '\n']);
-%fprintf(['\t|\t\ttest2 = ' num2str(chr_bin_SNP) '\n']);
-%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,1}{chr_bin_SNP}) '\n']);
-%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,1}{chr_bin_SNP})) '\n']);
-%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,2}{chr_bin_SNP}) '\n']);
-%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,2}{chr_bin_SNP})) '\n']);
-%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,3}{chr_bin_SNP}) '\n']);
-%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,3}{chr_bin_SNP})) '\n']);
-%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,4}{chr_bin_SNP}) '\n']);
-%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,4}{chr_bin_SNP})) '\n']);
-%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,5}{chr_bin_SNP}) '\n']);
-%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,5}{chr_bin_SNP})) '\n']);
-%fprintf(['\t|\t\ttest4 = type:' typeinfo(chr_SNPdata{chr,6}{chr_bin_SNP}) '\n']);
-%fprintf(['\t|\t\ttest4 = ' num2str(sizeof(chr_SNPdata{chr,6}{chr_bin_SNP})) '\n']);
+			%fprintf(['\t|\t\ttest1 = ' num2str(chr) '\n']);
+			%fprintf(['\t|\t\ttest2 = ' num2str(chr_bin_SNP) '\n']);
+			%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,1}{chr_bin_SNP}) '\n']);
+			%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,1}{chr_bin_SNP})) '\n']);
+			%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,2}{chr_bin_SNP}) '\n']);
+			%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,2}{chr_bin_SNP})) '\n']);
+			%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,3}{chr_bin_SNP}) '\n']);
+			%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,3}{chr_bin_SNP})) '\n']);
+			%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,4}{chr_bin_SNP}) '\n']);
+			%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,4}{chr_bin_SNP})) '\n']);
+			%fprintf(['\t|\t\ttest3 = type:' typeinfo(chr_SNPdata{chr,5}{chr_bin_SNP}) '\n']);
+			%fprintf(['\t|\t\ttest3 = ' num2str(sizeof(chr_SNPdata{chr,5}{chr_bin_SNP})) '\n']);
+			%fprintf(['\t|\t\ttest4 = type:' typeinfo(chr_SNPdata{chr,6}{chr_bin_SNP}) '\n']);
+			%fprintf(['\t|\t\ttest4 = ' num2str(sizeof(chr_SNPdata{chr,6}{chr_bin_SNP})) '\n']);
 
 			allelic_ratios						= [chr_SNPdata{chr,1}{chr_bin_SNP} chr_SNPdata{chr,2}{chr_bin_SNP}];
 			coordinates						= [chr_SNPdata{chr,3}{chr_bin_SNP} chr_SNPdata{chr,4}{chr_bin_SNP}];
 			if (sizeof(chr_SNPdata{chr,5}{chr_bin_SNP}) == 0)
-				phased_alleles = '';
+				phased_alleles					= '';
 			else
-				phased_alleles = chr_SNPdata{chr,5}{chr_bin_SNP};
+				phased_alleles					= chr_SNPdata{chr,5}{chr_bin_SNP};
 			end;
 			if (sizeof(chr_SNPdata{chr,6}{chr_bin_SNP}) == 0)
-				unphased_alleles = '';
+				unphased_alleles				= '';
 			else
-				unphased_alleles = chr_SNPdata{chr,6}{chr_bin_SNP};
+				unphased_alleles				= chr_SNPdata{chr,6}{chr_bin_SNP};
 			end;
 			allele_strings						= [phased_alleles unphased_alleles];
 
@@ -876,6 +876,23 @@ for chr = 1:num_chrs
 	end;
 end;
 fprintf('\n');
+
+% Make figure showing histogram of SNPs_count across genome; dragon4
+SNP_count_all = [];
+for chr = 1:num_chrs
+	if (chr_in_use(chr) == 1)
+		for chr_bin_SNP = 1:ceil(chr_size(chr)/bases_per_bin_SNP)
+			SNP_count_all += [SNP_count_all, SNPs_count{chr}(chr_bin_SNP)];
+		end;
+	end;
+end;
+SNP_histogram_fig = figure(3);
+figure(SNP_histogram_fig);
+hist(SNP_count_all, 10, 1, "facecolor", "g");
+saveas(SNP_histogram_fig,[projectDir 'fig.SNP-histogram.' figVer 'eps'], 'epsc');
+saveas(SNP_histogram_fig,[projectDir 'fig.SNP-histogram.' figVer 'png'], 'png');
+delete(SNP_histogram_fig);
+
 
 % load size definitions
 [linear_fig_height,linear_fig_width,Linear_left_start,Linear_chr_gap,Linear_Chr_max_width,Linear_height...

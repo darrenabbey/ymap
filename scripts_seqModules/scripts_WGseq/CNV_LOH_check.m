@@ -269,7 +269,7 @@ end;
 %-------------------------------------------------------------------------------------------------
 fprintf('\n### Loading "Common_CNV" data file, to be used in copy number estimation.\n');
 load([projectDir 'Common_CNV.mat']);   % 'CNVplot2', 'genome_CNV'
-[chr_breaks, chrCopyNum, ploidyAdjust, chrCopyRsquared] = FindChrSizes_4(workingDir, segmental_aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use, true);
+[chr_breaks, chrCopyNum, ploidyAdjust, chrCopyRsquared] = FindChrSizes_4(workingDir, segmental_aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use, false);
 CNVfit_Rsquared = chrCopyRsquared;
 
 fprintf('\n\n### Check for inconsistent CNV segment breakpoints using CNV and SNP-ratio data.\n');
@@ -287,7 +287,7 @@ while (chrCopyNum_changed == true)
 		%-------------------------------------------------------------------------------------------------
 		fprintf('\n### Loading "Common_CNV" data file, to be used in copy number estimation.\n');
 		load([projectDir 'Common_CNV.mat']);   % 'CNVplot2', 'genome_CNV'
-		[chr_breaks, chrCopyNum, ploidyAdjust, chrCopyRsquared] = FindChrSizes_4(workingDir, segmental_aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use, true);
+		[chr_breaks, chrCopyNum, ploidyAdjust, chrCopyRsquared] = FindChrSizes_4(workingDir, segmental_aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use, false);
 		CNVfit_Rsquared = chrCopyRsquared;
 	endif;
 
@@ -549,8 +549,6 @@ while (chrCopyNum_changed == true)
 					Rsquared_CNVtest_vector = [];
 					Rsquared_SNPtest_vector = [];
 					for copyNum = 1:9
-						makeFitFigures          = false;
-
 						Rsquared_CNV            = testPloidyEstimate_CNV(workingDir, CNVplot2, chr_breaks, ploidy, chr, segment, copyNum, makeFitFigures);
 						Rsquared_CNVtest_vector = [Rsquared_CNVtest_vector Rsquared_CNV];
 
