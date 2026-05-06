@@ -373,18 +373,19 @@
 							var_dump($output);
 							log_stuff("","","","","","2: ".ob_get_flush());
 						}
+						queue_start($user,$project,"","");
 
-//// Generate 'testing.txt' file for testing the bulk-data file recognition process.
-//$fileName = $project_dir1."/testing.txt";
-//$file     = fopen($fileName, 'w');
-//fwrite($file, $project_raw."\n");
-//fwrite($file, $project."\n");
-//fwrite($file, $project_head."\n");
-//fwrite($file, $project_tail."\n");
-//fwrite($file, $filename_key."\n");
-//fwrite($file, $project2."\n");
-//fclose($file);
-//chmod($fileName,0774);
+						//// Generate 'testing.txt' file for testing the bulk-data file recognition process.
+						//$fileName = $project_dir1."/testing.txt";
+						//$file     = fopen($fileName, 'w');
+						//fwrite($file, $project_raw."\n");
+						//fwrite($file, $project."\n");
+						//fwrite($file, $project_head."\n");
+						//fwrite($file, $project_tail."\n");
+						//fwrite($file, $filename_key."\n");
+						//fwrite($file, $project2."\n");
+						//fclose($file);
+						//chmod($fileName,0774);
 
 						// Make txt file containing raw data file name(s).
 						$fileName = $project_dir1."/datafiles.txt";
