@@ -3,6 +3,7 @@
 	error_reporting(E_ALL);
         require_once '../../constants.php';
 	require_once '../../POST_validation.php';
+	require_once '../../sharedFunctions.php';
         ini_set('display_errors', 1);
 
         // If the user is not logged on, redirect to login page.
@@ -20,8 +21,9 @@
 </script>
 <?php
 	$project_dir = "../../users/".$user."/projects/".$project;
+        queue_start($user,$project,"","");
 
-// Initialize log files.
+	// Initialize log files.
 	$logOutputName = $project_dir."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'a');
 	fwrite($logOutput, "#..............................................................................\n");
@@ -36,7 +38,7 @@
 	fwrite($condensedLogOutput, "Updating.\n");
 	fclose($condensedLogOutput);
 
-// Delete pre-existing final output files.
+	// Delete pre-existing final output files.
 	fwrite($logOutput, "Cleaning up old output files.\n");
 	$projectFiles   = preg_grep('~\.(png|eps|bed|gff3)$~', scandir("../../users/".$user."/projects/".$project."/"));
 	foreach ($projectFiles as $file) {
@@ -44,7 +46,7 @@
 		unlink("../../users/".$user."/projects/".$project."/".$file);
 	}
 
-// Final install functions are in shell script.
+	// Final install functions are in shell script.
 	fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_WGseq/project.WGseq.update_2.sh'\n");
 	fwrite($logOutput, "\t\tCurrent directory = '".getcwd()."'\n" );
 	$system_call_string = "sh project.WGseq.update_2.sh ".$user." ".$project." > /dev/null &";

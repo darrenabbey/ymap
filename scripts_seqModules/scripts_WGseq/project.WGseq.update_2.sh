@@ -376,9 +376,25 @@ else
 	sed 's/^/\t\t|/;' $projectDirectory"octave.final_figs.log" >> $logName;
 fi
 
+
 ##==============================================================================
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
 chmod 774 $projectDirectory*;
 echo "running: " $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir >> $logName;
 sh $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir 2>> $logName;
+
+
+##==============================================================================
+## Add project end to queue log file.
+##------------------------------------------------------------------------------
+echo "\tEnding queue processing." >> $logName;
+outputName=$projectDirectory"finalize.php";
+echo "<?php" > $outputName;
+echo "chdir('"$main_dir"');" >> $outputName;
+echo "require_once 'constants.php';" >> $outputName;
+echo "require_once 'sharedFunctions.php';" >> $outputName;
+echo "queue_end('"$user"','"$project"','','');" >> $outputName;
+echo "?>" >> $outputName;
+php $outputName;
+rm $outputName;

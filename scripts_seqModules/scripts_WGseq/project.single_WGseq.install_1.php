@@ -7,6 +7,7 @@
 		ini_set('display_errors', 1);
 		require_once '../../constants.php';
 		require_once '../../POST_validation.php';
+		require_once '../../sharedFunctions.php';
 
 		$user     = $argv[1];
 		$fileName = $argv[2];
@@ -21,6 +22,7 @@
 		ini_set('display_errors', 1);
 		require_once '../../constants.php';
 		require_once '../../POST_validation.php';
+		require_once '../../sharedFunctions.php';
 
 		// If the user is not logged on, redirect to login page.
 		if(!isset($_SESSION['logged_on'])){
@@ -58,7 +60,9 @@
 <title>Install project into pipeline.</title>
 </HEAD>
 <?php
-// Initialize log files.
+	queue_start($user,$project,"","");
+
+	// Initialize log files.
 	$logOutputName = $project_dir."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'w');
 	fwrite($logOutput, "Log file initialized.\n");
@@ -76,7 +80,7 @@
 	fwrite($condensedLogOutput, "Initializing.\n");
 	fclose($condensedLogOutput);
 
-// Generate 'working.txt' file to let pipeline know processing is started.
+	// Generate 'working.txt' file to let pipeline know processing is started.
 	$outputName      = $project_dir."/working.txt";
 	$output          = fopen($outputName, 'w');
 	$startTimeString = date("Y-m-d H:i:s");
@@ -85,7 +89,7 @@
 	chmod($outputName,0774);
 	fwrite($logOutput, "\tGenerated 'working.txt' file.\n");
 
-// Installation continues with next php script... strings recieved as POST are forwarded to next script.
+	// Installation continues with next php script... strings recieved as POST are forwarded to next script.
 	fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_WGseq/project.single_WGseq.install_2.php'\n");
 	fwrite($logOutput, "        file    = ".$fileName."\n");
 	fwrite($logOutput, "        user    = ".$user."\n");

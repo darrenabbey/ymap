@@ -7,6 +7,7 @@
 		ini_set('display_errors', 1);
 		require_once '../../constants.php';
 		require_once '../../POST_validation.php';
+		require_once '../../sharedFunctions.php';
 
 		$user     = $argv[1];
 		$fileName = $argv[2];
@@ -21,6 +22,7 @@
 		ini_set('display_errors', 1);
 		require_once '../../constants.php';
 		require_once '../../POST_validation.php';
+		require_once '../../sharedFunctions.php';
 
 	        // If the user is not logged on, redirect to login page.
 		if(!isset($_SESSION['logged_on'])){
@@ -58,6 +60,8 @@
 <title>Install project into pipeline.</title>
 </HEAD>
 <?php
+	queue_start($user,$project,"","");
+
 	// Initialize log file.
 	$logOutputName = $project_dir."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'w');
