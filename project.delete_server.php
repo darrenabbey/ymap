@@ -27,6 +27,7 @@
 		rrmdir($dir);
 		echo "COMPLETE";
 		log_stuff($user,$project,"","","","project:DELETE success");
+		queue_end($user,$project,"","","Deleted by user.");
 	} else {
 		if (file_exists($dir2)) {
 			// Project is locked.
