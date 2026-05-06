@@ -259,7 +259,7 @@ for chr = 1:num_chrs
 		else
 			right_edge = length(locs{chr});
 		end;
-		fprintf([num2str(locs{chr}(right_edge)) '] (' num2str(length(locs{chr})) ' edges)\n']);
+		fprintf([num2str(locs{chr}) '] (' num2str(length(locs{chr})) ' edges)\n']);
 	end;
 end;
 

@@ -2,7 +2,7 @@
 #
 # project.WGseq.install_4.sh
 #
-set -E;
+set -e;
 ## All created files will have permission 760
 umask 007;
 
@@ -33,11 +33,6 @@ echo "";
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
-
-
-## Error handling in case something crashes.
-trap 'sh queue_end.sh $user $project $main_dir $logName "Something went wrong. project.WGseq.install_4.sh:$LINENO"; echo "Something went wrong. project.WGseq.install_4.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
-
 
 # Get genome name used from project's "genome.txt" file.
 genome=$(head -n 1 $projectDirectory"genome.txt");
@@ -94,9 +89,8 @@ then
 	echo "\tCNV data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
 else
 	echo "\tPreprocessing CNV data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
-	$python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.txt" 2>> $logName;
+	$python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.txt" 2>> $logName || { sh queue_end.sh $user $project $main_dir $logName "error: project.WGseq.install_4.sh:96"; echo "Something went wrong. project.WGseq.install_4.sh:96" > $projectDirectory"error.txt"; exit 1; };
 	echo "\tpre-processing complete." >> $logName;
-
 	chmod 774 $projectDirectory"preprocessed_CNVs.txt";
 fi
 
@@ -124,7 +118,7 @@ echo "\t|\tend" >> $logName;
 
 echo "\tCalling OCTAVE." >> $logName;
 cd $projectDirectory;
-$octave_exec $outputName;
+$octave_exec $outputName || { sh queue_end.sh $user $project $main_dir $logName "error: project.WGseq.install_4.sh:125"; echo "Something went wrong. project.WGseq.install_4.sh:125" > $projectDirectory"error.txt"; exit 1; };
 cd $script_dir;
 
 
@@ -171,7 +165,7 @@ else
 	echo "== ChARM analysis ==============================================================================";
 	echo "================================================================================================";
 	cd $projectDirectory;
-	$octave_exec $outputName;
+	$octave_exec $outputName || { sh queue_end.sh $user $project $main_dir $logName "error: project.WGseq.install_4.sh:172"; echo "Something went wrong. project.WGseq.install_4.sh:172" > $projectDirectory"error.txt"; exit 1; };
 	cd $script_dir;
 	echo "\tOCTAVE log from ChARM analysis." >> $logName;
 	sed 's/^/\t|/;' $projectDirectory"octave.ChARM.log" >> $logName;
@@ -206,18 +200,18 @@ else
 		echo "\tDecompressing parent SNP data." >> $logName;
 		parentSnpDataTempDir=$projectDirectory"/SNPdata_parent_temp/";
 		mkdir $parentSnpDataTempDir;
-		unzip -j $projectParentDirectory"putative_SNPs_v4.zip" -d $parentSnpDataTempDir;
+		unzip -j $projectParentDirectory"putative_SNPs_v4.zip" -d $parentSnpDataTempDir || { sh queue_end.sh $user $project $main_dir $logName "error: project.WGseq.install_4.sh:207"; echo "Something went wrong. project.WGseq.install_4.sh:207" > $projectDirectory"error.txt"; exit 1; };
 		mv $parentSnpDataTempDir"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
 		rmdir $parentSnpDataTempDir;
 	fi
 
 	# preprocess parent for comparison.
-	$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt" 2>> $logName;
+	$python_exec $main_dir"scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" $genome $genomeUser $project $user $projectParent $projectParentUser $main_dir LOH > $projectDirectory"SNPdata_parent.temp.txt" 2>> $logName || { sh queue_end.sh $user $project $main_dir $logName "error: project.WGseq.install_4.sh:213"; echo "Something went wrong. project.WGseq.install_4.sh:213" > $projectDirectory"error.txt"; exit 1; };
 
 	rm $projectDirectory"SNPdata_parent.txt";
 	mv $projectDirectory"SNPdata_parent.temp.txt" $projectDirectory"SNPdata_parent.txt";
 
-	$python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" $genome $genomeUser $projectParent $projectParentUser $project $user $main_dir $logName LOH > $projectDirectory"preprocessed_SNPs.txt" 2>> $logName;
+	$python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" $genome $genomeUser $projectParent $projectParentUser $project $user $main_dir $logName LOH > $projectDirectory"preprocessed_SNPs.txt" 2>> $logName || { sh queue_end.sh $user $project $main_dir $logName "error: project.WGseq.install_4.sh:218"; echo "Something went wrong. project.WGseq.install_4.sh:218" > $projectDirectory"error.txt"; exit 1; };
 	echo "\tpre-processing complete." >> $logName;
 
 	chmod 774 $projectDirectory"preprocessed_SNPs.txt";
@@ -248,7 +242,7 @@ echo "==========================================================================
 echo "== SNP analysis ================================================================================";
 echo "================================================================================================";
 cd $projectDirectory;
-$octave_exec $outputName;
+$octave_exec $outputName || { sh queue_end.sh $user $project $main_dir $logName "error: project.WGseq.install_4.sh:249"; echo "Something went wrong. project.WGseq.install_4.sh:249" > $projectDirectory"error.txt"; exit 1; };
 cd $script_dir;
 echo "\tOCTAVE log from SNP analysis." >> $logName;
 sed 's/^/\t|/;' $projectDirectory"octave.SNP_analysis.log" >> $logName;
@@ -286,7 +280,7 @@ echo "==========================================================================
 echo "== Final figures ===============================================================================";
 echo "================================================================================================";
 cd $projectDirectory;
-$octave_exec $outputName;
+$octave_exec $outputName || { sh queue_end.sh $user $project $main_dir $logName "error: project.WGseq.install_4.sh:287"; echo "Something went wrong. project.WGseq.install_4.sh:287" > $projectDirectory"error.txt"; exit 1; };
 cd $script_dir;
 echo "\tOCTAVE log from final figure generation." >> $logName;
 sed 's/^/\t|/;' $projectDirectory"octave.final_figs.log" >> $logName;
@@ -298,7 +292,7 @@ echo "finished all processing, moving to Cleaning up intermediate WGseq files" >
 ##------------------------------------------------------------------------------
 chmod 774 $projectDirectory*;
 echo "running: " $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir >> $logName;
-sh $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir 2>> $logName;
+sh $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir 2>> $logName || { sh queue_end.sh $user $project $main_dir $logName "error: project.WGseq.install_4.sh:310"; echo "Something went wrong. project.WGseq.install_4.sh:310" > $projectDirectory"error.txt"; exit 1; };
 
 
 ##==============================================================================

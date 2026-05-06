@@ -2,7 +2,6 @@
 #
 # cleaning_WGseq.sh
 #
-set -E;
 ## All created files will have permission 760
 umask 007;
 
@@ -77,30 +76,6 @@ then
 	rm $projectDirectory"processing4.m";
 	echo "\tprocessing4.m" >> $logName;
 fi
-
-#if [ -f $projectDirectory"octave.CNV_and_GCbias.log" ]
-#then
-#	rm $projectDirectory"octave.CNV_and_GCbias.log";
-#	echo "\toctave.CNV_and_GCbias.log" >> $logName;
-#fi
-
-#if [ -f $projectDirectory"octave.ChARM.log" ]
-#then
-#	rm $projectDirectory"octave.ChARM.log";
-#	echo "\toctave.ChARM.log" >> $logName;
-#fi
-
-#if [ -f $projectDirectory"octave.SNP_analysis.log" ]
-#then
-#	rm $projectDirectory"octave.SNP_analysis.log";
-#	echo "\toctave.SNP_analysis.log" >> $logName;
-#fi
-
-#if [ -f $projectDirectory"octave.final_figs.log" ]
-#then
-#	rm $projectDirectory"octave.final_figs.log";
-#	echo "\toctave.final_figs.log" >> $logName;
-#fi
 
 if [ -f $projectDirectory"data_sorted.bam.bai" ]
 then
