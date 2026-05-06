@@ -29,7 +29,7 @@ kmerStep=$6;
 genomeDirectory=$mainDir"users/"$userAccount"/genomes/"$genomeName"/";
 
 ## Error handling in case something crashes.
-trap 'sh queue_end.sh $userAccount $genomeName $mainDir $logFile; echo "Something went wrong. FASTA_ATskew_dictionary.sh:$LINENO" > $genomeDirectory"error.txt"; exit 1;' ERR;
+trap 'sh queue_end.sh $userAccount $genomeName $mainDir $logFile "Something went wrong. FASTA_ATskew_dictionary.sh:$LINENO"; echo "Something went wrong. FASTA_ATskew_dictionary.sh:$LINENO" > $genomeDirectory"error.txt"; exit 1;' ERR;
 
 
 # load local installed program location variables.

@@ -34,7 +34,7 @@ condensedLog=$hapmapDirectory"condensed_log.txt";
 
 
 ## Error handling in case something crashes.
-trap 'sh queue_end.sh $user $hapmap $main_dir $logName; echo "Something went wrong. hapmap.finalize.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+trap 'sh queue_end.sh $user $hapmap $main_dir $logName "Something went wrong. hapmap.finalize.sh:$LINENO"; echo "Something went wrong. hapmap.finalize.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
 
 echo "" >> $logName;
@@ -54,4 +54,4 @@ $python_exec $main_dir"/scripts_seqModules/scripts_hapmaps/process_hapmap.output
 ##==============================================================================
 ## Add project end to queue log file.
 ##------------------------------------------------------------------------------
-sh queue_end.sh $user $hapmap $main_dir $logName;
+sh queue_end.sh $user $hapmap $main_dir $logName "hapmap.finalize.sh completed.";

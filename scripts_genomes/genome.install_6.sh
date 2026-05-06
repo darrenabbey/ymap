@@ -37,7 +37,7 @@ condensedLog=$genomeDirectory"condensed_log.txt";
 
 
 ## Error handling in case something crashes.
-trap 'sh queue_end.sh $user $genome $main_dir $logName; echo "Something went wrong. genome.install_6.sh:$LINENO" > $genomeDirectory"error.txt"; exit 1;' ERR;
+trap 'sh queue_end.sh $user $genome $main_dir $logName "Something went wrong. genome.install_6.sh:$LINENO"; echo "Something went wrong. genome.install_6.sh:$LINENO" > $genomeDirectory"error.txt"; exit 1;' ERR;
 
 
 echo "\n\nRunning 'scripts_genomes/genome.install_6.sh'" >> $logName;
@@ -377,4 +377,4 @@ echo "\n\t======================================================================
 ##==============================================================================
 ## Add project end to queue log file.
 ##------------------------------------------------------------------------------
-sh queue_end.sh $user $genome $main_dir $logName;
+sh queue_end.sh $user $genome $main_dir $logName "genome.install_6.sh completed.";

@@ -36,7 +36,7 @@ condensedLog=$projectDirectory"condensed_log.txt";
 
 
 ## Error handling in case something crashes.
-trap 'sh queue_end.sh $user $project $main_dir $logName; echo "Something went wrong. project.ddRADseq.install_2.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+trap 'sh queue_end.sh $user $project $main_dir $logName "Something went wrong. project.ddRADseq.install_2.sh:$LINENO"; echo "Something went wrong. project.ddRADseq.install_2.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
 
 chmod 0666 $logName;
@@ -245,4 +245,4 @@ sh $main_dir"scripts_seqModules/scripts_ddRADseq/cleaning_ddRADseq.sh" $user $pr
 ##==============================================================================
 ## Add project end to queue log file.
 ##------------------------------------------------------------------------------
-sh queue_end.sh $user $project $main_dir $logName;
+sh queue_end.sh $user $project $main_dir $logName "project.ddRADseq.update_2.sh completed.";

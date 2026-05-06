@@ -35,7 +35,7 @@ logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
 
 ## Error handling in case something crashes.
-trap 'sh queue_end.sh $user $project $main_dir $logName; echo "Something went wrong. project.paired_WGseq.install_3.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+trap 'sh queue_end.sh $user $project $main_dir $logName "Something went wrong. project.paired_WGseq.install_3.sh:$LINENO"; echo "Something went wrong. project.paired_WGseq.install_3.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
 echo "#.............................................................................." >> $logName;
 echo "Running 'scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_3.sh'" >> $logName;
