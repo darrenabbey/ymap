@@ -64,7 +64,7 @@ function log_stuff($user,$project,$hapmap,$genome,$filename,$message) {
 }
 
 // YMAP Queue functions.
-function queue_start($user,$project,$genome,$hapmap) {
+function queue_start($user,$project,$genome,$hapmap,$message) {
 	// find main Ymap directory, by removing possible ymap subdirectories from path of calling script.
 	$filePath = getcwd();
 	$filePath = str_replace("/scripts_genomes_enhanced_annotations","",$filePath);
@@ -93,9 +93,10 @@ function queue_start($user,$project,$genome,$hapmap) {
 	if (!empty($genome)) {    $line = $line.' - genome:'.$genome;     }
 	if (!empty($hapmap)) {    $line = $line.' - hapmap:'.$hapmap;     }
 	$line = $line.' - start';
+	if (!empty($message)) {   $line = $line.' - '.$message;           }
 	file_put_contents($log_file, $line . PHP_EOL, FILE_APPEND);
 }
-function queue_end($user,$project,$genome,$hapmap) {
+function queue_end($user,$project,$genome,$hapmap,$message) {
 	// find main Ymap directory, by removing possible ymap subdirectories from path of calling script.
 	$filePath = getcwd();
 	$filePath = str_replace("/scripts_genomes_enhanced_annotations","",$filePath);
@@ -128,21 +129,20 @@ function queue_end($user,$project,$genome,$hapmap) {
 							$outline = date('Y-m-d H:i:s');
 							$outline = $outline.' - user:'.$user;
 							$outline = $outline.' - project:'.$project;
-							$outline = $outline.' - end';
 						} else if ($line_parts[2] == "genome:".$genome) {
 							$outline = date('Y-m-d H:i:s');
 							$outline = $outline.' - user:'.$user;
 							$outline = $outline.' - genome:'.$genome;
-							$outline = $outline.' - end';
 						} else if ($line_parts[2] == "hapmap:".$hapmap) {
 							$outline = date('Y-m-d H:i:s');
 							$outline = $outline.' - user:'.$user;
 							$outline = $outline.' - hapmap:'.$hapmap;
-							$outline = $outline.' - end';
 						}
 					}
 				}
 				if ($outline <> "") {
+					$outline = $outline.' - end';
+					if (!empty($message)) {   $outline = $outline.' - '.$message;           }
 					file_put_contents($queue_dir.$queue_file, $outline.PHP_EOL, FILE_APPEND);
 				}
 			}

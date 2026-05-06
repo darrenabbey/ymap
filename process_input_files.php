@@ -453,7 +453,7 @@ if ($ext_new == "fastq") {
 	exit;
 }
 
-queue_start($user,$project,"","");
+queue_start($user,$project,"","","from: process_input_files.php");
 fwrite($logOutput, "\t\t*--------------------------------------------------------*\n");
 fwrite($logOutput, "\t\t| 'process_input_files.php' has completed.               |\n");
 fwrite($logOutput, "\t\t*========================================================*\n");

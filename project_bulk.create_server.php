@@ -373,7 +373,7 @@
 							var_dump($output);
 							log_stuff("","","","","","2: ".ob_get_flush());
 						}
-						queue_start($user,$project,"","");
+						queue_start($user,$project,"","","from: project_bulk.create_server.php");
 
 						//// Generate 'testing.txt' file for testing the bulk-data file recognition process.
 						//$fileName = $project_dir1."/testing.txt";
