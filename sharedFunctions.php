@@ -115,8 +115,8 @@ function queue_end($user,$project,$genome,$hapmap,$message) {
 			if ($queue_contents) {
 				// Queue contents example:
 				//	Initiate queue file: 2026-05-05 19:06:21
-				//	2026-05-05 19:06:21 - user:darrenFY - project:TJ4771_R1_clean - start
-				//	2026-05-05 19:06:21 - user:darrenFY - project:TJ4772_R1_clean - start
+				//	2026-05-05 19:06:21 - user:darrenFY - project:TJ4771_R1_clean - start - message 1.
+				//	2026-05-05 19:06:21 - user:darrenFY - project:TJ4772_R1_clean - start - message 2.
 				//	2026-05-05 19:06:21 - user:darrenFY - project:TJ4773_R1_clean - start
 				$outline = "";
 				$queue_lines = preg_split("/\R/", $queue_contents);
