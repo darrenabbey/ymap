@@ -877,7 +877,9 @@ for chr = 1:num_chrs
 end;
 fprintf('\n');
 
-% Make figure showing histogram of SNPs_count across genome; dragon4
+
+%% Make figure showing histogram of SNPs_count across genome; dragon4
+fprintf('Make histogram of SNP count per bin across genome.\n');
 SNP_count_all = [];
 count = 1;
 for chr = 1:num_chrs
@@ -895,9 +897,10 @@ hist(SNP_count_all, max_SNP_count, "facecolor", "g");
 saveas(SNP_histogram_fig,[projectDir 'fig.SNP-histogram.' figVer 'eps'], 'epsc');
 saveas(SNP_histogram_fig,[projectDir 'fig.SNP-histogram.' figVer 'png'], 'png');
 delete(SNP_histogram_fig);
+fprintf('\n');
 
 
-% load size definitions
+%% load size definitions
 [linear_fig_height,linear_fig_width,Linear_left_start,Linear_chr_gap,Linear_Chr_max_width,Linear_height...
     ,Linear_base,rotate,linear_chr_font_size,linear_axis_font_size,linear_gca_font_size,stacked_fig_height,...
     stacked_fig_width,stacked_chr_font_size,stacked_title_size,stacked_axis_font_size,...
