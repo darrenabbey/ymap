@@ -33,6 +33,12 @@ projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 # Setup process_log.txt file.
 logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
+
+
+## Error handling in case something crashes.
+trap 'sh queue_end.sh $user $project $main_dir $logName; echo "Something went wrong. project.ddRADseq.install_2.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+
+
 chmod 0666 $logName;
 echo "#.............................................................................." >> $logName;
 echo "Running 'scripts_seqModules/scripts_ddRADseq/project.ddRADseq.update_2.sh'" >> $logName;
@@ -234,3 +240,9 @@ sed 's/^/\t\t|/;' $projectDirectory"octave.final_figs.log" >> $logName;
 ##------------------------------------------------------------------------------
 echo "running: " $main_dir"scripts_seqModules/scripts_ddRADseq/cleaning_ddRADseq.sh" $user $project >> $logName;
 sh $main_dir"scripts_seqModules/scripts_ddRADseq/cleaning_ddRADseq.sh" $user $project 2>> $logName;
+
+
+##==============================================================================
+## Add project end to queue log file.
+##------------------------------------------------------------------------------
+sh queue_end.sh $user $project $main_dir $logName;

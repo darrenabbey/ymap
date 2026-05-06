@@ -1,5 +1,6 @@
 #!/bin/bash -e
 
+set -e;
 ## All created files will have permission 760
 umask 007;
 
@@ -31,6 +32,12 @@ then
 fi
 logName=$hapmapDirectory"process_log.txt";
 condensedLog=$hapmapDirectory"condensed_log.txt";
+
+
+## Error handling in case something crashes.
+trap 'sh queue_end.sh $user $hapmap $main_dir $logName; echo "Something went wrong. hapmap.install_4.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+
+
 echo "" >> $logName;
 echo "Running 'scripts_seqModules/scripts_hapmaps/hapmap.install_4.sh'" >> $logName;
 echo "Variables passed via command-line from 'scripts_seqModules/scripts_hapmaps/hapmap.install_3.php' :" >> $logName;

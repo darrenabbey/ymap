@@ -21,6 +21,12 @@ mainDir=$3;
 logFile=$4;
 kmer_length=$5;
 
+genomeDirectory=$mainDir"users/"$userAccount"/genomes/"$genomeName"/";
+
+## Error handling in case something crashes.
+trap 'sh queue_end.sh $userAccount $genomeName $mainDir $logFile; echo "Something went wrong. FASTA_repetitiveness_dictionary.sh:$LINENO" > $genomeDirectory"error.txt"; exit 1;' ERR;
+
+
 # load local installed program location variables.
 . $mainDir"local_installed_programs.sh";
 

@@ -19,6 +19,10 @@ main_dir=$(pwd)"/../../";
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
+
+## Error handling in case something crashes.
+trap 'sh queue_end.sh $user $project $main_dir $logName; echo "Something went wrong. project.single_WGseq.install_3.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+
 echo "#.............................................................................." >> $logName;
 echo "" >> $logName;
 echo "Input to : project.single_WGseq.install_3.sh" >> $logName;

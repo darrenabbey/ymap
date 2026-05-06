@@ -4,6 +4,7 @@
 #   $1 : user
 #   $2 : hapmap
 
+set -e;
 ## All created files will have permission 760
 umask 007;
 
@@ -30,6 +31,12 @@ then
 fi
 logName=$hapmapDirectory"process_log.txt";
 condensedLog=$hapmapDirectory"condensed_log.txt";
+
+
+## Error handling in case something crashes.
+trap 'sh queue_end.sh $user $hapmap $main_dir $logName; echo "Something went wrong. hapmap.finalize.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+
+
 echo "" >> $logName;
 echo "Running 'scripts_seqModules/scripts_hapmaps/hapmap.finalize.sh'" >> $logName;
 echo "    user              = "$user >> $logName;

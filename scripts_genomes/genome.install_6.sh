@@ -35,6 +35,11 @@ ddRADseq_FASTA=$genomeDirectory$FASTAname".MfeI_MboI.fasta";				# Name of digest
 logName=$genomeDirectory"process_log.txt";
 condensedLog=$genomeDirectory"condensed_log.txt";
 
+
+## Error handling in case something crashes.
+trap 'sh queue_end.sh $user $genome $main_dir $logName; echo "Something went wrong. genome.install_6.sh:$LINENO" > $genomeDirectory"error.txt"; exit 1;' ERR;
+
+
 echo "\n\nRunning 'scripts_genomes/genome.install_6.sh'" >> $logName;
 echo "\tInput to shell script:" >> $logName;
 echo "\t\t\$1 (user)          = $1" >> $logName;

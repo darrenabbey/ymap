@@ -26,6 +26,12 @@ logFile=$4;
 kmerLength=$5;
 kmerStep=$6;
 
+genomeDirectory=$mainDir"users/"$userAccount"/genomes/"$genomeName"/";
+
+## Error handling in case something crashes.
+trap 'sh queue_end.sh $userAccount $genomeName $mainDir $logFile; echo "Something went wrong. FASTA_GCskew_dictionary.sh:$LINENO" > $genomeDirectory"error.txt"; exit 1;' ERR;
+
+
 # load local installed program location variables.
 . $mainDir"local_installed_programs.sh";
 

@@ -23,6 +23,10 @@ logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
 
 
+## Error handling in case something crashes.
+trap 'sh queue_end.sh $user $project $main_dir $logName; echo "Something went wrong. project.ddRADseq.install_4.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+
+
 # Get parent name used from project's "parent.txt" file.
 parent=$(head -n 1 $projectDirectory"parent.txt");
 echo "\tparent = '"$parent"'" >> $logName;
