@@ -2,7 +2,7 @@
 #
 # project.paired_WGseq.install_3.sh
 #
-set -e;
+set -E;
 ## All created files will have permission 760
 umask 007;
 

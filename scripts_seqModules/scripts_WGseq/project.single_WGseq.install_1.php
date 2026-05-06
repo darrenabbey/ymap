@@ -60,8 +60,6 @@
 <title>Install project into pipeline.</title>
 </HEAD>
 <?php
-	queue_start($user,$project,"","");
-
 	// Initialize log files.
 	$logOutputName = $project_dir."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'w');

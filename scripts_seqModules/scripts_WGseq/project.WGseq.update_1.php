@@ -21,7 +21,6 @@
 </script>
 <?php
 	$project_dir = "../../users/".$user."/projects/".$project;
-        queue_start($user,$project,"","");
 
 	// Initialize log files.
 	$logOutputName = $project_dir."/process_log.txt";

@@ -2,7 +2,7 @@
 #
 # project.WGseq.hapmap.install_4.sh
 #
-set -e;
+set -E;
 ## All created files will have permission 760
 umask 007;
 

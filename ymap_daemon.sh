@@ -26,7 +26,7 @@ STOP_OPTS="--stop --pidfile ${PIDFILE}"
 
 test -x $DAEMON || exit 0
 
-set -e
+set -E
 
 case "$1" in
     start)
