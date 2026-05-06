@@ -1,5 +1,7 @@
 <?php
 function process_input_files($ext,$name,$projectPath,$key,$user,$project,$output, $condensedLogOutput,$logOutput) {
+require_once 'constants.php';
+require_once 'sharedFunctions.php';
 fwrite($logOutput, "\tPHP : Process uploaded data files into standard forms for pipeline use.\n");
 fwrite($logOutput, "\t\t*========================================================*\n");
 fwrite($logOutput, "\t\t| Log of 'process_input_files.php'                       |\n");
@@ -441,14 +443,6 @@ if ($ext_new == "fastq") {
 	chmod($errorFileName,0774);
 	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: TDT file format errors.");
 	exit;
-} elseif ($ext_new == "none4") {
-        fwrite($logOutput, "\t\t| The contents of this FASTQ file are long-reads, which YMAP cannot process.\n");
-        $errorFile = fopen($projectPath."error.txt", 'w');
-        fwrite($errorFile, "YMAP is unable to process long-read sequence data.");
-        fclose($errorFile);
-        chmod($errorFileName,0774);
-        log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTQ file includes long-read data.");
-        exit;
 } else {
 	fwrite($logOutput, "\t\t| This is an unknown file type.\n");
 	$errorFile = fopen($projectPath."error.txt", 'w');
@@ -459,6 +453,7 @@ if ($ext_new == "fastq") {
 	exit;
 }
 
+queue_start($user,$project,"","");
 fwrite($logOutput, "\t\t*--------------------------------------------------------*\n");
 fwrite($logOutput, "\t\t| 'process_input_files.php' has completed.               |\n");
 fwrite($logOutput, "\t\t*========================================================*\n");
