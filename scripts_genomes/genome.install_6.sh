@@ -372,11 +372,4 @@ echo "\n\t======================================================================
 ##==============================================================================
 ## Add project end to queue log file.
 ##------------------------------------------------------------------------------
-outputName=$projectDirectory"finalize.php";
-echo "<?php"; > $outputName;
-echo "require_once '"$main_dir"constants.php';"; >> $outputName;
-echo "require_once '"$main_dir"sharedFunctions.php';"; >> $outputName;
-echo "queue_end('"$user"','','"$genome"','');"; >> $outputName;
-echo "?>"; >> $outputName;
-php $outputName;
-rm $outputName;
+sh queue_end.sh $user $genome $main_dir $logName;

@@ -388,13 +388,4 @@ sh $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project 
 ##==============================================================================
 ## Add project end to queue log file.
 ##------------------------------------------------------------------------------
-echo "\tEnding queue processing." >> $logName;
-outputName=$projectDirectory"finalize.php";
-echo "<?php" > $outputName;
-echo "chdir('"$main_dir"');" >> $outputName;
-echo "require_once 'constants.php';" >> $outputName;
-echo "require_once 'sharedFunctions.php';" >> $outputName;
-echo "queue_end('"$user"','"$project"','','');" >> $outputName;
-echo "?>" >> $outputName;
-php $outputName;
-rm $outputName;
+sh queue_end.sh $user $project $main_dir $logName;

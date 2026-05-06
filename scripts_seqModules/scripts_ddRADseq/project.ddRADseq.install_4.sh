@@ -276,11 +276,4 @@ sh $main_dir"scripts_seqModules/scripts_ddRADseq/cleaning_ddRADseq.sh" $user $pr
 ##==============================================================================
 ## Add project end to queue log file.
 ##------------------------------------------------------------------------------
-outputName=$projectDirectory"finalize.php";
-echo "<?php"; > $outputName;
-echo "require_once '"$main_dir"constants.php';"; >> $outputName;
-echo "require_once '"$main_dir"sharedFunctions.php';"; >> $outputName;
-echo "queue_end('"$user"','"$project"','','');"; >> $outputName;
-echo "?>"; >> $outputName;
-php $outputName;
-rm $outputName;
+sh queue_end.sh $user $project $main_dir $logName;

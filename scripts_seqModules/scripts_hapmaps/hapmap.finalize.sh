@@ -47,11 +47,4 @@ $python_exec $main_dir"/scripts_seqModules/scripts_hapmaps/process_hapmap.output
 ##==============================================================================
 ## Add project end to queue log file.
 ##------------------------------------------------------------------------------
-outputName=$projectDirectory"finalize.php";
-echo "<?php"; > $outputName;
-echo "require_once '"$main_dir"constants.php';"; >> $outputName;
-echo "require_once '"$main_dir"sharedFunctions.php';"; >> $outputName;
-echo "queue_end('"$user"','','','"$hapmap"');"; >> $outputName;
-echo "?>"; >> $outputName;
-php $outputName;
-rm $outputName;
+sh queue_end.sh $user $hapmap $main_dir $logName;
