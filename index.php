@@ -389,7 +389,7 @@ function blank_and_content_tab() {
 		newImg.document.write("<script type='text/javascript'> document.oncontextmenu = new Function('return false') </script>")
 		newImg.document.close();
 	}
-	function openProject(user,project,key,projectName,color1,color2,parent,figVer) {
+	function openProject(user,project,key,projectName,color1,color2,parent,figVer,warning) {
 		if (key.includes("_admin")) {
 			var visualize_iframe     = document.getElementById('panel_super1_iframe');
 			var show_button_element  = visualize_iframe.contentDocument.getElementById("show_"+key);
@@ -462,6 +462,10 @@ function blank_and_content_tab() {
 			string1 += "<div id='userProjectHET_"+key+"' style='display:inline'></div>";
 			string1 += "<div id='userProjectB_"+key+"'   style='display:inline'></div>";
 			string1 += "<div id='userProjectHOM_"+key+"' style='display:inline'></div>";
+			string1 += "</td><td>";
+			if (warning.length > 0) {
+				string1 += " <font color='red'>"+warning+"</font>";
+			}
 			string1 += "</td></tr></table>";
 			string1 += "</td><td width='60%' align='left'><font size='-1'>";
 
@@ -583,11 +587,9 @@ function blank_and_content_tab() {
 				string1 += "; <a href=\"" + CGD_SNP_track + "bed\" target=\"_blank\">BED format allele ratio track</a>";
 			}
 
-//dragon
 			if (file_list.indexOf(output_figures_archive) != -1) {
 				string1 += "; Output file archive <a href='"+output_figures_archive+"' download='figures."+project+".zip'><img src='images/icon_zip_15b.png' alt-text='[ZIP] button' align='center''></a>";
 			}
-
 
 			string1 += "</font>";
 

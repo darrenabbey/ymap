@@ -199,17 +199,24 @@
 		$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 		$projectNameString = trim($projectNameString);
 
+		$warning_file    = "users/".$user."/projects/".$project."/warning.txt";
+		if (file_exists($warning_file)) {
+			$warning_string = trim(file_get_contents($warning_file));
+		} else {
+			$warning_string = "";
+		}
+
 		echo "<table style='background-color:".$bgColor.";' width='100%'><tr><td>\n";
 		echo "<span id='p_label_".$key."_super1' style='color:#".$labelRgbColor."; background-color:#".$labelRgbBackgroundColor.";'>\n\t\t\t\t";
 		echo "<font size='2'>".($key+1).".";
 		if ($frameContainerIx != "1") {
-			echo "<input id='show_".$key."_super1' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."_super1','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."');\" style=\"visibility:hidden;\">";
+			echo "<input id='show_".$key."_super1' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."_super1','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','".$warning_string."');\" style=\"visibility:hidden;\">";
 		} else {
 			// Limit files list to valid output file types.
 			$projectFiles   = preg_grep('~\.(png|eps|bed|gff3)$~', scandir("users/$user/projects/$project/"));
 			sort($projectFiles);
 			$json_file_list = json_encode($projectFiles);
-			echo "<input id='show_".$key."_super1' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."_super1','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
+			echo "<input id='show_".$key."_super1' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."_super1','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','".$warning_string."'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
 		}
 
 		echo $projectNameString." ".$comment;
