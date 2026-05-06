@@ -1,8 +1,9 @@
+set -e
 # If no data file option is given, describe script purpose and input.
 if [ -z $1 ]
 then
 	echo;
-	echo "# Command syntax is : 'sh FASTQ_trimming.sh [dataset]'";
+	echo "# Command syntax is : 'bash FASTQ_trimming.sh [dataset]'";
 	echo "# ";
 	echo "#        [dataset] : read file to be trimmed of incomplete final read.";
 	echo "# ";

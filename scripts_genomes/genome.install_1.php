@@ -95,7 +95,7 @@
 	rename(getcwd()."/".$genomePath.$name1, getcwd()."/".$genomePath.$name2);
 
 	// Convert FASTA sequences to uppercase only.
-	$null = shell_exec("sh ".getcwd()."/../scripts_seqModules/FASTA_to-uppercase.sh ".getcwd()."/".$genomePath.$name2." > ".getcwd()."/".$genomePath."temp.fasta");
+	$null = shell_exec("bash ".getcwd()."/../scripts_seqModules/FASTA_to-uppercase.sh ".getcwd()."/".$genomePath.$name2." > ".getcwd()."/".$genomePath."temp.fasta");
 	rename(getcwd()."/".$genomePath."temp.fasta", getcwd()."/".$genomePath.$name2);
 
 	// Process uploaded file.

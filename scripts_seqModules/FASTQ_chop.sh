@@ -1,8 +1,9 @@
+set -e
 # If no data file option is given, describe script purpose and input.
 if [ -z $1 ] || [ -z $2 ]
 then
 	echo;
-	echo "# Command syntax is : 'sh FASTQ_chop.sh [dataset] [length]'";
+	echo "# Command syntax is : 'bash FASTQ_chop.sh [dataset] [length]'";
 	echo "# ";
 	echo "#        [dataset] : File containing FASTQ entries.";
 	echo "#        [length]  : Number of lines at which to cut file in two.";

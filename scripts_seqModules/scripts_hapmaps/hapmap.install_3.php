@@ -153,7 +153,7 @@
 		fclose($logOutput);
 
 		// Pass control over to a shell script ('scripts_seqModules/scripts_hapmaps/hapmap.install_4.sh') to continue processing and link with octave.
-		$system_call_string = "sh hapmap.install_4.sh ".$user." ".$referencePloidy." ".$project1." ".$project2." ".$hapmap." > /dev/null &";
+		$system_call_string = "bash hapmap.install_4.sh ".$user." ".$referencePloidy." ".$project1." ".$project2." ".$hapmap." > /dev/null &";
 		system($system_call_string);
 
 		log_stuff($user,"",$hapmap,"","","hapmap:CREATE success.");

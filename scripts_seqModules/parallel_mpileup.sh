@@ -1,4 +1,6 @@
 #!/bin/sh
+set -e
+
 user=$1;	#user="darren2";
 project=$2;	#project="test";
 main_dir=$(pwd)"/../../";

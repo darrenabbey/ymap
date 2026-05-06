@@ -1,10 +1,10 @@
 #!/bin/sh
-
+set -e
 # If no data file option is given, describe script purpose and input.
 if [ -z $5 ]
 then
 	echo;
-	echo "# Command syntax is : 'sh FASTA_repetitiveness_dictionary.sh [YMAP user name] [YMAP genome name] [YMAP main dir] [YMAP log file] [kmer length]'";
+	echo "# Command syntax is : 'bash FASTA_repetitiveness_dictionary.sh [YMAP user name] [YMAP genome name] [YMAP main dir] [YMAP log file] [kmer length]'";
 	echo "# ";
 	echo "#        [YMAP user name]   : Name of user account.";
 	echo "#        [YMAP genome name] : Name of installed genome.";
@@ -24,7 +24,7 @@ kmer_length=$5;
 genomeDirectory=$mainDir"users/"$userAccount"/genomes/"$genomeName"/";
 
 ## Error handling in case something crashes.
-trap 'sh queue_end.sh $userAccount $genomeName $mainDir $logFile "Something went wrong. FASTA_repetitiveness_dictionary.sh:$LINENO"; echo "Something went wrong. FASTA_repetitiveness_dictionary.sh:$LINENO" > $genomeDirectory"error.txt"; exit 1;' ERR;
+trap 'bash queue_end.sh $userAccount $genomeName $mainDir $logFile "Something went wrong. FASTA_repetitiveness_dictionary.sh:$LINENO"; echo "Something went wrong. FASTA_repetitiveness_dictionary.sh:$LINENO" > $genomeDirectory"error.txt"; exit 1;' ERR;
 
 
 # load local installed program location variables.

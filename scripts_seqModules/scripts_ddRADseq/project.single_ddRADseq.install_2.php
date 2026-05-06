@@ -98,12 +98,12 @@
 		fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_ddRADseq/project.paired_ddRADseq.install_3.sh'\n");
 		fwrite($logOutput, "\t\tPaired-end reads being processed.\n");
 		fwrite($logOutput, "\t\tCurrent directory = '".getcwd()."'\n" );
-		$system_call_string = "sh project.paired_ddRADseq.install_3.sh ".$user." ".$project." > /dev/null &";
+		$system_call_string = "bash project.paired_ddRADseq.install_3.sh ".$user." ".$project." > /dev/null &";
 	} else {
 		fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_ddRADseq/project.single_ddRADseq.install_3.sh'\n");
 		fwrite($logOutput, "\t\tSingle-end reads being processed.\n");
 		fwrite($logOutput, "\t\tCurrent directory = '".getcwd()."'\n" );
-	 	$system_call_string = "sh project.single_ddRADseq.install_3.sh ".$user." ".$project." > /dev/null &";
+	 	$system_call_string = "bash project.single_ddRADseq.install_3.sh ".$user." ".$project." > /dev/null &";
 	}
 	fwrite($logOutput, "\t\tSystem call string = '".$system_call_string."'\n");
 

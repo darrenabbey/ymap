@@ -1,10 +1,10 @@
 #!/bin/sh
-
+set -e
 # If no data file option is given, describe script purpose and input.
 if [ -z $1 ]
 then
 	echo;
-	echo "# Command syntax is : 'sh FASTA_repetitiveness_dictionary_clean.sh [YMAP user name] [YMAP genome name] [YMAP main dir] [YMAP log file] [kmer length]'";
+	echo "# Command syntax is : 'bash FASTA_repetitiveness_dictionary_clean.sh [YMAP user name] [YMAP genome name] [YMAP main dir] [YMAP log file] [kmer length]'";
 	echo "# ";
 	echo "#        [YMAP user name]   : Name of user account.";
 	echo "#        [YMAP genome name] : Name of installed genome.";

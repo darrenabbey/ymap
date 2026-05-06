@@ -2,7 +2,7 @@
 #
 # project.single_WGseq.install_3.sh
 #
-set -E;
+set -e;
 ## All created files will have permission 760
 umask 007;
 
@@ -21,7 +21,7 @@ logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
 
 ## Error handling in case something crashes.
-trap 'sh queue_end.sh $user $project $main_dir $logName "Something went wrong. project.single_WGseq.install_3.sh:$LINENO"; echo "Something went wrong. project.single_WGseq.install_3.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.single_WGseq.install_3.sh:$LINENO"; echo "Something went wrong. project.single_WGseq.install_3.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
 echo "#.............................................................................." >> $logName;
 echo "" >> $logName;
@@ -135,7 +135,7 @@ else
 	echo "Resolving FASTQ file errors." >> $condensedLog;
 	currdir=$(pwd);
 	cd $projectDirectory;
-	sh $main_dir"scripts_seqModules/FASTQ_1_trimming.sh" $projectDirectory$datafile >> $logName;
+	bash $main_dir"scripts_seqModules/FASTQ_1_trimming.sh" $projectDirectory$datafile >> $logName;
 	cd $currdir;
 
 	##==============================================================================
@@ -282,9 +282,9 @@ if [ $hapmapInUse = 0 ]
 then
 	echo "Passing processing on to 'scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh' for final analysis." >> $logName;
 	echo   "=========================================================================\n" >> $logName;
-	sh $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" $user $project 2>> $logName;
+	bash $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" $user $project 2>> $logName;
 else
 	echo "Passing processing on to 'scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh' for final analysis." >> $logName;
 	echo "=========================================================================\n" >> $logName;
-	sh $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh" $user $project $hapmap 2>> $logName;
+	bash $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh" $user $project $hapmap 2>> $logName;
 fi

@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-set -E;
+set -e;
 ## All created files will have permission 760
 umask 007;
 
@@ -34,7 +34,7 @@ condensedLog=$hapmapDirectory"condensed_log.txt";
 
 
 ## Error handling in case something crashes.
-trap 'sh queue_end.sh $user $hapmap $main_dir $logName "Something went wrong. hapmap.update_4.sh:$LINENO"; echo "Something went wrong. hapmap.update_4.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+trap 'bash queue_end.sh $user $hapmap $main_dir $logName "Something went wrong. hapmap.update_4.sh:$LINENO"; echo "Something went wrong. hapmap.update_4.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
 
 echo "" >> $logName;
@@ -175,4 +175,4 @@ echo "Concluding analysis." >> $condensedLog;
 ## Delete 'working.txt' file to let pipeline know that processing has completed, but hapmap is available for additional entries.
 rm $main_dir"users/"$user"/hapmaps/"$hapmap"/working.txt";
 
-sh queue_end.sh $user $hapmap $main_dir $logName "hapmap.update_4.sh completed.";
+bash queue_end.sh $user $hapmap $main_dir $logName "hapmap.update_4.sh completed.";

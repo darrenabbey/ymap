@@ -1,10 +1,10 @@
 #!/bin/sh
-
+set -e
 # If no data file option is given, describe script purpose and input.
 if [ -z $3 ]
 then
 	echo;
-	echo "# Command syntax is : 'sh WIG-to_BigWIG.sh [wig file] [chrom.sizes file] [bigwig file]'";
+	echo "# Command syntax is : 'bash WIG-to_BigWIG.sh [wig file] [chrom.sizes file] [bigwig file]'";
 	echo "# ";
 	echo "#        [wig file]     : one of the ASCII wiggle formats, not including track lines.";
 	echo "#        [chrom.sizes]  : a two-column text file with lines of <chromosome name> <size in bases>.";

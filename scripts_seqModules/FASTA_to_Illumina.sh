@@ -1,10 +1,10 @@
 #!/bin/sh
-
+set -e
 # If no data file option is given, describe script purpose and input.
 if [ -z $1 ]
 then
 	echo;
-	echo "# Command syntax is : 'sh FASTA_to_Illumina [FASTA seq file] (FASTQ.GZ file)'";
+	echo "# Command syntax is : 'bash FASTA_to_Illumina [FASTA seq file] (FASTQ.GZ file)'";
 	echo "# ";
 	echo "#        [FASTA seq file] : Genome sequence file in FASTA format.";
 	echo "#        (FASTQ.GZ file)  : Optional output file in GZ compressed FASTQ format.";
@@ -49,7 +49,7 @@ mkdir $tempdir;
 	python3 $BASEDIR/FASTA_to_FASTQ.py $tempdir/$base_name1.2> $tempdir/$base_name1.3;
 
 	# Make sure FASTQ entries have unique header strings.
-	sh $BASEDIR/FASTQ_rename_headers.sh $tempdir/$base_name1.3 > $tempdir/$base_name1.4;
+	bash $BASEDIR/FASTQ_rename_headers.sh $tempdir/$base_name1.3 > $tempdir/$base_name1.4;
 
 	# Output results.
 	cp $tempdir/$base_name1.4 $CALLDIR/$finalName;

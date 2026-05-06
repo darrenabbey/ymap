@@ -1,8 +1,9 @@
+set -e
 if [ -z $1 ]
 then
 	echo;
 	echo "### UNTESTED ###";
-	echo "# Command syntax is : 'sh FASTQ_reformat_1.sh [FASTQ seq file] > output.fastq'";
+	echo "# Command syntax is : 'bash FASTQ_reformat_1.sh [FASTQ seq file] > output.fastq'";
 	echo "# ";
 	echo "#        [FASTQ seq file] : Genome sequence file in FASTQ format.";
 	echo "# ";

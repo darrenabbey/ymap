@@ -1,8 +1,9 @@
+set -e
 # If no data file option is given, describe script purpose and input.
 if [ -z $1 ] || [ -z $2 ]
 then
 	echo;
-	echo "# Command syntax is : 'sh FASTQ_trimming.sh [dataset_R1] [dataset_R2]'";
+	echo "# Command syntax is : 'bash FASTQ_trimming.sh [dataset_R1] [dataset_R2]'";
 	echo "# ";
 	echo "#        [dataset_R1] & [dataset_R2] : Left & right read files to be trimmed of unbalanced reads.";
 	echo "# ";

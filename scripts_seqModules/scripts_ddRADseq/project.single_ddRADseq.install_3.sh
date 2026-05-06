@@ -2,7 +2,7 @@
 #
 # project.single_ddRADseq.install_3.sh
 #
-set -E;
+set -e;
 ## All created files will have permission 760
 umask 007;
 
@@ -23,7 +23,7 @@ condensedLog=$projectDirectory"condensed_log.txt";
 
 
 ## Error handling in case something crashes.
-trap 'sh queue_end.sh $user $project $main_dir $logName "Something went wrong. project.single_ddRADseq.install_3.sh:$LINENO"; echo "Something went wrong. project.single_ddRADseq.install_3.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.single_ddRADseq.install_3.sh:$LINENO"; echo "Something went wrong. project.single_ddRADseq.install_3.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
 
 echo "#.............................................................................." >> $logName;
@@ -165,7 +165,7 @@ else
 	echo "Resolving FASTQ file errors." >> $condensedLog;
 	currdir=$(pwd);
 	cd $projectDirectory;
-	sh $main_dir"scripts_seqModules/FASTQ_1_trimming.sh" $projectDirectory$datafile >> $logName;
+	bash $main_dir"scripts_seqModules/FASTQ_1_trimming.sh" $projectDirectory$datafile >> $logName;
 	cd $currdir;
 	echo "\tFASTQ files trimmed using : 'FASTQ_trimming.sh'" >> $logName;
 
@@ -332,9 +332,9 @@ if [ $hapmapInUse = 0 ]
 then
 	echo "\nPassing processing on to 'scripts_seqModules/scripts_ddRADseq/project.ddRADseq.install_4.sh' for final analysis.\n" >> $logName;
 	echo   "============================================================================\n" >> $logName;
-	sh $main_dir"scripts_seqModules/scripts_ddRADseq/project.ddRADseq.install_4.sh" $user $project 2>> $logName;
+	bash $main_dir"scripts_seqModules/scripts_ddRADseq/project.ddRADseq.install_4.sh" $user $project 2>> $logName;
 else
 	echo "\nPassing processing on to 'scripts_seqModules/scripts_ddRADseq/project.ddRADseq.hapmap.install_4.sh' for final analysis.\n" >> $logName;
 	echo   "===================================================================================\n" >> $logName;
-	sh $main_dir"scripts_seqModules/scripts_ddRADseq/project.ddRADseq.hapmap.install_4.sh" $user $project $hapmap 2>> $logName;
+	bash $main_dir"scripts_seqModules/scripts_ddRADseq/project.ddRADseq.hapmap.install_4.sh" $user $project $hapmap 2>> $logName;
 fi

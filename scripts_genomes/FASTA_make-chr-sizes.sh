@@ -1,10 +1,10 @@
 #!/bin/sh
-
+set -e
 # If no data file option is given, describe script purpose and input.
 if [ -z $1 ]
 then
 	echo;
-	echo "# Command syntax is : 'sh FASTA_make-chr-sizes.sh [fasta file] > chrom.sizes'";
+	echo "# Command syntax is : 'bash FASTA_make-chr-sizes.sh [fasta file] > chrom.sizes'";
 	echo "# ";
 	echo "#        [fasta file]   : FASTA formatted genome sequence file.";
 	echo "#        chrom.sizes    : a two-column text file with lines of <chromosome name> <size in bases>.";

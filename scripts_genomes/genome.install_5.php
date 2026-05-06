@@ -102,7 +102,7 @@
 	}
 
 	// Final install functions are in shell script.
-	$system_call_string = "sh genome.install_6.sh ".$user." ".$genome." > /dev/null &";
+	$system_call_string = "bash genome.install_6.sh ".$user." ".$genome." > /dev/null &";
 	system($system_call_string);
 	fwrite($logOutput, "\tCurrent Directory  = '".getcwd()."'\n");
 	fwrite($logOutput, "\tSystem Call String = '".$system_call_string."'\n");

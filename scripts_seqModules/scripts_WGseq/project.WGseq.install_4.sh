@@ -32,7 +32,7 @@ echo "";
 
 
 ## Error handling in case something crashes.
-trap 'sh queue_end.sh $user $project $main_dir $logName "Something went wrong. project.WGseq.install_4.sh:$LINENO"; echo "Something went wrong. project.WGseq.install_4.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.WGseq.install_4.sh:$LINENO"; echo "Something went wrong. project.WGseq.install_4.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
 
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
@@ -297,10 +297,10 @@ echo "finished all processing, moving to Cleaning up intermediate WGseq files" >
 ##------------------------------------------------------------------------------
 chmod 774 $projectDirectory*;
 echo "running: " $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir >> $logName;
-sh $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir 2>> $logName;
+bash $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir 2>> $logName;
 
 
 ##==============================================================================
 ## Add project end to queue log file.
 ##------------------------------------------------------------------------------
-sh queue_end.sh $user $project $main_dir $logName "project.WGseq.install_4.sh completed.";
+bash queue_end.sh $user $project $main_dir $logName "project.WGseq.install_4.sh completed.";

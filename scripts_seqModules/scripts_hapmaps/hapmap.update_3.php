@@ -95,7 +95,7 @@
 	fclose($logOutput);
 
 	// Pass control over to a shell script ('scripts_seqModules/scripts_hapmaps/hapmap.update_4.sh') to continue processing and link with octave.
-	$system_call_string = "sh hapmap.update_4.sh ".$user." ".$project1." ".$project2." ".$hapmap." > /dev/null &";
+	$system_call_string = "bash hapmap.update_4.sh ".$user." ".$project1." ".$project2." ".$hapmap." > /dev/null &";
 
 	system($system_call_string);
 ?>

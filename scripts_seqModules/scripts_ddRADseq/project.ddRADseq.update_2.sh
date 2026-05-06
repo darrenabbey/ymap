@@ -2,7 +2,7 @@
 #
 # project.ddRADseq.install_4.sh
 #
-set -E;
+set -e;
 ## All created files will have permission 760
 umask 007;
 
@@ -36,7 +36,7 @@ condensedLog=$projectDirectory"condensed_log.txt";
 
 
 ## Error handling in case something crashes.
-trap 'sh queue_end.sh $user $project $main_dir $logName "Something went wrong. project.ddRADseq.install_2.sh:$LINENO"; echo "Something went wrong. project.ddRADseq.install_2.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.ddRADseq.install_2.sh:$LINENO"; echo "Something went wrong. project.ddRADseq.install_2.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
 
 chmod 0666 $logName;
@@ -239,10 +239,10 @@ sed 's/^/\t\t|/;' $projectDirectory"octave.final_figs.log" >> $logName;
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
 echo "running: " $main_dir"scripts_seqModules/scripts_ddRADseq/cleaning_ddRADseq.sh" $user $project >> $logName;
-sh $main_dir"scripts_seqModules/scripts_ddRADseq/cleaning_ddRADseq.sh" $user $project 2>> $logName;
+bash $main_dir"scripts_seqModules/scripts_ddRADseq/cleaning_ddRADseq.sh" $user $project 2>> $logName;
 
 
 ##==============================================================================
 ## Add project end to queue log file.
 ##------------------------------------------------------------------------------
-sh queue_end.sh $user $project $main_dir $logName "project.ddRADseq.update_2.sh completed.";
+bash queue_end.sh $user $project $main_dir $logName "project.ddRADseq.update_2.sh completed.";

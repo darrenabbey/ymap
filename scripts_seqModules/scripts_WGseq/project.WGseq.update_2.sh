@@ -37,7 +37,7 @@ condensedLog=$projectDirectory"condensed_log.txt";
 
 
 ## Error handling in case something crashes.
-trap 'sh queue_end.sh $user $project $main_dir $logName "Something went wrong. project.WGseq.update_2.sh:$LINENO"; echo "Something went wrong. project.WGseq.update_2.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.WGseq.update_2.sh:$LINENO"; echo "Something went wrong. project.WGseq.update_2.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
 
 echo "#.............................................................................." >> $logName;
@@ -387,10 +387,10 @@ fi
 ##------------------------------------------------------------------------------
 chmod 774 $projectDirectory*;
 echo "running: " $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir >> $logName;
-sh $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir 2>> $logName;
+bash $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir 2>> $logName;
 
 
 ##==============================================================================
 ## Add project end to queue log file.
 ##------------------------------------------------------------------------------
-sh queue_end.sh $user $project $main_dir $logName "project.WGseq.update_2.sh completed.";
+bash queue_end.sh $user $project $main_dir $logName "project.WGseq.update_2.sh completed.";

@@ -1,10 +1,10 @@
 #!/bin/sh
-
+set -e
 # If no data file option is given, describe script purpose and input.
 if [ -z $1 ]
 then
 	echo;
-	echo "# Command syntax is : 'sh FASTA_to-uppercase.sh [FASTA seq file] > output.fasta'";
+	echo "# Command syntax is : 'bash FASTA_to-uppercase.sh [FASTA seq file] > output.fasta'";
 	echo "# ";
 	echo "#        [FASTA seq file] : Genome sequence file in FASTA format.";
 	echo "# ";

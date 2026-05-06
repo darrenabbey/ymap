@@ -48,7 +48,7 @@
 	// Final install functions are in shell script.
 	fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_WGseq/project.WGseq.update_2.sh'\n");
 	fwrite($logOutput, "\t\tCurrent directory = '".getcwd()."'\n" );
-	$system_call_string = "sh project.WGseq.update_2.sh ".$user." ".$project." > /dev/null &";
+	$system_call_string = "bash project.WGseq.update_2.sh ".$user." ".$project." > /dev/null &";
 	fwrite($logOutput, "\t\tSystem call string = '".$system_call_string."'\n");
 
 	system($system_call_string);

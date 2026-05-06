@@ -1,8 +1,9 @@
+set -e
 # If no data file option is given, describe script purpose and input.
 if [ -z $1 ] || [ -z $2 ] || [ -z $3 ]
 then
 	echo;
-	echo "# Command syntax is : 'sh FASTQ_shuffle.sh [dataset_R1] [dataset_R2] [outfile]'";
+	echo "# Command syntax is : 'bash FASTQ_shuffle.sh [dataset_R1] [dataset_R2] [outfile]'";
 	echo "# ";
 	echo "#        [dataset_R1] & [dataset_R2] : Left & right read files to be shuffled into one FASTQ file.";
 	echo "#        [outfile]                   : Destination file for FASTQ entries.";

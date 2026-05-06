@@ -3,7 +3,7 @@
 #
 # genome.install_6.sh
 #
-set -E;
+set -e;
 ## All created files will have permission 760
 umask 007;
 
@@ -13,7 +13,7 @@ user='darren';
 if [ "$singleGenome" = true ]; then
 	## reinstall single genomes in user account.
 	genome="Phaseolus_vulgaris_YP4";
-	sh genome.install_6.sh $user $genome;
+	bash genome.install_6.sh $user $genome;
 else
 	## reinstall all genomes in user account.
 	directory='/var/www/html/ymap/users/default/genomes';
@@ -28,7 +28,7 @@ else
 			# item is a directory.
 			echo $file;
 			genome=$file;
-			sh genome.install_6.sh $user $genome;
+			bash genome.install_6.sh $user $genome;
 			echo "\tdone."
 		fi
 	done

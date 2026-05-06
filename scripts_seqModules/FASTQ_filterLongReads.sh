@@ -1,8 +1,9 @@
+set -e
 # If no data file option is given, describe script purpose and input.
 if [ -z $1 ] || [ -z $2 ] || [ -z $3 ]
 then
 	echo;
-	echo "# Command syntax is : 'sh FASTQ_filterLongReads.sh [dataset] [cutoff] [outfile]'";
+	echo "# Command syntax is : 'bash FASTQ_filterLongReads.sh [dataset] [cutoff] [outfile]'";
 	echo "# ";
 	echo "#        [dataset] : FASTQ read file input.";
 	echo "#        [cutoff]  : Reads longer than this are discarded.";

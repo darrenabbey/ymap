@@ -1,9 +1,8 @@
-#!/bi
-#n/bash -e
+#!/bin/bash -e
 #
 # genome.install_6.sh
 #
-set -E;
+set -e;
 ## All created files will have permission 760
 umask 007;
 
@@ -37,7 +36,7 @@ condensedLog=$genomeDirectory"condensed_log.txt";
 
 
 ## Error handling in case something crashes.
-trap 'sh queue_end.sh $user $genome $main_dir $logName "Something went wrong. genome.install_6.sh:$LINENO"; echo "Something went wrong. genome.install_6.sh:$LINENO" > $genomeDirectory"error.txt"; exit 1;' ERR;
+trap 'bash queue_end.sh $user $genome $main_dir $logName "Something went wrong. genome.install_6.sh:$LINENO"; echo "Something went wrong. genome.install_6.sh:$LINENO" > $genomeDirectory"error.txt"; exit 1;' ERR;
 
 
 echo "\n\nRunning 'scripts_genomes/genome.install_6.sh'" >> $logName;
@@ -115,20 +114,20 @@ else
 	if [ ! -e $genomeDirectory"datafile_g_0.repetitiveness_"$repet_kmerLength".txt" ]
 	then
 		echo "\tGenerating repetitiveness dictionary." >> $logName;
-		echo "\t\t sh "$main_dir"scripts_genomes/FASTA_repetitiveness_dictionary.sh "$user" "$genome" "$main_dir" "$logName" "$repet_kmerlength" >> "$logName" 2>> "$logName";";
-		sh $main_dir"scripts_genomes/FASTA_repetitiveness_dictionary.sh"       $user $genome $main_dir $logName $repet_kmerLength >> $logName 2>> $logName;
+		echo "\t\t bash "$main_dir"scripts_genomes/FASTA_repetitiveness_dictionary.sh "$user" "$genome" "$main_dir" "$logName" "$repet_kmerlength" >> "$logName" 2>> "$logName";";
+		bash $main_dir"scripts_genomes/FASTA_repetitiveness_dictionary.sh"       $user $genome $main_dir $logName $repet_kmerLength >> $logName 2>> $logName;
 
 		echo "\tCleaning up repetitiveness dictionary." >> $logName;
-		echo "\t\t sh "$main_dir"scripts_genomes/FASTA_repetitiveness_dictionary_clean.sh "$user" "$genome" "$main_dir" "$logName" "$repet_kmerlength" >> "$logName" 2>> "$logName";";
-		sh $main_dir"scripts_genomes/FASTA_repetitiveness_dictionary_clean.sh" $user $genome $main_dir $logName $repet_kmerLength >> $logName 2>> $logName;
+		echo "\t\t bash "$main_dir"scripts_genomes/FASTA_repetitiveness_dictionary_clean.sh "$user" "$genome" "$main_dir" "$logName" "$repet_kmerlength" >> "$logName" 2>> "$logName";";
+		bash $main_dir"scripts_genomes/FASTA_repetitiveness_dictionary_clean.sh" $user $genome $main_dir $logName $repet_kmerLength >> $logName 2>> $logName;
 	else
 		echo "\tRepetitiveness dictionary for genome '$genome' found" >> $logName;
 	fi
 	if [ ! -e $genomeDirectory"datafile_g_0.repetitiveness_"$repet_kmerLength".wig" ]
 	then
 		echo "\tMaking repetitiveness profile (*.wig)." >> $logName;
-		echo "\t\t sh "$main_dir"scripts_genomes/FASTA_repetitiveness-to-WIG.sh "$user" "$genome" "$main_dir" "$logName" "$repet_kmerlength" >> "$logName" 2>> "$logName";";
-		sh $main_dir"scripts_genomes/FASTA_repetitiveness-to-WIG.sh"           $user $genome $main_dir $logName $repet_kmerLength >> $logName 2>> $logName;
+		echo "\t\t bash "$main_dir"scripts_genomes/FASTA_repetitiveness-to-WIG.sh "$user" "$genome" "$main_dir" "$logName" "$repet_kmerlength" >> "$logName" 2>> "$logName";";
+		bash $main_dir"scripts_genomes/FASTA_repetitiveness-to-WIG.sh"           $user $genome $main_dir $logName $repet_kmerLength >> $logName 2>> $logName;
 	else
 		echo "\tRepetitiveness profile (*.wig) for genome '$genome' found" >> $logName;
 	fi
@@ -181,11 +180,11 @@ else
 
 	echo "Processing genome for GC-skew." >> $condensedLog;
 	echo "\tGenerating GC-skew dictionary." >> $logName;
-        sh $main_dir"scripts_genomes/FASTA_GCskew_dictionary.sh"       $user $genome $main_dir $logName $skew_kmerLength $skew_kmerStep >> $logName 2>> $logName;
+        bash $main_dir"scripts_genomes/FASTA_GCskew_dictionary.sh"       $user $genome $main_dir $logName $skew_kmerLength $skew_kmerStep >> $logName 2>> $logName;
 
 	echo "Processing genome for AT-skew." >> $condensedLog;
 	echo "\tGenerating AT-skew dictionary." >> $logName;
-	sh $main_dir"scripts_genomes/FASTA_ATskew_dictionary.sh"       $user $genome $main_dir $logName $skew_kmerLength $skew_kmerStep >> $logName 2>> $logName;
+	bash $main_dir"scripts_genomes/FASTA_ATskew_dictionary.sh"       $user $genome $main_dir $logName $skew_kmerLength $skew_kmerStep >> $logName 2>> $logName;
 
 	echo "#==============================#" >> $logName;
 	echo "# Generate GC/AT-skew figure.  #" >> $logName;
@@ -369,7 +368,7 @@ echo "\n\t======================================================================
 ##==============================================================================
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
-sh $main_dir"scripts_genomes/cleaning_genome.sh" $user $genome $main_dir 2>> $logName;
+bash $main_dir"scripts_genomes/cleaning_genome.sh" $user $genome $main_dir 2>> $logName;
 
 echo "\n\t============================================================================================== 9" >> $logName;
 
@@ -377,4 +376,4 @@ echo "\n\t======================================================================
 ##==============================================================================
 ## Add project end to queue log file.
 ##------------------------------------------------------------------------------
-sh queue_end.sh $user $genome $main_dir $logName "genome.install_6.sh completed.";
+bash queue_end.sh $user $genome $main_dir $logName "genome.install_6.sh completed.";

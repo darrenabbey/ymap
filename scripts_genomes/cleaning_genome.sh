@@ -1,9 +1,8 @@
-
 #!/bin/bash -e
 #
 # cleaning_genome.sh
 #
-set -E;
+set -e;
 ## All created files will have permission 760
 umask 007;
 

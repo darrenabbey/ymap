@@ -109,7 +109,7 @@
 	// Final install functions are in shell script.
 	fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_3.sh'\n");
 	fwrite($logOutput, "Current directory = '".getcwd()."'\n" );
-	$system_call_string = "sh project.paired_WGseq.install_3.sh ".$user." ".$project." > /dev/null &";
+	$system_call_string = "bash project.paired_WGseq.install_3.sh ".$user." ".$project." > /dev/null &";
 	system($system_call_string);
 	fclose($condensedLogOutput);
 	fclose($logOutput);

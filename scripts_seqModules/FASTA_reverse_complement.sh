@@ -2,7 +2,7 @@
 ## Reformat fasta : puts FASTA sequences into single lines, then sorts entries by seq length.
 ##---------------------------------------------------------------------------------------------
 echo "[[=- Reformatting FASTA entries into single lines per sequence. -=]]";
-# 0) Called like : "sh reformat_fasta.sh file.fa"
+# 0) Called like : "bash reformat_fasta.sh file.fa"
 # 1) For lines that start with ">", convert the ending "\n" into "\t".
 # 2) Removes all newline characters.
 # 3) Adds newlines in front of ">"s to split FASTA entries onto separate lines.
@@ -83,7 +83,7 @@ mv $1.temp $1;
 ## Reformat fasta : inserts newline characters into long sequences to break into 100bp lines.
 ##---------------------------------------------------------------------------------------------
 echo "[[=- Reformatting FASTA entries to wrap sequence at 100 bp. -=]]";
-# 0) Called like : "sh reformat_fasta.sh file.fa"
+# 0) Called like : "bash reformat_fasta.sh file.fa"
 # 1) Adds a newline between each fasta entry, for ease of reading.
 # 2) Adds a newline between each fasta entry, for ease of reading.
 # 3) Remove initial blank lines...  added above as artifact of adding lines between entries.

@@ -1,10 +1,10 @@
 #!/bin/sh
-
+set -e
 # If no data file option is given, describe script purpose and input.
 if [ -z $6 ]
 then
 	echo;
-	echo "# Command syntax is : 'sh FASTA_ATskew_dictionary.sh [YMAP user name] [YMAP genome name] [YMAP main dir] [YMAP log file] [kmer length]'";
+	echo "# Command syntax is : 'bash FASTA_ATskew_dictionary.sh [YMAP user name] [YMAP genome name] [YMAP main dir] [YMAP log file] [kmer length]'";
 	echo "# ";
 	echo "#        [YMAP user name]   : Name of user account.";
 	echo "#        [YMAP genome name] : Name of installed genome.";
@@ -29,7 +29,7 @@ kmerStep=$6;
 genomeDirectory=$mainDir"users/"$userAccount"/genomes/"$genomeName"/";
 
 ## Error handling in case something crashes.
-trap 'sh queue_end.sh $userAccount $genomeName $mainDir $logFile "Something went wrong. FASTA_ATskew_dictionary.sh:$LINENO"; echo "Something went wrong. FASTA_ATskew_dictionary.sh:$LINENO" > $genomeDirectory"error.txt"; exit 1;' ERR;
+trap 'bash queue_end.sh $userAccount $genomeName $mainDir $logFile "Something went wrong. FASTA_ATskew_dictionary.sh:$LINENO"; echo "Something went wrong. FASTA_ATskew_dictionary.sh:$LINENO" > $genomeDirectory"error.txt"; exit 1;' ERR;
 
 
 # load local installed program location variables.

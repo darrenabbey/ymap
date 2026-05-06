@@ -1,10 +1,10 @@
 #!/bin/sh
-
+set -e
 # If no data file option is given, describe script purpose and input.
 if [ -z $1 ]
 then
 	echo;
-	echo "# Command syntax is : 'sh FASTQ_to_Illumina [FASTQ seq file]'";
+	echo "# Command syntax is : 'bash FASTQ_to_Illumina [FASTQ seq file]'";
 	echo "# ";
 	echo "#        [FASTQ seq file] : Genome sequence file in FASTQ format.";
 	echo "# ";
@@ -38,7 +38,7 @@ mkdir $tempdir;
 	base_name1=$(basename $1);
 
 	# Converts input FASTQ file to FASTA file by discarding quality scores.
-	sh $BASEDIR/FASTQ_to_FASTA.sh $1 > $tempdir/$base_name1.1;
+	bash $BASEDIR/FASTQ_to_FASTA.sh $1 > $tempdir/$base_name1.1;
 
 	# Ensure FASTA entries are single-line.
 	bash $BASEDIR/FASTA_reformat_1.sh $tempdir/$base_name1.1 > $tempdir/$base_name1.2;
@@ -50,7 +50,7 @@ mkdir $tempdir;
 	python3 $BASEDIR/FASTA_to_FASTQ.py $tempdir/$base_name1.3 > $tempdir/$base_name1.4;
 
 	# Make sure FASTQ entries have unique header strings.
-	sh $BASEDIR/FASTQ_rename_headers.sh $tempdir/$base_name1.4 > $tempdir/$base_name1.5;
+	bash $BASEDIR/FASTQ_rename_headers.sh $tempdir/$base_name1.4 > $tempdir/$base_name1.5;
 
 	# Output results.
 	cp $tempdir/$base_name1.5 $CALLDIR/$finalName;

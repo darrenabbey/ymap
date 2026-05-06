@@ -1,8 +1,9 @@
+set -e
 # If no data file option is given, describe script purpose and input.
 if [ -z $1 ] || [ -z $2 ]
 then
 	echo;
-	echo "# Command syntax is : 'sh FASTQ_ambiguousToN.sh [dataset] [outfile]'";
+	echo "# Command syntax is : 'bash FASTQ_ambiguousToN.sh [dataset] [outfile]'";
 	echo "# ";
 	echo "#        [dataset] : FASTQ read file input.";
 	echo "#        [outfile] : Destination file for FASTQ entries.";

@@ -1,10 +1,10 @@
 #!/bin/sh
-
+set -e
 # If no data file option is given, describe script purpose and input.
 if [ -z $1 ]
 then
 	echo;
-	echo "# Command syntax is : 'sh FASTQ_to_FASTA.sh [FASTQ seq file] > output.fasta'";
+	echo "# Command syntax is : 'bash FASTQ_to_FASTA.sh [FASTQ seq file] > output.fasta'";
 	echo "# ";
 	echo "#        [FASTQ seq file] : DNA sequence data in FASTQ format.";
 	echo "# ";

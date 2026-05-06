@@ -1,7 +1,7 @@
 ##---------------------------------------------------------------------------------------------
 ## Count subseq : counts the number of times a sequence string is found in a file.
 ##---------------------------------------------------------------------------------------------
-# Called like : "sh FASTA_count_subseq.sh [string] [file.fa]"
+# Called like : "bash FASTA_count_subseq.sh [string] [file.fa]"
 
 # If no data file option is given, describe script purpose and input.
 if [ -z $1 ]
