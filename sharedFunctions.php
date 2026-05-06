@@ -20,8 +20,18 @@ function getUserQuota($userName) {
 
 // YMAP logging function.
 function log_stuff($user,$project,$hapmap,$genome,$filename,$message) {
+	// find main Ymap directory, by removing possible ymap subdirectories from path of calling script.
+	$filePath = getcwd();
+	$filePath = str_replace("/scripts_genomes_enhanced_annotations","",$filePath);
+	$filePath = str_replace("/scripts_genomes","",$filePath);
+	$filePath = str_replace("/scripts_seqModules","",$filePath);
+	$filePath = str_replace("/scripts_SnpCghArray","",$filePath);
+	$filePath = str_replace("/scripts_WGseq","",$filePath);
+	$filePath = str_replace("/scripts_hapmaps","",$filePath);
+	$filePath = str_replace("/scripts_ddRADseq","",$filePath);
+
 	// define log file.
-	$log_file = $base_dir."/logs/".date('Y-m-d')."_activity.log";
+	$log_file = $filePath."/logs/".date('Y-m-d')."_activity.log";
 
 	// check if log file exists, create if not.
 	if (!file_exists($log_file)) {
@@ -55,8 +65,18 @@ function log_stuff($user,$project,$hapmap,$genome,$filename,$message) {
 
 // YMAP Queue functions.
 function queue_start($user,$project,$genome,$hapmap) {
+	// find main Ymap directory, by removing possible ymap subdirectories from path of calling script.
+	$filePath = getcwd();
+	$filePath = str_replace("/scripts_genomes_enhanced_annotations","",$filePath);
+	$filePath = str_replace("/scripts_genomes","",$filePath);
+	$filePath = str_replace("/scripts_seqModules","",$filePath);
+	$filePath = str_replace("/scripts_SnpCghArray","",$filePath);
+	$filePath = str_replace("/scripts_WGseq","",$filePath);
+	$filePath = str_replace("/scripts_hapmaps","",$filePath);
+	$filePath = str_replace("/scripts_ddRADseq","",$filePath);
+
 	// define log file.
-	$log_file = $base_dir."/queue/".date('Y-m-d')."_queue.log";
+	$log_file = $filePath."/queue/".date('Y-m-d')."_queue.log";
 
 	// check if log file exists, create if not.
 	if (!file_exists($log_file)) {
@@ -76,7 +96,17 @@ function queue_start($user,$project,$genome,$hapmap) {
 	file_put_contents($log_file, $line . PHP_EOL, FILE_APPEND);
 }
 function queue_end($user,$project,$genome,$hapmap) {
-	$queue_dir   = $base_diur."/queue/";
+	// find main Ymap directory, by removing possible ymap subdirectories from path of calling script.
+	$filePath = getcwd();
+	$filePath = str_replace("/scripts_genomes_enhanced_annotations","",$filePath);
+	$filePath = str_replace("/scripts_genomes","",$filePath);
+	$filePath = str_replace("/scripts_seqModules","",$filePath);
+	$filePath = str_replace("/scripts_SnpCghArray","",$filePath);
+	$filePath = str_replace("/scripts_WGseq","",$filePath);
+	$filePath = str_replace("/scripts_hapmaps","",$filePath);
+	$filePath = str_replace("/scripts_ddRADseq","",$filePath);
+
+	$queue_dir   = $filePath."/queue/";
 	$queue_files = array_slice(scandir($queue_dir), 2);
 
 	foreach ($queue_files as $key1 => $queue_file) {
