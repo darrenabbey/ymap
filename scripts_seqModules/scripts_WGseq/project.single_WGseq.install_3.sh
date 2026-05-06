@@ -244,6 +244,10 @@ echo $readDepthAverageFound" (Found read depth)" >> $projectDirectory"readStats.
 percentageMapped1=$(echo "scale=6; ($readDepthAverageFound / $readDepthAverageExpected)*100" | bc);
 percentageMapped2=$(echo "scale=3; $percentageMapped1 / 1" | bc);
 echo $percentageMapped2" (Mapped read percentage)">> $projectDirectory"readStats.txt";
+if [ "$percentageMapped2" -le "50" ]
+then
+	echo "%"$percentageMapped2" reads mapped.">> $projectDirectory"warning.txt";
+fi
 
 
 if [ $hapmapInUse = 1 ]
