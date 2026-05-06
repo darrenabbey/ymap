@@ -888,9 +888,10 @@ for chr = 1:num_chrs
 		end;
 	end;
 end;
+max_SNP_count = max(SNP_count_all);
 SNP_histogram_fig = figure(3);
 figure(SNP_histogram_fig);
-hist(SNP_count_all, 10, 1, "facecolor", "g");
+hist(SNP_count_all, max_SNP_count, "facecolor", "g");
 saveas(SNP_histogram_fig,[projectDir 'fig.SNP-histogram.' figVer 'eps'], 'epsc');
 saveas(SNP_histogram_fig,[projectDir 'fig.SNP-histogram.' figVer 'png'], 'png');
 delete(SNP_histogram_fig);
