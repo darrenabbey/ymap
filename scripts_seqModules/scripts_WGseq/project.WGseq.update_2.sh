@@ -2,6 +2,7 @@
 #
 # project.WGseq.update_2.sh
 #
+set -e
 ## All created files will have permission 760
 umask 007;
 
@@ -33,6 +34,11 @@ projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 # Setup process_log.txt file.
 logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
+
+
+## Error handling in case something crashes.
+trap 'sh queue_end.sh $user $project $main_dir $logName "Something went wrong. project.WGseq.update_2.sh:$LINENO"; echo "Something went wrong. project.WGseq.update_2.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+
 
 echo "#.............................................................................." >> $logName;
 echo "Running 'scripts_seqModules/scripts_WGseq/project.WGseq.update_2.sh'" >> $logName;
@@ -147,7 +153,7 @@ then
 else
 	echo "Preprocessing CNVs." >> $condensedLog;
         echo "\tPreprocessing CNV data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
-        $python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.txt" 2>> $logName || { sh queue_end.sh $user $project $main_dir $logName "error: project.WGseq.update_2.sh:150"; echo "Something went wrong. project.WGseq.update_2.sh:150" > $projectDirectory"error.txt"; exit 1; };
+        $python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.txt" 2>> $logName;
         echo "\tpre-processing complete." >> $logName;
 
         chmod 774 $projectDirectory"preprocessed_CNVs.txt";
@@ -159,7 +165,7 @@ else
 	echo "Preprocessing SNPs." >> $condensedLog;
         echo "\tPreprocessing SNP data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 
-        $python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" $genome $genomeUser $project $user $project $user $main_dir $logName LOH > $projectDirectory"preprocessed_SNPs.txt" 2>> $logName || { sh queue_end.sh $user $project $main_dir $logName "error: project.WGseq.update_2.sh:162"; echo "Something went wrong. project.WGseq.update_2.sh:162" > $projectDirectory"error.txt"; exit 1; };
+        $python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" $genome $genomeUser $project $user $project $user $main_dir $logName LOH > $projectDirectory"preprocessed_SNPs.txt" 2>> $logName;
         echo "\tpre-processing complete." >> $logName;
 
         chmod 774 $projectDirectory"preprocessed_SNPs.txt";
@@ -201,7 +207,7 @@ echo "\t|\tend" >> $logName;
 ###
 echo "\tCalling OCTAVE." >> $logName;
 cd $projectDirectory;
-$octave_exec $outputName || { sh queue_end.sh $user $project $main_dir $logName "error: project.WGseq.update_2.sh:204"; echo "Something went wrong. project.WGseq.update_2.sh:204" > $projectDirectory"error.txt"; exit 1; };
+$octave_exec $outputName;
 cd $script_dir;
 echo "\tOCTAVE log from CNV analysis." >> $logName;
 sed 's/^/\t|/;' $projectDirectory"octave.CNV_and_GCbias.log" >> $logName;
@@ -248,7 +254,7 @@ then
 	echo "== SNP analysis ================================================================================";
 	echo "================================================================================================";
 	cd $projectDirectory;
-	$octave_exec $outputName || { sh queue_end.sh $user $project $main_dir $logName "error: project.WGseq.update_2.sh:230"; echo "Something went wrong. project.WGseq.update_2.sh:230" > $projectDirectory"error.txt"; exit 1; };
+	$octave_exec $outputName;
 	cd $script_dir;
 	echo "\tOCTAVE log from SNP analysis." >> $logName;
 	sed 's/^/\t|/;' $projectDirectory"octave.SNP_analysis.log" >> $logName;
@@ -286,7 +292,7 @@ then
 	echo "== Final figures ===============================================================================";
 	echo "================================================================================================";
 	cd $projectDirectory;
-	$octave_exec $outputName || { sh queue_end.sh $user $project $main_dir $logName "error: project.WGseq.update_2.sh:289"; echo "Something went wrong. project.WGseq.update_2.sh:289" > $projectDirectory"error.txt"; exit 1; };
+	$octave_exec $outputName;
 	cd $script_dir;
 	echo "\tOCTAVE log from final figure generation." >> $logName;
 	sed 's/^/\t|/;' $projectDirectory"octave.final_figs.log" >> $logName;
@@ -331,7 +337,7 @@ else
 	echo "== SNP analysis ================================================================================";
 	echo "================================================================================================";
 	cd $projectDirectory;
-	$octave_exec $outputName || { sh queue_end.sh $user $project $main_dir $logName "error: project.WGseq.update_2.sh:334"; echo "Something went wrong. project.WGseq.update_2.sh:334" > $projectDirectory"error.txt"; exit 1; };
+	$octave_exec $outputName;
 	cd $script_dir;
 	echo "\t\tOCTAVE log from SNP analysis." >> $logName;
 	sed 's/^/\t\t\t|/;' $projectDirectory"octave.SNP_analysis.log" >> $logName;
@@ -369,7 +375,7 @@ else
 	echo "== CNV/SNP/LOH figure generation ===============================================================";
 	echo "================================================================================================";
 	cd $projectDirectory;
-	$octave_exec $outputName || { sh queue_end.sh $user $project $main_dir $logName "error: project.WGseq.update_2.sh:372"; echo "Something went wrong. project.WGseq.update_2.sh:372" > $projectDirectory"error.txt"; exit 1; };
+	$octave_exec $outputName;
 	cd $script_dir;
 	echo "\t\tOCTAVE log from final figure generation." >> $logName;
 	sed 's/^/\t\t|/;' $projectDirectory"octave.final_figs.log" >> $logName;
