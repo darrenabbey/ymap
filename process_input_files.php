@@ -353,7 +353,7 @@ if ($ext_new == "fastq") {
 	fwrite($logOutput, "\t\t| working directory : ".$newDir."/temp\n");
 	fwrite($logOutput, "\t\t| data file         : ".$newDir."/".$name_new."\n");
 	fwrite($logOutput, "\t\t|\n");
-	$null = shell_exec("sh ../../../../scripts_seqModules/FASTQ_to_Illumina.sh ".$newDir."/".$name_new." ".$newDir."/temp");
+	$null = shell_exec("bash ../../../../scripts_seqModules/FASTQ_to_Illumina.sh ".$newDir."/".$name_new." ".$newDir."/temp");
 
 	// delete original file.
 	unlink($newDir."/".$name_new);
@@ -375,7 +375,7 @@ if ($ext_new == "fastq") {
 	fwrite($logOutput, "\t\t| working directory : ".$newDir."/temp\n");
 	fwrite($logOutput, "\t\t| data file         : ".$newDir."/".$name_new."\n");
 	fwrite($logOutput, "\t\t|\n");
-	$null = shell_exec("sh ../../../../scripts_seqModules/FASTA_to_Illumina.sh ".$newDir."/".$name_new." ".$newDir."/temp");
+	$null = shell_exec("bash ../../../../scripts_seqModules/FASTA_to_Illumina.sh ".$newDir."/".$name_new." ".$newDir."/temp");
 
 	// delete original file.
 	unlink($newDir."/".$name_new);
@@ -394,7 +394,7 @@ if ($ext_new == "fastq") {
 
 	// Convert SAM file to FASTQ files.
 	fwrite($condensedLogOutput, "Decompressing SAM/BAM file to FASTQ.\n");
-	$null       = shell_exec("sh scripts_seqModules/sam2fastq.sh ".$user." ".$project." ".$name_new);
+	$null       = shell_exec("bash scripts_seqModules/sam2fastq.sh ".$user." ".$project." ".$name_new);
 
 	// Place resulting FASTQ file names into datafiles.txt.
 	fwrite($output, "data_r1.fastq\n");
@@ -409,9 +409,9 @@ if ($ext_new == "fastq") {
 } elseif ($ext_new == "tdt") {
 	fwrite($logOutput, "\t\t| This is a txt file.\n");
 	fwrite($logOutput, "\t\t|\tCurrentDir = ".getcwd()."\n");
-	fwrite($logOutput, "\t\t|\tshell_exec string = 'sh ../Gareth2pileups.sh ".$user." ".$project." ".$name_new."'\n");
+	fwrite($logOutput, "\t\t|\tshell_exec string = 'bash ../Gareth2pileups.sh ".$user." ".$project." ".$name_new."'\n");
 	$currentDir = getcwd();
-	$null       = shell_exec("sh ../Gareth2pileups.sh ".$user." ".$project." ".$name_new);
+	$null       = shell_exec("bash ../Gareth2pileups.sh ".$user." ".$project." ".$name_new);
 	// sam2fastq.sh user project main_dir inputFile;
 	fwrite($output, "null1\n");
 	fwrite($output, "null2\n");
