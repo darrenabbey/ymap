@@ -81,7 +81,7 @@ function queue_start($user,$project,$genome,$hapmap,$message) {
 	// check if log file exists, create if not.
 	if (!file_exists($log_file)) {
 		$myfile = fopen($log_file, "w");
-		fwrite($myfile, "Initiate queue file: ".date('Y-m-d H:i:s')."\n");
+		fwrite($myfile, "");
 		fclose($myfile);
 		chmod($log_file, 0774);
 	}
@@ -109,9 +109,8 @@ function queue_end($user,$project,$genome,$hapmap,$message) {
 
 	$queue_dir   = $filePath."/queue/";
 	$queue_files = array_slice(scandir($queue_dir), 2);
-
 	foreach ($queue_files as $key1 => $queue_file) {
-		if ((is_file($queue_file)) && (str_contains($queue_file,".log"))) {
+		if (str_contains($queue_file,".log")) {
 			$queue_contents = trim(file_get_contents($queue_dir.$queue_file));
 			if ($queue_contents) {
 				// Queue contents example:
@@ -121,22 +120,23 @@ function queue_end($user,$project,$genome,$hapmap,$message) {
 				//	2026-05-05 19:06:21 - user:darrenFY - project:TJ4773_R1_clean - start
 				$outline = "";
 				$queue_lines = preg_split("/\R/", $queue_contents);
-				print_r($queue_lines);
 				foreach($queue_lines as $key2 => $line){
 					$line_parts = explode(" - ",$line);
-					if ($line_parts[1] == "user:".$user) {
-						if ($line_parts[2] == "project:".$project) {
-							$outline = date('Y-m-d H:i:s');
-							$outline = $outline.' - user:'.$user;
-							$outline = $outline.' - project:'.$project;
-						} else if ($line_parts[2] == "genome:".$genome) {
-							$outline = date('Y-m-d H:i:s');
-							$outline = $outline.' - user:'.$user;
-							$outline = $outline.' - genome:'.$genome;
-						} else if ($line_parts[2] == "hapmap:".$hapmap) {
-							$outline = date('Y-m-d H:i:s');
-							$outline = $outline.' - user:'.$user;
-							$outline = $outline.' - hapmap:'.$hapmap;
+					if (sizeof($line_parts) > 0) {
+						if ($line_parts[1] == "user:".$user) {
+							if ($line_parts[2] == "project:".$project) {
+								$outline = date('Y-m-d H:i:s');
+								$outline = $outline.' - user:'.$user;
+								$outline = $outline.' - project:'.$project;
+							} else if ($line_parts[2] == "genome:".$genome) {
+								$outline = date('Y-m-d H:i:s');
+								$outline = $outline.' - user:'.$user;
+								$outline = $outline.' - genome:'.$genome;
+							} else if ($line_parts[2] == "hapmap:".$hapmap) {
+								$outline = date('Y-m-d H:i:s');
+								$outline = $outline.' - user:'.$user;
+								$outline = $outline.' - hapmap:'.$hapmap;
+							}
 						}
 					}
 				}
