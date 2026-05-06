@@ -35,7 +35,8 @@
 </HEAD>
 <?php
 	require_once '../../constants.php';
-	include_once '../../process_input_files.php';
+	require_once '../../process_input_files.php';
+	require_once '../../sharedFunctions.php';
 
 // Deal with passed variables.
 	$fileName = $argv[1];
@@ -45,6 +46,9 @@
 // Initialize log file.
 	$logOutputName = "../../users/".$user."/projects/".$project."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'a');
+
+	queue_start($user,$project,"","","from: project.single_WGseq.install_2.php");
+
 	fwrite($logOutput, "#..............................................................................\n");
 	fwrite($logOutput, "Running 'scripts_seqModules/scripts_WGseq/project.single_WGseq.install_2.php'.\n");
 	fwrite($logOutput, "Variables passed via command-line from 'scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php' :\n");

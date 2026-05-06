@@ -7,11 +7,15 @@
 
 // current directory
 	require_once '../constants.php';
-	include_once 'process_input_files.genome.php';
+	require_once 'process_input_files.genome.php';
+	require_once '../sharedFunctions.php';
 
 // Initialize log files.
 	$logOutputName = "../users/".$user."/genomes/".$genome."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'w');
+
+	queue_start($user,"",$genome,"","from: genome.install_1.php");
+
 	fwrite($logOutput, "*========================================================================*\n");
 	fwrite($logOutput, "| Log file initalized in 'scripts_genomes/genome.install_1.php'.         |\n");
 	fwrite($logOutput, "*------------------------------------------------------------------------*\n");
