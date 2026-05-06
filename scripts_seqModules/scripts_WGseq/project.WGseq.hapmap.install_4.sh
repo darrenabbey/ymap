@@ -274,3 +274,16 @@ sed 's/^/\t\t|/;' $projectDirectory"octave.final_figs.log" >> $logName;
 chmod 774 $projectDirectory*;
 echo "running: " $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir >> $logName;
 sh $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir 2>> $logName;
+
+
+##==============================================================================
+## Add project end to queue log file.
+##------------------------------------------------------------------------------
+outputName=$projectDirectory"finalize.php";
+echo "<?php"; > $outputName;
+echo "require_once '"$main_dir"constants.php';"; >> $outputName;
+echo "require_once '"$main_dir"sharedFunctions.php';"; >> $outputName;
+echo "queue_end('"$user"','"$project"','','');"; >> $outputName;
+echo "?>"; >> $outputName;
+php $outputName;
+rm $outputName;

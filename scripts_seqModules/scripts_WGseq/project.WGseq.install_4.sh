@@ -223,7 +223,6 @@ echo "\tGenerating OCTAVE script to perform SNP analysis of dataset." >> $logNam
 outputName=$projectDirectory"processing3.m";
 echo "\toutputName = "$outputName >> $logName;
 
-##echo "function [] = processing3()" > $outputName;
 echo "function processing3" > $outputName;
 echo "\tpkg load matgeom;" >> $outputName;
 echo "\tdiary('"$projectDirectory"octave.SNP_analysis.log');" >> $outputName;
@@ -232,7 +231,6 @@ echo "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$proje
 echo "end" >> $outputName;
 chmod 774 $outputName;
 
-##echo "\t|\tfunction [] = processing3()" >> $logName;
 echo "\t|\tfunction processing3" >> $logName;
 echo "\t|\t    pkg load matgeom;" >> $logName;
 echo "\t|\t    diary('"$projectDirectory"octave.SNP_analysis.log');" >> $logName;
@@ -263,7 +261,6 @@ echo "\tGenerating OCTAVE script to generate combined CNV and SNP analysis figur
 outputName=$projectDirectory"processing4.m";
 echo "\toutputName = "$outputName >> $logName;
 
-##echo "function [] = processing4()" > $outputName;
 echo "function processing4" > $outputName;
 echo "\tpkg load matgeom;" >> $outputName;
 echo "\tdiary('"$projectDirectory"octave.final_figs.log');" >> $outputName;
@@ -272,7 +269,6 @@ echo "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$p
 echo "end" >> $outputName;
 chmod 774 $outputName;
 
-##echo "\t|\tfunction [] = processing4()" >> $logName;
 echo "\t|\tfunction processing4" >> $logName;
 echo "\t|\t    pkg load matgeom;" >> $logName;
 echo "\t|\t    diary('"$projectDirectory"octave.final_figs.log');" >> $logName;
@@ -298,3 +294,16 @@ echo "finished all processing, moving to Cleaning up intermediate WGseq files" >
 chmod 774 $projectDirectory*;
 echo "running: " $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir >> $logName;
 sh $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir 2>> $logName;
+
+
+##==============================================================================
+## Add project end to queue log file.
+##------------------------------------------------------------------------------
+outputName=$projectDirectory"finalize.php";
+echo "<?php"; > $outputName;
+echo "require_once '"$main_dir"constants.php';"; >> $outputName;
+echo "require_once '"$main_dir"sharedFunctions.php';"; >> $outputName;
+echo "queue_end('"$user"','"$project"','','');"; >> $outputName;
+echo "?>"; >> $outputName;
+php $outputName;
+rm $outputName;

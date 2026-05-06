@@ -274,7 +274,13 @@ sh $main_dir"scripts_seqModules/scripts_ddRADseq/cleaning_ddRADseq.sh" $user $pr
 
 
 ##==============================================================================
-## Adjust permissions of output png/eps files so apache2 can serve them.
+## Add project end to queue log file.
 ##------------------------------------------------------------------------------
-#chmod 0666 $main_dir"users/"$user"/projects/"$project"/*.png";
-#chmod 0666 $main_dir"users/"$user"/projects/"$project"/*.eps";
+outputName=$projectDirectory"finalize.php";
+echo "<?php"; > $outputName;
+echo "require_once '"$main_dir"constants.php';"; >> $outputName;
+echo "require_once '"$main_dir"sharedFunctions.php';"; >> $outputName;
+echo "queue_end('"$user"','"$project"','','');"; >> $outputName;
+echo "?>"; >> $outputName;
+php $outputName;
+rm $outputName;

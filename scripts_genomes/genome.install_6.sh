@@ -367,3 +367,16 @@ echo "\n\t======================================================================
 sh $main_dir"scripts_genomes/cleaning_genome.sh" $user $genome $main_dir 2>> $logName;
 
 echo "\n\t============================================================================================== 9" >> $logName;
+
+
+##==============================================================================
+## Add project end to queue log file.
+##------------------------------------------------------------------------------
+outputName=$projectDirectory"finalize.php";
+echo "<?php"; > $outputName;
+echo "require_once '"$main_dir"constants.php';"; >> $outputName;
+echo "require_once '"$main_dir"sharedFunctions.php';"; >> $outputName;
+echo "queue_end('"$user"','','"$genome"','');"; >> $outputName;
+echo "?>"; >> $outputName;
+php $outputName;
+rm $outputName;
