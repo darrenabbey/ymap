@@ -24,6 +24,7 @@
 
 	if (is_dir($dir) and !file_exists($dir2))  {
 		// Requested project dir does exist for logged in user: Delete installed project.
+		queue_end($user,$project,"","","User deleted project.");
 		rrmdir($dir);
 		echo "COMPLETE";
 		log_stuff($user,$project,"","","","project:DELETE success");
