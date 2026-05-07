@@ -145,7 +145,7 @@
 			$count_bulk_working = sizeof($projects_start_list);
 
 			// 5. Fire off YMAP processes.
-			if (($count_bulk_working <= $MAX_BULK_PARALLEL) && (sizeof($projects_init_list) >= 1)) {
+			if (($count_bulk_working < $MAX_BULK_PARALLEL) && (sizeof($projects_init_list) >= 1)) {
 				//=============================
 				// Call YMAP processes.
 				//-----------------------------
