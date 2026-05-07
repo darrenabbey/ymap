@@ -67,7 +67,7 @@ function log_stuff($user,$project,$hapmap,$genome,$filename,$message) {
 //========================================================================================
 // YMAP Queue functions.
 //----------------------------------------------------------------------------------------
-unction queue_init($user,$project,$genome,$hapmap,$message) {
+function queue_init($user,$project,$genome,$hapmap,$message) {
 	// find main Ymap directory, by removing possible ymap subdirectories from path of calling script.
 	$filePath = getcwd();
 	$filePath = str_replace("/scripts_genomes_enhanced_annotations","",$filePath);
