@@ -16,6 +16,10 @@ logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
 
 
+## Error handling in case something crashes.
+trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. cleaning_WGseq.sh:$LINENO"; echo -e "Something went wrong. cleaning_WGseq.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+
+
 ##==============================================================================
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------

@@ -282,7 +282,7 @@ then
 	fi
 fi
 
-chmod 774 $projectDirectory"*";
+chmod 774 $projectDirectory* || true;
 
 echo -e "Pileup processing is complete." >> $condensedLog;
 echo -e "\nPileup processing complete.\n" >> $logName;
