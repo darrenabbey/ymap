@@ -27,7 +27,9 @@ $ext = strtolower($ext);
 if (($ext == "tdt") || ($ext == "sam") || ($ext == "bam") || ($ext == "fasta") || ($ext == "fna") || ($ext == "ffn") || ($ext == "faa") || ($ext == "frn") || ($ext == "fa") || ($ext == "fastq") || ($ext == "fq") || ($ext == "zip") || ($ext == "gz")) {
 	fwrite($logOutput, "\t\t| Compatible file format uploaded.\n");
 } else {
-	unlink($projectPath.$name);
+	if (file_exists($projectPath.$name)) {
+		unlink($projectPath.$name);
+	}
 	fwrite($logOutput, "\t\t| Incompatible file format uploaded!!!\n");
 }
 
@@ -125,7 +127,7 @@ if ($ext == "zip") {
 	fwrite($logOutput, "\t\t| This is a GZ archive of : ".$name."\n");
 
 	// What is the file count in the archive?
-	$fileCount          = shell_exec("tar -tzf ".$projectPath.$name." | wc -l");
+	$fileCount          = shell_exec("tar -tzf ".$projectPath.$name." | wc -l 2> /dev/null");
 	if ($fileCount > 1) {
 		fwrite($logOutput, "\t\t| Multiple files in .TAR.GZ archive, only examining first file.\n");
 		$errorText = $errorText."Multiple files in .TAR.GZ archive, only examining first file. ";
@@ -255,6 +257,7 @@ if ($ext_new == "fastq") {
 		$totalReadLength = (int)explode(" ",trim(shell_exec("wc -c ".$projectPath.$name_new.".temp")))[0] - $totalReadCount;	// Get total sequence length.
 		unlink($projectPath.$name_new.".temp");											// Delete temp file.
 
+		fwrite($logOutput, "\t\t| Preparing readstats.txt file.\n");
 		if (!file_exists($projectPath."readStats.txt")) {
 			// Make a new readStats.txt file with read length stats.
 			$readStatsFile = fopen($projectPath."readStats.txt", 'w');

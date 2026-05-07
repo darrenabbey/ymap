@@ -180,7 +180,7 @@
 							$filename_lines  = preg_split("/\r\n|\n|\r/", $filename_string);
 							if (sizeof($filename_lines) == 3) {
 								$filename1 = $filename_lines[0];
-								$filename2 = $filename_lines[2];
+								$filename2 = $filename_lines[1];
 								$fileName  = $filename1.",".$filename2;
 							} else {
 								$fileName  = $filename_lines[0];

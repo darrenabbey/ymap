@@ -66,7 +66,7 @@
 	fwrite($logOutput, "Log file initialized.\n");
 	fwrite($logOutput, "#..............................................................................\n");
 	fwrite($logOutput, "Running 'scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php'.\n");
-	fwrite($logOutput, "Variables passed :\n");
+	fwrite($logOutput, "Variables passed via POST :\n");
 	fwrite($logOutput, "\tfileName = '".$fileName."'\n");
 	fwrite($logOutput, "\tuser     = '".$user."'\n");
 	fwrite($logOutput, "\tproject  = '".$project."'\n");
@@ -89,13 +89,11 @@
 
 	// Installation continues with next php script... strings recieved as POST are forwarded to next script.
 	fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_WGseq/project.single_WGseq.install_2.php'\n");
-	fwrite($logOutput, "        file    = ".$fileName."\n");
-	fwrite($logOutput, "        user    = ".$user."\n");
-	fwrite($logOutput, "        project = ".$project."\n");
  	$system_call_string = "php project.single_WGseq.install_2.php ".$fileName." ".$user." ".$project." > /dev/null &";
 	system($system_call_string);
 
 	fwrite($logOutput, "Loading 'project.working_server.php' into iframe.\n");
+	fwrite($logOutput, getcwd()."\n");
 	fclose($logOutput);
 ?>
 <font size="2" color="red">Upload complete; processing...</font><br>
@@ -108,10 +106,15 @@
 	var autoSubmitForm = document.createElement("form");
 		autoSubmitForm.setAttribute("method","post");
 		autoSubmitForm.setAttribute("action","../../project.working_server.php");
-	var input2 = document.createElement("input");
-		input2.setAttribute("type","hidden");
-		input2.setAttribute("name","key");
-		input2.setAttribute("value",key);
+	var input1 = document.createElement("input");
+		input1.setAttribute("type","hidden");
+		input1.setAttribute("name","key");
+		input1.setAttribute("value",key);
+		autoSubmitForm.appendChild(input1);
+        var input2 = document.createElement("input");
+                input2.setAttribute("type","hidden");
+                input2.setAttribute("name","user");
+                input2.setAttribute("value",user);
 		autoSubmitForm.appendChild(input2);
 	var input3 = document.createElement("input");
 		input3.setAttribute("type","hidden");

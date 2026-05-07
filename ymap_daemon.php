@@ -41,10 +41,11 @@
 			// YOUR TASK HERE (e.g., process data, monitor files)
 			// --------------------------------------------------
 			// 0. Initialize projects list.
+			$projects_init_list  = [];
 			$projects_start_list = [];
 			$projects_end_list   = [];
 
-			// 1. Grab start and end project entries from queue logs.
+			// 1. Grab init/start/end project entries from queue logs.
 			$queue_dir   = $base_dir."/queue/";
 			$queue_files = array_slice(scandir($queue_dir), 2);
 			foreach ($queue_files as $key1 => $queue_file) {
@@ -71,7 +72,9 @@
 								$project_entry[] = $user;
 								$project_entry[] = $project;
 								$project_entry[] = $status;
-								if ($status == "start") {
+								if ($status == "init") {
+									$projects_init_list[] = $project_entry;
+								} else if ($status == "start") {
 									$projects_start_list[] = $project_entry;
 								} else if ($status == "end") {
 									$projects_end_list[] = $project_entry;
@@ -81,12 +84,13 @@
 					}
 				}
 			}
+			//print_r($projects_init_list);
 			//print_r($projects_start_list);
 			//print_r($projects_end_list);
 
-			// 2. Drop ended project entries from start queue list.
+			// 2. Drop end entries from start queue list.
 			foreach ($projects_end_list as $key1 => $project_end_entry) {
-				$count = sizeof($projects_start_list);
+				$count = sizeof($projects_init_list);
 				foreach (array_reverse($projects_start_list) as $key2 => $project_start_entry) {
 					$end_user      = $project_end_entry[1];
 					$end_project   = $project_end_entry[2];
@@ -97,9 +101,37 @@
 					}
 				}
 			}
-			//print_r($projects_start_list);
+			$count_bulk_working = sizeof($projects_start_list);
 
-			// 3. Drop active projects without a 'bulk.txt' file.
+			// 3. Drop start/end entries from init queue list.
+			foreach ($projects_start_list as $key1 => $project_start_entry) {
+				$count = sizeof($projects_init_list);
+				foreach (array_reverse($projects_init_list) as $key2 => $project_init_entry) {
+					$start_user    = $project_start_entry[1];
+					$start_project = $project_start_entry[2];
+					$init_user     = $project_init_entry[1];
+					$init_project  = $project_init_entry[2];
+					if (($start_user == $init_user) && ($start_project == $init_project)) {
+						array_splice($projects_init_list, $count-$key2-1, 1);
+					}
+				}
+			}
+			foreach ($projects_end_list as $key1 => $project_end_entry) {
+				$count = sizeof($projects_init_list);
+				foreach (array_reverse($projects_init_list) as $key2 => $project_init_entry) {
+					$end_user     = $project_end_entry[1];
+					$end_project  = $project_end_entry[2];
+					$init_user    = $project_init_entry[1];
+					$init_project = $project_init_entry[2];
+					if (($end_user == $init_user) && ($end_project == $init_project)) {
+						array_splice($projects_init_list, $count-$key2-1, 1);
+					}
+				}
+			}
+			$count_bulk_initalized = sizeof($projects_init_list);
+			//print_r($projects_init_list);
+
+			// 4. Drop active projects without a 'bulk.txt' file.
 			$count = sizeof($projects_start_list);
 			foreach (array_reverse($projects_start_list) as $key1 => $project_entry) {
 				$user    = $project_entry[1];
@@ -109,12 +141,49 @@
 					array_splice($projects_start_list, $count-$key1-1, 1);
 				}
 			}
-			print_r($projects_start_list);
+			print_r($projects_init_list);
+			$count_bulk_working = sizeof($projects_start_list);
 
-			//// Log date/time of active daemon.
-			//$timestamp = date('Y-m-d H:i:s');
-			//$message = "[{$timestamp}] Daemon is running. Current memory usage: " . memory_get_usage() . " bytes\n";
-			//error_log($message);
+			// 5. Fire off YMAP processes.
+			if (($count_bulk_working <= $MAX_BULK_PARALLEL) && (sizeof($projects_init_list) >= 1)) {
+				//=============================
+				// Call YMAP processes.
+				//-----------------------------
+				$user    = $projects_init_list[0][1];
+				$project = $projects_init_list[0][2];
+
+				$project_dir   = $base_dir."/users/".$user."/projects/".$project."/";
+
+				// Construct filename string from 'datafiles.txt' file.
+				$filename_string = trim(file_get_contents($project_dir."datafiles.txt"));
+				$filename_lines  = preg_split("/\r\n|\n|\r/", $filename_string);
+
+				if (sizeof($filename_lines) == 2) {
+					$filename1 = $filename_lines[0];
+					$filename2 = $filename_lines[1];
+					$fileName  = $filename1.",".$filename2;
+				} else {
+					$fileName  = $filename_lines[0];
+				}
+
+				// Construct dataformat string from 'dataFormat.txt' file.
+				$dataformat_string = file_get_contents($project_dir."/dataFormat.txt");
+				$dataformat_lines  = preg_split("/:/", $dataformat_string);
+
+				if ((int)$dataformat_lines[1] == 0) {
+					$dataFormat = "WGseq_single";
+				} else {
+					$dataFormat = "WGseq_paired";
+				}
+				project_process($user,$project,$dataFormat,$fileName);
+
+				$count_bulk_working += 1;
+
+				log_stuff($user,$project,"","","","YMAP_daemon:SUCCESS Dataset processing initiated.");
+
+				// Pause after initiating processing of a dataset, to avoid n datasets all piling up at once when done.
+				sleep(15);
+			}
 
 			// Sleep for 10 seconds to keep daemon from running continuously.
 			sleep(10);
@@ -131,12 +200,13 @@
 
 
 	// Function to initiate and release a YMAP thread to process data for a project.
-	function project_process($user,$project,$dataFormat,$fileName,$key) {
+	function project_process($user,$project,$dataFormat,$fileName) {
 		// Set session variables.
 		$_SESSION['user']       = $user;
 		$_SESSION['fileName']   = $fileName;
 		$_SESSION['project']    = $project;
-		$_SESSION['key']        = $key;
+		$key = "1";
+		$_SESSION['key']        = $key;		// to be removed later once everything is processed through queue.
 
 		// Set string to pass via commandline.
 		$command_string  = $user." ".$fileName." ".$project." ".$key;

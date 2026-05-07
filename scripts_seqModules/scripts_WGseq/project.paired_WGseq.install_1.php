@@ -106,11 +106,11 @@
 	var autoSubmitForm = document.createElement("form");
 		autoSubmitForm.setAttribute("method","post");
 		autoSubmitForm.setAttribute("action","../../project.working_server.php");
-	var input2 = document.createElement("input");
-		input2.setAttribute("type","hidden");
-		input2.setAttribute("name","key");
-		input2.setAttribute("value",key);
-		autoSubmitForm.appendChild(input2);
+	var input1 = document.createElement("input");
+		input1.setAttribute("type","hidden");
+		input1.setAttribute("name","key");
+		input1.setAttribute("value",key);
+		autoSubmitForm.appendChild(input1);
 	var input2 = document.createElement("input");
 		input2.setAttribute("type","hidden");
 		input2.setAttribute("name","user");
@@ -125,6 +125,7 @@
 		input4.setAttribute("type","hidden");
 		input4.setAttribute("name","status");
 		input4.setAttribute("value",status);
+	// append form to body to allow submit
 	document.body.appendChild(autoSubmitForm);
 	autoSubmitForm.submit();
 </script>

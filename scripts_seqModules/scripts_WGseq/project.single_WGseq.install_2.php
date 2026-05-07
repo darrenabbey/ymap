@@ -62,12 +62,11 @@
 	$condensedLogOutput     = fopen($condensedLogOutputName, 'a');
 //	fclose($condensedLogOutput);
 
-// Generate 'datafiles.txt' file containing: name of all data files.
 // Identify format of uploaded file and decompress as needed (*.ZIP; *.GZ).
 	$outputName = "../../users/".$user."/projects/".$project."/datafiles.txt";
 	$output     = fopen($outputName, 'w');
 	$fileNames  = explode(",", $fileName);
-	fwrite($logOutput, "\tGenerate 'datafiles.txt' and decompress uploaded archives.\n");
+	fwrite($logOutput, "\tGenerate 'datafiles.txt' and decompress uploaded archive.\n");
 	$paired     = 0;
 	foreach ($fileNames as $key=>$name) {
 		$projectPath = "../../users/".$user."/projects/".$project."/";
@@ -83,6 +82,7 @@
 		fwrite($logOutput, "\t\tPath      : '$projectPath'.\n");
 
 		// Generate 'upload_size.txt' file to contain the size of the uploaded file (irrespective of format) for display in "Manage Datasets" tab.
+
 		$output2Name    = $projectPath."upload_size_1.txt";
 		$output2        = fopen($output2Name, 'w');
 		$fileSizeString = filesize($projectPath.$name);

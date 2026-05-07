@@ -61,15 +61,18 @@
 	$condensedLogOutputName = "../../users/".$user."/projects/".$project."/condensed_log.txt";
 	$condensedLogOutput = fopen($condensedLogOutputName, 'a');
 
-// Generate 'datafiles.txt' file containing: name of all data files.
+
 // Identify format of uploaded file and decompress as needed (*.ZIP; *.GZ).
 	$outputName = "../../users/".$user."/projects/".$project."/datafiles.txt";
 	$output     = fopen($outputName, 'w');
-	$fileNames = explode(",", $fileName);
+	$fileNames  = explode(",", $fileName);
 	fwrite($logOutput, "\tGenerate 'datafiles.txt' and decompress uploaded archives.\n");
+
 	foreach ($fileNames as $key=>$name) {
 		$projectPath = "../../users/".$user."/projects/".$project."/";
 		$name        = str_replace("\\", ",", $name);
+
+
 		$ext         = strtolower(pathinfo($name, PATHINFO_EXTENSION));
 		$filename    = strtolower(pathinfo($name, PATHINFO_FILENAME));
 		fwrite($logOutput, "\tFile ".$key."\n");
@@ -97,13 +100,13 @@
 		}
 	}
 	fclose($output);
-	chmod($outputName,0774);
+	//chmod($outputName,0774);
 
-	// Trim the last "\n" character from 'datafiles.txt'.
-	$fh = fopen($outputName, 'r+');
-	$stat = fstat($fh);
-	ftruncate($fh, $stat['size']-1);
-	fclose($fh);
+//	// Trim the last "\n" character from 'datafiles.txt'.
+//	$fh = fopen($outputName, 'r+');
+//	$stat = fstat($fh);
+//	ftruncate($fh, $stat['size']-1);
+//	fclose($fh);
 	fwrite($logOutput, "Completed 'datafiles.txt' file.\n");
 
 	// Final install functions are in shell script.
