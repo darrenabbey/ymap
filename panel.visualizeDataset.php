@@ -369,6 +369,13 @@
 		echo "\n\n<script>\n";
 		echo "function openUserProjects() {\n";
 		foreach($projectFolders_complete as $key_=>$project) {
+			$warning_file    = "users/".$user."/projects/".$project."/warning.txt";
+			if (file_exists($warning_file)) {
+				$warning_string = trim(file_get_contents($warning_file));
+			} else {
+				$warning_string = "";
+			}
+
 			$nameFile        = "users/".$user."/projects/".$project."/name.txt";
 			$parent_file     = "users/".$user."/projects/".$project."/parent.txt";
 
@@ -391,7 +398,7 @@
 
 			$key = $key_ + $key_count3;
 			echo "\tdocument.getElementById('show_$key').checked = document.getElementById('showAllUser').checked;\n";
-			echo "\tparent.openProject('$user','$project','$key','$projectNameString','$colorString1','$colorString2','$parentString','$figVer','');\n\n";
+			echo "\tparent.openProject('$user','$project','$key','$projectNameString','$colorString1','$colorString2','$parentString','$figVer','$warning_string');\n\n";
 		}
 		echo "\twindow.top.hide_combined_fig_menu();\n";
 		echo "}\n";
