@@ -255,10 +255,27 @@ if ($ext_new == "fastq") {
 		$totalReadLength = (int)explode(" ",trim(shell_exec("wc -c ".$projectPath.$name_new.".temp")))[0] - $totalReadCount;	// Get total sequence length.
 		unlink($projectPath.$name_new.".temp");											// Delete temp file.
 
-		// Make a new text file with read length stats.
-		$readStatsFile = fopen($projectPath."readStats.txt", 'w');
-		fwrite($readStatsFile, $totalReadCount." (reads count)\n".$totalReadLength." (reads total length)\n");
-		fclose($readStatsFile);
+		if (!file_exists($projectPath."readStats.txt")) {
+			// Make a new readStats.txt file with read length stats.
+			$readStatsFile = fopen($projectPath."readStats.txt", 'w');
+			fwrite($readStatsFile, $totalReadCount." (reads count)\n".$totalReadLength." (reads total length)\n");
+			fclose($readStatsFile);
+		} else {
+			// Load existing totalReadCount and totalReadLength from readStats.txt file.
+			$oldStats_raw        = trim(file_get_contents($projectPath."readStats.txt"));
+			$oldStats_lines      = preg_split("/\R/", $oldStats_raw);
+			$totalReadCount_old  = (int)$oldStats_lines[0];
+			$totalReadLength_old = (int)$oldStats_lines[1];
+
+			// Add the new and old values.
+			$totalReadCount      = $totalReadCount  + $totalReadCount_old;
+			$totalReadLength     = $totalReadLength + $totalReadLength_old;
+
+			// Make a new readStats.txt file with new values.
+			$readStatsFile = fopen($projectPath."readStats.txt", 'w');
+			fwrite($readStatsFile, $totalReadCount." (reads count)\n".$totalReadLength." (reads total length)\n");
+			fclose($readStatsFile);
+		}
 
 		fwrite($logOutput, "\t\t| max read length = ".(string)$maxReadLength."\n");
 		if ($maxReadLength <= 500) {
@@ -446,6 +463,15 @@ if ($ext_new == "fastq") {
 	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: TDT file format errors.");
 	queue_end($user,$project,"","","File validation failed.");
 	exit;
+} elseif ($ext_new == "none4") {
+        fwrite($logOutput, "\t\t| The FASTQ file contains long-reads.\n");
+        $errorFile = fopen($projectPath."error.txt", 'w');
+        fwrite($errorFile, "FASTQ file with long reads, unable to process.");
+        fclose($errorFile);
+        chmod($errorFileName,0774);
+        log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTQ file has incompatible long-reads..");
+        queue_end($user,$project,"","","File validation failed.");
+        exit;
 } else {
 	fwrite($logOutput, "\t\t| This is an unknown file type.\n");
 	$errorFile = fopen($projectPath."error.txt", 'w');
