@@ -426,6 +426,7 @@ if ($ext_new == "fastq") {
 	fclose($errorFile);
 	chmod($errorFileName,0774);
 	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTQ not found in archive.");
+	queue_end($user,$project,"","","File validation failed.");
 	exit;
 } elseif ($ext_new == "none2") {
         fwrite($logOutput, "\t\t| The FASTQ file was not formated properly.\n");
@@ -434,6 +435,7 @@ if ($ext_new == "fastq") {
         fclose($errorFile);
         chmod($errorFileName,0774);
 	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTQ file format errors.");
+	queue_end($user,$project,"","","File validation failed.");
         exit;
 } elseif ($ext_new == "none3") {
 	fwrite($logOutput, "\t\t| The contents of this TDT file did not match expectations.\n");
@@ -442,6 +444,7 @@ if ($ext_new == "fastq") {
 	fclose($errorFile);
 	chmod($errorFileName,0774);
 	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: TDT file format errors.");
+	queue_end($user,$project,"","","File validation failed.");
 	exit;
 } else {
 	fwrite($logOutput, "\t\t| This is an unknown file type.\n");
@@ -450,6 +453,7 @@ if ($ext_new == "fastq") {
 	fclose($errorFile);
 	chmod($errorFileName,0774);
 	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: Unknown file format.");
+	queue_end($user,$project,"","","File validation failed.");
 	exit;
 }
 

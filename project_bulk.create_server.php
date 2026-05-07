@@ -364,6 +364,7 @@
 						$fileType_     = pathinfo($filename_key, PATHINFO_EXTENSION);
 						$filename_new1 = str_replace(".","-",$fileName_).".".$fileType_;
 						$exec_command = "mv ".$base_dir."/".$projects_bulkdata."/".$filename_key." ".$base_dir."/".$project_dir1."/".$filename_new1." 2>&1";
+						queue_init($user,$project,"","","from: project_bulk.create_server.php");
 						log_stuff("","","","","","1: ".$exec_command);
 						exec($exec_command,$output,$retval);
 						if ($retval == false) {
@@ -373,18 +374,6 @@
 							var_dump($output);
 							log_stuff("","","","","","2: ".ob_get_flush());
 						}
-
-						//// Generate 'testing.txt' file for testing the bulk-data file recognition process.
-						//$fileName = $project_dir1."/testing.txt";
-						//$file     = fopen($fileName, 'w');
-						//fwrite($file, $project_raw."\n");
-						//fwrite($file, $project."\n");
-						//fwrite($file, $project_head."\n");
-						//fwrite($file, $project_tail."\n");
-						//fwrite($file, $filename_key."\n");
-						//fwrite($file, $project2."\n");
-						//fclose($file);
-						//chmod($fileName,0774);
 
 						// Make txt file containing raw data file name(s).
 						$fileName = $project_dir1."/datafiles.txt";
