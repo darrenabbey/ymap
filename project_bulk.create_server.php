@@ -428,7 +428,7 @@
 								// Make txt file containing raw data file name(s).
 								$fileName = $project_dir1."/datafiles.txt";
 								$file     = fopen($fileName, 'a');
-								fwrite($file, "\n".$filename_new2);
+								fwrite($file, $filename_new2);
 								fclose($file);
 								chmod($fileName,0774);
 							}
