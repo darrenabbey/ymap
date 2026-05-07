@@ -3,13 +3,13 @@ set -e
 if [ -z $1 ] || [ -z $2 ]
 then
 	echo;
-	echo "# Command syntax is : 'bash FASTQ_trimming.sh [dataset_R1] [dataset_R2]'";
-	echo "# ";
-	echo "#        [dataset_R1] & [dataset_R2] : Left & right read files to be trimmed of unbalanced reads.";
-	echo "# ";
-	echo "# This file attempts to cleanup a pair of FASTQ files which are not validly formatted due to extra";
-	echo "#      and/or unbalanced lines.  This formatting problem results in FASTQC crashing.";
-	echo "# ";
+	echo -e "# Command syntax is : 'bash FASTQ_trimming.sh [dataset_R1] [dataset_R2]'";
+	echo -e "# ";
+	echo -e "#        [dataset_R1] & [dataset_R2] : Left & right read files to be trimmed of unbalanced reads.";
+	echo -e "# ";
+	echo -e "# This file attempts to cleanup a pair of FASTQ files which are not validly formatted due to extra";
+	echo -e "#      and/or unbalanced lines.  This formatting problem results in FASTQC crashing.";
+	echo -e "# ";
 	echo;
 	exit 1;   # exit with error.
 else
@@ -20,16 +20,16 @@ else
 	# If final files are found, don't process these data files.
 	if [ -f $residueName1 ] || [ -f $residueName2 ]
 	then
-		echo "# ";
-		echo "# Trimming of unbalanced read pairs has already been run on this datsaet.";
-		echo "# ";
+		echo -e "# ";
+		echo -e "# Trimming of unbalanced read pairs has already been run on this datsaet.";
+		echo -e "# ";
 		exit 0;   # exit with no error.
 	else
 		## FASTQ format per line, repeating.
-		# echo "@ id"
-		# echo "sequence"
-		# echo "+ id"
-		# echo "quality"
+		# echo -e "@ id"
+		# echo -e "sequence"
+		# echo -e "+ id"
+		# echo -e "quality"
 
 		# number of lines of each file.
 		echo -e "\tTotal number of lines in each file:";
@@ -41,16 +41,16 @@ else
 		# modulus of the number of lines by 4, as the fastq format is in blocks of 4 lines.
 		# this will give us the number of extra lines in each file.
 		echo -e "\tLines at end of each file suggestive of a cropped entry:";
-		length_extra1=$(expr $length_full1 % 4);
+		length_extra1=(($length_full1 % 4));
 		echo -e "\t\tFile1: "$length_extra1;
-		length_extra2=$(expr $length_full2 % 4);
+		length_extra2=(($length_full2 % 4));
 		echo -e "\t\tFile2: "$length_extra2;
 
 		# the number of properly formated lines per file.
 		echo -e "\tNumber of properly formated lines per file:";
-		length_base1=$(expr $length_full1 - $length_extra1);
+		length_base1=(($length_full1 - $length_extra1));
 		echo -e "\t\tFile1: "$length_base1;
-		length_base2=$(expr $length_full2 - $length_extra2);
+		length_base2=(($length_full2 - $length_extra2));
 		echo -e "\t\tFile2: "$length_base2;
 
 		# find the lesser length of properly formated lines per file.
@@ -64,9 +64,9 @@ else
 		# find the residue lengths per file.
 		# this is the number of lines of incomplete and extra reads.
 		echo -e "\tNumber of lines at the end of each file to be removed:";
-		length_residue1=$(expr $length_full1 - $lesser_length_base);
+		length_residue1=(($length_full1 - $lesser_length_base));
 		echo -e "\t\tFile1: "$length_residue1;
-		length_residue2=$(expr $length_full2 - $lesser_length_base);
+		length_residue2=(($length_full2 - $lesser_length_base));
 		echo -e "\t\tFile2: "$length_residue2;
 
 		findStr=".fastq";

@@ -4,18 +4,18 @@ set -e
 if [ -z $6 ]
 then
 	echo;
-	echo "# Command syntax is : 'bash FASTA_ATskew_dictionary.sh [YMAP user name] [YMAP genome name] [YMAP main dir] [YMAP log file] [kmer length]'";
-	echo "# ";
-	echo "#        [YMAP user name]   : Name of user account.";
-	echo "#        [YMAP genome name] : Name of installed genome.";
-	echo "#        [YMAP main dir]    : Location of YMAP install.";
-	echo "#        [YMAP log file]    : Log file for output.";
-	echo "#        [kmer length]      : length of window to examine for AT-skew.";
-	echo "# ";
-	echo "# Script will output a figure showing AT skew.";
-	echo "#     AT skew = (A-T)/(A+T)";
-	echo "# Value is shown at each bp, calculated over the k-mer window.";
-	echo "#";
+	echo -e "# Command syntax is : 'bash FASTA_ATskew_dictionary.sh [YMAP user name] [YMAP genome name] [YMAP main dir] [YMAP log file] [kmer length]'";
+	echo -e "# ";
+	echo -e "#        [YMAP user name]   : Name of user account.";
+	echo -e "#        [YMAP genome name] : Name of installed genome.";
+	echo -e "#        [YMAP main dir]    : Location of YMAP install.";
+	echo -e "#        [YMAP log file]    : Log file for output.";
+	echo -e "#        [kmer length]      : length of window to examine for AT-skew.";
+	echo -e "# ";
+	echo -e "# Script will output a figure showing AT skew.";
+	echo -e "#     AT skew = (A-T)/(A+T)";
+	echo -e "# Value is shown at each bp, calculated over the k-mer window.";
+	echo -e "#";
 	echo;
 	exit 1;
 else
@@ -29,7 +29,7 @@ kmerStep=$6;
 genomeDirectory=$mainDir"users/"$userAccount"/genomes/"$genomeName"/";
 
 ## Error handling in case something crashes.
-trap 'bash queue_end.sh $userAccount $genomeName $mainDir $logFile "Something went wrong. FASTA_ATskew_dictionary.sh:$LINENO"; echo "Something went wrong. FASTA_ATskew_dictionary.sh:$LINENO" > $genomeDirectory"error.txt"; exit 1;' ERR;
+trap 'bash queue_end.sh $userAccount $genomeName $mainDir $logFile "Something went wrong. FASTA_ATskew_dictionary.sh:$LINENO"; echo -e "Something went wrong. FASTA_ATskew_dictionary.sh:$LINENO" > $genomeDirectory"error.txt"; exit 1;' ERR;
 
 
 # load local installed program location variables.
@@ -57,10 +57,10 @@ tempdir=$(mktemp -d);
 	for file in $tempdir/contig.*
 	do
 		# make repetitiveness dictionary for each contig file.
-		#echo "1: "$file;
-		#echo "2: "$kmerLength;
-		#echo "3: "$tempdir;
-		#echo "4: "$file.skew;
+		#echo -e "1: "$file;
+		#echo -e "2: "$kmerLength;
+		#echo -e "3: "$tempdir;
+		#echo -e "4: "$file.skew;
 		$python_exec $mainDir"scripts_genomes/scripts/ATskew.make_dictionary.py" $file $kmerLength $kmerStep $tempdir $file.skew;
 	done;
 #	wait;
@@ -82,7 +82,7 @@ tempdir=$(mktemp -d);
 #	# simplify names.
 #	base_name1='datafile_g_0.2.fasta';
 #
-#	echo "Processing: "$genomeName;
+#	echo -e "Processing: "$genomeName;
 #	$python_exec $mainDir"scripts_genomes/scripts/ATskew.make_dictionary.py" $tempdir/$base_name1 $kmerLength $tempdir;
 #	cp $tempdir/output.txt $ATskew_file;
 #	# arg[1] : input file.

@@ -4,17 +4,17 @@ set -e
 if [ -z $1 ]
 then
 	echo;
-	echo "# Command syntax is : 'bash FASTA_repetitiveness_dictionary_clean.sh [YMAP user name] [YMAP genome name] [YMAP main dir] [YMAP log file] [kmer length]'";
-	echo "# ";
-	echo "#        [YMAP user name]   : Name of user account.";
-	echo "#        [YMAP genome name] : Name of installed genome.";
-	echo "#        [YMAP main dir]    : Location of YMAP install.";
-	echo "#        [YMAP log file]    : Log file for output.";
-	echo "#        [kmer length]      : K-mer length.";
-	echo "#";
-	echo "#        This script cleans up the dictionary file by condensing duplicate counts for";
-	echo:"#        specific kmers into single summary counts. Such replicates are formed during";
-	echo "#        initial dictionary construction due to multi-threaded algorithm used.";
+	echo -e "# Command syntax is : 'bash FASTA_repetitiveness_dictionary_clean.sh [YMAP user name] [YMAP genome name] [YMAP main dir] [YMAP log file] [kmer length]'";
+	echo -e "# ";
+	echo -e "#        [YMAP user name]   : Name of user account.";
+	echo -e "#        [YMAP genome name] : Name of installed genome.";
+	echo -e "#        [YMAP main dir]    : Location of YMAP install.";
+	echo -e "#        [YMAP log file]    : Log file for output.";
+	echo -e "#        [kmer length]      : K-mer length.";
+	echo -e "#";
+	echo -e "#        This script cleans up the dictionary file by condensing duplicate counts for";
+	echo -e "#        specific kmers into single summary counts. Such replicates are formed during";
+	echo -e "#        initial dictionary construction due to multi-threaded algorithm used.";
 	echo;
 	exit 1;
 else

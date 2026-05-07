@@ -2,25 +2,25 @@ set -e
 if [ -z $1 ]
 then
 	echo;
-	echo "### UNTESTED ###";
-	echo "# Command syntax is : 'bash FASTQ_reformat_1.sh [FASTQ seq file] > output.fastq'";
-	echo "# ";
-	echo "#        [FASTQ seq file] : Genome sequence file in FASTQ format.";
-	echo "# ";
-	echo "# This script will take a file containing multi-line FASTQ entries and reformat";
-	echo "# them to have only one line for the header and for the sequence for each entry.";
-	echo "# ";
+	echo -e "### UNTESTED ###";
+	echo -e "# Command syntax is : 'bash FASTQ_reformat_1.sh [FASTQ seq file] > output.fastq'";
+	echo -e "# ";
+	echo -e "#        [FASTQ seq file] : Genome sequence file in FASTQ format.";
+	echo -e "# ";
+	echo -e "# This script will take a file containing multi-line FASTQ entries and reformat";
+	echo -e "# them to have only one line for the header and for the sequence for each entry.";
+	echo -e "# ";
 	echo;
 	exit 1;
 else
 # Absolute path this script is in.
 BASEPATH=$(readlink -f "$0");
 BASEDIR=$(dirname $BASEPATH);
-#echo "Script found in: ${BASEDIR}"
+#echo -e "Script found in: ${BASEDIR}"
 
 # Absolute path the script is called from.
 CALLDIR=${PWD}
-#echo "Script executed from: ${CALLDIR}"
+#echo -e "Script executed from: ${CALLDIR}"
 
 # Make temp dir.
 tempdir=$(mktemp -d);

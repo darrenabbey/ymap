@@ -13,12 +13,12 @@ main_dir=$(pwd)"/../../";
 local_dir=$(pwd);
 script_dir=$(pwd);
 
-echo "";
-echo "Input to : project.WGseq.update_2.sh";
-echo "\tuser     = "$user;
-echo "\tproject  = "$project;
-echo "\tmain_dir = "$main_dir;
-echo "";
+echo -e "";
+echo -e "Input to : project.WGseq.update_2.sh";
+echo -e "\tuser     = "$user;
+echo -e "\tproject  = "$project;
+echo -e "\tmain_dir = "$main_dir;
+echo -e "";
 
 ##==============================================================================
 ## Define locations and names to be used later.
@@ -37,23 +37,23 @@ condensedLog=$projectDirectory"condensed_log.txt";
 
 
 ## Error handling in case something crashes.
-trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.WGseq.update_2.sh:$LINENO"; echo "Something went wrong. project.WGseq.update_2.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.WGseq.update_2.sh:$LINENO"; echo -e "Something went wrong. project.WGseq.update_2.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
 
-echo "#.............................................................................." >> $logName;
-echo "Running 'scripts_seqModules/scripts_WGseq/project.WGseq.update_2.sh'" >> $logName;
-echo "Variables passed via command-line from 'scripts_seqModules/scripts_WGseq/project.WGseq.update_2.sh' :" >> $logName;
-echo "\tuser     = '"$user"'" >> $logName;
-echo "\tproject  = '"$project"'" >> $logName;
-echo "\tmain_dir = '"$main_dir"'" >> $logName;
-echo "#============================================================================== 3" >> $logName;
+echo -e "#.............................................................................." >> $logName;
+echo -e "Running 'scripts_seqModules/scripts_WGseq/project.WGseq.update_2.sh'" >> $logName;
+echo -e "Variables passed via command-line from 'scripts_seqModules/scripts_WGseq/project.WGseq.update_2.sh' :" >> $logName;
+echo -e "\tuser     = '"$user"'" >> $logName;
+echo -e "\tproject  = '"$project"'" >> $logName;
+echo -e "\tmain_dir = '"$main_dir"'" >> $logName;
+echo -e "#============================================================================== 3" >> $logName;
 
-echo "#=====================================#" >> $logName;
-echo "# Setting up locations and variables. #" >> $logName;
-echo "#=====================================#" >> $logName;
+echo -e "#=====================================#" >> $logName;
+echo -e "# Setting up locations and variables. #" >> $logName;
+echo -e "#=====================================#" >> $logName;
 
-echo "\tprojectDirectory = '$projectDirectory'" >> $logName;
-echo "Setting up for processing." >> $condensedLog;
+echo -e "\tprojectDirectory = '$projectDirectory'" >> $logName;
+echo -e "Setting up for processing." >> $condensedLog;
 
 # Get setup information from project files.
 # "genome.txt"
@@ -62,13 +62,13 @@ echo "Setting up for processing." >> $condensedLog;
 genome=$(head -n 1 $projectDirectory"genome.txt");
 hapmap=$(tail -n 1 $projectDirectory"genome.txt");
 dataFormat=$(head -n 1 $projectDirectory"dataFormat.txt");
-echo "\t'genome.txt' file entry." >> $logName;
-echo "\t\tgenome = '"$genome"'" >> $logName;
+echo -e "\t'genome.txt' file entry." >> $logName;
+echo -e "\t\tgenome = '"$genome"'" >> $logName;
 if [ "$genome" = "$hapmap" ]
 then
 	hapmapInUse=0;
 else
-	echo "\t\thapmap = '"$hapmap"'" >> $logName;
+	echo -e "\t\thapmap = '"$hapmap"'" >> $logName;
 	hapmapInUse=1;
 fi
 if [ $hapmapInUse = 1 ]
@@ -83,7 +83,7 @@ then
 		hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
 		hapmapUser="default";
 	fi
-	echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
+	echo -e "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
 fi
 
 # Determine location of genome being used.
@@ -96,25 +96,25 @@ then
 	genomeDirectory=$main_dir"users/default/genomes/"$genome"/";
 	genomeUser="default";
 fi
-echo "\tgenomeDirectory = '"$genomeDirectory"'" >> $logName;
+echo -e "\tgenomeDirectory = '"$genomeDirectory"'" >> $logName;
 
 # Get reference FASTA file name from "reference.txt";
 genomeFASTA=$(head -n 1 $genomeDirectory"reference.txt");
-echo "\tgenomeFASTA = '"$genomeFASTA"'" >> $logName;
+echo -e "\tgenomeFASTA = '"$genomeFASTA"'" >> $logName;
 
 # Get ploidy estimate from "ploidy.txt" in project directory.
 ploidyEstimate=$(head -n 1 $projectDirectory"ploidy.txt");
-echo "\tploidyEstimate = '"$ploidyEstimate"'" >> $logName;
+echo -e "\tploidyEstimate = '"$ploidyEstimate"'" >> $logName;
 
 # Get ploidy baseline from "ploidy.txt" in project directory.
 ploidyBase=$(tail -n 1 $projectDirectory"ploidy.txt");
-echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
+echo -e "\tploidyBase = '"$ploidyBase"'" >> $logName;
 
 # Get parent name from "parent.txt" in project directory.
 projectParent=$(head -n 1 $projectDirectory"parent.txt");
-echo "\tparentProject = '"$projectParent"'" >> $logName;
+echo -e "\tparentProject = '"$projectParent"'" >> $logName;
 
-echo "#============================================================================== 2" >> $logName;
+echo -e "#============================================================================== 2" >> $logName;
 
 
 ##==============================================================================
@@ -122,20 +122,20 @@ echo "#=========================================================================
 ##------------------------------------------------------------------------------
 if [ -f $projectDirectory"putative_SNPs_v4.txt" ]
 then
-	echo "\tSNP data already decompressed." >> $logName;
+	echo -e "\tSNP data already decompressed." >> $logName;
 else
-	echo "Decompressing SNP data." >> $condensedLog;
-	echo "\tDecompressing SNP data." >> $logName;
+	echo -e "Decompressing SNP data." >> $condensedLog;
+	echo -e "\tDecompressing SNP data." >> $logName;
 	cd $projectDirectory;
 	unzip -j -o putative_SNPs_v4.zip;
 	cd $local_dir;
 fi
 if [ -f $projectDirectory"SNP_CNV_v1.txt" ]
 then
-	echo "\tSNP data already decompressed." >> $logName;
+	echo -e "\tSNP data already decompressed." >> $logName;
 else
-	echo "Decompressing CNV/SNP data." >> $condensedLog;
-	echo "\tDecompressing SNP data." >> $logName;
+	echo -e "Decompressing CNV/SNP data." >> $condensedLog;
+	echo -e "\tDecompressing SNP data." >> $logName;
 	cd $projectDirectory;
 	unzip -j -o SNP_CNV_v1.zip;
 	cd $local_dir;
@@ -144,29 +144,29 @@ fi
 ##==============================================================================
 ## Preprocess CNV/SNPs if necessary.
 ##------------------------------------------------------------------------------
-echo "#==========================#" >> $logName;
-echo "# Preprocessing CNV/SNPs.  #" >> $logName;
-echo "#==========================#" >> $logName;
+echo -e "#==========================#" >> $logName;
+echo -e "# Preprocessing CNV/SNPs.  #" >> $logName;
+echo -e "#==========================#" >> $logName;
 if [ -f $projectDirectory"preprocessed_CNVs.txt" ]
 then
-        echo "\tCNV data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
+        echo -e "\tCNV data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
 else
-	echo "Preprocessing CNVs." >> $condensedLog;
-        echo "\tPreprocessing CNV data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
+	echo -e "Preprocessing CNVs." >> $condensedLog;
+        echo -e "\tPreprocessing CNV data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
         $python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.txt" 2>> $logName;
-        echo "\tpre-processing complete." >> $logName;
+        echo -e "\tpre-processing complete." >> $logName;
 
         chmod 774 $projectDirectory"preprocessed_CNVs.txt";
 fi
 if [ -f $projectDirectory"preprocessed_SNPs.txt" ]
 then
-        echo "\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
+        echo -e "\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 else
-	echo "Preprocessing SNPs." >> $condensedLog;
-        echo "\tPreprocessing SNP data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
+	echo -e "Preprocessing SNPs." >> $condensedLog;
+        echo -e "\tPreprocessing SNP data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 
         $python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" $genome $genomeUser $project $user $project $user $main_dir $logName LOH > $projectDirectory"preprocessed_SNPs.txt" 2>> $logName;
-        echo "\tpre-processing complete." >> $logName;
+        echo -e "\tpre-processing complete." >> $logName;
 
         chmod 774 $projectDirectory"preprocessed_SNPs.txt";
 fi
@@ -175,41 +175,41 @@ fi
 ##==============================================================================
 ## Perform CNV analysis, with GC-correction, on dataset.
 ##------------------------------------------------------------------------------
-echo "#==========================#" >> $logName;
-echo "# CNV analysis of dataset. #" >> $logName;
-echo "#==========================#" >> $logName;
-echo "Preprocessing CNV data.   (~10 min for 1.6 Gbase genome dataset.)" >> $condensedLog;
-echo "Analyzing and mapping CNVs." >> $condensedLog;
+echo -e "#==========================#" >> $logName;
+echo -e "# CNV analysis of dataset. #" >> $logName;
+echo -e "#==========================#" >> $logName;
+echo -e "Preprocessing CNV data.   (~10 min for 1.6 Gbase genome dataset.)" >> $condensedLog;
+echo -e "Analyzing and mapping CNVs." >> $condensedLog;
 
-echo "\tGenerating OCTAVE script to perform CNV analysis of dataset, with GC-correction." >> $logName;
+echo -e "\tGenerating OCTAVE script to perform CNV analysis of dataset, with GC-correction." >> $logName;
 outputName=$projectDirectory"processing1.m";
-echo "\toutputName = "$outputName >> $logName;
+echo -e "\toutputName = "$outputName >> $logName;
 
-echo "function [] = processing1()" > $outputName;
-echo "\tpkg load statistics;" >> $outputName;
-echo "\tpkg load matgeom;" >> $outputName;
-echo "\tdiary('"$projectDirectory"octave.CNV_and_GCbias.log');" >> $outputName;
-echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
-echo "\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
-echo "endfunction" >> $outputName;
+echo -e "function [] = processing1()" > $outputName;
+echo -e "\tpkg load statistics;" >> $outputName;
+echo -e "\tpkg load matgeom;" >> $outputName;
+echo -e "\tdiary('"$projectDirectory"octave.CNV_and_GCbias.log');" >> $outputName;
+echo -e "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
+echo -e "\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+echo -e "endfunction" >> $outputName;
 chmod 774 $outputName;
 
-echo "\t|\tfunction [] = processing1()" >> $logName;
-echo "\t|\t    pkg load statistics;" >> $logName;
-echo "\t|\t    pkg load matgeom;" >> $logName;
-echo "\t|\t    diary('"$projectDirectory"octave.CNV_and_GCbias.log');" >> $logName;
-echo "\t|\t    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
-echo "\t|\t    analyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
-echo "\t|\tend" >> $logName;
+echo -e "\t|\tfunction [] = processing1()" >> $logName;
+echo -e "\t|\t    pkg load statistics;" >> $logName;
+echo -e "\t|\t    pkg load matgeom;" >> $logName;
+echo -e "\t|\t    diary('"$projectDirectory"octave.CNV_and_GCbias.log');" >> $logName;
+echo -e "\t|\t    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
+echo -e "\t|\t    analyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
+echo -e "\t|\tend" >> $logName;
 
 ###
 ### Temporary comment out to speed up troubleshooting of CNV_LOH_check.m code.
 ###
-echo "\tCalling OCTAVE." >> $logName;
+echo -e "\tCalling OCTAVE." >> $logName;
 cd $projectDirectory;
 $octave_exec $outputName;
 cd $script_dir;
-echo "\tOCTAVE log from CNV analysis." >> $logName;
+echo -e "\tOCTAVE log from CNV analysis." >> $logName;
 sed 's/^/\t|/;' $projectDirectory"octave.CNV_and_GCbias.log" >> $logName;
 
 
@@ -220,164 +220,164 @@ then
 	##------------------------------------------------------------------------------
 	if [ "$project" = "$projectParent" ]
 	then
-		echo "#==========================#" >> $logName;
-		echo "# SNP analysis of dataset. #" >> $logName;
-		echo "#==========================#" >> $logName;
+		echo -e "#==========================#" >> $logName;
+		echo -e "# SNP analysis of dataset. #" >> $logName;
+		echo -e "#==========================#" >> $logName;
 	else
-		echo "#==========================#" >> $logName;
-		echo "# LOH analysis of dataset. #" >> $logName;
-		echo "#==========================#" >> $logName;
+		echo -e "#==========================#" >> $logName;
+		echo -e "# LOH analysis of dataset. #" >> $logName;
+		echo -e "#==========================#" >> $logName;
 	fi
 
-	echo "Mapping SNPs." >> $condensedLog;
-	echo "\tGenerating OCTAVE script to perform SNP analysis of dataset." >> $logName;
+	echo -e "Mapping SNPs." >> $condensedLog;
+	echo -e "\tGenerating OCTAVE script to perform SNP analysis of dataset." >> $logName;
 	outputName=$projectDirectory"processing3.m";
-	echo "\toutputName = "$outputName >> $logName;
+	echo -e "\toutputName = "$outputName >> $logName;
 
-	echo "function [] = processing3()" > $outputName;
-	echo "\tpkg load matgeom;" >> $outputName;
-	echo "\tdiary('"$projectDirectory"octave.SNP_analysis.log');" >> $outputName;
-	echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
-	echo "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
-	echo "end" >> $outputName;
+	echo -e "function [] = processing3()" > $outputName;
+	echo -e "\tpkg load matgeom;" >> $outputName;
+	echo -e "\tdiary('"$projectDirectory"octave.SNP_analysis.log');" >> $outputName;
+	echo -e "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
+	echo -e "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+	echo -e "end" >> $outputName;
 	chmod 774 $outputName;
 
-	echo "\t|\tfunction [] = processing3()" >> $logName;
-	echo "\t|\t    pkg load matgeom;" >> $logName;
-	echo "\t|\t    diary('"$projectDirectory"octave.SNP_analysis.log');" >> $logName;
-	echo "\t|\t    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
-	echo "\t|\t    analyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
-	echo "\t|\tend" >> $logName;
+	echo -e "\t|\tfunction [] = processing3()" >> $logName;
+	echo -e "\t|\t    pkg load matgeom;" >> $logName;
+	echo -e "\t|\t    diary('"$projectDirectory"octave.SNP_analysis.log');" >> $logName;
+	echo -e "\t|\t    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
+	echo -e "\t|\t    analyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
+	echo -e "\t|\tend" >> $logName;
 
-	echo "\tCalling OCTAVE." >> $logName;
-	echo "================================================================================================";
-	echo "== SNP analysis ================================================================================";
-	echo "================================================================================================";
+	echo -e "\tCalling OCTAVE." >> $logName;
+	echo -e "================================================================================================";
+	echo -e "== SNP analysis ================================================================================";
+	echo -e "================================================================================================";
 	cd $projectDirectory;
 	$octave_exec $outputName;
 	cd $script_dir;
-	echo "\tOCTAVE log from SNP analysis." >> $logName;
+	echo -e "\tOCTAVE log from SNP analysis." >> $logName;
 	sed 's/^/\t|/;' $projectDirectory"octave.SNP_analysis.log" >> $logName;
 
 
 	##==============================================================================
 	## Generate final figures for dataset.
 	##------------------------------------------------------------------------------
-	echo "#==================================#" >> $logName;
-	echo "# Generate final combined figures. #" >> $logName;
-	echo "#==================================#" >> $logName;
-	echo "Generating final figures." >> $condensedLog;
+	echo -e "#==================================#" >> $logName;
+	echo -e "# Generate final combined figures. #" >> $logName;
+	echo -e "#==================================#" >> $logName;
+	echo -e "Generating final figures." >> $condensedLog;
 
-	echo "\tGenerating OCTAVE script to generate combined CNV and SNP analysis figures from previous calculations." >> $logName;
+	echo -e "\tGenerating OCTAVE script to generate combined CNV and SNP analysis figures from previous calculations." >> $logName;
 	outputName=$projectDirectory"processing4.m";
-	echo "\toutputName = "$outputName >> $logName;
+	echo -e "\toutputName = "$outputName >> $logName;
 
-	echo "function [] = processing4()" > $outputName;
-	echo "\tpkg load matgeom;" >> $outputName;
-	echo "\tdiary('"$projectDirectory"octave.final_figs.log');" >> $outputName;
-	echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
-	echo "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
-	echo "end" >> $outputName;
+	echo -e "function [] = processing4()" > $outputName;
+	echo -e "\tpkg load matgeom;" >> $outputName;
+	echo -e "\tdiary('"$projectDirectory"octave.final_figs.log');" >> $outputName;
+	echo -e "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
+	echo -e "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+	echo -e "end" >> $outputName;
 	chmod 774 $outputName;
 
-	echo "\t|\tfunction [] = processing4()" >> $logName;
-	echo "\t|\t    pkg load matgeom;" >> $logName;
-	echo "\t|\t    diary('"$projectDirectory"octave.final_figs.log');" >> $logName;
-	echo "\t|\t    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
-	echo "\t|\t    analyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
-	echo "\t|\tend" >> $logName;
+	echo -e "\t|\tfunction [] = processing4()" >> $logName;
+	echo -e "\t|\t    pkg load matgeom;" >> $logName;
+	echo -e "\t|\t    diary('"$projectDirectory"octave.final_figs.log');" >> $logName;
+	echo -e "\t|\t    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
+	echo -e "\t|\t    analyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
+	echo -e "\t|\tend" >> $logName;
 
-	echo "\tCalling OCTAVE.   (Log will be appended here after completion.)" >> $logName;
-	echo "================================================================================================";
-	echo "== Final figures ===============================================================================";
-	echo "================================================================================================";
+	echo -e "\tCalling OCTAVE.   (Log will be appended here after completion.)" >> $logName;
+	echo -e "================================================================================================";
+	echo -e "== Final figures ===============================================================================";
+	echo -e "================================================================================================";
 	cd $projectDirectory;
 	$octave_exec $outputName;
 	cd $script_dir;
-	echo "\tOCTAVE log from final figure generation." >> $logName;
+	echo -e "\tOCTAVE log from final figure generation." >> $logName;
 	sed 's/^/\t|/;' $projectDirectory"octave.final_figs.log" >> $logName;
-	echo "finished all processing, moving to Cleaning up intermediate WGseq files" >> $condensedLog;
+	echo -e "finished all processing, moving to Cleaning up intermediate WGseq files" >> $condensedLog;
 else
 	##==============================================================================
 	## Perform SNP/LOH analysis on dataset.
 	##------------------------------------------------------------------------------
 	if [ hapmapUsed = 1 ]
 	then
-		echo "#===========================================#" >> $logName;
-		echo "# SNP/LOH analysis of dataset, with hapmap. #" >> $logName;
-		echo "#===========================================#" >> $logName;
+		echo -e "#===========================================#" >> $logName;
+		echo -e "# SNP/LOH analysis of dataset, with hapmap. #" >> $logName;
+		echo -e "#===========================================#" >> $logName;
 	else
-		echo "#==============================================#" >> $logName;
-		echo "# SNP/LOH analysis of dataset, with reference. #" >> $logName;
-		echo "#==============================================#" >> $logName;
+		echo -e "#==============================================#" >> $logName;
+		echo -e "# SNP/LOH analysis of dataset, with reference. #" >> $logName;
+		echo -e "#==============================================#" >> $logName;
 	fi;
 
-	echo "Mapping SNPs." >> $condensedLog;
-	echo "\t\tGenerating OCTAVE script to perform SNP analysis of dataset." >> $logName;
+	echo -e "Mapping SNPs." >> $condensedLog;
+	echo -e "\t\tGenerating OCTAVE script to perform SNP analysis of dataset." >> $logName;
 	outputName=$projectDirectory"processing3.m";
-	echo "\t\toutputName = "$outputName >> $logName;
+	echo -e "\t\toutputName = "$outputName >> $logName;
 
-	echo "function [] = processing3()" > $outputName;
-	echo "\tpkg load matgeom;" >> $outputName;
-	echo "\tdiary('"$projectDirectory"octave.SNP_analysis.log');" >> $outputName;
-	echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
-	echo "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
-	echo "end" >> $outputName;
+	echo -e "function [] = processing3()" > $outputName;
+	echo -e "\tpkg load matgeom;" >> $outputName;
+	echo -e "\tdiary('"$projectDirectory"octave.SNP_analysis.log');" >> $outputName;
+	echo -e "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
+	echo -e "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+	echo -e "end" >> $outputName;
 	chmod 774 $outputName;
 
-	echo "\t|\tfunction [] = processing3()" >> $logName;
-	echo "\t|\t    pkg load matgeom;" >> $logName;
-	echo "\t|\t    diary('"$projectDirectory"octave.SNP_analysis.log');" >> $logName;
-	echo "\t|\t    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
-	echo "\t|\t    analyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
-	echo "\t|\tend" >> $logName;
+	echo -e "\t|\tfunction [] = processing3()" >> $logName;
+	echo -e "\t|\t    pkg load matgeom;" >> $logName;
+	echo -e "\t|\t    diary('"$projectDirectory"octave.SNP_analysis.log');" >> $logName;
+	echo -e "\t|\t    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
+	echo -e "\t|\t    analyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
+	echo -e "\t|\tend" >> $logName;
 
-	echo "\t\tCalling OCTAVE." >> $logName;
-	echo "================================================================================================";
-	echo "== SNP analysis ================================================================================";
-	echo "================================================================================================";
+	echo -e "\t\tCalling OCTAVE." >> $logName;
+	echo -e "================================================================================================";
+	echo -e "== SNP analysis ================================================================================";
+	echo -e "================================================================================================";
 	cd $projectDirectory;
 	$octave_exec $outputName;
 	cd $script_dir;
-	echo "\t\tOCTAVE log from SNP analysis." >> $logName;
+	echo -e "\t\tOCTAVE log from SNP analysis." >> $logName;
 	sed 's/^/\t\t\t|/;' $projectDirectory"octave.SNP_analysis.log" >> $logName;
 
 
 	##==============================================================================
 	## Generate final figures for dataset.
 	##------------------------------------------------------------------------------
-	echo "#==================================#" >> $logName;
-	echo "# Generate final combined figures. #" >> $logName;
-	echo "#==================================#" >> $logName;
-	echo "Generating final figures." >> $condensedLog;
+	echo -e "#==================================#" >> $logName;
+	echo -e "# Generate final combined figures. #" >> $logName;
+	echo -e "#==================================#" >> $logName;
+	echo -e "Generating final figures." >> $condensedLog;
 
-	echo "\t\tGenerating OCTAVE script to generate combined CNV and SNP analysis figures from previous calculations." >> $logName;
+	echo -e "\t\tGenerating OCTAVE script to generate combined CNV and SNP analysis figures from previous calculations." >> $logName;
 	outputName=$projectDirectory"processing4.m";
-	echo "\t\toutputName = "$outputName >> $logName;
+	echo -e "\t\toutputName = "$outputName >> $logName;
 
-	echo "function [] = processing4()" > $outputName;
-	echo "\tpkg load matgeom;" >> $outputName;
-	echo "\tdiary('"$projectDirectory"octave.final_figs.log');" >> $outputName;
-	echo "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
-	echo "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
-	echo "end" >> $outputName;
+	echo -e "function [] = processing4()" > $outputName;
+	echo -e "\tpkg load matgeom;" >> $outputName;
+	echo -e "\tdiary('"$projectDirectory"octave.final_figs.log');" >> $outputName;
+	echo -e "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
+	echo -e "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+	echo -e "end" >> $outputName;
 	chmod 774 $outputName;
 
-	echo "\t|\tfunction [] = processing4()" >> $logName;
-	echo "\t|\t    pkg load matgeom;" >> $logName;
-	echo "\t|\t    diary('"$projectDirectory"octave.final_figs.log');" >> $logName;
-	echo "\t|\t    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
-	echo "\t|\t    analyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
-	echo "\t|\tend" >> $logName;
+	echo -e "\t|\tfunction [] = processing4()" >> $logName;
+	echo -e "\t|\t    pkg load matgeom;" >> $logName;
+	echo -e "\t|\t    diary('"$projectDirectory"octave.final_figs.log');" >> $logName;
+	echo -e "\t|\t    cd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $logName;
+	echo -e "\t|\t    analyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
+	echo -e "\t|\tend" >> $logName;
 
-	echo "\t\tCalling OCTAVE.   (Log will be appended here after completion.)" >> $logName;
-	echo "================================================================================================";
-	echo "== CNV/SNP/LOH figure generation ===============================================================";
-	echo "================================================================================================";
+	echo -e "\t\tCalling OCTAVE.   (Log will be appended here after completion.)" >> $logName;
+	echo -e "================================================================================================";
+	echo -e "== CNV/SNP/LOH figure generation ===============================================================";
+	echo -e "================================================================================================";
 	cd $projectDirectory;
 	$octave_exec $outputName;
 	cd $script_dir;
-	echo "\t\tOCTAVE log from final figure generation." >> $logName;
+	echo -e "\t\tOCTAVE log from final figure generation." >> $logName;
 	sed 's/^/\t\t|/;' $projectDirectory"octave.final_figs.log" >> $logName;
 fi
 
@@ -386,7 +386,7 @@ fi
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
 chmod 774 $projectDirectory*;
-echo "running: " $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir >> $logName;
+echo -e "running: " $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir >> $logName;
 bash $main_dir"scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" $user $project $main_dir 2>> $logName;
 
 

@@ -4,30 +4,30 @@ set -e
 if [ -z $1 ]
 then
 	echo;
-	echo "# Command syntax is : 'bash FASTA_to_Illumina [FASTA seq file] (FASTQ.GZ file)'";
-	echo "# ";
-	echo "#        [FASTA seq file] : Genome sequence file in FASTA format.";
-	echo "#        (FASTQ.GZ file)  : Optional output file in GZ compressed FASTQ format.";
-	echo "# ";
-	echo "# This script will take a file containing single-line FASTA entries and fragment";
-	echo "# them into many entries at 300bp long per entry, repeated at every offset to try";
-	echo "# and generate simulated Illumina reads for input into YMAP for homolog identification.";
-	echo "#";
-	echo "# Output is a *.fastq.gz file, defaults to 'output.fastq.gz' if not provided.";
-	echo "# Headers in FASTQ file do not reflect headers in original FASTA, but are unique";
-	echo "# as needed for alignment purposes.";
-	echo "#";
+	echo -e "# Command syntax is : 'bash FASTA_to_Illumina [FASTA seq file] (FASTQ.GZ file)'";
+	echo -e "# ";
+	echo -e "#        [FASTA seq file] : Genome sequence file in FASTA format.";
+	echo -e "#        (FASTQ.GZ file)  : Optional output file in GZ compressed FASTQ format.";
+	echo -e "# ";
+	echo -e "# This script will take a file containing single-line FASTA entries and fragment";
+	echo -e "# them into many entries at 300bp long per entry, repeated at every offset to try";
+	echo -e "# and generate simulated Illumina reads for input into YMAP for homolog identification.";
+	echo -e "#";
+	echo -e "# Output is a *.fastq.gz file, defaults to 'output.fastq.gz' if not provided.";
+	echo -e "# Headers in FASTQ file do not reflect headers in original FASTA, but are unique";
+	echo -e "# as needed for alignment purposes.";
+	echo -e "#";
 	echo;
 	exit 1;
 else
 # Absolute path this script is in.
 BASEPATH=$(readlink -f "$0");
 BASEDIR=$(dirname $BASEPATH);
-#echo "Script found in: ${BASEDIR}"
+#echo -e "Script found in: ${BASEDIR}"
 
 # Absolute path the script is called from: the YAMP project directory.
 CALLDIR=${PWD}
-#echo "Script executed from: ${CALLDIR}"
+#echo -e "Script executed from: ${CALLDIR}"
 
 # Make temp dir.
 tempdir=$2;

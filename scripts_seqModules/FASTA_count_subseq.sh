@@ -7,14 +7,14 @@
 if [ -z $1 ]
 then
 	echo;
-	echo "# Command syntax is : 'sh FASTA_count_subseq.sh [sequence] [FASTA seq file]'";
-	echo "# ";
-	echo "#        [sequence]       : Short DNA sequence string.";
-	echo "#        [FASTA seq file] : Genome sequence file in FASTA format.";
-	echo "# ";
-	echo "# This script will count the incidence of the target sequence in the FASTA file.";
-	echo "# The FASTA file should be reformated to single-line entries using FASTA_reformat_1.sh first.";
-	echo "# ";
+	echo -e "# Command syntax is : 'sh FASTA_count_subseq.sh [sequence] [FASTA seq file]'";
+	echo -e "# ";
+	echo -e "#        [sequence]       : Short DNA sequence string.";
+	echo -e "#        [FASTA seq file] : Genome sequence file in FASTA format.";
+	echo -e "# ";
+	echo -e "# This script will count the incidence of the target sequence in the FASTA file.";
+	echo -e "# The FASTA file should be reformated to single-line entries using FASTA_reformat_1.sh first.";
+	echo -e "# ";
 	echo;
 	exit 1;
 else

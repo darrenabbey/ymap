@@ -22,17 +22,17 @@ else
 fi
 
 ### Load used contig names from $genomeDirectory"figure_definitions.txt" file.
-echo "identifying which contigs are used.";
+echo -e "identifying which contigs are used.";
 figureDefinitions=$genomeDirectory"figure_definitions.txt";
 contigNames=();
 i=0;
 {
 	read -r null;
 	while read line; do
-		useContig=$(echo "$line" | awk '{print $2}');		# if 2nd field is 1, indicates contig is used.
+		useContig=$(echo -e "$line" | awk '{print $2}');		# if 2nd field is 1, indicates contig is used.
 		if [ $useContig -eq 1 ]
 		then
-			contigName=$(echo "$line" | awk '{print $4}');	# extract 4th field from each line for contig name.
+			contigName=$(echo -e "$line" | awk '{print $4}');	# extract 4th field from each line for contig name.
 			echo $contigName;
 			contigNames[i]+=$contigName;
 			i=$((i+1));
@@ -41,7 +41,7 @@ i=0;
 } < $figureDefinitions;
 
 ### Fire off samtools mpileup processes for quick parallel operation.
-echo "generating temporary '*.pileup_' files for each contig that is used, in parallel with low memory footprint.";
+echo -e "generating temporary '*.pileup_' files for each contig that is used, in parallel with low memory footprint.";
 arraylength=${#contigNames[@]}
 for (( i=0; i<${arraylength}; i++ ));
 do
@@ -50,8 +50,8 @@ done;
 wait;
 
 # Cleanup intermediate files.
-echo "concatenating temporary '*.pileup_' files to 'data.pileup'.";
+echo -e "concatenating temporary '*.pileup_' files to 'data.pileup'.";
 cat $projectDirectory/*.pileup_ > $projectDirectory/data.pileup;
 
-echo "removing temporary '*.pileup_' files.";
+echo -e "removing temporary '*.pileup_' files.";
 rm $projectDirectory/*.pileup_;

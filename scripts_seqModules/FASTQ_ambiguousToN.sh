@@ -3,27 +3,27 @@ set -e
 if [ -z $1 ] || [ -z $2 ]
 then
 	echo;
-	echo "# Command syntax is : 'bash FASTQ_ambiguousToN.sh [dataset] [outfile]'";
-	echo "# ";
-	echo "#        [dataset] : FASTQ read file input.";
-	echo "#        [outfile] : Destination file for FASTQ entries.";
-	echo "# ";
-	echo "# This script converts non-ATCG characters in sequence lines to N.";
-	echo "# ";
+	echo -e "# Command syntax is : 'bash FASTQ_ambiguousToN.sh [dataset] [outfile]'";
+	echo -e "# ";
+	echo -e "#        [dataset] : FASTQ read file input.";
+	echo -e "#        [outfile] : Destination file for FASTQ entries.";
+	echo -e "# ";
+	echo -e "# This script converts non-ATCG characters in sequence lines to N.";
+	echo -e "# ";
 	echo;
 	exit 1;
 else
 	## FASTQ format per line, repeating.
-	# echo "@ id";
-	# echo "sequence"
-	# echo "+ id"
-	# echo "quality"
+	# echo -e "@ id";
+	# echo -e "sequence"
+	# echo -e "+ id"
+	# echo -e "quality"
 
 	# number of lines of each file.
 	length_full1=$(wc -l $1 | awk '{print $1}');
 
 	# initialize and clear output file.
-	echo "null" >> $2;
+	echo -e "null" >> $2;
 	cp /dev/null $2;
 
 	# open extra file descriptor for input.

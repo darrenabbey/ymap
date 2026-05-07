@@ -34,15 +34,15 @@ condensedLog=$hapmapDirectory"condensed_log.txt";
 
 
 ## Error handling in case something crashes.
-trap 'bash queue_end.sh $user $hapmap $main_dir $logName "Something went wrong. hapmap.finalize.sh:$LINENO"; echo "Something went wrong. hapmap.finalize.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+trap 'bash queue_end.sh $user $hapmap $main_dir $logName "Something went wrong. hapmap.finalize.sh:$LINENO"; echo -e "Something went wrong. hapmap.finalize.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
 
-echo "" >> $logName;
-echo "Running 'scripts_seqModules/scripts_hapmaps/hapmap.finalize.sh'" >> $logName;
-echo "    user              = "$user >> $logName;
-echo "    hapmap            = "$hapmap >> $logName;
-echo "    hapmapUser        = '"$hapmapUser"'" >> $logName;
-echo "    hapmapDirectory   = '"$hapmapDirectory"'" >> $logName;
+echo -e "" >> $logName;
+echo -e "Running 'scripts_seqModules/scripts_hapmaps/hapmap.finalize.sh'" >> $logName;
+echo -e "    user              = "$user >> $logName;
+echo -e "    hapmap            = "$hapmap >> $logName;
+echo -e "    hapmapUser        = '"$hapmapUser"'" >> $logName;
+echo -e "    hapmapDirectory   = '"$hapmapDirectory"'" >> $logName;
 
 ##============================================================================================================
 ## Read in 'SNPdata_parent.txt' file from Ymap-internal representation and output hapmap definition files.

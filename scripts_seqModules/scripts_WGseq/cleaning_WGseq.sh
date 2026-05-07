@@ -22,106 +22,106 @@ condensedLog=$projectDirectory"condensed_log.txt";
 . $main_dir"config.sh";
 if [ $debug -eq 1 ];
 then
-	echo "\tReached cleanup stage, but skipping it because the debug flag is on." >> $logName;
-	echo "\tCreating complete.txt, so that the front-end recognizes the completion." >> $logName;
+	echo -e "\tReached cleanup stage, but skipping it because the debug flag is on." >> $logName;
+	echo -e "\tCreating complete.txt, so that the front-end recognizes the completion." >> $logName;
 
 	completeFile=$projectDirectory"complete.txt";
-	echo "complete" > $completeFile;
+	echo -e "complete" > $completeFile;
 	timestamp=$(date +%T);
 	echo $timestamp >> $completeFile;
-	echo "\tGenerated 'complete.txt' file." >> $logName;
+	echo -e "\tGenerated 'complete.txt' file." >> $logName;
 	chmod 0774 $completeFile;
 
 	## changing working.txt to working_done.txt
 	if [ -f $projectDirectory"working.txt" ]
 	then
 		mv $projectDirectory"working.txt" $projectDirectory"working_done.txt";
-		echo "\t changed working.txt to working_done.txt" >> $logName;
+		echo -e "\t changed working.txt to working_done.txt" >> $logName;
 	fi
 
 	exit 0;
 fi
 
-echo "#=======================================#" >> $logName;
-echo "# Cleaning up intermediate WGseq files. #" >> $logName;
-echo "#=======================================#" >> $logName;
-echo "Cleaning and archiving." >> $condensedLog;
+echo -e "#=======================================#" >> $logName;
+echo -e "# Cleaning up intermediate WGseq files. #" >> $logName;
+echo -e "#=======================================#" >> $logName;
+echo -e "Cleaning and archiving." >> $condensedLog;
 
 if [ -f $projectDirectory"zipTemp.txt" ]
 then
 	rm $projectDirectory"zipTemp.txt";
-	echo "\tzipTemp.txt" >> $logName;
+	echo -e "\tzipTemp.txt" >> $logName;
 fi
 
 if [ -f $projectDirectory"processing1.m" ]
 then
 	rm $projectDirectory"processing1.m";
-	echo "\tprocessing1.m" >> $logName;
+	echo -e "\tprocessing1.m" >> $logName;
 fi
 
 if [ -f $projectDirectory"processing2.m" ]
 then
 	rm $projectDirectory"processing2.m";
-	echo "\tprocessing2.m" >> $logName;
+	echo -e "\tprocessing2.m" >> $logName;
 fi
 
 if [ -f $projectDirectory"processing3.m" ]
 then
 	rm $projectDirectory"processing3.m";
-	echo "\tprocessing3.m" >> $logName;
+	echo -e "\tprocessing3.m" >> $logName;
 fi
 
 if [ -f $projectDirectory"processing4.m" ]
 then
 	rm $projectDirectory"processing4.m";
-	echo "\tprocessing4.m" >> $logName;
+	echo -e "\tprocessing4.m" >> $logName;
 fi
 
 if [ -f $projectDirectory"data_sorted.bam.bai" ]
 then
 	rm $projectDirectory"data_sorted.bam.bai";
-	echo "\tdata_sorted.bam.bai" >> $logName;
+	echo -e "\tdata_sorted.bam.bai" >> $logName;
 fi
 
 if [ -f $projectDirectory"data_sorted.bam" ]
 then
 	rm $projectDirectory"data_sorted.bam";
-	echo "\tdata_sorted.bam" >> $logName;
+	echo -e "\tdata_sorted.bam" >> $logName;
 fi
 if [ -f $projectDirectory"data.bam" ]
 then
 	rm $projectDirectory"data.bam";
-	echo "\tdata.bam" >> $logName;
+	echo -e "\tdata.bam" >> $logName;
 fi
 if [ -f $projectDirectory"data.pileup" ]
 then
 	rm $projectDirectory"data.pileup";
-	echo "\tdata.pileup" >> $logName;
+	echo -e "\tdata.pileup" >> $logName;
 fi
 if [ -f $projectDirectory"data_indelRealigned.bam" ]
 then
 	rm $projectDirectory"data_indelRealigned.bam";
-	echo "\tdata_indelRealigned.bam" >> $logName;
+	echo -e "\tdata_indelRealigned.bam" >> $logName;
 fi
 if [ -f $projectDirectory"data_indelRealigned.bai" ]
 then
 	rm $projectDirectory"data_indelRealigned.bai";
-	echo "\tdata_indelRealigned.bai" >> $logName;
+	echo -e "\tdata_indelRealigned.bai" >> $logName;
 fi
 
 if [ -d $projectDirectory"fastqc_temp/" ]
 then
 	rm -rf $projectDirectory"fastqc_temp/";
-	echo "\tfastqc_temp/" >> $logName;
+	echo -e "\tfastqc_temp/" >> $logName;
 fi
 if [ -f $projectDirectory"datafiles.txt" ]
 then
 	# Get first data file name from "datafiles.txt";
 	datafile1=$(head -n 1 $projectDirectory"datafiles.txt");
-	echo "\tdatafile 1 = '"$datafile1"'" >> $logName;
+	echo -e "\tdatafile 1 = '"$datafile1"'" >> $logName;
 	# Get second data file name from "datafiles.txt";
 	datafile2=$(tail -n 1 $projectDirectory"datafiles.txt");
-	echo "\tdatafile 2 = '"$datafile2"'" >> $logName;
+	echo -e "\tdatafile 2 = '"$datafile2"'" >> $logName;
 	if [ "$datafile1" = "$datafile2" ]
 	then
 		# deleting only if a valid file name is written
@@ -130,23 +130,23 @@ then
 			if [ -f $projectDirectory$datafile1 ]
 			then
 				rm $projectDirectory$datafile1;
-				echo "\t"$datafile1 >> $logName;
+				echo -e "\t"$datafile1 >> $logName;
 			fi
 		fi
 	else
 		if [ -f $projectDirectory$datafile1 ]
 		then
 			rm $projectDirectory$datafile1;
-			echo "\t"$datafile1 >> $logName;
+			echo -e "\t"$datafile1 >> $logName;
 		fi
 		if [ -f $projectDirectory$datafile2 ]
 		then
 			rm $projectDirectory$datafile2;
-			echo "\t"$datafile2 >> $logName;
+			echo -e "\t"$datafile2 >> $logName;
 		fi
 	fi
 	rm $projectDirectory"datafiles.txt";
-	echo "\tdatafiles.txt" >> $logName;
+	echo -e "\tdatafiles.txt" >> $logName;
 fi
 
 
@@ -155,13 +155,13 @@ if [ -f $projectDirectory"putative_SNPs_v4.txt" ]
 then
 	zip -j -9 $projectDirectory"putative_SNPs_v4.zip" $projectDirectory"putative_SNPs_v4.txt";
 	rm $projectDirectory"putative_SNPs_v4.txt";
-	echo "\tputative_SNPs_v4.txt => putative_SNPs_v4.zip" >> $logName;
+	echo -e "\tputative_SNPs_v4.txt => putative_SNPs_v4.zip" >> $logName;
 fi
 if [ -f $projectDirectory"SNP_CNV_v1.txt" ]
 then
 	zip -j -9 $projectDirectory"SNP_CNV_v1.zip" $projectDirectory"SNP_CNV_v1.txt";
 	rm $projectDirectory"SNP_CNV_v1.txt";
-	echo "\tSNP_CNV_v1.txt => SNP_CNV_v1.zip" >> $logName;
+	echo -e "\tSNP_CNV_v1.txt => SNP_CNV_v1.zip" >> $logName;
 fi
 
 
@@ -185,19 +185,19 @@ then
 	cat $projectDirectory"dataFormat.txt" >> $timesLogFile;
 	echo -n "]\t" >> $timesLogFile;
 	cat $projectDirectory"working.txt" >> $timesLogFile;
-	echo " -> "$timestamp >> $timesLogFile;
+	echo -e " -> "$timestamp >> $timesLogFile;
 fi
 
 completeFile=$projectDirectory"complete.txt";
-echo "complete" > $completeFile;
+echo -e "complete" > $completeFile;
 echo $timestamp >> $completeFile;
-echo "\tGenerated 'complete.txt' file." >> $logName;
+echo -e "\tGenerated 'complete.txt' file." >> $logName;
 chmod 0774 $completeFile;
 
 if [ -f $projectDirectory"working.txt" ]
 then
 	mv $projectDirectory"working.txt" $projectDirectory"working_done.txt";
-	echo "\tworking.txt" >> $logName;
+	echo -e "\tworking.txt" >> $logName;
 fi
 
 

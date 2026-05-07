@@ -9,13 +9,13 @@ projectDirectory=$main_dir"users/"$user"/genomes/"$genome"/";
 ##==============================================================================
 ## Add project end to queue log file.
 ##------------------------------------------------------------------------------
-echo "\tEnding queue processing." >> $logName;
+echo -e "\tEnding queue processing." >> $logName;
 outputName=$projectDirectory"finalize.php";
-echo "<?php" > $outputName;
-echo "chdir('"$main_dir"');" >> $outputName;
-echo "require_once 'constants.php';" >> $outputName;
-echo "require_once 'sharedFunctions.php';" >> $outputName;
-echo "queue_end('"$user"','','"$genome"','','"$message"');" >> $outputName;
-echo "?>" >> $outputName;
+echo -e "<?php" > $outputName;
+echo -e "chdir('"$main_dir"');" >> $outputName;
+echo -e "require_once 'constants.php';" >> $outputName;
+echo -e "require_once 'sharedFunctions.php';" >> $outputName;
+echo -e "queue_end('"$user"','','"$genome"','','"$message"');" >> $outputName;
+echo -e "?>" >> $outputName;
 php $outputName;
 rm $outputName;

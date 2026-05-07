@@ -11,12 +11,12 @@ user=$1;
 project=$2;
 main_dir=$(pwd)"/../../";
 
-echo "";
-echo "Input to : project.paired_WGseq.install_3.sh";
-echo "\tuser     = "$user;
-echo "\tproject  = "$project;
-echo "\tmain_dir = "$main_dir;
-echo "";
+echo -e "";
+echo -e "Input to : project.paired_WGseq.install_3.sh";
+echo -e "\tuser     = "$user;
+echo -e "\tproject  = "$project;
+echo -e "\tmain_dir = "$main_dir;
+echo -e "";
 
 
 ##==============================================================================
@@ -35,22 +35,22 @@ logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
 
 ## Error handling in case something crashes.
-trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.paired_WGseq.install_3.sh:$LINENO"; echo "Something went wrong. project.paired_WGseq.install_3.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.paired_WGseq.install_3.sh:$LINENO"; echo -e "Something went wrong. project.paired_WGseq.install_3.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
-echo "#.............................................................................." >> $logName;
-echo "Running 'scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_3.sh'" >> $logName;
-echo "Variables passed via command-line from 'scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_2.php' :" >> $logName;
-echo "\tuser     = '"$user"'" >> $logName;
-echo "\tproject  = '"$project"'" >> $logName;
-echo "\tmain_dir = '"$main_dir"'" >> $logName;
-echo "#============================================================================== 3" >> $logName;
+echo -e "#.............................................................................." >> $logName;
+echo -e "Running 'scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_3.sh'" >> $logName;
+echo -e "Variables passed via command-line from 'scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_2.php' :" >> $logName;
+echo -e "\tuser     = '"$user"'" >> $logName;
+echo -e "\tproject  = '"$project"'" >> $logName;
+echo -e "\tmain_dir = '"$main_dir"'" >> $logName;
+echo -e "#============================================================================== 3" >> $logName;
 
-echo "#=====================================#" >> $logName;
-echo "# Setting up locations and variables. #" >> $logName;
-echo "#=====================================#" >> $logName;
+echo -e "#=====================================#" >> $logName;
+echo -e "# Setting up locations and variables. #" >> $logName;
+echo -e "#=====================================#" >> $logName;
 
-echo "\tprojectDirectory = '$projectDirectory'" >> $logName;
-echo "Setting up for processing." >> $condensedLog;
+echo -e "\tprojectDirectory = '$projectDirectory'" >> $logName;
+echo -e "Setting up for processing." >> $condensedLog;
 
 chmod 0774 $logName;
 chmod 0774 $condensedLog;
@@ -65,13 +65,13 @@ chmod 0774 $condensedLog;
 genome=$(head -n 1 $projectDirectory"genome.txt");
 hapmap=$(tail -n 1 $projectDirectory"genome.txt");
 dataFormat=$(head -n 1 $projectDirectory"dataFormat.txt");
-echo "\t'genome.txt' file entry." >> $logName;
-echo "\t\tgenome = '"$genome"'" >> $logName;
+echo -e "\t'genome.txt' file entry." >> $logName;
+echo -e "\t\tgenome = '"$genome"'" >> $logName;
 if [ "$genome" = "$hapmap" ]
 then
 	hapmapInUse=0;
 else
-	echo "\t\thapmap = '"$hapmap"'" >> $logName;
+	echo -e "\t\thapmap = '"$hapmap"'" >> $logName;
 	hapmapInUse=1;
 fi
 if [ $hapmapInUse = 1 ]
@@ -86,7 +86,7 @@ then
 		hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
 		hapmapUser="default";
 	fi
-	echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
+	echo -e "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
 fi
 
 # Determine location of genome being used.
@@ -99,48 +99,48 @@ then
 	genomeDirectory=$main_dir"users/default/genomes/"$genome"/";
 	genomeUser="default";
 fi
-echo "\tgenomeDirectory = '"$genomeDirectory"'" >> $logName;
+echo -e "\tgenomeDirectory = '"$genomeDirectory"'" >> $logName;
 
 # Get reference FASTA file name from "reference.txt";
 genomeFASTA=$(head -n 1 $genomeDirectory"reference.txt");
-echo "\tgenomeFASTA = '"$genomeFASTA"'" >> $logName;
+echo -e "\tgenomeFASTA = '"$genomeFASTA"'" >> $logName;
 
 # Get first data file name from "datafiles.txt";
 datafile1=$(head -n 1 $projectDirectory"datafiles.txt");
-echo "\tdatafile 1 = '"$datafile1"'" >> $logName;
+echo -e "\tdatafile 1 = '"$datafile1"'" >> $logName;
 
 # Get second data file name from "datafiles.txt";
 datafile2=$(tail -n 1 $projectDirectory"datafiles.txt");
-echo "\tdatafile 2 = '"$datafile2"'" >> $logName;
+echo -e "\tdatafile 2 = '"$datafile2"'" >> $logName;
 
 # Get ploidy estimate from "ploidy.txt" in project directory.
 ploidyEstimate=$(head -n 1 $projectDirectory"ploidy.txt");
-echo "\tploidyEstimate = '"$ploidyEstimate"'" >> $logName;
+echo -e "\tploidyEstimate = '"$ploidyEstimate"'" >> $logName;
 
 # Get ploidy baseline from "ploidy.txt" in project directory.
 ploidyBase=$(tail -n 1 $projectDirectory"ploidy.txt");
-echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
+echo -e "\tploidyBase = '"$ploidyBase"'" >> $logName;
 
 # Get parent name from "parent.txt" in project directory.
 projectParent=$(head -n 1 $projectDirectory"parent.txt");
-echo "\tparentProject = '"$projectParent"'" >> $logName;
+echo -e "\tparentProject = '"$projectParent"'" >> $logName;
 
 
-echo "#============================================================================== 2" >> $logName;
+echo -e "#============================================================================== 2" >> $logName;
 
 
 if [ -f $projectDirectory"SNP_CNV_v1.txt" ]
 then
-	echo "\tDone: SAM -> BAM, new group headers, sorted." >> $logName;
-	echo "\tSamtools.pileup generated." >> $logName;
+	echo -e "\tDone: SAM -> BAM, new group headers, sorted." >> $logName;
+	echo -e "\tSamtools.pileup generated." >> $logName;
 else
 	##==============================================================================
 	## Trimming/cleanup of FASTQ files.
 	##------------------------------------------------------------------------------
-	echo "#=======================================================================================#" >> $logName;
-	echo "# Trimming of unbalanced FASTQ entries using 'scripts_seqModules/FASTQ_2_trimming.sh'.  #" >> $logName;
-	echo "#=======================================================================================#" >> $logName;
-	echo "Resolving FASTQ file errors." >> $condensedLog;
+	echo -e "#=======================================================================================#" >> $logName;
+	echo -e "# Trimming of unbalanced FASTQ entries using 'scripts_seqModules/FASTQ_2_trimming.sh'.  #" >> $logName;
+	echo -e "#=======================================================================================#" >> $logName;
+	echo -e "Resolving FASTQ file errors." >> $condensedLog;
 	currdir=$(pwd);
 	cd $projectDirectory;
 	bash $main_dir"scripts_seqModules/FASTQ_2_trimming.sh" $projectDirectory$datafile1 $projectDirectory$datafile2 >> $logName;
@@ -150,78 +150,78 @@ else
 	##==============================================================================
 	## Initial processing of paired-WGseq dataset.
 	##------------------------------------------------------------------------------
-	echo "#=================================================#" >> $logName;
-	echo "# Initial processing of paired-end WGseq dataset. #" >> $logName;
-	echo "#=================================================#" >> $logName;
+	echo -e "#=================================================#" >> $logName;
+	echo -e "# Initial processing of paired-end WGseq dataset. #" >> $logName;
+	echo -e "#=================================================#" >> $logName;
 
 	# Align fastq against genome.
-	echo "[[=- Align with Bowtie -=]]" >> $logName;
-	echo "Aligning reads with Bowtie2 => SAM file." >> $condensedLog;
+	echo -e "[[=- Align with Bowtie -=]]" >> $logName;
+	echo -e "Aligning reads with Bowtie2 => SAM file." >> $condensedLog;
 
 	if [ -f $projectDirectory"data.bam" ]
 	then
-		echo "\tDone: SAM -> BAM, new group headers, sorted." >> $logName;
+		echo -e "\tDone: SAM -> BAM, new group headers, sorted." >> $logName;
 	else
-		echo "\tBowtie : paired-end reads aligning into SAM file." >> $logName;
+		echo -e "\tBowtie : paired-end reads aligning into SAM file." >> $logName;
 		## Bowtie 2 command for paired reads:
-		echo "\nRunning bowtie2.\n";
+		echo -e "\nRunning bowtie2.\n";
 		$bowtie2Directory"bowtie2" --very-sensitive -p $cores -x $genomeDirectory"bowtie_index" -1 $projectDirectory$datafile1 -2 $projectDirectory$datafile2 -S $projectDirectory"data.sam";
 			# -S : SAM output mode.
 			# -p : number of threads to use.
 			# -1 : dataset.
 		    # --very-sensitive : a default set of configurations.
 		chmod 774 $projectDirectory"data.sam";
-		echo "\tBowtie : paired-end reads aligned into SAM file." >> $logName;
+		echo -e "\tBowtie : paired-end reads aligned into SAM file." >> $logName;
 
-		echo "\tSamtools : converting Bowtie-SAM into compressed format (BAM) file." >> $logName;
-		echo "Compressing SAM file => BAM file." >> $condensedLog;
-		echo "\nRunning samtools:view.\n";
+		echo -e "\tSamtools : converting Bowtie-SAM into compressed format (BAM) file." >> $logName;
+		echo -e "Compressing SAM file => BAM file." >> $condensedLog;
+		echo -e "\nRunning samtools:view.\n";
 		$samtools_exec view -@ $cores -bT $genomeDirectory$genomeFASTA $projectDirectory"data.sam" > $projectDirectory"data.temp.bam";
 		rm $projectDirectory"data.sam";
-		echo "\tSamtools : Bowtie-SAM converted into compressed format (BAM) file." >> $logName;
+		echo -e "\tSamtools : Bowtie-SAM converted into compressed format (BAM) file." >> $logName;
 		mv $projectDirectory"data.temp.bam" $projectDirectory"data.bam";
 		chmod 774 $projectDirectory"data.bam";
 
-		echo "[[=- Sorting/Indexing BAM files -=]]" >> $logName;
-		echo "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
-		echo "Sorting BAM file." >> $condensedLog;
-		echo "\nRunning samtools:sort.\n";
+		echo -e "[[=- Sorting/Indexing BAM files -=]]" >> $logName;
+		echo -e "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
+		echo -e "Sorting BAM file." >> $condensedLog;
+		echo -e "\nRunning samtools:sort.\n";
 		$samtools_exec sort -@ $cores $projectDirectory"data.bam" -o $projectDirectory"data_sorted.bam" -T $projectDirectory;
 		chmod 774 $projectDirectory"data_sorted.bam";
-		echo "Indexing BAM file." >> $condensedLog;
-		echo "\nRunning samtools:index.\n";
+		echo -e "Indexing BAM file." >> $condensedLog;
+		echo -e "\nRunning samtools:index.\n";
 		$samtools_exec index $projectDirectory"data_sorted.bam";
 		chmod 774 $projectDirectory"data_sorted.bam.bai";
-		echo "\tSamtools : Bowtie-BAM sorted & indexed." >> $logName;
+		echo -e "\tSamtools : Bowtie-BAM sorted & indexed." >> $logName;
 	fi;
 
 	if [ -f $projectDirectory"data.pileup" ]
 	then
-		echo "\tSamtools.pileup generated." >> $logName;
+		echo -e "\tSamtools.pileup generated." >> $logName;
 	else
-		echo "#============================================================================== 3" >> $logName;
+		echo -e "#============================================================================== 3" >> $logName;
 
-		echo "[[=- In-house SNP/CNV analysis -=]]" >> $logName;
+		echo -e "[[=- In-house SNP/CNV analysis -=]]" >> $logName;
 		usedFile=$projectDirectory"data_sorted.bam";
-		echo "\tSamtools : Generating pileup.   (for SNP/CNV analysis)" >> $logName;
-		echo "Generating pileup file." >> $condensedLog;
-		echo "\nRunning samtools:mpileup.\n";
+		echo -e "\tSamtools : Generating pileup.   (for SNP/CNV analysis)" >> $logName;
+		echo -e "Generating pileup file." >> $condensedLog;
+		echo -e "\nRunning samtools:mpileup.\n";
 		bash $main_dir"scripts_seqModules/parallel_mpileup.sh" $user $project >> $logName;
 		chmod 774 $projectDirectory"data.pileup";
-		echo "\tSamtools : Pileup generated." >> $logName;
+		echo -e "\tSamtools : Pileup generated." >> $logName;
 	fi;
 
-	echo "Processing pileup for CNVs & SNPs." >> $condensedLog;
+	echo -e "Processing pileup for CNVs & SNPs." >> $condensedLog;
 
-	( echo "\tPython : Processing pileup for SNPs." >> $logName;
+	( echo -e "\tPython : Processing pileup for SNPs." >> $logName;
 	$python_exec $main_dir"scripts_seqModules/counts_SNPs_v5.py" $projectDirectory"data.pileup" > $projectDirectory"putative_SNPs_v4.txt" 2>> $logName;
 	chmod 774 $projectDirectory"putative_SNPs_v4.txt"
-	echo "\tPython : Pileup processed for SNPs." >> $logName; ) &
+	echo -e "\tPython : Pileup processed for SNPs." >> $logName; ) &
 
-	( echo "\tPython : Processing pileup for SNP-CNV." >> $logName;
+	( echo -e "\tPython : Processing pileup for SNP-CNV." >> $logName;
 	$python_exec $main_dir"scripts_seqModules/counts_CNVs-SNPs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"SNP_CNV_v1.txt" 2>> $logName;
 	chmod 774 $projectDirectory"SNP_CNV_v1.txt";
-	echo "\tPython : Pileup processed for SNP-CNV." >> $logName; ) &
+	echo -e "\tPython : Pileup processed for SNP-CNV." >> $logName; ) &
 
 	wait;
 fi
@@ -232,7 +232,7 @@ sed -n '2~2p' $genomeDirectory"datafile_g_0.2.fasta" > $projectDirectory"referen
 referenceSeq=$(wc $projectDirectory"reference.temp");
 genomeChrCount=$(echo $referenceSeq=|cut -d' ' -f1);
 genomeLengthInit=$(echo $referenceSeq=|cut -d' ' -f3)
-genomeLength=$(expr $genomeLengthInit - $genomeChrCount);
+genomeLength=(($genomeLengthInit - $genomeChrCount));
 echo $genomeLength" (genome length)" >> $projectDirectory"readStats.txt";
 chmod 774 $projectDirectory"readStats.txt";
 
@@ -241,7 +241,7 @@ readCount=$(head -n 1 $projectDirectory"readStats.txt" | awk '{print $1}');
 readTotalLength=$(head -n 2 $projectDirectory"readStats.txt" | tail -n 1 | awk '{print $1}');
 
 ## Calculate expected average read depth and add to readStats.txt file.
-readDepthAverageExpected=$(echo "scale=3; $readTotalLength / $genomeLength" | bc);
+readDepthAverageExpected=$(echo -e "scale=3; $readTotalLength / $genomeLength" | bc);
 echo $readDepthAverageExpected" (Expected read depth)" >> $projectDirectory"readStats.txt";
 
 ## Find average read depth and add to readStats.txt file.
@@ -249,12 +249,12 @@ readDepthAverageFound=$(awk '{sum += $3; count++} END {if (count > 0) print sum/
 echo $readDepthAverageFound" (Found read depth)" >> $projectDirectory"readStats.txt";
 
 ## Calculate percentage mapped and add to readStats.txt file.
-percentageMapped1=$(echo "scale=6; ($readDepthAverageFound / $readDepthAverageExpected)*100" | bc);
-percentageMapped2=$(echo "scale=3; $percentageMapped1 / 1" | bc);
+percentageMapped1=$(echo -e "scale=6; ($readDepthAverageFound / $readDepthAverageExpected)*100" | bc);
+percentageMapped2=$(echo -e "scale=3; $percentageMapped1 / 1" | bc);
 echo $percentageMapped2" (Mapped read percentage)">> $projectDirectory"readStats.txt";
 if [ "$percentageMapped2" -le "50" ]
 then
-	echo "%"$percentageMapped2" reads mapped.">> $projectDirectory"warning.txt";
+	echo -e "%"$percentageMapped2" reads mapped.">> $projectDirectory"warning.txt";
 fi
 
 
@@ -262,20 +262,20 @@ if [ $hapmapInUse = 1 ]
 then
 	if [ -f $projectDirectory"trimmed_SNPs_v5.txt" ]
 	then
-		echo "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
-		echo "\t\tDone." >> $logName;
+		echo -e "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
+		echo -e "\t\tDone." >> $logName;
 	else
-		echo "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
-		echo "\t\t| Inputs to python script:" >> $logName;
-		echo "\t\t|\tgenome     = '$genome'"     >> $logName;
-		echo "\t\t|\tgenomeUser = '$genomeUser'" >> $logName;
-		echo "\t\t|\tproject    = '$project'"    >> $logName;
-		echo "\t\t|\tuser       = '$user'"       >> $logName;
-		echo "\t\t|\thapmap     = '$hapmap'"     >> $logName;
-		echo "\t\t|\thapmapUser = '$hapmapUser'" >> $logName;
-		echo "\t\t|\tmain_dir   = '$main_dir'"   >> $logName;
+		echo -e "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
+		echo -e "\t\t| Inputs to python script:" >> $logName;
+		echo -e "\t\t|\tgenome     = '$genome'"     >> $logName;
+		echo -e "\t\t|\tgenomeUser = '$genomeUser'" >> $logName;
+		echo -e "\t\t|\tproject    = '$project'"    >> $logName;
+		echo -e "\t\t|\tuser       = '$user'"       >> $logName;
+		echo -e "\t\t|\thapmap     = '$hapmap'"     >> $logName;
+		echo -e "\t\t|\thapmapUser = '$hapmapUser'" >> $logName;
+		echo -e "\t\t|\tmain_dir   = '$main_dir'"   >> $logName;
 		$python_exec $main_dir"scripts_seqModules/putative_SNPs_from_hapmap_in_child.py" $genome $genomeUser $project $user $hapmap $hapmapUser $main_dir > $projectDirectory"trimmed_SNPs_v5.txt" 2>> $logName;
-		echo "\t\tDone." >> $logName;
+		echo -e "\t\tDone." >> $logName;
 
 		chmod 774 $projectDirectory"trimmed_SNPs_v5.txt";
 	fi
@@ -283,17 +283,17 @@ fi
 
 chmod 774 $projectDirectory*;
 
-echo "Pileup processing is complete." >> $condensedLog;
-echo "\nPileup processing complete.\n" >> $logName;
+echo -e "Pileup processing is complete." >> $condensedLog;
+echo -e "\nPileup processing complete.\n" >> $logName;
 echo   "=========================================================================\n" >> $logName;
 
 if [ $hapmapInUse = 0 ]
 then
-	echo "\nPassing processing on to 'project.WGseq.install_4.sh' for final analysis.\n" >> $logName;
+	echo -e "\nPassing processing on to 'project.WGseq.install_4.sh' for final analysis.\n" >> $logName;
 	echo   "=========================================================================\n" >> $logName;
 	bash $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" $user $project 2>> $logName;
 else
-	echo "\nPassing processing on to 'project.WGseq.hapmap.install_4.sh' for final analysis.\n" >> $logName;
+	echo -e "\nPassing processing on to 'project.WGseq.hapmap.install_4.sh' for final analysis.\n" >> $logName;
 	echo   "================================================================================\n" >> $logName;
 	bash $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh" $user $project $hapmap 2>> $logName;
 fi

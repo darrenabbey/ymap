@@ -11,12 +11,12 @@
 if [ -z $1 ] 
 then
 	echo;
-	echo "# Command syntax is : 'bash FASTQ_reformtat_1.sh [FASTA seq file]'";
-	echo "# ";
-	echo "#        [FASTA seq file] : Genome sequence file in FASTA format.";
-	echo "# ";
-	echo "# This script will take a file containing single-line FASTA entries and reformat";
-	echo "# them to have one header line and many sequence lines 100bp long per entry.";
+	echo -e "# Command syntax is : 'bash FASTQ_reformtat_1.sh [FASTA seq file]'";
+	echo -e "# ";
+	echo -e "#        [FASTA seq file] : Genome sequence file in FASTA format.";
+	echo -e "# ";
+	echo -e "# This script will take a file containing single-line FASTA entries and reformat";
+	echo -e "# them to have one header line and many sequence lines 100bp long per entry.";
 	echo;
 	exit 1;
 else

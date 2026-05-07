@@ -29,7 +29,7 @@ condensedLog=$projectDirectory"condensed_log.txt";
 
 # Get parent name used, from project's "parent.txt" file.
 parent=$(head -n 1 $projectDirectory"parent.txt");
-echo "\tparent = '"$parent"'" >> $logName;
+echo -e "\tparent = '"$parent"'" >> $logName;
 # Determine location of parent.
 if [ -d $main_dir"users/"$user"/projects/"$parent"/" ]
 then
@@ -40,7 +40,7 @@ then
 	parentDirectory=$main_dir"users/default/projects/"$parent"/";
 	parentUser="default";
 fi
-echo "\tparentDirectory = '"$parentDirectory"'" >> $logName;
+echo -e "\tparentDirectory = '"$parentDirectory"'" >> $logName;
 
 # Get genome and hapmap names used, from project's "genome.txt" file.
 genome=$(head -n 1 $projectDirectory"genome.txt");
@@ -54,16 +54,16 @@ else
 	then
 		hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
 		cp $hapmapDirectory"colors.txt" $projectDirectory"colors.txt";
-		echo "\thapmap          = '"$hapmap"'" >> $logName;
-		echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
+		echo -e "\thapmap          = '"$hapmap"'" >> $logName;
+		echo -e "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
 		hapmapUser=$user;
 		hapmapInUse=1;
 	elif [ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]
 	then
 		hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
 		cp $hapmapDirectory"colors.txt" $projectDirectory"colors.txt";
-		echo "\thapmap          = '"$hapmap"'" >> $logName;
-		echo "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
+		echo -e "\thapmap          = '"$hapmap"'" >> $logName;
+		echo -e "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
 		hapmapUser="default";
 		hapmapInUse=1;
 	else
@@ -81,16 +81,16 @@ then
 	genomeDirectory=$main_dir"users/default/genomes/"$genome"/";
 	genomeUser="default";
 fi
-echo "\tgenome          = '"$genome"'" >> $logName;
-echo "\tgenomeDirectory = '"$genomeDirectory"'" >> $logName;
+echo -e "\tgenome          = '"$genome"'" >> $logName;
+echo -e "\tgenomeDirectory = '"$genomeDirectory"'" >> $logName;
 
 # Get ploidy estimate from "ploidy.txt" in project directory.
 ploidyEstimate=$(head -n 1 $projectDirectory"ploidy.txt");
-echo "\tploidyEstimate = '"$ploidyEstimate"'" >> $logName;
+echo -e "\tploidyEstimate = '"$ploidyEstimate"'" >> $logName;
 
 # Get ploidy baseline from "ploidy.txt" in project directory.
 ploidyBase=$(tail -n 1 $projectDirectory"ploidy.txt");
-echo "\tploidyBase = '"$ploidyBase"'" >> $logName;
+echo -e "\tploidyBase = '"$ploidyBase"'" >> $logName;
 
 reflocation=$main_dir"users/"$genomeUser"/genomes/"$genome"/";                 # Directory where FASTA file is kept.
 FASTA=`sed -n 1,1'p' $reflocation"reference.txt"`;                             # Name of FASTA file.
@@ -102,29 +102,29 @@ ddRADseq_FASTA=$FASTAname"."$RestrctionEnzymes".fasta";                        #
 ##==============================================================================
 ## Generate script to re-run terminal visualization octave code.
 ##------------------------------------------------------------------------------
-echo "#======================================#" >> $logName;
-echo "# Re-perform visualization of dataset. #" >> $logName;
-echo "#======================================#" >> $logName;
+echo -e "#======================================#" >> $logName;
+echo -e "# Re-perform visualization of dataset. #" >> $logName;
+echo -e "#======================================#" >> $logName;
 
-echo "\tGenerating octave script to perform CNV analysis of dataset, with GC-correction." >> $logName;
+echo -e "\tGenerating octave script to perform CNV analysis of dataset, with GC-correction." >> $logName;
 outputName=$projectDirectory"processing_Rerun.m";
-echo "\toutputName = "$outputName >> $logName;
+echo -e "\toutputName = "$outputName >> $logName;
 
-echo "function [] = processing_Rerun()" > $outputName;
-echo "\tdiary('"$projectDirectory"octave.rerun_visualization.log');" >> $outputName;
-echo "\tcd "$main_dir"scripts_seqModules/scripts_ddRADseq;" >> $outputName;
-
-
-echo "\tanalyze_CNVs_RADseq_3(  '$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
-
-echo "\tanalyze_SNPs_RADseq(    '$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
-
-echo "\tanalyze_CNV_SNPs_RADseq('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+echo -e "function [] = processing_Rerun()" > $outputName;
+echo -e "\tdiary('"$projectDirectory"octave.rerun_visualization.log');" >> $outputName;
+echo -e "\tcd "$main_dir"scripts_seqModules/scripts_ddRADseq;" >> $outputName;
 
 
-echo "end" >> $outputName;
+echo -e "\tanalyze_CNVs_RADseq_3(  '$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 
-echo "\tCalling octave." >> $logName;
+echo -e "\tanalyze_SNPs_RADseq(    '$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+
+echo -e "\tanalyze_CNV_SNPs_RADseq('$main_dir','$user','$genomeUser','$project','$parent','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+
+
+echo -e "end" >> $outputName;
+
+echo -e "\tCalling octave." >> $logName;
 $octave_exec $outputName  2>> $logName;
-echo "\toctave log from redo of visualization.." >> $logName;
+echo -e "\toctave log from redo of visualization.." >> $logName;
 sed 's/^/\t\t|/;' $projectDirectory"octave.rerun_visualization.log" >> $logName;

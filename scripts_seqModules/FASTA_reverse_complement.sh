@@ -1,7 +1,7 @@
 ##---------------------------------------------------------------------------------------------
 ## Reformat fasta : puts FASTA sequences into single lines, then sorts entries by seq length.
 ##---------------------------------------------------------------------------------------------
-echo "[[=- Reformatting FASTA entries into single lines per sequence. -=]]";
+echo -e "[[=- Reformatting FASTA entries into single lines per sequence. -=]]";
 # 0) Called like : "bash reformat_fasta.sh file.fa"
 # 1) For lines that start with ">", convert the ending "\n" into "\t".
 # 2) Removes all newline characters.
@@ -29,11 +29,11 @@ mv $1.temp $1;
 ##---------------------------------------------------------------------------------------------
 ## Reformat fasta : computes reverse complement of each FASTA entry.
 ##---------------------------------------------------------------------------------------------
-echo "[[=- Determining reverse-complement for sequence in each FASTA entry. -=]]";
+echo -e "[[=- Determining reverse-complement for sequence in each FASTA entry. -=]]";
 outFile=$1.temp;
 count=0;
 while read p; do
-        count=$(expr $count + 1);
+        count=(($count + 1));
         headerTest=${p:0:1};
         if [ "$headerTest" == ">" ]
         then
@@ -82,7 +82,7 @@ mv $1.temp $1;
 ##---------------------------------------------------------------------------------------------
 ## Reformat fasta : inserts newline characters into long sequences to break into 100bp lines.
 ##---------------------------------------------------------------------------------------------
-echo "[[=- Reformatting FASTA entries to wrap sequence at 100 bp. -=]]";
+echo -e "[[=- Reformatting FASTA entries to wrap sequence at 100 bp. -=]]";
 # 0) Called like : "bash reformat_fasta.sh file.fa"
 # 1) Adds a newline between each fasta entry, for ease of reading.
 # 2) Adds a newline between each fasta entry, for ease of reading.

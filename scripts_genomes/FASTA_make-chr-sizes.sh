@@ -4,25 +4,25 @@ set -e
 if [ -z $1 ]
 then
 	echo;
-	echo "# Command syntax is : 'bash FASTA_make-chr-sizes.sh [fasta file] > chrom.sizes'";
-	echo "# ";
-	echo "#        [fasta file]   : FASTA formatted genome sequence file.";
-	echo "#        chrom.sizes    : a two-column text file with lines of <chromosome name> <size in bases>.";
-	echo "# ";
-	echo "# Script processes input FASTA file into a two-column text file with lines of <chromosome name> <size in bases>";
-	echo "for use with WIG-to-BigWIG.sh to create a BigWig file for use with IGV.";
-	echo "#";
+	echo -e "# Command syntax is : 'bash FASTA_make-chr-sizes.sh [fasta file] > chrom.sizes'";
+	echo -e "# ";
+	echo -e "#        [fasta file]   : FASTA formatted genome sequence file.";
+	echo -e "#        chrom.sizes    : a two-column text file with lines of <chromosome name> <size in bases>.";
+	echo -e "# ";
+	echo -e "# Script processes input FASTA file into a two-column text file with lines of <chromosome name> <size in bases>";
+	echo -e "for use with WIG-to-BigWIG.sh to create a BigWig file for use with IGV.";
+	echo -e "#";
 	echo;
 	exit 1;
 else
 # Absolute path this script is in.
 BASEPATH=$(readlink -f "$0");
 BASEDIR=$(dirname $BASEPATH);
-#echo "Script found in: ${BASEDIR}"
+#echo -e "Script found in: ${BASEDIR}"
 
 # Absolute path the script is called from.
 CALLDIR=${PWD}
-#echo "Script executed from: ${CALLDIR}"
+#echo -e "Script executed from: ${CALLDIR}"
 
 # Make temp dir.
 tempdir=$(mktemp -d);

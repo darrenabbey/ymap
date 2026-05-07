@@ -32,12 +32,12 @@ case "$1" in
     start)
         echo -n "Starting ${DESC}: "
         start-stop-daemon $START_OPTS >> $LOGFILE
-        echo "$NAME."
+        echo -e "$NAME."
         ;;
     stop)
         echo -n "Stopping $DESC: "
         start-stop-daemon $STOP_OPTS
-        echo "$NAME."
+        echo -e "$NAME."
         rm -f $PIDFILE
         ;;
     restart|force-reload)
@@ -45,11 +45,11 @@ case "$1" in
         start-stop-daemon $STOP_OPTS
         sleep 1
         start-stop-daemon $START_OPTS >> $LOGFILE
-        echo "$NAME."
+        echo -e "$NAME."
         ;;
     *)
         N=/etc/init.d/$NAME
-        echo "Usage: $N {start|stop|restart|force-reload}" >&2
+        echo -e "Usage: $N {start|stop|restart|force-reload}" >&2
         exit 1
         ;;
 esac

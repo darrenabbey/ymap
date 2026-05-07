@@ -11,11 +11,11 @@ main_dir=$(pwd)"/";
 
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 logFile=$projectDirectory"process_log.txt";
-echo "#|---- bam2sam.sh ---- begin." >> $logFile;
+echo -e "#|---- bam2sam.sh ---- begin." >> $logFile;
 
 outputFile="data.sam"
-echo "#| input file  : "$inputFile >> $logFile;
-echo "#| output file : "$outputFile >> $logFile;
+echo -e "#| input file  : "$inputFile >> $logFile;
+echo -e "#| output file : "$outputFile >> $logFile;
 
 #===================================================================================================================================
 # Use SAMtools to convert Bam to Sam.
@@ -23,8 +23,8 @@ echo "#| output file : "$outputFile >> $logFile;
 
 cd $projectDirectory;
 
-echo "#| indexing BAM file." >> $logFile;
+echo -e "#| indexing BAM file." >> $logFile;
 $samtools_exec index $inputFile;
-echo "#| converting to SAM file." >> $logFile;
+echo -e "#| converting to SAM file." >> $logFile;
 $samtools_exec view -h $inputFile > $outputFile;
-echo "#|---- bam2sam.sh ---- end." >> $logFile;
+echo -e "#|---- bam2sam.sh ---- end." >> $logFile;

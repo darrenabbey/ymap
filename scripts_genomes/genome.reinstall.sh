@@ -23,13 +23,13 @@ else
 
 		if [ -f "$file" ]; then
 			# item is a file, ignore.
-			echo "";
+			echo -e "";
 		else
 			# item is a directory.
 			echo $file;
 			genome=$file;
 			bash genome.install_6.sh $user $genome;
-			echo "\tdone."
+			echo -e "\tdone."
 		fi
 	done
 fi

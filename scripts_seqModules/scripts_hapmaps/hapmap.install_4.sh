@@ -35,27 +35,27 @@ condensedLog=$hapmapDirectory"condensed_log.txt";
 
 
 ## Error handling in case something crashes.
-trap 'bash queue_end.sh $user $hapmap $main_dir $logName "Something went wrong. hapmap.install_4.sh:$LINENO"; echo "Something went wrong. hapmap.install_4.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+trap 'bash queue_end.sh $user $hapmap $main_dir $logName "Something went wrong. hapmap.install_4.sh:$LINENO"; echo -e "Something went wrong. hapmap.install_4.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
 
-echo "" >> $logName;
-echo "Running 'scripts_seqModules/scripts_hapmaps/hapmap.install_4.sh'" >> $logName;
-echo "Variables passed via command-line from 'scripts_seqModules/scripts_hapmaps/hapmap.install_3.php' :" >> $logName;
-echo "    user                        = "$user >> $logName;
-echo "    referencePloidy             = "$referencePloidy >> $logName;
-echo "    project1 (parent)           = "$project1 >> $logName;
-echo "    project2 (child)            = "$project2 >> $logName;
-echo "    hapmap                      = "$hapmap >> $logName;
-echo "    main_dir                    = "$main_dir >> $logName;
-echo "#.............................................................................." >> $logName;
-echo "" >> $logName;
-echo "#=====================================#" >> $logName;
-echo "# Setting up locations and variables. #" >> $logName;
-echo "#=====================================#" >> $logName;
-echo "Setting up for processing." >> $condensedLog;
-echo "Important variables :" >> $logName;
-echo "    hapmap user                 = '"$hapmapUser"'" >> $logName;
-echo "    hapmap directory            = '"$hapmapDirectory"'" >> $logName;
+echo -e "" >> $logName;
+echo -e "Running 'scripts_seqModules/scripts_hapmaps/hapmap.install_4.sh'" >> $logName;
+echo -e "Variables passed via command-line from 'scripts_seqModules/scripts_hapmaps/hapmap.install_3.php' :" >> $logName;
+echo -e "    user                        = "$user >> $logName;
+echo -e "    referencePloidy             = "$referencePloidy >> $logName;
+echo -e "    project1 (parent)           = "$project1 >> $logName;
+echo -e "    project2 (child)            = "$project2 >> $logName;
+echo -e "    hapmap                      = "$hapmap >> $logName;
+echo -e "    main_dir                    = "$main_dir >> $logName;
+echo -e "#.............................................................................." >> $logName;
+echo -e "" >> $logName;
+echo -e "#=====================================#" >> $logName;
+echo -e "# Setting up locations and variables. #" >> $logName;
+echo -e "#=====================================#" >> $logName;
+echo -e "Setting up for processing." >> $condensedLog;
+echo -e "Important variables :" >> $logName;
+echo -e "    hapmap user                 = '"$hapmapUser"'" >> $logName;
+echo -e "    hapmap directory            = '"$hapmapDirectory"'" >> $logName;
 
 # Determine location of project1 (parent).  Is it in user or default account?
 if [ -d $main_dir"users/"$user"/projects/"$project1"/" ]
@@ -67,7 +67,7 @@ then
 	project1Directory=$main_dir"users/default/projects/"$project1"/";
 	project1User="default";
 fi
-echo "    project1 (parent) directory = '"$project1Directory"'" >> $logName;
+echo -e "    project1 (parent) directory = '"$project1Directory"'" >> $logName;
 
 # Determine location of project2 (child).  Is it in user or default account?
 if [ -d $main_dir"users/"$user"/projects/"$project2"/" ]
@@ -79,13 +79,13 @@ then
 	projcet2Directory=$main_dir"users/default/projects/"$project2"/";
 	project2User="default";
 fi
-echo "    project2 (child) directory  = '"$project2Directory"'" >> $logName;
+echo -e "    project2 (child) directory  = '"$project2Directory"'" >> $logName;
 
 # Get genome name from project1's "genome.txt" file.
 # ...both project1 and project2 will have the same genome, as only projects matching the genome
 # chosen for the hapmap are given as selection options.
 genome=$(head -n 1 $project1Directory"genome.txt");
-echo "    genome                      = '"$genome"'" >> $logName;
+echo -e "    genome                      = '"$genome"'" >> $logName;
 
 # Determine location of project1 genome.
 if [ -d $main_dir"users/"$user"/genomes/"$genome"/" ]
@@ -97,12 +97,12 @@ then
 	genomeDirectory=$main_dir"users/default/genomes/"$genome"/";
 	genomeUser="default";
 fi
-echo "    genome directory            = '"$genomeDirectory"'" >> $logName;
+echo -e "    genome directory            = '"$genomeDirectory"'" >> $logName;
 
 # Get reference FASTA file name from "reference.txt";
 genomeFASTA=$(head -n 1 $genomeDirectory"reference.txt");
-echo "    genome FASTA file           = '"$genomeFASTA"'" >> $logName;
-echo "    reference ploidy            = '"$referencePloidy"'" >> $logName;
+echo -e "    genome FASTA file           = '"$genomeFASTA"'" >> $logName;
+echo -e "    reference ploidy            = '"$referencePloidy"'" >> $logName;
 
 if [ "$referencePloidy" = "2" ]
 then
@@ -110,13 +110,13 @@ then
 	## For a diploid reference hapmap : Move parent SNP data to hapmap directory and
 	## preprocess it for analysis.
 	##------------------------------------------------------------------------------
-	echo "Move SNP data files to hapmap directory." >> $logName;
+	echo -e "Move SNP data files to hapmap directory." >> $logName;
 	if [ ! -f $hapmapDirectory"SNPdata_parent.txt" ]
 	then
-		echo "\tCopy parent : 'putative_SNPs_v4.txt'" >> $logName;
-		echo "\t\t to : '"$hapmapDirectory"SNPdata_parent.txt'" >> $logName;
+		echo -e "\tCopy parent : 'putative_SNPs_v4.txt'" >> $logName;
+		echo -e "\t\t to : '"$hapmapDirectory"SNPdata_parent.txt'" >> $logName;
 		cp $project1Directory"putative_SNPs_v4.zip" $hapmapDirectory"SNPdata_parent.zip";
-		echo "\tDecompressing parent data." >> $logName;
+		echo -e "\tDecompressing parent data." >> $logName;
 		cd $hapmapDirectory;
 		unzip -j SNPdata_parent.zip;
 		rm SNPdata_parent.zip;
@@ -128,7 +128,7 @@ then
 		rm $hapmapDirectory"SNPdata_parent.txt"
 		mv $hapmapDirectory"SNPdata_parent.temp.txt" $hapmapDirectory"SNPdata_parent.txt"
 	else
-		echo "\tParent data already preprocessed for use in hapmap." >> $logName;
+		echo -e "\tParent data already preprocessed for use in hapmap." >> $logName;
 	fi
 
 	##==============================================================================
@@ -140,19 +140,19 @@ then
 	## Deal with installing and processing child/project2 datasets.
 	##------------------------------------------------------------------------------
 	# Copy child SNP dataset to hapmap directory.
-	echo "\tDetermining number of child datasets in hapmap." >> $logName;
+	echo -e "\tDetermining number of child datasets in hapmap." >> $logName;
 	childNum=0;
 	while [ -f $hapmapDirectory"haplotypeFragments."$childNum".txt" ]
 	do
 		childNum=`expr $childNum + 1`;
 	done
-	echo "\t\tThere are "$childNum" child datasets used in hapmap." >> $logName;
+	echo -e "\t\tThere are "$childNum" child datasets used in hapmap." >> $logName;
 	childNum=`expr $childNum - 1`;   # at least one will always be found, but counting of map entries is zero based.
-	echo "\tCopy child : 'SNP_CNV_v1.zip'" >> $logName;
-	echo "\t\t from : '"$project2Directory"SNP_CNV_v1.zip'" >> $logName;
-	echo "\t\t to   : '"$hapmapDirectory"SNPdata_child."$childNum".zip'" >> $logName;
+	echo -e "\tCopy child : 'SNP_CNV_v1.zip'" >> $logName;
+	echo -e "\t\t from : '"$project2Directory"SNP_CNV_v1.zip'" >> $logName;
+	echo -e "\t\t to   : '"$hapmapDirectory"SNPdata_child."$childNum".zip'" >> $logName;
 	cp $project2Directory"SNP_CNV_v1.zip" $hapmapDirectory"SNPdata_child."$childNum".zip";
-	echo "\tDecompressing child data." >> $logName;
+	echo -e "\tDecompressing child data." >> $logName;
 	cd $hapmapDirectory;
 	unzip -j "SNPdata_child."$childNum".zip";
 	rm "SNPdata_child."$childNum".zip";
@@ -171,23 +171,23 @@ else
 	## For a haploid reference hapmap : Move parent SNP data to hapmap directory and
 	## preprocess it for analysis.
 	##------------------------------------------------------------------------------
-	echo "Move SNP data files to hapmap directory." >> $logName;
+	echo -e "Move SNP data files to hapmap directory." >> $logName;
 	if [ ! -f $hapmapDirectory"SNPdata_parent.txt" ]
 	then
-		echo "\tCopy parent1 : 'SNP_CNV_v1.txt'" >> $logName;
-		echo "\t\t to : '"$hapmapDirectory"SNPdata_parent1.txt'" >> $logName;
+		echo -e "\tCopy parent1 : 'SNP_CNV_v1.txt'" >> $logName;
+		echo -e "\t\t to : '"$hapmapDirectory"SNPdata_parent1.txt'" >> $logName;
 		cp $project1Directory"SNP_CNV_v1.zip" $hapmapDirectory"SNPdata_parent1.zip";
-		echo "\tDecompressing parent1 data." >> $logName;
+		echo -e "\tDecompressing parent1 data." >> $logName;
 		cd $hapmapDirectory;
 		unzip -j SNPdata_parent1.zip;
 		rm SNPdata_parent1.zip;
 		mv SNP_CNV_v1.txt SNPdata_parent1.txt;
 		cd $main_dir;
 
-		echo "\tCopy parent2 : 'SNP_CNV_v1.txt'" >> $logName;
-		echo "\t\t to : '"$hapmapDirectory"SNPdata_parent2.txt'" >> $logName;
+		echo -e "\tCopy parent2 : 'SNP_CNV_v1.txt'" >> $logName;
+		echo -e "\t\t to : '"$hapmapDirectory"SNPdata_parent2.txt'" >> $logName;
 		cp $project2Directory"SNP_CNV_v1.zip" $hapmapDirectory"SNPdata_parent2.zip";
-		echo "\tDecompressing parent2 data." >> $logName;
+		echo -e "\tDecompressing parent2 data." >> $logName;
 		cd $hapmapDirectory;
 		unzip -j SNPdata_parent2.zip;
 		rm SNPdata_parent2.zip;
@@ -202,18 +202,18 @@ else
 		rm $hapmapDirectory"SNPdata_parent1.txt";
 		rm $hapmapDirectory"SNPdata_parent2.txt";
 	else
-		echo "\tParent1 & parent2 data already preprocessed for use as hapmap." >> $logName;
+		echo -e "\tParent1 & parent2 data already preprocessed for use as hapmap." >> $logName;
 	fi
 
 	## Generate "complete.txt" to indicate processing has completed normally.
 	completeFile=$hapmapDirectory"complete.txt";
 	timestamp=$(date +%T);
 	echo $timestamp > $completeFile;
-	echo "\tGenerated 'complete.txt' file." >> $logName;
+	echo -e "\tGenerated 'complete.txt' file." >> $logName;
 	chmod 0666 $completeFile;
 fi
 
-echo "Concluding analysis." >> $condensedLog;
+echo -e "Concluding analysis." >> $condensedLog;
 
 ## Delete 'working.txt' file to let pipeline know that processing has completed, but hapmap is available for additional entries.
 rm $main_dir"users/"$user"/hapmaps/"$hapmap"/working.txt";

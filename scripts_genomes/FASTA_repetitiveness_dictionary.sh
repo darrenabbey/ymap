@@ -4,14 +4,14 @@ set -e
 if [ -z $5 ]
 then
 	echo;
-	echo "# Command syntax is : 'bash FASTA_repetitiveness_dictionary.sh [YMAP user name] [YMAP genome name] [YMAP main dir] [YMAP log file] [kmer length]'";
-	echo "# ";
-	echo "#        [YMAP user name]   : Name of user account.";
-	echo "#        [YMAP genome name] : Name of installed genome.";
-	echo "#        [YMAP main dir]    : Location of YMAP install.";
-	echo "#        [YMAP log file]    : Log file for output.";
-	echo "#        [kmer length]      : K-mer length.";
-	echo "#";
+	echo -e "# Command syntax is : 'bash FASTA_repetitiveness_dictionary.sh [YMAP user name] [YMAP genome name] [YMAP main dir] [YMAP log file] [kmer length]'";
+	echo -e "# ";
+	echo -e "#        [YMAP user name]   : Name of user account.";
+	echo -e "#        [YMAP genome name] : Name of installed genome.";
+	echo -e "#        [YMAP main dir]    : Location of YMAP install.";
+	echo -e "#        [YMAP log file]    : Log file for output.";
+	echo -e "#        [kmer length]      : K-mer length.";
+	echo -e "#";
 	echo;
 	exit 1;
 else
@@ -24,7 +24,7 @@ kmer_length=$5;
 genomeDirectory=$mainDir"users/"$userAccount"/genomes/"$genomeName"/";
 
 ## Error handling in case something crashes.
-trap 'bash queue_end.sh $userAccount $genomeName $mainDir $logFile "Something went wrong. FASTA_repetitiveness_dictionary.sh:$LINENO"; echo "Something went wrong. FASTA_repetitiveness_dictionary.sh:$LINENO" > $genomeDirectory"error.txt"; exit 1;' ERR;
+trap 'bash queue_end.sh $userAccount $genomeName $mainDir $logFile "Something went wrong. FASTA_repetitiveness_dictionary.sh:$LINENO"; echo -e "Something went wrong. FASTA_repetitiveness_dictionary.sh:$LINENO" > $genomeDirectory"error.txt"; exit 1;' ERR;
 
 
 # load local installed program location variables.
@@ -60,10 +60,10 @@ tempdir=$(mktemp -d);
 	done;
 #	wait;
 
-	#echo "Combining chromosome dictionaries."
+	#echo -e "Combining chromosome dictionaries."
 	cat $tempdir/*.repet > $tempdir/library.temp;
 
-	#echo "Sorting combined dictionary.";
+	#echo -e "Sorting combined dictionary.";
 	sort $tempdir/library.temp > $RepetDictionary;
 
 ###
