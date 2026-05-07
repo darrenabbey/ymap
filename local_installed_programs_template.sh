@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 #============================================================================
 # User installed executables not in PATH variable.

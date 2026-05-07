@@ -1,8 +1,9 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # project.ddRADseq.install_4.sh
 #
 set -e;
+
 ## All created files will have permission 760
 umask 007;
 
@@ -31,11 +32,11 @@ trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong.
 parent=$(head -n 1 $projectDirectory"parent.txt");
 echo -e "\tparent = '"$parent"'" >> $logName;
 # Determine location of parent.
-if [ -d $main_dir"users/"$user"/projects/"$parent"/" ]
+if [[ -d $main_dir"users/"$user"/projects/"$parent"/" ]]
 then
 	parentDirectory=$main_dir"users/"$user"/projects/"$parent"/";
 	parentUser=$user;
-elif [ -d $main_dir"users/default/projects/"$parent"/" ]
+elif [[ -d $main_dir"users/default/projects/"$parent"/" ]]
 then
 	parentDirectory=$main_dir"users/default/projects/"$parent"/";
 	parentUser="default";
@@ -47,11 +48,11 @@ echo -e "\tparentDirectory = '"$parentDirectory"'" >> $logName;
 genome=$(head -n 1 $projectDirectory"genome.txt");
 echo -e "\tgenome = '"$genome"'" >> $logName;
 # Determine location of genome being used.
-if [ -d $main_dir"users/"$user"/genomes/"$genome"/" ]
+if [[ -d $main_dir"users/"$user"/genomes/"$genome"/" ]]
 then
 	genomeDirectory=$main_dir"users/"$user"/genomes/"$genome"/";
 	genomeUser=$user;
-elif [ -d $main_dir"users/default/genomes/"$genome"/" ]
+elif [[ -d $main_dir"users/default/genomes/"$genome"/" ]]
 then
 	genomeDirectory=$main_dir"users/default/genomes/"$genome"/";
 	genomeUser="default";
@@ -77,7 +78,7 @@ ddRADseq_FASTA=$FASTAname"."$RestrctionEnzymes".fasta";                        #
 ## Preprocess ddRADseq CNV information.
 ##------------------------------------------------------------------------------
 echo -e "Preprocessing CNV data." >> $condensedLog;
-if [ -f $projectDirectory"preprocessed_CNVs.ddRADseq.txt" ]
+if [[ -f $projectDirectory"preprocessed_CNVs.ddRADseq.txt" ]]
 then
 	echo -e "\tCNV data already preprocessed with python script : 'py/dataset_process_for_CNV_analysis.ddRADseq.py'" >> $logName;
 else
@@ -91,12 +92,12 @@ fi
 ## Preprocess ddRADseq SNP information.
 ##------------------------------------------------------------------------------
 echo -e "Preprocessing SNP data." >> $condensedLog;
-if [ -f $projectDirectory"preprocessed_SNPs.ddRADseq.txt" ]
+if [[ -f $projectDirectory"preprocessed_SNPs.ddRADseq.txt" ]]
 then
 	echo -e "\tParent or hapmap data already preprocessed with python script: 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py'" >> $logName;
 	echo -e "\tSNP data already preprocessed with python script: 'scripts_seqModules/scripts_ddRADseq/dataset_process_for_SNP_analysis.ddRADseq.py'" >> $logName;
 else
-	if [ -f $parentDirectory"putative_SNPs_v4.txt" ]
+	if [[ -f $parentDirectory"putative_SNPs_v4.txt" ]]
 	then
 		echo -e "\tParent SNP data already decompressed." >> $logName;
 		cp $parentDirectory"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
@@ -131,7 +132,7 @@ echo -e "# CGH analysis of dataset. #" >> $logName;
 echo -e "#==========================#" >> $logName;
 echo -e "Performing CGH analysis." >> $condensedLog;
 
-if [ -f $projectDirectory"corrected_CNV.project.mat" ]
+if [[ -f $projectDirectory"corrected_CNV.project.mat" ]]
 then
 	echo -e "\tCNV analysis already complete." >> $logName;
 else
@@ -168,7 +169,7 @@ echo -e "# ChARM analysis of dataset. #" >> $logName;
 echo -e "#============================#" >> $logName;
 echo -e "Analyzing CNV edges." >> $condensedLog;
 
-if [ -f $projectDirectory"Common_ChARM.mat" ]
+if [[ -f $projectDirectory"Common_ChARM.mat" ]]
 then
 	echo -e "\tChARM analysis already complete." >> $logName;
 else
@@ -201,7 +202,7 @@ fi
 ##==============================================================================
 ## Perform SNP/LOH analysis on dataset.   ...must be redone for ddRADseq, specificially.
 ##------------------------------------------------------------------------------
-if [ "$project" = "$parent" ]
+if [[ "$project" = "$parent" ]]
 then
 	echo -e "#============================#" >> $logName;
 	echo -e "#= LOH analysis of dataset. =#" >> $logName;

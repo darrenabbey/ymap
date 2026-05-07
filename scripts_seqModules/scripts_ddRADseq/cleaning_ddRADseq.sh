@@ -1,8 +1,9 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # cleaning_ddRADseq.sh
 #
 set -e;
+
 ## All created files will have permission 760
 umask 007;
 
@@ -20,7 +21,7 @@ logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
 
 . $main_dir"config.sh";
-if [ $debug -eq 1 ];
+if [[ $debug -eq 1 ]]
 then
 	echo -e "\tReached cleanup stage, but skipping it because the debug flag is on." >> $logName;
 	echo -e "\tCreating complete.txt, so that the front-end recognizes the completion." >> $logName;
@@ -33,7 +34,7 @@ then
 	chmod 0666 $completeFile;
 
 	## changing working.txt to working_done.txt
-	if [ -f $projectDirectory"working.txt" ]
+	if [[ -f $projectDirectory"working.txt" ]]
 	then
 		mv $projectDirectory"working.txt" $projectDirectory"working_done.txt";
 		echo -e "\t changed working.txt to working_done.txt" >> $logName;
@@ -47,109 +48,109 @@ echo -e "# Cleaning up intermediate ddRADseq files. #" >> $logName;
 echo -e "#==========================================#" >> $logName;
 echo -e "Cleaning and archiving." >> $condensedLog;
 
-if [ -f $projectDirectory"zipTemp.txt" ]
+if [[ -f $projectDirectory"zipTemp.txt" ]]
 then
     rm $projectDirectory"zipTemp.txt";
 	echo -e "\tzipTemp.txt" >> $logName;
 fi
 
-if [ -f $projectDirectory"processing1.m" ]
+if [[ -f $projectDirectory"processing1.m" ]]
 then
 	rm $projectDirectory"processing1.m";
 	echo -e "\tprocessing1.m" >> $logName;
 fi
 
-if [ -f $projectDirectory"processing2.m" ]
+if [[ -f $projectDirectory"processing2.m" ]]
 then
 	rm $projectDirectory"processing2.m";
 	echo -e "\tprocessing2.m" >> $logName;
 fi
 
-if [ -f $projectDirectory"processing3.m" ]
+if [[ -f $projectDirectory"processing3.m" ]]
 then
 	rm $projectDirectory"processing3.m";
 	echo -e "\tprocessing3.m" >> $logName;
 fi
 
-if [ -f $projectDirectory"processing4.m" ]
+if [[ -f $projectDirectory"processing4.m" ]]
 then
 	rm $projectDirectory"processing4.m";
 	echo -e "\tprocessing4.m" >> $logName;
 fi
 
-if [ -f $projectDirectory"octave.ChARM.log" ]
+if [[ -f $projectDirectory"octave.ChARM.log" ]]
 then
 	rm $projectDirectory"octave.ChARM.log";
 	echo -e "\toctave.ChARM.log" >> $logName;
 fi
 
-if [ -f $projectDirectory"octave.CNV_and_GCbias.log" ]
+if [[ -f $projectDirectory"octave.CNV_and_GCbias.log" ]]
 then
 	rm $projectDirectory"octave.CNV_and_GCbias.log";
 	echo -e "\toctave.CNV_and_GCbias.log" >> $logName;
 fi
 
-if [ -f $projectDirectory"octave.final_figs.log" ]
+if [[ -f $projectDirectory"octave.final_figs.log" ]]
 then
 	rm $projectDirectory"octave.final_figs.log";
 	echo -e "\tmatlat.final_figs.log" >> $logName;
 fi
 
-if [ -f $projectDirectory"octave.SNP_analysis.log" ]
+if [[ -f $projectDirectory"octave.SNP_analysis.log" ]]
 then
 	rm $projectDirectory"octave.SNP_analysis.log";
 	echo -e "\toctave.SNP_analysis.log" >> $logName;
 fi
 
-if [ -f $projectDirectory"data_sorted.bam.bai" ]
+if [[ -f $projectDirectory"data_sorted.bam.bai" ]]
 then
 	rm $projectDirectory"data_sorted.bam.bai";
 	echo -e "\tdata_sorted.bam.bai" >> $logName;
 fi
 
-if [ -f $projectDirectory"data_sorted.bam" ]
+if [[ -f $projectDirectory"data_sorted.bam" ]]
 then
 	rm $projectDirectory"data_sorted.bam";
 	echo -e "\tdata_sorted.bam" >> $logName;
 fi
 
-if [ -f $projectDirectory"data.bam" ]
+if [[ -f $projectDirectory"data.bam" ]]
 then
 	rm $projectDirectory"data.bam";
 	echo -e "\tdata.bam" >> $logName;
 fi
 
-if [ -f $projectDirectory"data.pileup" ]
+if [[ -f $projectDirectory"data.pileup" ]]
 then
 	rm $projectDirectory"data.pileup";
 	echo -e "\tdata.pileup" >> $logName;
 fi
 
-if [ -f $projectDirectory"data_indelRealigned.bam" ]
+if [[ -f $projectDirectory"data_indelRealigned.bam" ]]
 then
 	rm $projectDirectory"data_indelRealigned.bam";
 	echo -e "\tdata_indelRealigned.bam" >> $logName;
 fi
 
-if [ -f $projectDirectory"data_indelRealigned.bai" ]
+if [[ -f $projectDirectory"data_indelRealigned.bai" ]]
 then
 	rm $projectDirectory"data_indelRealigned.bai";
 	echo -e "\tdata_indelRealigned.bai" >> $logName;
 fi
 
-if [ -f $projectDirectory"data_forIndelRealigner.intervals" ]
+if [[ -f $projectDirectory"data_forIndelRealigner.intervals" ]]
 then
 	rm $projectDirectory"data_forIndelRealigner.intervals";
 	echo -e "\tdata_forIndelRealigner.intervals" >> $logName;
 fi
 
-if [ -d $projectDirectory"fastqc_temp/" ]
+if [[ -d $projectDirectory"fastqc_temp/" ]]
 then
 	rm -rf $projectDirectory"fastqc_temp/";
 	echo -e "\tfastqc_temp/" >> $logName;
 fi
 
-if [ -f $projectDirectory"datafiles.txt" ]
+if [[ -f $projectDirectory"datafiles.txt" ]]
 then
 	# Get first data file name from "datafiles.txt";
 	datafile1=$(head -n 1 $projectDirectory"datafiles.txt");
@@ -157,24 +158,24 @@ then
 	# Get second data file name from "datafiles.txt";
 	datafile2=$(tail -n 1 $projectDirectory"datafiles.txt");
 	echo -e "\tdatafile 2 = '"$datafile2"'" >> $logName;
-	if [ "$datafile1" = "$datafile2" ]
+	if [[ "$datafile1" = "$datafile2" ]]
 	then
 		# deleting only if a valid file name is written
-		if [ "$datafile1" != "null1" ]
+		if [[ "$datafile1" != "null1" ]]
 		then
-			if [ -f $projectDirectory$datafile1 ]
+			if [[ -f $projectDirectory$datafile1 ]]
 			then
 				rm $projectDirectory$datafile1;
 				echo -e "\t"$datafile1 >> $logName;
 			fi
 		fi
 	else
-		if [ -f $projectDirectory$datafile1 ]
+		if [[ -f $projectDirectory$datafile1 ]]
 		then
 			rm $projectDirectory$datafile1;
 			echo -e "\t"$datafile1 >> $logName;
 		fi
-		if [ -f $projectDirectory$datafile2 ]
+		if [[ -f $projectDirectory$datafile2 ]]
 		then
 			rm $projectDirectory$datafile2;
 			echo -e "\t"$datafile2 >> $logName;
@@ -184,26 +185,8 @@ then
 	echo -e "\tdatafiles.txt" >> $logName;
 fi
 
-
-# Remove potential leftovers from upload restarts.
-#pattern="*.zip";
-#if [ "$(echo $pattern)" != "$pattern" ]; then rm *.zip; fi
-#echo -e "\t*.zip" >> $logName;
-#pattern="*.gz";
-#if [ "$(echo $pattern)" != "$pattern" ]; then rm *.gz; fi
-#echo -e "\t*.gz" >> $logName;
-#pattern="*.bam";
-#if [ "$(echo $pattern)" != "$pattern" ]; then rm *.bam; fi
-#echo -e "\t*.bam" >> $logName;
-#pattern="*.sam";
-#if [ "$(echo $pattern)" != "$pattern" ]; then rm *.sam; fi
-#echo -e "\t*.sam" >> $logName;
-#pattern="*.fastq";
-#if [ "$(echo $pattern)" != "$pattern" ]; then rm *.fastq; fi
-#echo -e "\t*.fastq" >> $logName;
-
 # Compress 'SNP_CNVs_v1.txt'.
-if [ -f $projectDirectory"SNP_CNV_v1.txt" ]
+if [[ -f $projectDirectory"SNP_CNV_v1.txt" ]]
 then
 	zip -9 $projectDirectory"SNP_CNV_v1.zip" $projectDirectory"SNP_CNV_v1.txt";
 	rm $projectDirectory"SNP_CNV_v1.txt";
@@ -214,7 +197,7 @@ fi
 timestamp=$(date +%T);
 
 	timesLogFile=$main_dir"completion_times.log";
-	if [ -f $timesLogFile ]
+	if [[ -f $timesLogFile ]]
 	then
 		echo -n $user"("$project")[WGseq " >> $timesLogFile;
 		cat $projectDirectory"dataFormat.txt" >> $timesLogFile;
@@ -229,7 +212,7 @@ echo $timestamp >> $completeFile;
 echo -e "\tGenerated 'complete.txt' file." >> $logName;
 chmod 0666 $completeFile;
 
-if [ -f $projectDirectory"working.txt" ]
+if [[ -f $projectDirectory"working.txt" ]]
 then
 	mv $projectDirectory"working.txt" $projectDirectory"working_done.txt";
 	echo -e "\tworking.txt" >> $logName;

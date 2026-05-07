@@ -1,8 +1,9 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # project.ddRADseq.install_4.sh
 #
 set -e;
+
 ## All created files will have permission 760
 umask 007;
 
@@ -64,19 +65,19 @@ hapmap=$(tail -n 1 $projectDirectory"genome.txt");
 dataFormat=$(head -n 1 $projectDirectory"dataFormat.txt");
 echo -e "\t'genome.txt' file entry." >> $logName;
 echo -e "\t\tgenome = '"$genome"'" >> $logName;
-if [ "$genome" = "$hapmap" ]
+if [[ "$genome" = "$hapmap" ]]
 then
 	hapmapInUse=0;
 else
 	echo -e "\t\thapmap = '"$hapmap"'" >> $logName;
 	hapmapInUse=1;
 	# Determine location of hapmap being used.
-	if [ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]
+	if [[ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]]
 	then
 		hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
 		hapmapUser=$user;
 		hapmapUsed=1
-	elif [ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]
+	elif [[ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]]
 	then
 		hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
 		hapmapUser="default";
@@ -88,11 +89,11 @@ else
 fi
 
 # Determine location of genome being used.
-if [ -d $main_dir"users/"$user"/genomes/"$genome"/" ]
+if [[ -d $main_dir"users/"$user"/genomes/"$genome"/" ]]
 then
 	genomeDirectory=$main_dir"users/"$user"/genomes/"$genome"/";
 	genomeUser=$user;
-elif [ -d $main_dir"users/default/genomes/"$genome"/" ]
+elif [[ -d $main_dir"users/default/genomes/"$genome"/" ]]
 then
 	genomeDirectory=$main_dir"users/default/genomes/"$genome"/";
 	genomeUser="default";
@@ -116,11 +117,11 @@ projectParent=$(head -n 1 $projectDirectory"parent.txt");
 echo -e "\tparentProject = '"$projectParent"'" >> $logName;
 
 # Determine location of parent being used.
-if [ -d $main_dir"users/"$user"/projects/"$projectParent"/" ]
+if [[ -d $main_dir"users/"$user"/projects/"$projectParent"/" ]]
 then
 	projectParentDirectory=$main_dir"users/"$user"/genomes/"$projectParent"/";
 	projectParentUser=$user;
-elif [ -d $main_dir"users/default/projects/"$projectParent"/" ]
+elif [[ -d $main_dir"users/default/projects/"$projectParent"/" ]]
 then
 	projectParentDirectory=$main_dir"users/default/genomes/"$projectParent"/";
 	projectParentUser="default";
@@ -169,7 +170,7 @@ sed 's/^/\t\t|/;' $projectDirectory"octave.CNV_and_GCbias.log" >> $logName;
 ##==============================================================================
 ## Perform SNP/LOH analysis on dataset.   ...must be redone for ddRADseq, specificially.
 ##------------------------------------------------------------------------------
-if [ "$project" = "$parent" ]
+if [[ "$project" = "$parent" ]]
 then
 	echo -e "#============================#" >> $logName;
 	echo -e "#= LOH analysis of dataset. =#" >> $logName;

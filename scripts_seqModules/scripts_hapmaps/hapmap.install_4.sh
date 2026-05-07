@@ -1,6 +1,6 @@
-#!/bin/bash -e
-
+#!/bin/bash
 set -e;
+
 ## All created files will have permission 760
 umask 007;
 
@@ -21,11 +21,11 @@ main_dir=$(pwd)"/../../";
 ## Define locations and names to be used later.
 ##------------------------------------------------------------------------------
 # Determine location of hapmap.
-if [ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]
+if [[ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]]
 then
 	hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
 	hapmapUser=$user;
-elif [ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]
+elif [[ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]]
 then
 	hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
 	hapmapUser="default";
@@ -58,11 +58,11 @@ echo -e "    hapmap user                 = '"$hapmapUser"'" >> $logName;
 echo -e "    hapmap directory            = '"$hapmapDirectory"'" >> $logName;
 
 # Determine location of project1 (parent).  Is it in user or default account?
-if [ -d $main_dir"users/"$user"/projects/"$project1"/" ]
+if [[ -d $main_dir"users/"$user"/projects/"$project1"/" ]]
 then
 	project1Directory=$main_dir"users/"$user"/projects/"$project1"/";
 	project1User=$user;
-elif [ -d $main_dir"users/default/projects/"$project1"/" ]
+elif [[ -d $main_dir"users/default/projects/"$project1"/" ]]
 then
 	project1Directory=$main_dir"users/default/projects/"$project1"/";
 	project1User="default";
@@ -70,11 +70,11 @@ fi
 echo -e "    project1 (parent) directory = '"$project1Directory"'" >> $logName;
 
 # Determine location of project2 (child).  Is it in user or default account?
-if [ -d $main_dir"users/"$user"/projects/"$project2"/" ]
+if [[ -d $main_dir"users/"$user"/projects/"$project2"/" ]]
 then
 	project2Directory=$main_dir"users/"$user"/projects/"$project2"/";
 	project2User=$user;
-elif [ -d $main_dir"users/default/projects/"$project2"/" ]
+elif [[ -d $main_dir"users/default/projects/"$project2"/" ]]
 then
 	projcet2Directory=$main_dir"users/default/projects/"$project2"/";
 	project2User="default";
@@ -88,11 +88,11 @@ genome=$(head -n 1 $project1Directory"genome.txt");
 echo -e "    genome                      = '"$genome"'" >> $logName;
 
 # Determine location of project1 genome.
-if [ -d $main_dir"users/"$user"/genomes/"$genome"/" ]
+if [[ -d $main_dir"users/"$user"/genomes/"$genome"/" ]]
 then
 	genomeDirectory=$main_dir"users/"$user"/genomes/"$genome"/";
 	genomeUser=$user;
-elif [ -d $main_dir"users/default/genomes/"$genome"/" ]
+elif [[ -d $main_dir"users/default/genomes/"$genome"/" ]]
 then
 	genomeDirectory=$main_dir"users/default/genomes/"$genome"/";
 	genomeUser="default";
@@ -104,14 +104,14 @@ genomeFASTA=$(head -n 1 $genomeDirectory"reference.txt");
 echo -e "    genome FASTA file           = '"$genomeFASTA"'" >> $logName;
 echo -e "    reference ploidy            = '"$referencePloidy"'" >> $logName;
 
-if [ "$referencePloidy" = "2" ]
+if [[ "$referencePloidy" = "2" ]]
 then
 	##==============================================================================
 	## For a diploid reference hapmap : Move parent SNP data to hapmap directory and
 	## preprocess it for analysis.
 	##------------------------------------------------------------------------------
 	echo -e "Move SNP data files to hapmap directory." >> $logName;
-	if [ ! -f $hapmapDirectory"SNPdata_parent.txt" ]
+	if [[ ! -f $hapmapDirectory"SNPdata_parent.txt" ]]
 	then
 		echo -e "\tCopy parent : 'putative_SNPs_v4.txt'" >> $logName;
 		echo -e "\t\t to : '"$hapmapDirectory"SNPdata_parent.txt'" >> $logName;
@@ -142,7 +142,7 @@ then
 	# Copy child SNP dataset to hapmap directory.
 	echo -e "\tDetermining number of child datasets in hapmap." >> $logName;
 	childNum=0;
-	while [ -f $hapmapDirectory"haplotypeFragments."$childNum".txt" ]
+	while [[ -f $hapmapDirectory"haplotypeFragments."$childNum".txt" ]]
 	do
 		childNum=`expr $childNum + 1`;
 	done
@@ -172,7 +172,7 @@ else
 	## preprocess it for analysis.
 	##------------------------------------------------------------------------------
 	echo -e "Move SNP data files to hapmap directory." >> $logName;
-	if [ ! -f $hapmapDirectory"SNPdata_parent.txt" ]
+	if [[ ! -f $hapmapDirectory"SNPdata_parent.txt" ]]
 	then
 		echo -e "\tCopy parent1 : 'SNP_CNV_v1.txt'" >> $logName;
 		echo -e "\t\t to : '"$hapmapDirectory"SNPdata_parent1.txt'" >> $logName;

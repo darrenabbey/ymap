@@ -1,5 +1,6 @@
-#n/bash
+#!/bin/bash
 set -e
+
 #===================================================================================================================================
 # Translate Gareth's pileup format into the pileup formats used by the pipeline.
 #-----------------------------------------------------------------------------------------------------------------------------------
@@ -90,62 +91,78 @@ do
 	existG=0;
 	existC=0;
 
-	if [ "$allele1" = "A" ]; then
+	if [[ "$allele1" = "A" ]]
+	then
 		A_count=$count1;
 		existA=1;
-	elif [ "$allele1" = "T" ]; then
+	elif [[ "$allele1" = "T" ]]
+	then
 		T_count=$count1;
 		existT=1;
-	elif [ "$allele1" = "G" ]; then
+	elif [[ "$allele1" = "G" ]]
+	then
 		G_count=$count1;
 		existG=1;
-	elif [ "$allele1" = "C" ]; then
+	elif [[ "$allele1" = "C" ]]
+	then
 		C_count=$count1;
 		existC=1;
 	fi
 
-	if [ "$allele2" = "A" ]; then
+	if [[ "$allele2" = "A" ]]
+	then
 		A_count=$count2;
 		existA=1;
-	elif [ "$allele2" = "T" ]; then
+	elif [[ "$allele2" = "T" ]]
+	then
 		T_count=$count2;
 		existT=1;
-	elif [ "$allele2" = "G" ]; then
+	elif [[ "$allele2" = "G" ]]
+	then
 		G_count=$count2;
 		existG=1;
-	elif [ "$allele2" = "C" ]; then
+	elif [[ "$allele2" = "C" ]]
+	then
 		C_count=$count2;
 		existC=1;
 	fi
 
-	if [ "$allele3" = "A" ]; then
+	if [[ "$allele3" = "A" ]]
+	then
 		A_count=$count3;
 		existA=1;
-	elif [ "$allele3" = "T" ]; then
+	elif [[ "$allele3" = "T" ]]
+	then
 		T_count=$count3;
 		existT=1;
-	elif [ "$allele3" = "G" ]; then
+	elif [[ "$allele3" = "G" ]]
+	then
 		G_count=$count3;
 		existG=1;
-	elif [ "$allele3" = "C" ]; then
+	elif [[ "$allele3" = "C" ]]
+	then
 		C_count=$count3;
 		existC=1;
 	fi
 
-	if [ "$allele4" = "A" ]; then
+	if [[ "$allele4" = "A" ]]
+	then
 		A_count=$count4;
 		existA=1;
-	elif [ "$allele4" = "T" ]; then
+	elif [[ "$allele4" = "T" ]]
+	then
 		T_count=$count4;
 		existT=1;
-	elif [ "$allele4" = "G" ]; then
+	elif [[ "$allele4" = "G" ]]
+	then
 		G_count=$count4;
 		existG=1;
-	elif [ "$allele4" = "C" ]; then
+	elif [[ "$allele4" = "C" ]]
+	then
 		C_count=$count4;
 		existC=1;
 	fi
-	total_count=$(($A_count + $T_count + $G_count + $C_count));
+	total_count=$((A_count+T_count+G_count+C_count));
 
 	# Line from pipeline processing script defining 'putative_SNPs_v4.txt' file format.
 	#	print chrom + '\t' + pos + '\t' + ref_base + '\t' + str(A) + '\t' + str(T) + '\t' +  str(G) + '\t' +  str(C)
@@ -155,7 +172,8 @@ do
 	#
 
 	# Output line to 'putative_SNPs_v4.txt' file.
-	if [ $(($existA+$existT+$existG+$existC)) -gt 1 ]; then
+	if [[ $((existA+existT+existG+existC)) -gt 1 ]]
+	then
 		output=$chromosome"\t"$coordinate"\t"$allele1"\t"$A_count"\t"$T_count"\t"$G_count"\t"$C_count;
 		echo $output >> $tempFile1;
 	fi
@@ -166,7 +184,8 @@ do
 
 
 	# Let the user know the script is proceding through chromosomes...
-	if [ "$previous_chr" != "$chromosome" ]; then
+	if [[ "$previous_chr" != "$chromosome" ]]
+	then
 		echo -e "Current chromosome = "$chromosome;
 	fi
 	previous_chr=$chromosome;

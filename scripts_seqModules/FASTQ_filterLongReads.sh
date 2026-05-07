@@ -1,6 +1,8 @@
+#!/bin/bash
 set -e
+
 # If no data file option is given, describe script purpose and input.
-if [ -z $1 ] || [ -z $2 ] || [ -z $3 ]
+if [[ -z $1 ]] || [[ -z $2 ]] || [[ -z $3 ]]
 then
 	echo;
 	echo -e "# Command syntax is : 'bash FASTQ_filterLongReads.sh [dataset] [cutoff] [outfile]'";
@@ -41,7 +43,7 @@ else
 
 		lengthOfRead=${#line1_2};
 
-		if [ $lengthOfRead -le $filterCutoff ]
+		if [[ $lengthOfRead -le $filterCutoff ]]
 		then
 			echo $line1_1 >> $3;
 			echo $line1_2 >> $3;

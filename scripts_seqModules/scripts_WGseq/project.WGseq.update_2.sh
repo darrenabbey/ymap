@@ -1,8 +1,9 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # project.WGseq.update_2.sh
 #
 set -e
+
 ## All created files will have permission 760
 umask 007;
 
@@ -64,21 +65,21 @@ hapmap=$(tail -n 1 $projectDirectory"genome.txt");
 dataFormat=$(head -n 1 $projectDirectory"dataFormat.txt");
 echo -e "\t'genome.txt' file entry." >> $logName;
 echo -e "\t\tgenome = '"$genome"'" >> $logName;
-if [ "$genome" = "$hapmap" ]
+if [[ "$genome" = "$hapmap" ]]
 then
 	hapmapInUse=0;
 else
 	echo -e "\t\thapmap = '"$hapmap"'" >> $logName;
 	hapmapInUse=1;
 fi
-if [ $hapmapInUse = 1 ]
+if [[ $hapmapInUse = 1 ]]
 then
 	# Determine location of hapmap being used.
-	if [ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]
+	if [[ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]]
 	then
 		hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
 		hapmapUser=$user;
-	elif [ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]
+	elif [[ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]]
 	then
 		hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
 		hapmapUser="default";
@@ -87,11 +88,11 @@ then
 fi
 
 # Determine location of genome being used.
-if [ -d $main_dir"users/"$user"/genomes/"$genome"/" ]
+if [[ -d $main_dir"users/"$user"/genomes/"$genome"/" ]]
 then
 	genomeDirectory=$main_dir"users/"$user"/genomes/"$genome"/";
 	genomeUser=$user;
-elif [ -d $main_dir"users/default/genomes/"$genome"/" ]
+elif [[ -d $main_dir"users/default/genomes/"$genome"/" ]]
 then
 	genomeDirectory=$main_dir"users/default/genomes/"$genome"/";
 	genomeUser="default";
@@ -120,7 +121,7 @@ echo -e "#======================================================================
 ##==============================================================================
 ## Unzip SNP archive file: putative_SNPs_v4.zip
 ##------------------------------------------------------------------------------
-if [ -f $projectDirectory"putative_SNPs_v4.txt" ]
+if [[ -f $projectDirectory"putative_SNPs_v4.txt" ]]
 then
 	echo -e "\tSNP data already decompressed." >> $logName;
 else
@@ -130,7 +131,7 @@ else
 	unzip -j -o putative_SNPs_v4.zip;
 	cd $local_dir;
 fi
-if [ -f $projectDirectory"SNP_CNV_v1.txt" ]
+if [[ -f $projectDirectory"SNP_CNV_v1.txt" ]]
 then
 	echo -e "\tSNP data already decompressed." >> $logName;
 else
@@ -147,7 +148,7 @@ fi
 echo -e "#==========================#" >> $logName;
 echo -e "# Preprocessing CNV/SNPs.  #" >> $logName;
 echo -e "#==========================#" >> $logName;
-if [ -f $projectDirectory"preprocessed_CNVs.txt" ]
+if [[ -f $projectDirectory"preprocessed_CNVs.txt" ]]
 then
         echo -e "\tCNV data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
 else
@@ -158,7 +159,7 @@ else
 
         chmod 774 $projectDirectory"preprocessed_CNVs.txt";
 fi
-if [ -f $projectDirectory"preprocessed_SNPs.txt" ]
+if [[ -f $projectDirectory"preprocessed_SNPs.txt" ]]
 then
         echo -e "\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 else
@@ -213,12 +214,12 @@ echo -e "\tOCTAVE log from CNV analysis." >> $logName;
 sed 's/^/\t|/;' $projectDirectory"octave.CNV_and_GCbias.log" >> $logName;
 
 
-if [ $hapmapInUse = 0 ]
+if [[ $hapmapInUse = 0 ]]
 then
 	##==============================================================================
 	## Perform SNP/LOH analysis on dataset.
 	##------------------------------------------------------------------------------
-	if [ "$project" = "$projectParent" ]
+	if [[ "$project" = "$projectParent" ]]
 	then
 		echo -e "#==========================#" >> $logName;
 		echo -e "# SNP analysis of dataset. #" >> $logName;
@@ -301,7 +302,7 @@ else
 	##==============================================================================
 	## Perform SNP/LOH analysis on dataset.
 	##------------------------------------------------------------------------------
-	if [ hapmapUsed = 1 ]
+	if [[ hapmapUsed = 1 ]]
 	then
 		echo -e "#===========================================#" >> $logName;
 		echo -e "# SNP/LOH analysis of dataset, with hapmap. #" >> $logName;

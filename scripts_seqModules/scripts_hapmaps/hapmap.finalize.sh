@@ -1,10 +1,10 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # Initialization of genome into pipeline
 #   $1 : user
 #   $2 : hapmap
-
 set -e;
+
 ## All created files will have permission 760
 umask 007;
 
@@ -20,11 +20,11 @@ main_dir=$(pwd)"/../../";
 ## Define locations and names to be used later.
 ##------------------------------------------------------------------------------------------------------------
 # Determine location of hapmap.
-if [ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]
+if [[ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]]
 then
 	hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
 	hapmapUser=$user;
-elif [ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]
+elif [[ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]]
 then
 	hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
 	hapmapUser="default";

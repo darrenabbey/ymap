@@ -1,4 +1,7 @@
-if [ -z $1 ]
+#!/bin/bash
+set -e
+
+if [[ -z $1 ]]
 then
 	echo;
 	echo -e "# Command syntax is : 'bash FASTA_reformat_1.sh [FASTA seq file] > output.fasta'";
@@ -27,8 +30,10 @@ tempdir=$(mktemp -d);
 	# If line starts with ">" output with leading & trailing "\n"; else output without trailing "\n";
 	counter=0;
 	while read line; do
-		if [[ $line == ">"* ]]; then
-			if [ $counter -eq "1" ]; then
+		if [[ $line == ">"* ]]
+		then
+			if [[ $counter -eq "1" ]]
+			then
 				echo -e "\n"$line;
 			else
 				echo -e $line;

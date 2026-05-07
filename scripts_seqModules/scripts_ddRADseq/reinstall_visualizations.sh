@@ -1,8 +1,9 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # project.ddRADseq.hapmap.install_4.sh
 #
 set -e;
+
 ## All created files will have permission 760
 umask 007;
 
@@ -31,11 +32,11 @@ condensedLog=$projectDirectory"condensed_log.txt";
 parent=$(head -n 1 $projectDirectory"parent.txt");
 echo -e "\tparent = '"$parent"'" >> $logName;
 # Determine location of parent.
-if [ -d $main_dir"users/"$user"/projects/"$parent"/" ]
+if [[ -d $main_dir"users/"$user"/projects/"$parent"/" ]]
 then
 	parentDirectory=$main_dir"users/"$user"/projects/"$parent"/";
 	parentUser=$user;
-elif [ -d $main_dir"users/default/projects/"$parent"/" ]
+elif [[ -d $main_dir"users/default/projects/"$parent"/" ]]
 then
 	parentDirectory=$main_dir"users/default/projects/"$parent"/";
 	parentUser="default";
@@ -45,12 +46,12 @@ echo -e "\tparentDirectory = '"$parentDirectory"'" >> $logName;
 # Get genome and hapmap names used, from project's "genome.txt" file.
 genome=$(head -n 1 $projectDirectory"genome.txt");
 hapmap=$(tail -n 1 $projectDirectory"genome.txt");
-if [ "$genome" = "$hapmap" ]
+if [[ "$genome" = "$hapmap" ]]
 then
 	hapmapInUse=0;
 else
 	# Determine location of hapmap being used.
-	if [ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]
+	if [[ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]]
 	then
 		hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
 		cp $hapmapDirectory"colors.txt" $projectDirectory"colors.txt";
@@ -58,7 +59,7 @@ else
 		echo -e "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
 		hapmapUser=$user;
 		hapmapInUse=1;
-	elif [ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]
+	elif [[ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]]
 	then
 		hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
 		cp $hapmapDirectory"colors.txt" $projectDirectory"colors.txt";
@@ -72,11 +73,11 @@ else
 fi
 
 # Determine location of genome being used.
-if [ -d $main_dir"users/"$user"/genomes/"$genome"/" ]
+if [[ -d $main_dir"users/"$user"/genomes/"$genome"/" ]]
 then
 	genomeDirectory=$main_dir"users/"$user"/genomes/"$genome"/";
 	genomeUser=$user;
-elif [ -d $main_dir"users/default/genomes/"$genome"/" ]
+elif [[ -d $main_dir"users/default/genomes/"$genome"/" ]]
 then
 	genomeDirectory=$main_dir"users/default/genomes/"$genome"/";
 	genomeUser="default";

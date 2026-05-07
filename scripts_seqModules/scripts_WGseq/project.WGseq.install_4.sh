@@ -1,8 +1,9 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # project.WGseq.install_4.sh
 #
 set -e;
+
 ## All created files will have permission 760
 umask 007;
 
@@ -44,11 +45,11 @@ genome=$(head -n 1 $projectDirectory"genome.txt");
 echo -e "\tgenome = '"$genome"'" >> $logName;
 
 # Determine location of genome being used.
-if [ -d $main_dir"users/"$user"/genomes/"$genome"/" ]
+if [[ -d $main_dir"users/"$user"/genomes/"$genome"/" ]]
 then
     genomeDirectory=$main_dir"users/"$user"/genomes/"$genome"/";
     genomeUser=$user;
-elif [ -d $main_dir"users/default/genomes/"$genome"/" ]
+elif [[ -d $main_dir"users/default/genomes/"$genome"/" ]]
 then
     genomeDirectory=$main_dir"users/default/genomes/"$genome"/";
     genomeUser="default";
@@ -68,11 +69,11 @@ projectParent=$(head -n 1 $projectDirectory"parent.txt");
 echo -e "\tparentProject = '"$projectParent"'" >> $logName;
 
 # Determine location of project being used.
-if [ -d $main_dir"users/"$user"/projects/"$projectParent"/" ]
+if [[ -d $main_dir"users/"$user"/projects/"$projectParent"/" ]]
 then
     projectParentDirectory=$main_dir"users/"$user"/projects/"$projectParent"/";
     projectParentUser=$user;
-elif [ -d $main_dir"users/default/projects/"$projectParent"/" ]
+elif [[ -d $main_dir"users/default/projects/"$projectParent"/" ]]
 then
     projectParentDirectory=$main_dir"users/default/projects/"$projectParent"/";
     projectParentUser="default";
@@ -89,7 +90,7 @@ echo -e "# CNV analysis of dataset. #" >> $logName;
 echo -e "#==========================#" >> $logName;
 echo -e "Preprocessing CNV data.   (~10 min for 1.6 Gbase genome dataset.)" >> $condensedLog;
 
-if [ -f $projectDirectory"preprocessed_CNVs.txt" ]
+if [[ -f $projectDirectory"preprocessed_CNVs.txt" ]]
 then
 	echo -e "\tCNV data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
 else
@@ -140,7 +141,7 @@ echo -e "# ChARM analysis of dataset. #" >> $logName;
 echo -e "#============================#" >> $logName;
 echo -e "Analyzing CNV edges." >> $condensedLog;
 
-if [ -f $projectDirectory"Common_ChARM.mat" ]
+if [[ -f $projectDirectory"Common_ChARM.mat" ]]
 then
 	echo -e "\tChARM analysis already completed." >> $logName;
 else
@@ -179,7 +180,7 @@ fi
 ##==============================================================================
 ## Perform SNP/LOH analysis on dataset.
 ##------------------------------------------------------------------------------
-if [ "$project" = "$projectParent" ]
+if [[ "$project" = "$projectParent" ]]
 then
 	echo -e "#==========================#" >> $logName;
 	echo -e "# SNP analysis of dataset. #" >> $logName;
@@ -192,12 +193,12 @@ else
 	echo -e "Preprocessing SNP data, with reference." >> $condensedLog;
 fi
 
-if [ -f $projectDirectory"preprocessed_SNPs.txt" ]
+if [[ -f $projectDirectory"preprocessed_SNPs.txt" ]]
 then
 	echo -e "\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 else
 	echo -e "\tPreprocessing SNP data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
-	if [ -f $projectParentDirectory"putative_SNPs_v4.txt" ]
+	if [[ -f $projectParentDirectory"putative_SNPs_v4.txt" ]]
 	then
 		echo -e "\tParent SNP data already decompressed." >> $logName;
 		cp $projectParentDirectory"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";

@@ -1,5 +1,7 @@
+#!/bin/bash
 set -e
-if [ -z $1 ]
+
+if [[ -z $1 ]]
 then
 	echo;
 	echo -e "### UNTESTED ###";
@@ -28,10 +30,12 @@ tempdir=$(mktemp -d);
 
 	# If line starts with "@" output with leading & trailing "\n"; else output without trailing "\n";
 	while read line; do
-		if [[ $line == "@"* ]]; then
+		if [[ $line == "@"* ]]
+		then
 			echo -e "\n"$line;
 		else
-			if [[ $line == "+"* ]]; then
+			if [[ $line == "+"* ]]
+			then
 				echo -e "\n"$line;
 			else
 				echo -n $line;

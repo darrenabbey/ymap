@@ -1,5 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 set -e
+
 # If no data file option is given, describe script purpose and input.
 if [ -z $3 ]
 then

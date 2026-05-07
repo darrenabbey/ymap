@@ -1,8 +1,9 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # project.WGseq.hapmap.install_4.sh
 #
 set -e;
+
 ## All created files will have permission 760
 umask 007;
 
@@ -43,11 +44,11 @@ genome=$(head -n 1 $projectDirectory"genome.txt");
 echo -e "\tgenome = '"$genome"'" >> $logName;
 
 # Determine location of genome being used.
-if [ -d $main_dir"users/"$user"/genomes/"$genome"/" ]
+if [[ -d $main_dir"users/"$user"/genomes/"$genome"/" ]]
 then
     genomeDirectory=$main_dir"users/"$user"/genomes/"$genome"/";
     genomeUser=$user;
-elif [ -d $main_dir"users/default/genomes/"$genome"/" ]
+elif [[ -d $main_dir"users/default/genomes/"$genome"/" ]]
 then
     genomeDirectory=$main_dir"users/default/genomes/"$genome"/";
     genomeUser="default";
@@ -63,12 +64,12 @@ ploidyBase=$(tail -n 1 $projectDirectory"ploidy.txt");
 echo -e "\tploidyBase = '"$ploidyBase"'" >> $logName;
 
 # Determine location of hapmap being used.
-if [ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]
+if [[ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]]
 then
 	hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
 	hapmapUser=$user;
 	hapmapUsed=1
-elif [ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]
+elif [[ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]]
 then
 	hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
 	hapmapUser="default";
@@ -91,7 +92,7 @@ echo -e "# CNV analysis of dataset. #" >> $logName;
 echo -e "#==========================#" >> $logName;
 echo -e "Preprocessing CNV data." >> $condensedLog;
 
-if [ -f $projectDirectory"preprocessed_CNVs.txt" ]
+if [[ -f $projectDirectory"preprocessed_CNVs.txt" ]]
 then
 	echo -e "\t\tCNV data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
 else
@@ -141,7 +142,7 @@ echo -e "# ChARM analysis of dataset. #" >> $logName;
 echo -e "#============================#" >> $logName;
 echo -e "Analyzing CNV edges." >> $condensedLog;
 
-if [ -f $projectDirectory"Common_ChARM.mat" ]
+if [[ -f $projectDirectory"Common_ChARM.mat" ]]
 then
 	echo -e "\t\tChARM analysis already completed." >> $logName;
 else
@@ -179,7 +180,7 @@ fi
 ##==============================================================================
 ## Perform SNP/LOH analysis on dataset.
 ##------------------------------------------------------------------------------
-if [ hapmapUsed = 1 ]
+if [[ hapmapUsed = 1 ]]
 then
 	echo -e "#===========================================#" >> $logName;
 	echo -e "# SNP/LOH analysis of dataset, with hapmap. #" >> $logName;
@@ -193,7 +194,7 @@ else
 fi;
 
 
-if [ -f $projectDirectory"preprocessed_SNPs.txt" ]
+if [[ -f $projectDirectory"preprocessed_SNPs.txt" ]]
 then
 	echo -e "\t\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 else

@@ -1,3 +1,6 @@
+#!/bin/bash
+set -e
+
 ##---------------------------------------------------------------------------------------------
 ## Reformat fasta 2 : converts single-line FASTA entries into multi-line entries.
 ##---------------------------------------------------------------------------------------------
@@ -8,7 +11,7 @@
 
 
 # If no data file option is given, describe script purpose and input.
-if [ -z $1 ] 
+if [[ -z $1 ]]
 then
 	echo;
 	echo -e "# Command syntax is : 'bash FASTQ_reformtat_1.sh [FASTA seq file]'";

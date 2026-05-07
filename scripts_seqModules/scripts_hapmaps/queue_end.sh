@@ -1,3 +1,6 @@
+#!/bin/bash
+set -e
+
 user=$1;
 hapmap=$2;
 main_dir=$3;

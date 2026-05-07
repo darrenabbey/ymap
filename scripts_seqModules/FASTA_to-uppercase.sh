@@ -1,7 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 set -e
+
 # If no data file option is given, describe script purpose and input.
-if [ -z $1 ]
+if [[ -z $1 ]]
 then
 	echo;
 	echo -e "# Command syntax is : 'bash FASTA_to-uppercase.sh [FASTA seq file] > output.fasta'";

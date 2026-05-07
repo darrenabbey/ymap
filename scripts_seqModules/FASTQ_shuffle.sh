@@ -1,6 +1,8 @@
+#!/bin/bash
 set -e
+
 # If no data file option is given, describe script purpose and input.
-if [ -z $1 ] || [ -z $2 ] || [ -z $3 ]
+if [[ -z $1 ]] || [[ -z $2 ]] || [[ -z $3 ]]
 then
 	echo;
 	echo -e "# Command syntax is : 'bash FASTQ_shuffle.sh [dataset_R1] [dataset_R2] [outfile]'";
@@ -23,7 +25,7 @@ else
 	length_full1=$(wc -l $1 | awk '{print $1}');
 	length_full2=$(wc -l $2 | awk '{print $1}');
 
-	if [ $length_full1 -ne $length_full2 ]
+	if [[ $length_full1 -ne $length_full2 ]]
 	then
 		echo -e "##";
 		echo -e "## Input FASTQ files have different numbers of lines.";

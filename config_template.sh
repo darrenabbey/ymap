@@ -1,3 +1,6 @@
+#!/bin/bash
+set -e
+
 # How many cores is Ymap allowed to use (relevant to 3-rd party tools):
 cores=6
 

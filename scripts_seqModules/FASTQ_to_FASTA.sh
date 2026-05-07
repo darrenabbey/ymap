@@ -1,7 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 set -e
+
 # If no data file option is given, describe script purpose and input.
-if [ -z $1 ]
+if [[ -z $1 ]]
 then
 	echo;
 	echo -e "# Command syntax is : 'bash FASTQ_to_FASTA.sh [FASTQ seq file] > output.fasta'";

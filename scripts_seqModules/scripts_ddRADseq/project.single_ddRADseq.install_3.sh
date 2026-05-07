@@ -1,8 +1,9 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # project.single_ddRADseq.install_3.sh
 #
 set -e;
+
 ## All created files will have permission 760
 umask 007;
 
@@ -60,25 +61,24 @@ echo -e "Setting up for processing." >> $condensedLog;
 #    first line  => genome
 #    second line => hapmap
 # "dataFormat.txt"
-#    5th character, 0=no indel-realignment, 1= indel-realignment.
 genome=$(head -n 1 $projectDirectory"genome.txt");
 hapmap=$(tail -n 1 $projectDirectory"genome.txt");
 dataFormat=$(head -n 1 $projectDirectory"dataFormat.txt");
 echo -e "\tLocation variables from 'genome.txt' file entry." >> $logName;
 echo -e "\t\tgenome = '"$genome"'" >> $logName;
-if [ "$genome" = "$hapmap" ]
+if [[ "$genome" = "$hapmap" ]]
 then
 	hapmapInUse=0;
 else
 	echo -e "\t\thapmap = '"$hapmap"'" >> $logName;
 	hapmapInUse=1;
 	# Determine location of hapmap being used.
-	if [ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]
+	if [[ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]]
 	then
 		hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
 		hapmapUser=$user;
 		hapmapUsed=1
-	elif [ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]
+	elif [[ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]]
 	then
 		hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
 		hapmapUser="default";
@@ -88,14 +88,13 @@ else
 	fi
 	echo -e "\thapmapDirectory = '"$hapmapDirectory"'" >> $logName;
 fi
-indelrealign_bool=$(echo $dataFormat | cut -c5-5);  # 0=no indel-realignment; 1=indel-realignment.
 
 # Determine location of genome being used.
-if [ -d $main_dir"users/"$user"/genomes/"$genome"/" ]
+if [[ -d $main_dir"users/"$user"/genomes/"$genome"/" ]]
 then
 	genomeDirectory=$main_dir"users/"$user"/genomes/"$genome"/";
 	genomeUser=$user;
-elif [ -d $main_dir"users/default/genomes/"$genome"/" ]
+elif [[ -d $main_dir"users/default/genomes/"$genome"/" ]]
 then
 	genomeDirectory=$main_dir"users/default/genomes/"$genome"/";
 	genomeUser="default";
@@ -122,19 +121,12 @@ echo -e "\tploidyBase = '"$ploidyBase"'" >> $logName;
 projectParent=$(head -n 1 $projectDirectory"parent.txt");
 echo -e "\tparentProject = '"$projectParent"'" >> $logName;
 
-if [ $indelrealign_bool = 1 ]
-then
-	# Define temporary directory for abra2 files.
-	abra2TempDirectory=$projectDirectory"abra2_temp/";
-	echo -e "\tabra2TempDirectory = '"$abra2TempDirectory"'" >> $logName;
-fi
-
 # Determine location of parent being used.
-if [ -d $main_dir"users/"$user"/projects/"$projectParent"/" ]
+if [[ -d $main_dir"users/"$user"/projects/"$projectParent"/" ]]
 then
 	projectParentDirectory=$main_dir"users/"$user"/genomes/"$projectParent"/";
 	projectParentUser=$user;
-elif [ -d $main_dir"users/default/projects/"$projectParent"/" ]
+elif [[ -d $main_dir"users/default/projects/"$projectParent"/" ]]
 then
 	projectParentDirectory=$main_dir"users/default/genomes/"$projectParent"/";
 	projectParentUser="default";
@@ -150,10 +142,9 @@ RestrctionEnzymes=`sed -n 1,1'p' $projectDirectory"restrictionEnzymes.txt"`;   #
 ddRADseq_FASTA=$FASTAname"."$RestrctionEnzymes".fasta";                        # Name of digested reference for ddRADseq analysis, using chosen restriction enzymes.
 
 
-if [ -f $projectDirectory"SNP_CNV_v1.txt" ]
+if [[ -f $projectDirectory"SNP_CNV_v1.txt" ]]
 then
 	echo -e "\tDone: SAM -> BAM, new group headers, sorted." >> $logName;
-	echo -e "\tDone: BAM.indelrealignment." >> $logName;
 	echo -e "\tDone: Samtools.pileup." >> $logName;
 else
 	##==============================================================================
@@ -181,7 +172,7 @@ else
 	echo -e "[[=- Align with Bowtie -=]]" >> $logName;
 	echo -e "Aligning reads with Bowtie2 => SAM file." >> $condensedLog;
 
-	if [ -f $projectDirectory"data.bam" ]
+	if [[ -f $projectDirectory"data.bam" ]]
 	then
 		echo -e "\tDone: SAM -> BAM, new group headers, sorted." >> $logName;
 	else
@@ -220,56 +211,15 @@ else
 		echo -e "\tSamtools : Bowtie-BAM sorted & indexed." >> $logName;
 	fi
 
-	if [ -f $projectDirectory"data.pileup" ]
+	if [[ -f $projectDirectory"data.pileup" ]]
 	then
-		echo -e "\tBAM.indelrealignment done; Samtools.pileup generated." >> $logName;
+		echo -e "\tSamtools.pileup generated." >> $logName;
 	else
-		if [ $indelrealign_bool = 1 ]
-		then
-			#================================
-			# Abra2: indel realignment.
-			#--------------------------------
-			echo -e "[[=- Indel realignment with ABRA2 -=]]" >> $logName;
-			echo -e "\tAbra2 : indel-realignment in process." >> $logName;
-			echo -e "Indel realignment with ABRA2." >> $condensedLog;
-			echo -e "\nRunning abra2.\n";
-			ABRA2bedFile=$genomeDirectory"genome.bed";
-			ABRA2inputFile=$projectDirectory"data_sorted.bam";
-			ABRA2outputFile=$projectDirectory"data_indelRealigned.bam";
-			referenceFile=$genomeDirectory$genomeFASTA;
-			mkdir $abra2TempDirectory;
-			#echo -e ""  >> $logName;
-			#echo -e "command: "$java7Directory"java -Xmx16g -jar "$abra2_exec" --in "$ABRA2inputFile" --out "$ABRA2outputFile" --ref "$referenceFile" --threads "$cores" --targets "$ABRA2bedFile" --tmpdir "$abra2TempDirectory" > "$projectDirectory"abra2.log"  >> $logName;
-			#echo -e ""  >> $logName;
-			$java7Directory"java" -Xmx16g -jar $abra2_exec --in $ABRA2inputFile --out $ABRA2outputFile --ref $referenceFile --threads $cores --targets $ABRA2bedFile --tmpdir $abra2TempDirectory > $projectDirectory"abra2.log";
-			echo -e "\tAbra2 : indel-realignment done." >> $logName;
-			rm -rf $abra2TempDirectory;
-			# abra2-2.24.jar is missing file libAbra.so, which can be found in abra2-2.23.jar from github.com mozack/abra2.
-			# example command-line from abra2 readme.
-			# java -Xmx16G -jar abra2.jar --in input.bam --out output-sorted-realigned.bam --ref hg38.fa --threads 8 --targets targets.bed --tmpdir /your/tmpdir > abra.log
-			# From paper: "Either the entire genome is traversed, or regions of interest can be specified via a bed file." in section 2.2.1 on page 2967.
-
-			#================================
-			# Sorting BAM file after Abra2.
-			#--------------------------------
-			echo -e "[[=- Sorting/Indexing BAM files -=]]" >> $logName;
-			echo -e "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
-			echo -e "Sorting BAM file." >> $condensedLog;
-			echo -e "\nRunning samtools:sort.\n";
-			$samtools_exec sort -@ $cores $projectDirectory"data_indelRealigned.bam" -o $projectDirectory"data_sorted.bam" -T $projectDirectory;
-			echo -e "Indexing BAM file." >> $condensedLog;
-			echo -e "\nRunning samtools:index.\n";
-			$samtools_exec index $projectDirectory"data_sorted.bam";
-			echo -e "\tSamtools : Bowtie-BAM sorted & indexed." >> $logName;
-		else
-			echo -e "[[=- Indel realignment not being done -=]]" >> $logName;
-		fi
-
 		echo -e "#============================================================================== 3" >> $logName;
 
-		echo -e "[[=- In-house SNP/CNV/INDEL analysis -=]]" >> $logName;
+		echo -e "[[=- In-house SNP/CNV analysis -=]]" >> $logName;
 		usedFile=$projectDirectory"data_sorted.bam";
-		echo -e "\tSamtools : Generating pileup.   (for SNP/CNV/INDEL analysis)" >> $logName;
+		echo -e "\tSamtools : Generating pileup.   (for SNP/CNV analysis)" >> $logName;
 		echo -e "Generating pileup file." >> $condensedLog;
 		echo -e "\nRunning samtools:mpileup.\n";
 		$python_exec $main_dir"scripts_seqModules/parallel_mpileup.py" $samtools_exec $genomeDirectory$genomeFASTA $usedFile $logName $cores $genomeDirectory data.pileup 2>> $logName;
@@ -277,14 +227,6 @@ else
 	fi
 
 	echo -e "Processing pileup for CNVs & SNPs." >> $condensedLog;
-
-	# ( echo -e "\tPython : Processing pileup for CNVs." >> $logName;
-	# $python_exec $main_dir"scripts_seqModules/counts_CNVs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_CNVs_v1.txt" 2>> $logName;
-	# echo -e "\tPython : Pileup processed for CNVs." >> $logName; ) &
-	#
-	# ( echo -e "\tPython : Processing pileup for INDELs." >> $logName;
-	# $python_exec $main_dir"scripts_seqModules/counts_INDELs_v1.py" $projectDirectory"data.pileup" > $projectDirectory"putative_INDELS_v1.txt" 2>> $logName;
-	# echo -e "\tPython : Pileup processed for INDELs." >> $logName; ) &
 
 	( echo -e "\tPython : Processing pileup for SNPs." >> $logName;
 	$python_exec $main_dir"scripts_seqModules/counts_SNPs_v5.py" $projectDirectory"data.pileup" > $projectDirectory"putative_SNPs_v4.txt" 2>> $logName;
@@ -296,7 +238,7 @@ else
 
 	wait;
 fi
-if [ -f $projectDirectory"trimmed_SNPs_v4.txt" ]
+if [[ -f $projectDirectory"trimmed_SNPs_v4.txt" ]]
 then
 	echo -e "\tPython : Simplify parental putative_SNP list to contain only those loci with an allelic ratio on range [0.25 .. 0.75]." >> $logName;
 	echo -e "\t\tDone." >> $logName;
@@ -311,9 +253,9 @@ else
 	$python_exec $main_dir"scripts_seqModules/scripts_ddRADseq/putative_SNPs_from_parent_in_child.3.py" $genome $genomeUser $project $user $main_dir > $projectDirectory"trimmed_SNPs_v4.txt" 2>> $logName;
 	echo -e "\t\tDone." >> $logName;
 fi
-if [ $hapmapInUse = 1 ]
+if [[ $hapmapInUse = 1 ]]
 then
-	if [ -f $projectDirectory"trimmed_SNPs_v5.txt" ]
+	if [[ -f $projectDirectory"trimmed_SNPs_v5.txt" ]]
 	then
 		echo -e "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
 		echo -e "\t\tDone." >> $logName;
@@ -328,7 +270,7 @@ fi
 echo -e "Pileup processing is complete." >> $condensedLog;
 echo -e "\n\tPileup processing complete.\n" >> $logName;
 
-if [ $hapmapInUse = 0 ]
+if [[ $hapmapInUse = 0 ]]
 then
 	echo -e "\nPassing processing on to 'scripts_seqModules/scripts_ddRADseq/project.ddRADseq.install_4.sh' for final analysis.\n" >> $logName;
 	echo   "============================================================================\n" >> $logName;

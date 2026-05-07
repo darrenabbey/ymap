@@ -1,4 +1,5 @@
-#! /bin/sh
+#!/bin/bash
+set -e
 
 # Installation
 # - Move this to /etc/init.d/ymap_daemon

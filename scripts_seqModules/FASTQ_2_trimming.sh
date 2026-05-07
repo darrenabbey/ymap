@@ -1,6 +1,8 @@
+#!/bin/bash
 set -e
+
 # If no data file option is given, describe script purpose and input.
-if [ -z $1 ] || [ -z $2 ]
+if [[ -z $1 ]] || [[ -z $2 ]]
 then
 	echo;
 	echo -e "# Command syntax is : 'bash FASTQ_trimming.sh [dataset_R1] [dataset_R2]'";
@@ -18,7 +20,7 @@ else
 	residueName1=$(echo $1 | sed -e "s/$findStr$/$replaceStr/g");
 	residueName2=$(echo $2 | sed -e "s/$findStr$/$replaceStr/g");
 	# If final files are found, don't process these data files.
-	if [ -f $residueName1 ] || [ -f $residueName2 ]
+	if [[ -f $residueName1 ]] || [[ -f $residueName2 ]]
 	then
 		echo -e "# ";
 		echo -e "# Trimming of unbalanced read pairs has already been run on this datsaet.";
@@ -41,16 +43,16 @@ else
 		# modulus of the number of lines by 4, as the fastq format is in blocks of 4 lines.
 		# this will give us the number of extra lines in each file.
 		echo -e "\tLines at end of each file suggestive of a cropped entry:";
-		length_extra1=(($length_full1 % 4));
+		length_extra1=$((length_full1%4));
 		echo -e "\t\tFile1: "$length_extra1;
-		length_extra2=(($length_full2 % 4));
+		length_extra2=$((length_full2%4));
 		echo -e "\t\tFile2: "$length_extra2;
 
 		# the number of properly formated lines per file.
 		echo -e "\tNumber of properly formated lines per file:";
-		length_base1=(($length_full1 - $length_extra1));
+		length_base1=$((length_full1-length_extra1));
 		echo -e "\t\tFile1: "$length_base1;
-		length_base2=(($length_full2 - $length_extra2));
+		length_base2=$((length_full2-length_extra2));
 		echo -e "\t\tFile2: "$length_base2;
 
 		# find the lesser length of properly formated lines per file.
@@ -64,9 +66,9 @@ else
 		# find the residue lengths per file.
 		# this is the number of lines of incomplete and extra reads.
 		echo -e "\tNumber of lines at the end of each file to be removed:";
-		length_residue1=(($length_full1 - $lesser_length_base));
+		length_residue1=$((length_full1-lesser_length_base));
 		echo -e "\t\tFile1: "$length_residue1;
-		length_residue2=(($length_full2 - $lesser_length_base));
+		length_residue2=$((length_full2-lesser_length_base));
 		echo -e "\t\tFile2: "$length_residue2;
 
 		findStr=".fastq";
@@ -83,12 +85,12 @@ else
 
 		# make residue files containing any incomplete or extra read lines.
 		echo -e "\tMaking files containing residual lines:";
-		if [ "$length_residue1" -gt 0 ]
+		if [[ "$length_residue1" -gt 0 ]]
 		then
 			echo -e "\t\tFile1: "$residueName1;
 			cat $1 | tail -$length_residue1 > $residueName1;
 		fi
-		if [ "$length_residue2" -gt 0 ]
+		if [[ "$length_residue2" -gt 0 ]]
 		then
 			echo -e "\t\tFile2: "$residueName2;
 			cat $2 | tail -$length_residue2 > $residueName2;

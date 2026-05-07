@@ -1,9 +1,9 @@
-#!/bi
-#n/bash -e
+#!/bin/bash
 #
 # genome.install_6.sh
 #
 set -e;
+
 ## All created files will have permission 760
 umask 007;
 
