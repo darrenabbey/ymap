@@ -74,6 +74,5 @@
 		//----------------------------------------------------------------------------
 		require('UploadHandler.php');
 		$upload_handler = new UploadHandler($target_dir);
-		queue_init($user,$project,"","","from: php/uploader/index.php");
 	}
 ?>
