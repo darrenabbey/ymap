@@ -53,10 +53,9 @@
 					$queue_contents = trim(file_get_contents($queue_dir.$queue_file));
 					if ($queue_contents) {
 						// Queue contents example:
-						//      2026-05-05 19:06:21 - user:darrenFY - project:TJ4771_R1_clean - start - message 1.
-						//      2026-05-05 19:06:21 - user:darrenFY - project:TJ4772_R1_clean - start - message 2.
-						//      2026-05-05 19:06:21 - user:darrenFY - project:TJ4773_R1_clean - start
-						//	2026-05-05 22:06:21 - user:darrenFY - project:TJ4772_R1_clean - end - message 3.
+						//	2026-05-08 00:08:15 - user:darrenFY - project:TJ4771_R1_clean - b1be4a21a5e6f7a1 - init - from: project_bulk.create_server.php
+						//	2026-05-08 00:08:15 - user:darrenFY - project:TJ4772_R1_clean - c75617867d1e1356 - init - from: project_bulk.create_server.php
+						//	2026-05-08 00:08:15 - user:darrenFY - project:TJ4773_R1_clean - 9537892444c7e1c4 - init - from: project_bulk.create_server.php
 						$outline = "";
 						$queue_lines = preg_split("/\R/", $queue_contents);
 						foreach($queue_lines as $key2 => $line){
@@ -65,13 +64,16 @@
 								$time            = $line_parts[0];
 								$user            = str_replace("user:", "", $line_parts[1]);
 								$project         = str_replace("project:", "", $line_parts[2]); // (or genome, or hapmap?).
-								$status          = $line_parts[3];
+								$salt            = $line_parts[3];
+								$status          = $line_parts[4];
 
 								$project_entry   = [];
 								$project_entry[] = $time;
 								$project_entry[] = $user;
 								$project_entry[] = $project;
+								$project_entry[] = $salt;
 								$project_entry[] = $status;
+
 								if ($status == "init") {
 									$projects_init_list[] = $project_entry;
 								} else if ($status == "start") {
@@ -88,15 +90,23 @@
 			//print_r($projects_start_list);
 			//print_r($projects_end_list);
 
+			// 2. Cleanup queue log files.
+			foreach ($queue_files as $key1 => $queue_file) {
+				if (str_contains($queue_file,".log")) {
+				}
+			}
+
 			// 2. Drop end entries from start queue list.
 			foreach ($projects_end_list as $key1 => $project_end_entry) {
 				$count = sizeof($projects_init_list);
 				foreach (array_reverse($projects_start_list) as $key2 => $project_start_entry) {
 					$end_user      = $project_end_entry[1];
 					$end_project   = $project_end_entry[2];
+					$end_salt      = $project_end_entry[3];
 					$start_user    = $project_start_entry[1];
 					$start_project = $project_start_entry[2];
-					if (($end_user == $start_user) && ($end_project == $start_project)) {
+					$start_salt    = $project_start_entry[3];
+					if (($end_user == $start_user) && ($end_project == $start_project) && ($end_salt == $start_salt)) {
 						array_splice($projects_start_list, $count-$key2-1, 1);
 					}
 				}
@@ -109,9 +119,11 @@
 				foreach (array_reverse($projects_init_list) as $key2 => $project_init_entry) {
 					$start_user    = $project_start_entry[1];
 					$start_project = $project_start_entry[2];
+					$start_salt    = $project_start_entry[3];
 					$init_user     = $project_init_entry[1];
 					$init_project  = $project_init_entry[2];
-					if (($start_user == $init_user) && ($start_project == $init_project)) {
+					$init_salt     = $project_init_entry[3];
+					if (($start_user == $init_user) && ($start_project == $init_project) && ($start_salt == $init_salt)) {
 						array_splice($projects_init_list, $count-$key2-1, 1);
 					}
 				}
@@ -121,9 +133,11 @@
 				foreach (array_reverse($projects_init_list) as $key2 => $project_init_entry) {
 					$end_user     = $project_end_entry[1];
 					$end_project  = $project_end_entry[2];
+					$end_salt     = $project_end_entry[3];
 					$init_user    = $project_init_entry[1];
 					$init_project = $project_init_entry[2];
-					if (($end_user == $init_user) && ($end_project == $init_project)) {
+					$init_salt    = $project_init_entry[3];
+					if (($end_user == $init_user) && ($end_project == $init_project) && ($end_salt == $init_salt)) {
 						array_splice($projects_init_list, $count-$key2-1, 1);
 					}
 				}
@@ -175,14 +189,11 @@
 				} else {
 					$dataFormat = "WGseq_paired";
 				}
-				project_process($user,$project,$dataFormat,$fileName);
-
-				$count_bulk_working += 1;
+				$projectDirectory = $base_dir."/users/".$user."/projects/".$project."/";
+				project_process($user,$project,$dataFormat,$fileName,$projectDirectory);
+				//$count_bulk_working += 1;
 
 				log_stuff($user,$project,"","","","YMAP_daemon:SUCCESS Dataset processing initiated.");
-
-				// Pause after initiating processing of a dataset, to avoid n datasets all piling up at once when done.
-				sleep(15);
 			}
 
 			// Sleep for 10 seconds to keep daemon from running continuously.
@@ -196,35 +207,37 @@
 	}
 
 	// Cleanup code (e.g., close database connections, save state)
-	error_log("Daemon stopped successfully.");
+	error_log("YMAP daemon stopped successfully.");
 
 
 	// Function to initiate and release a YMAP thread to process data for a project.
-	function project_process($user,$project,$dataFormat,$fileName) {
-		// Set session variables.
-		$_SESSION['user']       = $user;
-		$_SESSION['fileName']   = $fileName;
-		$_SESSION['project']    = $project;
-		$key = "1";
-		$_SESSION['key']        = $key;		// to be removed later once everything is processed through queue.
+	function project_process($user,$project,$dataFormat,$fileName,$projectDirectory) {
+		if ((!file_exists($projectDirectory."working.txt")) && (!file_exists($projectDirectory."complete.txt"))) {
+			// Set session variables.
+			$_SESSION['user']       = $user;
+			$_SESSION['fileName']   = $fileName;
+			$_SESSION['project']    = $project;
+			$key = "1";
+			$_SESSION['key']        = $key;		// to be removed later once everything is processed through queue.
 
-		// Set string to pass via commandline.
-		$command_string  = $user." ".$fileName." ".$project." ".$key;
+			// Set string to pass via commandline.
+			$command_string  = $user." ".$fileName." ".$project." ".$key;
 
-		// Initiate project processing.
-		$conclusion_script = "";
-		switch ($dataFormat) {
-			case "WGseq_single":
-				$conclusion_script = "project.single_WGseq.install_1.php";
-				break;
-			case "WGseq_paired":
-				$conclusion_script = "project.paired_WGseq.install_1.php";
-				break;
+			// Initiate project processing.
+			$conclusion_script = "";
+			switch ($dataFormat) {
+				case "WGseq_single":
+					$conclusion_script = "project.single_WGseq.install_1.php";
+					break;
+				case "WGseq_paired":
+					$conclusion_script = "project.paired_WGseq.install_1.php";
+					break;
+			}
+
+			// Run processing script.
+			chdir("scripts_seqModules/scripts_WGseq/");
+			exec("php ".$conclusion_script." ".$command_string." > /dev/null &");
+			chdir("../../");
 		}
-
-		// Run processing script.
-		chdir("scripts_seqModules/scripts_WGseq/");
-		exec("php ".$conclusion_script." ".$command_string." > /dev/null &");
-		chdir("../../");
 	}
 ?>
