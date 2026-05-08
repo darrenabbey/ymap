@@ -150,6 +150,9 @@ if ($ext == "zip") {
 		chdir($projectPath);                   // move to projectDirectory.
 		$null = shell_exec("gzip -dc ".$name." > ".$name_new); // decompress archive while keeping results in case of early file end error.
 		chdir($currentDir);                    // move back to script's path.
+
+		// Delete original archive.
+		unlink($projectPath.$name);
 	} else {
 		fwrite($logOutput,"\t\t| Files in tar.gz archive = ".$fileCount.".\n");
 
