@@ -1,4 +1,7 @@
 <?php
+	//
+	// Called from "js/HTML5Uploader.js" once data is uploaded.
+	//
 	session_start();
 	error_reporting(E_ALL);
 	require_once 'constants.php';
@@ -120,12 +123,15 @@
 					$conclusion_script = "scripts_SnpCghArray/project.SnpCgh.install.php";
 					break;
 				case "WGseq_single":
+					queue_init($user,$project,"","","from: upload_processer.php");
 					$conclusion_script = "scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php";
 					break;
 				case "WGseq_paired":
+					queue_init($user,$project,"","","from: upload_processer.php");
 					$conclusion_script = "scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_1.php";
 					break;
 				case "WGseq_long":
+					queue_init($user,$project,"","","from: upload_processer.php");
 					$conclusion_script = "scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php";
 					break;
 				case "ddRADseq_single":
