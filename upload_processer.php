@@ -142,6 +142,7 @@
 					break;
 				case "FASTA":
 					$conclusion_script = "scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php";
+					queue_init($user,$project,"","","from: upload_processer.php");
 					break;
 			}
 		} else if ($genome != "") {
