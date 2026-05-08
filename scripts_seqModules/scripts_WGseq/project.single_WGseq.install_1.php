@@ -62,7 +62,7 @@
 <?php
 	// Initialize log files.
 	$logOutputName = $project_dir."/process_log.txt";
-	$logOutput     = fopen($logOutputName, 'w');
+	$logOutput     = fopen($logOutputName, 'a');
 	fwrite($logOutput, "Log file initialized.\n");
 	fwrite($logOutput, "#..............................................................................\n");
 	fwrite($logOutput, "Running 'scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php'.\n");
