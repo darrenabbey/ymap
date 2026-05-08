@@ -204,10 +204,3 @@ then
 	mv $projectDirectory"working.txt" $projectDirectory"working_done.txt";
 	echo -e "\tworking.txt" >> $logName;
 fi
-
-
-##==============================================================================
-## Make sure all files produced from bulk-processing are owned by www-data:www-data.
-##------------------------------------------------------------------------------
-
-chown www-data:www-data $projectDirectory/*;
