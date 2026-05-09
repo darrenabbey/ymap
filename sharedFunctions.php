@@ -100,10 +100,10 @@ function queue_init($user,$project,$genome,$hapmap,$message) {
 		$line = $line.' - project:'.$project.' - '.$salt_string;
 	} elseif (!empty($genome)) {
 		file_put_contents($filePath."/users/".$user."/genomes/".$genome."/salt.txt", $salt_string);
-		$line = $line.' - genome:'.$genome;
+		$line = $line.' - genome:'.$genome.' - '.$salt_string;
 	} elseif (!empty($hapmap)) {
 		file_put_contents($filePath."/users/".$user."/hapmaps/".$hapmap."/salt.txt", $salt_string);
-		$line = $line.' - hapmap:'.$hapmap;
+		$line = $line.' - hapmap:'.$hapmap.' - '.$salt_string;
 	}
 	$line = $line.' - init';
 	if (!empty($message)) {   $line = $line.' - '.$message;           }
@@ -151,10 +151,10 @@ function queue_reinit($user,$project,$genome,$hapmap,$message) {
 		$line = $line.' - project:'.$project.' - '.$salt_string;
 	} elseif (!empty($genome)) {
 		file_put_contents($filePath."/users/".$user."/genomes/".$genome."/salt.txt", $salt_string);
-		$line = $line.' - genome:'.$genome;
+		$line = $line.' - genome:'.$genome.' - '.$salt_string;
 	} elseif (!empty($hapmap)) {
 		file_put_contents($filePath."/users/".$user."/hapmaps/".$hapmap."/salt.txt", $salt_string);
-		$line = $line.' - hapmap:'.$hapmap;
+		$line = $line.' - hapmap:'.$hapmap.' - '.$salt_string;
 	}
 	$line = $line.' - init';
 	if (!empty($message)) {   $line = $line.' - '.$message;           }
@@ -171,61 +171,33 @@ function queue_start($user,$project,$genome,$hapmap,$message) {
 	$filePath = str_replace("/scripts_hapmaps","",$filePath);
 	$filePath = str_replace("/scripts_ddRADseq","",$filePath);
 
-	// Find which existing queue file contains the init for this project/genome/hapmap.
-	$queue_dir   = $filePath."/queue/";
-	$queue_files = array_slice(scandir($queue_dir), 2);
-	foreach ($queue_files as $key1 => $queue_file) {
-		if (str_contains($queue_file,".log")) {
-			$queue_contents = trim(file_get_contents($queue_dir.$queue_file));
-			if ($queue_contents) {
-				// Queue contents example:
-				//	2026-05-08 00:08:15 - user:darrenFY - project:TJ4771_R1_clean - b1be4a21a5e6f7a1 - init - from: project_bulk.create_server.php
-				//	2026-05-08 00:08:15 - user:darrenFY - project:TJ4772_R1_clean - c75617867d1e1356 - init - from: project_bulk.create_server.php
-				//	2026-05-08 00:08:15 - user:darrenFY - project:TJ4773_R1_clean - 9537892444c7e1c4 - init - from: project_bulk.create_server.php
-				$outline = "";
-				$queue_lines = preg_split("/\R/", $queue_contents);
-				foreach($queue_lines as $key2 => $line){
-					$line_parts = explode(" - ",$line);
-					if (sizeof($line_parts) > 3) {
-						if ($line_parts[4] == "init") {
-							if ($line_parts[1] == "user:".$user) {
-								if ($line_parts[2] == "project:".$project) {
-									$salt_string = file_get_contents($filePath."/users/".$user."/projects/".$project."/salt.txt");
-									if ($line_parts[3] == $salt_string) {
-										$outline = date('Y-m-d H:i:s');
-										$outline = $outline.' - user:'.$user;
-										$outline = $outline.' - project:'.$project;
-										$outline = $outline.' - '.$salt_string;
-									}
-								} else if ($line_parts[2] == "genome:".$genome) {
-									$salt_string = file_get_contents($filePath."/users/".$user."/genomes/".$genome."/salt.txt");
-									if ($line_parts[3] == $salt_string) {
-										$outline = date('Y-m-d H:i:s');
-										$outline = $outline.' - user:'.$user;
-										$outline = $outline.' - genome:'.$genome;
-										$outline = $outline.' - '.$salt_string;
-									}
-								} else if ($line_parts[2] == "hapmap:".$hapmap) {
-									$salt_string = file_get_contents($filePath."/users/".$user."/hapmaps/".$hapmap."/salt.txt");
-									if ($line_parts[3] == $salt_string) {
-										$outline = date('Y-m-d H:i:s');
-										$outline = $outline.' - user:'.$user;
-										$outline = $outline.' - hapmap:'.$hapmap;
-										$outline = $outline.' - '.$salt_string;
-									}
-								}
-							}
-						}
-					}
-				}
-				if ($outline <> "") {
-					$outline = $outline.' - start';
-					if (!empty($message)) {   $outline = $outline.' - '.$message;           }
-					file_put_contents($queue_dir.$queue_file, $outline.PHP_EOL, FILE_APPEND);
-				}
-			}
-		}
+	// define log file.
+	$log_file = $filePath."/queue/".date('Y-m-d')."_queue.log";
+
+	// check if log file exists, create if not.
+	if (!file_exists($log_file)) {
+		$myfile = fopen($log_file, "w");
+		fwrite($myfile, "");
+		fclose($myfile);
+		chmod($log_file, 0774);
 	}
+
+	// add comment to log file.
+	$line = date('Y-m-d H:i:s');
+	$line = $line.' - user:'.$user;
+	if (!empty($project)) {
+		file_put_contents($filePath."/users/".$user."/projects/".$project."/salt.txt", $salt_string);
+		$line = $line.' - project:'.$project.' - '.$salt_string;
+	} elseif (!empty($genome)) {
+		file_put_contents($filePath."/users/".$user."/genomes/".$genome."/salt.txt", $salt_string);
+		$line = $line.' - genome:'.$genome.' - '.$salt_string;
+	} elseif (!empty($hapmap)) {
+		file_put_contents($filePath."/users/".$user."/hapmaps/".$hapmap."/salt.txt", $salt_string);
+		$line = $line.' - hapmap:'.$hapmap.' - '.$salt_string;
+	}
+	$line = $line.' - start';
+	if (!empty($message)) {   $line = $line.' - '.$message;           }
+	file_put_contents($log_file, $line . PHP_EOL, FILE_APPEND);
 }
 function queue_end($user,$project,$genome,$hapmap,$message) {
 	// find main Ymap directory, by removing possible ymap subdirectories from path of calling script.
@@ -238,61 +210,33 @@ function queue_end($user,$project,$genome,$hapmap,$message) {
 	$filePath = str_replace("/scripts_hapmaps","",$filePath);
 	$filePath = str_replace("/scripts_ddRADseq","",$filePath);
 
-	// Find which existing queue file contains the init for this project/genome/hapmap.
-	$queue_dir   = $filePath."/queue/";
-	$queue_files = array_slice(scandir($queue_dir), 2);
-	foreach ($queue_files as $key1 => $queue_file) {
-		if (str_contains($queue_file,".log")) {
-			$queue_contents = trim(file_get_contents($queue_dir.$queue_file));
-			if ($queue_contents) {
-								// Queue contents example:
-				//      2026-05-08 00:08:15 - user:darrenFY - project:TJ4771_R1_clean - b1be4a21a5e6f7a1 - init - from: project_bulk.create_server.php
-				//      2026-05-08 00:08:15 - user:darrenFY - project:TJ4772_R1_clean - c75617867d1e1356 - init - from: project_bulk.create_server.php
-				//      2026-05-08 00:08:15 - user:darrenFY - project:TJ4773_R1_clean - 9537892444c7e1c4 - init - from: project_bulk.create_server.php
-				$outline = "";
-				$queue_lines = preg_split("/\R/", $queue_contents);
-				foreach($queue_lines as $key2 => $line){
-					$line_parts = explode(" - ",$line);
-					if (sizeof($line_parts) > 0) {
-						if ($line_parts[4] == "init") {
-							if ($line_parts[1] == "user:".$user) {
-								if ($line_parts[2] == "project:".$project) {
-									$salt_string = file_get_contents($filePath."/users/".$user."/projects/".$project."/salt.txt");
-									if ($line_parts[3] == $salt_string) {
-										$outline = date('Y-m-d H:i:s');
-										$outline = $outline.' - user:'.$user;
-										$outline = $outline.' - project:'.$project;
-										$outline = $outline.' - '.$salt_string;
-									}
-								} else if ($line_parts[2] == "genome:".$genome) {
-									$salt_string = file_get_contents($filePath."/users/".$user."/genomes/".$genome."/salt.txt");
-									if ($line_parts[3] == $salt_string) {
-										$outline = date('Y-m-d H:i:s');
-										$outline = $outline.' - user:'.$user;
-										$outline = $outline.' - genome:'.$genome;
-										$outline = $outline.' - '.$salt_string;
-									}
-								} else if ($line_parts[2] == "hapmap:".$hapmap) {
-									$salt_string = file_get_contents($filePath."/users/".$user."/hapmaps/".$hapmap."/salt.txt");
-									if ($line_parts[3] == $salt_string) {
-										$outline = date('Y-m-d H:i:s');
-										$outline = $outline.' - user:'.$user;
-										$outline = $outline.' - hapmap:'.$hapmap;
-										$outline = $outline.' - '.$salt_string;
-									}
-								}
-							}
-						}
-					}
-				}
-				if ($outline <> "") {
-					$outline = $outline.' - end';
-					if (!empty($message)) {   $outline = $outline.' - '.$message;           }
-					file_put_contents($queue_dir.$queue_file, $outline.PHP_EOL, FILE_APPEND);
-				}
-			}
-		}
+	// define log file.
+	$log_file = $filePath."/queue/".date('Y-m-d')."_queue.log";
+
+	// check if log file exists, create if not.
+	if (!file_exists($log_file)) {
+		$myfile = fopen($log_file, "w");
+		fwrite($myfile, "");
+		fclose($myfile);
+		chmod($log_file, 0774);
 	}
+
+	// add comment to log file.
+	$line = date('Y-m-d H:i:s');
+	$line = $line.' - user:'.$user;
+	if (!empty($project)) {
+		file_put_contents($filePath."/users/".$user."/projects/".$project."/salt.txt", $salt_string);
+		$line = $line.' - project:'.$project.' - '.$salt_string;
+	} elseif (!empty($genome)) {
+		file_put_contents($filePath."/users/".$user."/genomes/".$genome."/salt.txt", $salt_string);
+		$line = $line.' - genome:'.$genome.' - '.$salt_string;
+	} elseif (!empty($hapmap)) {
+		file_put_contents($filePath."/users/".$user."/hapmaps/".$hapmap."/salt.txt", $salt_string);
+		$line = $line.' - hapmap:'.$hapmap.' - '.$salt_string;
+	}
+	$line = $line.' - end';
+	if (!empty($message)) {   $line = $line.' - '.$message;           }
+	file_put_contents($log_file, $line . PHP_EOL, FILE_APPEND);
 }
 
 function getColors($user,$project) {
