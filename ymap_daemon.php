@@ -86,32 +86,7 @@
 					}
 				}
 			}
-			//print_r($projects_init_list);
-			//print_r($projects_start_list);
-			//print_r($projects_end_list);
-
-			// 2. Cleanup queue log files.
-			foreach ($queue_files as $key1 => $queue_file) {
-				if (str_contains($queue_file,".log")) {
-				}
-			}
-
-			// 2. Drop end entries from start queue list.
-			foreach ($projects_end_list as $key1 => $project_end_entry) {
-				$count = sizeof($projects_init_list);
-				foreach (array_reverse($projects_start_list) as $key2 => $project_start_entry) {
-					$end_user      = $project_end_entry[1];
-					$end_project   = $project_end_entry[2];
-					$end_salt      = $project_end_entry[3];
-					$start_user    = $project_start_entry[1];
-					$start_project = $project_start_entry[2];
-					$start_salt    = $project_start_entry[3];
-					if (($end_user == $start_user) && ($end_project == $start_project) && ($end_salt == $start_salt)) {
-						array_splice($projects_start_list, $count-$key2-1, 1);
-					}
-				}
-			}
-			$count_bulk_working = sizeof($projects_start_list);
+			$count_queue_done = sizeof($projects_end_list);
 
 			// 3. Drop start/end entries from init queue list.
 			foreach ($projects_start_list as $key1 => $project_start_entry) {
@@ -124,7 +99,9 @@
 					$init_project  = $project_init_entry[2];
 					$init_salt     = $project_init_entry[3];
 					if (($start_user == $init_user) && ($start_project == $init_project) && ($start_salt == $init_salt)) {
-						array_splice($projects_init_list, $count-$key2-1, 1);
+						$new_key = $count-$key2-1;
+						array_splice($projects_init_list, $new_key, 1);
+						break;
 					}
 				}
 			}
@@ -138,12 +115,35 @@
 					$init_project = $project_init_entry[2];
 					$init_salt    = $project_init_entry[3];
 					if (($end_user == $init_user) && ($end_project == $init_project) && ($end_salt == $init_salt)) {
-						array_splice($projects_init_list, $count-$key2-1, 1);
+						$new_key = $count-$key2-1;
+						array_splice($projects_init_list, $new_key, 1);
+						break;
 					}
 				}
 			}
-			$count_bulk_initalized = sizeof($projects_init_list);
-			//print_r($projects_init_list);
+			$count_queue_initialized = sizeof($projects_init_list);
+
+			//print_r($projects_start_list);
+
+			// 2. Drop end entries from start queue list.
+			foreach ($projects_end_list as $key1 => $project_end_entry) {
+				$count = sizeof($projects_start_list);
+				foreach (array_reverse($projects_start_list) as $key2 => $project_start_entry) {
+					$end_user      = trim($project_end_entry[1]);
+					$end_project   = trim($project_end_entry[2]);
+					$end_salt      = trim($project_end_entry[3]);
+					$start_user    = trim($project_start_entry[1]);
+					$start_project = trim($project_start_entry[2]);
+					$start_salt    = trim($project_start_entry[3]);
+					if (($end_user == $start_user) && ($end_project == $start_project) && ($end_salt == $start_salt)) {
+						$new_key = $count-$key2-1;
+						//print_r($count." : ".$end_project."\t".$new_key."\n");
+						array_splice($projects_start_list, $new_key, 1);
+						break;
+					}
+				}
+			}
+			$count_queue_working = sizeof($projects_start_list);
 
 			// 4. Drop active projects without a 'bulk.txt' file.
 			$count = sizeof($projects_start_list);
@@ -155,11 +155,22 @@
 					array_splice($projects_start_list, $count-$key1-1, 1);
 				}
 			}
+			$count_queue_working = sizeof($projects_start_list);
+
+
+			//===========================================================
+			// Temporary troubleshooting output.
+			print_r("YMAPs initialized: ".$count_queue_initialized."\n");
+			print_r("YMAPs processing:  ".$count_queue_working."\n");
+			print_r("YMAPs complete:    ".$count_queue_done."\n");
 			print_r($projects_init_list);
-			$count_bulk_working = sizeof($projects_start_list);
+			//print_r($projects_start_list);
+			//print_r($projects_end_list);
+			//-----------------------------------------------------------
+
 
 			// 5. Fire off YMAP processes.
-			if (($count_bulk_working < $MAX_BULK_PARALLEL) && (sizeof($projects_init_list) >= 1)) {
+			if (($count_queue_working < $MAX_QUEUE_PARALLEL) && ($count_queue_initialized >= 1)) {
 				//=============================
 				// Call YMAP processes.
 				//-----------------------------
@@ -191,8 +202,6 @@
 				}
 				$projectDirectory = $base_dir."/users/".$user."/projects/".$project."/";
 				project_process($user,$project,$dataFormat,$fileName,$projectDirectory);
-				//$count_bulk_working += 1;
-
 				log_stuff($user,$project,"","","","YMAP_daemon:SUCCESS Dataset processing initiated.");
 			}
 
@@ -220,23 +229,28 @@
 			$key = "1";
 			$_SESSION['key']        = $key;		// to be removed later once everything is processed through queue.
 
-			// Set string to pass via commandline.
-			$command_string  = $user." ".$fileName." ".$project." ".$key;
-
 			// Initiate project processing.
-			$conclusion_script = "";
-			switch ($dataFormat) {
-				case "WGseq_single":
-					$conclusion_script = "project.single_WGseq.install_1.php";
-					break;
-				case "WGseq_paired":
-					$conclusion_script = "project.paired_WGseq.install_1.php";
-					break;
+			$projectDirectory = $base_dir."/users/".$user."/projects/".$project."/";
+			if (!file_exists($projectDirectory."update.txt")) {
+				// Start an initial YMAP process.
+				switch ($dataFormat) {
+					case "WGseq_single":
+						$conclusion_script = "php project.single_WGseq.install_1.php";
+						break;
+					case "WGseq_paired":
+						$conclusion_script = "php project.paired_WGseq.install_1.php";
+						break;
+				}
+				$command_string  = $user." ".$fileName." ".$project." ".$key;
+			} else {
+				// Start an update YMAP process.
+				$conclusion_script = "bash project.WGseq.update_2.sh";
+				$command_string  = $user." ".$project;
 			}
 
 			// Run processing script.
 			chdir("scripts_seqModules/scripts_WGseq/");
-			exec("php ".$conclusion_script." ".$command_string." > /dev/null &");
+			exec($conclusion_script." ".$command_string." > /dev/null &");
 			chdir("../../");
 		}
 	}
