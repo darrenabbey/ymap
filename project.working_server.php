@@ -177,7 +177,7 @@ body {font-family: arial;}
 		} else {
 			?>
 			<body onload = "parent.parent.resize_project('<?PHP echo $key; ?>', 38); parent.parent.update_project_label_color('<?php echo $key; ?>','#000000','#FFCCCC');" class="tab">
-			<div style='color: red; display: inline-block; font-size: 10px;'><b>[In bulk data queue.]</b></div>
+			<div style='color: red; display: inline-block; font-size: 10px;'><b>[In processing queue.]</b></div>
 			<?php
 		}
 		echo $clock."<br>";
