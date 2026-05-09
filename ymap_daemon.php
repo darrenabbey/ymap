@@ -230,7 +230,6 @@
 			$_SESSION['key']        = $key;		// to be removed later once everything is processed through queue.
 
 			// Initiate project processing.
-			$projectDirectory = $base_dir."/users/".$user."/projects/".$project."/";
 			if (!file_exists($projectDirectory."update.txt")) {
 				// Start an initial YMAP process.
 				switch ($dataFormat) {
