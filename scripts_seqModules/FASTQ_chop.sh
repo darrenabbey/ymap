@@ -1,17 +1,17 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 # If no data file option is given, describe script purpose and input.
-if [[ -z $1 ]] || [[ -z $2 ]]
+if [ -z $1 ] || [ -z $2 ]
 then
 	echo;
-	echo -e "# Command syntax is : 'bash FASTQ_chop.sh [dataset] [length]'";
-	echo -e "# ";
-	echo -e "#        [dataset] : File containing FASTQ entries.";
-	echo -e "#        [length]  : Number of lines at which to cut file in two.";
-	echo -e "# ";
-	echo -e "# This function is useful in trouble-shooting FASTQ file formatting issues.";
-	echo -e "# ";
+	echo "# Command syntax is : 'sh FASTQ_chop.sh [dataset] [length]'";
+	echo "# ";
+	echo "#        [dataset] : File containing FASTQ entries.";
+	echo "#        [length]  : Number of lines at which to cut file in two.";
+	echo "# ";
+	echo "# This function is useful in trouble-shooting FASTQ file formatting issues.";
+	echo "# ";
 	echo;
 	exit 1;
 else

@@ -1,17 +1,17 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
-if [[ -z $1 ]]
+if [ -z $1 ]
 then
 	echo;
-	echo -e "### UNTESTED ###";
-	echo -e "# Command syntax is : 'bash FASTQ_reformat_1.sh [FASTQ seq file] > output.fastq'";
-	echo -e "# ";
-	echo -e "#        [FASTQ seq file] : Genome sequence file in FASTQ format.";
-	echo -e "# ";
-	echo -e "# This script will take a file containing multi-line FASTQ entries and reformat";
-	echo -e "# them to have only one line for the header and for the sequence for each entry.";
-	echo -e "# ";
+	echo "### UNTESTED ###";
+	echo "# Command syntax is : 'sh FASTQ_reformat_1.sh [FASTQ seq file] > output.fastq'";
+	echo "# ";
+	echo "#        [FASTQ seq file] : Genome sequence file in FASTQ format.";
+	echo "# ";
+	echo "# This script will take a file containing multi-line FASTQ entries and reformat";
+	echo "# them to have only one line for the header and for the sequence for each entry.";
+	echo "# ";
 	echo;
 	exit 1;
 else
@@ -30,13 +30,13 @@ tempdir=$(mktemp -d);
 
 	# If line starts with "@" output with leading & trailing "\n"; else output without trailing "\n";
 	while read line; do
-		if [[ $line == "@"* ]]
+		if [ $line == "@"* ]
 		then
-			echo -e "\n"$line;
+			echo "\n"$line;
 		else
-			if [[ $line == "+"* ]]
+			if [ $line == "+"* ]
 			then
-				echo -e "\n"$line;
+				echo "\n"$line;
 			else
 				echo -n $line;
 			fi

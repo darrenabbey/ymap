@@ -1,28 +1,28 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 # If no data file option is given, describe script purpose and input.
-if [[ -z $1 ]]
+if [ -z $1 ]
 then
 	echo;
-	echo -e "# Command syntax is : 'bash FASTA_to-uppercase.sh [FASTA seq file] > output.fasta'";
-	echo -e "# ";
-	echo -e "#        [FASTA seq file] : Genome sequence file in FASTA format.";
-	echo -e "# ";
-	echo -e "# This script will take a file containing FASTA entries and change any lowercase";
-	echo -e "# bases to uppercase.";
-	echo -e "# ";
+	echo "# Command syntax is : 'sh FASTA_to-uppercase.sh [FASTA seq file] > output.fasta'";
+	echo "# ";
+	echo "#        [FASTA seq file] : Genome sequence file in FASTA format.";
+	echo "# ";
+	echo "# This script will take a file containing FASTA entries and change any lowercase";
+	echo "# bases to uppercase.";
+	echo "# ";
 	echo;
 	exit 1;
 else
 # Absolute path this script is in.
 BASEPATH=$(readlink -f "$0");
 BASEDIR=$(dirname $BASEPATH);
-#echo -e "Script found in: ${BASEDIR}"
+#echo "Script found in: ${BASEDIR}"
 
 # Absolute path the script is called from.
 CALLDIR=${PWD}
-#echo -e "Script executed from: ${CALLDIR}"
+#echo "Script executed from: ${CALLDIR}"
 
 # Make temp dir.
 tempdir=$(mktemp -d);

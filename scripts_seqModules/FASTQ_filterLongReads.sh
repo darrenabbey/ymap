@@ -1,26 +1,26 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 # If no data file option is given, describe script purpose and input.
-if [[ -z $1 ]] || [[ -z $2 ]] || [[ -z $3 ]]
+if [ -z $1 ] || [ -z $2 ] || [ -z $3 ]
 then
 	echo;
-	echo -e "# Command syntax is : 'bash FASTQ_filterLongReads.sh [dataset] [cutoff] [outfile]'";
-	echo -e "# ";
-	echo -e "#        [dataset] : FASTQ read file input.";
-	echo -e "#        [cutoff]  : Reads longer than this are discarded.";
-	echo -e "#        [outfile] : Destination file for FASTQ entries.";
-	echo -e "# ";
-	echo -e "# This script expects the input FASTQ to be well-formatted.";
-	echo -e "# ";
+	echo "# Command syntax is : 'sh FASTQ_filterLongReads.sh [dataset] [cutoff] [outfile]'";
+	echo "# ";
+	echo "#        [dataset] : FASTQ read file input.";
+	echo "#        [cutoff]  : Reads longer than this are discarded.";
+	echo "#        [outfile] : Destination file for FASTQ entries.";
+	echo "# ";
+	echo "# This script expects the input FASTQ to be well-formatted.";
+	echo "# ";
 	echo;
 	exit 1;
 else
 	## FASTQ format per line, repeating.
-	# echo -e "@ id";
-	# echo -e "sequence"
-	# echo -e "+ id"
-	# echo -e "quality"
+	# echo "@ id";
+	# echo "sequence"
+	# echo "+ id"
+	# echo "quality"
 
 	filterCutoff=$2;
 
@@ -28,7 +28,7 @@ else
 	length_full1=$(wc -l $1 | awk '{print $1}');
 
 	# initialize and clear output file.
-	echo -e "null" >> $3;
+	echo "null" >> $3;
 	cp /dev/null $3;
 
 	# open extra file descriptor for input.
@@ -43,7 +43,7 @@ else
 
 		lengthOfRead=${#line1_2};
 
-		if [[ $lengthOfRead -le $filterCutoff ]]
+		if [ $lengthOfRead -le $filterCutoff ]
 		then
 			echo $line1_1 >> $3;
 			echo $line1_2 >> $3;

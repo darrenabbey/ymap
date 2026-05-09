@@ -17,7 +17,7 @@ logName=$projectDirectory"process_log.txt";
 trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. sam2fastq.sh:$LINENO"; echo -e "Something went wrong. sam2fastq.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
 
-echo -e "#|---- sam2fastq.sh ---- begin." >> $logName;
+echo "#|---- sam2fastq.sh ---- begin." >> $logName;
 
 # import locations of auxillary software for pipeline analysis.
 . $main_dir"local_installed_programs.sh";
@@ -29,8 +29,8 @@ finalOutput2=$projectDirectory"data_r2.fastq";
 # Use SAMtools to convert Bam to Sam.
 #-----------------------------------------------------------------------------------------------------------------------------------
 
-echo -e "#| $samtools_exec collate -u -O $projectDirectory$inputFile | $samtools_exec fastq -1 $finalOutput1 -2 $finalOutput2 -0 /dev/null -s /dev/null -n" >> $logName;
+echo "#| $samtools_exec collate -u -O $projectDirectory$inputFile | $samtools_exec fastq -1 $finalOutput1 -2 $finalOutput2 -0 /dev/null -s /dev/null -n" >> $logName;
 
 $samtools_exec collate -u -O $projectDirectory$inputFile | $samtools_exec fastq -1 $finalOutput1 -2 $finalOutput2 -0 /dev/null -s /dev/null -n;
 
-echo -e "#|---- sam2fastq.sh ---- end." >> $logName;
+echo "#|---- sam2fastq.sh ---- end." >> $logName;

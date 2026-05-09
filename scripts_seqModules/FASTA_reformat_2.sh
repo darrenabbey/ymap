@@ -1,25 +1,25 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 ##---------------------------------------------------------------------------------------------
 ## Reformat fasta 2 : converts single-line FASTA entries into multi-line entries.
 ##---------------------------------------------------------------------------------------------
-# 0) Called like : "bash FASTA_reformat_2.sh file.fa"
+# 0) Called like : "sh FASTA_reformat_2.sh file.fa"
 # 1) Adds newlines in front of ">"s to split FASTA entries onto separate lines.
 # 2) Adds a newline after every 100bp of sequence.
 # 3) Remove initial blank lines...  added above as artifact of adding lines between entries.
 
 
 # If no data file option is given, describe script purpose and input.
-if [[ -z $1 ]]
+if [ -z $1 ]
 then
 	echo;
-	echo -e "# Command syntax is : 'bash FASTQ_reformtat_1.sh [FASTA seq file]'";
-	echo -e "# ";
-	echo -e "#        [FASTA seq file] : Genome sequence file in FASTA format.";
-	echo -e "# ";
-	echo -e "# This script will take a file containing single-line FASTA entries and reformat";
-	echo -e "# them to have one header line and many sequence lines 100bp long per entry.";
+	echo "# Command syntax is : 'sh FASTQ_reformtat_1.sh [FASTA seq file]'";
+	echo "# ";
+	echo "#        [FASTA seq file] : Genome sequence file in FASTA format.";
+	echo "# ";
+	echo "# This script will take a file containing single-line FASTA entries and reformat";
+	echo "# them to have one header line and many sequence lines 100bp long per entry.";
 	echo;
 	exit 1;
 else

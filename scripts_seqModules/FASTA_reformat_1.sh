@@ -1,16 +1,15 @@
 #!/bin/bash
-set -e
 
-if [[ -z $1 ]]
+if [ -z $1 ]
 then
 	echo;
-	echo -e "# Command syntax is : 'bash FASTA_reformat_1.sh [FASTA seq file] > output.fasta'";
-	echo -e "# ";
-	echo -e "#        [FASTA seq file] : Genome sequence file in FASTA format.";
-	echo -e "# ";
-	echo -e "# This script will take a file containing multi-line FASTA entries and reformat";
-	echo -e "# them to have only one line for the header and for the sequence for each entry.";
-	echo -e "# ";
+	echo "# Command syntax is : 'bash FASTA_reformat_1.sh [FASTA seq file] > output.fasta'";
+	echo "# ";
+	echo "#        [FASTA seq file] : Genome sequence file in FASTA format.";
+	echo "# ";
+	echo "# This script will take a file containing multi-line FASTA entries and reformat";
+	echo "# them to have only one line for the header and for the sequence for each entry.";
+	echo "# ";
 	echo;
 	exit 1;
 else
@@ -36,7 +35,7 @@ tempdir=$(mktemp -d);
 			then
 				echo -e "\n"$line;
 			else
-				echo -e $line;
+				echo $line;
 			fi
 		else
 			echo -n $line;

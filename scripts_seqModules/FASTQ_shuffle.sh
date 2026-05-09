@@ -1,39 +1,39 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 # If no data file option is given, describe script purpose and input.
-if [[ -z $1 ]] || [[ -z $2 ]] || [[ -z $3 ]]
+if [ -z $1 ] || [ -z $2 ] || [ -z $3 ]
 then
 	echo;
-	echo -e "# Command syntax is : 'bash FASTQ_shuffle.sh [dataset_R1] [dataset_R2] [outfile]'";
-	echo -e "# ";
-	echo -e "#        [dataset_R1] & [dataset_R2] : Left & right read files to be shuffled into one FASTQ file.";
-	echo -e "#        [outfile]                   : Destination file for FASTQ entries.";
-	echo -e "# ";
-	echo -e "# This script expects the two input files to have the same number of lines.";
-	echo -e "# ";
+	echo "# Command syntax is : 'sh FASTQ_shuffle.sh [dataset_R1] [dataset_R2] [outfile]'";
+	echo "# ";
+	echo "#        [dataset_R1] & [dataset_R2] : Left & right read files to be shuffled into one FASTQ file.";
+	echo "#        [outfile]                   : Destination file for FASTQ entries.";
+	echo "# ";
+	echo "# This script expects the two input files to have the same number of lines.";
+	echo "# ";
 	echo;
 	exit 1;
 else
 	## FASTQ format per line, repeating.
-	# echo -e "@ id";
-	# echo -e "sequence"
-	# echo -e "+ id"
-	# echo -e "quality"
+	# echo "@ id";
+	# echo "sequence"
+	# echo "+ id"
+	# echo "quality"
 
 	# number of lines of each file.
 	length_full1=$(wc -l $1 | awk '{print $1}');
 	length_full2=$(wc -l $2 | awk '{print $1}');
 
-	if [[ $length_full1 -ne $length_full2 ]]
+	if [ $length_full1 -ne $length_full2 ]
 	then
-		echo -e "##";
-		echo -e "## Input FASTQ files have different numbers of lines.";
-		echo -e "##";
+		echo "##";
+		echo "## Input FASTQ files have different numbers of lines.";
+		echo "##";
 		exit;
 	else
 		# initialize and clear output file.
-		echo -e "null" >> $3;
+		echo "null" >> $3;
 		cp /dev/null $3;
 
 		# open extra file descriptors for input.
