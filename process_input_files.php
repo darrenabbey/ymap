@@ -22,6 +22,9 @@ if ($count > 2) {
 $name_new .= ".".$fragments[$count-1];
 $name      = $name_new;
 
+// Initialize name of potential second file from sam/bam file.
+$name_new2 = "";
+
 // If uploaded file is wrong file type, delete.
 $ext = strtolower($ext);
 if (($ext == "tdt") || ($ext == "sam") || ($ext == "bam") || ($ext == "fasta") || ($ext == "fna") || ($ext == "ffn") || ($ext == "faa") || ($ext == "frn") || ($ext == "fa") || ($ext == "fastq") || ($ext == "fq") || ($ext == "zip") || ($ext == "gz")) {
@@ -34,9 +37,9 @@ if (($ext == "tdt") || ($ext == "sam") || ($ext == "bam") || ($ext == "fasta") |
 }
 
 
-//================================
-// Deal with compressed archives.
-//--------------------------------
+//==================================================
+// Deal with compressed archives and odd extensions.
+//--------------------------------------------------
 $errorText = '';
 $currentDir = getcwd(); // get script's path.
 if ($ext == "zip") {
@@ -108,8 +111,9 @@ if ($ext == "zip") {
 	fwrite($logOutput, "\t\t| rename_target = '".$rename_target."'\n");
 
 	// Hand off decompressed ZIP file to next section.
-	$ext_new  = $ext_first;
-	$name_new = $rename_target;
+	$ext_new   = $ext_first;
+	$name_new  = $rename_target;
+	$name_new2 = "";
 
 	// Is decompressed file a FASTQ?
 	if ($ext_new == "fastq") {
@@ -199,8 +203,9 @@ if ($ext == "zip") {
 	fwrite($logOutput, "\t\t| rename  = '".$rename_target."'\n");
 
 	// Hand off decompressed GZ file to next section.
-	$ext_new  = $name_ext;
-	$name_new = $rename_target;
+	$ext_new   = $name_ext;
+	$name_new  = $rename_target;
+	$name_new2 = "";
 
 	// Is decompressed file a FASTQ?
 	if ($ext_new == "fastq") {
@@ -213,18 +218,46 @@ if ($ext == "zip") {
 		$ext_new  = "none1";
 		$name_new = "";
 	}
+} else if (($ext_new == "sam") || ($ext_new == "bam")) {
+	fwrite($logOutput, "\t\t| This is a SAM/BAM file.\n");
+
+	// The .sh scripts need to be running from Ymap root.
+	$absProjectPath = realpath($projectPath) . "/";
+	$currentDir = getcwd();
+	chdir($projectPath . "../../../../"); // ymap_root/users/user_name/projects/this_project
+
+	// Convert SAM file to FASTQ files.
+	fwrite($condensedLogOutput, "Decompressing SAM/BAM file to FASTQ.\n");
+	$null       = shell_exec("bash scripts_seqModules/sam2fastq.sh ".$user." ".$project." ".$name_new);
+
+	// Place resulting FASTQ file names into datafiles.txt.
+	fwrite($output, "data_r1.fastq\n");
+	fwrite($output, "data_r2.fastq\n");
+
+	// delete original archive.
+	unlink($absProjectPath.$name_new);
+	fwrite($logOutput, "\t\t| File converted to paired-FASTQ files, original deleted.\n");
+	$ext_new   = "fastq";
+	$name_new  = "data_r1.fastq";
+	$name_new2 = "data_r2.fastq";
+
+	$paired = 1;
+	chdir($currentDir);
 } else if ($ext == "fq") {
 	// if short extension for fastq, fq is found, rename to fastq.
-	$ext_new  = "fastq";
-	$name_new = $name;
+	$ext_new   = "fastq";
+	$name_new  = $name;
+	$name_new2 = "";
 } else if (($ext == "fna") || ($ext == "ffn") || ($ext == "faa") || ($ext == "frn") || ($ext == "fa")) {
 	// alternate extensions for fasta, rename to fasta.
-	$ext_new  = "fasta";
-	$name_new = $name;
+	$ext_new   = "fasta";
+	$name_new  = $name;
+	$name_new2 = "";
 } else {
 	// Not a compressed archive, hand off to next section.
-	$ext_new  = $ext;
-	$name_new = $name;
+	$ext_new   = $ext;
+	$name_new  = $name;
+	$name_new2 = "";
 }
 
 fwrite($logOutput, "\t\t| After archive decompression.\n");
@@ -237,68 +270,14 @@ fwrite($logOutput, "\t\t|\tprojectPath = ".$projectPath."\n");
 // Validate FASTQ, FASTA, and CSV/TDT/TXT files.
 //---------------------------------------
 if ($ext_new == "fastq") {
-	// Correct filename.
-
-	// Looking at first four lines of text to check basic format requirements are met.
-	$file_name   = $projectPath.$name_new;
-	$file_handle = fopen($file_name,'r');
-	$line_1      = fgets($file_handle);
-	$line_2      = fgets($file_handle);
-	$line_3      = fgets($file_handle);
-	$line_4      = fgets($file_handle);
-	fclose($file_handle);
-
-	// Is this a fastq file?
-	if (($line_1[0] == '@') && ($line_3[0] == '+')) {
-		// This is a FASTQ file.
-		// Is this a short-read or long-read fastq file?
-		// Determine max read length, read count, length of all reads,
-		fwrite($condensedLogOutput, "Calculating FASTQ read length statistics.\n");
-		$null            = shell_exec("sed -n '2~4p' ".$projectPath.$name_new." > ".$projectPath.$name_new.".temp");		// Discared FASTQ lines except for sequence.
-		$maxReadLength   = (int)explode(" ",trim(shell_exec("wc -L ".$projectPath.$name_new.".temp")))[0];			// Get longest sequence length.
-		$totalReadCount  = (int)explode(" ",trim(shell_exec("wc -l ".$projectPath.$name_new.".temp")))[0];			// Get number of reads.
-		$totalReadLength = (int)explode(" ",trim(shell_exec("wc -c ".$projectPath.$name_new.".temp")))[0] - $totalReadCount;	// Get total sequence length.
-		unlink($projectPath.$name_new.".temp");											// Delete temp file.
-
-		fwrite($logOutput, "\t\t| Preparing readstats.txt file.\n");
-		if (!file_exists($projectPath."readStats.txt")) {
-			// Make a new readStats.txt file with read length stats.
-			$readStatsFile = fopen($projectPath."readStats.txt", 'w');
-			fwrite($readStatsFile, $totalReadCount." (reads count)\n".$totalReadLength." (reads total length)\n");
-			fclose($readStatsFile);
-		} else {
-			// Load existing totalReadCount and totalReadLength from readStats.txt file.
-			$oldStats_raw        = trim(file_get_contents($projectPath."readStats.txt"));
-			$oldStats_lines      = preg_split("/\R/", $oldStats_raw);
-			$totalReadCount_old  = (int)$oldStats_lines[0];
-			$totalReadLength_old = (int)$oldStats_lines[1];
-
-			// Add the new and old values.
-			$totalReadCount      = $totalReadCount  + $totalReadCount_old;
-			$totalReadLength     = $totalReadLength + $totalReadLength_old;
-
-			// Make a new readStats.txt file with new values.
-			$readStatsFile = fopen($projectPath."readStats.txt", 'w');
-			fwrite($readStatsFile, $totalReadCount." (reads count)\n".$totalReadLength." (reads total length)\n");
-			fclose($readStatsFile);
-		}
-
-		fwrite($logOutput, "\t\t| max read length = ".(string)$maxReadLength."\n");
-		if ($maxReadLength <= 500) {
-			// short-reads: no problems.
-			fwrite($logOutput, "\t\t| Short-reads identified.\n");
-		} else {
-			// long-reads: generate error.
-			unlink($projectPath.$name_first);
-			fwrite($logOutput, "\t\t| Long-reads identified.\n");
-			//$ext_new = "none4"; //YMAP1 doesn't process long-reads, so error code.
-			$ext_new = "fastq-l"; //YMAP2 does process long-reads, so file type.
-		}
+	// validate fastq file(s).
+	$ext_new = validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput);
+	if (str_contains($ext_new,"none")) {
+		unlink($projectPath."data_r2.fastq");
 	} else {
-		// format is wrong for a FASTQ file.
-		unlink($projectPath.$name_first);
-		fwrite($logOutput, "\t\t| FASTQ file format incorrect!!!\n");
-		$ext_new = "none2";
+		if ($name_new2 <> "") {
+			$ext_new = validate_fastq($projectPath,$name_new2,$condensedLogOutput,$logOutput);
+		}
 	}
 } else if ($ext_new == "fasta") {
 	// Looking at first line of text.
@@ -316,7 +295,7 @@ if ($ext_new == "fastq") {
 		fwrite($logOutput, "\t\t| FASTA file format incorrect!!!\n");
 		$ext_new = "none2";
 	}
-} else if ($ext_new == "tdt") {
+} else if ($ext_new == "tdt") {  // Data from custom SnpCgh microarray.
 	// Looking at first four lines of text.
 	$file_name = $projectPath.$name_new;
 	$file_handle = fopen($file_name,'r');
@@ -407,28 +386,6 @@ if ($ext_new == "fastq") {
 	fwrite($output, "output.fastq\n");
 	$paired = 0;
 	chdir($currentDir);
-} else if (($ext_new == "sam") || ($ext_new == "bam")) {
-	fwrite($logOutput, "\t\t| This is a SAM/BAM file.\n");
-
-	// The .sh scripts need to be running from Ymap root.
-	$absProjectPath = realpath($projectPath) . "/";
-	$currentDir = getcwd();
-	chdir($projectPath . "../../../../"); // ymap_root/users/user_name/projects/this_project
-
-	// Convert SAM file to FASTQ files.
-	fwrite($condensedLogOutput, "Decompressing SAM/BAM file to FASTQ.\n");
-	$null       = shell_exec("bash scripts_seqModules/sam2fastq.sh ".$user." ".$project." ".$name_new);
-
-	// Place resulting FASTQ file names into datafiles.txt.
-	fwrite($output, "data_r1.fastq\n");
-	fwrite($output, "data_r2.fastq\n");
-
-	// delete original archive.
-	unlink($absProjectPath.$name_new);
-	fwrite($logOutput, "\t\t| File converted to paired-FASTQ files, original deleted.\n");
-
-	$paired = 1;
-	chdir($currentDir);
 } elseif ($ext_new == "tdt") {
 	fwrite($logOutput, "\t\t| This is a txt file.\n");
 	fwrite($logOutput, "\t\t|\tCurrentDir = ".getcwd()."\n");
@@ -452,14 +409,14 @@ if ($ext_new == "fastq") {
 	queue_end($user,$project,"","","File validation failed.");
 	exit;
 } elseif ($ext_new == "none2") {
-        fwrite($logOutput, "\t\t| The FASTQ file was not formated properly.\n");
+	fwrite($logOutput, "\t\t| The FASTQ file was not formated properly.\n");
 	$errorFile = fopen($projectPath."error.txt", 'w');
-        fwrite($errorFile, "FASTQ file formatting improperly.");
-        fclose($errorFile);
-        chmod($errorFileName,0774);
+	fwrite($errorFile, "FASTQ file formatting improperly.");
+	fclose($errorFile);
+	chmod($errorFileName,0774);
 	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTQ file format errors.");
 	queue_end($user,$project,"","","File validation failed.");
-        exit;
+	exit;
 } elseif ($ext_new == "none3") {
 	fwrite($logOutput, "\t\t| The contents of this TDT file did not match expectations.\n");
 	$errorFile = fopen($projectPath."error.txt", 'w');
@@ -470,14 +427,14 @@ if ($ext_new == "fastq") {
 	queue_end($user,$project,"","","File validation failed.");
 	exit;
 } elseif ($ext_new == "none4") {
-        fwrite($logOutput, "\t\t| The FASTQ file contains long-reads.\n");
-        $errorFile = fopen($projectPath."error.txt", 'w');
-        fwrite($errorFile, "FASTQ file with long reads, unable to process.");
-        fclose($errorFile);
-        chmod($errorFileName,0774);
-        log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTQ file has incompatible long-reads..");
-        queue_end($user,$project,"","","File validation failed.");
-        exit;
+	fwrite($logOutput, "\t\t| The FASTQ file contains long-reads.\n");
+	$errorFile = fopen($projectPath."error.txt", 'w');
+	fwrite($errorFile, "FASTQ file with long reads, unable to process.");
+	fclose($errorFile);
+	chmod($errorFileName,0774);
+	log_stuff($user,$project,"","","users/".$user."/projects/".$project."/".$name_new.".".$ext_new,"UPLOAD fail: FASTQ file has incompatible long-reads..");
+	queue_end($user,$project,"","","File validation failed.");
+	exit;
 } else {
 	fwrite($logOutput, "\t\t| This is an unknown file type.\n");
 	$errorFile = fopen($projectPath."error.txt", 'w');
@@ -494,4 +451,79 @@ fwrite($logOutput, "\t\t| 'process_input_files.php' has completed.              
 fwrite($logOutput, "\t\t*========================================================*\n");
 return $paired;
 }
+
+
+function $ext_new = validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput);
+	// Looking at first four lines of text to check basic format requirements are met.
+	$file_name   = $projectPath.$name_new;
+	$file_handle = fopen($file_name,'r');
+	$line_1      = fgets($file_handle);
+	$line_2      = fgets($file_handle);
+	$line_3      = fgets($file_handle);
+	$line_4      = fgets($file_handle);
+	fclose($file_handle);
+
+	// Is this a fastq file?
+	if (($line_1[0] == '@') && ($line_3[0] == '+')) {
+		// This is a FASTQ file.
+		// Is this a short-read or long-read fastq file?
+		// Determine max read length, read count, length of all reads,
+		fwrite($condensedLogOutput, "Calculating FASTQ read length statistics.\n");
+		$null            = shell_exec("sed -n '2~4p' ".$projectPath.$name_new." > ".$projectPath.$name_new.".temp");		// Discared FASTQ lines except for sequence.
+		$maxReadLength   = (int)explode(" ",trim(shell_exec("wc -L ".$projectPath.$name_new.".temp")))[0];			// Get longest sequence length.
+		$totalReadCount  = (int)explode(" ",trim(shell_exec("wc -l ".$projectPath.$name_new.".temp")))[0];			// Get number of reads.
+		$totalReadLength = (int)explode(" ",trim(shell_exec("wc -c ".$projectPath.$name_new.".temp")))[0] - $totalReadCount;	// Get total sequence length.
+		unlink($projectPath.$name_new.".temp");											// Delete temp file.
+
+		fwrite($logOutput, "\t\t| Preparing readstats.txt file.\n");
+		if (!file_exists($projectPath."readStats.txt")) {
+			// Make a new readStats.txt file with read length stats.
+			$readStatsFile = fopen($projectPath."readStats.txt", 'w');
+			fwrite($readStatsFile, $totalReadCount." (reads count)\n".$totalReadLength." (reads total length)\n");
+			fclose($readStatsFile);
+		} else {
+			// Load existing totalReadCount and totalReadLength from readStats.txt file.
+			$oldStats_raw        = trim(file_get_contents($projectPath."readStats.txt"));
+			$oldStats_lines      = preg_split("/\R/", $oldStats_raw);
+			$totalReadCount_old  = (int)$oldStats_lines[0];
+			$totalReadLength_old = (int)$oldStats_lines[1];
+
+			// Add the new and old values.
+			$totalReadCount      = $totalReadCount  + $totalReadCount_old;
+			$totalReadLength     = $totalReadLength + $totalReadLength_old;
+
+			// Make a new readStats.txt file with new values.
+			$readStatsFile = fopen($projectPath."readStats.txt", 'w');
+			fwrite($readStatsFile, $totalReadCount." (reads count)\n".$totalReadLength." (reads total length)\n");
+			fclose($readStatsFile);
+		}
+
+		fwrite($logOutput, "\t\t| max read length = ".(string)$maxReadLength."\n");
+		if ($maxReadLength <= 500) {
+			// short-reads: no problems.
+			fwrite($logOutput, "\t\t| Short-reads identified.\n");
+		} else {
+			// long-reads: generate error.
+			unlink($projectPath.$name_first);
+			fwrite($logOutput, "\t\t| Long-reads identified.\n");
+			//$ext_new = "none4"; //YMAP1 doesn't process long-reads, so error code.
+			$ext_new = "fastq-l"; //YMAP2 does process long-reads, so file type.
+		}
+	} else {
+		// format is wrong for a FASTQ file.
+		unlink($projectPath.$name_first);
+		fwrite($logOutput, "\t\t| FASTQ file format incorrect!!!\n");
+		$ext_new = "none2";
+	}
+}
+
+
+
+
+
+
+
+
+
+
 ?>
