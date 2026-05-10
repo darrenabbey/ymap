@@ -230,9 +230,12 @@ if ($ext == "zip") {
 	fwrite($condensedLogOutput, "Decompressing SAM/BAM file to FASTQ.\n");
 	$null       = shell_exec("bash scripts_seqModules/sam2fastq.sh ".$user." ".$project." ".$name_new);
 
-	// Place resulting FASTQ file names into datafiles.txt.
-	fwrite($output, "data_r1.fastq\n");
-	fwrite($output, "data_r2.fastq\n");
+	// Rewrite datafiles.txt file with decomressed sam/bam data.
+	unlink($absProjectPath."datafiles.txt");
+	$datafiles_file = fopen($absProjectPath."datafiles.txt", 'w');
+	fwrite($datafiles_file, "data_r1.fastq\n");
+	fwrite($datafiles_file, "data_r2.fastq\n");
+	fclose($datafiles_file);
 
 	// delete original archive.
 	unlink($absProjectPath.$name_new);
@@ -262,7 +265,12 @@ if ($ext == "zip") {
 
 fwrite($logOutput, "\t\t| After archive decompression.\n");
 fwrite($logOutput, "\t\t|\text_new     = ".$ext_new."\n");
-fwrite($logOutput, "\t\t|\tname_new    = ".$name_new."\n");
+if ($name_new2 == "") {
+	fwrite($logOutput, "\t\t|\tname_new    = ".$name_new."\n");
+} else {
+	fwrite($logOutput, "\t\t|\tname_new    = ".$name_new."\n");
+	fwrite($logOutput, "\t\t|\tname_new2   = ".$name_new2."\n");
+}
 fwrite($logOutput, "\t\t|\tprojectPath = ".$projectPath."\n");
 
 
