@@ -453,7 +453,7 @@ return $paired;
 }
 
 
-function $ext_new = validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput);
+function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput) {
 	// Looking at first four lines of text to check basic format requirements are met.
 	$file_name   = $projectPath.$name_new;
 	$file_handle = fopen($file_name,'r');
@@ -515,15 +515,7 @@ function $ext_new = validate_fastq($projectPath,$name_new,$condensedLogOutput,$l
 		fwrite($logOutput, "\t\t| FASTQ file format incorrect!!!\n");
 		$ext_new = "none2";
 	}
+	return $ext_new;
 }
-
-
-
-
-
-
-
-
-
 
 ?>
