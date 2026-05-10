@@ -271,12 +271,12 @@ fwrite($logOutput, "\t\t|\tprojectPath = ".$projectPath."\n");
 //---------------------------------------
 if ($ext_new == "fastq") {
 	// validate fastq file(s).
-	$ext_new = validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput);
+	$ext_new = validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$ext_new);
 	if (str_contains($ext_new,"none")) {
 		unlink($projectPath."data_r2.fastq");
 	} else {
 		if ($name_new2 <> "") {
-			$ext_new = validate_fastq($projectPath,$name_new2,$condensedLogOutput,$logOutput);
+			$ext_new = validate_fastq($projectPath,$name_new2,$condensedLogOutput,$logOutput,$ext_new);
 		}
 	}
 } else if ($ext_new == "fasta") {
@@ -453,7 +453,7 @@ return $paired;
 }
 
 
-function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput) {
+function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$ext_new) {
 	// Looking at first four lines of text to check basic format requirements are met.
 	$file_name   = $projectPath.$name_new;
 	$file_handle = fopen($file_name,'r');
