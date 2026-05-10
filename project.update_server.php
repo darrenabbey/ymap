@@ -202,16 +202,19 @@
 				$conclusion_script = "scripts_SnpCghArray/project.SnpCgh.update.php";
 				break;
 			case "1": //"WGseq_short":
-				$conclusion_script = "scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
+				queue_reinit($user,$project,"","","project.update_server.php");
+				//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
 				break;
 			case "2": //"WGseq_long";
-				$conclusion_script = "scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
+				queue_reinit($user,$project,"","","project.update_server.php");
+				//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
 				break;
 			case "3": //"ddRADseq":
 				$conclusion_script = "scripts_seqModules/scripts_ddRADseq/project.ddRADseq.update_1.php";
 				break;
 			case "4": //"FASTA":
-				$conclusion_script = "scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
+				queue_reinit($user,$project,"","","project.update_server.php");
+				//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
 				break;
 			}
 
@@ -220,7 +223,9 @@
 		chdir("users/".$user);
 
 		// Open processing script.
-		fwrite($logOutput, "\tCalling next script: ".$conclusion_script."\n");
-		header("Location: ".$conclusion_script);
+		if ($conclustion_script <> "") {
+			fwrite($logOutput, "\tCalling next script: ".$conclusion_script."\n");
+			header("Location: ".$conclusion_script);
+		}
 	}
 ?>

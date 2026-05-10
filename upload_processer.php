@@ -128,11 +128,11 @@
 					break;
 				case "WGseq_paired":
 					queue_init($user,$project,"","","from: upload_processer.php");
-					$conclusion_script = "scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_1.php";
+					//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_1.php";
 					break;
 				case "WGseq_long":
 					queue_init($user,$project,"","","from: upload_processer.php");
-					$conclusion_script = "scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php";
+					//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php";
 					break;
 				case "ddRADseq_single":
 					$conclusion_script = "scripts_seqModules/scripts_ddRADseq/project.single_ddRADseq.install_1.php";
@@ -141,8 +141,8 @@
 					$conclusion_script = "scripts_seqModules/scripts_ddRADseq/project.paired_ddRADseq.install_1.php";
 					break;
 				case "FASTA":
-					$conclusion_script = "scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php";
 					queue_init($user,$project,"","","from: upload_processer.php");
+					//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php";
 					break;
 			}
 		} else if ($genome != "") {
@@ -159,6 +159,8 @@
 		chdir("users/".$user);
 
 		// Open processing script.
-		header("Location: ".$conclusion_script);
+		if ($conclusion_script <> "") {
+			header("Location: ".$conclusion_script);
+		}
 	}
 ?>

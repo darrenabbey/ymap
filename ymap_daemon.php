@@ -248,7 +248,8 @@
 				$command_string  = $user." ".$fileName." ".$project." ".$key;
 			} else {
 				// Start an update YMAP process.
-				$conclusion_script = "bash project.WGseq.update_2.sh";
+				//$conclusion_script = "bash project.WGseq.update_2.sh";
+				$conclusion_script = "php scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
 				$command_string  = $user." ".$project;
 			}
 
