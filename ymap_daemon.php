@@ -178,31 +178,36 @@
 				$project = $projects_init_list[0][2];
 
 				$project_dir   = $base_dir."/users/".$user."/projects/".$project."/";
+				if (is_dir($project_dir)) {
+					// Construct filename string from 'datafiles.txt' file.
+					if (file_exists($project_dir."datafiles.txt")) {
+						$filename_string = trim(file_get_contents($project_dir."datafiles.txt"));
+					}
+					$filename_lines  = preg_split("/\r\n|\n|\r/", $filename_string);
 
-				// Construct filename string from 'datafiles.txt' file.
-				$filename_string = trim(file_get_contents($project_dir."datafiles.txt"));
-				$filename_lines  = preg_split("/\r\n|\n|\r/", $filename_string);
+					if (sizeof($filename_lines) == 2) {
+						$filename1 = $filename_lines[0];
+						$filename2 = $filename_lines[1];
+						$fileName  = $filename1.",".$filename2;
+					} else {
+						$fileName  = $filename_lines[0];
+					}
 
-				if (sizeof($filename_lines) == 2) {
-					$filename1 = $filename_lines[0];
-					$filename2 = $filename_lines[1];
-					$fileName  = $filename1.",".$filename2;
-				} else {
-					$fileName  = $filename_lines[0];
+					// Construct dataformat string from 'dataFormat.txt' file.
+					if (file_exists($project_dir."dataFormat.txt")) {
+						$dataformat_string = file_get_contents($project_dir."/dataFormat.txt");
+					}
+					$dataformat_lines  = preg_split("/:/", $dataformat_string);
+
+					if ((int)$dataformat_lines[1] == 0) {
+						$dataFormat = "WGseq_single";
+					} else {
+						$dataFormat = "WGseq_paired";
+					}
+					$projectDirectory = $base_dir."/users/".$user."/projects/".$project."/";
+					project_process($user,$project,$dataFormat,$fileName,$projectDirectory);
+					log_stuff($user,$project,"","","","YMAP_daemon:SUCCESS Dataset processing initiated.");
 				}
-
-				// Construct dataformat string from 'dataFormat.txt' file.
-				$dataformat_string = file_get_contents($project_dir."/dataFormat.txt");
-				$dataformat_lines  = preg_split("/:/", $dataformat_string);
-
-				if ((int)$dataformat_lines[1] == 0) {
-					$dataFormat = "WGseq_single";
-				} else {
-					$dataFormat = "WGseq_paired";
-				}
-				$projectDirectory = $base_dir."/users/".$user."/projects/".$project."/";
-				project_process($user,$project,$dataFormat,$fileName,$projectDirectory);
-				log_stuff($user,$project,"","","","YMAP_daemon:SUCCESS Dataset processing initiated.");
 			}
 
 			// Sleep for 10 seconds to keep daemon from running continuously.

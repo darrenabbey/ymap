@@ -218,7 +218,7 @@ if ($ext == "zip") {
 		$ext_new  = "none1";
 		$name_new = "";
 	}
-} else if (($ext_new == "sam") || ($ext_new == "bam")) {
+} else if (($ext == "sam") || ($ext == "bam")) {
 	fwrite($logOutput, "\t\t| This is a SAM/BAM file.\n");
 
 	// The .sh scripts need to be running from Ymap root.
