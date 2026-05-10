@@ -147,12 +147,15 @@ function queue_reinit($user,$project,$genome,$hapmap,$message) {
 	// Make a unique string to place in project/genome/hapmap directory.
 	$salt_string = bin2hex(random_bytes(16 / 2));
 	if (!empty($project)) {
+		unlink($filePath."/users/".$user."/projects/".$project."/salt.txt");
 		file_put_contents($filePath."/users/".$user."/projects/".$project."/salt.txt", $salt_string);
 		$line = $line.' - project:'.$project.' - '.$salt_string;
 	} elseif (!empty($genome)) {
+		unlink($filePath."/users/".$user."/genomes/".$genome."/salt.txt");
 		file_put_contents($filePath."/users/".$user."/genomes/".$genome."/salt.txt", $salt_string);
 		$line = $line.' - genome:'.$genome.' - '.$salt_string;
 	} elseif (!empty($hapmap)) {
+		unlink($filePath."/users/".$user."/hapmaps/".$hapmap."/salt.txt");
 		file_put_contents($filePath."/users/".$user."/hapmaps/".$hapmap."/salt.txt", $salt_string);
 		$line = $line.' - hapmap:'.$hapmap.' - '.$salt_string;
 	}
