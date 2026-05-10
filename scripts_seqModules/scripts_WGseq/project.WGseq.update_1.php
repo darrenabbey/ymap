@@ -1,27 +1,35 @@
 <?php
-	session_start();
 	error_reporting(E_ALL);
-        require_once '../../constants.php';
+	ini_set('display_errors', 1);
+	require_once '../../constants.php';
 	require_once '../../POST_validation.php';
 	require_once '../../sharedFunctions.php';
-        ini_set('display_errors', 1);
-
-        // If the user is not logged on, redirect to login page.
-        if(!isset($_SESSION['logged_on'])){
-		session_destroy();
-                header('Location: ../../');
-        }
-
-	// pull strings from session.
-	$user     = $_SESSION['user'];
-	$project  = $_SESSION['project'];
+	if (!isset($_SERVER["HTTP_HOST"])) {
+		//=============================
+		// Script run from commandline.
+		//-----------------------------
+		$user     = $argv[1];
+		$project  = $argv[2];
+	} else {
+		//===============================
+		// Script run from web interface.
+		//-------------------------------
+		session_start();
+	        // If the user is not logged on, redirect to login page.
+	        if(!isset($_SESSION['logged_on'])){
+			session_destroy();
+	                header('Location: ../../');
+	        }
+		// pull strings from session.
+		$user     = $_SESSION['user'];
+		$project  = $_SESSION['project'];
+	}
+	$project_dir = "../../users/".$user."/projects/".$project;
 ?>
 <script type="text/javascript">
 	parent.update_interface();
 </script>
 <?php
-	$project_dir = "../../users/".$user."/projects/".$project;
-
 	// Initialize log files.
 	$logOutputName = $project_dir."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'a');
@@ -45,14 +53,15 @@
 		unlink("../../users/".$user."/projects/".$project."/".$file);
 	}
 
-	queue_reinit($user,$project,"","","project.WGseq.update_1.php");
+//	queue_reinit($user,$project,"","","project.WGseq.update_1.php");
 
-//	// Final install functions are in shell script.
-//	fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_WGseq/project.WGseq.update_2.sh'\n");
-//	fwrite($logOutput, "\t\tCurrent directory = '".getcwd()."'\n" );
-//	$system_call_string = "bash project.WGseq.update_2.sh ".$user." ".$project." > /dev/null &";
-//	fwrite($logOutput, "\t\tSystem call string = '".$system_call_string."'\n");
-//
-//	system($system_call_string);
-//	fclose($logOutput);
+	// Final install functions are in shell script.
+	fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_WGseq/project.WGseq.update_2.sh'\n");
+	fwrite($logOutput, "\t\tCurrent directory = '".getcwd()."'\n" );
+	$system_call_string = "bash project.WGseq.update_2.sh ".$user." ".$project." > /dev/null &";
+	fwrite($logOutput, "\t\tSystem call string = '".$system_call_string."'\n");
+
+	system($system_call_string);
+	fclose($logOutput);
 ?>
+scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php

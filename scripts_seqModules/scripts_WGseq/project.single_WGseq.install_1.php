@@ -1,14 +1,13 @@
 <?php
+	error_reporting(E_ALL);
+	ini_set('display_errors', 1);
+	require_once '../../constants.php';
+	require_once '../../POST_validation.php';
+	require_once '../../sharedFunctions.php';
 	if (!isset($_SERVER["HTTP_HOST"])) {
 		//=============================
 		// Script run from commandline.
 		//-----------------------------
-		error_reporting(E_ALL);
-		ini_set('display_errors', 1);
-		require_once '../../constants.php';
-		require_once '../../POST_validation.php';
-		require_once '../../sharedFunctions.php';
-
 		$user     = $argv[1];
 		$fileName = $argv[2];
 		$project  = $argv[3];
@@ -18,12 +17,6 @@
 		// Script run from web interface.
 		//-------------------------------
 		session_start();
-		error_reporting(E_ALL);
-		ini_set('display_errors', 1);
-		require_once '../../constants.php';
-		require_once '../../POST_validation.php';
-		require_once '../../sharedFunctions.php';
-
 		// If the user is not logged on, redirect to login page.
 		if(!isset($_SESSION['logged_on'])){
 			session_destroy();
@@ -95,6 +88,8 @@
 	fwrite($logOutput, "Loading 'project.working_server.php' into iframe.\n");
 	fwrite($logOutput, getcwd()."\n");
 	fclose($logOutput);
+
+	queue_init($user,$project,"","","project.single_WGseq.install_1.php");
 ?>
 <font size="2" color="red">Upload complete; processing...</font><br>
 <script type="text/javascript">
