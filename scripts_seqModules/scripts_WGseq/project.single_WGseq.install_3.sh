@@ -247,7 +247,12 @@ percentageMapped2=$(echo -e "scale=3; $percentageMapped1 / 1" | bc);
 echo $percentageMapped2" (Mapped read percentage)" >> $projectDirectory"readStats.txt";
 if [[ $percentageMapped2 < 50 ]]
 then
-	echo -e "%"$percentageMapped2" reads mapped." >> $projectDirectory"warning.txt";
+	if [[ $percentageMapped2 < 1 ]]
+	then
+		echo -e "0"$percentageMapped2"% reads mapped." >> $projectDirectory"warning.txt";
+	else
+		echo -e $percentageMapped2"% reads mapped." >> $projectDirectory"warning.txt";
+	fi
 fi
 
 
