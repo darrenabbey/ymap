@@ -230,6 +230,9 @@ function queue_end($user,$project,$genome,$hapmap,$message) {
 		chmod($log_file, 0774);
 	}
 
+
+	$message = $message."; ".$filePath;
+
 	// add comment to log file.
 	$line = date('Y-m-d H:i:s');
 	$line = $line.' - user:'.$user;

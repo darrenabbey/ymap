@@ -202,10 +202,12 @@
 				$conclusion_script = "scripts_SnpCghArray/project.SnpCgh.update.php";
 				break;
 			case "1": //"WGseq_short":
+				unlink("users/".$user."/projects/".$project."/working.txt");
 				queue_reinit($user,$project,"","","project.update_server.php");
 				//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
 				break;
 			case "2": //"WGseq_long";
+				unlink("users/".$user."/projects/".$project."/working.txt");
 				queue_reinit($user,$project,"","","project.update_server.php");
 				//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
 				break;
@@ -213,6 +215,7 @@
 				$conclusion_script = "scripts_seqModules/scripts_ddRADseq/project.ddRADseq.update_1.php";
 				break;
 			case "4": //"FASTA":
+				unlink("users/".$user."/projects/".$project."/working.txt");
 				queue_reinit($user,$project,"","","project.update_server.php");
 				//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
 				break;

@@ -11,8 +11,8 @@ umask 007;
 user=$1;
 project=$2;
 main_dir=$(pwd)"/../../";
-local_dir=$(pwd);
-script_dir=$(pwd);
+local_dir=$(pwd)"/";
+script_dir=$(pwd)"/";
 
 echo -e "";
 echo -e "Input to : project.WGseq.update_2.sh";

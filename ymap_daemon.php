@@ -182,15 +182,17 @@
 					// Construct filename string from 'datafiles.txt' file.
 					if (file_exists($project_dir."datafiles.txt")) {
 						$filename_string = trim(file_get_contents($project_dir."datafiles.txt"));
-					}
-					$filename_lines  = preg_split("/\r\n|\n|\r/", $filename_string);
+						$filename_lines  = preg_split("/\r\n|\n|\r/", $filename_string);
 
-					if (sizeof($filename_lines) == 2) {
-						$filename1 = $filename_lines[0];
-						$filename2 = $filename_lines[1];
-						$fileName  = $filename1.",".$filename2;
+						if (sizeof($filename_lines) == 2) {
+							$filename1 = $filename_lines[0];
+							$filename2 = $filename_lines[1];
+							$fileName  = $filename1.",".$filename2;
+						} else {
+							$fileName  = $filename_lines[0];
+						}
 					} else {
-						$fileName  = $filename_lines[0];
+						$fileName = "";
 					}
 
 					// Construct dataformat string from 'dataFormat.txt' file.
@@ -236,6 +238,7 @@
 
 			// Initiate project processing.
 			if (!file_exists($projectDirectory."update.txt")) {
+				print_r("Init process.\n");
 				// Start an initial YMAP process.
 				switch ($dataFormat) {
 					case "WGseq_single":
@@ -247,12 +250,12 @@
 				}
 				$command_string  = $user." ".$fileName." ".$project." ".$key;
 			} else {
+				print_r("Update process.\n");
 				// Start an update YMAP process.
 				//$conclusion_script = "bash project.WGseq.update_2.sh";
-				$conclusion_script = "php scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
+				$conclusion_script = "php project.WGseq.update_1.php";
 				$command_string  = $user." ".$project;
 			}
-
 			// Run processing script.
 			chdir("scripts_seqModules/scripts_WGseq/");
 			exec($conclusion_script." ".$command_string." > /dev/null &");

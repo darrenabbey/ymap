@@ -24,7 +24,7 @@
 		$user     = $_SESSION['user'];
 		$project  = $_SESSION['project'];
 	}
-	$project_dir = "../../users/".$user."/projects/".$project;
+	$project_dir = "../../users/".$user."/projects/".$project."/";
 ?>
 <script type="text/javascript">
 	parent.update_interface();
@@ -45,15 +45,20 @@
 	fwrite($condensedLogOutput, "Updating.\n");
 	fclose($condensedLogOutput);
 
+	$OutputName = $project_dir."/working.txt";
+	$Output     = fopen($OutputName, 'w');
+	fwrite($Output, "Updating.");
+	fclose($Output);
+
+	queue_start($user,$project,"","","from: project.WGseq.update_1.php");
+
 	// Delete pre-existing final output files.
 	fwrite($logOutput, "Cleaning up old output files.\n");
-	$projectFiles   = preg_grep('~\.(png|eps|bed|gff3)$~', scandir("../../users/".$user."/projects/".$project."/"));
+	$projectFiles   = preg_grep('~\.(png|eps|bed|gff3)$~', scandir($project_dir));
 	foreach ($projectFiles as $file) {
 		fwrite($logOutput, "\t".$file."\n");
-		unlink("../../users/".$user."/projects/".$project."/".$file);
+		unlink($project_dir.$file);
 	}
-
-//	queue_reinit($user,$project,"","","project.WGseq.update_1.php");
 
 	// Final install functions are in shell script.
 	fwrite($logOutput, "Passing control to : 'scripts_seqModules/scripts_WGseq/project.WGseq.update_2.sh'\n");
@@ -64,4 +69,3 @@
 	system($system_call_string);
 	fclose($logOutput);
 ?>
-scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php
