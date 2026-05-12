@@ -384,10 +384,8 @@ if (performEndbiasCorrection)
 			fprintf(['chr_middle_bin   = ' num2str(chr_middle_bin) '\n']);
 
 			for pos = 1:(largest_chr_bin_count - chr_bin_count)
-				%% Results in chr end correction not being done well for center of large chromosomes.
-				%chr_CNVdata_extended{chr}(end+1) = center_median_CNV;
-
 				%% Results in chr end correction being done effectively for most areas; center of chr1 still fails for Candida albicans A21.
+				%	Chr1 aneuploidy shows dip in CNV after correction, fix by normalizing to chr average before end-bias fix, then reapply average to data after.
 				chr_CNVdata_extended{chr}(end+1) = chr_CNVdata_extended{largest_chr}(pos+chr_bin_count);
 			end;
 		end;
@@ -467,6 +465,7 @@ if (performEndbiasCorrection)
 			end;
 		end;
 	end;
+
 else
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
