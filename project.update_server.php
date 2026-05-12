@@ -56,7 +56,7 @@
 
 		$condensedLogOutputName = $project_dir."/condensed_log.txt";
 		$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
-		fwrite($condensedLogOutput, "Updating.\n");
+		fwrite($condensedLogOutput, "Added to processing queue.\n");
 		fclose($condensedLogOutput);
 
 		// Update 'ploidy.txt' file.
