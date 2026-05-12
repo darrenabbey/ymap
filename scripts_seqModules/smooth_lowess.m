@@ -1,5 +1,11 @@
 function [dataout lowerLimit upperLimit xy] = smooth_lowess(Xinput,Yinput, f,wantplot,imagefile,xdata)
-graphics_toolkit gnuplot;
+gts = available_graphics_toolkits();
+qt_available = any(strcmp(gts, 'qt'));
+if (qt_available)
+	graphics_toolkit("qt");
+else
+	graphics_toolkit("gnuplot");
+endif
 
 %====================================================================================================
 %	Xinput     : Vector (n x 1).
@@ -187,7 +193,7 @@ graphics_toolkit gnuplot;
 		y_data = datain(:,2);
 	end
 
-	if exist('xdata','var') == 0 
+	if exist('xdata','var') == 0
 		% User didn't provide any x-valures for generating a dataset use
 		% supplied set prior to sorting.
 		xdata = [dte x_data];
@@ -216,7 +222,7 @@ graphics_toolkit gnuplot;
 	end
 
 	dataout = [];
-	
+
 	for nplots=1:limits
 		% if limits is turned on, then plot the upper and lower limits of
 		% the lowess- set to plot residuals lowess

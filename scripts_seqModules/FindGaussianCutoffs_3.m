@@ -1,5 +1,11 @@
 function [x_peak,actual_cutoffs,mostLikelyGaussians, Rsquared] = FindGaussianCutoffs_3(workingDir,descriptionString, chromosome,segment,copyNum, smoothed_Histogram, makeFitFigures);
-graphics_toolkit gnuplot;
+gts = available_graphics_toolkits();
+qt_available = any(strcmp(gts, 'qt'));
+if (qt_available)
+	graphics_toolkit("qt");
+else
+	graphics_toolkit("gnuplot");
+endif
 
 %%=========================================================================
 % Load project figure version.

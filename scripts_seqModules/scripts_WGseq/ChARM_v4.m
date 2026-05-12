@@ -1,5 +1,12 @@
 function [] = ChARM_v4(project,user,genome,genomeUser,main_dir)
-graphics_toolkit gnuplot;
+gts = available_graphics_toolkits();
+qt_available = any(strcmp(gts, 'qt'));
+if (qt_available)
+	graphics_toolkit("qt");
+else
+	graphics_toolkit("gnuplot");
+endif
+
 addpath('../');
 
 % hide figures during construction.

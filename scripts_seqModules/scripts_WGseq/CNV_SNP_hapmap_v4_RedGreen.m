@@ -1,5 +1,12 @@
 function [] = CNV_SNP_hapmap_v4_RedGreen(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
-graphics_toolkit gnuplot;
+gts = available_graphics_toolkits();
+qt_available = any(strcmp(gts, 'qt'));
+if (qt_available)
+	graphics_toolkit("qt");
+else
+	graphics_toolkit("gnuplot");
+endif
+
 addpath('../');
 
 workingDir      = [main_dir 'users/' user '/projects/' project '/'];

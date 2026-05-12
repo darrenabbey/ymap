@@ -1,5 +1,11 @@
 function [G1_a, G1_b, G1_c, Rsquared] = fit_Gaussian_model2(workingDir, data, location, func_type, show_fitting, ploidy1x, makeFitFigures, descriptionString)
-	graphics_toolkit gnuplot;
+	gts = available_graphics_toolkits();
+	qt_available = any(strcmp(gts, 'qt'));
+	if (qt_available)
+		graphics_toolkit("qt");
+	else
+		graphics_toolkit("gnuplot");
+	endif
 
 	%%%================================================================================================
 	%%% Attempt to fit a single-gaussian model to data.

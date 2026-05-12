@@ -1,5 +1,11 @@
 function [imageX, imageY, imageC] = smoothhist2D_4(x,y,lambda,nbins,rangeMax,outliercutoff)
-graphics_toolkit gnuplot;
+gts = available_graphics_toolkits();
+qt_available = any(strcmp(gts, 'qt'));
+if (qt_available)
+	graphics_toolkit("qt");
+else
+	graphics_toolkit("gnuplot");
+endif
 
 %
 %  This version allows user control of the colormap in use.   Only standard octave colormaps are valid.
