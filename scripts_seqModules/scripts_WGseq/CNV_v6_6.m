@@ -436,13 +436,18 @@ if (performEndbiasCorrection)
 	chr_EndDistanceData_extended_clean(CNVdata_clean     == 0   ) = [];
 	CNVdata_clean(                     CNVdata_clean     == 0   ) = [];
 
-	% Perform LOWESS fitting : end bias.
+
+	%% Perform LOWESS fitting : end bias.
 	rawData_X1     = chr_EndDistanceData_extended_clean;
 	rawData_Y1     = chr_CNVdata_extended_clean;
-	% perform correction only if the data it not empty
 	if (~isempty(rawData_X1) && ~isempty(rawData_Y1))
 		fprintf(['Lowess X:Y size : [' num2str(size(rawData_X1,1)) ',' num2str(size(rawData_X1,2)) ']:[' num2str(size(rawData_Y1,1)) ',' num2str(size(rawData_Y1,2)) ']\n']);
 		[fitX1, fitY1] = optimize_mylowess(rawData_X1,rawData_Y1,10, 0);
+
+		%% DRAGON
+		% Find minimum coordinate of fit, then apply that value to every location to the right in the fit (towards the chromosome center).
+		[$minFitY, $minFitYkey] = min($fitY1);
+		$fitY1($minFitYkey:end) = $minFitY;
 
 		% Correct data using normalization to LOWESS fitting
 		Y_target = 1;
@@ -465,7 +470,6 @@ if (performEndbiasCorrection)
 			end;
 		end;
 	end;
-
 else
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
