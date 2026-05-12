@@ -197,21 +197,21 @@
 </td><td width="75%" align="right" valign="top">
 <table width="100%" height="<?php echo $ui_tabArea_height; ?>px" cellspacing="0">
 <tr>
-<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_user"
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>; border-radius:10px 10px 0px 0px;" align="center" id="tab_user"
 	onclick="tabWindow('user');"            >User</td>
-<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_manageDataset"
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>; border-radius:10px 10px 0px 0px;" align="center" id="tab_manageDataset"
 	onclick="tabWindow('manageDataset');"   >Manage Datasets</td>
-<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_visualizeDataset"
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>; border-radius:10px 10px 0px 0px;" align="center" id="tab_visualizeDataset"
 	onclick="tabWindow('visualizeDataset');">Visualize Datasets</td>
-<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_genome"
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>; border-radius:10px 10px 0px 0px;" align="center" id="tab_genome"
 	onclick="tabWindow('genome');"          >Reference Genomes</td>
-<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_hapmap"
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>; border-radius:10px 10px 0px 0px;" align="center" id="tab_hapmap"
 	onclick="tabWindow('hapmap');"          >Hapmaps</td>
-<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_bugs"
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>; border-radius:10px 10px 0px 0px;" align="center" id="tab_bugs"
 	onclick="tabWindow('bugs');"            >Bug Reporting</td>
-<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_help"
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>; border-radius:10px 10px 0px 0px;" align="center" id="tab_help"
 	onclick="tabWindow('help');"            >Help</td>
-<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>;" align="center" id="tab_citations"
+<td class="select" valign="middle" style="height:<?php echo $ui_tab_height; ?>; width:<?php echo $ui_tab_width; ?>; border-radius:10px 10px 0px 0px;" align="center" id="tab_citations"
 	onclick="tabWindow('citations');"       >Citations</td>
 <?php
 // Check if logged in user has admin rights.
@@ -232,16 +232,16 @@ if (file_exists($super_user_flag_file)) {
 
 // If user is admin, show the "Admin" tab in the user interface.
 if ($admin == "true") {
-	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin1" ';
+	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.'; border-radius:10px 10px 0px 0px;" align="center" id="tab_admin1" ';
 	echo 'onclick="tabWindow(\'admin1\');"          >Admin1</td>';
-	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin2" ';
+	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.'; border-radius:10px 10px 0px 0px;" align="center" id="tab_admin2" ';
 	echo 'onclick="tabWindow(\'admin2\');"          >Admin2</td>';
-	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_admin3" ';
+	echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.'; border-radius:10px 10px 0px 0px;" align="center" id="tab_admin3" ';
 	echo 'onclick="tabWindow(\'admin3\');"          >Admin3</td>';
 	if ($super == "true") {
-		echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_super1" ';
+		echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.'; border-radius:10px 10px 0px 0px;" align="center" id="tab_super1" ';
 		echo 'onclick="tabWindow(\'super1\');"          >Super1</td>';
-		echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.';" align="center" id="tab_super2" ';
+		echo '<td class="select" valign="middle" style="height:'.$ui_tab_height.'; width:'.$ui_tab_width.'; border-radius:10px 10px 0px 0px;" align="center" id="tab_super2" ';
 		echo 'onclick="tabWindow(\'super2\');"          >Super2</td>';
 	} else {
 		echo '<div id="tab_super1" style="visibility:hidden;"></div>';
@@ -256,7 +256,7 @@ if ($admin == "true") {
 }
 ?>
 
-<td class="select" valign="middle" id="tab_blank">&nbsp;</td>
+<td class="select" valign="middle" id="tab_blank"></td>
 </tr>
 <tr>
 	<?php

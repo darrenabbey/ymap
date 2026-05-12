@@ -22,6 +22,7 @@ if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
 }
 </script>
 
+<table width="100%"><tr><td width="50%">
 <font size='3'>Log into a preexisting user account or create a new user account.</font><br>
 <?php
 
@@ -67,3 +68,7 @@ if (isset($_SESSION['logged_on'])) {
 	$_SESSION['reload_once'] = "true";
 }
 ?>
+</td><td width="50%" style="border:1px solid black; border-radius:10px; padding:10px;" valign="top">
+<b>YMAP news!</b><br>
+asdfasd
+</td></tr></table>
