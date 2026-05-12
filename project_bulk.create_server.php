@@ -338,7 +338,7 @@
 						// Generate 'condensed_log.txt' file.
 						$fileName = $project_dir1."/condensed_log.txt";
 						$file     = fopen($fileName, 'w');
-						fwrite($file, "");
+						fwrite($file, "Added to processing queue.");
 						fclose($file);
 						chmod($fileName,0774);
 
