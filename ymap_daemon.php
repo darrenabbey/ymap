@@ -145,17 +145,17 @@
 			}
 			$count_queue_working = sizeof($projects_start_list);
 
-			// 4. Drop active projects without a 'bulk.txt' file.
-			$count = sizeof($projects_start_list);
-			foreach (array_reverse($projects_start_list) as $key1 => $project_entry) {
-				$user    = $project_entry[1];
-				$project = $project_entry[2];
-				$projectDirectory = $base_dir."/users/".$user."/projects/".$project."/";
-				if (!file_exists($projectDirectory."bulk.txt")) {
-					array_splice($projects_start_list, $count-$key1-1, 1);
-				}
-			}
-			$count_queue_working = sizeof($projects_start_list);
+		//	// 4. Drop active projects without a 'bulk.txt' file.
+		//	$count = sizeof($projects_start_list);
+		//	foreach (array_reverse($projects_start_list) as $key1 => $project_entry) {
+		//		$user    = $project_entry[1];
+		//		$project = $project_entry[2];
+		//		$projectDirectory = $base_dir."/users/".$user."/projects/".$project."/";
+		//		if (!file_exists($projectDirectory."bulk.txt")) {
+		//			array_splice($projects_start_list, $count-$key1-1, 1);
+		//		}
+		//	}
+		//	$count_queue_working = sizeof($projects_start_list);
 
 
 			//===========================================================
