@@ -145,17 +145,17 @@
 			}
 			$count_queue_working = sizeof($projects_start_list);
 
-		//	// 4. Drop active projects without a 'bulk.txt' file.
-		//	$count = sizeof($projects_start_list);
-		//	foreach (array_reverse($projects_start_list) as $key1 => $project_entry) {
-		//		$user    = $project_entry[1];
-		//		$project = $project_entry[2];
-		//		$projectDirectory = $base_dir."/users/".$user."/projects/".$project."/";
-		//		if (!file_exists($projectDirectory."bulk.txt")) {
-		//			array_splice($projects_start_list, $count-$key1-1, 1);
-		//		}
-		//	}
-		//	$count_queue_working = sizeof($projects_start_list);
+			// 4. Drop active projects without a 'bulk.txt' file.
+			$count = sizeof($projects_start_list);
+			foreach (array_reverse($projects_start_list) as $key1 => $project_entry) {
+				$user    = $project_entry[1];
+				$project = $project_entry[2];
+				$projectDirectory = $base_dir."/users/".$user."/projects/".$project."/";
+				if (!file_exists($projectDirectory."bulk.txt")) {
+					array_splice($projects_start_list, $count-$key1-1, 1);
+				}
+			}
+			$count_queue_working = sizeof($projects_start_list);
 
 
 			//===========================================================
@@ -163,7 +163,15 @@
 			print_r("YMAPs initialized: ".$count_queue_initialized."\n");
 			print_r("YMAPs processing:  ".$count_queue_working."\n");
 			print_r("YMAPs complete:    ".$count_queue_done."\n");
-			print_r($projects_init_list);
+			foreach ($projects_init_list as $key=>$value) {
+				print_r("\t[{$key}] ".$value[2]);
+				if ($key % 7 == 0) {
+					print_r("\n");
+				} else {
+					print_r("\t");
+				}
+			}
+			print_r("\n");
 			//print_r($projects_start_list);
 			//print_r($projects_end_list);
 			//-----------------------------------------------------------
