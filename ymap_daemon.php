@@ -88,7 +88,7 @@
 			}
 			$count_queue_done = sizeof($projects_end_list);
 
-			// 3. Drop start/end entries from init queue list.
+			// 2. Drop start/end entries from init queue list.
 			foreach ($projects_start_list as $key1 => $project_start_entry) {
 				$count = sizeof($projects_init_list);
 				foreach (array_reverse($projects_init_list) as $key2 => $project_init_entry) {
@@ -122,10 +122,9 @@
 				}
 			}
 			$count_queue_initialized = sizeof($projects_init_list);
-
 			//print_r($projects_start_list);
 
-			// 2. Drop end entries from start queue list.
+			// 3. Drop end entries from start queue list.
 			foreach ($projects_end_list as $key1 => $project_end_entry) {
 				$count = sizeof($projects_start_list);
 				foreach (array_reverse($projects_start_list) as $key2 => $project_start_entry) {
@@ -157,21 +156,88 @@
 			}
 			$count_queue_working = sizeof($projects_start_list);
 
+			// 5. Delete old log files that are done.
+			foreach ($queue_files as $key1 => $queue_file) {
+				if ((str_contains($queue_file,".log")) && ($queue_file <> date('Y-m-d')."_queue.log")) {
+					// Grap the init entries from this queue file.
+					$oldprojects_init_list = [];
+					$oldqueue_contents = trim(file_get_contents($queue_dir.$queue_file));
+					if ($oldqueue_contents) {
+						$outline = "";
+						$oldqueue_lines = preg_split("/\R/", $oldqueue_contents);
+						foreach($oldqueue_lines as $key2 => $oldline){
+							$oldline_parts = explode(" - ",$oldline);
+							if (sizeof($line_parts) >= 3) {
+								$time            = $oldline_parts[0];
+								$user            = str_replace("user:", "", $oldline_parts[1]);
+								$project         = str_replace("project:", "", $oldline_parts[2]); // (or genome, or hapmap?).
+								$salt            = $oldline_parts[3];
+								$status          = $oldline_parts[4];
+
+								$oldproject_entry   = [];
+								$oldproject_entry[] = $time;
+								$oldproject_entry[] = $user;
+								$oldproject_entry[] = $project;
+								$oldproject_entry[] = $salt;
+								$oldproject_entry[] = $status;
+
+								if ($status == "init") {
+									$oldprojects_init_list[] = $oldproject_entry;
+								}
+							}
+						}
+					}
+
+					// Remove any that match with done entries from any queue file.
+					foreach ($projects_end_list as $key1 => $project_end_entry) {
+						$count = sizeof($oldprojects_init_list);
+						foreach (array_reverse($oldprojects_init_list) as $key2 => $oldproject_init_entry) {
+							$end_user        = $project_end_entry[1];
+							$end_project     = $project_end_entry[2];
+							$end_salt        = $project_end_entry[3];
+							$oldinit_user    = $oldproject_init_entry[1];
+							$oldinit_project = $oldproject_init_entry[2];
+							$oldinit_salt    = $oldproject_init_entry[3];
+							if (($end_user == $oldinit_user) && ($end_project == $oldinit_project) && ($end_salt == $oldinit_salt)) {
+								$new_key = $count-$key2-1;
+								array_splice($oldprojects_init_list, $new_key, 1);
+								break;
+							}
+						}
+					}
+
+					// If there are no entries left in {$oldprojects_init_list}, then delete the queue file.
+					if (sizeof($oldprojects_init_list) == 0) {
+						unlink($queue_dir.$queue_file);
+					}
+				}
+			}
+
 
 			//===========================================================
 			// Temporary troubleshooting output.
+			print_r("===================================================================\n");
 			print_r("YMAPs initialized: ".$count_queue_initialized."\n");
-			print_r("YMAPs processing:  ".$count_queue_working."\n");
-			print_r("YMAPs complete:    ".$count_queue_done."\n");
 			foreach ($projects_init_list as $key=>$value) {
 				print_r("\t[{$key}] ".$value[2]);
-				if ($key % 7 == 0) {
+				if (($key+1) % 7 == 0) {
 					print_r("\n");
 				} else {
 					print_r("\t");
 				}
 			}
 			print_r("\n");
+			print_r("YMAPs processing:  ".$count_queue_working."\n");
+			foreach ($projects_start_list as $key=>$value) {
+				print_r("\t[{$key}] ".$value[2]);
+				if (($key+1) % 7 == 0) {
+					print_r("\n");
+				} else {
+					print_r("\t");
+				}
+			}
+			print_r("\n");
+			print_r("YMAPs complete:    ".$count_queue_done."\n");
 			//print_r($projects_start_list);
 			//print_r($projects_end_list);
 			//-----------------------------------------------------------
@@ -184,6 +250,8 @@
 				//-----------------------------
 				$user    = $projects_init_list[0][1];
 				$project = $projects_init_list[0][2];
+
+				print_r($user.":".$project."\n");
 
 				$project_dir   = $base_dir."/users/".$user."/projects/".$project."/";
 				if (is_dir($project_dir)) {
