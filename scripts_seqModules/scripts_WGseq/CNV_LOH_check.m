@@ -549,6 +549,14 @@ while (chrCopyNum_changed == true)
 					Rsquared_CNVtest_vector = [];
 					Rsquared_SNPtest_vector = [];
 					for copyNum = 1:9
+						fprintf(['    copyNum    = ' num2str(copyNum) '\n']);
+						fprintf(['\tworkingDir = ' num2str(workingDir) '\n']);
+						fprintf(['\tchr_breaks = ']);
+						temp = chr_breaks
+						fprintf(['\n']);
+						fprintf(['\tploidy     = ' num2str(ploidy) '\n']);
+						fprintf(['\tchr        = ' num2str(chr) '\n']);
+						fprintf(['\tsegment    = ' num2str(segment) '\n']);
 						Rsquared_CNV            = testPloidyEstimate_CNV(workingDir, CNVplot2, chr_breaks, ploidy, chr, segment, copyNum, makeFitFigures);
 						Rsquared_CNVtest_vector = [Rsquared_CNVtest_vector Rsquared_CNV];
 
