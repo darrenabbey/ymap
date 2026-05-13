@@ -1,5 +1,4 @@
 box off;
-% DRAGON : attempting to manually generate appropriate tick marks and labels.
 set(gca,'visible','off');
 
 % Make my own x-axis tick labels

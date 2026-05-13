@@ -1,6 +1,5 @@
 function [raw,smoothed,x_peak,actual_cutoffs,mostLikelyGaussians,chrCopyNum] = FindGaussianCutoffs_2(probeset1,chrCopyNum,chr_breaks,chr_size,chromosome,segment, ...
 	monosomy_peak,disomy_peak,trisomy_peak,tetrasomy_peak,pentasomy_peak,hexasomy_peak,skew_factor,name,file_dir,MakeFigure,show_fitting,DataTypeToUse, workingDir)
-graphics_toolkit gnuplot;
 
 %%=========================================================================
 % Load project figure version.

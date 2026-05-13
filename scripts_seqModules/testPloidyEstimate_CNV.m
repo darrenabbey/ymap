@@ -1,5 +1,4 @@
 function [Rsquared] = testPloidyEstimate_CNV(workingDir, CNVplot, chr_breaks, ploidy, usedChr, segment, copyNum, makeFitFigures)
-
 %%%================================================================================================
 %%%
 %%% Find R^2 value for CNV data gaussian fit to specific copy number.

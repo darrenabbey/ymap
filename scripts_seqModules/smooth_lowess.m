@@ -1,12 +1,4 @@
 function [dataout lowerLimit upperLimit xy] = smooth_lowess(Xinput,Yinput, f,wantplot,imagefile,xdata)
-gts = available_graphics_toolkits();
-qt_available = any(strcmp(gts, 'qt'));
-if (qt_available)
-	graphics_toolkit("qt");
-else
-	graphics_toolkit("gnuplot");
-endif
-
 %====================================================================================================
 %	Xinput     : Vector (n x 1).
 %	Yinput     : Vector (n x 1).

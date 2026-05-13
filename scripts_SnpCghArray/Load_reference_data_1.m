@@ -1,5 +1,4 @@
 function [CGH_data_all SNP_data_all] = Load_reference_data_1()
-graphics_toolkit gnuplot;
 
 % Load currently used calibration data.
 load('cal_data.mat');

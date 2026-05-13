@@ -4,7 +4,6 @@ function [result_image_location, archive_data_location] = ...
                  experiment_name, workingDir, show_MRS_string)
 		% PROCESS_MAIN wrapper around microarray analysis pipeline for integration into online tools and website.
 		% This version does not load calibration data and generate a hapmap...   see 'calibration_setup.m' for relevant script.
-	graphics_toolkit gnuplot;
 
 
 %%=========================================================================

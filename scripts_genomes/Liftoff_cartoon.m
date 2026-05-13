@@ -1,5 +1,4 @@
 function [] = Liftoff_cartoon(main_dir,genomeUser,genome,kmerLength,kmerStep);
-graphics_toolkit gnuplot;
 addpath('../');
 addpath('../scripts_seqModules/')
 

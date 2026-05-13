@@ -1,5 +1,4 @@
 function [] = ChARM_v5_SNP(projectName, workingDir)
-graphics_toolkit gnuplot;
 
 %% =========================================================================================
 % Analyze SNP information for allelic ratio changes.

@@ -1,12 +1,4 @@
 function [] = CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,rDNA_verString,displayBREAKS, referenceCHR); %% rDNA_verString & referenceCHR are not used.
-gts = available_graphics_toolkits();
-qt_available = any(strcmp(gts, 'qt'));
-if (qt_available)
-	graphics_toolkit("qt");
-else
-	graphics_toolkit("gnuplot");
-endif
-
 addpath('../');
 
 % hide figures during construction.

@@ -1,5 +1,4 @@
 function [] = repetitiveness_plot(main_dir,genomeUser,genome,kmerLength);
-graphics_toolkit gnuplot;
 addpath('../');
 addpath('../scripts_seqModules/')
 

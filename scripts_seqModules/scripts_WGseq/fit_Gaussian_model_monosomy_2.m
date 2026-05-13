@@ -1,13 +1,6 @@
 function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, Rsquared] = fit_Gaussian_model_monosomy_2(workingDir, descriptionString, data,locations,init_width,func_type, makeFitFigures)
-% attempt to fit a 2-gaussian model to data.
-% peaks should be narrow, since only sequencing error noise is being examined.
-gts = available_graphics_toolkits();
-qt_available = any(strcmp(gts, 'qt'));
-if (qt_available)
-	graphics_toolkit("qt");
-else
-	graphics_toolkit("gnuplot");
-endif
+	% attempt to fit a 2-gaussian model to data.
+	% peaks should be narrow, since only sequencing error noise is being examined.
 	show = false;
 	p1_a = nan;   p1_b = nan;   p1_c = nan;
 	p2_a = nan;   p2_b = nan;   p2_c = nan;

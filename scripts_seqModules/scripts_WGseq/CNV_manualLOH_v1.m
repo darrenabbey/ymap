@@ -1,12 +1,4 @@
 function [] = CNV_manualLOH_v1(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
-gts = available_graphics_toolkits();
-qt_available = any(strcmp(gts, 'qt'));
-if (qt_available)
-	graphics_toolkit("qt");
-else
-	graphics_toolkit("gnuplot");
-endif
-
 addpath('../');
 
 % hide figures during construction.

@@ -17,7 +17,7 @@ for usedChr = [8 1:7]
                     if (length(probeset1(i).probe_Ratio) > 0) && (length(probeset1(i+1).probe_Ratio) > 0)
                         % Calculate value of SNP probe pair.
                         [UsedData] = calculateValue(probeset1,i,DataTypeToUse);
-                        
+
                         if (isfield(probeset1(1),'probe_polarity') == 1)
                             if (probeset1(i).probe_polarity == 0)
                                 if (show_unnassigned == true)

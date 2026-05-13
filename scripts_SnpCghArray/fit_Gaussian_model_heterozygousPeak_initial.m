@@ -1,5 +1,4 @@
 function [fitted] = fit_Gaussian_model_heterozygousPeak_initial(data,locations,func_type,show, workingDir)
-graphics_toolkit gnuplot;
 
 %%=========================================================================
 % Load project figure version.

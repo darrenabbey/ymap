@@ -1,12 +1,5 @@
 function [p1_a, p1_b, p1_c, p2_a, p2_b, p2_c, p3_a, p3_b, p3_c, Rsquared] = fit_Gaussian_model_disomy_2(workingDir, descriptionString, data,locations,init_width,func_type, makeFitFigures)
 % attempt to fit a 3-gaussian model to data.
-gts = available_graphics_toolkits();
-qt_available = any(strcmp(gts, 'qt'));
-if (qt_available)
-	graphics_toolkit("qt");
-else
-	graphics_toolkit("gnuplot");
-endif
 
 %%=========================================================================
 % Load project figure version.

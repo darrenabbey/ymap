@@ -1,5 +1,4 @@
 function [] = ChARM_v4(projectName, workingDir)
-graphics_toolkit gnuplot;
 
 %% =========================================================================================
 % Analyze CNV information for copy number changes.
