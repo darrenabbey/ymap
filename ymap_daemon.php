@@ -226,7 +226,9 @@
 					print_r("\t");
 				}
 			}
-			print_r("\n");
+			if (sizeof($projects_init_list) > 0) {
+				print_r("\n");
+			}
 			print_r("YMAPs processing:  ".$count_queue_working."\n");
 			foreach ($projects_start_list as $key=>$value) {
 				print_r("\t[{$key}] ".$value[2]);
@@ -236,7 +238,9 @@
 					print_r("\t");
 				}
 			}
-			print_r("\n");
+			if (sizeof($projects_start_list) > 0) {
+				print_r("\n");
+			}
 			print_r("YMAPs complete:    ".$count_queue_done."\n");
 			//print_r($projects_start_list);
 			//print_r($projects_end_list);
