@@ -292,6 +292,9 @@ while (chrCopyNum_changed == true)
 
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
+			% Clean up chr_breaks vectors by filtering out non-unique values.
+			chr_breaks{chr} = unique(chr_breaks{chr});
+
 			fprintf(['\t chr_breaks{' num2str(chr) '} = ']);
 			for i = 1:length(chr_breaks{chr})
 				fprintf([num2str(chr_breaks{chr}(i)) ' ']);
@@ -550,7 +553,7 @@ while (chrCopyNum_changed == true)
 					for copyNum = 1:9
 						fprintf(['    copyNum    = ' num2str(copyNum) '\n']);
 						fprintf(['\tworkingDir = ' num2str(workingDir) '\n']);
-						fprintf(['\tchr_breaks = ']);
+						fprintf(['\tchr_breaks = ']); 
 						temp = chr_breaks
 						fprintf(['\n']);
 						fprintf(['\tploidy     = ' num2str(ploidy) '\n']);
