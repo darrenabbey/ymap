@@ -22,7 +22,7 @@ if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
 }
 </script>
 
-<table width="100%"><tr><td width="50%">
+<table width="100%"><tr><td width="50%" valign="top">
 <font size='3'>Log into a preexisting user account or create a new user account.</font><br>
 <?php
 
@@ -70,5 +70,26 @@ if (isset($_SESSION['logged_on'])) {
 ?>
 </td><td width="50%" style="border:1px solid black; border-radius:10px; padding:10px;" valign="top">
 <b>YMAP news!</b><br>
-asdfasd
+<ul>
+<li>YMAP is back! While we were offline, I took the opportunity to do some major system updates.</li>
+	<ol>
+	<li>Uploaded data is now added to a queue that will process your data while helping to ensure the server isn't sporadically overloaded.</li>
+	<li>If a process crashes, a much more informative error message will be generated, allowing easier code troubleshooting.</li>
+	<li>The install process has been greatly simplified if you want to setup your own local YMAP server. This option will give you the opportunity to use a bulk data processing module that isn't available on the public server.</li>
+	</ol>
+<br>
+<li>There have been user interface and final output figure improvements.</li>
+	<ol>
+	<li>Chromosome cartoons have a more polished look.</li>
+	<li>The combined figure command now produces a figure with dataset names added above each subfigure.</li>
+	</ol>
+<br>
+<li>Additional functions are planned to be added at the time of a planned paper where the name will transition to YMAP2.</li>
+	<ol>
+	<li>Processing long-read sequence data.</li>
+	<li>Natively handling diploid reference genomes.</li>
+	<li>Processing data for much larger genomes.</li>
+	<li>...</li>
+	<li><b><font color="red">What feature immprovements would you like to see?</font></b></li>
+	</ol>
 </td></tr></table>
