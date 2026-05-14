@@ -536,12 +536,12 @@ function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$e
 		fwrite($logOutput, "\t\t| max read length = ".(string)$maxReadLength."\n");
 		if ($maxReadLength <= 500) {
 			// short-reads: no problems.
-			fwrite($logOutput, "\t\t| Short-reads identified.\n");
 		} else {
-			// long-reads: generate error.
-			unlink($projectPath.$name_first);
-			fwrite($logOutput, "\t\t| Long-reads identified.\n");
+			// long-reads: generate error for YMAP1.
+			//unlink($projectPath.$name_first);
 			//$ext_new = "none4"; //YMAP1 doesn't process long-reads, so error code.
+
+			// long-reads: no problem for YMAP2.
 			$ext_new = "fastq-l"; //YMAP2 does process long-reads, so file type.
 		}
 	} else {
