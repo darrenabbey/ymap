@@ -346,8 +346,8 @@
 						$fileName1 = $project_dir1."/dataFormat.txt";
 						$file1     = fopen($fileName1, 'w');
 						if (($ext == ".sam") || ($ext == ".bam")) {
-							// $readType = 2; SAM/BAM file.
-							$readType = 2;
+							// $readType = 2; SAM/BAM file.  => SAM/BAM files are converted into single-end fastq reead files.
+							$readType = 0;
 						} elseif ($skip == 1) {
 							// $readType = 1; paired-end reads.
 							$readType = 1;
