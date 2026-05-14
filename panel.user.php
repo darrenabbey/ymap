@@ -69,7 +69,8 @@ if (isset($_SESSION['logged_on'])) {
 }
 ?>
 </td><td width="50%" style="border:1px solid black; border-radius:10px; padding:10px;" valign="top">
-<b>YMAP news!</b><br>
+<b>YMAP news!</b><br><br>
+2026-05-14
 <ul>
 <li>YMAP is back! While we were offline, I took the opportunity to do some major system updates.</li>
 	<ol>
