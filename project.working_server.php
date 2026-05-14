@@ -1,5 +1,7 @@
 <?php
-	session_start();
+//	if (session_status() === PHP_SESSION_NONE) {
+		session_start();
+//	}
 	error_reporting(E_ALL);
 	require_once 'constants.php';
 	require_once 'sharedFunctions.php';
@@ -13,12 +15,20 @@
 	}
 
 	// Load user string from session.
-	$user    = $_SESSION['user'];
+	$user             = $_SESSION['user'];
+	$init             = $_SESSION['init'];
+	$_SESSION['init'] = false;
 
-	// Sanitize input strings.
-	$project       = sanitize_POST("project");
-	$key           = sanitize_POST("key");
-	$status        = (int)sanitize_POST("status");
+	// Grap input strings.
+	if ($init == true) {
+		$project = $_SESSION['project'];
+		$key     = $_SESSION['key'];
+		$status  = (int)$_SESSION['status'];
+	} else {
+		$project = sanitize_POST("project");
+		$key     = sanitize_POST("key");
+		$status  = (int)sanitize_POST("status");
+	}
 
 	// Confirm if requested project exists.
 	$project_dir = "users/".$user."/projects/".$project;
