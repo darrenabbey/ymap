@@ -255,7 +255,7 @@
 				$user    = $projects_init_list[0][1];
 				$project = $projects_init_list[0][2];
 
-				print_r($user.":".$project."\n");
+				//print_r($user.":".$project."\n");
 
 				$project_dir   = $base_dir."/users/".$user."/projects/".$project."/";
 				if (is_dir($project_dir)) {
