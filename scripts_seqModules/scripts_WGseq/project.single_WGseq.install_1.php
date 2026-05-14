@@ -88,8 +88,6 @@
 	fwrite($logOutput, "Loading 'project.working_server.php' into iframe.\n");
 	fwrite($logOutput, getcwd()."\n");
 	fclose($logOutput);
-
-	queue_init($user,$project,"","","project.single_WGseq.install_1.php");
 ?>
 <font size="2" color="red">Upload complete; processing...</font><br>
 <script type="text/javascript">
