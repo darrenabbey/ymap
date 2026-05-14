@@ -24,33 +24,15 @@ echo -e "#|---- sam2fastq.sh ---- begin." >> $logName;
 SAMheader=$($samtools_exec view -H $projectDirectory$inputFile);
 count=$(grep -E -o '\.fastq|\.fq' <<< "$SAMheader" | wc -l)
 
+## Paired-end position data isn't used in YMAP, so it's faster to treat everything as single-read data.
 if [ $count == "1" ]; then
 	echo -e "#|\tSingle end reads." >> $logName;
-	finalOutput1=$projectDirectory"data.fastq";
-	finalOutput2="";
-	echo -e "#|\t$samtools_exec fastq -0 /dev/null $projectDirectory$inputFile -n > $finalOutput1" >> $logName;
-	$samtools_exec fastq -0 /dev/null $projectDirectory$inputFile -n > $finalOutput1;
-
-	#echo -e "#|\t$samtools_exec fastq -1 $finalOutput1 -2 $finalOutput1 -0 $finalOutput1 -s /dev/null $projectDirectory$inputFile -n" >> $logName;
-	#$samtools_exec fastq -1 $finalOutput1 -2 $finalOutput1 -0 $finalOutput1 -s /dev/null $projectDirectory$inputFile -n;
-
 else
 	echo -e "#|\tPaired end reads." >> $logName;
-
-	finalOutput1=$projectDirectory"data.fastq";
-	finalOutput2="";
-	echo -e "#|\t$samtools_exec fastq -0 /dev/null $projectDirectory$inputFile -n > $finalOutput1" >> $logName;
-	$samtools_exec fastq -0 /dev/null $projectDirectory$inputFile -n > $finalOutput1;
-
-	#echo -e "#|\t$samtools_exec fastq -1 $finalOutput1 -2 $finalOutput1 -0 $finalOutput1 -s /dev/null $projectDirectory$inputFile -n" >> $logName;
-	#$samtools_exec fastq -1 $finalOutput1 -2 $finalOutput1 -0 $finalOutput1 -s /dev/null $projectDirectory$inputFile -n;
-
-	## Pair-end data isn't used in YMAP, so faster just to treat them as single.
-	#finalOutput1=$projectDirectory"data_r1.fastq";
-	#finalOutput2=$projectDirectory"data_r2.fastq";
-	#echo -e "#|\t$samtools_exec collate -u -O $projectDirectory$inputFile | $samtools_exec fastq -1 $finalOutput1 -2 $finalOutput2 -0 /dev/null -s /dev/null -n" >> $logName;
-	#$samtools_exec collate -u -O $projectDirectory$inputFile | $samtools_exec fastq -1 $finalOutput1 -2 $finalOutput2 -0 /dev/null -s /dev/null -n;
 fi;
-echo -e "#|---- sam2fastq.sh ---- end." >> $logName;
+finalOutput1=$projectDirectory"data.fastq";
+finalOutput2="";
+echo -e "#|\t$samtools_exec fastq -0 /dev/null $projectDirectory$inputFile -n > $finalOutput1" >> $logName;
+$samtools_exec fastq -0 /dev/null $projectDirectory$inputFile -n > $finalOutput1;
 
-##$samtools_exec collate -u -O $projectDirectory$inputFile | $samtools_exec fastq -1 $finalOutput1 -2 $finalOutput2 -0 /dev/null -s /dev/null -n;
+echo -e "#|---- sam2fastq.sh ---- end." >> $logName;
