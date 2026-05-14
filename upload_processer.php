@@ -114,6 +114,7 @@
 		$_SESSION['genome']     = $genome;
 		$_SESSION['project']    = $project;
 		$_SESSION['key']        = $key;
+		$_SESSION['status']     = "0";
 
 		if ($project != "") {
 			// initiate project processing.
@@ -123,15 +124,21 @@
 					$conclusion_script = "scripts_SnpCghArray/project.SnpCgh.install.php";
 					break;
 				case "WGseq_single":
+					setupProjectForQueue($project_dir,$fileName);
 					queue_init($user,$project,"","","from: upload_processer.php");
-					$conclusion_script = "scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php";
+					$conclusion_script = "project.working_server.php";
+					//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php";
 					break;
 				case "WGseq_paired":
+					setupProjectForQueue($project_dir,$fileName);
 					queue_init($user,$project,"","","from: upload_processer.php");
+					$conclusion_script = "project.working_server.php";
 					//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_1.php";
 					break;
 				case "WGseq_long":
+					setupProjectForQueue($project_dir,$fileName);
 					queue_init($user,$project,"","","from: upload_processer.php");
+					$conclusion_script = "project.working_server.php";
 					//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php";
 					break;
 				case "ddRADseq_single":
@@ -141,7 +148,9 @@
 					$conclusion_script = "scripts_seqModules/scripts_ddRADseq/project.paired_ddRADseq.install_1.php";
 					break;
 				case "FASTA":
+					setupProjectForQueue($project_dir,$fileName);
 					queue_init($user,$project,"","","from: upload_processer.php");
+					$conclusion_script = "project.working_server.php";
 					//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php";
 					break;
 			}
@@ -163,4 +172,42 @@
 			header("Location: ".$conclusion_script);
 		}
 	}
+
+function setupProjectForQueue($project_dir,$datafile) {
+	// Generate 'bulk.txt' file.
+	$fileName = $project_dir."/bulk.txt";
+	$file     = fopen($fileName, 'w');
+	fwrite($file, "initiated");
+	fclose($file);
+	chmod($fileName,0774);
+
+	// Generate 'condensed_log.txt' file.
+	$fileName = $project_dir."/condensed_log.txt";
+	$file     = fopen($fileName, 'w');
+	fwrite($file, "Added to processing queue.");
+	fclose($file);
+	chmod($fileName,0774);
+
+	// Generate 'datafiles.txt' file.
+	// Make txt file containing raw data file name(s).
+	$fileName = $project_dir."/datafiles.txt";
+	$file     = fopen($fileName, 'w');
+	if (str_contains($datafile,",")) {
+		// Two filenames, separated by a comma.
+		$datafiles      = explode(",",$datafile);
+		$datafile1      = $datafiles[0];
+		$datafile2      = $datafiles[1];
+		fwrite($file, $datafile1."\n");
+		fwrite($file, $datafile2);
+	} else {
+		// One filename.
+		fwrite($file, $datafile);
+	}
+	fclose($file);
+	chmod($fileName,0774);
+
+	// Define a session variables to let called script know it is bein initialized.
+	$_SESSION['init']     = true;
+}
 ?>
+
