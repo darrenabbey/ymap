@@ -121,37 +121,40 @@
 			$conclusion_script = "";
 			switch ($dataFormat) {
 				case "SnpCghArray":
+					// Run directly.
 					$conclusion_script = "scripts_SnpCghArray/project.SnpCgh.install.php";
 					break;
 				case "WGseq_single":
+					// Add to processing queue.
 					setupProjectForQueue($project_dir,$fileName);
 					queue_init($user,$project,"","","from: upload_processer.php");
 					$conclusion_script = "project.working_server.php";
-					//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php";
 					break;
 				case "WGseq_paired":
+					// Add to processing queue.
 					setupProjectForQueue($project_dir,$fileName);
 					queue_init($user,$project,"","","from: upload_processer.php");
 					$conclusion_script = "project.working_server.php";
-					//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_1.php";
 					break;
 				case "WGseq_long":
+					// Add to processing queue.
 					setupProjectForQueue($project_dir,$fileName);
 					queue_init($user,$project,"","","from: upload_processer.php");
 					$conclusion_script = "project.working_server.php";
-					//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php";
 					break;
 				case "ddRADseq_single":
+					// Run directly.
 					$conclusion_script = "scripts_seqModules/scripts_ddRADseq/project.single_ddRADseq.install_1.php";
 					break;
 				case "ddRADseq_paired":
+					// Run directly.
 					$conclusion_script = "scripts_seqModules/scripts_ddRADseq/project.paired_ddRADseq.install_1.php";
 					break;
 				case "FASTA":
+					// Add to processing queue.
 					setupProjectForQueue($project_dir,$fileName);
 					queue_init($user,$project,"","","from: upload_processer.php");
 					$conclusion_script = "project.working_server.php";
-					//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.single_WGseq.install_1.php";
 					break;
 			}
 		} else if ($genome != "") {
