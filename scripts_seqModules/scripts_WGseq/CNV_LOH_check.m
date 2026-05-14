@@ -293,11 +293,12 @@ while (chrCopyNum_changed == true)
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			% Clean up chr_breaks vectors by filtering out non-unique values.
+			chr_breaks_     = chr_breaks{chr}
 			chr_breaks{chr} = unique(chr_breaks{chr});
 
 			fprintf(['\t chr_breaks{' num2str(chr) '} = ']);
 			for i = 1:length(chr_breaks{chr})
-				fprintf([num2str(chr_breaks{chr}(i)) ' ']);
+				fprintf(['chr_breaks{' num2str(chr) '}(' num2str(i) ') = ' num2str(chr_breaks{chr}(i)) '\n']);
 			end;
 			fprintf('\n');
 		end;
@@ -308,7 +309,7 @@ while (chrCopyNum_changed == true)
 		if (chr_in_use(chr) == 1)
 			fprintf(['\t chrCopyNum{' num2str(chr) '} = ']);
 			for i = 1:length(chrCopyNum{chr})
-				fprintf([num2str(chrCopyNum{chr}(i)) ' ']);
+				fprintf(['chrCopyNum{' num2str(chr) '}(' num2str(i) ') = ' num2str(chrCopyNum{chr}(i)) '\n']);
 			end;
 			fprintf('\n');
 		end;

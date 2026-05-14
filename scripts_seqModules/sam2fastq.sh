@@ -22,15 +22,25 @@ echo "#|---- sam2fastq.sh ---- begin." >> $logName;
 # import locations of auxillary software for pipeline analysis.
 . $main_dir"local_installed_programs.sh";
 
-finalOutput1=$projectDirectory"data_r1.fastq";
-finalOutput2=$projectDirectory"data_r2.fastq";
 
-#===================================================================================================================================
-# Use SAMtools to convert Bam to Sam.
-#-----------------------------------------------------------------------------------------------------------------------------------
+## Check if SAM file contains single or paired reads, then extract.
+header=$($samtools_exec view -H $projectDirectory$inputFile);
+count=$(echo "$header" | grep -o "[.fastq|.fq]" | wc -l);
 
-echo "#| $samtools_exec collate -u -O $projectDirectory$inputFile | $samtools_exec fastq -1 $finalOutput1 -2 $finalOutput2 -0 /dev/null -s /dev/null -n" >> $logName;
+if [ $count == "1" ]; then
+	echo "#|\tSingle end reads." >> $logName;
+	finalOutput1=$projectDirectory"data.fastq";
+	finalOutput2="";
+	echo "#|\t$samtools_exec fastq -1 $finalOutput1 -2 $finalOutput1 -0 $finalOutput1 -s /dev/null $projectDirectory$inputFile -n" >> $logName;
+	$samtools_exec fastq -1 $finalOutput1 -2 $finalOutput1 -0 $finalOutput1 -s /dev/null $projectDirectory$inputFile -n;
 
-$samtools_exec collate -u -O $projectDirectory$inputFile | $samtools_exec fastq -1 $finalOutput1 -2 $finalOutput2 -0 /dev/null -s /dev/null -n;
-
+else
+	echo "#|\tPaired end reads." >> $logName;
+	finalOutput1=$projectDirectory"data_r1.fastq";
+	finalOutput2=$projectDirectory"data_r2.fastq";
+	echo "#|\t$samtools_exec collate -u -O $projectDirectory$inputFile | $samtools_exec fastq -1 $finalOutput1 -2 $finalOutput2 -0 /dev/null -s /dev/null -n" >> $logName;
+	$samtools_exec collate -u -O $projectDirectory$inputFile | $samtools_exec fastq -1 $finalOutput1 -2 $finalOutput2 -0 /dev/null -s /dev/null -n;
+fi;
 echo "#|---- sam2fastq.sh ---- end." >> $logName;
+
+##$samtools_exec collate -u -O $projectDirectory$inputFile | $samtools_exec fastq -1 $finalOutput1 -2 $finalOutput2 -0 /dev/null -s /dev/null -n;

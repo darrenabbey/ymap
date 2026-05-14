@@ -230,21 +230,39 @@ if ($ext == "zip") {
 	fwrite($condensedLogOutput, "Decompressing SAM/BAM file to FASTQ.\n");
 	$null       = shell_exec("bash scripts_seqModules/sam2fastq.sh ".$user." ".$project." ".$name_new);
 
-	// Rewrite datafiles.txt file with decomressed sam/bam data.
+	// Check if file has single or paired read data.
+	$SAMheader  = shell_exec("$samtools_exec view -H $absProjectPath$inputFile";
+	$FASTQcount = substr_count($SAMheader,".fastq")+substr_count($SAMheader,".fq");
+	fwrite($logOutput, "\t\t| SAM/BAM header\n");
+	fwrite($logOutput, ["\t\t|\t" $SAMheader "\n"]);
+	fwrite($logOutput, ["\t\t| Source file count = " $FASTQcount "\n"]);
+
+	// Rewrite datafiles.txt depending on contents of SAM/BAM file.
 	unlink($absProjectPath."datafiles.txt");
 	$datafiles_file = fopen($absProjectPath."datafiles.txt", 'w');
-	fwrite($datafiles_file, "data_r1.fastq\n");
-	fwrite($datafiles_file, "data_r2.fastq\n");
+	if (paired == true) {
+		// Rewrite datafiles.txt file with decomressed sam/bam data.
+		fwrite($datafiles_file, "data_r1.fastq\n");
+		fwrite($datafiles_file, "data_r2.fastq\n");
+		fwrite($logOutput, "\t\t| File converted to paired-FASTQ files, original deleted.\n");
+		$name_new  = "data_r1.fastq";
+		$name_new2 = "data_r2.fastq";
+		$paired = 1;
+	} else {
+		// Rewrite datafiles.txt file with decomressed sam/bam data.
+		fwrite($datafiles_file, "data.fastq\n");
+		fwrite($datafiles_file, "");
+		fwrite($logOutput, "\t\t| File converted to single-FASTQ file, original deleted.\n");
+		$name_new  = "data.fastq";
+		$name_new2 = "";
+		$paired = 0;
+	}
 	fclose($datafiles_file);
+	$ext_new   = "fastq";
 
 	// delete original archive.
-	unlink($absProjectPath.$name_new);
-	fwrite($logOutput, "\t\t| File converted to paired-FASTQ files, original deleted.\n");
-	$ext_new   = "fastq";
-	$name_new  = "data_r1.fastq";
-	$name_new2 = "data_r2.fastq";
+	unlink($absProjectPath.$name);
 
-	$paired = 1;
 	chdir($currentDir);
 } else if ($ext == "fq") {
 	// if short extension for fastq, fq is found, rename to fastq.
