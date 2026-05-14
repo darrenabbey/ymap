@@ -28,16 +28,22 @@ if [ $count == "1" ]; then
 	echo -e "#|\tSingle end reads." >> $logName;
 	finalOutput1=$projectDirectory"data.fastq";
 	finalOutput2="";
-	echo -e "#|\t$samtools_exec fastq -1 $finalOutput1 -2 $finalOutput1 -0 $finalOutput1 -s /dev/null $projectDirectory$inputFile -n" >> $logName;
-	$samtools_exec fastq -1 $finalOutput1 -2 $finalOutput1 -0 $finalOutput1 -s /dev/null $projectDirectory$inputFile -n;
+	echo -e "#|\t$samtools_exec fastq -0 /dev/null $projectDirectory$inputFile -n > $finalOutput1" >> $logName;
+	$samtools_exec fastq -0 /dev/null $projectDirectory$inputFile -n > $finalOutput1;
+
+	#echo -e "#|\t$samtools_exec fastq -1 $finalOutput1 -2 $finalOutput1 -0 $finalOutput1 -s /dev/null $projectDirectory$inputFile -n" >> $logName;
+	#$samtools_exec fastq -1 $finalOutput1 -2 $finalOutput1 -0 $finalOutput1 -s /dev/null $projectDirectory$inputFile -n;
 
 else
 	echo -e "#|\tPaired end reads." >> $logName;
 
 	finalOutput1=$projectDirectory"data.fastq";
 	finalOutput2="";
-	echo -e "#|\t$samtools_exec fastq -1 $finalOutput1 -2 $finalOutput1 -0 $finalOutput1 -s /dev/null $projectDirectory$inputFile -n" >> $logName;
-	$samtools_exec fastq -1 $finalOutput1 -2 $finalOutput1 -0 $finalOutput1 -s /dev/null $projectDirectory$inputFile -n;
+	echo -e "#|\t$samtools_exec fastq -0 /dev/null $projectDirectory$inputFile -n > $finalOutput1" >> $logName;
+	$samtools_exec fastq -0 /dev/null $projectDirectory$inputFile -n > $finalOutput1;
+
+	#echo -e "#|\t$samtools_exec fastq -1 $finalOutput1 -2 $finalOutput1 -0 $finalOutput1 -s /dev/null $projectDirectory$inputFile -n" >> $logName;
+	#$samtools_exec fastq -1 $finalOutput1 -2 $finalOutput1 -0 $finalOutput1 -s /dev/null $projectDirectory$inputFile -n;
 
 	## Pair-end data isn't used in YMAP, so faster just to treat them as single.
 	#finalOutput1=$projectDirectory"data_r1.fastq";
