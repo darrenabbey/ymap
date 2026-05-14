@@ -231,32 +231,38 @@ if ($ext == "zip") {
 	$null       = shell_exec("bash scripts_seqModules/sam2fastq.sh ".$user." ".$project." ".$name_new);
 
 	// Check if file has single or paired read data.
-	$SAMheader  = shell_exec("$samtools_exec view -H $absProjectPath$inputFile";
+	fwrite($logOutput, "\t\t| SAM/BAM file: ".$absProjectPath.$name_new."\n");
+	$SAMheader  = shell_exec("samtools view -H ".$absProjectPath.$name_new);
 	$FASTQcount = substr_count($SAMheader,".fastq")+substr_count($SAMheader,".fq");
-	fwrite($logOutput, "\t\t| SAM/BAM header\n");
-	fwrite($logOutput, ["\t\t|\t" $SAMheader "\n"]);
-	fwrite($logOutput, ["\t\t| Source file count = " $FASTQcount "\n"]);
+	//fwrite($logOutput, "\t\t| SAM/BAM header\n");
+	//fwrite($logOutput, "\t\t|\t".$SAMheader."\n");
+	fwrite($logOutput, "\t\t| Source file count from SAM/BAM header = ".$FASTQcount."\n");
 
 	// Rewrite datafiles.txt depending on contents of SAM/BAM file.
 	unlink($absProjectPath."datafiles.txt");
 	$datafiles_file = fopen($absProjectPath."datafiles.txt", 'w');
-	if (paired == true) {
-		// Rewrite datafiles.txt file with decomressed sam/bam data.
-		fwrite($datafiles_file, "data_r1.fastq\n");
-		fwrite($datafiles_file, "data_r2.fastq\n");
-		fwrite($logOutput, "\t\t| File converted to paired-FASTQ files, original deleted.\n");
-		$name_new  = "data_r1.fastq";
-		$name_new2 = "data_r2.fastq";
-		$paired = 1;
+
+	if ((int)$FASTQcount == 1) {
+		fwrite($logOutput, "\t\t| Single-read SAM/BAM file converted to FASTQ file, original deleted.\n");
 	} else {
+		fwrite($logOutput, "\t\t| Paired-read SAM/BAM file converted to FASTQ file, original deleted.\n");
+	}
+	// Faster just to treat all SAM/BAM files as single-end reads.
+//	if (paired == true) {
+//		// Rewrite datafiles.txt file with decomressed sam/bam data.
+//		fwrite($datafiles_file, "data_r1.fastq\n");
+//		fwrite($datafiles_file, "data_r2.fastq\n");
+//		$name_new  = "data_r1.fastq";
+//		$name_new2 = "data_r2.fastq";
+//		$paired = 1;
+//	} else {
 		// Rewrite datafiles.txt file with decomressed sam/bam data.
 		fwrite($datafiles_file, "data.fastq\n");
 		fwrite($datafiles_file, "");
-		fwrite($logOutput, "\t\t| File converted to single-FASTQ file, original deleted.\n");
 		$name_new  = "data.fastq";
 		$name_new2 = "";
 		$paired = 0;
-	}
+//	}
 	fclose($datafiles_file);
 	$ext_new   = "fastq";
 
