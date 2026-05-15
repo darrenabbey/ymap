@@ -88,7 +88,7 @@ echo -e "\tprojectParentDirectory = '"$projectParentDirectory"'" >> $logName;
 echo -e "#==========================#" >> $logName;
 echo -e "# CNV analysis of dataset. #" >> $logName;
 echo -e "#==========================#" >> $logName;
-echo -e "Preprocessing CNV data.   (~10 min for 1.6 Gbase genome dataset.)" >> $condensedLog;
+echo -e "Preprocessing CNV data." >> $condensedLog;
 
 if [[ -f $projectDirectory"preprocessed_CNVs.txt" ]]
 then

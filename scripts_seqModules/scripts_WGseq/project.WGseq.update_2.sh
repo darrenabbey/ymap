@@ -179,7 +179,7 @@ fi
 echo -e "#==========================#" >> $logName;
 echo -e "# CNV analysis of dataset. #" >> $logName;
 echo -e "#==========================#" >> $logName;
-echo -e "Preprocessing CNV data.   (~10 min for 1.6 Gbase genome dataset.)" >> $condensedLog;
+echo -e "Preprocessing CNV data." >> $condensedLog;
 echo -e "Analyzing and mapping CNVs." >> $condensedLog;
 
 echo -e "\tGenerating OCTAVE script to perform CNV analysis of dataset, with GC-correction." >> $logName;
