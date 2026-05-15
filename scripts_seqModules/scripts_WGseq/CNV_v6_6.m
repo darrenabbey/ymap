@@ -444,7 +444,7 @@ if (performEndbiasCorrection)
 		%% DRAGON
 		% Find minimum coordinate of fit, then apply that value to every location to the right in the fit (towards the chromosome center).
 		[minFitY, minFitYkey] = min(fitY1);
-		fitY1_                = fitY1_
+		fitY1_                = fitY1;
 		fitY1(minFitYkey:end) = minFitY;
 
 		% Correct data using normalization to LOWESS fitting
