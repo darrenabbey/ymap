@@ -292,9 +292,9 @@ while (chrCopyNum_changed == true)
 
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
-			% Clean up chr_breaks vectors by filtering out non-unique values.
-			chr_breaks_     = chr_breaks{chr}
-			chr_breaks{chr} = unique(chr_breaks{chr});
+			%% Clean up chr_breaks vectors by filtering out non-unique values.
+			%chr_breaks_     = chr_breaks{chr}
+			%chr_breaks{chr} = unique(chr_breaks{chr});
 
 			fprintf(['\t chr_breaks{' num2str(chr) '} = ']);
 			for i = 1:length(chr_breaks{chr})
