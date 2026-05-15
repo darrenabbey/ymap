@@ -15,9 +15,17 @@
 	}
 
 	// Load user string from session.
-	$user             = $_SESSION['user'];
-	$init             = $_SESSION['init'];
+	$user = $_SESSION['user'];
+
+
+	// load init value, determining if this page was called by server-side PHP or client-side JS.
+	if (isset($_SESSION["init"])) {
+		$init = $_SESSION['init'];
+	} else {
+		$init = false;
+	}
 	$_SESSION['init'] = false;
+
 
 	// Grap input strings.
 	if ($init == true) {
