@@ -47,7 +47,7 @@
 
 	$OutputName = $project_dir."/working.txt";
 	$Output     = fopen($OutputName, 'w');
-	fwrite($Output, "Updating.");
+	fwrite($Output, date('Y-m-d H:i:s'));
 	fclose($Output);
 
 	queue_start($user,$project,"","","from: project.WGseq.update_1.php");
