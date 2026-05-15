@@ -444,6 +444,7 @@ if (performEndbiasCorrection)
 		%% DRAGON
 		% Find minimum coordinate of fit, then apply that value to every location to the right in the fit (towards the chromosome center).
 		[minFitY, minFitYkey] = min(fitY1);
+		fitY1_                = fitY1_
 		fitY1(minFitYkey:end) = minFitY;
 
 		% Correct data using normalization to LOWESS fitting
@@ -559,6 +560,8 @@ if (Make_figure_bias_end)
 	%% Generate figure showing subplots of LOWESS fittings.
 	if (performEndbiasCorrection)
 		bias_end_fig = figure();
+
+		%% Make raw data subplot.
 		subplot(1,2,1);
 		hold on;
 		for chr = 1:num_chrs
@@ -566,15 +569,17 @@ if (Make_figure_bias_end)
 				plot(rawData_chr_X1{chr},rawData_chr_Y1{chr},'k.','markersize',1);        % raw data
 			end;
 		end;
-		plot(fitX1,fitY1,'r','LineWidth',2);                        % LOWESS fit curve.
+		plot(fitX1,fitY1_, ':r', 'LineWidth',2);	% Raw LOWESS fit curve.
+		plot(fitX1,fitY1,  '-r',  'LineWidth',2);	% Adjusted LOWESS fit curve.
 		hold off;
-
 		xlabel('NearestEnd');
 		ylabel('CNV data');
 		xlim([0 largest_chr_bin_count/2]);
 		ylim([0 4]);
 		axis square;
 		title('Reads vs. NearestEnd');
+
+		%% Make corrected data subplot.
 		subplot(1,2,2);
 		hold on;
 		for chr = 1:num_chrs
