@@ -465,13 +465,16 @@ if (performEndbiasCorrection)
 		[fitX1, fitY1]  = optimize_mylowess(rawData_X1,rawData_Y1, 10,0);
 		[fitX1_,fitY1_] = optimize_mylowess(rawData_X1,rawData_Y1_,10,0);
 
-		% Find minimum coordinate of fit, then apply that value to every location to the right in the fit (towards the chromosome center).
-		[minFitY, minFitYkey]   = min(fitY1);
-		fitY1_raw               = fitY1;
-		fitY1(minFitYkey:end)   = minFitY;
-		[minFitY_, minFitYkey_] = min(fitY1_);
-		fitY1_raw_              = fitY1_;
-		fitY1_(minFitYkey_:end) = minFitY_;
+		% Find minimum coordinate of fits, then apply that value to every location to the right in the fit (towards the chromosome center).
+		[minFitY1, minFitY1key]   = min(fitY1)
+		fitY1_raw                 = fitY1;
+		fitY1(minFitY1key:end)    = minFitY1;
+		test = fitY1-fitY1_raw
+
+		[minFitY1_, minFitY1key_] = min(fitY1_)
+		fitY1_raw_                = fitY1_;
+		fitY1_(minFitY1key_:end)  = minFitY1_;
+		test_ = fitY1_-fitY1_raw_
 
 		% Correct data using normalization to LOWESS fitting
 		Y_target = 1;
@@ -538,7 +541,7 @@ if (performGCbiasCorrection)
 	% otherwise inner functions of octave will cause crash
 	if (size(rawData_X2,2) > 1 && size(rawData_Y2,2) > 1)
 	fprintf(['Lowess X:Y size : [' num2str(size(rawData_X2,1)) ',' num2str(size(rawData_X2,2)) ']:[' num2str(size(rawData_Y2,1)) ',' num2str(size(rawData_Y2,2)) ']\n']);
-	[fitX2, fitY2] = optimize_mylowess(rawData_X2,rawData_Y2,10, 0);
+	[fitX2, fitY2] = optimize_mylowess2(rawData_X2,rawData_Y2,10, 0);
 	% Correct data using normalization to LOWESS fitting
 	Y_target = 1;
 	for chr = 1:num_chrs
@@ -606,7 +609,7 @@ if (Make_figure_bias_end)
 				plot(rawData_chr_X1{chr},rawData_chr_Y1{chr},'k.','markersize',1);        % raw data
 			end;
 		end;
-		plot(fitX1,fitY1_raw, 'Color', [1 0 0], 'LineWidth',1);       % Raw LOWESS fit curve.
+		plot(fitX1,fitY1_raw, 'Color', [0 0 1], 'LineWidth',1);       % Raw LOWESS fit curve.
 		plot(fitX1,fitY1,     'Color', [1 0 0], 'LineWidth',3);       % Adjusted LOWESS fit curve.
 		hold off;
 		xlabel('NearestEnd');
@@ -631,7 +634,7 @@ if (Make_figure_bias_end)
 		xlim([0 largest_chr_bin_count/2]);
 		ylim([0 4]);
 		axis square;
-		title('NearestEnd Corrected');
+		title('NearestEnd Corrected (algorithm 1)');
 
 		%%=========================================================
 		% Attempting to normalize by chromosome median CNV before fitting.
@@ -645,7 +648,7 @@ if (Make_figure_bias_end)
 				plot(rawData_chr_X1{chr},rawData_chr_Y1_{chr},'k.','markersize',1);        % raw data
 			end;
 		end;
-		plot(fitX1,fitY1_raw_, 'Color', [1 0 0], 'LineWidth',1);	% Raw LOWESS fit curve.
+		plot(fitX1,fitY1_raw_, 'Color', [0 0 1], 'LineWidth',1);	% Raw LOWESS fit curve.
 		plot(fitX1,fitY1_,     'Color', [1 0 0], 'LineWidth',3);	% Adjusted LOWESS fit curve.
 		hold off;
 		xlabel('NearestEnd');
@@ -670,7 +673,7 @@ if (Make_figure_bias_end)
 		xlim([0 largest_chr_bin_count/2]);
 		ylim([0 4]);
 		axis square;
-		title('NearestEnd Corrected (2)');
+		title('NearestEnd Corrected (algorithm 2)');
 
 		%%=========================================================
 		% final stuff.
