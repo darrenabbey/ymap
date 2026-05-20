@@ -390,10 +390,9 @@ function blank_and_content_tab() {
 		newImg.document.close();
 	}
 	function openGenome(user,genome,key,genomeName,warning) {
-		// DRAGON : to be built out to display figures generated during genome setup.
-		var visualize_iframe     = document.getElementById('panel_genome_iframe');
-		var show_button_element  = visualize_iframe.contentDocument.getElementById("show_"+key);
-		var show_button_element2 = visualize_iframe.contentDocument.getElementById("showAllUser");
+		var genome_iframe     = document.getElementById('panel_genome_iframe');
+		var show_button_element  = genome_iframe.contentDocument.getElementById("show_g"+key);
+		//var show_button_element2 = genome_iframe.contentDocument.getElementById("showAllUser");
 		closeProject_viewOnly(key);
 		console.log('#     genome.openGenome : "'+user+':'+genome+':'+key+':'+genomeName+'"');
 		if (show_button_element.checked == false) {
@@ -496,11 +495,11 @@ function blank_and_content_tab() {
 	function openProject(user,project,key,projectName,color1,color2,parent,figVer,warning) {
 		if (key.includes("_admin")) {
 			var visualize_iframe     = document.getElementById('panel_super1_iframe');
-			var show_button_element  = visualize_iframe.contentDocument.getElementById("show_"+key);
+			var show_button_element  = visualize_iframe.contentDocument.getElementById("show_p"+key);
 			var show_button_element2 = visualize_iframe.contentDocument.getElementById("showAllUser");
 		} else {
 			var visualize_iframe     = document.getElementById('panel_visualizeDataset_iframe');
-			var show_button_element  = visualize_iframe.contentDocument.getElementById("show_"+key);
+			var show_button_element  = visualize_iframe.contentDocument.getElementById("show_p"+key);
 			var show_button_element2 = visualize_iframe.contentDocument.getElementById("showAllUser");
 		}
 		closeProject_viewOnly(key);
@@ -729,7 +728,7 @@ function blank_and_content_tab() {
 	}
 	function closeGenome(user,genome,key,genomeName) {
 		var visualize_iframe    = document.getElementById('panel_genome_iframe');
-		var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
+		var show_button_element = visualize_iframe.contentDocument.getElementById("show_g"+key);
 		if (show_button_element) {
 			show_button_element.checked = false;
 		}
@@ -738,21 +737,21 @@ function blank_and_content_tab() {
 			figure_element.remove();
 		}
 		var genomesShown = localStorage.getItem("genomesShown");
-		genomesShown = genomesShown.replace(user+":"+genome+":"+key+":"+genometName+":null:null:null;","");
+		genomesShown = genomesShown.replace(user+":"+genome+":"+key+":"+genomeName+";","");
 		genomesShown = genomesShown.replace("  "," ");  // remove duplicate " " characters.
 		while (genomesShown.charAt(0) == " ")
 			genomesShown = genomesShown.slice( 1 );     // remove leading " " characater.
 		localStorage.setItem("genomesShown", genomesShown);
-		console.log('#     Remove from genomesShown : "'+user+':'+genome+':'+key+':'+genomeName+':null:null:null"');
+		console.log('#     Remove from genomesShown : "'+user+':'+genome+':'+key+':'+genomeName+'"');
 		console.log('#         genomesShown = "'+genomesShown+'"');
 	}
 	function closeProject(user,project,key,projectName,color1,color2,parent,figVer) {
 		if (key.includes("_admin")) {
 			var visualize_iframe    = document.getElementById('panel_super1_iframe');
-			var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
+			var show_button_element = visualize_iframe.contentDocument.getElementById("show_p"+key);
 		} else {
 			var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');
-			var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
+			var show_button_element = visualize_iframe.contentDocument.getElementById("show_p"+key);
 		}
 		if (show_button_element) {
 			show_button_element.checked = false;
@@ -1003,6 +1002,11 @@ if(localStorage.getItem("tabInUse")) {
 if(localStorage.getItem("projectsShown")) {
 	var projectsShown = localStorage.getItem("projectsShown");
 }
+if(localStorage.getItem("genomesShown")) {
+	//dragon
+	//localStorage.setItem("genomesShown","");
+	var genomesShown = localStorage.getItem("genomesShown");
+}
 
 // Reload previously viewed tab after page reload.
 <?php
@@ -1016,6 +1020,7 @@ tabWindow(tabInUse);
 
 // Reload previously viewed project datasets after page reload.
 console.log('#: projectsShown = "'+projectsShown+'"');
+console.log('#: genomesShown = "'+genomesShown+'"');
 function restore_shown_figures() {
 	// function is called at the end of page loading.
 	if (projectsShown) {
@@ -1043,15 +1048,49 @@ function restore_shown_figures() {
 
 					if (!key.includes("_admin")) {
 						console.log('#:    Project '+i+' = '+currentProject);
-						var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
+						var show_button_element = visualize_iframe.contentDocument.getElementById("show_p"+key);
 						show_button_element.checked = true;
 						// Open projects previously shown, except for admin_as_user projects.
-						openProject(userName,projectName,key,projectNameText, colorString1, colorString2, 'null', figVer);
+						openProject(userName,projectName,key,projectNameText, colorString1, colorString2, 'null', figVer, "");
 						projectsShown_new = projectsShown_new + currentProject+";";
 					}
 				}
 			}
 			localStorage.setItem("projectsShown", projectsShown_new);
+		}
+	}
+
+	if (genomesShown) {
+		genomesShown = genomesShown.substring(0,genomesShown.length-1);
+		var genomesShown_entries = genomesShown.split(';');
+		localStorage.setItem("genomesShown","");
+
+		var genome_iframe = document.getElementById('panel_genome_iframe');
+		genome_iframe.onload = function () {
+			var genomesShown_new = "";
+			console.log("#: Opening genomes shown before page reload.");
+			for (var i=0;i<genomesShown_entries.length; i++) {
+				var currentGenome = genomesShown_entries[i];
+				if (currentGenome != '') {
+					var entry_parts    = currentGenome.split(':');
+
+					// select checkBoxes for previously viewed datasets.
+					userName        = entry_parts[0];
+					genomeName      = entry_parts[1];
+					key             = entry_parts[2];
+					genomeNameText  = entry_parts[3];
+
+					if (!key.includes("_admin")) {
+						console.log('#:    Genome '+i+' = '+currentGenome);
+						var show_button_element = genome_iframe.contentDocument.getElementById("show_g"+key);
+						show_button_element.checked = true;
+						// Open genomes previously shown, except for admin_as_user genomes.
+						openGenome(userName,genomeName,key,genomeNameText, "");
+						genomesShown_new = genomesShown_new + currentGenome+";";
+					}
+				}
+			}
+			localStorage.setItem("genomesShown", genomesShown_new);
 		}
 	}
 }

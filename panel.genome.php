@@ -127,7 +127,11 @@
 
 		echo "<span id='g_label_".$key."' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
 		echo "<font size='2'>".($key+1).".";
-		echo "<input id='show_$key' type='checkbox' onclick=\"parent.openGenome('$user','$genome','$key','$genomeNameString',''); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
+		if (file_exists("users/".$user."/admin.txt") && file_exists("users/".$user."/genomes/".$genome."/complete.txt")) {
+			echo "<input id='show_g".$key."' type='checkbox' onclick=\"parent.openGenome('$user','$genome','$key','$genomeNameString',''); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
+		} else {
+			echo "<input id='show_g".$key."' type='checkbox' onclick=\"parent.openGenome('$user','$genome','$key','$genomeNameString',''); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' style=\"visibility:hidden;\">";
+		}
 
 		// checks condensed log to see if initial processing is done.
 		if (file_exists("users/".$user."/genomes/".$genome."/working.txt")) {
@@ -185,11 +189,29 @@
 	foreach($systemGenomeFolders as $key=>$folder) {   $systemGenomeFolders[$key] = str_replace($genomesDir,"",$folder);   }
 	$systemGenomeCount = count($systemGenomeFolders);
 	echo "<b><font size='2'>Installed Reference Genomes:</font></b><br>\n";
-	foreach ($systemGenomeFolders as $key=>$genome) {
+	foreach ($systemGenomeFolders as $key_=>$genome) {
 		if (is_dir("users/default/genomes/".$genome)) {
 			$genomeNameString = file_get_contents("users/default/genomes/".$genome."/name.txt");
 			$genomeNameString = trim($genomeNameString);
-			echo "\t\t\t\t<font size='2'>".$genomeNameString."</font><br>\n";
+			//echo "\t\t\t\t<font size='2'>".$genomeNameString."</font><br>\n";
+
+			// Collect output file names, passed to javascript function that builds user interface elements.
+			// Limit files to valid output file types.
+			$genomeFiles   = preg_grep('~\.(png|eps)$~', scandir("users/default/genomes/$genome/"));
+			sort($genomeFiles);
+			$json_file_list = json_encode($genomeFiles);
+
+			$key = $key_ + $userGenomeCount;
+			echo "<span id='g_label_".$key."' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
+			echo "<font size='2'>".($key+1).".";
+			if (file_exists("users/".$user."/admin.txt") && file_exists("users/default/genomes/".$genome."/complete.txt") && (sizeof($genomeFiles) > 0)) {
+				echo "<input id='show_g".$key."' type='checkbox' onclick=\"parent.openGenome('default','$genome','$key','$genomeNameString',''); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
+			} else {
+				echo "<input id='show_g".$key."' type='checkbox' onclick=\"parent.openGenome('default','$genome','$key','$genomeNameString',''); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' style=\"visibility:hidden;\">";
+			}
+
+			echo $genomeNameString;
+			echo "</font></span>\n\t\t\t\t<br>";
 		}
 	}
 	?>

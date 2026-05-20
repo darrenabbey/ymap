@@ -101,7 +101,7 @@
 					fclose($handle);
 					echo "<span id='p_label_".$key."' style='color:#000000; background-color:#FFFFCC;'>\n\t\t";
 					echo "<font size='2'>".($key+1).".";
-					echo "<input id='show_".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','');\" style=\"visibility:hidden;\">";
+					echo "<input id='show_p".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','');\" style=\"visibility:hidden;\">";
 					echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
 					echo "<span id='p_".$project."_type'></span>\n\t\t";
 					echo "<br>\n\t\t";
@@ -110,7 +110,7 @@
 					// an error has happend.
 					echo "<span id='p_label_".$key."' style='color:#888888;'>\n\t\t";
 					echo "<font size='2'>".($key+1).".";
-					echo "<input id='show_".$key."' type='checkbox'>";
+					echo "<input id='show_p".$key."' type='checkbox'>";
 					echo "\n\t\t".$project."</font></span> ".$genome_name."\n\t\t";
 					echo "<span id='p_".$project."_type'></span>\n\t\t";
 					echo "<br>\n\t\t";
@@ -177,7 +177,7 @@
 					echo "<span id='p_label_".($key+$key_count1)."' style='color:#CC0000;'>\n\t\t";
 				}
 				echo "<font size='2'>".($key+$key_count1+1).".";
-				echo "<input id='show_".($key+$key_count1)."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".($key+$key_count1)."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','');\" style=\"visibility:hidden;\">";
+				echo "<input id='show_p".($key+$key_count1)."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".($key+$key_count1)."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','');\" style=\"visibility:hidden;\">";
 				echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
@@ -186,7 +186,7 @@
 				// an error has happened.
 				echo "<span id='p_label_".($key+$key_count1)."' style='color:#888888;'>\n\t\t";
 				echo "<font size='2'>".($key+$key_count1+1).".";
-				echo "<input id='show_".($key+$key_count1)."' type='checkbox'>";
+				echo "<input id='show_p".($key+$key_count1)."' type='checkbox'>";
 				echo "\n\t\t".$project."</font></span> ".$genome_name."\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
@@ -247,7 +247,7 @@
 					fclose($handle);
 					echo "<span id='p_label_".($key+$key_count2)."' style='color:#BB9900;'>\n\t\t";
 					echo "<font size='2'>".($key+$key_count2+1).".";
-					echo "<input id='show_".($key+$key_count2)."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".($key+$key_count2)."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','');\" style=\"visibility:hidden;\">";
+					echo "<input id='show_p".($key+$key_count2)."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".($key+$key_count2)."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','');\" style=\"visibility:hidden;\">";
 					echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
 					echo "<span id='p_".$project."_type'></span>\n\t\t";
 					echo "<br>\n\t\t";
@@ -256,7 +256,7 @@
 					// an error has happend.
 					echo "<span id='p_label_".($key+$key_count2)."' style='color:#888888;'>\n\t\t";
 					echo "<font size='2'>".($key+$key_count2+1).".";
-					echo "<input id='show_".($key+$key_count2)."' type='checkbox'>";
+					echo "<input id='show_p".($key+$key_count2)."' type='checkbox'>";
 					echo "\n\t\t".$project."</font></span> ".$genome_name."\n\t\t";
 					echo "<span id='p_".$project."_type'></span>\n\t\t";
 					echo "<br>\n\t\t";
@@ -344,7 +344,7 @@
 					echo "<span id='project_label_".$key."' style='color:#00CC00;'>\n\t\t";
 				}
 				echo "<font size='2'>".($key+1).".";
-				echo "<input id='show_$key' type='checkbox' onclick=\"parent.openProject('$user','$project','$key','$projectNameString','$colorString1','$colorString2','$parentString','$figVer','$warning_string'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
+				echo "<input id='show_p".$key."' type='checkbox' onclick=\"parent.openProject('$user','$project','$key','$projectNameString','$colorString1','$colorString2','$parentString','$figVer','$warning_string'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
 				echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
 				echo "<font size='1' style='color:#999999;'> - Completed: ".$figDate."</font>";
 				echo "<span id='p2_".$project."_delete'></span><span id='p_".$project."_type'></span>\n\t\t";
@@ -355,7 +355,7 @@
 				$key = $key_ + $key_count3;
 				echo "<span id='p_label_".$key."' style='color:#888888;'>\n\t\t";
 				echo "<font size='2'>".($key+1).".";
-				echo "<input id='show_".$key."' type='checkbox'>";
+				echo "<input id='show_p".$key."' type='checkbox'>";
 				echo "\n\t\t".$project."</font></span> ".$genome_name."\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
@@ -397,7 +397,7 @@
 			}
 
 			$key = $key_ + $key_count3;
-			echo "\tdocument.getElementById('show_$key').checked = document.getElementById('showAllUser').checked;\n";
+			echo "\tdocument.getElementById('show_p".$key."').checked = document.getElementById('showAllUser').checked;\n";
 			echo "\tparent.openProject('$user','$project','$key','$projectNameString','$colorString1','$colorString2','$parentString','$figVer','$warning_string');\n\n";
 		}
 		echo "\twindow.top.hide_combined_fig_menu();\n";
@@ -562,7 +562,7 @@
 
 		$key = $key_ + $userProjectCount_starting + $userProjectCount_working + $userProjectCount_complete;
 		echo "<font size='2'>".($key+1).".";
-		echo "<input id='show_".$key."_sys' type='checkbox' onclick=\"parent.openProject('default','".$project."','".$key."_sys','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','');\" data-file-list='".$json_file_list."'>";
+		echo "<input id='show_p".$key."_sys' type='checkbox' onclick=\"parent.openProject('default','".$project."','".$key."_sys','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','');\" data-file-list='".$json_file_list."'>";
 
 		echo $projectNameString."</font>";
 		echo "<br>\n\t\t";
@@ -595,7 +595,7 @@
 		}
 
 		$key = $key_ + $userProjectCount_starting + $userProjectCount_working + $userProjectCount_complete;
-		echo "\tdocument.getElementById('show_".$key."_sys').checked = document.getElementById('showAllDefault').checked;\n";
+		echo "\tdocument.getElementById('show_p".$key."_sys').checked = document.getElementById('showAllDefault').checked;\n";
 		echo "\tparent.openProject('default','$project','".$key."_sys','$projectNameString','$colorString1','$colorString2','$parentString','$figVer','');\n\n";
 	}
 	echo "\twindow.top.hide_combined_fig_menu();\n";
