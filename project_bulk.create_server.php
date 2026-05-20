@@ -247,7 +247,7 @@
 					// Replace any "."s in string with "_"s.
 					$project = str_replace(".","_",$project);
 
-					// Check if file is one of paired reads. (Name ends in "_R1" or "_R1_001".)
+					// Check if file is one of paired reads. (Name ends in "_1" or "_R1" or "_R1_001".)
 					// Strip suffix off name if found and skip the next filename if it is a R2 name.
 					$project_head = "";
 					$project_tail = "";
@@ -273,6 +273,19 @@
 							$next_project = $project_head."_R2".$project_tail;
 						} else {
 							$next_project = $project_head."_R2".$project_tail.".".$ext1;
+						}
+						$project2     = $next_project;
+						if (in_array($next_project,$bulkdata_files)) {
+							$skip = 1;
+						}
+					} elseif (str_contains($project,"_1")) {
+						$project_head = substr($project_raw,0,strpos($project,"_1"));
+						$project_tail = substr($project_raw,strpos($project,"_1")+3);
+
+						if ($ext2 == "" ) {
+							$next_project = $project_head."_2".$project_tail;
+						} else {
+							$next_project = $project_head."_2".$project_tail.".".$ext1;
 						}
 						$project2     = $next_project;
 						if (in_array($next_project,$bulkdata_files)) {
@@ -409,7 +422,7 @@
 
 							// Check if file is one of paired reads. (Name ends in "_R1" or "_R2".)
 							// Strip suffix off name if found and skip next filename.
-							if (str_contains($project2,"_R2")) {
+							if ((str_contains($project2,"_R2")) || (str_contains($project2,"_2"))) {
 							//if ((substr($project2,-3) == "_R2") || (substr($project2,-7) == "_R2_001")) {
 								$fileName_     = pathinfo($filename_key2, PATHINFO_FILENAME);
 								$fileType_     = pathinfo($filename_key2, PATHINFO_EXTENSION);
