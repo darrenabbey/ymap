@@ -141,26 +141,28 @@ if (Make_figure_skew)
 
 			GCcumulativeSkew = 0;
 		else
-			%%% Contig data line.
-			% T,0.2,1,-0.07692307692307693,0.43478260869565216,0.043478260869565216
-			%	base (ATGC)
-			%	GC-skew  = (G - C)/(G + C)
-			%	alpha    = (G < C)=>1, else 0			(https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7717575/)
-			%	AT-skew  = (A − T)/(A + T)
-			%	GC-percs = (G+C)/kmer_length
-			%	PP-skew  = ((A+G) - (T+C))/((A+G) + (T+C))	(purine-pyrimidine skew)
+			if (chr_in_use(chr_ID))
+				%%% Contig data line.
+				% T,0.2,1,-0.07692307692307693,0.43478260869565216,0.043478260869565216
+				%	base (ATGC)
+				%	GC-skew  = (G - C)/(G + C)
+				%	alpha    = (G < C)=>1, else 0			(https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7717575/)
+				%	AT-skew  = (A − T)/(A + T)
+				%	GC-percs = (G+C)/kmer_length
+				%	PP-skew  = ((A+G) - (T+C))/((A+G) + (T+C))	(purine-pyrimidine skew)
 
-			GCcounters(chr_ID) += 1;
+				GCcounters(chr_ID) += 1;
 
-			%%% For GCskew data file containing all GCskews.
-			GCskew_row = strsplit(GCskew_line, ",");
-			GCskew_chr_xPos{chr_ID}(GCcounters(chr_ID)) = str2double(GCskew_row{1});
-			dataValue                                   = str2double(GCskew_row{2});
-			GCskew_chr_data{chr_ID}(GCcounters(chr_ID)) = dataValue;
+				%%% For GCskew data file containing all GCskews.
+				GCskew_row = strsplit(GCskew_line, ",");
+				GCskew_chr_xPos{chr_ID}(GCcounters(chr_ID)) = str2double(GCskew_row{1});
+				dataValue                                   = str2double(GCskew_row{2});
+				GCskew_chr_data{chr_ID}(GCcounters(chr_ID)) = dataValue;
 
-			%%% accumulate cumulative GC-skew data.
-			GCcumulativeSkew += dataValue;
-			GCskew_chr_data_cumulative{chr_ID}(GCcounters(chr_ID)) = GCcumulativeSkew;
+				%%% accumulate cumulative GC-skew data.
+				GCcumulativeSkew += dataValue;
+				GCskew_chr_data_cumulative{chr_ID}(GCcounters(chr_ID)) = GCcumulativeSkew;
+			end;
 		end;
 		GCskew_line       = fgetl(GCskewData);
 	end;
@@ -186,26 +188,28 @@ if (Make_figure_skew)
 
 			ATcumulativeSkew = 0;
 		else
-			%%% Contig data line.
-			% T,0.2,1,-0.07692307692307693,0.43478260869565216,0.043478260869565216
-			%       base (ATGC)
-			%       GC-skew  = (G - C)/(G + C)
-			%       alpha    = (G < C)=>1, else 0                   (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7717575/)
-			%       AT-skew  = (A − T)/(A + T)
-			%       GC-percs = (G+C)/kmer_length
-			%       PP-skew  = ((A+G) - (T+C))/((A+G) + (T+C))      (purine-pyrimidine skew)
+			if (chr_in_use(chr_ID))
+				%%% Contig data line.
+				% T,0.2,1,-0.07692307692307693,0.43478260869565216,0.043478260869565216
+				%       base (ATGC)
+				%       GC-skew  = (G - C)/(G + C)
+				%       alpha    = (G < C)=>1, else 0                   (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7717575/)
+				%       AT-skew  = (A − T)/(A + T)
+				%       GC-percs = (G+C)/kmer_length
+				%       PP-skew  = ((A+G) - (T+C))/((A+G) + (T+C))      (purine-pyrimidine skew)
 
-			ATcounters(chr_ID) += 1;
+				ATcounters(chr_ID) += 1;
 
-			%%% For ATskew data file containing all ATskews.
-			ATskew_row = strsplit(ATskew_line, ",");
-			ATskew_chr_xPos{chr_ID}(ATcounters(chr_ID)) = str2double(ATskew_row{1});
-			dataValue                                   = str2double(ATskew_row{2});
-			ATskew_chr_data{chr_ID}(ATcounters(chr_ID)) = dataValue;
+				%%% For ATskew data file containing all ATskews.
+				ATskew_row = strsplit(ATskew_line, ",");
+				ATskew_chr_xPos{chr_ID}(ATcounters(chr_ID)) = str2double(ATskew_row{1});
+				dataValue                                   = str2double(ATskew_row{2});
+				ATskew_chr_data{chr_ID}(ATcounters(chr_ID)) = dataValue;
 
-			%%% accumulate cumulative AT-skew data.
-			ATcumulativeSkew += dataValue;
-			ATskew_chr_data_cumulative{chr_ID}(ATcounters(chr_ID)) = ATcumulativeSkew;
+				%%% accumulate cumulative AT-skew data.
+				ATcumulativeSkew += dataValue;
+				ATskew_chr_data_cumulative{chr_ID}(ATcounters(chr_ID)) = ATcumulativeSkew;
+			end;
 		end;
 		ATskew_line       = fgetl(ATskewData);
 	end;
