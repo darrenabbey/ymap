@@ -116,11 +116,11 @@ else
 	if [ ! -e $genomeDirectory"datafile_g_0.repetitiveness_"$repet_kmerLength".txt" ]
 	then
 		echo -e "\tGenerating repetitiveness dictionary." >> $logName;
-		echo -e "\t\t bash "$main_dir"scripts_genomes/FASTA_repetitiveness_dictionary.sh "$user" "$genome" "$main_dir" "$logName" "$repet_kmerlength" >> "$logName" 2>> "$logName";";
+		echo -e "\t\t bash "$main_dir"scripts_genomes/FASTA_repetitiveness_dictionary.sh "$user" "$genome" "$main_dir" "$logName" "$repet_kmerlength" >> "$logName" 2>> "$logName";" >> $logName;
 		bash $main_dir"scripts_genomes/FASTA_repetitiveness_dictionary.sh"       $user $genome $main_dir $logName $repet_kmerLength >> $logName 2>> $logName;
 
 		echo -e "\tCleaning up repetitiveness dictionary." >> $logName;
-		echo -e "\t\t bash "$main_dir"scripts_genomes/FASTA_repetitiveness_dictionary_clean.sh "$user" "$genome" "$main_dir" "$logName" "$repet_kmerlength" >> "$logName" 2>> "$logName";";
+		echo -e "\t\t bash "$main_dir"scripts_genomes/FASTA_repetitiveness_dictionary_clean.sh "$user" "$genome" "$main_dir" "$logName" "$repet_kmerlength" >> "$logName" 2>> "$logName";" >> $logName;
 		bash $main_dir"scripts_genomes/FASTA_repetitiveness_dictionary_clean.sh" $user $genome $main_dir $logName $repet_kmerLength >> $logName 2>> $logName;
 	else
 		echo -e "\tRepetitiveness dictionary for genome '$genome' found" >> $logName;
@@ -128,7 +128,7 @@ else
 	if [ ! -e $genomeDirectory"datafile_g_0.repetitiveness_"$repet_kmerLength".wig" ]
 	then
 		echo -e "\tMaking repetitiveness profile (*.wig)." >> $logName;
-		echo -e "\t\t bash "$main_dir"scripts_genomes/FASTA_repetitiveness-to-WIG.sh "$user" "$genome" "$main_dir" "$logName" "$repet_kmerlength" >> "$logName" 2>> "$logName";";
+		echo -e "\t\t bash "$main_dir"scripts_genomes/FASTA_repetitiveness-to-WIG.sh "$user" "$genome" "$main_dir" "$logName" "$repet_kmerlength" >> "$logName" 2>> "$logName";" >> $logName;
 		bash $main_dir"scripts_genomes/FASTA_repetitiveness-to-WIG.sh"           $user $genome $main_dir $logName $repet_kmerLength >> $logName 2>> $logName;
 	else
 		echo -e "\tRepetitiveness profile (*.wig) for genome '$genome' found" >> $logName;
@@ -182,10 +182,12 @@ else
 
 	echo -e "Processing genome for GC-skew." >> $condensedLog;
 	echo -e "\tGenerating GC-skew dictionary." >> $logName;
+	echo -e "\t\t bash "$main_dir"scripts_genomes/FASTA_GCskew_dictionary.sh "$user" "$genome" "$main_dir" "$logName" "$skew_kmerLength" "$skew_kmerStep" >> "$logName" 2>> "$logName >> $logName;
         bash $main_dir"scripts_genomes/FASTA_GCskew_dictionary.sh"       $user $genome $main_dir $logName $skew_kmerLength $skew_kmerStep >> $logName 2>> $logName;
 
 	echo -e "Processing genome for AT-skew." >> $condensedLog;
 	echo -e "\tGenerating AT-skew dictionary." >> $logName;
+	echo -e "\t\t bash "$main_dir"scripts_genomes/FASTA_ATskew_dictionary.sh "$user" "$genome" "$main_dir" "$logName" "$skew_kmerLength" "$skew_kmerStep" >> "$logName" 2>> "$logName >> $logName;
 	bash $main_dir"scripts_genomes/FASTA_ATskew_dictionary.sh"       $user $genome $main_dir $logName $skew_kmerLength $skew_kmerStep >> $logName 2>> $logName;
 
 	echo -e "#==============================#" >> $logName;
