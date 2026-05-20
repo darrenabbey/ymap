@@ -465,12 +465,13 @@ if (performEndbiasCorrection)
 		[fitX1, fitY1]  = optimize_mylowess(rawData_X1,rawData_Y1, 10,0);
 		[fitX1_,fitY1_] = optimize_mylowess(rawData_X1,rawData_Y1_,10,0);
 
-		% Find minimum coordinate of fits, then apply that value to every location to the right in the fit (towards the chromosome center).
+		%% Find minimum coordinate of fits, then apply that value to every location to the right in the fit (towards the chromosome center).
+		% To raw data.
 		[minFitY1, minFitY1key]   = min(fitY1)
 		fitY1_raw                 = fitY1;
 		fitY1(minFitY1key:end)    = minFitY1;
 		test = fitY1-fitY1_raw
-
+		% To data after normalization by chromosome median.
 		[minFitY1_, minFitY1key_] = min(fitY1_)
 		fitY1_raw_                = fitY1_;
 		fitY1_(minFitY1key_:end)  = minFitY1_;
@@ -602,15 +603,15 @@ if (Make_figure_bias_end)
 		%----------------------------------------------------------
 
 		%% Make median normalized data subplot.
-		subplot(2,2,1);
+		subplot(2,6,1:2);
 		hold on;
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
 				plot(rawData_chr_X1{chr},rawData_chr_Y1{chr},'k.','markersize',1);        % raw data
 			end;
 		end;
-		plot(fitX1,fitY1_raw, 'Color', [0 0 1], 'LineWidth',1);       % Raw LOWESS fit curve.
-		plot(fitX1,fitY1,     'Color', [1 0 0], 'LineWidth',3);       % Adjusted LOWESS fit curve.
+		plot(fitX1,fitY1,     'Color', [1 0 0], 'LineWidth',4);       % Adjusted LOWESS fit curve.
+		plot(fitX1,fitY1_raw, 'Color', [0 0 1], 'LineWidth',2);       % Raw LOWESS fit curve.
 		hold off;
 		xlabel('NearestEnd');
 		ylabel('CNV data');
@@ -619,15 +620,27 @@ if (Make_figure_bias_end)
 		axis square;
 		title('Reads vs. NearestEnd');
 
+% dragon
+		% Make y-value histogram
+		subplot(2,6,3);
+		data = [];
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+			data = [data, rawData_chr_Y1{chr}];
+			end;
+		end;
+		endBias_histogram(data,4);
+		ylabel('CNV data');
+
 		%% Make corrected data subplot.
-		subplot(2,2,2);
+		subplot(2,6,4:5);
 		hold on;
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
 				plot(rawData_chr_X1{chr},normalizedData_chr_Y1{chr},'k.','markersize',1); % corrected data.
 			end;
 		end;
-		plot([fitX1(1) fitX1(end)],[Y_target Y_target],'r','LineWidth',2);          % normalization line.
+		plot([fitX1(1) fitX1(end)],[Y_target Y_target], 'Color', [1 0 0], 'LineWidth',4);          % normalization line.
 		hold off;
 		xlabel('NearestEnd');
 		ylabel('corrected CNV data');
@@ -636,20 +649,33 @@ if (Make_figure_bias_end)
 		axis square;
 		title('NearestEnd Corrected (algorithm 1)');
 
+% dragon
+		% Make y-value histogram
+		subplot(2,6,6);
+		data = [];
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+				data = [data, normalizedData_chr_Y1{chr}];
+			end;
+		end;
+		endBias_histogram(data,4);
+		ylabel('corrected CNV data');
+
+
 		%%=========================================================
 		% Attempting to normalize by chromosome median CNV before fitting.
 		%----------------------------------------------------------
 
 		%% Make median normalized data subplot.
-		subplot(2,2,3);
+		subplot(2,6,7:8);
 		hold on;
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
 				plot(rawData_chr_X1{chr},rawData_chr_Y1_{chr},'k.','markersize',1);        % raw data
 			end;
 		end;
-		plot(fitX1,fitY1_raw_, 'Color', [0 0 1], 'LineWidth',1);	% Raw LOWESS fit curve.
-		plot(fitX1,fitY1_,     'Color', [1 0 0], 'LineWidth',3);	% Adjusted LOWESS fit curve.
+		plot(fitX1,fitY1_,     'Color', [1 0 0], 'LineWidth',4);	% Adjusted LOWESS fit curve.
+		plot(fitX1,fitY1_raw_, 'Color', [0 0 1], 'LineWidth',2);        % Raw LOWESS fit curve.
 		hold off;
 		xlabel('NearestEnd');
 		ylabel('CNV data');
@@ -658,15 +684,27 @@ if (Make_figure_bias_end)
 		axis square;
 		title('Median normalized Reads vs. NearestEnd');
 
+% dragon
+		% Make y-value histogram
+		subplot(2,6,9);
+		data = [];
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+			data = [data, rawData_chr_Y1_{chr}];
+			end;
+		end;
+		endBias_histogram(data,4);
+		ylabel('CNV data');
+
 		%% Make corrected data subplot.
-		subplot(2,2,4);
+		subplot(2,6,10:11);
 		hold on;
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
 				plot(rawData_chr_X1{chr},normalizedData_chr_Y1_{chr},'k.','markersize',1); % corrected data.
 			end;
 		end;
-		plot([fitX1(1) fitX1(end)],[Y_target Y_target],'r','LineWidth',2);          % normalization line.
+		plot([fitX1(1) fitX1(end)],[Y_target Y_target], 'Color', [1 0 0], 'LineWidth',2);          % normalization line.
 		hold off;
 		xlabel('NearestEnd');
 		ylabel('corrected CNV data');
@@ -674,6 +712,19 @@ if (Make_figure_bias_end)
 		ylim([0 4]);
 		axis square;
 		title('NearestEnd Corrected (algorithm 2)');
+
+% dragon
+		% Make y-value histogram
+		subplot(2,6,12);
+		data = [];
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+			data = [data, normalizedData_chr_Y1_{chr}];
+			end;
+		end;
+		endBias_histogram(data,4);
+		ylabel('corrected CNV data');
+
 
 		%%=========================================================
 		% final stuff.
@@ -692,7 +743,9 @@ end;
 if (Make_figure_bias_GC)
 	if (performGCbiasCorrection)
 		bias_GC_fig = figure();
-		subplot(1,2,1);
+
+		% Make raw GC% bias plot.
+		subplot(2,6,1:2);
 		hold on;
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
@@ -707,7 +760,22 @@ if (Make_figure_bias_GC)
 		ylim([0 4]);
 		axis square;
 		title('Reads vs. GC bias');
-		subplot(1,2,2);
+
+% dragon
+		% Make y-value histogram
+		subplot(2,6,3);
+		data = [];
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+			data = [data, rawData_chr_Y2{chr}];
+			end;
+		end;
+		endBias_histogram(data,4);
+		ylabel('CNV data');
+		title('CNV histogram');
+
+		% Make corrected GC% bias plot.
+		subplot(2,6,4:5);
 		hold on;
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
@@ -723,6 +791,21 @@ if (Make_figure_bias_GC)
 		axis square;
 		title('GC bias Corrected');
 
+% dragon
+		% Make y-value histogram
+		subplot(2,6,6);
+		data = [];
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+			data = [data, normalizedData_chr_Y2{chr}];
+			end;
+		end;
+		endBias_histogram(data,4);
+		ylabel('corrected CNV data');
+		title('CNV histogram');
+
+
+		% Save figure.
 		set(bias_GC_fig,'PaperPosition',[0 0 6 3]*2);
 		saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.' figVer 'eps'], 'epsc');
 		saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.' figVer 'png'], 'png');
@@ -1031,7 +1114,6 @@ for chr_to_draw  = 1:length(chr_order)
 				fprintf(['chr = ' num2str(chr) '\n']);
 				for segment = 1:length(chrCopyNum{chr})
 					subplot('Position',[(left+chr_width(chr)+0.005)+width*(segment-1) bottom-0.007 width height+0.007]);
-
 					% The CNV-histogram values were normalized to a median value of 1.
 					for i = round(1+length(CNVplot2{chr})*chr_breaks{chr}(segment)):round(length(CNVplot2{chr})*chr_breaks{chr}(segment+1))
 						if (Low_quality_ploidy_estimate)
@@ -1040,28 +1122,17 @@ for chr_to_draw  = 1:length(chr_order)
 							histAll{segment}(i) = CNVplot2{chr}(i)*ploidy;
 						end;
 					end;
-
-%					fprintf([' :: Low_quality_ploidy_estimate = ' Low_quality_ploidy_estimate '\n']);
-%					fprintf([' :: ploidy       = ' num2str(ploidy) '\n']);
-%					fprintf([' :: ploidyAdjust = ' num2str(ploidyAdjust) '\n']);
-%					fprintf([' :: start_bin    = ' num2str(round(1+length(CNVplot2{chr})*chr_breaks{chr}(segment))) '\n']);
-%					fprintf([' :: end_bin      = ' num2str(round(length(CNVplot2{chr})*chr_breaks{chr}(segment+1))) '\n']);
-%					fprintf([' :: CNVplot2{' num2str(chr) '} = ']); fprintf('%f ', CNVplot2{chr}); fprintf('\n');
-%					fprintf([' :: chr_breaks{' num2str(chr) '}(' num2str(segment) ') = ' num2str(chr_breaks{chr}(segment)) '\n']);
-%					fprintf([' :: chr_breaks{' num2str(chr) '}(' num2str(segment+1) ') = ' num2str(chr_breaks{chr}(segment+1)) '\n']);
-
 					% make a histogram of CNV data, then smooth it for display.
 					histogram_end                                    = 15;   % end point in copy numbers for the histogram, this should be way outside the expected range.
 					histAll{segment}(histAll{segment}<=0)            = [];   % clears any zero data. If ploidyAdjust is somehow zero, this causes on CNV histogram data to exist.
+
 					% endpoints added to ensure histogram bounds.
 					histAll{segment}(length(histAll{segment})+1)     = 0;
 					histAll{segment}(length(histAll{segment})+1)     = histogram_end;
+
 					% crop off any copy data outside the range.
 					histAll{segment}(histAll{segment}<0)             = [];
 					histAll{segment}(histAll{segment}>histogram_end) = [];
-
-%					fprintf(['histAll{' num2str(segment) '} = ']); fprintf('%f ', histAll{segment}); fprintf('\n\n');
-
 					smoothed{segment}                                = smooth_gaussian(hist(histAll{segment},histogram_end*20),2,10);
 
 					% make a smoothed version of just the endpoints used to ensure histogram bounds.
@@ -1072,8 +1143,6 @@ for chr_to_draw  = 1:length(chr_order)
 					% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
 					smoothed{segment}                                = (smoothed{segment}-smoothed2{segment});
 					smoothed{segment}                                = smoothed{segment}/max(smoothed{segment});
-
-%					fprintf(['smoothed{' num2str(segment) '} = ']); fprintf('%f ', smoothed{segment}); fprintf('\n\n');
 
 					% draw lines to mark whole copy number changes.
 					plot([0;300], [0;       0      ],'color',[0.00 0.00 0.00]);
