@@ -67,8 +67,16 @@ function [linear_fig_height,linear_fig_width,linear_left_padding,linear_chr_gap,
 	lower_boundary = 0.10;
 	upper_boundary = 0.25;
 
-	% removing zero enteries in chromosom sizes
-	chr_size_cleaned = chr_size(chr_size ~= 0);
+	% gather chr sizes.
+	chr_size_cleaned = [];
+	for chr = 1:length(chr_in_use)
+		if (chr_in_use(chr) == 1)
+			chr_size_cleaned[] = chr_size(chr);
+		end;
+	end;
+
+	% removing any zero enteries in chromosom sizes
+	chr_size_cleaned = chr_size_cleaned(chr_size_cleaned ~= 0);
 
 	% calculate ratio between smallest chromosome size to largest.
 	ratio = min(chr_size_cleaned)/max(chr_size_cleaned);
