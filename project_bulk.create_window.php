@@ -283,18 +283,22 @@
 			UpdateHapmapList=function() {
 				var selectedGenome = document.getElementById("genome").value;   // grab genome name.
 				var select         = document.getElementById("selectHapmap");   // grab select list.
-				select.innerHTML   = '';
-				var el             = document.createElement("option");
-				el.textContent     = '[None defined]';
-				el.value           = 'none';
-				select.appendChild(el);
-				for (var i = 1; i < hapmapGenome_entries.length; i++) {
-					var item = hapmapGenome_entries[i];
-					if (selectedGenome == item[1]) {
-						var el         = document.createElement("option");
-						el.textContent = item[0];
-						el.value       = item[0];
+				if (select != null) {
+					if ("innerHTML" in select) {
+						select.innerHTML   = '';
+						var el             = document.createElement("option");
+						el.textContent     = '[None defined]';
+						el.value           = 'none';
 						select.appendChild(el);
+						for (var i = 1; i < hapmapGenome_entries.length; i++) {
+							var item = hapmapGenome_entries[i];
+							if (selectedGenome == item[1]) {
+								var el         = document.createElement("option");
+								el.textContent = item[0];
+								el.value       = item[0];
+								select.appendChild(el);
+							}
+						}
 					}
 				}
 			}
@@ -302,19 +306,23 @@
 				var selectedGenome     = document.getElementById("genome").value;     // grab genome name.
 				var selectedDataFormat = document.getElementById("dataFormat").value; // grab dataset type.
 				var select             = document.getElementById("selectParent");     // grab select list.
-				select.innerHTML       = '';
-				var el                 = document.createElement("option");
-				el.textContent         = '[No parent strain for comparison.]';
-				el.value               = 'none';
-				select.appendChild(el);
-				for (var i = 1; i < parentGenomeDataFormat_entries.length; i++) {
-					var item = parentGenomeDataFormat_entries[i];
-					if (selectedGenome == item[1] && selectedDataFormat == item[2]) {
-						if (item[3] != "") {
-							var el         = document.createElement("option");
-							el.textContent = item[3];
-							el.value       = item[0];
-							select.appendChild(el);
+				if (select != null) {
+					if ("innerHTML" in select) {
+						select.innerHTML       = '';
+						var el                 = document.createElement("option");
+						el.textContent         = '[No parent strain for comparison.]';
+						el.value               = 'none';
+						select.appendChild(el);
+						for (var i = 1; i < parentGenomeDataFormat_entries.length; i++) {
+							var item = parentGenomeDataFormat_entries[i];
+							if (selectedGenome == item[1] && selectedDataFormat == item[2]) {
+								if (item[3] != "") {
+									var el         = document.createElement("option");
+									el.textContent = item[3];
+									el.value       = item[0];
+									select.appendChild(el);
+								}
+							}
 						}
 					}
 				}

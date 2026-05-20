@@ -262,8 +262,8 @@
 				if (document.getElementById("dataFormat").value == 0) { // SnpCgh Microarray.
 					document.getElementById("hiddenFormSection1").style.display  = 'none';
 					document.getElementById("hiddenFormSection2").style.display  = 'none';
-					document.getElementById("hiddenFormSection2a").style.display = 'none';
-					document.getElementById("hiddenFormSection2b").style.display = 'none';
+					//document.getElementById("hiddenFormSection2a").style.display = 'none';
+				//	document.getElementById("hiddenFormSection2b").style.display = 'none';
 					document.getElementById("hiddenFormSection3").style.display  = 'none';
 					document.getElementById("hiddenFormSection4").style.display  = 'none';
 					document.getElementById("hiddenFormSection5").style.display  = 'none';
@@ -277,8 +277,8 @@
 				} else { // WGseq or ddRADseq.
 					document.getElementById("hiddenFormSection1").style.display  = 'inline';
 					document.getElementById("hiddenFormSection2").style.display  = 'inline';
-					document.getElementById("hiddenFormSection2a").style.display = 'inline';
-					document.getElementById("hiddenFormSection2b").style.display = 'inline';
+					//document.getElementById("hiddenFormSection2a").style.display = 'inline';
+					//document.getElementById("hiddenFormSection2b").style.display = 'inline';
 					document.getElementById("hiddenFormSection3").style.display  = 'inline';
 					document.getElementById("hiddenFormSection4").style.display  = 'inline';
 					document.getElementById("hiddenFormSection5").style.display  = 'inline';
