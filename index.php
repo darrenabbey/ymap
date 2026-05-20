@@ -389,6 +389,9 @@ function blank_and_content_tab() {
 		newImg.document.write("<script type='text/javascript'> document.oncontextmenu = new Function('return false') </script>")
 		newImg.document.close();
 	}
+	function openGenome(user,genome,key,genomeName,figVer,warning) {
+		// DRAGON : to be built out to display figures generated during genome setup.
+	}
 	function openProject(user,project,key,projectName,color1,color2,parent,figVer,warning) {
 		if (key.includes("_admin")) {
 			var visualize_iframe     = document.getElementById('panel_super1_iframe');
@@ -476,12 +479,7 @@ function blank_and_content_tab() {
 				mainFigure1 = fig_linear_CNV;
 			} else if (file_list.indexOf(fig_linear_SNP+"png") != -1) {
 				mainFigure1 = fig_linear_SNP;
-			} //else if (file_list.indexOf(fig_linear_SNP+"png") != -1) {
-
-			//console.log("## "+figVer_);
-			//console.log("## "+fig_linear_CNV_SNP+"png");
-			//console.log("## "+fig_linear_CNV+"png");
-			//console.log("## "+fig_linear_SNP+"png");
+			}
 
 			if (file_list.indexOf(fig_linear_CNV_SNP+"png") != -1) {
 				string1 += "<b>CNV and SNP/LOH</b> (linear ";
