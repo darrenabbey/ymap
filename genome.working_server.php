@@ -74,9 +74,9 @@
 		$sizeString_1 = trim(fgets($handle));
 		fclose($handle);
 		if ($sizeString_1 !== "") {
-			echo "\n<script type='text/javascript'>\n";
-			echo "parent.parent.update_genome_file_size('".$key."','".$sizeString_1."');";
-			echo "\n</script>\n";
+			//echo "\n<script type='text/javascript'>\n";
+			//echo "parent.parent.update_genome_file_size('".$key."','".$sizeString_1."');";
+			//echo "\n</script>\n";
 		}
 
 		if (file_exists($genome_dir."/complete.txt")) {
