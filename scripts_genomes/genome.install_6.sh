@@ -100,7 +100,7 @@ echo -e "\n\t===================================================================
 ## Check which figures are to be generated for genome.
 repetBool=$(head -n 2 $genomeDirectory"figure_options.txt" | tail -n 1);
 skewBool=$(head -n 3 $genomeDirectory"figure_options.txt" | tail -n 1);
-liftoffBool=$(head -n 4 $genomeDirectory"figure_options.txt" | tail -n 1);
+cartoonBool=$(head -n 4 $genomeDirectory"figure_options.txt" | tail -n 1);
 
 if [ "$repetBool" = "False" ]
 then
@@ -226,44 +226,44 @@ fi
 
 echo -e "\n\t============================================================================================== 5b" >> $logName;
 
-if [ "$liftoffBool" = "False" ]
+if [ "$cartoonBool" = "False" ]
 then
 	echo -e "\t###" >> $logName;
-	echo -e "\t### Liftoff cartoon style figure is not bening made." >> $logName;
+	echo -e "\t### Cartoon figure is not bening made." >> $logName;
 	echo -e "\t###" >> $logName;
 else
 	echo -e "\t###" >> $logName;
-	echo -e "\t### Liftoff cartoon style figure is being made.." >> $logName;
+	echo -e "\t### Cartoon figure is being made.." >> $logName;
 	echo -e "\t###" >> $logName;
 
-	echo -e "#===================================#" >> $logName;
-	echo -e "# Generate Liftoff Cartoon figure.  #" >> $logName;
-	echo -e "#===================================#" >> $logName;
-	echo -e "Generating Liftoff cartoon figure." >> $condensedLog;
+	echo -e "#===========================#" >> $logName;
+	echo -e "# Generate Cartoon figure.  #" >> $logName;
+	echo -e "#===========================#" >> $logName;
+	echo -e "Generating cartoon figure." >> $condensedLog;
 
-	echo -e "\tGenerating OCTAVE script to generate Liftoff cartoon figure." >> $logName;
+	echo -e "\tGenerating OCTAVE script to generate cartoon figure." >> $logName;
 	outputName=$genomeDirectory"processing3.m";
 	echo -e "\toutputName = "$outputName >> $logName;
 
 	echo -e "function [] = processing3()" > $outputName;
 	echo -e "\tpkg load matgeom;" >> $outputName;
-	echo -e "\tdiary('"$genomeDirectory"octave.liftoffCartoon.log');" >> $outputName;
+	echo -e "\tdiary('"$genomeDirectory"octave.cartoon.log');" >> $outputName;
 	echo -e "\tcd "$main_dir"scripts_genomes/;" >> $outputName;
-	echo -e "\tLiftoff_cartoon('"$main_dir"','"$user"','"$genome"','"$skew_kmerLength"','"$skew_kmerStep"');" >> $outputName;
+	echo -e "\tCartoon_plot('"$main_dir"','"$user"','"$genome"','"$skew_kmerLength"','"$skew_kmerStep"');" >> $outputName;
 	echo -e "end" >> $outputName;
 
 	scriptText=$(printf "%s " $(sed 's/^/\n\t|\t/' "$outputName"))
 	echo $scriptText >> $logName;
 
 	echo -e "\tCalling OCTAVE." >> $logName;
-	echo -e "================================================================================================";
-	echo -e "== Liftoff cartoon figure ======================================================================";
-	echo -e "================================================================================================";
+	echo -e "========================================================================================";
+	echo -e "== Cartoon figure ======================================================================";
+	echo -e "========================================================================================";
 	cd $genomeDirectory;
 	$octave_exec $outputName;
 	cd $script_dir;
-	##echo -e "\tOCTAVE log from Liftoff cartoon figure generation." >> $logName;
-	##sed 's/^/\t|/;' $genomeDirectory"octave.liftoffCartoon.log" >> $logName;
+	##echo -e "\tOCTAVE log from cartoon figure generation." >> $logName;
+	##sed 's/^/\t|/;' $genomeDirectory"octave.cartoon.log" >> $logName;
 fi
 
 echo -e "\n\t============================================================================================== 6" >> $logName;
