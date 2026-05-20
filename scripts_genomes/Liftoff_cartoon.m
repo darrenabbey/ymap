@@ -417,25 +417,25 @@ if (Make_liftoff_cartoon)
 	if (Standard_display)
 		% Save primary genome figure.
 		set(Standard_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
-		saveas(Standard_fig, [genomeDir 'fig.liftoff-cartoon.1.eps'], 'epsc');
-		saveas(Standard_fig, [genomeDir 'fig.liftoff-cartoon.1.png'], 'png');
+		saveas(Standard_fig, [genomeDir 'fig.cartoon.1.eps'], 'epsc');
+		saveas(Standard_fig, [genomeDir 'fig.cartoon.1.png'], 'png');
 		delete(Standard_fig);
 
 		%% change permissions of figures.
-		system(['chmod 774 ' genomeDir 'fig.liftoff-cartoon.1.eps']);
-		system(['chmod 774 ' genomeDir 'fig.liftoff-cartoon.1.png']);
+		system(['chmod 774 ' genomeDir 'fig.cartoon.1.eps']);
+		system(['chmod 774 ' genomeDir 'fig.cartoon.1.png']);
 	end;
 
 	if (Linear_display)
 		% Save horizontal aligned genome figure.
 		set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
-		saveas(Linear_fig,   [genomeDir 'fig.liftoff-cartoon.2.eps'], 'epsc');
-		saveas(Linear_fig,   [genomeDir 'fig.liftoff-cartoon.2.png'], 'png');
+		saveas(Linear_fig,   [genomeDir 'fig.cartoon.2.eps'], 'epsc');
+		saveas(Linear_fig,   [genomeDir 'fig.cartoon.2.png'], 'png');
 		delete(Linear_fig);
 
 		%% change permissions of figures.
-		system(['chmod 774 ' genomeDir 'fig.liftoff-cartoon.2.eps']);
-		system(['chmod 774 ' genomeDir 'fig.liftoff-cartoon.2.png']);
+		system(['chmod 774 ' genomeDir 'fig.cartoon.2.eps']);
+		system(['chmod 774 ' genomeDir 'fig.cartoon.2.png']);
 	end;
 
 	fprintf([  '$$$ Liftoff-cartoon figures saved.\n']);
