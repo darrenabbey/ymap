@@ -41,6 +41,7 @@ GCskew_file=$mainDir"users/"$userAccount"/genomes/"$genomeName"/datafile_g_0.GCs
 
 # Make temp dir.
 tempdir=$(mktemp -d);
+CALLDIR=${PWD};
 #========================
 
 	# copy input files to temp dir.
