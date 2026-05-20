@@ -70,15 +70,15 @@ function [linear_fig_height,linear_fig_width,linear_left_padding,linear_chr_gap,
 	% removing zero enteries in chromosom sizes
 	chr_size_cleaned = chr_size(chr_size ~= 0);
 
-	% calculate ration between smallest chromosome size to highest
+	% calculate ratio between smallest chromosome size to largest.
 	ratio = min(chr_size_cleaned)/max(chr_size_cleaned);
 	rotate = 0;
 	if (max_chrom_label_size > 5)
 		rotate = 90;
-	elseif (lower_boundary <= ratio && ratio <= upper_boundary)
+	elseif ((lower_boundary <= ratio) && (ratio <= upper_boundary))
 		% set rotate to 45 here to use.
 		rotate = 90;
-	elseif(ratio < lower_boundary)
+	elseif (ratio < lower_boundary)
 		rotate = 90;
 	end;
 
