@@ -4,8 +4,10 @@ function deleteGenomeConfirmation(genome,key){
 	panel_iframe             = document.getElementById('panel_genome_iframe');
 	dom_object               = panel_iframe.contentDocument.getElementById('g_delete_'+key);
 
-	dom_object.innerHTML     = "<b><font color=\"red\">[Are you sure?]</font><button type='button' onclick='parent.deleteGenome_yes(\""+genome+"\",\""+key+"\")'>Yes, delete.</button>";
-	dom_object.innerHTML    += "<button type='button' onclick='parent.deleteGenome_no(\""+genome+"\",\""+key+"\")'>No, cancel</button></b>";
+	dom_object.innerHTML     = "<b><font color=\"red\">[Are you sure?]</font>";
+	dom_object.innerHTML    += "<button type='button' onclick='parent.deleteGenome_no(\""+genome+"\",\""+key+"\")'>No, cancel</button>";
+	dom_object.innerHTML    += "<button type='button' onclick='parent.deleteGenome_yes(\""+genome+"\",\""+key+"\")'>Yes, delete.</button>";
+	dom_object.innerHTML    += "</b>";
 
 	// turn delete button off for this genome.
 	dom_button               = panel_iframe.contentDocument.getElementById('genome_delete_'+key);

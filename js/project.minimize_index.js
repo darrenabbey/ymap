@@ -9,8 +9,11 @@ function minimizeProjectConfirmation(project,key){
 	dom_object.innerHTML    += "<button type='button' onclick='parent.minimizeProject_yes(\""+project+"\",\""+key+"\")'>Yes, minimize.</button>";
 	dom_object.innerHTML    += "</b>";
 
+	// hide delete/minimize buttons.
 	dom_button               = panel_iframe.contentDocument.getElementById('project_minimize_'+key);
 	dom_button.style.display = 'none';
+	dom_button2               = panel_iframe.contentDocument.getElementById('project_delete_'+key);
+	dom_button2.style.display = 'none';
 }
 
 function minimizeProject_yes(project,key){
@@ -37,10 +40,15 @@ function minimizeProject_yes(project,key){
 function minimizeProject_no(project,key){
 	console.log('minimizeProject_no');
 	panel_iframe         = document.getElementById('panel_manageDataset_iframe');
+
+	// hide confirmation user interface.
 	dom_object           = panel_iframe.contentDocument.getElementById('p_minimize_'+key)
 	dom_object.innerHTML = "";
 
+	// show delete/minimize buttons.
 	dom_button               = panel_iframe.contentDocument.getElementById('project_minimize_'+key);
 	dom_button.style.display = 'inline';
+	dom_button2               = panel_iframe.contentDocument.getElementById('project_delete_'+key);
+	dom_button2.style.display = 'inline';
 }
 

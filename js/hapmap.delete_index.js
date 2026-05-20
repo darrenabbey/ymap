@@ -5,8 +5,10 @@ function deleteHapmapConfirmation(user,hapmap,key){
 	panel_iframe             = document.getElementById('panel_hapmap_iframe');
 	dom_object               = panel_iframe.contentDocument.getElementById('h_delete_'+key);
 
-	dom_object.innerHTML     = "<b><font color=\"red\">[Are you sure?]</font><button type='button' onclick='parent.deleteHapmap_yes(\""+user+"\",\""+hapmap+"\",\""+key+"\")'>Yes, delete.</button>";
-	dom_object.innerHTML    += "<button type='button' onclick='parent.deleteHapmap_no(\""+user+"\",\""+hapmap+"\",\""+key+"\")'>No, cancel</button></b>";
+	dom_object.innerHTML     = "<b><font color=\"red\">[Are you sure?]</font>";
+	dom_object.innerHTML    += "<button type='button' onclick='parent.deleteHapmap_no(\""+user+"\",\""+hapmap+"\",\""+key+"\")'>No, cancel</button>";
+	dom_object.innerHTML    += "<button type='button' onclick='parent.deleteHapmap_yes(\""+user+"\",\""+hapmap+"\",\""+key+"\")'>Yes, delete.</button>";
+	dom_object.innerHTML    += "</b>";
 
 	dom_button               = panel_iframe.contentDocument.getElementById('hapmap_delete_'+key);
 	dom_button.style.display = 'none';

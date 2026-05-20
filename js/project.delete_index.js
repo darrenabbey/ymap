@@ -9,8 +9,11 @@ function deleteProjectConfirmation(project,key){
 	dom_object.innerHTML    += "<button type='button' onclick='parent.deleteProject_yes(\""+project+"\",\""+key+"\")'>Yes, delete.</button>";
 	dom_object.innerHTML    += "</b>";
 
+	// hide delete/minimize buttons.
 	dom_button               = panel_iframe.contentDocument.getElementById('project_delete_'+key);
 	dom_button.style.display = 'none';
+	dom_button2               = panel_iframe.contentDocument.getElementById('project_minimize_'+key);
+	dom_button2.style.display = 'none';
 }
 
 function deleteProject_yes(project,key){
@@ -33,8 +36,10 @@ function deleteProject_yes(project,key){
 	// Hide delete confirmation user interface.
 	dom_object           = panel_iframe.contentDocument.getElementById('p_delete_'+key)
 	dom_object.innerHTML = "";
-	dom_button               = panel_iframe.contentDocument.getElementById('project_delete_'+key);
-	dom_button.style.display = 'inline';
+
+//	// show delete/minimize button?
+//	dom_button               = panel_iframe.contentDocument.getElementById('project_delete_'+key);
+//	dom_button.style.display = 'inline';
 
 	// Update user interface display panel to remove deleted project.
 	update_projectsShown_after_project_delete(key);
@@ -44,10 +49,14 @@ function deleteProject_no(project,key){
 	console.log('deleteProject_no');
 	panel_iframe         = document.getElementById('panel_manageDataset_iframe');
 
-	// Hide delete confirmation user interface.
+	// hide confirmation user interface.
 	dom_object           = panel_iframe.contentDocument.getElementById('p_delete_'+key)
 	dom_object.innerHTML = "";
+
+	// show delete/minimize buttons.
 	dom_button               = panel_iframe.contentDocument.getElementById('project_delete_'+key);
 	dom_button.style.display = 'inline';
+	dom_button2               = panel_iframe.contentDocument.getElementById('project_minimize_'+key);
+	dom_button2.style.display = 'inline';
 }
 
