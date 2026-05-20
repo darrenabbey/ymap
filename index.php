@@ -411,7 +411,7 @@ function blank_and_content_tab() {
 			var fig_linear_GCskew                = file_prefix + "fig.skew-map.2.";
 
 			var fig_standard_cartoon             = file_prefix + "fig.cartoon.1.";
-			var fig_standard_repetitiveness      = file_prefix + "fig.repat-map.1.";
+			var fig_standard_repetitiveness      = file_prefix + "fig.repet-map.1.";
 			var fig_standard_GCskew              = file_prefix + "fig.skew-map.1.";
 
 			var visible_list                     = document.getElementById("visible_list");
@@ -438,7 +438,7 @@ function blank_and_content_tab() {
 				string1 += "<b>Chr Cartoons</b> (linear ";
 				string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_cartoon+"png\",\"100\")'> ";
 				string1 += "<a href='"+fig_linear_cartoon+"eps' download='"+genome+".cartoon_linear.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
-				if (file_list.indexOf(fig_standard_CNV_SNP+"png") != -1) {
+				if (file_list.indexOf(fig_standard_cartoon+"png") != -1) {
 					string1 += " or standard ";
 					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_cartoon+"png\",\"50\")'> ";
 					string1 += "<a href='"+fig_standard_cartoon+"eps' download='"+genome+".cartoon_stacked.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
@@ -446,7 +446,7 @@ function blank_and_content_tab() {
 				string1 += ")";
 			}
 			if (file_list.indexOf(fig_linear_repetitiveness+"png") != -1) {
-				string1 += "; alternate colors (lin. ";
+				string1 += "; Repetitiveness (lin. ";
 				string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_repetitiveness+"png\",\"100\")'> ";
 				string1 += "<a href='"+fig_linear_repetitiveness+"eps' download='"+genome+".repetitiveness_linear.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
 				if (file_list.indexOf(fig_standard_repetitiveness+"png") != -1) {
@@ -457,7 +457,7 @@ function blank_and_content_tab() {
 				string1 += ")";
 			}
 			if (file_list.indexOf(fig_linear_GCskew+"png") != -1) {
-				string1 += "<br><b>CNV only</b> (lin. ";
+				string1 += "<br><b>GC/AT-skew</b> (lin. ";
 				string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_GCskew+"png\",\"100\")'> ";
 				string1 += "<a href='"+fig_linear_GCskew+"eps' download='"+genome+".GCskew_linear.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
 				if (file_list.indexOf(fig_standard_GCskew+"png") != -1) {

@@ -136,7 +136,7 @@ Reduce figures to be generated for faster processing for general use.</font><br>
 <font color="black" size="2">
 <input type="checkbox" id="fig_3" name="fig_3" value="True" checked><span id="label_fig_3" style="color:#000000">Chromosome cartoons.</span><br>
 <input type="checkbox" id="fig_1" name="fig_1" value="True" checked><span id="label_fig_1" style="color:#000000">Repetitiveness map.</span><br>
-<input type="checkbox" id="fig_2" name="fig_2" value="True" checked><span id="label_fig_2" style="color:#FF0000">GC-skew map.</span><br>
+<input type="checkbox" id="fig_2" name="fig_2" value="True" checked><span id="label_fig_2" style="color:#000000">GC-skew map.</span><br>
 </font>
 </div>
 </td></tr></table></div><br>
