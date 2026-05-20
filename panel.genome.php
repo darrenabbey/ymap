@@ -120,7 +120,8 @@
 		$genomeNameString = trim($genomeNameString);
 		echo "<span id='g_label_".$key."' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
 		echo "<font size='2'>".($key+1).".";
-		echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('".$genome."','".$key."');\">Delete</button>";
+		echo "<input id='show_$key' type='checkbox' onclick=\"parent.openGenome('$user','$genome','$key','$genomeNameString'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
+
 		echo $genomeNameString;
 
 		// checks condensed log to see if initial processing is done.
@@ -153,6 +154,7 @@
 			echo " <font color='black' size='1'>(". $genomeSizeStr .")</font>";
 		}
 		echo "</font></span>\n\t\t\t\t";
+		echo "<button id='genome_delete_".$key."' type='button' onclick=\"parent.deleteGenomeConfirmation('".$genome."','".$key."');\">Delete</button>";
 		echo "<span id='g_delete_".$key."'></span>\n\t\t";
 		echo "\n\t\t\t\t";
 		echo "<div id='frameContainer.g".$frameContainerIx."_".$key."'></div>";
