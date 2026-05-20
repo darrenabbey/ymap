@@ -11,6 +11,7 @@ umask 007;
 user=$1;
 genome=$2;
 main_dir=$(pwd)"/../";
+script_dir=$(pwd);
 
 genomeDirectory=$main_dir"users/"$user"/genomes/"$genome"/";
 FASTA=`sed -n 1,1'p' $genomeDirectory"reference.txt"`;					# Name of FASTA file.
@@ -156,15 +157,15 @@ else
 	echo -e "\t|\t    repetitiveness_plot('"$main_dir"','"$user"','"$genome"','"$repet_kmerLength"');" >> $logName;
 	echo -e "\t|\tend" >> $logName;
 
-	echo -e "\tCalling OCTAVE.   (Log will be appended here after completion.)" >> $logName;
+	echo -e "\tCalling OCTAVE." >> $logName;
 	echo -e "================================================================================================";
 	echo -e "== Repetitiveness figure =======================================================================";
 	echo -e "================================================================================================";
 	cd $genomeDirectory;
 	$octave_exec $outputName;
 	cd $script_dir;
-	echo -e "\tOCTAVE log from repetitiveness figure generation." >> $logName;
-	sed 's/^/\t|/;' $genomeDirectory"octave.repet.log" >> $logName;
+	##echo -e "\tOCTAVE log from repetitiveness figure generation." >> $logName;
+	##sed 's/^/\t|/;' $genomeDirectory"octave.repet.log" >> $logName;
 fi
 
 echo -e "\n\t============================================================================================== 5b" >> $logName;
@@ -210,15 +211,15 @@ else
 	echo -e "\t|\t    GCskew_plot('"$main_dir"','"$user"','"$genome"','"$skew_kmerLength"','"$skew_kmerStep"');" >> $logName;
 	echo -e "\t|\tend" >> $logName;
 
-	echo -e "\tCalling OCTAVE.   (Log will be appended here after completion.)" >> $logName;
+	echo -e "\tCalling OCTAVE." >> $logName;
 	echo -e "================================================================================================";
 	echo -e "== GC/AT-skew figure ===========================================================================";
 	echo -e "================================================================================================";
 	cd $genomeDirectory;
 	$octave_exec $outputName;
 	cd $script_dir;
-	echo -e "\tOCTAVE log from GC/AT-skew figure generation." >> $logName;
-	sed 's/^/\t|/;' $genomeDirectory"octave.skew.log" >> $logName;
+	##echo -e "\tOCTAVE log from GC/AT-skew figure generation." >> $logName;
+	##sed 's/^/\t|/;' $genomeDirectory"octave.skew.log" >> $logName;
 fi
 
 echo -e "\n\t============================================================================================== 5b" >> $logName;
@@ -252,15 +253,15 @@ else
 	scriptText=$(printf "%s " $(sed 's/^/\n\t|\t/' "$outputName"))
 	echo $scriptText >> $logName;
 
-	echo -e "\tCalling OCTAVE.   (Log will be appended here after completion.)" >> $logName;
+	echo -e "\tCalling OCTAVE." >> $logName;
 	echo -e "================================================================================================";
 	echo -e "== Liftoff cartoon figure ======================================================================";
 	echo -e "================================================================================================";
 	cd $genomeDirectory;
 	$octave_exec $outputName;
 	cd $script_dir;
-	echo -e "\tOCTAVE log from Liftoff cartoon figure generation." >> $logName;
-	sed 's/^/\t|/;' $genomeDirectory"octave.liftoffCartoon.log" >> $logName;
+	##echo -e "\tOCTAVE log from Liftoff cartoon figure generation." >> $logName;
+	##sed 's/^/\t|/;' $genomeDirectory"octave.liftoffCartoon.log" >> $logName;
 fi
 
 echo -e "\n\t============================================================================================== 6" >> $logName;
