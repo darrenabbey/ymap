@@ -4,8 +4,10 @@ function deleteProjectConfirmation(project,key){
 	panel_iframe             = document.getElementById('panel_manageDataset_iframe');
 	dom_object               = panel_iframe.contentDocument.getElementById('p_delete_'+key);
 
-	dom_object.innerHTML     = "<b><font color=\"red\">[Are you sure?]</font><button type='button' onclick='parent.deleteProject_yes(\""+project+"\",\""+key+"\")'>Yes, delete.</button>";
-	dom_object.innerHTML    += "<button type='button' onclick='parent.deleteProject_no(\""+project+"\",\""+key+"\")'>No, cancel</button></b>";
+	dom_object.innerHTML     = "<b><font color=\"red\">[Are you sure?]</font>";
+	dom_object.innerHTML    += "<button type='button' onclick='parent.deleteProject_no(\""+project+"\",\""+key+"\")'>No, cancel</button>";
+	dom_object.innerHTML    += "<button type='button' onclick='parent.deleteProject_yes(\""+project+"\",\""+key+"\")'>Yes, delete.</button>";
+	dom_object.innerHTML    += "</b>";
 
 	dom_button               = panel_iframe.contentDocument.getElementById('project_delete_'+key);
 	dom_button.style.display = 'none';
