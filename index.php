@@ -129,7 +129,7 @@
 		// Used to hide genome install process part of user interface once install has completed.
 		console.log("$$ genome_key = '"+genome_key+"'");
 		genome_key                           = genome_key.replace('g_','');
-		var show_button_element              = document.getElementById('1panel_genome_iframe').contentDocument.getElementById('show_'+genome_key);
+		var show_button_element              = document.getElementById('panel_genome_iframe').contentDocument.getElementById('show_'+genome_key);
 		show_button_element.style.visibility = 'visible';
 		var genome_iframe                    = document.getElementById('panel_genome_iframe').contentDocument.getElementById('frameContainer.g1_'+genome_key);
 		genome_iframe.innerHTML              = '';
@@ -389,8 +389,109 @@ function blank_and_content_tab() {
 		newImg.document.write("<script type='text/javascript'> document.oncontextmenu = new Function('return false') </script>")
 		newImg.document.close();
 	}
-	function openGenome(user,genome,key,genomeName,figVer,warning) {
+	function openGenome(user,genome,key,genomeName,warning) {
 		// DRAGON : to be built out to display figures generated during genome setup.
+		var visualize_iframe     = document.getElementById('panel_genome_iframe');
+		var show_button_element  = visualize_iframe.contentDocument.getElementById("show_"+key);
+		var show_button_element2 = visualize_iframe.contentDocument.getElementById("showAllUser");
+		closeProject_viewOnly(key);
+		console.log('#     genome.openGenome : "'+user+':'+genome+':'+key+':'+genomeName+'"');
+		if (show_button_element.checked == false) {
+			closeGenome(user,genome,key,genomeName);
+		} else {
+			var file_prefix = "users/"+user+"/genomes/"+genome+"/";
+			var file_list   = JSON.parse(show_button_element.getAttribute('data-file-list'));
+			// Prefix all files with their folder path, so that we won't have to manually add it in in every URL during HTML construction.
+			for (fileIx = 0; fileIx < file_list.length; fileIx++) {
+				file_list[fileIx] = file_prefix + file_list[fileIx];
+			}
+
+			var fig_linear_cartoon               = file_prefix + "fig.cartoon.2.";
+			var fig_linear_repetitiveness        = file_prefix + "fig.repet-map.2.";
+			var fig_linear_GCskew                = file_prefix + "fig.skew-map.2.";
+
+			var fig_standard_cartoon             = file_prefix + "fig.cartoon.1.";
+			var fig_standard_repetitiveness      = file_prefix + "fig.repat-map.1.";
+			var fig_standard_GCskew              = file_prefix + "fig.skew-map.1.";
+
+			var visible_list                     = document.getElementById("visible_list");
+			var string1 = "<div id='figure_"+key+"'><table border='0' align='center' width='100%'><tr><td width='35%' align='left'>";
+			string1 += "<table><tr><td valign='top'>";
+			string1 += genomeName+" ";
+			string1 += "</td><td>";
+			if (warning.length > 0) {
+				string1 += " <font color='red'>"+warning+"</font>";
+			}
+			string1 += "</td></tr></table>";
+			string1 += "</td><td width='60%' align='left'><font size='-1'>";
+
+			// only? fig.CNV-SNP-map.1.png
+			if (file_list.indexOf(fig_linear_cartoon+"png") != -1) {
+				mainFigure1 = fig_linear_cartoon;
+			} else if (file_list.indexOf(fig_linear_repetitiveness+"png") != -1) {
+				mainFigure1 = fig_linear_repetitiveness;
+			} else if (file_list.indexOf(fig_linear_GCskew+"png") != -1) {
+				mainFigure1 = fig_linear_GCskew;
+			}
+
+			if (file_list.indexOf(fig_linear_cartoon+"png") != -1) {
+				string1 += "<b>Chr Cartoons</b> (linear ";
+				string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_cartoon+"png\",\"100\")'> ";
+				string1 += "<a href='"+fig_linear_cartoon+"eps' download='"+genome+".cartoon_linear.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
+				if (file_list.indexOf(fig_standard_CNV_SNP+"png") != -1) {
+					string1 += " or standard ";
+					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_cartoon+"png\",\"50\")'> ";
+					string1 += "<a href='"+fig_standard_cartoon+"eps' download='"+genome+".cartoon_stacked.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
+				}
+				string1 += ")";
+			}
+			if (file_list.indexOf(fig_linear_repetitiveness+"png") != -1) {
+				string1 += "; alternate colors (lin. ";
+				string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_repetitiveness+"png\",\"100\")'> ";
+				string1 += "<a href='"+fig_linear_repetitiveness+"eps' download='"+genome+".repetitiveness_linear.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
+				if (file_list.indexOf(fig_standard_repetitiveness+"png") != -1) {
+					string1 += " or std. ";
+					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_repetitiveness+"png\",\"50\")'> ";
+					string1 += "<a href='"+fig_standard_repetitiveness+"eps' download='"+genome+".repetitiveness_stacked.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
+				}
+				string1 += ")";
+			}
+			if (file_list.indexOf(fig_linear_GCskew+"png") != -1) {
+				string1 += "<br><b>CNV only</b> (lin. ";
+				string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_GCskew+"png\",\"100\")'> ";
+				string1 += "<a href='"+fig_linear_GCskew+"eps' download='"+genome+".GCskew_linear.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
+				if (file_list.indexOf(fig_standard_GCskew+"png") != -1) {
+					string1 += " or std. ";
+					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_GCskew+"png\",\"50\")'> ";
+					string1 += "<a href='"+fig_standard_GCskew+"eps' download='"+genome+".GCskew_stacked.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
+				}
+				string1 += ")";
+			}
+
+			string1 += "</font>";
+
+			var string2 = "</td><td width='5%' align='right'><div onclick=\'closeGenome(\""+user+"\",\""+genome+"\",\""+key+"\",\""+genomeName+"\");' style='display:inline-block;'><b>[X]</b></div></td></tr>";
+			var string3 = "<tr><td align='center' colspan='3'>";
+			var string4 = "<div id='fig_"+key+"'><img src='"+mainFigure1+"png' width='100%'></div>";
+			string4 = string4 + "</td></tr></table>"+"<hr></div>";
+			visible_list.innerHTML += string1+string2+string3+string4;
+
+			var genomesShown = localStorage.getItem("genomesShown");
+			if (genomesShown != null) {
+				// If genome being opened is already displayed, remove it first!
+				genomesShown = genomesShown.replace(user+":"+genome+":"+key+":"+genomeName+";","");
+			} else {
+				genomesShown = "";
+			}
+			genomesShown = genomesShown+user+":"+genome+":"+key+":"+genomeName+";";
+			genomesShown = genomesShown.replace("  "," ");   // remove duplicate " " characters.
+			while (genomesShown.charAt(0) == " ")
+				genomesShown = genomesShown.slice(1);      // remove leading " " character.
+			localStorage.setItem("genomesShown", genomesShown);
+			console.log('#     Add to genomesShown : "'+user+':'+genome+':'+key+':'+genomeName+'"');
+			console.log('#         genomesShown = "'+genomesShown+'"');
+
+		}
 	}
 	function openProject(user,project,key,projectName,color1,color2,parent,figVer,warning) {
 		if (key.includes("_admin")) {
@@ -403,7 +504,7 @@ function blank_and_content_tab() {
 			var show_button_element2 = visualize_iframe.contentDocument.getElementById("showAllUser");
 		}
 		closeProject_viewOnly(key);
-		console.log('#     parent.openProject : "'+user+':'+project+':'+key+':'+projectName+':'+figVer+':'+color1+':'+color2	+'"');
+		console.log('#     parent.openProject : "'+user+':'+project+':'+key+':'+projectName+':'+figVer+':'+color1+':'+color2+'"');
 
 		if (show_button_element.checked == false) {
 			closeProject(user,project,key,projectName,color1,color2,parent,figVer);
@@ -626,6 +727,25 @@ function blank_and_content_tab() {
 			console.log('#         projectsShown = "'+projectsShown+'"');
 		}
 	}
+	function closeGenome(user,genome,key,genomeName) {
+		var visualize_iframe    = document.getElementById('panel_genome_iframe');
+		var show_button_element = visualize_iframe.contentDocument.getElementById("show_"+key);
+		if (show_button_element) {
+			show_button_element.checked = false;
+		}
+		var figure_element = document.getElementById("figure_"+key);
+		if (figure_element) {
+			figure_element.remove();
+		}
+		var genomesShown = localStorage.getItem("genomesShown");
+		genomesShown = genomesShown.replace(user+":"+genome+":"+key+":"+genometName+":null:null:null;","");
+		genomesShown = genomesShown.replace("  "," ");  // remove duplicate " " characters.
+		while (genomesShown.charAt(0) == " ")
+			genomesShown = genomesShown.slice( 1 );     // remove leading " " characater.
+		localStorage.setItem("genomesShown", genomesShown);
+		console.log('#     Remove from genomesShown : "'+user+':'+genome+':'+key+':'+genomeName+':null:null:null"');
+		console.log('#         genomesShown = "'+genomesShown+'"');
+	}
 	function closeProject(user,project,key,projectName,color1,color2,parent,figVer) {
 		if (key.includes("_admin")) {
 			var visualize_iframe    = document.getElementById('panel_super1_iframe');
@@ -650,11 +770,21 @@ function blank_and_content_tab() {
 		console.log('#     Remove from projectsShown : "'+user+':'+project+':'+key+':'+projectName+":"+figVer+':'+color1+':'+color2+'"');
 		console.log('#         projectsShown = "'+projectsShown+'"');
 	}
+	function closeGenome_viewOnly(key) {
+		var figure_element = document.getElementById("figure_"+key);
+		if (figure_element) {
+			figure_element.remove();
+		}
+	}
 	function closeProject_viewOnly(key) {
 		var figure_element = document.getElementById("figure_"+key);
 		if (figure_element) {
 			figure_element.remove();
 		}
+	}
+	function CloseAllGenomes(user) {
+		var visualize_iframe    = document.getElementById('panel_genome_iframe');
+		// Function not implementd.
 	}
 	function CloseAllProjects(user) {
 		var visualize_iframe    = document.getElementById('panel_visualizeDataset_iframe');

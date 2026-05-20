@@ -118,20 +118,27 @@
 	function printGenomeInfo($frameContainerIx, $key, $labelRgbColor, $user, $genome) {
 		$genomeNameString = file_get_contents("users/".$user."/genomes/".$genome."/name.txt");
 		$genomeNameString = trim($genomeNameString);
+
+		// Collect output file names, passed to javascript function that builds user interface elements.
+		// Limit files to valid output file types.
+		$genomeFiles   = preg_grep('~\.(png|eps)$~', scandir("users/$user/genomes/$genome/"));
+		sort($genomeFiles);
+		$json_file_list = json_encode($genomeFiles);
+
 		echo "<span id='g_label_".$key."' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
 		echo "<font size='2'>".($key+1).".";
-		echo "<input id='show_$key' type='checkbox' onclick=\"parent.openGenome('$user','$genome','$key','$genomeNameString'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
-
-		echo $genomeNameString;
+		echo "<input id='show_$key' type='checkbox' onclick=\"parent.openGenome('$user','$genome','$key','$genomeNameString',''); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
 
 		// checks condensed log to see if initial processing is done.
 		if (file_exists("users/".$user."/genomes/".$genome."/working.txt")) {
 			if (file_exists("users/".$user."/genomes/".$genome."/working2.txt") == false) {
 				if (!$exceededSpace) {
-					echo "<button id='genome_finalize_".$key."' type='button' onclick=\"parent.show_hidden('Hidden_InstallNewGenome2'); getElementById('genome_finalize_".$key."').style.display = 'none';;\">Finalize</button>";
+					echo "<button id='genome_finalize_".$key."' type='button' onclick=\"parent.show_hidden('Hidden_InstallNewGenome2'); getElementById('genome_finalize_".$key."').style.display = 'none';;\">Finalize</button> ";
 				}
 			}
 		}
+
+		echo $genomeNameString;
 
 		// display total size of files only if the genome is finished processeing
 		if ($frameContainerIx == "1") {

@@ -183,12 +183,12 @@ else
 	echo -e "Processing genome for GC-skew." >> $condensedLog;
 	echo -e "\tGenerating GC-skew dictionary." >> $logName;
 	echo -e "\t\t bash "$main_dir"scripts_genomes/FASTA_GCskew_dictionary.sh "$user" "$genome" "$main_dir" "$logName" "$skew_kmerLength" "$skew_kmerStep" >> "$logName" 2>> "$logName >> $logName;
-        bash $main_dir"scripts_genomes/FASTA_GCskew_dictionary.sh"       $user $genome $main_dir $logName $skew_kmerLength $skew_kmerStep >> $logName 2>> $logName;
+        bash $main_dir"scripts_genomes/FASTA_GCskew_dictionary.sh" $user $genome $main_dir $logName $skew_kmerLength $skew_kmerStep >> $logName 2>> $logName;
 
 	echo -e "Processing genome for AT-skew." >> $condensedLog;
 	echo -e "\tGenerating AT-skew dictionary." >> $logName;
 	echo -e "\t\t bash "$main_dir"scripts_genomes/FASTA_ATskew_dictionary.sh "$user" "$genome" "$main_dir" "$logName" "$skew_kmerLength" "$skew_kmerStep" >> "$logName" 2>> "$logName >> $logName;
-	bash $main_dir"scripts_genomes/FASTA_ATskew_dictionary.sh"       $user $genome $main_dir $logName $skew_kmerLength $skew_kmerStep >> $logName 2>> $logName;
+	bash $main_dir"scripts_genomes/FASTA_ATskew_dictionary.sh" $user $genome $main_dir $logName $skew_kmerLength $skew_kmerStep >> $logName 2>> $logName;
 
 	echo -e "#==============================#" >> $logName;
 	echo -e "# Generate GC/AT-skew figure.  #" >> $logName;
