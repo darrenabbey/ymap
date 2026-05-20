@@ -1,6 +1,7 @@
 function [] = Liftoff_cartoon(main_dir,genomeUser,genome,kmerLength,kmerStep);
-addpath('../');
-addpath('../scripts_seqModules/')
+addpath([pwd() '/../']);
+addpath([pwd() '/../scripts_seqModules/']);
+addpath([pwd() '/../scripts_seqModules/scripts_WGseq/']);
 
 % hide figures during construction.
 set(0,'DefaultFigureVisible','off');
@@ -137,17 +138,11 @@ if (Make_liftoff_cartoon)
 
 	if (Linear_display)
 		Linear_fig           = figure();
-		Linear_genome_size   = 15207859; %= sum(chr_size);
+		Linear_genome_size   = sum(chr_size);
 		Linear_TickSize      = -0.01;            % negative for outside, percentage of longest chr figure.
 		Linear_maxY          = 10;
 		Linear_left          = Linear_left_start;
 		axisLabelPosition_horiz = 0.01125;
-
-		% DRAGON = Linear_genome_size;
-		% fprintf(['DRAGON = ' num2str(DRAGON) '\n'])
-		% 15195292;
-		% 15084403;
-		Linear_genome_size   = 15195292;
 	end;
 	axisLabelPosition_vert = 0.01125;
 
@@ -199,11 +194,11 @@ if (Make_liftoff_cartoon)
 				leftEnd  = 0;                                   % 0.5*(5000/bases_per_bin);
 				rightEnd = chr_size(chr)/bases_per_bin;         % chr_size(chr)/bases_per_bin-0.5*(5000/bases_per_bin);
 				if (Centromere_format == 0)
-					source('../scripts_seqModules/scripts_WGseq/cartoon_stacked_0.m');
+					source([pwd() '/../scripts_seqModules/scripts_WGseq/cartoon_stacked_0.m']);
 				elseif (Centromere_format == 1)
-					source('../scripts_seqModules/scripts_WGseq/cartoon_stacked_1.m');
+					source([pwd() '/../scripts_seqModules/scripts_WGseq/cartoon_stacked_1.m']);
 				elseif (Centromere_format == 2) % sausage! (standard plot)
-					source('../scripts_seqModules/scripts_WGseq/cartoon_stacked_2.m');
+					source([pwd() '/../scripts_seqModules/scripts_WGseq/cartoon_stacked_2.m']);
 				end;
 				%% standard : end show centromere.
 
@@ -305,11 +300,11 @@ if (Make_liftoff_cartoon)
 				leftEnd  = 0;                                   % 0.5*(5000/bases_per_bin);
 				rightEnd = chr_size(chr)/bases_per_bin;         % chr_size(chr)/bases_per_bin-0.5*(5000/bases_per_bin);
 				if (Centromere_format == 0)
-					source('../scripts_seqModules/scripts_WGseq/cartoon_linear_0.m');
+					source([pwd() '/../scripts_seqModules/scripts_WGseq/cartoon_linear_0.m']);
 				elseif (Centromere_format == 1)
-					source('../scripts_seqModules/scripts_WGseq/cartoon_linear_1.m');
+					source([pwd() '/../scripts_seqModules/scripts_WGseq/cartoon_linear_1.m']);
 				elseif (Centromere_format == 2) % sausage! (linear plot)
-					source('../scripts_seqModules/scripts_WGseq/cartoon_linear_2.m');
+					source([pwd() '/../scripts_seqModules/scripts_WGseq/cartoon_linear_2.m']);
 				end;
 				%% linear : end show centromere/outline.
 
@@ -442,6 +437,8 @@ if (Make_liftoff_cartoon)
 		system(['chmod 774 ' genomeDir 'fig.liftoff-cartoon.2.eps']);
 		system(['chmod 774 ' genomeDir 'fig.liftoff-cartoon.2.png']);
 	end;
+
+	fprintf([  '$$$ Liftoff-cartoon figures saved.\n']);
 else
 	fprintf([  '$$$ Not making Liftoff-cartoon figures.\n']);
 end;
