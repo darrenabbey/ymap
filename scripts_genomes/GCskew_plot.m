@@ -387,6 +387,9 @@ if (Make_figure_skew)
 				yData3 = (GCskew_chr_data_cumulative{chr}+1)/2*maxY;
 				yData4 = (ATskew_chr_data_cumulative{chr}+1)/2*maxY;
 				xData  = GCskew_chr_xPos{chr}/bases_per_bin;
+				if (chr_figReversed(chr) == 1)
+					xData = fliplr(xData);
+				end;
 				plot(xData,yData1,'color',[0.75 0    0   ]);
 				hold on;
 				plot(xData,yData2,'color',[0.75 0    0.75]);
@@ -483,6 +486,9 @@ if (Make_figure_skew)
 				yData3 = (GCskew_chr_data_cumulative{chr}+1)/2*maxY;
 				yData4 = (ATskew_chr_data_cumulative{chr}+1)/2*maxY;
 				xData  = GCskew_chr_xPos{chr}/bases_per_bin;
+				if (chr_figReversed(chr) == 1)
+					xData = fliplr(xData);
+				end;
 				plot(xData,yData1,'color',[0.75 0    0   ]);
 				hold on;
 				plot(xData,yData2,'color',[0.75 0    0.75]);

@@ -257,6 +257,9 @@ if (Make_figure_repet)
 				maxValue = log(maxRepet_genome/kmerLength+0.5);
 				xData = [1:length(logData)]/bases_per_bin;
 				yData = logData/maxValue*maxY;
+				if (chr_figReversed(chr) == 1)
+					xData = fliplr(xData);
+				end;
 				plot(xData,yData,'color',[0 0 0]);
 				%% end plot section.
 				%%==================================================================================
@@ -348,6 +351,9 @@ if (Make_figure_repet)
 				maxValue = log(maxRepet_genome/kmerLength+0.5);
 				xData = [1:length(logData)]/bases_per_bin;
 				yData = logData/maxValue*maxY;
+				if (chr_figReversed(chr) == 1)
+					xData = fliplr(xData);
+				end;
 				plot(xData,yData,'color',[0 0 0]);
 				%% end plot section.
 				%%==================================================================================
