@@ -203,7 +203,7 @@
 
 			$key = $key_ + $userGenomeCount;
 			echo "<span id='g_label_".$key."' style='color:#".$labelRgbColor.";'>\n\t\t\t\t";
-			echo "<font size='2'>".($key+1).".";
+			echo "<font size='2'>".($key_+1).".";
 			if (file_exists("users/".$user."/admin.txt") && file_exists("users/default/genomes/".$genome."/complete.txt") && (sizeof($genomeFiles) > 0)) {
 				echo "<input id='show_g".$key."' type='checkbox' onclick=\"parent.openGenome('default','$genome','$key','$genomeNameString',''); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
 			} else {

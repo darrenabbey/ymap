@@ -561,7 +561,7 @@
 		}
 
 		$key = $key_ + $userProjectCount_starting + $userProjectCount_working + $userProjectCount_complete;
-		echo "<font size='2'>".($key+1).".";
+		echo "<font size='2'>".($key_	+1).".";
 		echo "<input id='show_p".$key."_sys' type='checkbox' onclick=\"parent.openProject('default','".$project."','".$key."_sys','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','');\" data-file-list='".$json_file_list."'>";
 
 		echo $projectNameString."</font>";
