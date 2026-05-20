@@ -161,7 +161,7 @@ else
 	echo -e "== Repetitiveness figure =======================================================================";
 	echo -e "================================================================================================";
 	cd $genomeDirectory;
-	$matlab_exec $outputName;
+	$octave_exec $outputName;
 	cd $script_dir;
 	echo -e "\tOCTAVE log from repetitiveness figure generation." >> $logName;
 	sed 's/^/\t|/;' $genomeDirectory"octave.repet.log" >> $logName;
@@ -215,7 +215,7 @@ else
 	echo -e "== GC/AT-skew figure ===========================================================================";
 	echo -e "================================================================================================";
 	cd $genomeDirectory;
-	$matlab_exec $outputName;
+	$octave_exec $outputName;
 	cd $script_dir;
 	echo -e "\tOCTAVE log from GC/AT-skew figure generation." >> $logName;
 	sed 's/^/\t|/;' $genomeDirectory"octave.skew.log" >> $logName;
@@ -257,7 +257,7 @@ else
 	echo -e "== Liftoff cartoon figure ======================================================================";
 	echo -e "================================================================================================";
 	cd $genomeDirectory;
-	$matlab_exec $outputName;
+	$octave_exec $outputName;
 	cd $script_dir;
 	echo -e "\tOCTAVE log from Liftoff cartoon figure generation." >> $logName;
 	sed 's/^/\t|/;' $genomeDirectory"octave.liftoffCartoon.log" >> $logName;

@@ -1,6 +1,6 @@
 % DNA sequence tool.
 %   Returns location in nmers array of recieved seq.
-%   Faster than matlab(find) because nmer vector is highly structured.
+%   Faster than octave(find) because nmer vector is highly structured.
 function [nmer,err] = find_nmer(seq)
    steps = length(seq);
    nt    = zeros(1,steps);

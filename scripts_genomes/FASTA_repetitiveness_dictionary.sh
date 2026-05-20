@@ -36,6 +36,7 @@ RepetDictionary=$mainDir"users/"$userAccount"/genomes/"$genomeName"/datafile_g_0
 
 # Make temp dir.
 tempdir=$(mktemp -d);
+CALLDIR=${PWD};
 #========================
 
 ###
