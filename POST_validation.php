@@ -34,7 +34,7 @@ function sanitizeProjectsShown_POST($POST_name) {   // for cleaning projectsShow
 	// strip out any HTML/XML/PHP tags.
 	$cleanString = strip_tags($cleanString);
 
-	// remove everything but alphanumeric characters, underlines, dashes, periods, and spaces.
+	// remove everything but alphanumeric characters, underlines, dashes, periods, spaces, :; chars.
 	$cleanString = preg_replace("/[^\w\-_.:; ]+/", "", $cleanString);
         return $cleanString;
 }

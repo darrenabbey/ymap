@@ -173,7 +173,7 @@
 		</td></tr><tr valign="bottom"><td align="middle">
 <font size='2'>
 	For support, please contact us at <a href="mailto:<?php print($admin_email) ?>"><?php print($admin_email) ?></a><br/><br/>
-	<button onclick="Generate_combined_figure(); document.getElementById('combined_fig_options').style.display = 'inline';">Combine figures viewed below.</button><br>
+	<button onclick="Generate_combined_figure();">Combine figures viewed below.</button><br>
 <?php
 	// Defines the filenames for combined figures.
 	$cfig_CNV_SNP     = "users/".$user."/combined_figure.1.png";
