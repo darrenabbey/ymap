@@ -79,9 +79,11 @@ if (Make_figure_repet)
 
 			counter = 0;
 		else
-			%%% Contig data line.
-			counter += 1;
-			WIG_chr_data{chr_ID}(counter)=str2double(WIG_line);
+			if (chr_ID != "")
+				%%% Contig data line.
+				counter += 1;
+				WIG_chr_data{chr_ID}(counter) = str2double(WIG_line);
+			end;
 		end;
 		WIG_line       = fgetl(WIGdata);
 	end;
