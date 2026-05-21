@@ -1,8 +1,8 @@
-	%%=========================================================================
-	%%= No further control variables below. ===================================
-	%%=========================================================================
+	%%//=========================================================================
+	%%//= No further control variables below. ===================================
+	%%//=========================================================================
 
-	%% Load CNV and SNP figure resolutions.
+	%%// Load CNV and SNP figure resolutions.
 	if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
 		bases_per_bin           = max(chr_size)/700;
 	else
@@ -21,10 +21,10 @@
 	largestChr = find(chr_width == max(chr_width));
 	largestChr = largestChr(1);
 
-	%% -----------------------------------------------------------------------------------------
-	% Setup for linear-view figure generation.
-	%-------------------------------------------------------------------------------------------
-	% load size definitions
+	%%// -----------------------------------------------------------------------------------------
+	%// Setup for linear-view figure generation.
+	%//-------------------------------------------------------------------------------------------
+	%// load size definitions
 	[linear_fig_height,linear_fig_width,Linear_left_start,Linear_chr_gap,Linear_Chr_max_width,Linear_height...
 	    ,Linear_base,rotate,linear_chr_font_size,linear_axis_font_size,linear_gca_font_size,stacked_fig_height,...
 	    stacked_fig_width,stacked_chr_font_size,stacked_title_size,stacked_axis_font_size,...
@@ -37,19 +37,19 @@
 	if (Linear_display)
 		Linear_fig           = figure();
 		Linear_genome_size   = sum(chr_size);
-		Linear_TickSize      = -0.01;            % negative for outside, percentage of longest chr figure.
+		Linear_TickSize      = -0.01;            %// negative for outside, percentage of longest chr figure.
 		Linear_maxY          = 10;
 		Linear_left          = Linear_left_start;
 		axisLabelPosition_horiz = 0.01125;
 	end;
 	axisLabelPosition_vert = 0.01125;
 
-	%% -----------------------------------------------------------------------------------------
-	% Make figures
-	%-------------------------------------------------------------------------------------------
+	%%// -----------------------------------------------------------------------------------------
+	%// Make figures
+	%//-------------------------------------------------------------------------------------------
 	first_chr = true;
 
-	% Determine order to draw chromosome cartoons in.
+	%// Determine order to draw chromosome cartoons in.
 	chr_order = [];
 	for test_chr = 1:num_chrs
 		chr_pos = find(chr_figOrder==test_chr);

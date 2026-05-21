@@ -1,4 +1,4 @@
-				%% show annotation locations (linear)
+				%%// Show annotation locations (linear)
 				if (show_annotations) && (length(annotations) > 0)
 					hold on;
 					plot([leftEnd rightEnd], [-maxY/10*0.75 -maxY/10*0.75],'color',[0 0 0]);
@@ -46,12 +46,12 @@
 					end;
 					hold off;
 				end;
-				%% end show annotation locations (linear)
+				%%// End show annotation locations (linear)
 
-				%% Final formatting stuff.
+				%%// Final formatting stuff.
 				xlim([0,chr_size(chr)/bases_per_bin]);
 
-				% modify y axis limits to show annotation locations if any are provided.
+				%// Modify y axis limits to show annotation locations if any are provided.
 				if (length(annotations) > 0)
 					ylim([-maxY/10*1.5,maxY]);
 				else
@@ -61,13 +61,13 @@
 				set(gca,'TickLength',[Linear_TickSize 0]);
 				set(gca,'YTick',[]);
 				set(gca,'YTickLabel',[]);
-				%set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
+				%//set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 				set(gca,'XTick',[]);
 				set(gca,'XTickLabel',[]);
-				%% end final reformatting.
+				%%// End final reformatting.
 
-				% Adding chromosome titles above the middle of the chromosome cartoons.
-				% note: adding title is done in the end since if placed earlier in the code somehow the plot function changes the title position.
+				%// Adding chromosome titles above the middle of the chromosome cartoons.
+				%// note: adding title is done in the end since if placed earlier in the code somehow the plot function changes the title position.
 				if (rotate == 0 && chr_size(chr) ~= 0 )
 					if (chr_figReversed(chr) == 0)
 						title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);

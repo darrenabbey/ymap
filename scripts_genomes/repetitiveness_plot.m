@@ -59,6 +59,13 @@ if (Make_figure_repet)
 		WIG_chr_data{i} = zeros(1,chr_size(i));
 	end;
 
+	% Makes sure chr_name{chr} elements aren't null, which causes next section to have problems.
+	for chr = 1:num_chrs
+		if (size(chr_name{chr}) == 0)
+			chr_name{chr} = "";
+		end;
+	end;
+
 	WIGfile  = [main_dir 'users/' genomeUser '/genomes/' genome '/datafile_g_0.repetitiveness_' num2str(kmerLength) '.wig' ];
 	WIGdata  = fopen(WIGfile,"r");
 	WIG_line = fgetl(WIGdata);
@@ -79,7 +86,7 @@ if (Make_figure_repet)
 
 			counter = 0;
 		else
-			if (chr_ID != "")
+			if (chr_in_use(chr_ID))
 				%%% Contig data line.
 				counter += 1;
 				WIG_chr_data{chr_ID}(counter) = str2double(WIG_line);
@@ -90,9 +97,15 @@ if (Make_figure_repet)
 
 	% find highest/mediaun/lowest repetitiveness across genome.
 	for i = 1:num_chrs
-		maxRepet_chr(i) = max(WIG_chr_data{i});
-		minRepet_chr(i) = min(WIG_chr_data{i});
-		medRepet_chr(i) = median(WIG_chr_data{i});
+		if (size(WIG_chr_data{i}) > 0)
+			maxRepet_chr(i) = max(WIG_chr_data{i});
+			minRepet_chr(i) = min(WIG_chr_data{i});
+			medRepet_chr(i) = median(WIG_chr_data{i});
+		else
+			maxRepet_chr(i) = 1;
+			minRepet_chr(i) = 1;
+			medRepet_chr(i) = 1;
+		end;
 	end;
 	maxRepet_chr
 	minRepet_chr

@@ -72,6 +72,13 @@ if (Make_figure_skew)
 		ATcounters(i)                    = 0;
 	end;
 
+	% Makes sure chr_name{chr} elements aren't null, which causes next section to have problems.
+	for chr = 1:num_chrs
+		if (size(chr_name{chr}) == 0)
+			chr_name{chr} = "";
+		end;
+	end;
+
 	%%%% Process GC skew file.
 	GCskewFile  = [main_dir 'users/' genomeUser '/genomes/' genome '/datafile_g_0.GCskew.txt' ];
 	GCskewData  = fopen(GCskewFile,"r");

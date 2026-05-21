@@ -4,10 +4,10 @@ function [linear_fig_height,linear_fig_width,linear_left_padding,linear_chr_gap,
 	fprintf('\n---------------------------------Load_size_info.m started---------------------------------------------------\n');
 
 
-%%%%
-%%%% Calculating data used to determine size.
-%%%%
-	%% Calculate the number of chrs used
+%%%%//
+%%%%// Calculating data used to determine size.
+%%%%//
+	%%// Calculate the number of chrs used
 	num_chrs_used = 0;
 	num_chrs
 	chr_in_use
@@ -19,13 +19,16 @@ function [linear_fig_height,linear_fig_width,linear_left_padding,linear_chr_gap,
 	fprintf('num_chrs_used - %d\n',num_chrs_used);
 
 
-	%% Calculating the maximum length of chromosome label size for the height of linear figure
+	%%// Calculating the maximum length of chromosome label size for the height of linear figure
+	%%// Also count the total used chromosomes.
+	used_chr_count = 0;
 	max_chrom_label_size = 1;
 	for chr = 1:length(chr_in_use)
 		if (chr_in_use(chr) == 1)
 			if (numel(chr_label{chr}) > max_chrom_label_size)
 				max_chrom_label_size = numel(chr_label{chr});
 			end;
+			used_chr_count = used_chr_count+1;
 		end;
 	end;
 	fprintf('max_chrom_label_size - %d\n',max_chrom_label_size);
@@ -34,40 +37,42 @@ function [linear_fig_height,linear_fig_width,linear_left_padding,linear_chr_gap,
 	fprintf('using %d dpi\n',system_dpi);
 
 
-%%%%
-%%%% linear figure.
-%%%%
+%%%%//
+%%%%// linear figure.
+%%%%//
 	fprintf('-----------------------------------Linear Figure -----------------------------------------------\n');
-	% setting size for linear figure
-	linear_fig_plot_height   = 130; % the height of each chromosom in the figure in px (including y-axis)
-	linear_fig_charc_height  = 20; % the size to be allocated in px for each character in the label 
+	%// setting size for linear figure
+	linear_fig_plot_height   = 130; %// the height of each chromosom in the figure in px (including y-axis)
+	linear_fig_charc_height  = 20;  %// the size to be allocated in px for each character in the label 
 
-	linear_fig_height_px     = linear_fig_plot_height + linear_fig_charc_height*max_chrom_label_size; % the total height of the linear figure in px
-	% normalize height according to dpi
+	linear_fig_height_px     = linear_fig_plot_height + linear_fig_charc_height*max_chrom_label_size; %// the total height of the linear figure in px
+	%// normalize height according to dpi
 	linear_fig_height        = linear_fig_height_px / system_dpi;
 
 	linear_fig_width_px      = 2400;
 	linear_fig_width         = linear_fig_width_px / system_dpi;
 
-	% base value in octave (the scaling here is from 0 to 1 and represent relative position
-	linear_left_padding      = 0.02;               % left margin
-	linear_right_padding     = 0.02;               % right margin
-	linear_total_gap         = 0.07;               % the size in precentage for total gap accross all figure
-	linear_cartoon_height_px = 111;            % the size of the chromosome cartoon in pixles (without y-axis) for proper scaling
-	linear_chr_gap           = linear_total_gap/(num_chrs-1);  % gaps between chr subfigures.
-	linear_chr_max_width     = 1 - linear_total_gap - linear_left_padding - linear_right_padding;  % width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
-	linear_height            = linear_cartoon_height_px/ linear_fig_height_px; % the size 
+	%// base value in octave (the scaling here is from 0 to 1 and represent relative position
+	linear_left_padding      = 0.02;               %// left margin
+	linear_right_padding     = 0.02;               %// right margin
+	linear_total_gap         = 0.07;               %// the size in precentage for total gap accross all figure
+	linear_cartoon_height_px = 111;                %// the size of the chromosome cartoon in pixles (without y-axis) for proper scaling
+
+	linear_chr_gap           = linear_total_gap/(used_chr_count-1);  %// gaps between chr subfigures.
+
+	linear_chr_max_width     = 1 - linear_total_gap - linear_left_padding - linear_right_padding;  %// width for all chromosomes across figure.  1.00 - leftMargin - rightMargin - subfigure gaps.
+	linear_height            = linear_cartoon_height_px/ linear_fig_height_px;                     %// the size
 	linear_base              = 0.1;
 
-	% setting rotation
-	% if there are more than 5 characters in label 90 degrees rotation, else
-	% rotating accroding to lowest chromosome size.
+	%// setting rotation
+	%// if there are more than 5 characters in label 90 degrees rotation, else
+	%// rotating accroding to lowest chromosome size.
 
-	% 45 degrees boundries
+	%// 45 degrees boundries
 	lower_boundary = 0.10;
 	upper_boundary = 0.25;
 
-	% gather chr sizes.
+	%// gather chr sizes.
 	chr_size_cleaned = [];
 	for chr = 1:length(chr_in_use)
 		if (chr_in_use(chr) == 1)
@@ -75,22 +80,22 @@ function [linear_fig_height,linear_fig_width,linear_left_padding,linear_chr_gap,
 		end;
 	end;
 
-	% removing any zero enteries in chromosom sizes
+	%// removing any zero enteries in chromosom sizes
 	chr_size_cleaned = chr_size_cleaned(chr_size_cleaned ~= 0);
 
-	% calculate ratio between smallest chromosome size to largest.
+	%// calculate ratio between smallest chromosome size to largest.
 	ratio = min(chr_size_cleaned)/max(chr_size_cleaned);
 	rotate = 0;
 	if (max_chrom_label_size > 5)
 		rotate = 90;
 	elseif ((lower_boundary <= ratio) && (ratio <= upper_boundary))
-		% set rotate to 45 here to use.
+		%// set rotate to 45 here to use.
 		rotate = 90;
 	elseif (ratio < lower_boundary)
 		rotate = 90;
 	end;
 
-	% font definitions
+	%// font definitions
 	linear_axis_font_size = 10;
 	linear_gca_font_size = 12;
 	linear_chr_font_size = 12;
@@ -100,14 +105,14 @@ function [linear_fig_height,linear_fig_width,linear_left_padding,linear_chr_gap,
 	fprintf('chr font size:%d, axis font size:%d px, gca font size:%d\n',linear_chr_font_size,linear_axis_font_size,linear_gca_font_size);
 
 
-%%%
-%%% Stacked figure.
-%%%
+%%%//
+%%%// Stacked figure.
+%%%//
 	fprintf('-----------------------------------Stacked Figure -----------------------------------------------\n');
 
-	stacked_plot_height = 205; % size in pixels of each cartoon height including gap
-	stacked_fig_height_px = stacked_plot_height*num_chrs_used; % the total height of the linear figure in px
-	% normalize height according to dpi
+	stacked_plot_height = 205;                                 %// size in pixels of each cartoon height including gap
+	stacked_fig_height_px = stacked_plot_height*num_chrs_used; %// the total height of the linear figure in px
+	%// normalize height according to dpi
 	stacked_fig_height = stacked_fig_height_px / system_dpi;
 
 	stacked_fig_width_px = 2400;
