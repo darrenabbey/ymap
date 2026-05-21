@@ -42,9 +42,4 @@ tempdir=$(mktemp -d);
 		fi
 		counter=1;
 	done < $1
-
-#========================
-# Cleanup
-rm $tempdir/*;
-rmdir $tempdir;
 fi

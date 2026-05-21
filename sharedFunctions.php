@@ -237,17 +237,17 @@ function queue_end($user,$project,$genome,$hapmap,$message) {
 	$line = date('Y-m-d H:i:s');
 	$line = $line.' - user:'.$user;
 	if (!empty($project)) {
-		if (exists($filePath."/users/".$user."/projects/".$project."/salt.txt")) {
+		if (file_exists($filePath."/users/".$user."/projects/".$project."/salt.txt")) {
 			$salt_string = trim(file_get_contents($filePath."/users/".$user."/projects/".$project."/salt.txt"));
 			$line = $line.' - project:'.$project.' - '.$salt_string;
 		}
 	} elseif (!empty($genome)) {
-		if (exists($filePath."/users/".$user."/genomes/".$genome."/salt.txt")) {
+		if (file_exists($filePath."/users/".$user."/genomes/".$genome."/salt.txt")) {
 			$salt_string = trim(file_get_contents($filePath."/users/".$user."/genomes/".$genome."/salt.txt"));
 			$line = $line.' - genome:'.$genome.' - '.$salt_string;
 		}
 	} elseif (!empty($hapmap)) {
-		if (exists($filePath."/users/".$user."/hapmaps/".$hapmap."/salt.txt")) {
+		if (file_exists($filePath."/users/".$user."/hapmaps/".$hapmap."/salt.txt")) {
 			$salt_string = trim(file_get_contents($filePath."/users/".$user."/hapmaps/".$hapmap."/salt.txt"));
 			$line = $line.' - hapmap:'.$hapmap.' - '.$salt_string;
 		}

@@ -76,8 +76,4 @@ CALLDIR=${PWD};
 #
 #	$python_exec $mainDir"scripts_genomes/scripts/repetitiveness.make_dictionary.py" reference.fasta $kmer_length $tempdir > $RepetDictionary;
 
-#========================
-# Cleanup
-rm $tempdir/*;
-rmdir $tempdir;
 fi

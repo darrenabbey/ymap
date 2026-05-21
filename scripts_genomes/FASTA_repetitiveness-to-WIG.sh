@@ -56,19 +56,12 @@ tempdir=$(mktemp -d);
 	split -l 2 reference.fasta contig.;
 	cd $CALLDIR;
 
-	# process all contig files.
+	# process all contig files, one after another.
 	for file in $tempdir/contig.*
 	do
-		# make wig file for each contig file, output results to standard.
 		$python_exec $mainDir"scripts_genomes/scripts/repetitiveness.make_WIG.single-entry.py" $tempdir/dictionary.txt $file $kmer_length $tempdir $file.wig;
 	done;
-#	wait;
 
 	# output results to final wig file.
 	cat $tempdir/*.wig > $genomeWIG;
-
-#========================
-# Cleanup
-rm $tempdir/*;
-rmdir $tempdir;
 fi

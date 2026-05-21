@@ -45,9 +45,4 @@ tempdir=$(mktemp -d);
 
 	# Replace original dictionary with cleaned version.
 	cp $tempdir/$base_name1 $RepetDictionary;
-
-#========================
-# Cleanup
-rm $tempdir/*;
-rmdir $tempdir;
 fi

@@ -91,8 +91,4 @@ CALLDIR=${PWD};
 #	# arg[2] : kmer length.
 #	# makes "output.txt" in tempdir.
 
-#========================
-# Cleanup
-rm $tempdir/*;
-rmdir $tempdir;
 fi

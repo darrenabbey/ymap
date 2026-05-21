@@ -92,8 +92,12 @@ fi
 echo -e "\n\t============================================================================================== 5" >> $logName;
 
 ## Generate version of FASTA genome file to have single-line entries.
-echo -e "\tReformatting genome FASTA file into single-line entries." >> $logName;
-bash $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $genomeDirectory$FASTA > $genomeDirectory$FASTA2;
+if [ -e $genomeDirectory$FASTA2 ]; then
+	echo -e "\tFASTA already reformated to single-line entries." >> $logName;
+else
+	echo -e "\tReformating FASTA into single-line entries." >> $logName;
+	bash $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $genomeDirectory$FASTA > $genomeDirectory$FASTA2;
+fi;
 
 echo -e "\n\t============================================================================================== 5a" >> $logName;
 
@@ -330,8 +334,8 @@ echo -e "Reformatting standard genome fragments FASTA file." >> $condensedLog;
 echo -e "\tReformatting digested FASTA file => single-line per sequence fragment." >> $logName;
 bash $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $standard_bin_FASTA > $standard_bin_FASTA.2;
 bash $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $standard_bin_SNPs_FASTA > $standard_bin_SNPs_FASTA.2;
-rm $standard_bin_FASTA;		mv $standard_bin_FASTA.2	$standard_bin_FASTA;
-rm $standard_bin_SNPs_FASTA;	mv $standard_bin_SNPs_FASTA.2	$standard_bin_SNPs_FASTA;
+mv $standard_bin_FASTA.2 $standard_bin_FASTA;
+mv $standard_bin_SNPs_FASTA.2 $standard_bin_SNPs_FASTA;
 
 outputFile=$genomeDirectory$FASTAname".GC_ratios.standard_bins.txt";
 if [ -e $outputFile ]
@@ -352,7 +356,7 @@ echo -e "\n\t-------------------------------------------------------------------
 echo -e "Reformatting digested genome fragments FASTA file." >> $condensedLog;
 echo -e "\tReformatting digested FASTA file => single-line per sequence fragment." >> $logName;
 bash $main_dir"scripts_seqModules/FASTA_reformat_1.sh" $ddRADseq_FASTA > $ddRADseq_FASTA.2;
-rm $ddRADseq_FASTA;		mv $ddRADseq_FASTA.2 		$ddRADseq_FASTA;
+mv $ddRADseq_FASTA.2 $ddRADseq_FASTA;
 
 outputFile=$genomeDirectory$FASTAname".GC_ratios.MfeI_MboI.txt";
 if [ -e $outputFile ]
