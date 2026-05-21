@@ -110,7 +110,7 @@ if (Make_cartoon)
 
 				set(gca,'FontSize',gca_stacked_font_size);
 				if (chr == find(chr_posY == max(chr_posY)))
-					title([ genome ' Repetitiveness map'],'Interpreter','none','FontSize',stacked_title_size);
+					title([ genome ' Chromosome Cartoons'],'Interpreter','none','FontSize',stacked_title_size);
 				end;
 			end;
 
