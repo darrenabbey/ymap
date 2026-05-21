@@ -62,7 +62,7 @@
 				set(gca,'YTick',[]);
 				set(gca,'YTickLabel',[]);
 				%set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
-				set(gca,'XTick,[]);
+				set(gca,'XTick',[]);
 				set(gca,'XTickLabel',[]);
 				%% end final reformatting.
 
@@ -78,7 +78,7 @@
 					if (chr_figReversed(chr) == 0)
 						text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
 					else
-						text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_>
+						text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
 					end;
 				end;
 			end;
