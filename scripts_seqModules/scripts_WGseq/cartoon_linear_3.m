@@ -179,7 +179,9 @@ end;
 if (xcen != 0)
 	if (xcen-dx < dx)
 		plot(poly_ctl_x,poly_ctl_y, 'Color', [0 0 0]);						%// cen-top-left-to-leftEnd (curve).
+		plot([xcen xcen], [poly_ctl_y(end) maxY-dy], 'Color', [0 0 0]);				%// curve offset top.
 		plot(poly_cbl_x,poly_cbl_y, 'Color', [0 0 0]);						%// cen-bottom-left-to-leftEnd (curve).
+		plot([xcen xcen], [poly_cbl_y(1) dy], 'Color', [0 0 0]);				%// curve offset bottom.
 		plot([0 0], [poly_ctl_y(end) poly_cbl_y(1)], 'Color', [0 0 0]);				%// left edge (line)
 	else
 		plot(poly1x,     poly1y,     'Color', [0 0 0]);						%// left-bottom-corner (curve).
@@ -192,8 +194,10 @@ if (xcen != 0)
 	end;
 	if (xcen+dx > rightEnd-dx)
 		plot(poly_ctr_x,poly_ctr_y, 'Color', [0 0 0]);						%// cen-top-right-to-rightEnd (curve).
+		plot([xcen xcen], [poly_ctr_y(1) maxY-dy], 'Color', [0 0 0]);				%// curve offset top.
 		plot(poly_cbr_x,poly_cbr_y, 'Color', [0 0 0]);						%// cen-bottom-right-to-rightEnd (curve).
-		plot([rightEnd rightEnd], [poly_ctl_y(1) poly_cbr_y(end)], 'Color', [0 0 0]);		%// right edge (line).
+		plot([xcen xcen], [poly_cbr_y(end) dy], 'Color', [0 0 0]);				%// curve offset bottom.
+		plot([rightEnd rightEnd], [poly_ctr_y(1) poly_cbr_y(end)], 'Color', [0 0 0]);		%// right edge (line).
 	else
 		plot(poly3x,     poly3y,     'Color', [0 0 0]);						%// right-bottom-corner (curve).
 		plot(poly4x,     poly4y,     'Color', [0 0 0]);						%// right-top-corner (curve).
