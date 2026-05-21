@@ -71,7 +71,7 @@ function [linear_fig_height,linear_fig_width,linear_left_padding,linear_chr_gap,
 	chr_size_cleaned = [];
 	for chr = 1:length(chr_in_use)
 		if (chr_in_use(chr) == 1)
-			chr_size_cleaned[] = chr_size(chr);
+			chr_size_cleaned(end+1) = chr_size(chr);
 		end;
 	end;
 

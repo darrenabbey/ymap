@@ -1,4 +1,4 @@
-function [] = Liftoff_cartoon(main_dir,genomeUser,genome,kmerLength,kmerStep);
+function [] = cartoon_plot(main_dir,genomeUser,genome,kmerLength,kmerStep);
 addpath([pwd() '/../']);
 addpath([pwd() '/../scripts_seqModules/']);
 addpath([pwd() '/../scripts_seqModules/scripts_WGseq/']);
@@ -33,16 +33,16 @@ if exist([main_dir 'users/' genomeUser '/genomes/' genome '/figure_options.txt']
 
 	option         = figure_options{4,1};
 	if strcmp(option,'False')
-		Make_liftoff_cartoon = false;
+		Make_cartoon = false;
 	else
-		Make_liftoff_cartoon = true;
+		Make_cartoon = true;
 	end;
 else
-	Make_liftoff_cartoon = true;
+	Make_cartoon = true;
 end;
 
-if (Make_liftoff_cartoon)
-	fprintf([  '$$$ Making Liftoff cartoon figure.\n']);
+if (Make_cartoon)
+	fprintf([  '$$$ Making cartoon figure.\n']);
 
 	[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 	Aneuploidy = [];
@@ -438,9 +438,9 @@ if (Make_liftoff_cartoon)
 		system(['chmod 774 ' genomeDir 'fig.cartoon.2.png']);
 	end;
 
-	fprintf([  '$$$ Liftoff-cartoon figures saved.\n']);
+	fprintf([  '$$$ Cartoon figures saved.\n']);
 else
-	fprintf([  '$$$ Not making Liftoff-cartoon figures.\n']);
+	fprintf([  '$$$ Not making cartoon figures.\n']);
 end;
 
 end

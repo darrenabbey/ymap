@@ -249,7 +249,7 @@ else
 	echo -e "\tpkg load matgeom;" >> $outputName;
 	echo -e "\tdiary('"$genomeDirectory"octave.cartoon.log');" >> $outputName;
 	echo -e "\tcd "$main_dir"scripts_genomes/;" >> $outputName;
-	echo -e "\tCartoon_plot('"$main_dir"','"$user"','"$genome"','"$skew_kmerLength"','"$skew_kmerStep"');" >> $outputName;
+	echo -e "\tcartoon_plot('"$main_dir"','"$user"','"$genome"','"$skew_kmerLength"','"$skew_kmerStep"');" >> $outputName;
 	echo -e "end" >> $outputName;
 
 	scriptText=$(printf "%s " $(sed 's/^/\n\t|\t/' "$outputName"))
