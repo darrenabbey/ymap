@@ -62,13 +62,34 @@ if (Make_cartoon)
 	source([pwd() '/custom_plots_section2.m']);
 	%%
 
+	% Draw chromosomes in order defined in figure_definitions.txt file.
+	for chr_to_draw  = 1:length(chr_order)
+		chr = chr_order(chr_to_draw);
+		if (chr_in_use(chr) == 1)
+			if (Standard_display)
+
+	%%
+	source([pwd() '/custom_plots_section3.m']);
+	%%
+
+
 				%%==================================================================================
 				%% custom stacked plot section.
 				%% end plot section.
 				%%==================================================================================
 
+
 	%%
-	source([pwd() '/custom_plots_section3.m']);
+	source([pwd() '/custom_plots_section4.m']);
+	%%
+
+			end;
+
+			%% Linear figure draw section
+			if (Linear_display)
+
+	%%
+	source([pwd() '/custom_plots_section5.m']);
 	%%
 
 				%%==================================================================================
@@ -77,8 +98,25 @@ if (Make_cartoon)
 				%%==================================================================================
 
 	%%
-	source([pwd() '/custom_plots_section4.m']);
+	source([pwd() '/custom_plots_section6.m']);
 	%%
+
+			end;
+
+			if (Standard_display)
+				% shift back to main figure generation.
+				figure(Standard_fig);
+				hold on;
+
+				set(gca,'FontSize',gca_stacked_font_size);
+				if (chr == find(chr_posY == max(chr_posY)))
+					title([ genome ' Repetitiveness map'],'Interpreter','none','FontSize',stacked_title_size);
+				end;
+			end;
+
+			first_chr = false;
+		end;
+	end;
 
 	if (Standard_display)
 		% Save primary genome figure.

@@ -1,4 +1,30 @@
-			%% show annotation locations (linear)
+				%axes labels etc.
+				hold off;
+
+				% standard : limit x-axis to range of chromosome.
+				xlim([0,chr_size(chr)/bases_per_bin]);
+
+				% modify y axis limits to show annotation locations if any are provided.
+				if (length(annotations) > 0)
+					ylim([-maxY/10*1.5,maxY]);
+				else
+					ylim([0,maxY]);
+				end;
+
+				set(gca,'TickLength',[TickSize 0]);
+				set(gca,'YTick',[]);
+				set(gca,'YTickLabel',[]);
+				set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
+				set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
+
+				%% chromosome cartoon titles for standard figure.
+				if (chr_figReversed(chr) == 0)
+					text(-50000/5000/2*3, maxY/2, chr_label{chr}, 'rotation',90, 'horizontalalignment', 'center', 'verticalalignment', 'bottom', 'fontsize', stacked_chr_font_size);
+				else
+					text(-50000/5000/2*3, maxY/2, [chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'rotation',90, 'horizontalalignment', 'center', 'verticalalignment', 'bottom', 'fontsize',stacked_chr_font_size);
+				end;
+
+				% show annotation locations (standard)
 				if (show_annotations) && (length(annotations) > 0)
 					hold on;
 					plot([leftEnd rightEnd], [-maxY/10*0.75 -maxY/10*0.75],'color',[0 0 0]);
@@ -22,78 +48,23 @@
 									end;
 								end;
 							elseif (strcmp(annotation_type{i},'block') == 1)
-								fill([annotationCenter-5 annotationCenter-5 annotationCenter+5 annotationCenter+5], ...
-									[-maxY/10*0.75+0.25 -maxY/10*0.75-0.25 -maxY/10*0.75-0.25 -maxY/10*0.75+0.25], ...
-									annotation_fillcolor{i}, ...
-									'edgecolor',    annotation_edgecolor{i});
-							elseif (strcmp(annotation_type{i},'box2') == 1)
 								fill([annotationStart annotationStart annotationEnd annotationEnd], ...
-									[-maxY/10*0.75+0.25 -maxY/10*0.75-0.25 -maxY/10*0.75-0.25 -maxY/10*0.75+0.25], ...
+									[-maxY/10*0.75+0.75 -maxY/10*0.75-0.75 -maxY/10*0.75-0.75 -maxY/10*0.75+0.75], ...
 									annotation_fillcolor{i}, ...
 									'edgecolor',    annotation_edgecolor{i});
 							elseif (strcmp(annotation_type{i},'arrowL') == 1)
-								fill([annotationCenter-5 annotationCenter+5 annotationCenter+5], ...
-									[-maxY/10*0.75 -maxY/10*0.75-0.25 -maxY/10*0.75+0.25], ...
+								fill([annotationStart annotationStart annotationEnd annotationEnd], ...
+									[-maxY/10*0.75 -maxY/10*0.75 -maxY/10*0.75-0.75 -maxY/10*0.75+0.75], ...
 									annotation_fillcolor{i}, ...
 									'edgecolor',       annotation_edgecolor{i});
 							elseif (strcmp(annotation_type{i},'arrowR') == 1)
-								fill([annotationCenter-5 annotationCenter-5 annotationCenter+5], ...
-									[-maxY/10*0.75+0.25 -maxY/10*0.75-0.25 -maxY/10*0.75], ...
+								fill([annotationStart annotationStart annotationEnd annotationEnd], ...
+									[-maxY/10*0.75+0.75 -maxY/10*0.75-0.75 -maxY/10*0.75 -maxY/10*0.75], ...
 									annotation_fillcolor{i}, ...
 									'edgecolor',       annotation_edgecolor{i});
-                                                        end;
+							end;
 						end;
 					end;
 					hold off;
 				end;
-				%% end show annotation locations (linear)
-
-				%% Final formatting stuff.
-				xlim([0,chr_size(chr)/bases_per_bin]);
-
-				% modify y axis limits to show annotation locations if any are provided.
-				if (length(annotations) > 0)
-					ylim([-maxY/10*1.5,maxY]);
-				else
-					ylim([0,maxY]);
-				end;
-
-				set(gca,'TickLength',[Linear_TickSize 0]);
-				set(gca,'YTick',[]);
-				set(gca,'YTickLabel',[]);
-				%set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
-				set(gca,'XTick',[]);
-				set(gca,'XTickLabel',[]);
-				%% end final reformatting.
-
-				% Adding chromosome titles above the middle of the chromosome cartoons.
-				% note: adding title is done in the end since if placed earlier in the code somehow the plot function changes the title position.
-				if (rotate == 0 && chr_size(chr) ~= 0 )
-					if (chr_figReversed(chr) == 0)
-						title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
-					else
-						title([chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
-					end;
-				else
-					if (chr_figReversed(chr) == 0)
-						text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
-					else
-						text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
-					end;
-				end;
-			end;
-
-			if (Standard_display)
-				% shift back to main figure generation.
-				figure(Standard_fig);
-				hold on;
-
-				set(gca,'FontSize',gca_stacked_font_size);
-				if (chr == find(chr_posY == max(chr_posY)))
-					title([ genome ' Repetitiveness map'],'Interpreter','none','FontSize',stacked_title_size);
-				end;
-			end;
-
-			first_chr = false;
-		end;
-	end;
+				% end show annotation locations (standard)
