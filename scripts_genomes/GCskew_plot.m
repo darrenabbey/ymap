@@ -74,7 +74,7 @@ if (Make_figure_skew)
 
 	% Makes sure chr_name{chr} elements aren't null, which causes next section to have problems.
 	for chr = 1:num_chrs
-		if (size(chr_name{chr}) == 0)
+		if (chr_in_use(chr) == 0)
 			chr_name{chr} = "";
 		end;
 	end;
