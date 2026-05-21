@@ -13,11 +13,12 @@
 
 
 				%%// standard : show centromere.
-				if (chr_size(chr) < 4000)
-					Centromere_format = 0;
-				else
+				%if (chr_size(chr) < 4000)
+				%	Centromere_format = 0;
+				%else
 					Centromere_format = Centromere_format_default;
-				end;
+				%end;
+
 				x1       = cen_start(chr)/bases_per_bin;
 				x2       = cen_end(chr)/bases_per_bin;
 				leftEnd  = 0;                                   %// 0.5*(5000/bases_per_bin);
