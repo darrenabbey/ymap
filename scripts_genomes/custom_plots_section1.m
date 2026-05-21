@@ -48,9 +48,10 @@
 				cen_end        (figure_details(i).chr) = centromeres(figure_details(i).chr).end;
 			else
 				%%// Reset values to zero for unused chromosomes.
-				chr_sizes(figure_details(i).chr).size    = 0;
-				centromeres(figure_details(i).chr).start = 0;
-				centromeres(figure_details(i).chr).end   = 0;
+				chr_sizes   (figure_details(i).chr).size  = 0;
+				centromeres (figure_details(i).chr).start = 0;
+				centromeres (figure_details(i).chr).end   = 0;
+				chr_in_use  (figure_details(i).chr)       = 0;
 			end;
 		end;
 	end;
