@@ -1,6 +1,7 @@
 completion_times.log
 local_installed_programs.sh
 config.sh
+ymap_daemon.php
 .DS_Store
 .*
 !.htaccess
