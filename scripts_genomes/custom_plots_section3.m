@@ -29,7 +29,7 @@
 					source([pwd() '/../scripts_seqModules/scripts_WGseq/cartoon_stacked_1.m']);
 				elseif (Centromere_format == 2) %// sausage! (standard plot)
 					source([pwd() '/../scripts_seqModules/scripts_WGseq/cartoon_stacked_2.m']);
-				elseif (Centromere_format == 2) %// improved sausage!
+				elseif (Centromere_format == 3) %// improved sausage!
 					source([pwd() '/../scripts_seqModules/scripts_WGseq/cartoon_stacked_3.m']);
 				end;
 				%%// standard : end show centromere.

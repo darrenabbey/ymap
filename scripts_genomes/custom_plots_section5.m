@@ -21,7 +21,7 @@
 				elseif (Centromere_format == 1)
 					source([pwd() '/../scripts_seqModules/scripts_WGseq/cartoon_linear_1.m']);
 				elseif (Centromere_format == 2) %// sausage! (linear plot)
-					source([pwd() '/../scripts_seqModules/scripts_WGseq/cartoon_linear_3.m']);  %// TESTING
+					source([pwd() '/../scripts_seqModules/scripts_WGseq/cartoon_linear_2.m']);
 				elseif (Centromere_format == 3) %// improved sausage!
 					source([pwd() '/../scripts_seqModules/scripts_WGseq/cartoon_linear_3.m']);
 				end;

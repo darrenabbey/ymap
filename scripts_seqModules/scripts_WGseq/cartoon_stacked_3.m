@@ -1,22 +1,41 @@
-%%//
-%%// Rounded chromosome cartoons that will be the default for YMAP2.
-%%//
-
 box off;
 set(gca,'visible','off');
 
-%%//cen_tel_Yindent  = maxY/4;
+%// Make my own x-axis tick labels
+XTickValues = 0:(40*(5000/bases_per_bin)):(chr_size(chr)/bases_per_bin);   %// limits tic values to size of chromosome in figure.
+XTickValLength = length(XTickValues)
+tickPercent = 0.75;
+if (length(annotations) > 0)
+	y = zeros(size(XTickValues))-maxY/10*(1.5+tickPercent);
+else
+	y = zeros(size(XTickValues))-maxY/10*1.5;
+end;
 
-%%// Configuration of chromosome cartoon curves.
+XTickLabels = cell(1,XTickValLength);
+for i = 1:XTickValLength
+	XTickLabels{i} = num2str((i-1)*0.2, "%5.1f");
+end;
+
+%// Make my own x-axis ticks.
+if (length(annotations) > 0)
+	for i = 1:length(XTickValues)
+		plot([XTickValues(i) XTickValues(i)], [-maxY/10*1.5 -maxY/10*(1.5+tickPercent)], 'Color', [0 0 0]);
+	end;
+else
+	for i = 1:length(XTickValues)
+		plot([XTickValues(i) XTickValues(i)], [0 -maxY/10*tickPercent], 'Color', [0 0 0]);
+	end;
+end;
+
+%// configuration of chromosome cartoon curves.
 res    = 64;
-Xscale = 40;  %// Arbitrary value that leads to good looking curves on linear view. Stacked view may need a different number.
+Xscale = 7;   %// Arbitrary value that results in smooth curved cartoons. Linear view needs a different number.
 dy     = cen_tel_Yindent;
 dx     = dy*Xscale;
 xcen   = (x1+x2)/2;
 
-%%// Calculate cartoon outlines and draw white patches to erase cartoon exterior.
+%%// Calculate cartoon outlins and draw white patches to erase cartoon exterior.
 if (xcen != 0)
-	%%// Centromere is indicated by a pinch along the cartoon.
 	if (xcen-dx < dx)
 		%%// Centromere is close enough to the left end such that the cartoon outline needs to be drawn as one curve.
 		xdelta = xcen/2;
@@ -27,10 +46,10 @@ if (xcen != 0)
 		poly_ctl_x =  poly_ctl(1:(res/2+1),1);
 		poly_ctl_y = (poly_ctl(1:(res/2+1),2)-(maxY-dy))/Xscale+(maxY-dy);
 		poly_ctl_y = (poly_ctl(1:(res/2+1),2)-(maxY-dy))/Xscale+(maxY-dy)+(maxY-max(poly_ctl_y));
-		patch([xcen; poly_ctl_x; 0], [maxY; poly_ctl_y; maxY], 'facecolor', 'w', 'edgecolor', 'w');
+		patch([0; poly_ctl_x; xcen], [maxY; poly_ctl_y; maxY], 'facecolor', 'w', 'edgecolor', 'w');
 
 		%// cen-bottom-left-to-leftEnd (curve).
-		poly_cbl   = circleToPolygon([xcen-xdelta maxY-dy xdelta], res);
+		poly_cbl   = circleToPolygon([xcen-xdelta dy xdelta], res);
 		poly_cbl_1        = poly_cbl(:,1);
 		poly_cbl_2        = poly_cbl(:,2);
 		poly_cbl_1(res+1) = poly_cbl_1(1);
@@ -81,7 +100,7 @@ if (xcen != 0)
 		patch([rightEnd; poly_ctr_x; xcen], [maxY; poly_ctr_y; maxY], 'facecolor', 'w', 'edgecolor', 'w');
 
 		%// cen-bottom-right-to-rightEnd (curve).
-		poly_cbr   = circleToPolygon([xcen+xdelta maxY-dy xdelta], res);
+		poly_cbr   = circleToPolygon([xcen+xdelta dy xdelta], res);
 		poly_cbr_1        = poly_cbr(:,1);
 		poly_cbr_2        = poly_cbr(:,2);
 		poly_cbr_1(res+1) = poly_cbr_1(1);
@@ -128,25 +147,23 @@ else
 		ydelta = xdelta*dy/dx;
 
 		%// top-left-to-rightEnd (cruve).
-		poly_top   = circleToPolygon([xdelta maxY-dy xdelta], res);	%// circle [X Y radius];
+		poly_top   = circleToPolygon([xdelta maxY-dy xdelta], res);     %// circle [X Y radius];
 		poly_top_x =  poly_top(1:(res/2+1),1);
 		poly_top_y = (poly_top(1:(res/2+1),2)-(maxY-dy))/Xscale+(maxY-dy);
 		poly_top_y = (poly_top(1:(res/2+1),2)-(maxY-dy))/Xscale+(maxY-dy)+(maxY-max(poly_top_y));
 		patch([0; poly_top_x; rightEnd], [maxY; poly_top_y; maxY], 'facecolor', 'w', 'edgecolor', 'w');
 
 		%// bottom-left-to-rightEnd (curve).
-		poly_bot 	  = circleToPolygon([xdelta maxY-dy xdelta], res);
+		poly_bot          = circleToPolygon([xdelta maxY-dy xdelta], res);
 		poly_bot_1        = poly_bot(:,1);
 		poly_bot_2        = poly_bot(:,2);
 		poly_bot_1(res+1) = poly_bot_1(1);
 		poly_bot_2(res+1) = poly_bot_2(1);
-		poly_bot_x	  =  poly_bot_1((res/2+1):(res+1));
-		poly_bot_y	  = (poly_bot_2((res/2+1):(res+1))-(dy))/Xscale+(dy);
+		poly_bot_x        =  poly_bot_1((res/2+1):(res+1));
+		poly_bot_y        = (poly_bot_2((res/2+1):(res+1))-(dy))/Xscale+(dy);
 		poly_bot_y        = (poly_bot_2((res/2+1):(res+1))-(dy))/Xscale+(dy)-min(poly_bot_y);
 		patch([0; poly_bot_x; rightEnd], [0; poly_bot_y; 0], 'facecolor', 'w', 'edgecolor', 'w');
 	else
-		%// *Xscale => *Xscale/maxY*4 ???
-
 		%// left-bottom corner (curve).
 		poly1  = circleToPolygon([leftEnd+dy dy dy], res);
 		poly1x = poly1((res/2+1):(res/4*3+1),1)*Xscale;
@@ -213,8 +230,8 @@ else
 	if (rightEnd < dx*2)
 		plot(poly_top_x,poly_top_y, 'Color', [0 0 0]);						%// top (curve).
 		plot(poly_bot_x,poly_bot_y, 'Color', [0 0 0]);						%// bottom (curve).
-		plot([0         0          ], [poly_top_y(1) poly_bot_y(end)], 'Color', [0 0 0]);       %// left edge (line).
-		plot([rightEnd  rightEnd   ], [poly_top_y(1) poly_bot_y(end)], 'Color', [0 0 0]);       %// right edge (line).
+		plot([0         0          ], [poly_top_y(1) poly_bot_y(end)], 'Color', [0 0 0]);	%// left edge (line).
+		plot([rightEnd  rightEnd   ], [poly_top_y(1) poly_bot_y(end)], 'Color', [0 0 0]);	%// right edge (line).
 	else
 		plot(poly1x,poly1y, 'Color', [0 0 0]);							%// left-bottom-corner (curve).
 		plot(poly2x,poly2y, 'Color', [0 0 0]);							%// left-top-corner (curve).

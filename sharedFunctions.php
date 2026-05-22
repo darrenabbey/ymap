@@ -50,7 +50,7 @@ function log_stuff($user,$project,$hapmap,$genome,$filename,$message) {
 		if (!empty($genome)) {     $line = $line.' - genome:'.$genome;     }
 		if (!empty($filename)) {   $line = $line.' - '.$filename;          }
 		if (!empty($message)) {    $line = $line.' - "'.$message.'"';      }
-		file_put_contents($log_file, $line . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, $line.PHP_EOL, FILE_APPEND);
 	} else {
 		$line = date('Y-m-d H:i:s').' - IP:[null] - SessionID:[null]';
 		if (!empty($user)) {       $line = $line.' - user:'.$user;         }
@@ -59,7 +59,7 @@ function log_stuff($user,$project,$hapmap,$genome,$filename,$message) {
 		if (!empty($genome)) {     $line = $line.' - genome:'.$genome;     }
 		if (!empty($filename)) {   $line = $line.' - '.$filename;          }
 		if (!empty($message)) {    $line = $line.' - "'.$message.'"';      }
-		file_put_contents($log_file, $line . PHP_EOL, FILE_APPEND);
+		file_put_contents($log_file, $line.PHP_EOL, FILE_APPEND);
 	}
 }
 
@@ -107,7 +107,7 @@ function queue_init($user,$project,$genome,$hapmap,$message) {
 	}
 	$line = $line.' - init';
 	if (!empty($message)) {   $line = $line.' - '.$message;           }
-	file_put_contents($log_file, $line . PHP_EOL, FILE_APPEND);
+	file_put_contents($log_file, $line.PHP_EOL, FILE_APPEND);
 }
 function queue_reinit($user,$project,$genome,$hapmap,$message) {
 	// find main Ymap directory, by removing possible ymap subdirectories from path of calling script.
@@ -167,7 +167,7 @@ function queue_reinit($user,$project,$genome,$hapmap,$message) {
 	}
 	$line = $line.' - init';
 	if (!empty($message)) {   $line = $line.' - '.$message;           }
-	file_put_contents($log_file, $line . PHP_EOL, FILE_APPEND);
+	file_put_contents($log_file, $line.PHP_EOL, FILE_APPEND);
 }
 function queue_start($user,$project,$genome,$hapmap,$message) {
 	// find main Ymap directory, by removing possible ymap subdirectories from path of calling script.
@@ -206,7 +206,7 @@ function queue_start($user,$project,$genome,$hapmap,$message) {
 	}
 	$line = $line.' - start';
 	if (!empty($message)) {   $line = $line.' - '.$message;           }
-	file_put_contents($log_file, $line . PHP_EOL, FILE_APPEND);
+	file_put_contents($log_file, $line.PHP_EOL, FILE_APPEND);
 }
 function queue_end($user,$project,$genome,$hapmap,$message) {
 	// find main Ymap directory, by removing possible ymap subdirectories from path of calling script.
@@ -230,9 +230,6 @@ function queue_end($user,$project,$genome,$hapmap,$message) {
 		chmod($log_file, 0774);
 	}
 
-
-	$message = $message."; ".$filePath;
-
 	// add comment to log file.
 	$line = date('Y-m-d H:i:s');
 	$line = $line.' - user:'.$user;
@@ -253,8 +250,10 @@ function queue_end($user,$project,$genome,$hapmap,$message) {
 		}
 	}
 	$line = $line.' - end';
-	if (!empty($message)) {   $line = $line.' - '.$message;           }
-	file_put_contents($log_file, $line . PHP_EOL, FILE_APPEND);
+	if (!empty($message)) {
+		$line = $line.' - '.$message;
+	}
+	file_put_contents($log_file, $line.PHP_EOL, FILE_APPEND);
 }
 
 function getColors($user,$project) {

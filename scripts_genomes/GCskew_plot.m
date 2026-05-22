@@ -7,7 +7,7 @@ set(0,'DefaultFigureVisible','off');
 
 %% ========================================================================
 
-Centromere_format_default   = 2;
+Centromere_format_default   = 3;
 Yscale_nearest_even_ploidy  = true;
 ChrNum                      = true;
 show_annotations            = true;

@@ -19,11 +19,11 @@ DESC="Daemon for the YMAP data processing queue.";
 PIDFILE="/var/run/${NAME}.pid";
 LOGFILE="/var/log/${NAME}.log";
 
-DAEMON="/usr/bin/php"
-DAEMON_OPTS="/var/www/html/ymap/ymap_daemon.php"
+DAEMON="/usr/bin/php";
+DAEMON_OPTS="/var/www/html/ymap/ymap_daemon.php";
 
-START_OPTS="--start --background --make-pidfile --pidfile ${PIDFILE} --exec ${DAEMON} ${DAEMON_OPTS}"
-STOP_OPTS="--stop --pidfile ${PIDFILE}"
+START_OPTS="--start --background --make-pidfile --pidfile ${PIDFILE} --exec ${DAEMON} ${DAEMON_OPTS}";
+STOP_OPTS="--stop --pidfile ${PIDFILE}";
 
 test -x $DAEMON || exit 0
 
@@ -37,7 +37,7 @@ case "$1" in
         ;;
     stop)
         echo -n "Stopping $DESC: "
-        start-stop-daemon $STOP_OPTS
+        start-stop-daemon $STOP_OPTS >> $LOGFILE
         echo -e "$NAME."
         rm -f $PIDFILE
         ;;
