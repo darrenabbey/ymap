@@ -1,18 +1,32 @@
 #!/bin/bash
 set -e
 
-# Installation
-# - Move this to /etc/init.d/ymap_daemon
-# - chmod +x this
+#==============================================================================
+#  Installation:
 #
-# Starting and stopping
-# - Start: `service ymap_daemon start` or `/etc/init.d/ymap_daemon start`
-# - Stop: `service ymap_daemon stop` or `/etc/init.d/ymap_daemon stop`
-
-#ref http://till.klampaeckel.de/blog/archives/94-start-stop-daemon,-Gearman-and-a-little-PHP.html
-#ref http://unix.stackexchange.com/questions/85033/use-start-stop-daemon-for-a-php-server/85570#85570
-#ref http://serverfault.com/questions/229759/launching-a-php-daemon-from-an-lsb-init-script-w-start-stop-daemon
-#ref https://www.bram.us/2013/11/11/run-a-php-script-as-a-servicedaemon-using-start-stop-daemon/
+#	1. Adjust this to the location of your "ymap_daemon.php" file.
+DAEMON_OPTS="/var/www/html/ymap/ymap_daemon.php";
+#
+#	2. Save this file to: "/etc/init.d/ymap_daemon"
+#
+#	3. chmod +x "/etc/init.d/ymap_daemon"
+#
+#------------------------------------------------------------------------------
+#
+# Starting and stopping the daemon:
+#
+#	Start: `service ymap_daemon start` or `/etc/init.d/ymap_daemon start`
+#	Stop: `service ymap_daemon stop` or `/etc/init.d/ymap_daemon stop`
+#
+#------------------------------------------------------------------------------
+#
+# References for this code.
+#	http://till.klampaeckel.de/blog/archives/94-start-stop-daemon,-Gearman-and-a-little-PHP.html
+#	http://unix.stackexchange.com/questions/85033/use-start-stop-daemon-for-a-php-server/85570#85570
+#	http://serverfault.com/questions/229759/launching-a-php-daemon-from-an-lsb-init-script-w-start-stop-daemon
+#	https://www.bram.us/2013/11/11/run-a-php-script-as-a-servicedaemon-using-start-stop-daemon/
+#
+#------------------------------------------------------------------------------
 
 NAME="ymap_daemon";
 DESC="Daemon for the YMAP data processing queue.";
@@ -20,7 +34,6 @@ PIDFILE="/var/run/${NAME}.pid";
 LOGFILE="/var/log/${NAME}.log";
 
 DAEMON="/usr/bin/php";
-DAEMON_OPTS="/var/www/html/ymap/ymap_daemon.php";
 
 START_OPTS="--start --background --make-pidfile --pidfile ${PIDFILE} --exec ${DAEMON} ${DAEMON_OPTS}";
 STOP_OPTS="--stop --pidfile ${PIDFILE}";
