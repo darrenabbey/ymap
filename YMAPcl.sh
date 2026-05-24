@@ -20,6 +20,16 @@ if [ -z $1 ]; then
 	echo -e "#        genomes (user)      : Lists installed genomes.";
 	echo -e "#        hapmaps (user)      : Lists installed hapmaps.";
 	echo -e "#        complete (user)     : Lists figure images for completed projects.";
+	echo -e "#        queue               : Shows the status of the YMAP processing queue.";
+	echo -e "#                              \e[31mNot yet implemented!\e[0m";
+	echo -e "#        queue delete        : Force ends an item from the processing queue. To be used in case";
+	echo -e "#                              there is ever an improperly terminated process that somehow doesn't";
+	echo -e "#                              lead to an end entry in the queue log, leading to the queue being";
+	echo -e "#                              hung/stuck."
+	echo -e "#                              \e[31mNot yet implemented!\e[0m";
+	echo -e "#        queue flush         : Cleans up resolved entries from the queue log. Should not be needed,";
+	echo -e "#                              but may be useful for managing the queue.";
+	echo -e "#                              \e[31mNot yet implemented!\e[0m";
 	echo -e "#        queue_limit         : Shows the max number of datasets to be processed in parallel.";
 	echo -e "#        queue_limit (value) : Sets the max number of datasets to be processed in parallel.";
 	echo -e "#                              \e[31mChanging this option will prompt you for your credentials to\e[0m";
@@ -31,15 +41,16 @@ if [ -z $1 ]; then
 	echo -e "#        quota               : Show per account disk quota.";
 	echo -e "#        quota (value)       : Set per account disk quota.";
 	echo -e "#";
-	echo -e "#   Commands to be written:";
-	echo -e "#        install dataset (user)  => user interface.";
-	echo -e "#        install genome (user)   => user interface.";
-	echo -e "#        build hapmap (user)     => user interface.";
-	echo -e "#        minimize dataset (user) => user interface.";
-	echo -e "#        delete dataset (user)   => user interface.";
-	echo -e "#        delete genome (user)    => user interface.";
-	echo -e "#        delete hapmap (user)    => user interface.";
-	echo -e "#        combine figures (user)";
+	echo -e "#   Other commands not yet implemented:";
+	echo -e "#        install dataset (user)   => user interface?";
+	echo -e "#        install bulk_data (user) => user interface?";
+	echo -e "#        install genome (user)    => user interface?";
+	echo -e "#        build hapmap (user)      => user interface?";
+	echo -e "#        minimize dataset (user)  => user interface?";
+	echo -e "#        delete dataset (user)    => user interface?";
+	echo -e "#        delete genome (user)     => user interface?";
+	echo -e "#        delete hapmap (user)     => user interface?";
+	echo -e "#        combine figures (user)   ???";
 	echo -e "# ";
 	echo -e $lineThick;
 else
