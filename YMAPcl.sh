@@ -12,23 +12,33 @@ if [ -z $1 ]; then
 	echo -e "# Command syntax is : 'bash YMAPcl.sh [command] (option1) (option2) (...)'";
 	echo -e "# ";
 	echo -e "#   Commands:";
-	echo -e "#        users           : List registered users.";
-	echo -e "#        user (user)     : Show user account information.";
-	echo -e "#        status          : Shows status of ymap_daemon service.";
-	echo -e "#        status (user)   : Shows data processing status.";
-	echo -e "#        projects (user) : Lists installed projects.";
-	echo -e "#        genomes (user)  : Lists installed genomes.";
-	echo -e "#        hapmaps (user)  : Lists installed hapmaps.";
-	echo -e "#        complete (user) : Lists figure images for completed projects.";
+	echo -e "#        users               : List registered users.";
+	echo -e "#        user (user)         : Show user account information.";
+	echo -e "#        status              : Shows status of ymap_daemon service.";
+	echo -e "#        status (user)       : Shows data processing status.";
+	echo -e "#        projects (user)     : Lists installed projects.";
+	echo -e "#        genomes (user)      : Lists installed genomes.";
+	echo -e "#        hapmaps (user)      : Lists installed hapmaps.";
+	echo -e "#        complete (user)     : Lists figure images for completed projects.";
+	echo -e "#        queue_limit         : Shows the max number of datasets to be processed in parallel.";
+	echo -e "#        queue_limit (value) : Sets the max number of datasets to be processed in parallel.";
+	echo -e "#                              \e[31mChanging this option will prompt you for your credentials to\e[0m";
+	echo -e "#                              \e[31mrestart the yamp_daemon service that manages the queue.\e[0m";
+	echo -e "#        data_limit          : Shows the max number of sequence reads to be processed at a time.";
+	echo -e "#        data_limit (value)  : Sets the max number of sequence reads to be processed at a time.";
+	echo -e "#        admin_email         : Show admin email, displayed in user interface for issues.";
+	echo -e "#        admin_email (value) : Set admin email, displayed in user interface for issues.";
+	echo -e "#        quota               : Show per account disk quota.";
+	echo -e "#        quota (value)       : Set per account disk quota.";
 	echo -e "#";
 	echo -e "#   Commands to be written:";
-	echo -e "#        install dataset (user)";
-	echo -e "#        install genome (user)";
-	echo -e "#        build hapmap (user)";
-	echo -e "#        minimize dataset (user)";
-	echo -e "#        delete dataset (user)";
-	echo -e "#        delete genome (user)";
-	echo -e "#        delete hapmap (user)";
+	echo -e "#        install dataset (user)  => user interface.";
+	echo -e "#        install genome (user)   => user interface.";
+	echo -e "#        build hapmap (user)     => user interface.";
+	echo -e "#        minimize dataset (user) => user interface.";
+	echo -e "#        delete dataset (user)   => user interface.";
+	echo -e "#        delete genome (user)    => user interface.";
+	echo -e "#        delete hapmap (user)    => user interface.";
 	echo -e "#        combine figures (user)";
 	echo -e "# ";
 	echo -e $lineThick;
@@ -249,6 +259,146 @@ else
 				echo -e "#\t\e[41mError: User name not registered.\e[0m";
 			fi;
 			echo -e "#";
+		fi;
+	    ;;
+	    "delete")
+		if [ -z $2 ]; then
+			echo -e "# YMAP2 commandline : Delete project/genome/hapmap/user.";
+			echo -e $lineThin;
+			echo -e "#";
+			echo -e "#\tUsage1: bash YMAPcl.sh delete \e[31m(project) (user)\e[0m";
+			echo -e "#\tUsage2: bash YMAPcl.sh delete \e[31m(genome) (user)\e[0m";
+			echo -e "#\tUsage3: bash YMAPcl.sh delete \e[31m(hapmap) (user)\e[0m";
+			echo -e "#\tUsage4: bash YMAPcl.sh delete \e[31m(user)\e[0m";
+		else
+			case $2 in
+			    "project")
+				if [ -z $3 ]; then
+					echo -e "# YMAP2 commandline : Delete project.";
+					echo -e $lineThin;
+					echo -e "#";
+					echo -e "#\tUsage1: bash YMAPcl.sh delete project \e[31m(user)\e[0m";
+				else
+					### https://www.geeksforgeeks.org/linux-unix/shell-scripting-dialog-boxes/
+					function DialogGen() {
+						# dialog --title "Delete Project" --msgbox 'Start of user interface to delete an installed project.' 10 40;
+						# dialog --checklist 'checklist' 15 10 10 'potato'  5 'on'  'carrot' 2 'off' 'grape' 3 'on' 'cabbage' 4 'off';
+						dialog --menu "Select project to delete." 12 45 25 1 "apple" 2 "banana" 3 "grapes" 4 "oranges";
+					}
+					DialogGen
+					clear;
+				fi;
+			    ;;
+			    "genome")
+				if [ -z $3 ]; then
+					echo -e "# YMAP2 commandline : Delete genome.";
+					echo -e $lineThin;
+					echo -e "#";
+					echo -e "#\tUsage1: bash YMAPcl.sh delete genome \e[31m(user)\e[0m";
+				else
+					# comment.
+					echo -e " DD";
+				fi;
+			    ;;
+			    "hapmap")
+				if [ -z $3 ]; then
+					echo -e "# YMAP2 commandline : Delete hapmap.";
+					echo -e $lineThin;
+					echo -e "#";
+					echo -e "#\tUsage1: bash YMAPcl.sh delete hapmap \e[31m(user)\e[0m";
+				else
+					# comment.
+					echo -e " DD";
+				fi;
+			    ;;
+			    *)
+				# comment.
+				echo -e " DD";
+			    ;;
+			esac;
+		fi;
+	    ;;
+	    queue_limit)
+		if [ -z $2 ]; then
+			echo -e "# YMAP2 commandline : Limit of YMAP processes to run concurrently in queue.";
+			echo -e $lineThin;
+			echo -e "#";
+			tempfile=$(mktemp --suffix ".ymap_setting");
+			grep "\$MAX_QUEUE_PARALLEL" constants.php > $tempfile;
+			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
+			echo -e "#";
+			echo -e "#	\e[31mChanging this option will prompt you for your credentials to\e[0m";
+			echo -e "#	\e[31mrestart the yamp_daemon service that manages the queue.\e[0m";
+		else
+			echo -e "# YMAP2 commandline : New limit of YMAP processes to run concurrently in queue.";
+			echo -e $lineThin;
+			echo -e "#";
+			sed -i "/\$MAX_QUEUE_PARALLEL/c\\\$MAX_QUEUE_PARALLEL = ${2};" constants.php
+			tempfile=$(mktemp --suffix ".ymap_setting");
+			grep "\$MAX_QUEUE_PARALLEL" constants.php > $tempfile;
+			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
+			echo -e "#";
+			echo -e "#	\e[31mChanging this option will prompt you for your credentials to\e[0m";
+			echo -e "#	\e[31mrestart the yamp_daemon service that manages the queue.\e[0m";
+			service ymap_daemon restart;
+		fi;
+	    ;;
+	    data_limit)
+		if [ -z $2 ]; then
+			echo -e "# YMAP2 commandline : Data limit in reads.";
+			echo -e $lineThin;
+			echo -e "#";
+			tempfile=$(mktemp --suffix ".ymap_setting");
+			grep "\$MAX_READ_COUNT_PER_PROJECT" constants.php > $tempfile;
+			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
+			echo -e "#";
+			echo -e "# This is not yet defind or implemented.";
+		else
+			echo -e "# YMAP2 commandline : New data limit in reads.";
+			echo -e $lineThin;
+			echo -e "#";
+			sed -i "/\$MAX_READ_COUNT_PER_PROJECT/c\\\$MAX_READ_COUNT_PER_PROJECT = ${2};" constants.php
+			tempfile=$(mktemp --suffix ".ymap_setting");
+			grep "\$MAX_READ_COUNT_PER_PROJECT" constants.php > $tempfile;
+			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
+			echo -e "#";
+			echo -e "# This is not yet defind or implemented.";
+		fi;
+	    ;;
+	    admin_email)
+		if [ -z $2 ]; then
+			echo -e "# YMAP2 commandline : Admin email address.";
+			echo -e $lineThin;
+			echo -e "#";
+			tempfile=$(mktemp --suffix ".ymap_setting");
+			grep "\$admin_email" constants.php > $tempfile;
+			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
+		else
+			echo -e "# YMAP2 commandline : New admin email address.";
+			echo -e $lineThin;
+			echo -e "#";
+			sed -i "/\$admin_email/c\\\$MAX_READ_COUNT_PER_PROJECT = ${2};" constants.php
+			tempfile=$(mktemp --suffix ".ymap_settin");
+			grep "\$admin_email" constants.php > $tempfile;
+			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
+		fi;
+	    ;;
+	    quota)
+		if [ -z $2 ]; then
+			echo -e "# YMAP2 commandline : User account disk utilization quota.";
+			echo -e $lineThin;
+			echo -e "#";
+			tempfile=$(mktemp --suffix ".ymap_setting");
+			grep "\$quota_global" constants.php > $tempfile;
+			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
+		else
+			echo -e "# YMAP2 commandline : New user account disk utilization quota.";
+			echo -e $lineThin;
+			echo -e "#";
+			sed -i "/\$quota_global/c\\\$MAX_READ_COUNT_PER_PROJECT = ${2};" constants.php
+			tempfile=$(mktemp --suffix ".ymap_settin");
+			grep "\$quota_global" constants.php > $tempfile;
+			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
 		fi;
 	    ;;
 	esac;
