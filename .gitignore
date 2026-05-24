@@ -2,6 +2,7 @@ completion_times.log
 local_installed_programs.sh
 config.sh
 ymap_daemon.php
+ymap_daemon.sh
 constants.php
 .DS_Store
 .*
