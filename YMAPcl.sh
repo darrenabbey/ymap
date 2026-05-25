@@ -100,7 +100,20 @@ else
 			echo -e "#";
 			tempfile=$(mktemp --suffix ".ymap_daemon_status");
 			service ymap_daemon status > $tempfile;
-			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
+
+			## If line contains "└" character, print long line broken into new lines without the "│" character.
+			## If line doesn't contain "└" character, print long line broken into new lines with "│" character to maintain formatting.
+			awk '{
+				if ($0 ~ "└") {
+					while (length > 160) {
+						print substr($0, 1, 160); $0 = "\t      \t\t" substr($0, 161);
+					} print $0;
+				} else {
+					while (length > 160) {
+						print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161);
+					} print $0;
+				}
+			}' $tempfile | sed 's/^/#\t/' | cat;
 		else
 			echo -e "# YMAP2 commandline : User project status.";
 			echo -e $lineThin;
