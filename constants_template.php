@@ -14,14 +14,14 @@ include(".pepper.php");
 
 
 //==============================================================================
-// The following settings can be adjusted using the YMAP command line interface.
+// The following settings can be adjusted using the YMAP command line interface (YMAPcl.sh).
 //------------------------------------------------------------------------------
 
 // Quota (in Gb) for all accounts where no quota.txt exits in user folder.
-$quota_global = 15;
+$QUOTA_GLOBAL = 15;
 
 // Admin contact email address.
-$admin_email = "darrenabbey.ymap@gmail.com";
+$ADMIN_EMAIL = "darrenabbey.ymap@gmail.com";
 
 // The maximum memory utilization has been found to be very predictable from the input size of the sequence reads file:
 //	f(x) = 14.07587815x - 1.123882666   (R²= 0.984638424)

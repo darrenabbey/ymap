@@ -13,7 +13,7 @@ function getUserQuota($userName) {
 	if (file_exists($base_dir."/users/".$userName."/quota.txt")) {
 		$quota = trim(file_get_contents($base_dir."/users/".$userName."/quota.txt"));
 	} else {
-		$quota = $quota_global;
+		$quota = $QUOTA_GLOBAL;
 	}
 	return $quota;
 }
