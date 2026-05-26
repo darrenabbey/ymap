@@ -17,13 +17,22 @@ include(".pepper.php");
 // The following settings can be adjusted using the YMAP command line interface.
 //------------------------------------------------------------------------------
 
-// Quota for all accounts where no quota.txt exits in user folder.
+// Quota (in Gb) for all accounts where no quota.txt exits in user folder.
 $quota_global = 15;
 
 // Admin contact email address.
 $admin_email = "darrenabbey.ymap@gmail.com";
 
+// The maximum memory utilization has been found to be very predictable from the input size of the sequence reads file:
+//	f(x) = 14.07587815x - 1.123882666   (R²= 0.984638424)
+//
+// Limiting the data size here can be used to keep the memory utilization within expected bounds.
+// A zero value here means the check is not performed.
+// A non-zero value here is interpreted in Gb; any larger datafiles will be subsampled down to this size before processing.
+$MAX_PROCESSED_DATA = o;
+
 // The maximum number of datasets to be analyzed in parallel by the processing queue.
+// More than one can be processed at once, but the memory utilization becomes less predictable so should not be done on memory limited servers.
 $MAX_QUEUE_PARALLEL = 1;
 
 // The maximum size of a dataset to be anaalyzed. Larger datasets will be subsampled down to this level.
