@@ -12,10 +12,13 @@ if [ -z $1 ]; then
 	echo -e "# Command syntax is : 'bash YMAPcl.sh [command] (option1) (option2) (...)'";
 	echo -e "# ";
 	echo -e "#   Commands:";
-	echo -e "#        users               : List registered users.";
-	echo -e "#        user (user)         : Show user account information.";
-	echo -e "#        status              : Shows status of ymap_daemon service.";
-	echo -e "#        status (user)       : Shows data processing status.";
+	echo -e "#	log_in			: Logs the admin interface to a specific user account.";
+	echo -e "#	log_out			: Logs the admin interface out of a user account.";
+	echo -e "#	info			: Shows user account information.";
+	echo -e "#	users			: List registered users.";
+	echo -e "#	daemon			: Shows status of ymap_daemon service.";
+	echo -e "#	status			: Shows data processing status.";
+
 	echo -e "#        projects (user)     : Lists installed projects.";
 	echo -e "#        genomes (user)      : Lists installed genomes.";
 	echo -e "#        hapmaps (user)      : Lists installed hapmaps.";
@@ -56,8 +59,70 @@ if [ -z $1 ]; then
 else
 	main_dir=$(pwd);
 	userDirectory=$main_dir"/users/";
+
+	##
+	## Check to see if a user account is logged in.
+	##
+	if [ -e $main_dir"/YMAPcl.dat" ]; then
+		user=$(head -n 1 $main_dir"/YMAPcl.dat");
+	else
+		user="";
+	fi;
+
+
 	echo -e $lineThick;
 	case $1 in
+	    "log_in")
+		echo -e "# YMAP2 commandline :";
+		echo -e $lineThin;
+		echo -e "#";
+		if [ -z $2 ]; then
+			echo -e "#\tUsage: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+			echo -e "#";
+			echo -e "#	\e[41mAs this is an admin interface, there is no user account password check.\e[0m";
+		else
+			echo -e "#      User $user has been logged in.";
+			echo $2 > $main_dir"/YMAPcl.dat";
+			#dialog --menu "Select user account." 12 45 25 1 "apple" 2 "banana" 3 "grapes" 4 "oranges";
+		fi;
+	    ;;
+	    "log_out")
+		echo -e "# YMAP2 commandline :";
+		echo -e $lineThin;
+		echo -e "#";
+		echo -e "#	User $user has been logged out.";
+		echo "" > $main_dir"/YMAPcl.dat";
+	    ;;
+	    "info")
+		echo -e "# YMAP2 commandline : User information.";
+		echo -e $lineThin;
+		echo -e "#";
+		if [ "$user" == "" ]; then
+			## If not logged in, allow user passed as argument.
+			if [ -z $2 ]; then
+				echo -e "#	Usage: bash YMAPcl.sh user \e[31m(user)\e[0m";
+				echo -e "#";
+				echo -e "#	Or log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+			else
+				echo -e "# user : "$2;
+				echo -e "#";
+				main_dir=$(pwd);
+				userInfoFile=$main_dir"/users/"$2"/info.txt";
+				while IFS= read -r line; do
+					echo -e "#\t"$line;
+				done < $userInfoFile;
+			fi;
+		else
+			## If logged in.
+			echo -e "# user : "$user;
+			echo -e "#";
+			main_dir=$(pwd);
+			userInfoFile=$main_dir"/users/"$user"/info.txt";
+			while IFS= read -r line; do
+				echo -e "#\t"$line;
+			done < $userInfoFile;
+		fi;
+	    ;;
 	    "users")
 		echo -e "# YMAP2 commandline : List users.";
 		echo -e $lineThin;
@@ -76,49 +141,70 @@ else
 			echo -e "#\t\e[41mError: User directory not found!\e[0m";
 		fi;
 	    ;;
-	    "user")
-		echo -e "# YMAP2 commandline : User information.";
+	    "daemon")
+		echo -e "# YMAP2 commandline : ymap_daemon service status.";
 		echo -e $lineThin;
 		echo -e "#";
-		if [ -z $2 ]; then
-			echo -e "#\tUsage: bash YMAPcl.sh user \e[31m(user)\e[0m";
-		else
-			echo -e "# user : "$2;
-			echo -e "#";
-			main_dir=$(pwd);
-			userInfoFile=$main_dir"/users/"$2"/info.txt";
-			#cat $userInfoFile;
-			while IFS= read -r line; do
-				echo -e "#\t"$line;
-			done < $userInfoFile;
-		fi;
+		tempfile=$(mktemp --suffix ".ymap_daemon_status");
+		service ymap_daemon status > $tempfile;
+
+		## If line contains "└" character, print long line broken into new lines without the "│" character.
+		## If line doesn't contain "└" character, print long line broken into new lines with "│" character to maintain formatting.
+		awk '{
+			if ($0 ~ "└") {
+				while (length > 160) {
+					print substr($0, 1, 160); $0 = "\t      \t\t" substr($0, 161);
+				} print $0;
+			} else {
+				while (length > 160) {
+					print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161);
+				} print $0;
+			}
+		}' $tempfile | sed 's/^/#\t/' | cat;
 	    ;;
 	    "status")
-		if [ -z $2 ]; then
-			echo -e "# YMAP2 commandline : ymap_daemon service status.";
-			echo -e $lineThin;
-			echo -e "#";
-			tempfile=$(mktemp --suffix ".ymap_daemon_status");
-			service ymap_daemon status > $tempfile;
-
-			## If line contains "└" character, print long line broken into new lines without the "│" character.
-			## If line doesn't contain "└" character, print long line broken into new lines with "│" character to maintain formatting.
-			awk '{
-				if ($0 ~ "└") {
-					while (length > 160) {
-						print substr($0, 1, 160); $0 = "\t      \t\t" substr($0, 161);
-					} print $0;
-				} else {
-					while (length > 160) {
-						print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161);
-					} print $0;
-				}
-			}' $tempfile | sed 's/^/#\t/' | cat;
-		else
+		if [ "$user" == "" ]; then
 			echo -e "# YMAP2 commandline : User project status.";
 			echo -e $lineThin;
 			echo -e "#";
-			projectDirectory=$main_dir"/users/"$2"/projects/";
+                        ## If not logged in. 
+                        if [ -z $2 ]; then
+                                echo -e "#      Usage: bash YMAPcl.sh status \e[31m(user)\e[0m";
+                                echo -e "#";
+                                echo -e "#      Or log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+                        else
+				projectDirectory=$main_dir"/users/"$2"/projects/";
+				if [ -d $projectDirectory ]; then
+					echo -e "# Projects initialized or processing:";
+					cd $projectDirectory;
+					for dir in */; do
+						line=$( tail -n 1 $dir"condensed_log.txt" )
+						if [[ "$line" != "Cleaning and archiving." ]]; then
+							echo -e "#\t"$dir"\t: "$line;
+							if [ -e $dir"error.txt" ]; then
+								error=$( cat $dir"error.txt"; )
+								echo -e "#\t\t\e[41mError: $error\e[0m";
+							fi;
+						fi;
+					done;
+					echo -e "#";
+					echo -e "# Projects completed:";
+					for dir in */; do
+						line=$( tail -n 1 $dir"condensed_log.txt" )
+						if [[ "$line" == "Cleaning and archiving." ]]; then
+							echo -e "#\t"$dir;
+						fi;
+					done;
+					cd ../../../;
+				else
+					echo -e "#\t\e[41mError: User not registered!\e[0m";
+				fi;
+                        fi;
+                else
+			echo -e "# YMAP2 commandline : User '$user' project status.";
+			echo -e $lineThin;
+			echo -e "#";
+			projectDirectory=$main_dir"/users/"$user"/projects/";
 			if [ -d $projectDirectory ]; then
 				echo -e "# Projects initialized or processing:";
 				cd $projectDirectory;
@@ -146,6 +232,9 @@ else
 			fi;
 		fi;
 	    ;;
+
+
+
 	    "projects")
 		echo -e "# YMAP2 commandline : List user projects.";
 		echo -e $lineThin;
@@ -253,6 +342,7 @@ else
 		echo -e "# YMAP2 commandline : List user figures.";
 		echo -e $lineThin;
 		echo -e "#";
+		user=$2;
 		if [ -z $2 ]; then
 			echo -e "#\tUsage: bash YMAPcl.sh complete \e[31m(user)\e[0m";
 		else
