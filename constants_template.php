@@ -29,7 +29,7 @@ $admin_email = "darrenabbey.ymap@gmail.com";
 // Limiting the data size here can be used to keep the memory utilization within expected bounds.
 // A zero value here means the check is not performed.
 // A non-zero value here is interpreted in Gb; any larger datafiles will be subsampled down to this size before processing.
-$MAX_PROCESSED_DATA_SIZE = o;
+$MAX_PROCESSED_DATA_SIZE = 0;
 
 // The maximum number of datasets to be analyzed in parallel by the processing queue.
 // More than one can be processed at once, but the memory utilization becomes less predictable so should not be done on memory limited servers without testing.

@@ -12,14 +12,12 @@ if [ -z $1 ]; then
 	echo -e "# Command syntax is : 'bash YMAPcl.sh [command] (option1) (option2) (...)'";
 	echo -e "# ";
 	echo -e "#   Commands:";
-	echo -e "#	log_in			: Logs the admin interface to a specific user account.";
-	echo -e "#	log_out			: Logs the admin interface out of a user account.";
+	echo -e "#	log_in			: Log the admin interface to a specific user account.";
+	echo -e "#	log_out			: Log the admin interface out of a user account.";
 	echo -e "#	info			: Shows user account information.";
-	echo -e "#	users			: List registered users.";
 	echo -e "#	daemon			: Shows status of ymap_daemon service.";
 	echo -e "#	status			: Shows data processing status.";
 
-	echo -e "#        projects (user)     : Lists installed projects.";
 	echo -e "#        genomes (user)      : Lists installed genomes.";
 	echo -e "#        hapmaps (user)      : Lists installed hapmaps.";
 	echo -e "#        complete (user)     : Lists figure images for completed projects.";
@@ -80,8 +78,30 @@ else
 			echo -e "#\tUsage: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
 			echo -e "#";
 			echo -e "#	\e[41mAs this is an admin interface, there is no user account password check.\e[0m";
+			echo -e "#";
+
+			## List user directories.
+			if [ -d $userDirectory ]; then
+				echo -e "#	Registered user accounts:";
+				dirs=$(find $userDirectory* -maxdepth 0 -type d);
+				if [ -z "$dirs" ]; then
+					echo -e "#\t\tNo registered users."
+				else
+					for dir in $dirs; do
+						echo -e "#\t\t"${dir##*/};
+					done;
+				fi;
+			else
+				echo -e "#\t\e[41mError: User directory not found!\e[0m";
+			fi;
+
+			if [ "$user" != "" ]; then
+				## Show currently logged in account, if logged in.
+				echo -e "#";
+				echo -e "#	User '$user' is currently logged in." ;
+			fi;
 		else
-			echo -e "#      User $user has been logged in.";
+			echo -e "#      User $2 has been logged in.";
 			echo $2 > $main_dir"/YMAPcl.dat";
 			#dialog --menu "Select user account." 12 45 25 1 "apple" 2 "banana" 3 "grapes" 4 "oranges";
 		fi;
@@ -145,7 +165,7 @@ else
 		echo -e "# YMAP2 commandline : ymap_daemon service status.";
 		echo -e $lineThin;
 		echo -e "#";
-		tempfile=$(mktemp --suffix ".ymap_daemon_status");
+		tempfile=$(mktemp --suffix ".ymap");
 		service ymap_daemon status > $tempfile;
 
 		## If line contains "└" character, print long line broken into new lines without the "│" character.
@@ -164,10 +184,12 @@ else
 	    ;;
 	    "status")
 		if [ "$user" == "" ]; then
+			##
+			## If not logged in.
+			##
 			echo -e "# YMAP2 commandline : User project status.";
 			echo -e $lineThin;
 			echo -e "#";
-                        ## If not logged in. 
                         if [ -z $2 ]; then
                                 echo -e "#      Usage: bash YMAPcl.sh status \e[31m(user)\e[0m";
                                 echo -e "#";
@@ -175,88 +197,87 @@ else
                         else
 				projectDirectory=$main_dir"/users/"$2"/projects/";
 				if [ -d $projectDirectory ]; then
-					echo -e "# Projects initialized or processing:";
 					cd $projectDirectory;
+
+					## Projects not started: missing "complete.txt" and "working.txt" files.
+					echo -e "# Projects initialized:";
+					tempfile=$(mktemp --suffix ".ymap");
+					find * -type d "!" -exec sh -c 'ls -A "{}" | grep --quiet -e "working.txt" -e "complete.txt"' \; -print > $tempfile;
+					cat $tempfile | xargs -n 7 | column -t | sed 's/^/#\t/' | cat;
+
+					## Projects that have started: include "working.txt" file.
+					echo -e "# Projects processing:";
 					for dir in */; do
-						line=$( tail -n 1 $dir"condensed_log.txt" )
-						if [[ "$line" != "Cleaning and archiving." ]]; then
-							echo -e "#\t"$dir"\t: "$line;
-							if [ -e $dir"error.txt" ]; then
-								error=$( cat $dir"error.txt"; )
-								echo -e "#\t\t\e[41mError: $error\e[0m";
+						if [ -e $dir"working.txt" ]; then
+							if [ ! -e $dir"complete.txt" ]; then
+								line=$( tail -n 1 $dir"condensed_log.txt" )
+								if [[ "$line" != "Cleaning and archiving." ]]; then
+									echo -e "#\t"$dir"\t: "$line;
+									if [ -e $dir"error.txt" ]; then
+										error=$( cat $dir"error.txt"; )
+										echo -e "#\t\t\e[41mError: $error\e[0m";
+									fi;
+								fi;
 							fi;
 						fi;
 					done;
 					echo -e "#";
+
+					## Projects done: include "complete.txt" file.
 					echo -e "# Projects completed:";
-					for dir in */; do
-						line=$( tail -n 1 $dir"condensed_log.txt" )
-						if [[ "$line" == "Cleaning and archiving." ]]; then
-							echo -e "#\t"$dir;
-						fi;
-					done;
+					tempfile=$(mktemp --suffix ".ymap");
+					find * -type d -exec sh -c 'ls -A "{}" | grep --quiet "complete.txt"' \; -print > $tempfile;
+					cat $tempfile | xargs -n 7 | column -t | sed 's/^/#\t/' | cat;
+
 					cd ../../../;
 				else
 					echo -e "#\t\e[41mError: User not registered!\e[0m";
 				fi;
                         fi;
                 else
+			##
+			## Logged in.
+			##
 			echo -e "# YMAP2 commandline : User '$user' project status.";
 			echo -e $lineThin;
 			echo -e "#";
 			projectDirectory=$main_dir"/users/"$user"/projects/";
 			if [ -d $projectDirectory ]; then
-				echo -e "# Projects initialized or processing:";
 				cd $projectDirectory;
+
+				## Projects not started: missing "complete.txt" and "working.txt" files.
+				echo -e "# Projects initialized:";
+				tempfile=$(mktemp --suffix ".ymap");
+				find * -type d "!" -exec sh -c 'ls -A "{}" | grep --quiet -e "working.txt" -e "complete.txt"' \; -print > $tempfile;
+				cat $tempfile | xargs -n 7 | column -t | sed 's/^/#\t/' | cat;
+				echo -e "#";
+
+				## Projects not started: missing "complete.txt" and "working.txt" files.
+				echo -e "# Projects processing:";
 				for dir in */; do
-					line=$( tail -n 1 $dir"condensed_log.txt" )
-					if [[ "$line" != "Cleaning and archiving." ]]; then
-						echo -e "#\t"$dir"\t: "$line;
-						if [ -e $dir"error.txt" ]; then
-							error=$( cat $dir"error.txt"; )
-							echo -e "#\t\t\e[41mError: $error\e[0m";
+					if [ -e $dir"working.txt" ]; then
+						if [ ! -e $dir"complete.txt" ]; then
+							line=$( tail -n 1 $dir"condensed_log.txt" )
+							if [[ "$line" != "Cleaning and archiving." ]]; then
+								echo -e "#\t"$dir"\t: "$line;
+								if [ -e $dir"error.txt" ]; then
+									error=$( cat $dir"error.txt"; )
+									echo -e "#\t\t\e[41mError: $error\e[0m";
+								fi;
+							fi;
 						fi;
 					fi;
 				done;
 				echo -e "#";
+
+				## Projects done: include "complete.txt" file.
 				echo -e "# Projects completed:";
-				for dir in */; do
-					line=$( tail -n 1 $dir"condensed_log.txt" )
-					if [[ "$line" == "Cleaning and archiving." ]]; then
-						echo -e "#\t"$dir;
-					fi;
-				done;
+				tempfile=$(mktemp --suffix ".ymap");
+				find * -type d -exec sh -c 'ls -A "{}" | grep --quiet "complete.txt"' \; -print > $tempfile;
+				# Convert one column into multiple columns in interface format.
+				cat $tempfile | xargs -n 7 | column -t | sed 's/^/#\t/' | cat;
+
 				cd ../../../;
-			else
-				echo -e "#\t\e[41mError: User not registered!\e[0m";
-			fi;
-		fi;
-	    ;;
-
-
-
-	    "projects")
-		echo -e "# YMAP2 commandline : List user projects.";
-		echo -e $lineThin;
-		echo -e "#";
-		if [ -z $2 ]; then
-			echo -e "#\tUsage: bash YMAPcl.sh projects \e[31m(user)\e[0m";
-		else
-			echo -e "# user : "$2;
-			echo -e "#";
-			main_dir=$(pwd);
-			projectDirectory=$main_dir"/users/"$2"/projects/";
-			if [ -d $projectDirectory ]; then
-				echo -e "# User installed projects:";
-				dirs=$(find $projectDirectory* -type d);
-				if [ -z "$dirs" ]; then
-					echo -e "#\tNo user installed projects."
-				else
-					for dir in $dirs; do
-						echo -e "#\t"${dir##*/};
-					done;
-				fi;
-
 			else
 				echo -e "#\t\e[41mError: User not registered!\e[0m";
 			fi;
@@ -437,7 +458,7 @@ else
 			echo -e "# YMAP2 commandline : Limit of YMAP processes to run concurrently in queue.";
 			echo -e $lineThin;
 			echo -e "#";
-			tempfile=$(mktemp --suffix ".ymap_setting");
+			tempfile=$(mktemp --suffix ".ymap");
 			grep "\$MAX_QUEUE_PARALLEL" constants.php > $tempfile;
 			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
 			echo -e "#";
@@ -448,7 +469,7 @@ else
 			echo -e $lineThin;
 			echo -e "#";
 			sed -i "/\$MAX_QUEUE_PARALLEL/c\\\$MAX_QUEUE_PARALLEL = ${2};" constants.php
-			tempfile=$(mktemp --suffix ".ymap_setting");
+			tempfile=$(mktemp --suffix ".ymap");
 			grep "\$MAX_QUEUE_PARALLEL" constants.php > $tempfile;
 			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
 			echo -e "#";
@@ -462,7 +483,7 @@ else
 			echo -e "# YMAP2 commandline : Data limit in reads.";
 			echo -e $lineThin;
 			echo -e "#";
-			tempfile=$(mktemp --suffix ".ymap_setting");
+			tempfile=$(mktemp --suffix ".ymap");
 			grep "\$MAX_READ_COUNT_PER_PROJECT" constants.php > $tempfile;
 			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
 			echo -e "#";
@@ -472,7 +493,7 @@ else
 			echo -e $lineThin;
 			echo -e "#";
 			sed -i "/\$MAX_READ_COUNT_PER_PROJECT/c\\\$MAX_READ_COUNT_PER_PROJECT = ${2};" constants.php
-			tempfile=$(mktemp --suffix ".ymap_setting");
+			tempfile=$(mktemp --suffix ".ymap");
 			grep "\$MAX_READ_COUNT_PER_PROJECT" constants.php > $tempfile;
 			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
 			echo -e "#";
@@ -484,7 +505,7 @@ else
 			echo -e "# YMAP2 commandline : Admin email address.";
 			echo -e $lineThin;
 			echo -e "#";
-			tempfile=$(mktemp --suffix ".ymap_setting");
+			tempfile=$(mktemp --suffix ".ymap");
 			grep "\$admin_email" constants.php > $tempfile;
 			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
 		else
@@ -492,7 +513,7 @@ else
 			echo -e $lineThin;
 			echo -e "#";
 			sed -i "/\$admin_email/c\\\$MAX_READ_COUNT_PER_PROJECT = ${2};" constants.php
-			tempfile=$(mktemp --suffix ".ymap_settin");
+			tempfile=$(mktemp --suffix ".ymap");
 			grep "\$admin_email" constants.php > $tempfile;
 			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
 		fi;
@@ -502,7 +523,7 @@ else
 			echo -e "# YMAP2 commandline : User account disk utilization quota.";
 			echo -e $lineThin;
 			echo -e "#";
-			tempfile=$(mktemp --suffix ".ymap_setting");
+			tempfile=$(mktemp --suffix ".ymap");
 			grep "\$quota_global" constants.php > $tempfile;
 			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
 		else
@@ -510,7 +531,7 @@ else
 			echo -e $lineThin;
 			echo -e "#";
 			sed -i "/\$quota_global/c\\\$MAX_READ_COUNT_PER_PROJECT = ${2};" constants.php
-			tempfile=$(mktemp --suffix ".ymap_settin");
+			tempfile=$(mktemp --suffix ".ymap");
 			grep "\$quota_global" constants.php > $tempfile;
 			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
 		fi;
