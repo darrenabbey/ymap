@@ -1,12 +1,30 @@
 #!/bin/bash
 set -e;
 
+main_dir=$(pwd);
+userDirectory=$main_dir"/users/";
+if [ -e $main_dir"/YMAPcl.dat" ]; then
+	user=$(head -n 1 $main_dir"/YMAPcl.dat");
+else
+	user="";
+fi;
+function logged_in_status() {
+	if [[ "$user" = "" ]]; then
+		echo -e "#\tNot logged in.";
+	else
+		echo -e "#\tLogged in as '$user'.";
+	fi;
+}
+
 lineThick="#================================================================================#";
 lineThin="#--------------------------------------------------------------------------------#";
+
+arguments_count=$#;
 
 if [ -z $1 ]; then
 	echo -e $lineThick;
 	echo -e "# YMAP2 commandline";
+	logged_in_status;
 	echo -e $lineThin;
 	echo -e "#";
 	echo -e "# Command syntax is : 'bash YMAPcl.sh [command] (option1) (option2) (...)'";
@@ -19,49 +37,254 @@ if [ -z $1 ]; then
 	echo -e "#	data_limit	: Show the max user data to be processed.";
 	echo -e "#	admin_email	: Show admin email, displayed in user interface for issues.";
 	echo -e "#	quota		: Show per account disk quota.";
-
 	echo -e "#	info		: Show user account information.";
 	echo -e "#	status		: Show data processing status.";
 	echo -e "#	genomes		: List installed genomes.";
 	echo -e "#	hapmaps		: List installed hapmaps.";
-	echo -e "#	complete	: Lists figure images for completed projects.";
-
-	echo -e "#        queue               : Shows the status of the YMAP processing queue.";
-	echo -e "#                              \e[31mNot yet implemented!\e[0m";
-	echo -e "#        queue delete        : Force ends an item from the processing queue. To be used in case";
-	echo -e "#                              there is ever an improperly terminated process that somehow doesn't";
-	echo -e "#                              lead to an end entry in the queue log, leading to the queue being";
-	echo -e "#                              hung/stuck."
-	echo -e "#                              \e[31mNot yet implemented!\e[0m";
-	echo -e "#        queue flush         : Cleans up resolved entries from the queue log. Should not be needed,";
-	echo -e "#                              but may be useful for managing the queue.";
-	echo -e "#                              \e[31mNot yet implemented!\e[0m";
+	echo -e "#	complete	: List file paths & names of images for completed projects.";
+	echo -e "#	delete		: Delete a project/genome/hapmap/user.";
+	echo -e "#	install		: install data for a new project/genome.";
 	echo -e "#";
-	echo -e "#   Other commands not yet implemented:";
-	echo -e "#        install dataset (user)   => user interface?";
-	echo -e "#        install bulk_data (user) => user interface?";
-	echo -e "#        install genome (user)    => user interface?";
-	echo -e "#        build hapmap (user)      => user interface?";
-	echo -e "#        minimize dataset (user)  => user interface?";
-	echo -e "#        delete dataset (user)    => user interface?";
-	echo -e "#        delete genome (user)     => user interface?";
-	echo -e "#        delete hapmap (user)     => user interface?";
-	echo -e "#        combine figures (user)   ???";
+	echo -e "#   Commands not implemented:"
+	echo -e "#	queue		: Shows the status of the YMAP processing queue.";
+	echo -e "#	queue delete	: Force ends an item from the processing queue. To be used in case";
+	echo -e "#				there is ever an improperly terminated process that somehow doesn't";
+	echo -e "#				lead to an end entry in the queue log, leading to the queue being";
+	echo -e "#				hung/stuck."
+	echo -e "#	queue flush	: Cleans up resolved entries from the queue log. Should not be needed,";
+	echo -e "#				but may be useful for managing the queue.";
+	echo -e "#	combine_figures";
+	echo -e "#";
+	echo -e "#   Commands not implemented, require uer interface:";
+	echo -e "#	build_hapmap";
+	echo -e "#	minimize (dataset)";
 	echo -e "# ";
 	echo -e $lineThick;
 else
-	main_dir=$(pwd);
-	userDirectory=$main_dir"/users/";
+	##
+	## Functions for use in commandline interface.
+	##
+	function queue_init_project() {
+		main_dir=$1;
+		user=$2;
+		project=$3;
+		message=$4;
+		projectDirectory=$main_dir"/users/"$user"/projects/";
+
+		# Define salt string.
+		salt=$(mktemp -u XXXXXXXXXXXXXXXX);
+		echo $salt > $projectDirectory$project"/salt.txt";
+
+		# Add entry to queue log.
+		printf -v queueLogFile '%(%Y-%m-%d)T' -1;
+		queueLogFile=$queueLogFile"_queue.log";
+		printf -v dateTime '%(%Y-%m-%d %H:%M:%S)T' -1;
+		queueString=$dateTime" - user:"$user" - project:"$project" - "$salt" - init - "$message;
+		echo "$queueString" >> $main_dir"/queue/"$queueLogFile;
+	}
+	function queue_reinit_project() {
+		main_dir=$1;
+		user=$2;
+		project=$3;
+		message=$4;
+		projectDirectory=$main_dir"/users/"$user"/projects/";
+
+		# Make "update.txt" file in project.
+		printf -v dateString '%(%Y-%m-%d)T' -1;
+		echo $dateString > $projectDirectory$project"/update.txt";
+
+		# Define salt string.
+		salt=$(mktemp -u XXXXXXXXXXXXXXXX);
+		echo $salt > $projectDirectory$project"/salt.txt";
+
+		# Add entry to queue log.
+		printf -v queueLogFile '%(%Y-%m-%d)T' -1;
+		queueLogFile=$queueLogFile"_queue.log";
+		printf -v dateTime '%(%Y-%m-%d %H:%M:%S)T' -1;
+		salt=$(head -n 1 $projectDirectory$project"/salt.txt");
+		queueString=$dateTime" - user:"$user" - project:"$project" - "$salt" - init - "$message;
+		echo "$queueString" >> $main_dir"/queue/"$queueLogFile;
+	}
+	function queue_start_project() {
+		main_dir=$1;
+		user=$2;
+		project=$3;
+		message=$4;
+		projectDirectory=$main_dir"/users/"$user"/projects/";
+
+		# Get salt string.
+		salt=$(head -n 1 $projectDirectory$project"/salt.txt");
+
+		# Add entry to queue log.
+		printf -v queueLogFile '%(%Y-%m-%d)T' -1;
+		queueLogFile=$queueLogFile"_queue.log";
+		printf -v dateTime '%(%Y-%m-%d %H:%M:%S)T' -1;
+		queueString=$dateTime" - user:"$user" - project:"$project" - "$salt" - start - "$message;
+		echo "$queueString" >> $main_dir"/queue/"$queueLogFile;
+	}
+	function queue_end_project() {
+		main_dir=$1;
+		user=$2;
+		project=$3;
+		message=$4;
+		projectDirectory=$main_dir"/users/"$user"/projects/";
+
+		# Get salt string.
+		if [[ -e $projectDirectory$project"/salt.txt" ]]; then
+			salt=$(head -n 1 $projectDirectory$project"/salt.txt");
+		else
+			salt=$(mktemp -u XXXXXXXXXXXXXXXX);
+		fi;
+
+		# Add entry to queue log.
+		printf -v queueLogFile '%(%Y-%m-%d)T' -1;
+		queueLogFile=$queueLogFile"_queue.log";
+		printf -v dateTime '%(%Y-%m-%d %H:%M:%S)T' -1;
+		queueString=$dateTime" - user:"$user" - project:"$project" - "$salt" - end - "$message;
+		echo "$queueString" >> $main_dir"/queue/"$queueLogFile;
+	}
+	function userInterface_delete() {
+		main_dir=$1;
+		userAccount=$2;
+		whatisit=$3;
+
+		tempfile=$(mktemp --suffix ".ymap");
+		tempfile2=$(mktemp --suffix ".ymap");
+
+		## Build string of projects.
+		if [[ "$whatisit" = "project" ]]; then
+			workingDirectory=$main_dir"/users/"$userAccount"/projects/";
+		elif [[ "$whatisit" = "genome" ]]; then
+			workingDirectory=$main_dir"/users/"$userAccount"/genomes/";
+		elif [[ "$whatisit" = "hapmap" ]]; then
+			workingDirectory=$main_dir"/users/"$userAccount"/hapmaps/";
+		elif [[ "$whatisit" = "user" ]]; then
+			if [[ "$userAccount" = "default" ]]; then
+				echo -e "#\t\e[41mInvalid selection: You can't delete the 'default' user.\e[0m";
+				echo -e "#";
+				echo -e $lineThick;
+				return 1;
+			else
+				workingDirectory=$main_dir"/users/";
+			fi;
+		else
+			echo -e "#\t\e[41mInvalid selection: Code error.\e[0m";
+			echo -e "#";
+			echo -e $lineThick;
+			return 1;
+		fi;
+
+		if [[ ! -e $workingDirectory ]]; then
+			echo -e "#\t\e[41mInvalid selection: User not found.\e[0m";
+			echo -e "#";
+			echo -e $lineThick;
+			return 1;
+		fi;
+
+		cd $workingDirectory;
+		if [ "$(find . -maxdepth 1 -type d | wc -l)" -gt 1 ]; then
+			nameString="";
+			counter=1;
+			for dir in */; do
+				name=$( echo ${dir::-1} );
+				nameString=$nameString" "$counter" "$name;
+				counter=$(($counter+1));
+			done;
+		else
+			nameString="";
+		fi;
+		cd ../../../;
+
+		if [[ ! "$nameString" = "" ]]; then
+			### https://www.geeksforgeeks.org/linux-unix/shell-scripting-dialog-boxes/
+			(dialog --nocancel --menu "Select $whatisit to delete.\n        (You can cancel later.)" 25 45 25 $nameString) 2> $tempfile
+			selectedKey=$(head -n 1 $tempfile);
+
+			## Get chosen project/genome/hapmap/user name.
+			cd $workingDirectory;
+			counter=1;
+			for dir in */; do
+				name=$( echo ${dir::-1} );
+				if [[ $selectedKey -eq $counter ]]; then
+					selectedName=$name;
+				fi;
+				counter=$(($counter+1));
+			done;
+			cd ../../../;
+
+			## Confirming user choice before deleting.
+			clear;
+			if [[ "$whatisit" = "user" ]] && [[ "$selectedName" = "default" ]]; then
+				echo -e $lineThick;
+				echo -e "# YMAP2 commandline : Delete user.";
+				logged_in_status;
+				echo -e $lineThin;
+				echo -e "#";
+				echo -e "#\t\e[41mInvalid selection: You can't delete the 'default' user.\e[0m";
+				echo -e "#";
+				echo -e $lineThick;
+				return 1;
+			else
+				echo -e $lineThick;
+				echo -e "# YMAP2 commandline : Delete $whatisit.";
+				logged_in_status;
+				echo -e $lineThin;
+				echo -e "#";
+				if [[ "$whatisit" = "user" ]]; then
+					echo -e "#\t\e[41mAre you certain you want to delete the $whatisit '$selectedName'?\e[0m";
+				else
+					echo -e "#\t\e[41mAre you certain you want to delete the $whatisit '$selectedName' belonging to user '$userAccount'?\e[0m";
+				fi;
+				echo -e -n "#\n#\t[yes/no]: ";
+				read -r response;
+				if [ "$response" = "yes" ]; then
+					echo -e "#";
+					echo -e "#\tDeleting $whatisit.";
+
+					if [[ "$whatisit" = "project" ]]; then
+						## Adding 'end' entry to queue log.
+						queue_end_project $main_dir $userAccount $selectedName "YMAPcl.sh deleted.";
+					fi;
+
+					## Actually deleting entry.
+					rm -rf $workingDirectory$selectedName;
+					echo -e "#\t$whatisit deleted.";
+				elif [ "$response" = "no" ]; then
+					echo -e "#";
+					echo -e "#\tOperation canceled.";
+				else
+					echo -e "#";
+					echo -e "#\tValue of 'yes' or 'no' was not entered, operation canceled.";
+				fi;
+			fi;
+		else
+			echo -e "#\tNo "$whatisit"s found, operation canceled.";
+		fi;
+	}
+	function userInterface_install() {
+		main_dir=$1;
+		user=$2;
+		whatisit=$3;
+
+		tempfile=$(mktemp --suffix ".ymap");
+		tempfile2=$(mktemp --suffix ".ymap");
+
+		if [[ "$whatisit" = "project" ]]; then
+			echo -e "#\t Installing a new project.";
+		elif [[ "$whatisit" = "genome" ]]; then
+			echo -e "#\tInstalling a new genome.";
+		elif [[ "$whatisit" = "user" ]]; then
+			echo -e "#\tInstalling a new user.";
+		else
+			echo -e "#\t\e[41mInvalid selection: Code error.\e[0m";
+			echo -e $lineThick;
+			return 1;
+		fi;
+	}
 
 	##
-	## Check to see if a user account is logged in.
+	## Main part of commandline interface code.
 	##
-	if [ -e $main_dir"/YMAPcl.dat" ]; then
-		user=$(head -n 1 $main_dir"/YMAPcl.dat");
-	else
-		user="";
-	fi;
-
 
 	echo -e $lineThick;
 	case $1 in
@@ -90,26 +313,39 @@ else
 				echo -e "#\t\e[41mError: User directory not found!\e[0m";
 			fi;
 
+			## Show currently logged in account, if logged in.
 			if [ "$user" != "" ]; then
-				## Show currently logged in account, if logged in.
 				echo -e "#";
 				echo -e "#\tUser '$user' is currently logged in." ;
 			fi;
 		else
-			echo -e "#      User $2 has been logged in.";
-			echo $2 > $main_dir"/YMAPcl.dat";
-			#dialog --menu "Select user account." 12 45 25 1 "apple" 2 "banana" 3 "grapes" 4 "oranges";
+			## Show currently logged in account, if logged in.
+			if [[ "$user" = "$2" ]]; then
+				echo -e "#\tUser '$2' was already logged in.";
+			else
+				if [[ ! "$user" = "" ]]; then
+					echo -e "#\tUser '$user' has been logged out.";
+					echo -e "#";
+				fi;
+				echo -e "#\tUser '$2' has been logged in.";
+				echo $2 > $main_dir"/YMAPcl.dat";
+			fi;
 		fi;
 	    ;;
 	    "log_out")
 		echo -e "# YMAP2 commandline :";
-		echo -e $lineThin;
+		echo -e $lineThin
 		echo -e "#";
-		echo -e "#\tUser $user has been logged out.";
-		echo "" > $main_dir"/YMAPcl.dat";
+		if [[ ! "$user" = "" ]]; then
+			echo "" > $main_dir"/YMAPcl.dat";
+			echo -e "#\tUser '$user' has been logged out.";
+		else
+			echo -e "#\tNo user was logged in.";
+		fi;
 	    ;;
 	    "info")
 		echo -e "# YMAP2 commandline : User information.";
+		logged_in_status;
 		echo -e $lineThin;
 		echo -e "#";
 		if [ "$user" == "" ]; then
@@ -135,6 +371,7 @@ else
 	    ;;
 	    "users")
 		echo -e "# YMAP2 commandline : List users.";
+		logged_in_status;
 		echo -e $lineThin;
 		echo -e "#";
 		if [ -d $userDirectory ]; then
@@ -153,6 +390,7 @@ else
 	    ;;
 	    "daemon")
 		echo -e "# YMAP2 commandline : ymap_daemon service status.";
+		logged_in_status;
 		echo -e $lineThin;
 		echo -e "#";
 		tempfile=$(mktemp --suffix ".ymap");
@@ -178,6 +416,7 @@ else
 			## If not logged in.
 			##
 			echo -e "# YMAP2 commandline : User project status.";
+			logged_in_status;
 			echo -e $lineThin;
 			echo -e "#";
                         if [ -z $2 ]; then
@@ -193,6 +432,7 @@ else
 			## Logged in.
 			##
 			echo -e "# YMAP2 commandline : User '$user' project status.";
+			logged_in_status;
 			echo -e $lineThin;
 			echo -e "#";
 			projectDirectory=$main_dir"/users/"$user"/projects/";
@@ -239,6 +479,7 @@ else
 	    ;;
 	    "genomes")
 		echo -e "# YMAP2 commandline : List user genomes.";
+		logged_in_status;
 		echo -e $lineThin;
 		echo -e "#";
 		if [ "$user" == "" ]; then
@@ -285,6 +526,7 @@ else
 	    ;;
 	    "hapmaps")
 		echo -e "# YMAP2 commandline : List user hapmaps.";
+		logged_in_status;
 		echo -e $lineThin;
 		echo -e "#";
 		if [ "$user" == "" ]; then
@@ -334,6 +576,7 @@ else
 	    ;;
 	    "complete")
 		echo -e "# YMAP2 commandline : List user figures.";
+		logged_in_status;
 		echo -e $lineThin;
 		echo -e "#";
 		if [ "$user" == "" ]; then
@@ -378,6 +621,7 @@ else
 	    "queue_limit")
 		if [ -z $2 ]; then
 			echo -e "# YMAP2 commandline : Limit of YMAP processes to run concurrently in queue.";
+			logged_in_status;
 			echo -e $lineThin;
 			echo -e "#";
 			tempfile=$(mktemp --suffix ".ymap");
@@ -391,6 +635,7 @@ else
 		else
 			if ! [[ "$2" =~ ^[0-9]+$ ]]; then
 				echo -e "# YMAP2 commandline : Limit of YMAP processes to run concurrently in queue.";
+				logged_in_status;
 				echo -e $lineThin;
 				echo -e "#";
 				tempfile=$(mktemp --suffix ".ymap");
@@ -403,6 +648,7 @@ else
 				echo -e "#\t\e[41mrestart the yamp_daemon service that manages the queue.\e[0m";
 			else
 				echo -e "# YMAP2 commandline : New limit of YMAP processes to run concurrently in queue.";
+				logged_in_status;
 				echo -e $lineThin;
 				echo -e "#";
 				sed -i "/\$MAX_QUEUE_PARALLEL/c\\\$MAX_QUEUE_PARALLEL = ${2};" constants.php
@@ -416,9 +662,10 @@ else
 			fi;
 		fi;
 	    ;;
-	    data_limit)
+	    "data_limit")
 		if [ -z $2 ]; then
 			echo -e "# YMAP2 commandline : Per project data limit in Gb.";
+			logged_in_status;
 			echo -e $lineThin;
 			echo -e "#";
 			tempfile=$(mktemp --suffix ".ymap");
@@ -431,6 +678,7 @@ else
 		else
 			if ! [[ "$2" =~ ^[0-9]+$ ]]; then
 				echo -e "# YMAP2 commandline : Per project data limit in Gb.";
+				logged_in_status;
 				echo -e $lineThin;
 				echo -e "#";
 				tempfile=$(mktemp --suffix ".ymap");
@@ -440,6 +688,7 @@ else
 				echo -e "#\t\e[41mInvalid input.\e[0m";
 			else
 				echo -e "# YMAP2 commandline : New per project data limit in Gb.";
+				logged_in_status;
 				echo -e $lineThin;
 				echo -e "#";
 				sed -i "/\$MAX_PROCESSED_DATA_SIZE/c\\\$MAX_PROCESSED_DATA_SIZE = ${2};" constants.php
@@ -452,6 +701,7 @@ else
 	    "admin_email")
 		if [ -z $2 ]; then
 			echo -e "# YMAP2 commandline : Admin email address.";
+			logged_in_status;
 			echo -e $lineThin;
 			echo -e "#";
 			tempfile=$(mktemp --suffix ".ymap");
@@ -463,6 +713,7 @@ else
 			email_pattern='^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 			if [[ ! "$2" =~ $email_pattern ]]; then
 				echo -e "# YMAP2 commandline : Admin email address.";
+				logged_in_status;
 				echo -e $lineThin;
 				echo -e "#";
 				tempfile=$(mktemp --suffix ".ymap");
@@ -472,6 +723,7 @@ else
 				echo -e "#\t\e[41mInvalid input.\e[0m";
 			else
 				echo -e "# YMAP2 commandline : New admin email address.";
+				logged_in_status;
 				echo -e $lineThin;
 				echo -e "#";
 				sed -i "/\$ADMIN_EMAIL/c\\\$ADMIN_EMAIL = \"${2}\";" constants.php
@@ -481,9 +733,10 @@ else
 			fi;
 		fi;
 	    ;;
-	    quota)
+	    "quota")
 		if [ -z $2 ]; then
 			echo -e "# YMAP2 commandline : User account disk utilization quota.";
+			logged_in_status;
 			echo -e $lineThin;
 			echo -e "#";
 			tempfile=$(mktemp --suffix ".ymap");
@@ -494,6 +747,7 @@ else
 		else
 			if ! [[ "$2" =~ ^[0-9]+$ ]]; then
 				echo -e "# YMAP2 commandline : User account disk utilization quota.";
+				logged_in_status;
 				echo -e $lineThin;
 				echo -e "#";
 				tempfile=$(mktemp --suffix ".ymap");
@@ -503,6 +757,7 @@ else
 				echo -e "#\t\e[41mInvalid input.\e[0m";
 			else
 				echo -e "# YMAP2 commandline : New user account disk utilization quota.";
+				logged_in_status;
 				echo -e $lineThin;
 				echo -e "#";
 				sed -i "/\$QUOTA_GLOBAL/c\\\$QUOTA_GLOBAL = ${2};" constants.php
@@ -512,66 +767,224 @@ else
 			fi;
 		fi;
 	    ;;
-
-
+	    "delete")
+		fail=0;
+		if [ "$user" = "" ]; then
+			if [[ "$arguments_count" = 3 ]]; then
+				userAccount=$3;
+			elif [[ "$arguments_count" = 2 ]]; then
+				echo -e "# YMAP2 commandline : Delete project/genome/hapmap/user.";
+				logged_in_status;
+				echo -e $lineThin;
+				echo -e "#";
+				case $2 in
+				    "project")
+					echo -e "#\tUsage: bash YMAPcl.sh delete project \e[31m(user)\e[0m";
+					echo -e "#";
+					echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+					fail=1;
+				    ;;
+				    "genome")
+					echo -e "#\tUsage: bash YMAPcl.sh delete genome \e[31m(user)\e[0m";
+					echo -e "#";
+					echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+					fail=1;
+				    ;;
+				    "hapmap")
+					echo -e "#\tUsage: bash YMAPcl.sh delete hapmap \e[31m(user)\e[0m";
+					echo -e "#";
+					echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+					fail=1;
+				    ;;
+				    "user")
+					fail=0;
+				    ;;
+				    *)
+					echo -e "#\tUsage: bash YMAPcl.sh delete project \e[31m(user)\e[0m";
+					echo -e "#\tUsage: bash YMAPcl.sh delete genome \e[31m(user)\e[0m";
+					echo -e "#\tUsage: bash YMAPcl.sh delete hapmap \e[31m(user)\e[0m";
+					echo -e "#\tUsage: bash YMAPcl.sh delete user";
+					echo -e "#";
+					echo -e "#\t\t\e[41mError: Wrong 2nd arguement!\e[0m";
+					fail=1;
+				    ;;
+				esac;
+			elif [[ "$arguments_count" = 1 ]]; then
+				echo -e "# YMAP2 commandline : Delete project/genome/hapmap/user.";
+				logged_in_status;
+				echo -e $lineThin;
+				echo -e "#";
+				echo -e "#\tUsage: bash YMAPcl.sh delete project \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcl.sh delete genome \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcl.sh delete hapmap \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcl.sh delete user";
+				echo -e "#";
+				echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+				fail=1;
+			else
+				echo -e "# YMAP2 commandline : Delete project/genome/hapmap/user.";
+				logged_in_status;
+				echo -e $lineThin;
+				echo -e "#";
+				echo -e "#\t\t\e[41mError: Wrong number of arguments!\e[0m";
+				fail=1;
+			fi;
+		else
+			if [[ "$arguments_count" = 2 ]]; then
+				userAccount=$user;
+			elif [[ "$arguments_count" = 1 ]]; then
+				echo -e "# YMAP2 commandline : Delete project/genome/hapmap/user.";
+				logged_in_status;
+				echo -e $lineThin;
+				echo -e "#";
+				echo -e "#\tUsage: bash YMAPcl.sh delete project";
+				echo -e "#\tUsage: bash YMAPcl.sh delete genome";
+				echo -e "#\tUsage: bash YMAPcl.sh delete hapmap";
+				echo -e "#\tUsage: bash YMAPcl.sh delete user";
+				fail=1;
+			else
+				echo -e "# YMAP2 commandline : Delete project/genome/hapmap/user.";
+				logged_in_status;
+				echo -e $lineThin;
+				echo -e "#";
+				echo -e "#\t\t\e[41mError: Wrong number of arguments!\e[0m";
+				fail=1;
+			fi;
+		fi;
+		if [[ "$fail" -eq 0 ]]; then
+			case $2 in
+			    "project")
+				userInterface_delete $main_dir $userAccount "project";
+			    ;;
+			    "genome")
+				userInterface_delete $main_dir $userAccount "genome";
+			    ;;
+			    "hapmap")
+				userInterface_delete $main_dir $userAccount "hapmap";
+			    ;;
+			    "user")
+				userInterface_delete $main_dir "null" "user";
+			    ;;
+			    *)
+				echo -e "# YMAP2 commandline : Delete project/genome/hapmap/user.";
+				logged_in_status;
+				echo -e $lineThin;
+				echo -e "#\tUsage: bash YMAPcl.sh install project \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcl.sh install genome \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcl.sh install hapmap \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcl.sh install user";
+				echo -e "#";
+				echo -e "#\t\t\e[41mError: Wrong 2nd arguement!\e[0m";
+			    ;;
+			esac;
+		fi;
+	    ;;
 ##
 ## DRAGON : not updated below.
 ##
-
-	    "delete")
-		if [ -z $2 ]; then
-			echo -e "# YMAP2 commandline : Delete project/genome/hapmap/user.";
-			echo -e $lineThin;
-			echo -e "#";
-			echo -e "#\tUsage1: bash YMAPcl.sh delete \e[31m(project) (user)\e[0m";
-			echo -e "#\tUsage2: bash YMAPcl.sh delete \e[31m(genome) (user)\e[0m";
-			echo -e "#\tUsage3: bash YMAPcl.sh delete \e[31m(hapmap) (user)\e[0m";
-			echo -e "#\tUsage4: bash YMAPcl.sh delete \e[31m(user)\e[0m";
+	    "install")
+		fail=0;
+		if [ "$user" = "" ]; then
+			if [[ "$arguments_count" = 3 ]]; then
+				echo -e "# YMAP2 commandline : Install project/genome/user.";
+				logged_in_status;
+				echo -e $lineThin;
+				echo -e "#";
+				userAccount=$3;
+			elif [[ "$arguments_count" = 2 ]]; then
+				echo -e "# YMAP2 commandline : Install project/genome/user.";
+				logged_in_status;
+				echo -e $lineThin;
+				echo -e "#";
+				case $2 in
+				    "project")
+					echo -e "#\tUsage: bash YMAPcl.sh install project \e[31m(user)\e[0m";
+					echo -e "#";
+					echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+					fail=1;
+				    ;;
+				    "genome")
+					echo -e "#\tUsage: bash YMAPcl.sh install genome \e[31m(user)\e[0m";
+					echo -e "#";
+					echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+					fail=1;
+				    ;;
+				    "user")
+					fail=0;
+				    ;;
+				    *)
+					echo -e "#\tUsage: bash YMAPcl.sh install project \e[31m(user)\e[0m";
+					echo -e "#\tUsage: bash YMAPcl.sh install genome \e[31m(user)\e[0m";
+					echo -e "#\tUsage: bash YMAPcl.sh install user";
+					echo -e "#";
+					echo -e "#\t\t\e[41mError: incorrect 2nd arguement!\e[0m";
+					fail=1;
+				    ;;
+				esac;
+			elif [[ "$arguments_count" = 1 ]]; then
+				echo -e "# YMAP2 commandline : Install project/genome/user.";
+				logged_in_status;
+				echo -e $lineThin;
+				echo -e "#";
+				echo -e "#\tUsage: bash YMAPcl.sh install project \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcl.sh install genome \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcl.sh install user";
+				echo -e "#";
+				echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+				fail=1;
+			else
+				echo -e "# YMAP2 commandline : Install project/genome/user.";
+				logged_in_status;
+				echo -e $lineThin;
+				echo -e "#";
+				echo -e "#\t\t\e[41mError: Wrong number of arguments!\e[0m";
+				fail=1;
+			fi;
 		else
+			if [[ "$arguments_count" = 2 ]]; then
+				echo -e "# YMAP2 commandline : Install project/genome/user.";
+				logged_in_status;
+				echo -e $lineThin;
+				echo -e "#";
+				userAccount=$user;
+			elif [[ "$arguments_count" = 1 ]]; then
+				echo -e "# YMAP2 commandline : Install project/genome/user.";
+				logged_in_status;
+				echo -e $lineThin;
+				echo -e "#";
+				echo -e "#\tUsage: bash YMAPcl.sh install project";
+				echo -e "#\tUsage: bash YMAPcl.sh install genome";
+				echo -e "#\tUsage: bash YMAPcl.sh install user";
+				fail=1;
+			else
+				echo -e "# YMAP2 commandline : Delete project/genome/hapmap/user.";
+				logged_in_status;
+				echo -e $lineThin;
+				echo -e "#";
+				echo -e "#\t\t\e[41mError: Wrong number of arguments!\e[0m";
+				fail=1;
+			fi;
+		fi;
+
+		if [[ "$fail" -eq 0 ]]; then
 			case $2 in
 			    "project")
-				if [ -z $3 ]; then
-					echo -e "# YMAP2 commandline : Delete project.";
-					echo -e $lineThin;
-					echo -e "#";
-					echo -e "#\tUsage1: bash YMAPcl.sh delete project \e[31m(user)\e[0m";
-				else
-					### https://www.geeksforgeeks.org/linux-unix/shell-scripting-dialog-boxes/
-					function DialogGen() {
-						# dialog --title "Delete Project" --msgbox 'Start of user interface to delete an installed project.' 10 40;
-						# dialog --checklist 'checklist' 15 10 10 'potato'  5 'on'  'carrot' 2 'off' 'grape' 3 'on' 'cabbage' 4 'off';
-						dialog --menu "Select project to delete." 12 45 25 1 "apple" 2 "banana" 3 "grapes" 4 "oranges";
-					}
-					DialogGen
-					clear;
-				fi;
+				userInterface_install $main_dir $userAccount "project";
 			    ;;
 			    "genome")
-				if [ -z $3 ]; then
-					echo -e "# YMAP2 commandline : Delete genome.";
-					echo -e $lineThin;
-					echo -e "#";
-					echo -e "#\tUsage1: bash YMAPcl.sh delete genome \e[31m(user)\e[0m";
-				else
-					# comment.
-					echo -e " DD";
-				fi;
+				userInterface_install $main_dir $userAccount "genome";
 			    ;;
-			    "hapmap")
-				if [ -z $3 ]; then
-					echo -e "# YMAP2 commandline : Delete hapmap.";
-					echo -e $lineThin;
-					echo -e "#";
-					echo -e "#\tUsage1: bash YMAPcl.sh delete hapmap \e[31m(user)\e[0m";
-				else
-					# comment.
-					echo -e " DD";
-				fi;
+			    "user")
+				userInterface_install $main_dir "null" "user";
 			    ;;
 			    *)
-				# comment.
-				echo -e " DD";
+				echo -e "# YMAP2 commandline : Delete project/genome/hapmap/user.";
+				logged_in_status;
+				echo -e $lineThin;
+				echo -e "#";
+				echo -e "#\t\t\e[41mError: Wrong arguement!\e[0m";
 			    ;;
+
 			esac;
 		fi;
 	    ;;
@@ -579,4 +992,5 @@ else
 	echo -e "#";
 	echo -e $lineThick
 fi;
+
 
