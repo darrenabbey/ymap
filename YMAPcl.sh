@@ -43,7 +43,7 @@ if [ -z $1 ]; then
 	echo -e "#	hapmaps		: List installed hapmaps.";
 	echo -e "#	complete	: List file paths & names of images for completed projects.";
 	echo -e "#	delete		: Delete a project/genome/hapmap/user.";
-	echo -e "#	install		: install data for a new project/genome.";
+	echo -e "#	install		: install a new project/genome/user.";
 	echo -e "#";
 	echo -e "#   Commands not implemented:"
 	echo -e "#	queue		: Shows the status of the YMAP processing queue.";
@@ -270,11 +270,108 @@ else
 		tempfile2=$(mktemp --suffix ".ymap");
 
 		if [[ "$whatisit" = "project" ]]; then
-			echo -e "#\t Installing a new project.";
+			workingDirectory=$main_dir"/users/"$user"/projects/"
+			bulkDirectory=$main_dir"/users/"$user"/bulkdata/";
+
+			if [[ ! -e $workingDirectory ]]; then
+				echo -e "#\t\e[41mInvalid selection: User not found.\e[0m";
+				echo -e "#";
+				echo -e $lineThick;
+				return 1;
+			fi;
+
+			echo -e "#\tInstalling a new project.";
+			echo -e "#\t\tAfter installing a datafile (or multiple datafiles to be run";
+			echo -e "#\t\twith the same settings), run a separate command to add the";
+			echo -e "#\t\tdata to the processing queue.";
+
+			## Accept input path;
+			echo -e "#";
+			echo -e "#\tEnter the path to your data files.";
+			echo -e -n "#\t\t[path/]: ";
+			read -r selectedDirectory;
+
+			startingDirectory=$(pwd);
+			cd $selectedDirectory;
+			if [ "$(find . -maxdepth 1 -type f | wc -l)" -gt 1 ]; then
+				nameString="";
+				counter=1;
+				options=();
+				for file in *; do
+					if [ -f "$file" ]; then
+						name=$(echo -n "$file");
+						options+=($counter);
+						options+=($name);
+						options+=(off);
+						counter=$(($counter+1));
+					fi
+				done;
+			else
+				nameString="";
+			fi;
+			cd $startingDirectory;
+			#echo $nameString;
+
+			cmd=(dialog --output-fd 1 --separate-output --checklist 'Choose the files to install:' 0 0 0)
+			choices=$("${cmd[@]}" "${options[@]}")
+			clear;
+
+			## Rebuild interface.
+			echo -e $lineThick;
+			echo -e "# YMAP2 commandline : Install project/genome/user.";
+			logged_in_status;
+			echo -e $lineThin;
+			echo -e "#";
+			echo -e "#\tInstalling a new project.";
+			echo -e "#\t\tAfter installing a datafile (or multiple datafiles to be run"; 
+			echo -e "#\t\twith the same settings), run a separate command to add the";
+			echo -e "#\t\tdata to the processing queue.";
+			echo -e "#";
+			echo -e "#\tEnter the path to your data files.";
+			echo -e "#\t\t[path/]: "$selectedDirectory;
+			echo -e "#";
+			echo -e "#\tData file selected:";
+			cd $selectedDirectory;
+			if [ "$(find . -maxdepth 1 -type f | wc -l)" -gt 1 ]; then
+				counter=1;
+				for file in *; do
+					if [ -f "$file" ]; then
+						name=$(echo -n "$file");
+						if [[ $choices == *"$counter"* ]]; then
+							if [ ! -f $bulkDirectory$file ]; then
+								echo -e "#\t\t$name";
+							else
+								echo -e "#\t\t$name (already in bulk directory)";
+							fi;
+						fi
+						counter=$(($counter+1));
+					fi
+				done;
+			fi;
+			cd $startingDirectory;
+			echo -e "#";
+			echo -e "#\tCopying data file into user 'bulkdata' directory.";
+			cd $selectedDirectory;
+			if [ "$(find . -maxdepth 1 -type f | wc -l)" -gt 1 ]; then
+				counter=1;
+				for file in *; do
+					if [ -f "$file" ]; then
+						name=$(echo -n "$file");
+						if [[ $choices == *"$counter"* ]]; then
+							if [ ! -f $bulkDirectory$file ]; then
+								cp $file $bulkDirectory;
+							fi;
+						fi;
+						counter=$(($counter+1));
+					fi
+				done;
+			fi;
+			cd $startingDirectory;
+
 		elif [[ "$whatisit" = "genome" ]]; then
-			echo -e "#\tInstalling a new genome.";
+			echo -e "#\tInstalling a new genome [not yet implemented].";
 		elif [[ "$whatisit" = "user" ]]; then
-			echo -e "#\tInstalling a new user.";
+			echo -e "#\tInstalling a new user [not yet implemented].";
 		else
 			echo -e "#\t\e[41mInvalid selection: Code error.\e[0m";
 			echo -e $lineThick;
