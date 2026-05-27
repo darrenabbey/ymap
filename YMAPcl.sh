@@ -43,7 +43,9 @@ if [ -z $1 ]; then
 	echo -e "#	hapmaps		: List installed hapmaps.";
 	echo -e "#	complete	: List file paths & names of images for completed projects.";
 	echo -e "#	delete		: Delete a project/genome/hapmap/user.";
-	echo -e "#	install		: install a new project/genome/user.";
+	echo -e "#	install		: Install a new project/genome/user.";
+	echo -e "#				Genome and user install are not implemented yet";
+	echo -e "#	run		: Configure and run installed project datasets.";
 	echo -e "#";
 	echo -e "#   Commands not implemented:"
 	echo -e "#	queue		: Shows the status of the YMAP processing queue.";
@@ -51,13 +53,11 @@ if [ -z $1 ]; then
 	echo -e "#				there is ever an improperly terminated process that somehow doesn't";
 	echo -e "#				lead to an end entry in the queue log, leading to the queue being";
 	echo -e "#				hung/stuck."
-	echo -e "#	queue flush	: Cleans up resolved entries from the queue log. Should not be needed,";
-	echo -e "#				but may be useful for managing the queue.";
-	echo -e "#	combine_figures";
-	echo -e "#";
-	echo -e "#   Commands not implemented, require uer interface:";
-	echo -e "#	build_hapmap";
-	echo -e "#	minimize (dataset)";
+	echo -e "#	queue flush	: Clean up corrupted queue log. May be needed if queue refuses to run";
+	echo -e "E				 installed data files.";
+	echo -e "#	combine_figures	: ";
+	echo -e "#	build_hapmap	: complicated user interface required, may not be possible in commandline.";
+	echo -e "#	minimize	: ";
 	echo -e "# ";
 	echo -e $lineThick;
 else
@@ -149,7 +149,6 @@ else
 		whatisit=$3;
 
 		tempfile=$(mktemp --suffix ".ymap");
-		tempfile2=$(mktemp --suffix ".ymap");
 
 		## Build string of projects.
 		if [[ "$whatisit" = "project" ]]; then
@@ -182,8 +181,8 @@ else
 		fi;
 
 		cd $workingDirectory;
+		nameString="";
 		if [ "$(find . -maxdepth 1 -type d | wc -l)" -gt 1 ]; then
-			nameString="";
 			counter=1;
 			for dir in */; do
 				name=$( echo ${dir::-1} );
@@ -235,7 +234,7 @@ else
 				else
 					echo -e "#\t\e[41mAre you certain you want to delete the $whatisit '$selectedName' belonging to user '$userAccount'?\e[0m";
 				fi;
-				echo -e -n "#\n#\t[yes/no]: ";
+				echo -e -n "#\t[yes/no]: ";
 				read -r response;
 				if [ "$response" = "yes" ]; then
 					echo -e "#";
@@ -254,7 +253,7 @@ else
 					echo -e "#\tOperation canceled.";
 				else
 					echo -e "#";
-					echo -e "#\tValue of 'yes' or 'no' was not entered, operation canceled.";
+					echo -e "#\tUnclear entry, operation canceled.";
 				fi;
 			fi;
 		else
@@ -267,7 +266,6 @@ else
 		whatisit=$3;
 
 		tempfile=$(mktemp --suffix ".ymap");
-		tempfile2=$(mktemp --suffix ".ymap");
 
 		if [[ "$whatisit" = "project" ]]; then
 			workingDirectory=$main_dir"/users/"$user"/projects/"
@@ -282,8 +280,8 @@ else
 
 			echo -e "#\tInstalling a new project.";
 			echo -e "#\t\tAfter installing a datafile (or multiple datafiles to be run";
-			echo -e "#\t\twith the same settings), run a separate command to add the";
-			echo -e "#\t\tdata to the processing queue.";
+			echo -e "#\t\twith the same settings), use command 'run' to add the data";
+			echo -e "#\t\tto the processing queue.";
 
 			## Accept input path;
 			echo -e "#";
@@ -300,9 +298,7 @@ else
 				for file in *; do
 					if [ -f "$file" ]; then
 						name=$(echo -n "$file");
-						options+=($counter);
-						options+=($name);
-						options+=(off);
+						options+=($counter $name off);
 						counter=$(($counter+1));
 					fi
 				done;
@@ -310,8 +306,6 @@ else
 				nameString="";
 			fi;
 			cd $startingDirectory;
-			#echo $nameString;
-
 			cmd=(dialog --output-fd 1 --separate-output --checklist 'Choose the files to install:' 0 0 0)
 			choices=$("${cmd[@]}" "${options[@]}")
 			clear;
@@ -367,7 +361,6 @@ else
 				done;
 			fi;
 			cd $startingDirectory;
-
 		elif [[ "$whatisit" = "genome" ]]; then
 			echo -e "#\tInstalling a new genome [not yet implemented].";
 		elif [[ "$whatisit" = "user" ]]; then
@@ -457,12 +450,10 @@ else
 		fi;
 		if [ "$user" != "" ]; then
 			## If logged in.
-			echo -e "#\tuser : "$user;
-			echo -e "#";
 			main_dir=$(pwd);
 			userInfoFile=$main_dir"/users/"$user"/info.txt";
 			while IFS= read -r line; do
-				echo -e "#\t\t"$line;
+				echo -e "#\t"$line;
 			done < $userInfoFile;
 		fi;
 	    ;;
@@ -977,7 +968,7 @@ else
 		fi;
 	    ;;
 ##
-## DRAGON : not updated below.
+## DRAGON : not finalized below.
 ##
 	    "install")
 		fail=0;
@@ -1083,6 +1074,355 @@ else
 			    ;;
 
 			esac;
+		fi;
+	    ;;
+	    "run")
+		fail=0;
+		if [ "$user" = "" ]; then
+			if [[ "$arguments_count" = 2 ]]; then
+				echo -e "# YMAP2 commandline : Run project queue.";
+				logged_in_status;
+				echo -e $lineThin;
+				echo -e "#";
+				userAccount=$2;
+			else
+				echo -e "# YMAP2 commandline : Run project queue.";
+				logged_in_status;
+				echo -e $lineThin;
+				echo -e "#";
+				echo -e "#\tUsage: bash YMAPcl.sh run \e[31m(user)\e[0m";
+				echo -e "#";
+				echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+                                fail=1;
+			fi;
+		else
+			echo -e "# YMAP2 commandline : Run project queue.";
+			logged_in_status;
+			echo -e $lineThin;
+			echo -e "#";
+			userAccount=$user;
+		fi;
+
+		if [[ "$fail" -eq 0 ]]; then
+			#// Main selections needed.
+			#$ploidy          = sanitizeFloat_ARGV(2);
+			#$ploidyBase      = sanitizeFloat_ARGV(3);
+			#$dataFormat      = sanitizeIntChar_ARGV(4);
+			#$showAnnotations = sanitizeIntChar_ARGV(5);
+			#$manualLOH       = sanitizeTabbed_ARGV(6);
+			#$genome          = sanitize_ARGV(7);
+			#$hapmap          = sanitize_ARGV(8);
+			#$bias_GC         = sanitizeBoolean_ARGV(9);
+			#$bias_end        = sanitizeBoolean_ARGV(10);
+
+			# Ask the user which genome to use.
+			genomeDir1=$main_dir"/users/"$user"/genomes/";
+			genomeDir2=$main_dir"/users/default/genomes/";
+			nameString=""
+			maxNameLength=0;
+			counter=1;
+			genomes=();
+			cd $genomeDir1;
+			if [ "$(find . -maxdepth 1 -type d | wc -l)" -gt 1 ]; then
+				for dir in */; do
+					name=$( echo ${dir::-1} );
+					if [[ ${#String} -gt "$maxNameLength" ]]; then
+						maxNameLength=${#name};
+					fi;
+					genomes+=($name);
+					nameString=$nameString" "$counter" "$name;
+					counter=$(($counter+1));
+				done;
+			else
+				nameString="";
+			fi;
+			cd ../../../;
+			cd $genomeDir2;
+			if [ "$(find . -maxdepth 1 -type d | wc -l)" -gt 1 ]; then
+				for dir in */; do
+					name=$( echo ${dir::-1} );
+					if [[ ${#String} -gt "$maxNameLength" ]]; then
+						maxNameLength=${#name};
+					fi;
+					genomes+=($name);
+					nameString=$nameString" "$counter" "$name;
+					counter=$(($counter+1));
+				done;
+			else
+				nameString="";
+			fi;
+			cd ../../../;
+			tempfile=$(mktemp --suffix ".ymap");
+			(dialog --nocancel --menu "Select genome to use." 25 $maxNameLength 25 $nameString) 2> $tempfile
+			selectedKey=$(head -n 1 $tempfile);
+			genome=${genomes[$selectedKey-1]};
+
+			# Get default ploidy from installed genome.
+			genomeDir1=$main_dir"/users/"$user"/genomes/"$genome;
+			genomeDir2=$main_dir"/users/default/genomes/"$genome;
+			if [[ -e "$genomeDir1" ]]; then
+				ploidy=$(cat $genomeDir1"/ploidy.txt");
+			elif [[ -e "$genomeDir2" ]]; then
+				ploidy=$(cat $genomeDir2"/ploidy.txt" );
+			fi;
+
+			# Ask user what ploidy to use for figure, using default ploidy from genome.
+			(dialog --form "Ploidy settings can be updated later." 12 40 4 "Ploidy of experiment:" 1 1 "$ploidy" 1 23 5 0 "Baseline ploidy:" 2 1 "$ploidy" 2 23 5 0) 2> $tempfile;
+			results=$(cat $tempfile);
+			ploidy=$(echo "${results#* ' '}" | head -n 1);
+			ploidyBase=$(echo "${results#* ' '}" | tail -n 1);
+
+			# dataformat default to 1 for short- or long-read sequence data.
+			dataFormat=1;
+
+			# showAnnotations
+			#	<option value="1">Yes</option>
+			#	<option value="0">No</option>
+			## Confirming user choice before deleting.
+			clear;
+			echo -e $lineThick;
+			echo -e "# YMAP2 commandline : Run processing queue.";
+			logged_in_status;
+			echo -e $lineThin;
+			echo -e "#";
+			echo -e "#\tSelected genome.";
+			echo -e "#\t\t$genome";
+			echo -e "#";
+			echo -e "#\tPloidy estimate = "$ploidy;
+			echo -e "#\t\tThis value is an estimate for the experimental sample and can be later adjusted for individual datasets.";
+			echo -e "#";
+			echo -e "#\tBaseline ploidy - "$ploidyBase;
+			echo -e "#\t\tThis value is used to define the midline of chromosome cartoons in generated figures, can be later adjusted.";
+			echo -e "#";
+			echo -e "#\tWould you like to generate figures using any annotations defind for this genome?";
+			echo -e -n "#\t\t[yes/no]: ";
+			read -r response;
+			if [ "$response" = "yes" ]; then
+				echo -e "#";
+				showAnnotations=1;
+			elif [ "$response" = "no" ]; then
+				echo -e "#";
+				showAnnotations=0;
+			else
+				echo -e "#\t\tUnclear entry, defaulting to 'yes'.";
+				echo -e "#";
+				showAnnotations=1;
+			fi;
+
+			# manualLOH is not yet used, default to "";
+			manualLOH="none";
+
+			# Look to see if there are any haplotype maps defined for the chosen genome.
+			hapmapDir1=$main_dir"/users/"$user"/hapmaps/";
+			hapmapDir2=$main_dir"/users/default/hapmaps/";
+			nameString=""
+			maxNameLength=0;
+			counter=1;
+			hapmaps=();
+			cd $hapmapDir1;
+			if [ "$(find . -maxdepth 1 -type d | wc -l)" -gt 1 ]; then
+				for dir in */; do
+					name=$( echo ${dir::-1} );
+					if [[ ${#String} -gt "$maxNameLength" ]]; then
+						maxNameLength=${#name};
+					fi;
+					genomeName=$(head -n 1 $hapmapDir1$name"/genome.txt");
+					if [[ "$genome" = "$genomeName" ]]; then
+						hapmaps+=($name);
+						nameString=$nameString" "$counter" "$name;
+						counter=$(($counter+1));
+					fi;
+				done;
+			else
+				nameString="";
+			fi;
+			cd ../../../;
+			cd $hapmapDir2;
+			if [ "$(find . -maxdepth 1 -type d | wc -l)" -gt 1 ]; then
+				for dir in */; do
+					name=$( echo ${dir::-1} );
+					if [[ ${#String} -gt "$maxNameLength" ]]; then
+						maxNameLength=${#name};
+					fi;
+					genomeName=$(head -n 1 $hapmapDir2$name"/genome.txt");
+					if [[ "$genome" = "$genomeName" ]]; then
+						hapmaps+=($name);
+						nameString=$nameString" "$counter" "$name;
+						counter=$(($counter+1));
+					fi;
+				done;
+			else
+				nameString="";
+			fi;
+			cd ../../../;
+			if [[ ${#a[@]} -gt 0 ]]; then
+				(dialog --nocancel --menu "Select haplotype map to use." 25 $maxNameLength 25 $nameString) 2> $tempfile
+				selectedKey=$(head -n 1 $tempfile);
+				hapmap=${hapmaps[$selectedKey-1]};
+			else
+				hapmap="none";
+			fi;
+
+			# Get bias correction selections.
+			clear;
+			echo -e $lineThick;
+			echo -e "# YMAP2 commandline : Run processing queue.";
+			logged_in_status;
+			echo -e $lineThin;
+			echo -e "#";
+			echo -e "#\tSelected genome.";
+			echo -e "#\t\t$genome";
+			echo -e "#";
+			echo -e "#\tPloidy estimate = "$ploidy;
+			echo -e "#\t\tThis value is an estimate for the experimental sample and can be later adjusted for individual datasets.";
+			echo -e "#";
+			echo -e "#\tBaseline ploidy - "$ploidyBase;
+			echo -e "#\t\tThis value is used to define the midline of chromosome cartoons in generated figures, can be later adjusted.";
+			echo -e "#";
+			echo -e "#\tWould you like to generate figures using any annotations defind for this genome?";
+			if [[ "$showAnnotations" = 0 ]]; then
+				echo -e "#\t\t[yes/no]: no";
+			else # if [[ "$showAnnotations" = 1 ]]; then
+				echo -e "#\t\t[yes/no]: yes";
+			fi;
+			echo -e "#"
+			echo -e "#\tWould you like to apply GC% bias correction to the data before display?"
+			echo -e -n "#\t\t[yes/no]: "
+			read -r response;
+			if [ "$response" = "yes" ]; then
+				bias_GC=true;
+			elif [ "$response" = "no" ]; then
+				bias_GC=false;
+			else
+				echo -e "#\t\tUnclear entry, defaulting to 'yes'.";
+				bias_GC=true;
+			fi;
+			echo -e "#"
+			echo -e "#\tWould you like to apply GC% bias correction to the data before display?"
+			echo -e -n "#\t\t[yes/no]: "
+			read -r response;
+			if [ "$response" = "yes" ]; then
+				bias_end=true;
+			elif [ "$response" = "no" ]; then
+				bias_end=false;
+			else
+				echo -e "#\t\tUnclear entry, defaulting to 'no'.";
+				bias_end=false;
+			fi;
+
+			#       // Figure selection booleans.
+			#       $fig_A1          = sanitizeBoolean_ARGV(11);
+			#       $fig_A2          = sanitizeBoolean_ARGV(12);
+			#       $fig_B1          = sanitizeBoolean_ARGV(13);
+			#       $fig_B2          = sanitizeBoolean_ARGV(14);
+			#       $fig_C           = sanitizeBoolean_ARGV(15);
+			#       $fig_D1          = sanitizeBoolean_ARGV(16);
+			#       $fig_D2          = sanitizeBoolean_ARGV(17);
+			#       $fig_E           = sanitizeBoolean_ARGV(18);
+			#       $fig_F1          = sanitizeBoolean_ARGV(19);
+			#       $fig_F2          = sanitizeBoolean_ARGV(20);
+			#       $fig_G1          = sanitizeBoolean_ARGV(21);
+			#       $fig_G2          = sanitizeBoolean_ARGV(22);
+
+			options=();
+			if [[ "$bias_GC" = "true" ]]; then
+				options+=(0 "GC-content bias figure" on);
+			fi
+			if [[ "$bias_end" = "true" ]]; then
+				options+=(1 "Chromosome-end bias figure" on);
+			fi;
+			options+=(2 "Linear CNV map figure" off);
+			options+=(3 "Full CNV map figure" off);
+			options+=(4 "Linear high-top CNV figure" off);
+			options+=(5 "Linear SNP/LOH map figure" off);
+			options+=(6 "Full SNP/LOH map figure" off);
+			options+=(7 "Linear allelic ratio (fire-plot) map figure" off);
+			options+=(8 "Linear CNV/SNP/LOH map figure" on);
+			options+=(9 "Full CNV/SNP/LOH map figure" on);
+			options+=(10 "Linear CNV/SNP/LOH map figure with alternate color scheme." off);
+			options+=(11 "Full CNV/SNP/LOH map figure with alternate color scheme." off);
+			cmd=(dialog --output-fd 1 --separate-output --checklist 'Choose the figures to generate.\nThese choices can be adjusted later.' 0 0 0)
+			choices=$("${cmd[@]}" "${options[@]}")
+			clear;
+			contains() {
+				value=0;
+				for word in $choices; do
+					if [[ "$word" = "$1" ]]; then
+						value=1;
+					fi;
+				done
+				return $value;
+			}
+			if contains "0";  then fig_A1=false; else fig_A1=true; fi;
+			if contains "1";  then fig_A2=false; else fig_A2=true; fi;
+			if contains "2";  then fig_B1=false; else fig_B1=true; fi;
+			if contains "3";  then fig_B2=false; else fig_B2=true; fi;
+			if contains "4";  then fig_C=false;  else fig_C=true;  fi;
+			if contains "5";  then fig_D1=false; else fig_D1=true; fi;
+			if contains "6";  then fig_D2=false; else fig_D2=true; fi;
+			if contains "7";  then fig_E=false;  else fig_E=true;  fi;
+			if contains "8";  then fig_F1=false; else fig_F1=true; fi;
+			if contains "9";  then fig_F2=false; else fig_F2=true; fi;
+			if contains "10"; then fig_G1=false; else fig_G1=true; fi;
+			if contains "11"; then fig_G2=false; else fig_G2=true; fi;
+
+			echo -e $lineThick;
+			echo -e "# YMAP2 commandline : Run processing queue.";
+			logged_in_status;
+			echo -e $lineThin;
+			echo -e "#";
+			echo -e "#\tSelected genome.";
+			echo -e "#\t\t$genome";
+			echo -e "#";
+			echo -e "#\tPloidy estimate = "$ploidy;
+			echo -e "#\t\tThis value is an estimate for the experimental sample and can be later adjusted for individual datasets.";
+			echo -e "#";
+			echo -e "#\tBaseline ploidy - "$ploidyBase;
+			echo -e "#\t\tThis value is used to define the midline of chromosome cartoons in generated figures, can be later adjusted.";
+			echo -e "#";
+			echo -e "#\tWould you like to generate figures using any annotations defind for this genome?";
+			if [[ "$showAnnotations" = 0 ]]; then
+				echo -e "#\t\t[yes/no]: no";
+			else # if [[ "$showAnnotations" = 1 ]]; then
+				echo -e "#\t\t[yes/no]: yes";
+			fi;
+			echo -e "#"
+			echo -e "#\tWould you like to apply GC% bias correction to the data before display?"
+			echo -e "#\t\t[yes/no]: "$bias_GC;
+			echo -e "#"
+			echo -e "#\tWould you like to apply GC% bias correction to the data before display?"
+			echo -e "#\t\t[yes/no]: "$bias_end;
+			echo -e "#"
+			echo -e "#\tFigure types selected:"
+			for i in $choices; do
+				echo -e "#\t\t"${options[$i*3+1]};
+			done;
+			echo -e "#"
+
+			#echo "user            : "$user;
+			#echo "ploidy          : "$ploidy;
+			#echo "ploidyBase      : "$ploidyBase;
+			#echo "dataFormat      : "$dataFormat;		# '1' for seq data.
+			#echo "showAnnotations : "$showAnnotations;	# '0' or '1' for no/yes
+			#echo "manualLOH       : "$manualLOH;
+			#echo "genome          : "$genome;
+			#echo "hapmap          : "$hapmap;
+			#echo "bias_GC         : "$bias_GC;		# ''/'False' => false; other => true.
+			#echo "bias_end        : "$bias_end;		# ''/'False' => false; other => true.
+			#echo "fig_A1          : "$fig_A1;
+			#echo "fig_A2          : "$fig_A2;
+			#echo "fig_B1          : "$fig_B1;
+			#echo "fig_B2          : "$fig_B2;
+			#echo "fig_C           : "$fig_C;
+			#echo "fig_D1          : "$fig_D1;		# all fig settings are "true"/"false";
+			#echo "fig_D2          : "$fig_D2;
+			#echo "fig_E           : "$fig_E;
+			#echo "fig_F1          : "$fig_F1;
+			#echo "fig_F2          : "$fig_F2;
+			#echo "fig_G1          : "$fig_G1;
+			#echo "fig_G2          : "$fig_G2;
+
+			php project_bulk.create_server.php $user $ploidy $ploidyBase $dataFormat $showAnnotations $manualLOH $genome $hapmap $bias_GC $bias_end $fig_A1 $fig_A2 $fig_B1 $fig_B2 $fig_C $fig_D1 $fig_D2 $fig_E $fig_F1 $fig_F2 $fig_G1 $fig_G2 >/dev/null 2>&1 &
 		fi;
 	    ;;
 	esac;

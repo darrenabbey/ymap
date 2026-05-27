@@ -1,5 +1,4 @@
 <?php
-	session_start();
 	error_reporting(E_ALL);
 	require_once 'constants.php';
 	require_once 'sharedFunctions.php';
@@ -7,17 +6,39 @@
 	require_once 'SecureNewDirectory.php';
 	ini_set('display_errors', 1);
 
-	// If the user is not logged on, redirect to login page.
-	if (!isset($_SESSION['logged_on'])) {
-		session_destroy();
-		header('Location: .');
-	}
+	if (sizeof($argv) > 1) {
+		//
+		// Script run from commandline interface.
+		//
+		$user = $argv[1];
 
-	// Load user string from session.
-	if(isset($_SESSION['user'])) {
-		$user   = $_SESSION['user'];
+		// Validate if user is good.
+		$userDir = "users/".$user."/";
+		if (!file_exists($userDir)) {
+			$user = "";
+			log_stuff("","","","","","user:VALIDATION failure, invalid user string from commandline interface.");
+			header('Location: .');
+		}
+		$commandLineInterface = true;
 	} else {
-		$user = "";
+		//
+		// Script run from web interface.
+		//
+		session_start();
+
+		// If the user is not logged on, redirect to login page.
+		if (!isset($_SESSION['logged_on'])) {
+			session_destroy();
+			header('Location: .');
+		}
+
+		// Load user string from session.
+		if(isset($_SESSION['user'])) {
+			$user   = $_SESSION['user'];
+		} else {
+			$user = "";
+		}
+		$commandLineInterface = false;
 	}
 
 	if ($user == "") {
@@ -27,22 +48,71 @@
 		$admin_user_flag_file = "users/".$user."/admin.txt";
 		if (file_exists($admin_user_flag_file)) {
 			// Validate input strings.
-			$ploidy          = sanitizeFloat_POST("ploidy");
-			$ploidyBase      = sanitizeFloat_POST("ploidyBase");
-			$dataFormat      = sanitizeIntChar_POST("dataFormat");
-			$showAnnotations = sanitizeIntChar_POST("showAnnotations");
-			$manualLOH       = sanitizeTabbed_POST("manualLOH");
 
-			$genome          = sanitize_POST("genome");
+			if ($commandLineInterface == false) {
+				$ploidy          = sanitizeFloat_POST("ploidy");
+				$ploidyBase      = sanitizeFloat_POST("ploidyBase");
+				$dataFormat      = sanitizeIntChar_POST("dataFormat");
+				$showAnnotations = sanitizeIntChar_POST("showAnnotations");
+				$manualLOH       = sanitizeTabbed_POST("manualLOH");
+				$genome          = sanitize_POST("genome");
+				$hapmap          = sanitize_POST("selectHapmap");
+				$bias_GC         = sanitizeBoolean_POST("1_bias2");
+				$bias_end        = sanitizeBoolean_POST("1_bias4");
+
+				// Figure selection booleans.
+				$fig_A1          = sanitizeBoolean_POST("fig_A1");
+				$fig_A2          = sanitizeBoolean_POST("fig_A2");
+				$fig_B1          = sanitizeBoolean_POST("fig_B1");
+				$fig_B2          = sanitizeBoolean_POST("fig_B2");
+				$fig_C           = sanitizeBoolean_POST("fig_C");
+				$fig_D1          = sanitizeBoolean_POST("fig_D1");
+				$fig_D2          = sanitizeBoolean_POST("fig_D2");
+				$fig_E           = sanitizeBoolean_POST("fig_E");
+				$fig_F1          = sanitizeBoolean_POST("fig_F1");
+				$fig_F2          = sanitizeBoolean_POST("fig_F2");
+				$fig_G1          = sanitizeBoolean_POST("fig_G1");
+				$fig_G2          = sanitizeBoolean_POST("fig_G2");
+			} else {
+				print_r($argv);
+				$ploidy          = sanitizeFloat_ARGV(	$argv,2);
+				$ploidyBase      = sanitizeFloat_ARGV(	$argv,3);
+				$dataFormat      = sanitizeIntChar_ARGV($argv,4);
+				$showAnnotations = sanitizeIntChar_ARGV($argv,5);
+				$manualLOH       = sanitizeTabbed_ARGV(	$argv,6);
+				if ($manualLOH == "none") { $manualLOH = ""; }
+				$genome          = sanitize_ARGV(	$argv,7);
+				$hapmap          = sanitize_ARGV(	$argv,8);
+				$bias_GC         = sanitizeBoolean_ARGV($argv,9);
+				$bias_end        = sanitizeBoolean_ARGV($argv,10);
+
+				// Figure selection booleans.
+				$fig_A1          = sanitizeBoolean_ARGV($argv,11);
+				$fig_A2          = sanitizeBoolean_ARGV($argv,12);
+				$fig_B1          = sanitizeBoolean_ARGV($argv,13);
+				$fig_B2          = sanitizeBoolean_ARGV($argv,14);
+				$fig_C           = sanitizeBoolean_ARGV($argv,15);
+				$fig_D1          = sanitizeBoolean_ARGV($argv,16);
+				$fig_D2          = sanitizeBoolean_ARGV($argv,17);
+				$fig_E           = sanitizeBoolean_ARGV($argv,18);
+				$fig_F1          = sanitizeBoolean_ARGV($argv,19);
+				$fig_F2          = sanitizeBoolean_ARGV($argv,20);
+				$fig_G1          = sanitizeBoolean_ARGV($argv,21);
+				$fig_G2          = sanitizeBoolean_ARGV($argv,22);
+			}
+
+
 			$genome_dir1     = "users/".$user."/genomes/".$genome;
 			$genome_dir2     = "users/default/genomes/".$genome;
 			if (!(is_dir($genome_dir1) || is_dir($genome_dir2))) {
 				// Genome doesn't exist, should never happen: Force logout.
-				session_destroy();
+				if ($commandLineInterface == false) {
+					session_destroy();
+				}
 				header('Location: .');
+				
 			}
 
-			$hapmap          = sanitize_POST("selectHapmap");
 			if (($hapmap == "none") || ($hapmap == "")) {
 				// no hapmap is used.
 			} else {
@@ -51,24 +121,12 @@
 				$hapmap_dir2 = "users/default/hapmaps/".$hapmap;
 				if (!(is_dir($hapmap_dir1) || is_dir($hapmap_dir2))) {
 					// Hapmap doesn't exist, should never happen: Force logout.
-					session_destroy();
+					if ($commandLineInterface == false) {
+						session_destroy();
+					}
 					header('Location: .');
 				}
 			}
-
-			// Figure selection booleans.
-			$fig_A1          = sanitizeBoolean_POST("fig_A1");
-			$fig_A2          = sanitizeBoolean_POST("fig_A2");
-			$fig_B1          = sanitizeBoolean_POST("fig_B1");
-			$fig_B2          = sanitizeBoolean_POST("fig_B2");
-			$fig_C           = sanitizeBoolean_POST("fig_C");
-			$fig_D1          = sanitizeBoolean_POST("fig_D1");
-			$fig_D2          = sanitizeBoolean_POST("fig_D2");
-			$fig_E           = sanitizeBoolean_POST("fig_E");
-			$fig_F1          = sanitizeBoolean_POST("fig_F1");
-			$fig_F2          = sanitizeBoolean_POST("fig_F2");
-			$fig_G1          = sanitizeBoolean_POST("fig_G1");
-			$fig_G2          = sanitizeBoolean_POST("fig_G2");
 
 			// Define some directories for later use.
 			$projects_bulkdata     = "users/".$user."/bulkdata";
@@ -143,14 +201,12 @@
 			$fileName2 = $projects_bulksettings."/dataBiases.txt";
 			$file2     = fopen($fileName2, 'w');
 			if ($dataFormat == "1") { // WGseq
-				$bias_GC     = filter_input(INPUT_POST, "1_bias2");
-				$bias_end    = filter_input(INPUT_POST, "1_bias4");
-				if ($bias_GC == "") {
+				if (($bias_GC == "") || ($bias_GC == "false")) {
 					$bias_GC  = "False";
 				} else {
 					$bias_GC  = "True";
 				}
-				if ($bias_end == "") {
+				if (($bias_end == "") || ($bias_end == "false")) {
 					$bias_end = "False";
 				} else {
 					$bias_end = "True";
@@ -303,7 +359,9 @@
 						echo "Project '".$project."' directory already exists.";
 						log_stuff($user,$project,"","","","bulkdata:FAIL project name already exists.");
 					} else {
-						$_SESSION['pending_install_project_count'] += 1;
+						if ($commandLineInterface == false) {
+							$_SESSION['pending_install_project_count'] += 1;
+						}
 
 						// Project doesn't already exist, so create.
 						mkdir($project_dir1);
@@ -449,7 +507,7 @@
 ?>
 	// Update user interface with project names.
 	var el1 = parent.document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('newly_installed_list');
-	el1.innerHTML += "<?php echo $_SESSION['pending_install_project_count']; ?>. <?php echo $project; ?><br>";
+	el1.innerHTML += "<?php if ($commandLineInterface == false) { echo $_SESSION['pending_install_project_count']; } ?>. <?php echo $project; ?><br>";
 <?php
 						log_stuff($user,$project,"","","","bulkdata:CREATE individual project success.");
 					}

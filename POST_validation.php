@@ -28,6 +28,21 @@ function sanitize_POST($POST_name) {
 	$cleanString = preg_replace("/[^\w\-_.]+/", "", $cleanString);
 	return $cleanString;
 }
+function sanitize_ARGV($argv,$ARGV_key) {
+	// Pull string from input_post; clean up any leading/trailing whitespace.
+	$cleanString = trim($argv[$ARGV_key]);
+	// strip out any HTML/XML/PHP tags.
+	$cleanString = strip_tags($cleanString);
+
+	// convert any spaces to underlines.
+	$cleanString = str_replace(" ","_", $cleanString);
+	// remove whitespace.
+	$cleanString = preg_replace("/[\s]+/", "", $cleanString);
+	// remove everything but alphanumeric characters, underlines, dashes, and periods.
+	$cleanString = preg_replace("/[^\w\-_.]+/", "", $cleanString);
+	return $cleanString;
+}
+
 function sanitizeProjectsShown_POST($POST_name) {   // for cleaning projectsShown descriptions strings in UI.
 	// Pull string from input_post; clean up any leading/trailing whitespace.
 	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT) ?? '');
@@ -40,6 +55,14 @@ function sanitizeProjectsShown_POST($POST_name) {   // for cleaning projectsShow
 }
 function sanitizeBoolean_POST($POST_name) {
 	$cleanString = sanitize_POST($POST_name);
+	if (strtolower($cleanString) == "true") {
+		return true;
+	} else {
+		return false;
+	}
+}
+function sanitizeBoolean_ARGV($argv,$ARGV_key) {
+	$cleanString = sanitize_ARGV($argv,$ARGV_key);
 	if (strtolower($cleanString) == "true") {
 		return true;
 	} else {
@@ -90,6 +113,16 @@ function sanitizeFloat_POST($POST_name) {
 	$cleanString = preg_replace("/[^\d\.]+/", "", $cleanString);
 	return $cleanString;
 }
+function sanitizeFloat_ARGV($argv,$ARGV_key) {
+	// Pull string from input_post; clean up any leading/trailing whitespace.
+	$cleanString = trim($argv[$ARGV_key]);
+	// strip out any HTML/XML/PHP tags.
+	$cleanString = strip_tags($cleanString);
+
+	// remove everything but numerals and period.
+	$cleanString = preg_replace("/[^\d\.]+/", "", $cleanString);
+	return $cleanString;
+}
 function sanitizeInt_POST($POST_name) {
 	// Pull string from input_post; clean up any leading/trailing whitespace.
 	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT) ?? '');
@@ -122,9 +155,31 @@ function sanitizeIntChar_POST($POST_name) {
 	$cleanString = $cleanString[0];
 	return $cleanString;
 }
+function sanitizeIntChar_ARGV($argv,$ARGV_key) {
+	// Pull string from input_post; clean up any leading/trailing whitespace.
+	$cleanString = trim($argv[$ARGV_key]);
+	// strip out any HTML/XML/PHP tags.
+	$cleanString = strip_tags($cleanString);
+
+	// remove everything but numerals.
+	$cleanString = preg_replace("/[^\d]+/", "", $cleanString);
+	// only use first numeral of input.
+	$cleanString = $cleanString[0];
+	return $cleanString;
+}
 function sanitizeTabbed_POST($POST_name) {
 	// Pull string from input_post; clean up any leading/trailing whitespace.
 	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT) ?? '');
+	// strip out any HTML/XML/PHP tags.
+	$cleanString = strip_tags($cleanString);
+
+	// remove everything but word characters and tabs.
+	$cleanString = preg_replace("/[^\w\t]+/", "", $cleanString);
+	return $cleanString;
+}
+function sanitizeTabbed_ARGV($argv,$ARGV_key) {
+	// Pull string from input_post; clean up any leading/trailing whitespace.
+	$cleanString = trim($argv[$ARGV_key]);
 	// strip out any HTML/XML/PHP tags.
 	$cleanString = strip_tags($cleanString);
 

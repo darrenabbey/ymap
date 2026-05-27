@@ -26,8 +26,10 @@
 			<label for="researchInstitution">Institution: </label>                      <input type="text"     id="researchInstitution"       name="researchInstitution"><br>
 			<div class='tab' style='font-size:10pt'>
 			Contact information here should be sufficient for admins to validate your existence.<br>
+			&nbsp; &nbsp; &nbsp; &nbsp; This is most easily accomplished by useing an instituitional or university provided email address.<br><br>
 			User accounts registered without sufficient information will be deleted.<br>
-			This information will only be used for system administration tasks.<br><br>
+			&nbsp; &nbsp; &nbsp; &nbsp; Examples of this are cccounts with domains such as @gmail.com or @qq.com that can't be validated to a specific person. <br><br>
+			This information will only be used for system administration tasks.<br>
 			You will receive an email confirmation once the account has been approved.<br>
 			</div>
 			<br>

@@ -287,7 +287,7 @@
 					if ("innerHTML" in select) {
 						select.innerHTML   = '';
 						var el             = document.createElement("option");
-						el.textContent     = '[None defined]';
+						el.textContent     = 'None';
 						el.value           = 'none';
 						select.appendChild(el);
 						for (var i = 1; i < hapmapGenome_entries.length; i++) {
