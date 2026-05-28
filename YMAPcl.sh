@@ -407,16 +407,13 @@ else
 	    ;;
 	    "localize")
 		if [[ ! -e "constants.php" ]]; then
-			# Copy 'constants_template.php' to constants.php
+			# Copy 'constants_template.php' to 'constants.php'.
 			TargetFile1="constants.php";
 			cp constants_template.php $TargetFile1;
-			# Update file setting.
-			sed -i '/BASE_DIR/c\\$base_dir="'$main_dir'/";' $TargetFile1;
-			sudo chown www-data:www-data $TargetFile1;
 
+			# Copy 'config_template.sh' to 'config.sh',
 			TargetFile2="config.sh"
 			cp config_template.sh $TargetFile2;
-			sudo chown www-data:www-data $TargetFile2;
 
 			echo -e "#";
 			echo -e "#\tSettings files localized.";
