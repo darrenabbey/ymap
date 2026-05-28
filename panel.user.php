@@ -74,22 +74,27 @@ if (isset($_SESSION['logged_on'])) {
 <ul>
 <li>YMAP is back! While we were offline, I took the opportunity to do some major system updates.</li>
 	<ol>
-	<li>Uploaded data is now added to a queue that will process your data while helping to ensure the server isn't sporadically overloaded.</li>
-	<li>If a process crashes, a much more informative error message will be generated, allowing easier code troubleshooting.</li>
+	<li><b>YMAP now can process long-read sequence data!</b></li>
+	<li>Uploaded data is now added to a queue that will process your data while keeping system demaind under control.</li>
+	<br>
+
+	<li>If a process crashes, a useful error message will be generated, allowing easier code troubleshooting.</li>
 	<li>The install process has been greatly simplified if you want to setup your own local YMAP server. This option will give you the opportunity to use a bulk data processing module that isn't available on the public server.</li>
+	<li>The web interface of YMAP includes several admin tabs for user and analysis management.</li>
+	<li>There is a new commandline admin interface ("YMAPcl.sh") that can use most features of the web interface of YMAP. </li>
 	</ol>
 <br>
 <li>There have been user interface and final output figure improvements.</li>
 	<ol>
 	<li>Chromosome cartoons have a more polished look.</li>
 	<li>The combined figure command now produces a figure with dataset names added above each subfigure.</li>
+	<li>Some buttons have been repositioned to help avoid accidental deletion of data.</li>
 	</ol>
 <br>
 <li>Additional functions are planned to be added at the time of a planned paper where the name will transition to YMAP2.</li>
 	<ol>
-	<li>Processing long-read sequence data.</li>
 	<li>Natively handling diploid reference genomes.</li>
-	<li>Processing data for much larger genomes.</li>
+	<li>Processing data for much larger genomes?</li>
 	<li>...</li>
 	<li><b><font color="red">What feature immprovements would you like to see?</font></b></li>
 	</ol>
