@@ -1439,7 +1439,7 @@ else
 			fi;
 			echo -e "#"
 			echo -e "#\tWould you like to apply GC% bias correction to the data before display?"
-			if [[ "$bias_QC" = "true" ]]; then
+			if [[ "$bias_GC" = "true" ]]; then
 				echo -e "#\t\t[yes/no]: yes";
 			else
 				echo -e "#\t\t[yes/no]: no"
