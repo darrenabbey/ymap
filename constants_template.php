@@ -1,13 +1,9 @@
 <?php
 //==============================================================================
-// The following settings will need to be updated at the time of YMAP installation.
+// The following settings may need to be updated at the time of YMAP installation.
 //
 // After adjusting, save this file to "constants.php" for use.
 //------------------------------------------------------------------------------
-
-// Pipeline componant locations; users_dir variable is not consistently used across YMAP code, so don't change.
-BASE_DIR
-$users_dir	= $base_dir."/users/";
 
 // Pepper string for password security; so long as this file name starts with a ".", git will ignore it.
 include(".pepper.php");
@@ -21,7 +17,7 @@ include(".pepper.php");
 $QUOTA_GLOBAL = 15;
 
 // Admin contact email address.
-$ADMIN_EMAIL = "darrenabbey.ymap@gmail.com";
+$ADMIN_EMAIL = "admin@email.address";
 
 // The maximum memory utilization has been found to be very predictable from the input size of the sequence reads file:
 //	x = Gb of *.fastq data; f(x) = Gb memory utilized.
@@ -54,4 +50,8 @@ $MAX_CHROM_SELECTION = 50;
 // The maximum number of chromosomes that will be displayed to the user to choose from the 50 to draw.
 // Too high a maximum leads to scripts_genomes/genome.install_2.php failing to run when a reference with many contigs is loaded.
 $MAX_CHROM_POOL = 200;
+
+// Pipeline componant locations; users_dir variable is not consistently used across YMAP code, so don't change.
+$base_dir  = getcwd();
+$users_dir = $base_dir."/users/";
 ?>
