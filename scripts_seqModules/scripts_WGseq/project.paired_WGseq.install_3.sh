@@ -57,6 +57,50 @@ chmod 0774 $logName;
 chmod 0774 $condensedLog;
 
 
+echo -e "#==============================================================================" >> $logName;
+echo -e "#\tChecking to see if FASTQ data needs to be downsampled to be processed within memory limitations." >> $logName;
+# Get memory target from "constants.php" file.
+MAX_MEMORY_TARGET=$(grep "MAX_MEMORY_TARGET" "$main_dir/constants.php" | tc -dc '0-9');
+if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
+	# Get FASTQ data total size in bytes.
+	FILESIZE1=$(stat -c%s "$main_dir/users/$user/projects/$project/datafile_0.fastq")
+	FILESIZE2=$(stat -c%s "$main_dir/users/$user/projects/$project/datafile_1.fastq")
+	FILESIZE=$(($FILESIZE1 + $FILESIZE2));
+
+	# Calculate FASTQ data total size in GB.
+	FILESIZE_GB=$(echo "$FILESIZE/1000000000" | bc -l)
+
+	A="2.4168477588029";
+	B="-1.13116709532669";
+	# Fit function relating FASTQ size (GB) to memory utilization (GB).
+	#	f(x) = A x + B
+	#		f(x) = memory utilization (GB)
+	#		x = FASTQ size (GB)
+	# To calculate the data that will produce a specific memory utilization, we invert the function.
+	#	f(y) = (y - B)/A
+	#		f(y) = FASTQ size (GB)
+	#		y = memory utilization (GB)
+	MAX_PROCESSED_DATA_SIZE=$(echo "($MAX_MEMORY_TARGET - $B)/$A" | bc -l);
+
+	if [[ $(echo "$FILESIZE > $MAX_PROCESSED_DATA_SIZE" | bc -l) ]]; then
+		# Calculate percentage of target vs original.
+		TARGET_PERCENTAGE=$(echo "$MAX_PROCESSED_DATA_SIZE/$FILESIZE" | bc -l);
+
+		echo -e "Downsampling FASTQ data." >> $condensedLog;
+		echo -e "#\tDownsampling FASTQ data:" >> $logName;
+		echo -e "#\t\tMemory utilization target : $MAX_MEMORY_TARGET" >> $LogName;
+		echo -e "#\t\tDownsampling percentage   : $TARGET_PERCENTAGE" >> $LogName;
+
+		# Subsample FASTQ files to target percentage.
+		seqtk sample "$main_dir/users/$user/projects/$project/datafile_0.fastq" "$TARGET_PERCENTAGE" > "$main_dir/users/$user/projects/$project/datafile_0.sample.fastq";
+		seqtk sample "$main_dir/users/$user/projects/$project/datafile_1.fastq" "$TARGET_PERCENTAGE" > "$main_dir/users/$user/projects/$project/datafile_1.sample.fastq";
+	else
+		echo -e "#\tNo need to downsample FASTQ data." >> $logName;
+	fi;
+fi;
+echo -e "#==============================================================================" >> $logName;
+
+
 # Get setup information from project files.
 # "genome.txt"
 #    first line  => genome

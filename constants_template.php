@@ -31,7 +31,6 @@ $ADMIN_EMAIL = "darrenabbey.ymap@gmail.com";
 // A zero value here means the check is not performed.
 // A non-zero value here is interpreted in Gb; any larger datafiles will be subsampled down to this size before processing.
 $MAX_MEMORY_TARGET = 20;
-$MAX_PROCESSED_DATA_SIZE = 2.59507052086734 * $MAX_MEMORY_TARGET - 1.13116709532669;
 
 // The maximum number of datasets to be analyzed in parallel by the processing queue.
 // More than one can be processed at once, but the memory utilization becomes less predictable so should not be done on memory limited servers without testing.
