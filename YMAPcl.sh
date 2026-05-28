@@ -34,7 +34,7 @@ if [ -z $1 ]; then
 	echo -e "#	log_out		: Log the admin interface out of a user account.";
 	echo -e "#	daemon		: Show status of ymap_daemon service.";
 	echo -e "#	queue_limit	: Show the max number of datasets to be processed in parallel.";
-	echo -e "#	data_limit	: Show the max user data to be processed.";
+	echo -e "#	data_limit	: Show the target max memory utilization.";
 	echo -e "#	admin_email	: Show admin email, displayed in user interface for issues.";
 	echo -e "#	quota		: Show per account disk quota.";
 	echo -e "#	info		: Show user account information.";
@@ -757,7 +757,7 @@ else
 			echo -e $lineThin;
 			echo -e "#";
 			tempfile=$(mktemp --suffix ".ymap");
-			grep "\$MAX_PROCESSED_DATA_SIZE" constants.php > $tempfile;
+			grep "\$MAX_MEMORY_TARGET" constants.php > $tempfile;
 			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
 			echo -e "#";
 			echo -e "#\tUsage: bash YMAPcl.sh data_limit \e[31m(value)\e[0m";
@@ -770,7 +770,7 @@ else
 				echo -e $lineThin;
 				echo -e "#";
 				tempfile=$(mktemp --suffix ".ymap");
-				grep "\$MAX_PROCESSED_DATA_SIZE" constants.php > $tempfile;
+				grep "\$MAX_MEMORY_TARGET" constants.php > $tempfile;
 				awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
 				echo -e "#";
 				echo -e "#\t\e[41mInvalid input.\e[0m";
@@ -779,9 +779,9 @@ else
 				logged_in_status;
 				echo -e $lineThin;
 				echo -e "#";
-				sed -i "/\$MAX_PROCESSED_DATA_SIZE/c\\\$MAX_PROCESSED_DATA_SIZE = ${2};" constants.php
+				sed -i "/\$MAX_MEMORY_TARGET/c\\\$MAX_MEMORY_TARGET = ${2};" constants.php
 				tempfile=$(mktemp --suffix ".ymap");
-				grep "\$MAX_PROCESSED_DATA_SIZE" constants.php > $tempfile;
+				grep "\$MAX_MEMORY_TARGET" constants.php > $tempfile;
 				awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
 			fi;
 		fi;
