@@ -5,6 +5,8 @@
 // After adjusting, save this file to "constants.php" for use.
 //------------------------------------------------------------------------------
 
+BASE_DIR_temp
+
 // Pepper string for password security; so long as this file name starts with a ".", git will ignore it.
 include(".pepper.php");
 
@@ -52,6 +54,5 @@ $MAX_CHROM_SELECTION = 50;
 $MAX_CHROM_POOL = 200;
 
 // Pipeline componant locations; users_dir variable is not consistently used across YMAP code, so don't change.
-$base_dir  = getcwd();
-$users_dir = $base_dir."/users/";
+$users_dir = $base_dir."users/";
 ?>

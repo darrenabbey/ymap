@@ -410,10 +410,16 @@ else
 			# Copy 'constants_template.php' to 'constants.php'.
 			TargetFile1="constants.php";
 			cp constants_template.php $TargetFile1;
+			sudo sed -i "/BASE_DIR_temp/c\\\$base_dir=\"$main_dir/\";" $TargetFile1;
+
+			# Copy 'ymap_daemon_template.php' to 'ymap_daemon.php'.
+			TargetFile2="ymap_daemon.php";
+			cp ymap_daemon_template.php $TargetFile2;
+			sudo sed -i "/BASE_DIR_temp/c\\\$script_directory=\"$main_dir/\";" $TargetFile2;
 
 			# Copy 'config_template.sh' to 'config.sh',
-			TargetFile2="config.sh"
-			cp config_template.sh $TargetFile2;
+			TargetFile3="config.sh"
+			cp config_template.sh $TargetFile3;
 
 			echo -e "#";
 			echo -e "#\tSettings files localized.";
