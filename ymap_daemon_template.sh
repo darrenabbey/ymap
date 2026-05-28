@@ -2,10 +2,11 @@
 set -e
 
 #==============================================================================
-#  Installation:
+#  Installation: (This can be done using the YMAP commandline admin interface.)
+#       (run by: "bash YMAPcl.sh" and then use the green highlighted command option.)
 #
 #	1. Adjust this to the location of your "ymap_daemon.php" file.
-DAEMON_OPTS="/var/www/html/ymap/ymap_daemon.php";
+DAEMON_OPTS
 #
 #	2. Save this file to: "/etc/init.d/ymap_daemon"
 #

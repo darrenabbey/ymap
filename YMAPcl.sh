@@ -30,6 +30,18 @@ if [ -z $1 ]; then
 	echo -e "# Command syntax is : 'bash YMAPcl.sh [command] (option1) (option2) (...)'";
 	echo -e "# ";
 	echo -e "#   Commands:";
+	echo -e "#";
+	if [[ ! -e "/etc/init.d/ymap_daemon" ]]; then
+		echo -e "#       \e[42minstall_daemon  : Install the ymap_daemon into '/etc/init.d/' then start it up.\e[0m";
+		echo -e "#                         \e[42mThis command will produce a prompt for credentials to start the\e[0m";
+		echo -e "#                         \e[42mdaemon process. This command option will go away after it is used.\e[0m";
+	fi
+	if [[ ! -e "constants.php" ]]; then
+		echo -e "#       \e[42mlocalize        : Adjusts settings files for YMAP installation path..\e[0m";
+		echo -e "#                         \e[42mThis command will produce a prompt for credentials to change\e[0m";
+                echo -e "#                         \e[42mownership of the new settings files. This command option will go away\e[0m";
+		echo -e "#                         \e[42mafter it is used.\e[0m";
+	fi
 	echo -e "#	log_in		: Log the admin interface to a specific user account.";
 	echo -e "#	log_out		: Log the admin interface out of a user account.";
 	echo -e "#	daemon		: Show status of ymap_daemon service.";
@@ -378,6 +390,36 @@ else
 
 	echo -e $lineThick;
 	case $1 in
+	    "install_daemon")
+		if [[ !  -e "/etc/init.d/ymap_daemon" ]]; then
+			# Copy 'ymap_daemon_template.sh' to /etc/init.d/ymap_daemon
+			TargetFile="/etc/init.d/ymap_daemon";
+			cp ymap_daemon_template.sh $TargetFile;
+
+			# Update file setting.
+			sed -i "/DAEMON_OPTS/c\\\DAEMON_OPTS=\"$main_dir/ymap_daemon.php\";" $TargetFile;
+
+			# Make it executable.
+			 chmod +x $TargetFile;
+
+			# Start the service.
+			service ymap_daemon restart;
+		fi;
+	    ;;
+	    "localize")
+		if [[ ! -e "constants.php" ]]; then
+			# Copy 'constants_template.php' to constants.php
+			TargetFile1="constants.php";
+			cp constants_template.php $TargetFile1;
+			# Update file setting.
+			sed -i "/BASE_DIR/c\\\DAEMON_OPTS=\"$base_dir=\"main_dir/\";" $TargetFile1;
+			sudo chown www-data:www-data $TargetFile1;
+
+			TargetFile2="config.sh"
+			cp config_template.sh $TargetFile2;
+			sudo chown www-data:www-data $TargetFile2;
+		fi;
+	    ;;
 	    "log_in")
 		echo -e "# YMAP2 commandline :";
 		echo -e $lineThin;

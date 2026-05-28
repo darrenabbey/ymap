@@ -6,7 +6,7 @@
 //------------------------------------------------------------------------------
 
 // Pipeline componant locations; users_dir variable is not consistently used across YMAP code, so don't change.
-$base_dir	= "/var/www/html/ymap";
+BASE_DIR
 $users_dir	= $base_dir."/users/";
 
 // Pepper string for password security; so long as this file name starts with a ".", git will ignore it.
@@ -30,6 +30,7 @@ $ADMIN_EMAIL = "darrenabbey.ymap@gmail.com";
 // Limiting the data size here can be used to keep the memory utilization within expected bounds.
 // A zero value here means the check is not performed.
 // A non-zero value here is interpreted in Gb; any larger datafiles will be subsampled down to this size before processing.
+//	Only use integer numbers here. A decimal number will not be properly interpreted by non-PHP components which also look to this file.
 $MAX_MEMORY_TARGET = 20;
 
 // The maximum number of datasets to be analyzed in parallel by the processing queue.
