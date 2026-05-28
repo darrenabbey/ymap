@@ -64,6 +64,7 @@
 
 // Identify format of uploaded file and decompress as needed (*.ZIP; *.GZ).
 	$outputName = "../../users/".$user."/projects/".$project."/datafiles.txt";
+	shell_exec("install /dev/null ".$outputName);
 	$output     = fopen($outputName, 'w');
 	$fileNames  = explode(",", $fileName);
 	fwrite($logOutput, "\tGenerate 'datafiles.txt' and decompress uploaded archives.\n");
@@ -84,6 +85,7 @@
 		// Generate 'upload_size.txt' file to contain the size of the uploaded file (irrespective of format) for display in "Manage Datasets" tab.
 		$fileNumber     = $key+1;
 		$output2Name    = $projectPath."upload_size_".$fileNumber.".txt";
+		shell_exec("install /dev/null ".$output2Name);
 		$output2        = fopen($output2Name, 'w');
 		$fileSizeString = filesize($projectPath.$name);
 		fwrite($output2, $fileSizeString);

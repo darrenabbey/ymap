@@ -76,8 +76,8 @@ if (isset($_SESSION['logged_on'])) {
 	<ol>
 	<li><b>YMAP now can process long-read sequence data!</b></li>
 	<li>Uploaded data is now added to a queue that will process your data while keeping system demaind under control.</li>
-	<br>
-
+	<li>A warning is presented if less than 25% of uploaded sequence reads map to the reference genome.</li>
+	<li>Fewer process hangs/crashes due to better error management.</i>
 	<li>If a process crashes, a useful error message will be generated, allowing easier code troubleshooting.</li>
 	<li>The install process has been greatly simplified if you want to setup your own local YMAP server. This option will give you the opportunity to use a bulk data processing module that isn't available on the public server.</li>
 	<li>The web interface of YMAP includes several admin tabs for user and analysis management.</li>

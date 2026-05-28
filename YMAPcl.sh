@@ -56,15 +56,11 @@ if [ -z $1 ]; then
 	echo -e "#	complete	: List file paths & names of images for completed projects.";
 	echo -e "#	delete		: Delete a project/genome/hapmap/user.";
 	echo -e "#	install		: Install a new project/genome/user.";
-	echo -e "#				Genome and user install are not implemented yet";
+	echo -e "#				\e[41mGenome and user install are not implemented yet.\e[0m";
 	echo -e "#	run		: Configure and run installed project datasets.";
 	echo -e "#";
 	echo -e "#   Commands not implemented:"
 	echo -e "#	queue		: Shows the status of the YMAP processing queue.";
-	echo -e "#	queue delete	: Force ends an item from the processing queue. To be used in case";
-	echo -e "#				there is ever an improperly terminated process that somehow doesn't";
-	echo -e "#				lead to an end entry in the queue log, leading to the queue being";
-	echo -e "#				hung/stuck."
 	echo -e "#	queue flush	: Clean up corrupted queue log. May be needed if queue refuses to run";
 	echo -e "E				 installed data files.";
 	echo -e "#	combine_figures	: ";
@@ -400,7 +396,7 @@ else
 			sed -i "/DAEMON_OPTS/c\\\DAEMON_OPTS=\"$main_dir/ymap_daemon.php\";" $TargetFile;
 
 			# Make it executable.
-			 chmod +x $TargetFile;
+			chmod +x $TargetFile;
 
 			# Start the service.
 			service ymap_daemon restart;
@@ -568,6 +564,15 @@ else
 			projectDirectory=$main_dir"/users/"$user"/projects/";
 			if [ -d $projectDirectory ]; then
 				cd $projectDirectory;
+
+				## Project files installed, but not run: count files in bulkdata directory.
+				installedCount=$(ls $main_dir"/users/"$user"/bulkdata/" | wc -l);
+				if [[ "$installedCount" = "0" ]]; then
+					echo -e "#\tNo datasets have been installed and not yet initialized/run into queue.";
+				else
+					echo -e "#\t$installedCount data files have been installed and not yet initialized/run into queue.";
+				fi;
+				echo -e "#";
 
 				## Projects not started: missing "complete.txt" and "working.txt" files.
 				echo -e "#\tProjects initialized:";
@@ -1144,6 +1149,10 @@ else
 			echo -e "#";
 			userAccount=$user;
 		fi;
+		if [[ $(ls $main_dir"/users/"$user"/bulkdata/" | wc -l) = "0" ]]; then
+			echo -e "#\t\e[41mNo datasets have been installed and not yet run for this user.\e[0m";
+			fail=1;
+		fi;
 
 		if [[ "$fail" -eq 0 ]]; then
 			#// Main selections needed.
@@ -1430,10 +1439,18 @@ else
 			fi;
 			echo -e "#"
 			echo -e "#\tWould you like to apply GC% bias correction to the data before display?"
-			echo -e "#\t\t[yes/no]: "$bias_GC;
+			if [[ "$bias_QC" = "true" ]]; then
+				echo -e "#\t\t[yes/no]: yes";
+			else
+				echo -e "#\t\t[yes/no]: no"
+			fi;
 			echo -e "#"
 			echo -e "#\tWould you like to apply GC% bias correction to the data before display?"
-			echo -e "#\t\t[yes/no]: "$bias_end;
+			if [[ "$bias_end" = "true" ]]; then
+				echo -e "#\t\t[yes/no]: yes";
+			else
+				echo -e "#\t\t[yes/no]: no"
+			fi;
 			echo -e "#"
 			echo -e "#\tFigure types selected:"
 			for i in $choices; do

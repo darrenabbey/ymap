@@ -22,7 +22,7 @@ logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
 
 ## Error handling in case something crashes.
-trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.single_WGseq.install_3.sh:$LINENO"; echo -e "Something went wrong. project.single_WGseq.install_3.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.single_WGseq.install_3.sh:$LINENO"; install /dev/null $projectDirectory"error.txt"; echo -e "Something went wrong. project.single_WGseq.install_3.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
 echo -e "#.............................................................................." >> $logName;
 echo -e "" >> $logName;
@@ -57,7 +57,7 @@ echo -e "Setting up for processing." >> $condensedLog;
 echo -e "#==============================================================================" >> $logName;
 echo -e "#\tChecking to see if FASTQ data needs to be downsampled to be processed within memory limitations." >> $logName;
 # Get memory target from "constants.php" file.
-MAX_MEMORY_TARGET=$(grep "MAX_MEMORY_TARGET" "$main_dir/constants.php" | tc -dc '0-9');
+MAX_MEMORY_TARGET=$(grep "MAX_MEMORY_TARGET" "$main_dir/constants.php" | tr -dc '0-9');
 if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	# Get FASTQ data total size in bytes.
 	FILESIZE=$(stat -c%s "$main_dir/users/$user/projects/$project/datafile_0.fastq")
@@ -83,8 +83,8 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 
 		echo -e "Downsampling FASTQ data." >> $condensedLog;
 		echo -e "#\tDownsampling FASTQ data:" >> $logName;
-		echo -e "#\t\tMemory utilization target : $MAX_MEMORY_TARGET" >> $LogName;
-		echo -e "#\t\tDownsampling percentage   : $TARGET_PERCENTAGE" >> $LogName;
+		echo -e "#\t\tMemory utilization target : "$MAX_MEMORY_TARGET >> $logName;
+		echo -e "#\t\tDownsampling percentage   : "$TARGET_PERCENTAGE >> $logName;
 
 		# Subsample FASTQ files to target percentage.
 		seqtk sample "$main_dir/users/$user/projects/$project/datafile_0.fastq" "$TARGET_PERCENTAGE" > "$main_dir/users/$user/projects/$project/datafile_0.sample.fastq";
@@ -169,17 +169,18 @@ then
 	echo -e "\tDone: SAM -> BAM, new group headers, sorted." >> $logName;
 	echo -e "\tSamtools.pileup generated." >> $logName;
 else
-	##==============================================================================
-	## Trimming/cleanup of FASTQ files.
-	##------------------------------------------------------------------------------
-	echo -e "#=======================================================================================#" >> $logName;
-	echo -e "# Trimming of unbalanced FASTQ entries using 'scripts_seqModules/FASTQ_1_trimming.sh'.  #" >> $logName;
-	echo -e "#=======================================================================================#" >> $logName;
-	echo -e "Resolving FASTQ file errors." >> $condensedLog;
-	currdir=$(pwd);
-	cd $projectDirectory;
-	bash $main_dir"scripts_seqModules/FASTQ_1_trimming.sh" $projectDirectory$datafile >> $logName;
-	cd $currdir;
+# Not needed because FASTQC isn't used.
+#	##==============================================================================
+#	## Trimming/cleanup of FASTQ files.
+#	##------------------------------------------------------------------------------
+#	echo -e "#=======================================================================================#" >> $logName;
+#	echo -e "# Trimming of unbalanced FASTQ entries using 'scripts_seqModules/FASTQ_1_trimming.sh'.  #" >> $logName;
+#	echo -e "#=======================================================================================#" >> $logName;
+#	echo -e "Resolving FASTQ file errors." >> $condensedLog;
+#	currdir=$(pwd);
+#	cd $projectDirectory;
+#	bash $main_dir"scripts_seqModules/FASTQ_1_trimming.sh" $projectDirectory$datafile >> $logName;
+#	cd $currdir;
 
 	##==============================================================================
 	## Initial processing of single-WGseq dataset.

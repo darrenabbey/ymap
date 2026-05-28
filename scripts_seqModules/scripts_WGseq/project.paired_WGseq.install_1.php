@@ -54,6 +54,7 @@
 </HEAD>
 <?php
 	// Initialize log file.
+	shell_exec("install /dev/null ".$project_dir."/process_log.txt");
 	$logOutputName = $project_dir."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'w');
 	fwrite($logOutput, "Log file initialized.\n");
@@ -66,12 +67,14 @@
 	fwrite($logOutput, "\tkey      = '".$key."'\n");
 	fwrite($logOutput, "#============================================================================== 1\n");
 
+	shell_exec("install /dev/null ".$project_dir."/condensed_log.txt");
 	$condensedLogOutputName = $project_dir."/condensed_log.txt";
 	$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
 	fwrite($condensedLogOutput, "Initializing.\n");
 	fclose($condensedLogOutput);
 
 	// Generate 'working.txt' file to let pipeline know processing is started.
+	shell_exec("install /dev/null ".$project_dir."/working.txt");
 	$outputName      = $project_dir."/working.txt";
 	$output          = fopen($outputName, 'w');
 	$startTimeString = date("Y-m-d H:i:s");
