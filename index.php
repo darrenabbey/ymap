@@ -172,7 +172,7 @@
 		<img src="images/YMAP2_Logo_1.png" alt="YMAP; Yeast Mapping Analysis Pipeline"><br><br>
 		</td></tr><tr valign="bottom"><td align="middle">
 <font size='2'>
-	For support, please contact us at <a href="mailto:<?php print($ADMIN_EMAIL) ?>"><?php print($admin_email) ?></a><br/><br/>
+	For support, please contact us at <a href="mailto:<?php print($ADMIN_EMAIL); ?>"><?php print($ADMIN_EMAIL) ?></a><br/><br/>
 	<button onclick="Generate_combined_figure();">Combine figures viewed below.</button><br>
 <?php
 	// Defines the filenames for combined figures.
