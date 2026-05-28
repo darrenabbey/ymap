@@ -6,7 +6,7 @@ set -e
 #       (run by: "bash YMAPcl.sh" and then use the green highlighted command option.)
 #
 #	1. Adjust this to the location of your "ymap_daemon.php" file.
-DAEMON_OPTS
+DAEMON_OPTS_temp
 #
 #	2. Save this file to: "/etc/init.d/ymap_daemon"
 #
@@ -14,11 +14,15 @@ DAEMON_OPTS
 #
 #------------------------------------------------------------------------------
 #
-# Starting and stopping the daemon:
+# Reload units:
+#	systemctl daemon-reload
 #
+# Starting and stopping the daemon:
 #	Start: `service ymap_daemon start` or `/etc/init.d/ymap_daemon start`
 #	Stop: `service ymap_daemon stop` or `/etc/init.d/ymap_daemon stop`
 #
+# Daemon status:
+#	systemctl status ymap_daemon.service
 #------------------------------------------------------------------------------
 #
 # References for this code.
@@ -44,29 +48,29 @@ test -x $DAEMON || exit 0
 set -E
 
 case "$1" in
-    start)
-        echo -n "Starting ${DESC}: "
-        start-stop-daemon $START_OPTS >> $LOGFILE
-        echo -e "$NAME."
-        ;;
-    stop)
-        echo -n "Stopping $DESC: "
-        start-stop-daemon $STOP_OPTS >> $LOGFILE
-        echo -e "$NAME."
-        rm -f $PIDFILE
-        ;;
-    restart|force-reload)
+    "start")
+        echo -n "Starting ${DESC}: ";
+        start-stop-daemon $START_OPTS >> $LOGFILE;
+        echo -e "$NAME.";
+    ;;
+    "stop")
+        echo -n "Stopping $DESC: ";
+        start-stop-daemon $STOP_OPTS >> $LOGFILE;
+        echo -e "$NAME.";
+        rm -f $PIDFILE;
+    ;;
+    "restart"|"force-reload")
         echo -n "Restarting $DESC: "
-        start-stop-daemon $STOP_OPTS
-        sleep 1
-        start-stop-daemon $START_OPTS >> $LOGFILE
-        echo -e "$NAME."
-        ;;
-    *)
+        start-stop-daemon $STOP_OPTS >> $LOGFILE;
+        sleep 1;
+        start-stop-daemon $START_OPTS >> $LOGFILE;
+        echo -e "$NAME.";
+    ;;
+    "*")
         N=/etc/init.d/$NAME
         echo -e "Usage: $N {start|stop|restart|force-reload}" >&2
         exit 1
-        ;;
+    ;;
 esac
 
 exit 0

@@ -390,16 +390,19 @@ else
 		if [[ !  -e "/etc/init.d/ymap_daemon" ]]; then
 			# Copy 'ymap_daemon_template.sh' to /etc/init.d/ymap_daemon
 			TargetFile="/etc/init.d/ymap_daemon";
-			cp ymap_daemon_template.sh $TargetFile;
+			sudo cp ymap_daemon_template.sh $TargetFile;
 
 			# Update file setting.
-			sed -i "/DAEMON_OPTS/c\\\DAEMON_OPTS=\"$main_dir/ymap_daemon.php\";" $TargetFile;
+			sudo sed -i "/DAEMON_OPTS_temp/c\\\DAEMON_OPTS=\"$main_dir/ymap_daemon.php\";" $TargetFile;
 
 			# Make it executable.
-			chmod +x $TargetFile;
+			sudo chmod +x $TargetFile;
+
+			# reload services.
+			sudo systemctl daemon-reload
 
 			# Start the service.
-			service ymap_daemon restart;
+			sudo service ymap_daemon start;
 		fi;
 	    ;;
 	    "localize")
@@ -408,12 +411,15 @@ else
 			TargetFile1="constants.php";
 			cp constants_template.php $TargetFile1;
 			# Update file setting.
-			sed -i "/BASE_DIR/c\\\DAEMON_OPTS=\"$base_dir=\"main_dir/\";" $TargetFile1;
+			sed -i '/BASE_DIR/c\\$base_dir="'$main_dir'/";' $TargetFile1;
 			sudo chown www-data:www-data $TargetFile1;
 
 			TargetFile2="config.sh"
 			cp config_template.sh $TargetFile2;
 			sudo chown www-data:www-data $TargetFile2;
+
+			echo -e "#";
+			echo -e "#\tSettings files localized.";
 		fi;
 	    ;;
 	    "log_in")
