@@ -70,8 +70,6 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	# Calculate FASTQ data total size in GB.
 	FILESIZE_GB=$(echo "$FILESIZE/1000000000" | bc -l)
 
-	A="2.4168477588029";
-	B="-1.13116709532669";
 	# Fit function relating FASTQ size (GB) to memory utilization (GB).
 	#	f(x) = A x + B
 	#		f(x) = memory utilization (GB)
@@ -80,11 +78,15 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	#	f(y) = (y - B)/A
 	#		f(y) = FASTQ size (GB)
 	#		y = memory utilization (GB)
+	A="2.4168477588029";
+	B="-1.13116709532669";
+	# Terms to fit function may need to be characterized at install.
+
 	MAX_PROCESSED_DATA_SIZE=$(echo "($MAX_MEMORY_TARGET - $B)/$A" | bc -l);
 
-	if [[ $(echo "$FILESIZE > $MAX_PROCESSED_DATA_SIZE" | bc -l) ]]; then
+	if [[ $(echo "$FILESIZE_GB > $MAX_PROCESSED_DATA_SIZE" | bc -l) ]]; then
 		# Calculate percentage of target vs original.
-		TARGET_PERCENTAGE=$(echo "$MAX_PROCESSED_DATA_SIZE/$FILESIZE" | bc -l);
+		TARGET_PERCENTAGE=$(echo "$MAX_PROCESSED_DATA_SIZE/$FILESIZE_GB" | bc -l);
 
 		echo -e "Downsampling FASTQ data." >> $condensedLog;
 		echo -e "#\tDownsampling FASTQ data:" >> $logName;
@@ -93,13 +95,15 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 
 		# Subsample FASTQ files to target percentage.
 		seqtk sample "$main_dir/users/$user/projects/$project/datafile_0.fastq" "$TARGET_PERCENTAGE" > "$main_dir/users/$user/projects/$project/datafile_0.sample.fastq";
+		echo -e "#\t\tdatafile_0.sample.fastq downsampled." >> $logName;
 		seqtk sample "$main_dir/users/$user/projects/$project/datafile_1.fastq" "$TARGET_PERCENTAGE" > "$main_dir/users/$user/projects/$project/datafile_1.sample.fastq";
+		echo -e "#\t\tdatafile_1.sample.fastq downsampled." >> $logName;
 	else
 		echo -e "#\tNo need to downsample FASTQ data." >> $logName;
 	fi;
 else
 	# Used later to ensure low read mapping warning isn't given because of downsampling.
-	TARGET_PERCENTAGE=1;
+	TARGET_PERCENTAGE="1";
 fi;
 echo -e "#==============================================================================" >> $logName;
 
@@ -289,7 +293,7 @@ readCount=$(head -n 1 $projectDirectory"readStats.txt" | awk '{print $1}');
 readTotalLength=$(head -n 2 $projectDirectory"readStats.txt" | tail -n 1 | awk '{print $1}');
 
 ## Calculate expected average read depth and add to readStats.txt file.
-readDepthAverageExpected=$(echo -e "scale=3; $readTotalLength / $genomeLength" | bc);
+readDepthAverageExpected=$(echo -e "scale=3; $readTotalLength*$TARGET_PERCENTAGE / $genomeLength" | bc -l);
 echo $readDepthAverageExpected" (Expected read depth)" >> $projectDirectory"readStats.txt";
 
 ## Find average read depth and add to readStats.txt file.
@@ -297,8 +301,8 @@ readDepthAverageFound=$(awk '{sum += $3; count++} END {if (count > 0) print sum/
 echo $readDepthAverageFound" (Found read depth)" >> $projectDirectory"readStats.txt";
 
 ## Calculate percentage mapped and add to readStats.txt file.
-percentageMapped1=$(echo -e "scale=6; ($readDepthAverageFound / $readDepthAverageExpected)*100" | bc);
-percentageMapped2=$(echo -e "scale=3; $percentageMapped1 / 1" | bc);
+percentageMapped1=$(echo -e "scale=6; ($readDepthAverageFound / $readDepthAverageExpected)*100" | bc -l);
+percentageMapped2=$(echo -e "scale=3; $percentageMapped1 / 1" | bc -l);
 echo $percentageMapped2" (Mapped read percentage)" >> $projectDirectory"readStats.txt";
 if [[ $percentageMapped2 < 50 ]]
 then
