@@ -100,13 +100,6 @@
 		}
 	}
 	fclose($output);
-	//chmod($outputName,0774);
-
-//	// Trim the last "\n" character from 'datafiles.txt'.
-//	$fh = fopen($outputName, 'r+');
-//	$stat = fstat($fh);
-//	ftruncate($fh, $stat['size']-1);
-//	fclose($fh);
 	fwrite($logOutput, "Completed 'datafiles.txt' file.\n");
 
 	// Final install functions are in shell script.
