@@ -89,9 +89,13 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 		echo -e "#\t\tDownsampling percentage   : "$TARGET_PERCENTAGE >> $logName;
 
 		# Subsample FASTQ files to target percentage.
-		seqtk sample "$main_dir/users/$user/projects/$project/datafile_0.fastq" "$TARGET_PERCENTAGE" > "$main_dir/users/$user/projects/$project/datafile_0.sample.fastq";
-		mv "$main_dir/users/$user/projects/$project/datafile_0.sample.fastq" "$main_dir/users/$user/projects/$project/datafile_0.fastq";
+
+		cd "$main_dir/users/$user/projects/$project/";
+		seqtk sample datafile_0.fastq "$TARGET_PERCENTAGE" > datafile_0.sample.fastq;
+		unlink datafile_0.fastq;
+		mv datafile_0.sample.fastq datafile_0.fastq;
 		echo -e "#\t\tdatafile_0.fastq downsampled." >> $logName;
+		cd "$main_dir";
 	else
 		echo -e "#\tNo need to downsample FASTQ data." >> $logName;
 	fi;
