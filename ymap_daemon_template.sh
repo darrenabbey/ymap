@@ -48,25 +48,25 @@ test -x $DAEMON || exit 0
 set -E
 
 case "$1" in
-    "start")
+    start)
         echo -n "Starting ${DESC}: ";
         start-stop-daemon $START_OPTS >> $LOGFILE;
         echo -e "$NAME.";
-    ;;
-    "stop")
+	;;
+    stop)
         echo -n "Stopping $DESC: ";
         start-stop-daemon $STOP_OPTS >> $LOGFILE;
         echo -e "$NAME.";
         rm -f $PIDFILE;
-    ;;
-    "restart"|"force-reload")
+	;;
+    restart|force-reload)
         echo -n "Restarting $DESC: "
         start-stop-daemon $STOP_OPTS >> $LOGFILE;
         sleep 1;
         start-stop-daemon $START_OPTS >> $LOGFILE;
         echo -e "$NAME.";
-    ;;
-    "*")
+	;;
+    *)
         N=/etc/init.d/$NAME
         echo -e "Usage: $N {start|stop|restart|force-reload}" >&2
         exit 1
