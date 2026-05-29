@@ -9,6 +9,8 @@ main_dir=$(pwd)"/../../";
 . $main_dir"local_installed_programs.sh";
 . $main_dir"config.sh";
 
+main_dir=$base_dir;
+
 # Define project directory.
 projectDirectory=$main_dir"users/"$user"/projects/"$project;
 BAMfile=$projectDirectory/data_sorted.bam;
