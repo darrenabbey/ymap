@@ -40,7 +40,7 @@ LOGFILE="/var/log/${NAME}.log";
 
 DAEMON="/usr/bin/php";
 
-START_OPTS="--start --background --make-pidfile --pidfile ${PIDFILE} --exec ${DAEMON} ${DAEMON_OPTS}";
+START_OPTS="--start --background --make-pidfile --pidfile ${PIDFILE} --chuid www-data:www-data --exec ${DAEMON} ${DAEMON_OPTS}";
 STOP_OPTS="--stop --pidfile ${PIDFILE}";
 
 test -x $DAEMON || exit 0

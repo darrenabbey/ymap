@@ -14,3 +14,6 @@ cores=2
 
 # If debug mode is turned on, intermediate files in analysis will be kept:
 debug=0
+
+# Defines YMAP install directory.
+BASE_DIR_temp
