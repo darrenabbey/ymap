@@ -1160,8 +1160,9 @@ else
 
 		if [[ "$fail" -eq 0 ]]; then
 			# Clear *.txt files from bulksettings directory of active user, to ensure there's no crossover from earlier runs.
-			bulkDir=$main_dir"/users/"$user"/bulksettings/";
-			rm $bulkDir *.txt;
+			cd $main_dir"/users/"$user"/bulksettings/";
+			rm *.txt;
+			cd $main_dir;
 
 			#// Main selections needed.
 			#$ploidy          = sanitizeFloat_ARGV(2);
