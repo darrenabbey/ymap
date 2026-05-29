@@ -32,15 +32,12 @@ if [ -z $1 ]; then
 	echo -e "#   Commands:";
 	echo -e "#";
 	if [[ ! -e "/etc/init.d/ymap_daemon" ]]; then
-		echo -e "#       \e[42minstall_daemon  : Install the ymap_daemon into '/etc/init.d/' then start it up.\e[0m";
-		echo -e "#                         \e[42mThis command will produce a prompt for credentials to start the\e[0m";
-		echo -e "#                         \e[42mdaemon process. This command option will go away after it is used.\e[0m";
-	fi
-	if [[ ! -e "constants.php" ]]; then
-		echo -e "#       \e[42mlocalize        : Adjusts settings files for YMAP installation path..\e[0m";
-		echo -e "#                         \e[42mThis command will produce a prompt for credentials to change\e[0m";
-                echo -e "#                         \e[42mownership of the new settings files. This command option will go away\e[0m";
-		echo -e "#                         \e[42mafter it is used.\e[0m";
+		echo -e "#       \e[42minstall_YMAP  : Install the ymap_daemon into '/etc/init.d/' then start it up.\e[0m";
+		echo -e "#                         \e[42mMake localized copies of template files.\e[0m";
+		echo -e "#                         \e[42mThis command will prompt for admin credentials.\e[0m";
+		echo -e "#                         \e[42mThis command option will go away after it is used.\e[0m";
+		echo -e "#                         \e[41mExamine code starting with '\"install_YMAP\")' to see what\e[0m";
+		echo -e "#                         \e[41madmin credentials are used for.\e[0m";
 	fi
 	echo -e "#	log_in		: Log the admin interface to a specific user account.";
 	echo -e "#	log_out		: Log the admin interface out of a user account.";
@@ -56,7 +53,7 @@ if [ -z $1 ]; then
 	echo -e "#	complete	: List file paths & names of images for completed projects.";
 	echo -e "#	delete		: Delete a project/genome/hapmap/user.";
 	echo -e "#	install		: Install a new project/genome/user.";
-	echo -e "#				\e[41mGenome and user install are not implemented yet.\e[0m";
+	echo -e "#				\e[32mGenome and user install are not implemented yet.\e[0m";
 	echo -e "#	run		: Configure and run installed project datasets.";
 	echo -e "#";
 	echo -e "#   Commands not implemented:"
@@ -386,7 +383,7 @@ else
 
 	echo -e $lineThick;
 	case $1 in
-	    "install_daemon")
+	    "install_YMAP")
 		if [[ !  -e "/etc/init.d/ymap_daemon" ]]; then
 			# Copy 'ymap_daemon_template.sh' to /etc/init.d/ymap_daemon
 			TargetFile="/etc/init.d/ymap_daemon";
@@ -404,8 +401,6 @@ else
 			# Start the service.
 			sudo service ymap_daemon start;
 		fi;
-	    ;;
-	    "localize")
 		if [[ ! -e "constants.php" ]]; then
 			# Copy 'constants_template.php' to 'constants.php'.
 			TargetFile1="constants.php";
