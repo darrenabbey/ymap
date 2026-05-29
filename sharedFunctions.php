@@ -38,7 +38,7 @@ function log_stuff($user,$project,$hapmap,$genome,$filename,$message) {
 		$myfile = fopen($log_file, "w");
 		fwrite($myfile, "Initiate log file: ".date('Y-m-d H:i:s')."\n");
 		fclose($myfile);
-		chmod($log_file, 0774);
+		chmod($log_file, 0666);
 	}
 
 	// add comment to log file.
@@ -86,7 +86,7 @@ function queue_init($user,$project,$genome,$hapmap,$message) {
 		$myfile = fopen($log_file, "w");
 		fwrite($myfile, "");
 		fclose($myfile);
-		chmod($log_file, 0774);
+		chmod($log_file, 0666);
 	}
 
 	// add comment to log file.
@@ -137,7 +137,7 @@ function queue_reinit($user,$project,$genome,$hapmap,$message) {
 		$myfile = fopen($log_file, "w");
 		fwrite($myfile, "");
 		fclose($myfile);
-		chmod($log_file, 0774);
+		chmod($log_file, 0666);
 	}
 
 	// add comment to log file.
@@ -188,7 +188,7 @@ function queue_start($user,$project,$genome,$hapmap,$message) {
 		$myfile = fopen($log_file, "w");
 		fwrite($myfile, "");
 		fclose($myfile);
-		chmod($log_file, 0774);
+		chmod($log_file, 0666);
 	}
 
 	// add comment to log file.
@@ -227,7 +227,7 @@ function queue_end($user,$project,$genome,$hapmap,$message) {
 		$myfile = fopen($log_file, "w");
 		fwrite($myfile, "");
 		fclose($myfile);
-		chmod($log_file, 0774);
+		chmod($log_file, 0666);
 	}
 
 	// add comment to log file.
