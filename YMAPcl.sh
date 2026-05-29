@@ -377,6 +377,31 @@ else
 			return 1;
 		fi;
 	}
+	ymap_display_daemon() {
+		tempfile=$(mktemp --suffix ".ymap");
+		if [[ "$1" = "status" ]]; then
+			service ymap_daemon status > $tempfile;
+
+			## If line contains "└" character, print long line broken into new lines without the "│" character.
+			## If line doesn't contain "└" character, print long line broken into new lines with "│" character to maintain formatting.
+			awk '{
+				if ($0 ~ "└") {
+					while (length > 160) {
+						print substr($0, 1, 160); $0 = "\t      \t\t" substr($0, 161);
+					} print $0;
+				} else {
+					while (length > 160) {
+						print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161);
+					} print $0;
+				}
+			}' $tempfile | sed 's/^/#\t/';
+		elif [[ "$1" = "log" ]]; then
+			journalctl -u ymap_daemon.service | tail -n 40 > $tempfile;
+
+			# No complicated graphics to show.
+			cat $tempfile | sed 's/^/#\t/';
+		fi;
+	}
 
 	##
 	## Main part of commandline interface code.
@@ -533,44 +558,14 @@ else
 		logged_in_status;
 		echo -e $lineThin;
 		echo -e "#";
-		tempfile=$(mktemp --suffix ".ymap");
-		service ymap_daemon status > $tempfile;
-
-		## If line contains "└" character, print long line broken into new lines without the "│" character.
-		## If line doesn't contain "└" character, print long line broken into new lines with "│" character to maintain formatting.
-		awk '{
-			if ($0 ~ "└") {
-				while (length > 160) {
-					print substr($0, 1, 160); $0 = "\t      \t\t" substr($0, 161);
-				} print $0;
-			} else {
-				while (length > 160) {
-					print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161);
-				} print $0;
-			}
-		}' $tempfile | sed 's/^/#\t/' | cat;
+		ymap_display_daemon status;
 	    ;;
 	    "daemon_log")
 		echo -e "# YMAP2 commandline : ymap_daemon service event log.";
 		logged_in_status;
 		echo -e $lineThin;
 		echo -e "#";
-		tempfile=$(mktemp --suffix ".ymap");
-		journalctl -u ymap_daemon.service | tail -n 40 > $tempfile;
-
-		## If line contains "└" character, print long line broken into new lines without the "│" character.
-		## If line doesn't contain "└" character, print long line broken into new lines with "│" character to maintain formatting.
-		awk '{
-			if ($0 ~ "└") {
-				while (length > 160) {
-					print substr($0, 1, 160); $0 = "\t      \t\t" substr($0, 161);
-				} print $0;
-			} else {
-				while (length > 160) {
-					print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161);
-				} print $0;
-			}
-		}' $tempfile | sed 's/^/#\t/' | cat;
+		ymap_display_daemon log;
 	    ;;
 	    "status")
 		if [ "$user" == "" ]; then
@@ -1529,6 +1524,10 @@ else
 		echo -e "# YMAP2 commandline : Unknown command.";
 		logged_in_status;
 		echo -e $lineThin;
+		echo -e "#"
+		echo -e "#\t'$1' is not a defined command in the YMAP commandline interface."
+		echo -e "#"
+		echo -e "#\tRun 'bash YMAPcl.sh' to see available commands."
 	    ;;
 	esac;
 	echo -e "#";
