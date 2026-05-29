@@ -314,6 +314,7 @@ then
 		echo -e "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
 		echo -e "\t\tDone." >> $logName;
 	else
+		install /dev/null $projectDirectory"trimmed_SNPs_v5.txt";
 		echo -e "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
 		echo -e "\t\t| Inputs to python script:" >> $logName;
 		echo -e "\t\t|\tgenome     = '$genome'"     >> $logName;
@@ -325,8 +326,6 @@ then
 		echo -e "\t\t|\tmain_dir   = '$main_dir'"   >> $logName;
 		$python_exec $main_dir"scripts_seqModules/putative_SNPs_from_hapmap_in_child.py" $genome $genomeUser $project $user $hapmap $hapmapUser $main_dir > $projectDirectory"trimmed_SNPs_v5.txt" 2>> $logName;
 		echo -e "\t\tDone." >> $logName;
-
-		chmod 774 $projectDirectory"trimmed_SNPs_v5.txt";
 	fi
 fi
 

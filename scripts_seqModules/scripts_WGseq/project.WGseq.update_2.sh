@@ -152,24 +152,22 @@ if [[ -f $projectDirectory"preprocessed_CNVs.txt" ]]
 then
         echo -e "\tCNV data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
 else
+	install /dev/null $projectDirectory"preprocessed_CNVs.txt";
 	echo -e "Preprocessing CNVs." >> $condensedLog;
         echo -e "\tPreprocessing CNV data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
         $python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py" $user $project $genome $genomeUser $main_dir $logName  > $projectDirectory"preprocessed_CNVs.txt" 2>> $logName;
         echo -e "\tpre-processing complete." >> $logName;
-
-        chmod 774 $projectDirectory"preprocessed_CNVs.txt";
 fi
 if [[ -f $projectDirectory"preprocessed_SNPs.txt" ]]
 then
         echo -e "\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 else
+	install /dev/null $projectDirectory"preprocessed_SNPs.txt";
 	echo -e "Preprocessing SNPs." >> $condensedLog;
         echo -e "\tPreprocessing SNP data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 
         $python_exec $main_dir"scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" $genome $genomeUser $project $user $project $user $main_dir $logName LOH > $projectDirectory"preprocessed_SNPs.txt" 2>> $logName;
         echo -e "\tpre-processing complete." >> $logName;
-
-        chmod 774 $projectDirectory"preprocessed_SNPs.txt";
 fi
 
 
@@ -184,6 +182,8 @@ echo -e "Analyzing and mapping CNVs." >> $condensedLog;
 
 echo -e "\tGenerating OCTAVE script to perform CNV analysis of dataset, with GC-correction." >> $logName;
 outputName=$projectDirectory"processing1.m";
+install /dev/null $outputName";
+install /dev/null $projectDirectory"octave.CNV_and_GCbias.log";
 echo -e "\toutputName = "$outputName >> $logName;
 
 echo -e "function [] = processing1()" > $outputName;
@@ -193,7 +193,6 @@ echo -e "\tdiary('"$projectDirectory"octave.CNV_and_GCbias.log');" >> $outputNam
 echo -e "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 echo -e "\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo -e "endfunction" >> $outputName;
-chmod 774 $outputName;
 
 echo -e "\t|\tfunction [] = processing1()" >> $logName;
 echo -e "\t|\t    pkg load statistics;" >> $logName;
@@ -233,6 +232,8 @@ then
 	echo -e "Mapping SNPs." >> $condensedLog;
 	echo -e "\tGenerating OCTAVE script to perform SNP analysis of dataset." >> $logName;
 	outputName=$projectDirectory"processing3.m";
+	install /dev/null $outputName";
+	install /dev/null $projectDirectory"octave.SNP_analysis.log";
 	echo -e "\toutputName = "$outputName >> $logName;
 
 	echo -e "function [] = processing3()" > $outputName;
@@ -241,7 +242,6 @@ then
 	echo -e "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 	echo -e "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 	echo -e "end" >> $outputName;
-	chmod 774 $outputName;
 
 	echo -e "\t|\tfunction [] = processing3()" >> $logName;
 	echo -e "\t|\t    pkg load matgeom;" >> $logName;
@@ -271,6 +271,8 @@ then
 
 	echo -e "\tGenerating OCTAVE script to generate combined CNV and SNP analysis figures from previous calculations." >> $logName;
 	outputName=$projectDirectory"processing4.m";
+	install /dev/null $outputName;
+	install /dev/null $projectDirectory"octave.final_figs.log";
 	echo -e "\toutputName = "$outputName >> $logName;
 
 	echo -e "function [] = processing4()" > $outputName;
@@ -279,7 +281,6 @@ then
 	echo -e "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 	echo -e "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 	echo -e "end" >> $outputName;
-	chmod 774 $outputName;
 
 	echo -e "\t|\tfunction [] = processing4()" >> $logName;
 	echo -e "\t|\t    pkg load matgeom;" >> $logName;
@@ -316,6 +317,8 @@ else
 	echo -e "Mapping SNPs." >> $condensedLog;
 	echo -e "\t\tGenerating OCTAVE script to perform SNP analysis of dataset." >> $logName;
 	outputName=$projectDirectory"processing3.m";
+	install /dev/null $outputName;
+	install /dev/null $projectDirectory"octave.SNP_analysis.log";
 	echo -e "\t\toutputName = "$outputName >> $logName;
 
 	echo -e "function [] = processing3()" > $outputName;
@@ -324,7 +327,6 @@ else
 	echo -e "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 	echo -e "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 	echo -e "end" >> $outputName;
-	chmod 774 $outputName;
 
 	echo -e "\t|\tfunction [] = processing3()" >> $logName;
 	echo -e "\t|\t    pkg load matgeom;" >> $logName;
@@ -354,6 +356,8 @@ else
 
 	echo -e "\t\tGenerating OCTAVE script to generate combined CNV and SNP analysis figures from previous calculations." >> $logName;
 	outputName=$projectDirectory"processing4.m";
+	install /dev/null $outputName;
+	install /dev/null $projectDirectory"octave.final_figs.log";
 	echo -e "\t\toutputName = "$outputName >> $logName;
 
 	echo -e "function [] = processing4()" > $outputName;
@@ -362,7 +366,6 @@ else
 	echo -e "\tcd "$main_dir"scripts_seqModules/scripts_WGseq;" >> $outputName;
 	echo -e "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 	echo -e "end" >> $outputName;
-	chmod 774 $outputName;
 
 	echo -e "\t|\tfunction [] = processing4()" >> $logName;
 	echo -e "\t|\t    pkg load matgeom;" >> $logName;
