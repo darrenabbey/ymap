@@ -2,11 +2,10 @@
 	//==========================================================================================
 	// YMAP processing queue daemon setp:
 	//------------------------------------------------------------------------------------------
-
 BASE_DIR_temp
 
 	require_once $script_directory.'constants.php';
-	require_once $script_directory.'sharedFunctions.php';
+	//require_once $script_directory.'sharedFunctions.php';
 
 	// Enable signal handling (required for pcntl functions)
 	declare(ticks=1);
