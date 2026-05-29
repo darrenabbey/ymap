@@ -110,7 +110,6 @@
 					session_destroy();
 				}
 				header('Location: .');
-				
 			}
 
 			if (($hapmap == "none") || ($hapmap == "")) {

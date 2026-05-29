@@ -1159,6 +1159,10 @@ else
 		fi;
 
 		if [[ "$fail" -eq 0 ]]; then
+			# Clear *.txt files from bulksettings directory of active user, to ensure there's no crossover from earlier runs.
+			bulkDir=$main_dir"/users/"$user"/bulksettings/";
+			rm $bulkDir *.txt;
+
 			#// Main selections needed.
 			#$ploidy          = sanitizeFloat_ARGV(2);
 			#$ploidyBase      = sanitizeFloat_ARGV(3);
@@ -1487,6 +1491,11 @@ else
 
 			php project_bulk.create_server.php $user $ploidy $ploidyBase $dataFormat $showAnnotations $manualLOH $genome $hapmap $bias_GC $bias_end $fig_A1 $fig_A2 $fig_B1 $fig_B2 $fig_C $fig_D1 $fig_D2 $fig_E $fig_F1 $fig_F2 $fig_G1 $fig_G2 >/dev/null 2>&1 &
 		fi;
+	    ;;
+	    *)
+		echo -e "# YMAP2 commandline : Unknown command.";
+		logged_in_status;
+		echo -e $lineThin;
 	    ;;
 	esac;
 	echo -e "#";

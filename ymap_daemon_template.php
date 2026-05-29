@@ -294,10 +294,16 @@ BASE_DIR_temp
 				}
 			}
 
+			// Force garbage collection;
+			gc_collect_cycles();
+
 			// Sleep for 10 seconds to keep daemon from running continuously.
 			sleep(10);
 
 		} catch (Exception $e) {
+			// Force garbage collection;
+			gc_collect_cycles();
+
 			// Log errors but continue running
 			error_log("Error: " . $e->getMessage() . " (Line: " . $e->getLine() . ")");
 			sleep(5); // Avoid spamming logs on repeated errors
