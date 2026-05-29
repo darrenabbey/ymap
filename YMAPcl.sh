@@ -52,6 +52,7 @@ if [ -z $1 ]; then
 	echo -e "#	genomes		: List installed genomes.";
 	echo -e "#	hapmaps		: List installed hapmaps.";
 	echo -e "#	complete	: List file paths & names of images for completed projects.";
+	echo -e "#	preview         : Preview an image in the shell.";
 	echo -e "#	delete		: Delete a project/genome/hapmap/user.";
 	echo -e "#	install		: Install a new project/genome/user.";
 	echo -e "#				\e[32mGenome and user install are not implemented yet.\e[0m";
@@ -450,6 +451,7 @@ else
 			# Copy 'config_template.sh' to 'config.sh',
 			TargetFile3="config.sh"
 			cp config_template.sh $TargetFile3;
+			sudo sed -i "/BASE_DIR_temp/c\\\base_dir=\"$main_dir/\";" $TargetFile3;
 
 			echo -e "#";
 			echo -e "#\tSettings files localized.";
@@ -1043,6 +1045,35 @@ else
 				echo -e "#\t\t\e[41mError: Wrong 2nd arguement!\e[0m";
 			    ;;
 			esac;
+		fi;
+	    ;;
+	    "preview")
+		# if "tiv" installed, show graphics.
+		if [[ -x "$(command -v tiv)" ]]; then
+			if [[ $user = "" ]]; then
+				echo -e "# YMAP2 commandline : Show graphics.";
+				## Ask which user.
+				## Ask which project/genome.
+				## Ask which figure.
+				## Display figure.
+			else
+				echo -e "# YMAP2 commandline : Show graphics.";
+				## Ask which project/genome.
+				## Ask which figure.
+				## Display figure.
+			fi;
+
+#			echo -e "# YMAP2 commandline : Show graphics.";
+#			logged_in_status;
+#			echo -e $lineThin;
+#			echo -e "#";
+#			tiv users/darren/projects/Z_SRR23332460.1_vs_PvFlavert/fig.CNV-SNP-map.2.png;
+		else
+			echo -e "# YMAP2 commandline : Show graphics.";
+			logged_in_status;
+			echo -e $lineThin;
+			echo -e "#";
+			echo -e "#\rCommandline tool 'tiv' is not installed, so no graphical output is enabled.";
 		fi;
 	    ;;
 ##
