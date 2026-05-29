@@ -199,7 +199,7 @@ else
 		else
 			nameString="";
 		fi;
-		cd ../../../;
+		cd $main_dir;
 
 		if [[ ! "$nameString" = "" ]]; then
 			### https://www.geeksforgeeks.org/linux-unix/shell-scripting-dialog-boxes/
@@ -216,7 +216,7 @@ else
 				fi;
 				counter=$(($counter+1));
 			done;
-			cd ../../../;
+			cd $main_dir;
 
 			## Confirming user choice before deleting.
 			clear;
@@ -639,7 +639,7 @@ else
 				# Convert one column into multiple columns in interface format.
 				cat $tempfile | xargs -n 7 | column -t | sed 's/^/#\t\t/' | cat;
 
-				cd ../../../;
+				cd $main_dir;
 			else
 				echo -e "#\t\t\e[41mError: User not registered!\e[0m";
 			fi;
@@ -763,24 +763,24 @@ else
 			if [ -d $projectDirectory ]; then
 				echo -e "#";
 				echo -e "#\tProjects completed:";
-					cd $projectDirectory;
-					for dir in */; do
-						line=$( tail -n 1 $dir"condensed_log.txt" )
-						if [[ "$line" == "Cleaning and archiving." ]]; then
-							echo -e "#\t\t"$dir;
-							for file in $projectDirectory$dir*.png; do
-								filename=${file##*/};
-								if [[ $filename != *"Rsquared"* ]]; then
-									if [[ $filename != *"ChARM_test"* ]]; then
-										if [[ $filename != *"SNP-histogram"* ]]; then
-											echo -e "#\t\t\tusers/"$user"/projects/"$dir${filename##*/};
-										fi;
+				cd $projectDirectory;
+				for dir in */; do
+					line=$( tail -n 1 $dir"condensed_log.txt" )
+					if [[ "$line" == "Cleaning and archiving." ]]; then
+						echo -e "#\t\t"$dir;
+						for file in $projectDirectory$dir*.png; do
+							filename=${file##*/};
+							if [[ $filename != *"Rsquared"* ]]; then
+								if [[ $filename != *"ChARM_test"* ]]; then
+									if [[ $filename != *"SNP-histogram"* ]]; then
+										echo -e "#\t\t\tusers/"$user"/projects/"$dir${filename##*/};
 									fi;
 								fi;
-							done;
-						fi;
-					done;
-				cd ../../../;
+							fi;
+						done;
+					fi;
+				done;
+				cd $main_dir;
 			else
 				echo -e "#\t\e[41mError: User name not registered.\e[0m";
 			fi;
@@ -1050,30 +1050,94 @@ else
 	    "preview")
 		# if "tiv" installed, show graphics.
 		if [[ -x "$(command -v tiv)" ]]; then
-			if [[ $user = "" ]]; then
-				echo -e "# YMAP2 commandline : Show graphics.";
-				## Ask which user.
-				## Ask which project/genome.
-				## Ask which figure.
-				## Display figure.
-			else
-				echo -e "# YMAP2 commandline : Show graphics.";
-				## Ask which project/genome.
-				## Ask which figure.
-				## Display figure.
+			echo -e "# YMAP2 commandline : Preview figure.";
+			logged_in_status;
+			echo -e $lineThin;
+			echo -e "#";
+			if [ "$user" == "" ]; then
+				## If not logged in, allow user passed as argument.
+				if [ -z $2 ]; then
+					echo -e "#\tUsage: bash YMAPcl.sh preview \e[31m(user)\e[0m";
+					echo -e "#";
+					echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+				else
+					user=$2;
+				fi;
 			fi;
+			if [ "$user" != "" ]; then
+				## Validate user account.
+				if [[ -e "$main_dir/users/$user" ]]; then
+					## Ask which project.
+					projectDir="$main_dir/users/$user/projects/";
+					nameString=""
+					maxNameLength=0;
+					counter=1;
+					projects=();
+					cd $projectDir;
+					if [ "$(find . -maxdepth 1 -type d | wc -l)" -gt 1 ]; then
+						for dir in */; do
+							name=$( echo ${dir::-1} );
+							if [[ ${#String} -gt "$maxNameLength" ]]; then
+								maxNameLength=${#name};
+							fi;
+							if [[ -e "$projectDir$name/complete.txt" ]]; then
+								projects+=($name);
+								nameString=$nameString" "$counter" "$name;
+								counter=$(($counter+1));
+							fi;
+						done;
+					else
+						nameString="";
+					fi;
+					cd $main_dir;
+					if [[ "$counter" -eq 1 ]]; then
+						echo -e "#\tNo projects are complete for user '$user'.";
+					else
+						tempfile=$(mktemp --suffix ".ymap");
+						(dialog --nocancel --menu "Select project to examine." 25 $maxNameLength 25 $nameString) 2> $tempfile
+						selectedKey=$(head -n 1 $tempfile);
+						project=${projects[$selectedKey-1]};
 
-#			echo -e "# YMAP2 commandline : Show graphics.";
-#			logged_in_status;
-#			echo -e $lineThin;
-#			echo -e "#";
-#			tiv users/darren/projects/Z_SRR23332460.1_vs_PvFlavert/fig.CNV-SNP-map.2.png;
+						## Ask which figure. dragon
+						projectDirectory="$main_dir/users/$user/projects/$project/";
+						nameString=""
+						maxNameLength=0;
+						counter=1;
+						for path in "$projectDirectory"*.png; do
+							name=${path##*/}
+							if [[ ${#String} -gt "$maxNameLength" ]]; then
+								maxNameLength=${#name};
+							fi;
+							images+=($name);
+							nameString=$nameString" "$counter" "$name;
+							counter=$(($counter+1));
+						done;
+						tempfile=$(mktemp --suffix ".ymap");
+						(dialog --nocancel --menu "Select project to examine." 25 $maxNameLength 25 $nameString) 2> $tempfile
+						selectedKey=$(head -n 1 $tempfile);
+						imageFile=${images[$selectedKey-1]};
+
+ 						## Display figure.
+						clear;
+						echo -e $lineThick;
+						echo -e "# YMAP2 commandline : Show graphics.";
+						logged_in_status;
+						echo -e $lineThin;
+						echo -e "#";
+						tiv "$projectDirectory$imageFile";
+					fi;
+				else
+					echo -e "#\tUser '$user' doesn't seem to exist.";
+				fi;
+			fi;
 		else
 			echo -e "# YMAP2 commandline : Show graphics.";
 			logged_in_status;
 			echo -e $lineThin;
 			echo -e "#";
-			echo -e "#\rCommandline tool 'tiv' is not installed, so no graphical output is enabled.";
+			echo -e "#\tCommandline tool 'tiv' is not installed, so no graphical output is not enabled.";
+			echo -e "#";
+			echo -e "#\ttiv can be installed from 'https://github.com/stefanhaustein/TerminalImageViewer'.";
 		fi;
 	    ;;
 ##
@@ -1254,7 +1318,7 @@ else
 			else
 				nameString="";
 			fi;
-			cd ../../../;
+			cd $main_dir;
 			cd $genomeDir2;
 			if [ "$(find . -maxdepth 1 -type d | wc -l)" -gt 1 ]; then
 				for dir in */; do
@@ -1269,7 +1333,7 @@ else
 			else
 				nameString="";
 			fi;
-			cd ../../../;
+			cd $main_dir;
 			tempfile=$(mktemp --suffix ".ymap");
 			(dialog --nocancel --menu "Select genome to use." 25 $maxNameLength 25 $nameString) 2> $tempfile
 			selectedKey=$(head -n 1 $tempfile);
@@ -1354,7 +1418,7 @@ else
 			else
 				nameString="";
 			fi;
-			cd ../../../;
+			cd $main_dir;
 			cd $hapmapDir2;
 			if [ "$(find . -maxdepth 1 -type d | wc -l)" -gt 1 ]; then
 				for dir in */; do
@@ -1372,7 +1436,7 @@ else
 			else
 				nameString="";
 			fi;
-			cd ../../../;
+			cd $main_dir;
 			if [[ ${#a[@]} -gt 0 ]]; then
 				(dialog --nocancel --menu "Select haplotype map to use." 25 $maxNameLength 25 $nameString) 2> $tempfile
 				selectedKey=$(head -n 1 $tempfile);
