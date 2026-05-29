@@ -42,6 +42,7 @@ if [ -z $1 ]; then
 	echo -e "#	log_in		: Log the admin interface to a specific user account.";
 	echo -e "#	log_out		: Log the admin interface out of a user account.";
 	echo -e "#	daemon		: Show status of ymap_daemon service.";
+	echo -e "#	daemon_log      : Show last 40 lines of the event log for the ymap_daemon service.";
 	echo -e "#	queue_limit	: Show the max number of datasets to be processed in parallel.";
 	echo -e "#	data_limit	: Show the target max memory utilization.";
 	echo -e "#	admin_email	: Show admin email, displayed in user interface for issues.";
@@ -385,21 +386,30 @@ else
 	case $1 in
 	    "install_YMAP")
 		if [[ !  -e "/etc/init.d/ymap_daemon" ]]; then
-			# Copy 'ymap_daemon_template.sh' to /etc/init.d/ymap_daemon
+			## Copy 'ymap_daemon_template.sh' to /etc/init.d/ymap_daemon
 			TargetFile="/etc/init.d/ymap_daemon";
 			sudo cp ymap_daemon_template.sh $TargetFile;
 
-			# Update file setting.
+			## Update file setting.
 			sudo sed -i "/DAEMON_OPTS_temp/c\\\DAEMON_OPTS=\"$main_dir/ymap_daemon.php\";" $TargetFile;
 
-			# Make it executable.
+			## Make it executable.
 			sudo chmod +x $TargetFile;
 
-			# reload services.
-			sudo systemctl daemon-reload
+			## Add the service to the start-up sequence.
+			sudo update-rc.d ymap_daemon defaults;
 
-			# Start the service.
+			## reload services.
+			sudo systemctl daemon-reload;
+
+			## Start the service.
 			sudo service ymap_daemon start;
+
+			## Remove the service from the start-up sequence.
+			# sudo update-rc.d ymap_daemon remove;
+
+			## Examine the system log for the ymap_daemon.
+			# sudo journalctl -u ymap_daemon.service;
 		fi;
 		if [[ ! -e "constants.php" ]]; then
 			# Copy 'constants_template.php' to 'constants.php'.
@@ -525,6 +535,28 @@ else
 		echo -e "#";
 		tempfile=$(mktemp --suffix ".ymap");
 		service ymap_daemon status > $tempfile;
+
+		## If line contains "└" character, print long line broken into new lines without the "│" character.
+		## If line doesn't contain "└" character, print long line broken into new lines with "│" character to maintain formatting.
+		awk '{
+			if ($0 ~ "└") {
+				while (length > 160) {
+					print substr($0, 1, 160); $0 = "\t      \t\t" substr($0, 161);
+				} print $0;
+			} else {
+				while (length > 160) {
+					print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161);
+				} print $0;
+			}
+		}' $tempfile | sed 's/^/#\t/' | cat;
+	    ;;
+	    "daemon_log")
+		echo -e "# YMAP2 commandline : ymap_daemon service event log.";
+		logged_in_status;
+		echo -e $lineThin;
+		echo -e "#";
+		tempfile=$(mktemp --suffix ".ymap");
+		journalctl -u ymap_daemon.service | tail -n 40 > $tempfile;
 
 		## If line contains "└" character, print long line broken into new lines without the "│" character.
 		## If line doesn't contain "└" character, print long line broken into new lines with "│" character to maintain formatting.
