@@ -266,6 +266,8 @@ else
 		echo -e "\tSamtools : Generating pileup.   (for SNP/CNV analysis)" >> $logName;
 		echo -e "Generating pileup file." >> $condensedLog;
 		echo -e "\nRunning samtools:mpileup.\n";
+		echo -e "command used:";
+		echo -e "\tbash $main_dir\"scripts_seqModules/parallel_mpileup.sh\" $user $project >> $logName;";
 		bash $main_dir"scripts_seqModules/parallel_mpileup.sh" $user $project >> $logName;
 		chmod 774 $projectDirectory"data.pileup";
 		echo -e "\tSamtools : Pileup generated." >> $logName;

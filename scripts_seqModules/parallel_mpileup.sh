@@ -10,9 +10,14 @@ main_dir=$(pwd)"/../../";
 . $main_dir"config.sh";
 
 main_dir=$base_dir;
+projectDirectory=$main_dir"users/"$user"/projects/"$project;
+logNAme=$projectDirectory"/process_log";
+
+## Error handling in case something crashes.
+trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. parallel_mpileup.sh:$LINENO"; install /dev/null $projectDirectory"error.txt"; echo -e "Something went wrong. parallel_mpileup.sh:$LINENO" > $projectDirectory"/error.txt"; exit 1;' ERR;
+
 
 # Define project directory.
-projectDirectory=$main_dir"users/"$user"/projects/"$project;
 BAMfile=$projectDirectory/data_sorted.bam;
 
 # Get setup information from project files : "genome.txt" : first line  => genome
