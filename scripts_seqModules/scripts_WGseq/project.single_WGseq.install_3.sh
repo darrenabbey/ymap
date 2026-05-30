@@ -7,22 +7,22 @@ set -e;
 ## All created files will have permission 760
 umask 007;
 
-### define script file locations.
-user=$1;
-project=$2;
-main_dir=$(pwd)"/../../";
+## Error handling in case something crashes.
+trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.single_WGseq.install_3.sh:$LINENO"; install /dev/null $projectDirectory"error.txt"; echo -e "Something went wrong. project.single_WGseq.install_3.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
 ##==============================================================================
 ## Define locations and names to be used later.
 ##------------------------------------------------------------------------------
 
+### define script file locations.
+user=$1;
+project=$2;
+main_dir=$(pwd)"/../../";
+
 # Setup process_log.txt file.
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
-
-## Error handling in case something crashes.
-trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.single_WGseq.install_3.sh:$LINENO"; install /dev/null $projectDirectory"error.txt"; echo -e "Something went wrong. project.single_WGseq.install_3.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
 echo -e "#.............................................................................." >> $logName;
 echo -e "" >> $logName;
@@ -35,6 +35,7 @@ echo -e "" >> $logName;
 # import locations of auxillary software for pipeline analysis.
 . $main_dir"local_installed_programs.sh";
 . $main_dir"config.sh";
+main_dir=$base_dir;
 
 # Define project directory.
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";

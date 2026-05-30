@@ -7,6 +7,9 @@ set -e;
 ## All created files will have permission 760
 umask 007;
 
+## Error handling in case something crashes.
+trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.paired_WGseq.install_3.sh:$LINENO"; install /dev/null $projectDirectory"error.txt"; echo -e "Something went wrong. project.paired_WGseq.install_3.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+
 ### define script file locations.
 user=$1;
 project=$2;
@@ -34,9 +37,6 @@ projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 # Setup process_log.txt file.
 logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
-
-## Error handling in case something crashes.
-trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.paired_WGseq.install_3.sh:$LINENO"; install /dev/null $projectDirectory"error.txt"; echo -e "Something went wrong. project.paired_WGseq.install_3.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
 echo -e "#.............................................................................." >> $logName;
 echo -e "Running 'scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_3.sh'" >> $logName;

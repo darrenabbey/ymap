@@ -1,9 +1,12 @@
 #!/bin/bash
 set -e
 
-user=$1;	#user="darren2";
-project=$2;	#project="test";
-main_dir=$3;	#main_dir="/var/www/html/ymap/";
+## Error handling in case something crashes.
+trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. parallel_mpileup.sh:$LINENO"; install /dev/null $projectDirectory"error.txt"; echo -e "Something went wrong. parallel_mpileup.sh:$LINENO" > $projectDirectory"/error.txt"; exit 1;' ERR;
+
+user=$1;        #user="darren2";
+project=$2;     #project="test";
+main_dir=$3;    #main_dir="/var/www/html/ymap/";
 
 # import locations of auxillary software for pipeline analysis.
 . $main_dir"local_installed_programs.sh";
@@ -11,10 +14,6 @@ main_dir=$3;	#main_dir="/var/www/html/ymap/";
 
 projectDirectory=$main_dir"users/"$user"/projects/"$project;
 logNAme=$projectDirectory"/process_log";
-
-## Error handling in case something crashes.
-trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. parallel_mpileup.sh:$LINENO"; install /dev/null $projectDirectory"error.txt"; echo -e "Something went wrong. parallel_mpileup.sh:$LINENO" > $projectDirectory"/error.txt"; exit 1;' ERR;
-
 
 # Define project directory.
 BAMfile=$projectDirectory/data_sorted.bam;
