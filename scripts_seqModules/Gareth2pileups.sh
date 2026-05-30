@@ -4,18 +4,18 @@ set -e
 #===================================================================================================================================
 # Translate Gareth's pileup format into the pileup formats used by the pipeline.
 #-----------------------------------------------------------------------------------------------------------------------------------
-user=$1;
-project=$2;
-inputFile=$3;
-main_dir=$(pwd)"/../../";
+user="$1";
+project="$2";
+inputFile="$3";
+main_dir=$(pwd)"/../..";
 
-projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
-tempDir=$projectDirectory"temp_dir/";
-logFile=$projectDirectory"process_log.txt";
+projectDirectory="$main_dir/users/$user/projects/$project";
+tempDir="$projectDirectory/temp_dir/";
+logFile="$projectDirectory/process_log.txt";
 
-echo "projectDirectory   = '"$projectDirectory"'";
-echo "tempDir            = '"$tempDir"'";
-echo "logFile            = '"$logFile"'";
+echo "projectDirectory   = $projectDirectory";
+echo "tempDir            = $tempDir";
+echo "logFile            = $logFile";
 
 
 echo "\t\t| Shell : Convert the uploaded tab-delimited text data to pileup formats used in the pipeline." >> $logFile;
@@ -23,10 +23,10 @@ echo "\t\t|\t*===========================================================*" >> $
 echo "\t\t|\t| Log of 'scripts_seqModules/Gareth2pileups.sh'             |" >> $logFile;
 echo "\t\t|\t*-----------------------------------------------------------*" >> $logFile;
 echo "\t\t|\t| Arguments:" >> $logFile;
-echo "\t\t|\t|     user      = "$user >> $logFile;
-echo "\t\t|\t|     project   = "$project >> $logFile;
-echo "\t\t|\t|     main_dir  = "$main_dir >> $logFile;
-echo "\t\t|\t|     inputFile = "$inputFile >> $logFile;
+echo "\t\t|\t|     user      = $user" >> $logFile;
+echo "\t\t|\t|     project   = $project" >> $logFile;
+echo "\t\t|\t|     main_dir  = $main_dir" >> $logFile;
+echo "\t\t|\t|     inputFile = $inputFile" >> $logFile;
 echo "\t\t|\t| " >> $logFile;
 echo "\t\t|\t| inputFile is a tab-delimited-text file, with optional collumns in parentheses. " >> $logFile;
 echo "\t\t|\t|         1\tChromosome name string." >> $logFile;
@@ -46,11 +46,11 @@ echo "\t\t|\t|        SNP_CNV_v1.txt" >> $logFile;
 echo "\t\t|\t| " >> $logFile;
 echo "\t\t|\t| Making temp dir in project folder." >> $logFile;
 
-mkdir $tempDir;
-outputFile1=$projectDirectory"putative_SNPs_v4.txt";
-outputFile2=$projectDirectory"SNP_CNV_v1.txt";
-tempFile1=$tempDir"temp.putative_SNPs_v4.txt";
-tempFile2=$tempDir"temp.SNP_CNV_v1.txt";
+mkdir "$tempDir";
+outputFile1="$projectDirectory/putative_SNPs_v4.txt";
+outputFile2="$projectDirectory/SNP_CNV_v1.txt";
+tempFile1="$tempDir/temp.putative_SNPs_v4.txt";
+tempFile2="$tempDir/temp.SNP_CNV_v1.txt";
 
 echo "\t\t|\t| Processing txt file to produce pileups." >> $logFile;
 # Loop through the file, line by line.
@@ -189,11 +189,11 @@ do
 		echo "Current chromosome = "$chromosome;
 	fi
 	previous_chr=$chromosome;
-done < $projectDirectory$inputFile
+done < "$projectDirectory/$inputFile"
 
 echo "\t\t|\t| Moving temp files to final location." >> $logFile;
-mv $tempFile1 $outputFile1;
-mv $tempFile2 $outputFile2;
+mv "$tempFile1" "$outputFile1";
+mv "$tempFile2" "$outputFile2";
 
 rm -rf $tempDir;
 

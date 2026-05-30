@@ -21,5 +21,5 @@ then
 	echo;
 	exit 1;
 else
-	grep -o $1 $2 | wc -l;
+	grep -o "$1" "$2" | wc -l;
 fi

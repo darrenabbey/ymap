@@ -69,9 +69,9 @@ hapmap             = sys.argv[5];
 HapmapUser         = sys.argv[6];
 main_dir           = sys.argv[7];
 
-logName            = main_dir+"users/"+projectChildUser+"/projects/"+projectChild+"/process_log.txt";
-inputFile_H        = main_dir+"users/"+HapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent.txt";
-inputFile_C        = main_dir+"users/"+projectChildUser+"/projects/"+projectChild+"/SNP_CNV_v1.txt";
+logName            = main_dir+"/users/"+projectChildUser+"/projects/"+projectChild+"/process_log.txt";
+inputFile_H        = main_dir+"/users/"+HapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent.txt";
+inputFile_C        = main_dir+"/users/"+projectChildUser+"/projects/"+projectChild+"/SNP_CNV_v1.txt";
 
 t0 = time.process_time();
 
@@ -84,7 +84,7 @@ with open(logName, "a") as myfile:
 #============================================================================================================
 # Find location of genome being used.
 #------------------------------------------------------------------------------------------------------------
-genomeDirectory = main_dir+"users/"+genomeUser+"/genomes/"+genome+"/"
+genomeDirectory = main_dir+"/users/"+genomeUser+"/genomes/"+genome+"/"
 
 #============================================================================================================
 # Load FastaName from 'reference.txt' for genome in use.
