@@ -82,31 +82,30 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	MAX_PROCESSED_DATA_SIZE=$(echo "($MAX_MEMORY_TARGET - $B)/$A" | bc -l);
 
 	if [[ $(echo "$FILESIZE_GB > $MAX_PROCESSED_DATA_SIZE" | bc -l) = "1" ]]; then
-		# Calculate percentage of target vs original.
-		TARGET_PERCENTAGE=$(echo "$MAX_PROCESSED_DATA_SIZE/$FILESIZE_GB" | bc -l);	# Calculate the target number of paired reads.
-		TARGET_READS=$(printf %.0f $(echo "$TARGET_PERCENTAGE*$READS" | bc -l) );	# Round to whole number of reads.
+		echo -e "#\t\tFILESIZE_GB > MAX_PROCESSED_DATA_SIZE => FASTQ subsampling needed." >> $logName;
+		# Calculate fraction of target vs original.
+		TARGET_FRACTION=$(echo "$MAX_PROCESSED_DATA_SIZE/$FILESIZE_GB" | bc -l);	# Calculate the target number of paired reads.
+		TARGET_READS=$(printf %.0f $(echo "$TARGET_FRACTION*$READS" | bc -l) );	# Round to whole number of reads.
 
 		echo -e "Downsampling FASTQ data." >> $condensedLog;
 		echo -e "#\tDownsampling FASTQ data:" >> $logName;
 		echo -e "#\t\tMemory utilization target : "$MAX_MEMORY_TARGET >> $logName;
-		echo -e "#\t\tDownsampling percentage   : "$TARGET_PERCENTAGE >> $logName;
+		echo -e "#\t\tDownsampling fraction     : "$TARGET_FRACTION >> $logName;
 
-		# Subsample FASTQ files to target percentage.
-		# Subsample FASTQ files to target percentage.
+		# Subsample FASTQ files to target fraction.
 		cd "$main_dir/users/$user/projects/$project/";
 		install /dev/null datafile_0.sample.fastq;
-
 		fadso single -i datafile_0.fastq -o datafile_0.sample.fastq -k $TARGET_READS;
-		echo -e "#\t\tdatafile_0.fastq and datafile_1.fastq downsampled." >> $logName;
 		unlink datafile_0.fastq;
 		mv datafile_0.sample.fastq datafile_0.fastq;
+		echo -e "#\t\tdatafile_0.fastq and datafile_1.fastq downsampled." >> $logName;
 		cd "$main_dir";
 	else
-		echo -e "#\tNo need to downsample FASTQ data." >> $logName;
+		echo -e "#\t\tFILESIZE_GB < MAX_PROCESSED_DATA_SIZE => FASTQ subsampling not needed." >> $logName;
 	fi;
 else
 	# Used later to ensure low read mapping warning isn't given because of downsampling.
-	TARGET_PERCENTAGE="1";
+	TARGET_FRACTION="1";
 fi;
 echo -e "#==============================================================================" >> $logName;
 
@@ -293,25 +292,24 @@ readCount=$(head -n 1 $projectDirectory"readStats.txt" | awk '{print $1}');
 readTotalLength=$(head -n 2 $projectDirectory"readStats.txt" | tail -n 1 | awk '{print $1}');
 
 ## Calculate expected average read depth and add to readStats.txt file.
-readDepthAverageExpected=$(echo -e "scale=3; $readTotalLength*$TARGET_PERCENTAGE / $genomeLength" | bc -l);
+readDepthAverageExpected=$(echo -e "scale=3; $readTotalLength*$TARGET_FRACTION / $genomeLength" | bc -l);
 echo $readDepthAverageExpected" (Expected read depth)" >> $projectDirectory"readStats.txt";
 
 ## Find average read depth and add to readStats.txt file.
 readDepthAverageFound=$(awk '{sum += $3; count++} END {if (count > 0) print sum/count}' $projectDirectory"SNP_CNV_v1.txt");
 echo $readDepthAverageFound" (Found read depth)" >> $projectDirectory"readStats.txt";
 
-## Calculate percentage mapped and add to readStats.txt file.
-percentageMapped1=$(echo -e "scale=6; ($readDepthAverageFound / $readDepthAverageExpected)*100" | bc -l);
-
-percentageMapped2=$(echo -e "scale=3; $percentageMapped1 / 1" | bc -l);
-echo $percentageMapped2" (Mapped read percentage)" >> $projectDirectory"readStats.txt";
-if [[ $percentageMapped2 < 50 ]]
+## Calculate fraction mapped and add to readStats.txt file.
+fractionMapped1=$(echo -e "scale=6; ($readDepthAverageFound / $readDepthAverageExpected)*100" | bc -l);
+fractionMapped2=$(echo -e "scale=3; $fractionMapped1 / 1" | bc -l);
+echo $fractionMapped2" (Mapped read fraction)" >> $projectDirectory"readStats.txt";
+if [[ $fractionMapped2 < 50 ]]
 then
-	if [[ $percentageMapped2 < 1 ]]
+	if [[ $fractionMapped2 < 1 ]]
 	then
-		echo -e "0"$percentageMapped2"% reads mapped." >> $projectDirectory"warning.txt";
+		echo -e "0"$fractionMapped2"% reads mapped." >> $projectDirectory"warning.txt";
 	else
-		echo -e $percentageMapped2"% reads mapped." >> $projectDirectory"warning.txt";
+		echo -e $fractionMapped2"% reads mapped." >> $projectDirectory"warning.txt";
 	fi
 fi
 
