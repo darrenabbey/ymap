@@ -3,13 +3,15 @@ set -e
 
 user=$1;	#user="darren2";
 project=$2;	#project="test";
-main_dir=$(pwd)"/../../";
+main_dir=$(pwd)"/../../../../";   # called from project directories like: /var/www/html/ymap/users/darren3/projects/NEM50/
 
 # import locations of auxillary software for pipeline analysis.
 . $main_dir"local_installed_programs.sh";
 . $main_dir"config.sh";
 
+# Clean up logging a little bit by using this path without sets of '../' to go up directory levels.
 main_dir=$base_dir;
+
 projectDirectory=$main_dir"users/"$user"/projects/"$project;
 logNAme=$projectDirectory"/process_log";
 
