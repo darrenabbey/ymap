@@ -7,6 +7,12 @@ set -e;
 ## All created files will have permission 760
 umask 007;
 
+user=$1;
+project=$2;
+main_dir=$(pwd)"/../../";
+projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
+logName=$projectDirectory"process_log.txt";
+
 ## Error handling in case something crashes.
 trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.single_WGseq.install_3.sh:$LINENO"; install /dev/null $projectDirectory"error.txt"; echo -e "Something went wrong. project.single_WGseq.install_3.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
@@ -14,14 +20,6 @@ trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong.
 ## Define locations and names to be used later.
 ##------------------------------------------------------------------------------
 
-### define script file locations.
-user=$1;
-project=$2;
-main_dir=$(pwd)"/../../";
-
-# Setup process_log.txt file.
-projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
-logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
 
 echo -e "#.............................................................................." >> $logName;
@@ -36,9 +34,6 @@ echo -e "" >> $logName;
 . $main_dir"local_installed_programs.sh";
 . $main_dir"config.sh";
 main_dir=$base_dir;
-
-# Define project directory.
-projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 
 echo -e "Running 'scripts_seqModules/scripts_WGseq/project.single_WGseq.install_3.sh'" >> $logName;
 echo -e "Variables passed via command-line from 'scripts_seqModules/scripts_WGseq/project.single_WGseq.install_2.php' :" >> $logName;

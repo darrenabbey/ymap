@@ -6,19 +6,16 @@ set -e
 ## All created files will have permission 760
 umask 007;
 
-### define script file locations.
 user=$1;
 project=$2;
-main_dir=$3; #$(pwd)"../../";
-
+main_dir=$3;
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 logName=$projectDirectory"process_log.txt";
-condensedLog=$projectDirectory"condensed_log.txt";
-
 
 ## Error handling in case something crashes.
 trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. cleaning_WGseq.sh:$LINENO"; install /dev/null $projectDirectory"error.txt"; echo -e "Something went wrong. cleaning_WGseq.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
+condensedLog=$projectDirectory"condensed_log.txt";
 
 ##==============================================================================
 ## Cleanup intermediate processing files.

@@ -7,6 +7,9 @@ main_dir=$3;
 logName=$4;
 message=$5;
 
+## Error handling in case something crashes.
+trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. queue_end.sh:$LINENO"; install /dev/null $projectDirectory"error.txt"; echo -e "Something went wrong. queue_end.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 
 ##==============================================================================

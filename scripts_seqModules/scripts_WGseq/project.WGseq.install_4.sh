@@ -7,15 +7,16 @@ set -e;
 ## All created files will have permission 760
 umask 007;
 
-### define script file locations.
 user=$1;
 project=$2;
 main_dir=$(pwd)"/../../";
-script_dir=$(pwd);
+projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
+logName=$projectDirectory"process_log.txt";
 
-#user="darren";
-#project="ID5087";
-#main_dir="/var/www/html/ymap/";
+## Error handling in case something crashes.
+trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.WGseq.install_4.sh:$LINENO"; install /dev/null $projectDirectory"error.txt"; echo -e "Something went wrong. project.WGseq.install_4.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+
+script_dir=$(pwd);
 
 echo -e "";
 echo -e "Input to : project.WGseq.install_4.sh";
@@ -31,13 +32,6 @@ echo -e "";
 ## Define locations and names to be used later.
 ##------------------------------------------------------------------------------
 
-
-## Error handling in case something crashes.
-trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.WGseq.install_4.sh:$LINENO"; install /dev/null $projectDirectory"error.txt"; echo -e "Something went wrong. project.WGseq.install_4.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
-
-
-projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
-logName=$projectDirectory"process_log.txt";
 condensedLog=$projectDirectory"condensed_log.txt";
 
 # Get genome name used from project's "genome.txt" file.
