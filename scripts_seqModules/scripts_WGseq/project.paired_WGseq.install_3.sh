@@ -1,4 +1,4 @@
-w#!/bin/bash
+#!/bin/bash
 #
 # project.paired_WGseq.install_3.sh
 #
@@ -67,6 +67,11 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	FILESIZE2=$(stat -c%s "$main_dir/users/$user/projects/$project/datafile_1.fastq")
 	FILESIZE=$(($FILESIZE1 + $FILESIZE2));
 
+	READS_RAW1=$(wc -l < "$main_dir/users/$user/projects/$project/datafile_0.fastq");
+	READS_RAW2=$(wc -l < "$main_dir/users/$user/projects/$project/datafile_1.fastq");
+	READS1=$( echo "$READS_RAW1/4" | bc -l);
+	READS2=$( echo "$READS_RAW2/4" | bc -l);
+
 	# Calculate FASTQ data total size in GB.
 	FILESIZE_GB=$(echo "$FILESIZE/1000000000" | bc -l)
 
@@ -86,7 +91,8 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 
 	if [[ $(echo "$FILESIZE_GB > $MAX_PROCESSED_DATA_SIZE" | bc -l) ]]; then
 		# Calculate percentage of target vs original.
-		TARGET_PERCENTAGE=$(echo "$MAX_PROCESSED_DATA_SIZE/$FILESIZE_GB" | bc -l);
+		TARGET_PERCENTAGE=$(echo "$MAX_PROCESSED_DATA_SIZE/$FILESIZE_GB" | bc -l);	# Calculate the target number of paired reads.
+		TARGET_READS=$(printf %.0f $(echo "$TARGET_PERCENTAGE*$READS1" | bc -l) );	# Round to whole number of reads.
 
 		echo -e "Downsampling FASTQ data." >> $condensedLog;
 		echo -e "#\tDownsampling FASTQ data:" >> $logName;
@@ -96,15 +102,14 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 		# Subsample FASTQ files to target percentage.
 		cd "$main_dir/users/$user/projects/$project/";
 		install /dev/null datafile_0.sample.fastq;
-		seqtk sample datafile_0.fastq "$TARGET_PERCENTAGE" > datafile_0.sample.fastq;
-		unlink datafile_0.fastq;
-		mv datafile_0.sample.fastq datafile_0.fastq;
-		echo -e "#\t\tdatafile_0.fastq downsampled." >> $logName;
 		install /dev/null datafile_1.sample.fastq;
-		seqtk sample datafile_1.fastq "$TARGET_PERCENTAGE" > datafile_1.sample.fastq;
+
+		fadso pair -1 datafile_0.fastq -2 datafile_1.fastq -a datafile_0.sample.fastq -b datafile_1.sample.fastq -k $TARGET_READS;
+		echo -e "#\t\tdatafile_0.fastq and datafile_1.fastq downsampled." >> $logName;
+		unlink datafile_0.fastq;
 		unlink datafile_1.fastq;
+		mv datafile_0.sample.fastq datafile_0.fastq;
 		mv datafile_1.sample.fastq datafile_1.fastq;
-		echo -e "#\t\tdatafile_1.fastq downsampled." >> $logName;
 		cd "$main_dir";
 	else
 		echo -e "#\tNo need to downsample FASTQ data." >> $logName;
@@ -262,12 +267,13 @@ else
 		echo -e "#============================================================================== 3" >> $logName;
 
 		echo -e "[[=- In-house SNP/CNV analysis -=]]" >> $logName;
-		usedFile=$projectDirectory"data_sorted.bam";
 		echo -e "\tSamtools : Generating pileup.   (for SNP/CNV analysis)" >> $logName;
 		echo -e "Generating pileup file." >> $condensedLog;
-		echo -e "\nRunning samtools:mpileup.\n";
-		echo -e "command used:";
-		echo -e "\tbash $main_dir\"scripts_seqModules/parallel_mpileup.sh\" $user $project >> $logName;";
+		echo -e "command used:" >> $logName;
+		echo -e "\tbash $main_dir\"scripts_seqModules/parallel_mpileup.sh\" $user $project >> $logName;" >> $logName;
+		echo -e "\t\tRunning this command somehow crash the YMAP_daemon if the original FASTQ files were downsampled.";
+		echo -e "\t\tThe crash seems to happen a certain time after seqtk is used, even if it was used manually.";
+		echo -e "\t\tRestarting the daemon after deleting the stalled job works." >> $logName;
 		bash $main_dir"scripts_seqModules/parallel_mpileup.sh" $user $project >> $logName;
 		chmod 774 $projectDirectory"data.pileup";
 		echo -e "\tSamtools : Pileup generated." >> $logName;

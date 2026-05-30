@@ -61,6 +61,8 @@ MAX_MEMORY_TARGET=$(grep "MAX_MEMORY_TARGET" "$main_dir/constants.php" | tr -dc 
 if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	# Get FASTQ data total size in bytes.
 	FILESIZE=$(stat -c%s "$main_dir/users/$user/projects/$project/datafile_0.fastq")
+	READS_RAW=$(wc -l < "$main_dir/users/$user/projects/$project/datafile_0.fastq");
+	READS=$( echo "$READS_RAW/4" | bc -l);
 
 	# Calculate FASTQ data total size in GB.
 	FILESIZE_GB=$(echo "$FILESIZE/1000000000" | bc -l)
@@ -81,7 +83,8 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 
 	if [[ $(echo "$FILESIZE_GB > $MAX_PROCESSED_DATA_SIZE" | bc -l) ]]; then
 		# Calculate percentage of target vs original.
-		TARGET_PERCENTAGE=$(echo "$MAX_PROCESSED_DATA_SIZE/$FILESIZE_GB" | bc -l);
+		TARGET_PERCENTAGE=$(echo "$MAX_PROCESSED_DATA_SIZE/$FILESIZE_GB" | bc -l);	# Calculate the target number of paired reads.
+		TARGET_READS=$(printf %.0f $(echo "$TARGET_PERCENTAGE*$READS" | bc -l) );	# Round to whole number of reads.
 
 		echo -e "Downsampling FASTQ data." >> $condensedLog;
 		echo -e "#\tDownsampling FASTQ data:" >> $logName;
@@ -89,13 +92,14 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 		echo -e "#\t\tDownsampling percentage   : "$TARGET_PERCENTAGE >> $logName;
 
 		# Subsample FASTQ files to target percentage.
-
+		# Subsample FASTQ files to target percentage.
 		cd "$main_dir/users/$user/projects/$project/";
 		install /dev/null datafile_0.sample.fastq;
-		seqtk sample datafile_0.fastq "$TARGET_PERCENTAGE" > datafile_0.sample.fastq;
+
+		fadso single -i datafile_0.fastq -o datafile_0.sample.fastq -k $TARGET_READS;
+		echo -e "#\t\tdatafile_0.fastq and datafile_1.fastq downsampled." >> $logName;
 		unlink datafile_0.fastq;
 		mv datafile_0.sample.fastq datafile_0.fastq;
-		echo -e "#\t\tdatafile_0.fastq downsampled." >> $logName;
 		cd "$main_dir";
 	else
 		echo -e "#\tNo need to downsample FASTQ data." >> $logName;
@@ -251,10 +255,10 @@ else
 		echo -e "#============================================================================== 3" >> $logName;
 
 		echo -e "[[=- In-house SNP/CNV/INDEL analysis -=]]" >> $logName;
-                usedFile=$projectDirectory"data_sorted.bam";
 		echo -e "\tSamtools : Generating pileup.   (for SNP/CNV/INDEL analysis)" >> $logName;
 		echo -e "Generating pileup file." >> $condensedLog;
-		echo -e "\nRunning samtools:mpileup.\n";
+		echo -e "command used:" >> $logName;
+		echo -e "\tbash $main_dir\"scripts_seqModules/parallel_mpileup.sh\" $user $project >> $logName;" >> $logName;
 		bash $main_dir"scripts_seqModules/parallel_mpileup.sh" $user $project >> $logName;
 		chmod 774 $projectDirectory"data.pileup";
 		echo -e "\tSamtools : Pileup generated." >> $logName;
