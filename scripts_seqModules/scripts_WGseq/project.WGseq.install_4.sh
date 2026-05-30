@@ -207,11 +207,12 @@ else
 		cp $projectParentDirectory"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
 	else
 		echo -e "\tDecompressing parent SNP data." >> $logName;
-		parentSnpDataTempDir=$projectDirectory"/SNPdata_parent_temp/";
-		mkdir $parentSnpDataTempDir;
-		unzip -j $projectParentDirectory"putative_SNPs_v4.zip" -d $parentSnpDataTempDir;
-		mv $parentSnpDataTempDir"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
-		rmdir $parentSnpDataTempDir;
+		pigz -dc $projectParentDirectory"putative_SNPs_v4.zip" > $projectDirectory"SNPdata_parent.txt";
+		#parentSnpDataTempDir=$projectDirectory"/SNPdata_parent_temp/";
+		#mkdir $parentSnpDataTempDir;
+		#unzip -j $projectParentDirectory"putative_SNPs_v4.zip" -d $parentSnpDataTempDir;
+		#mv $parentSnpDataTempDir"putative_SNPs_v4.txt" $projectDirectory"SNPdata_parent.txt";
+		#rmdir $parentSnpDataTempDir;
 	fi
 
 	# preprocess parent for comparison.
