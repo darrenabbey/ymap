@@ -9,24 +9,23 @@ umask 007;
 
 user=$1;
 project=$2;
-main_dir=$(pwd)"/../../";
+#main_dir=$(pwd)"/../../";
+main_dir=$(pwd);
 projectDirectory=$main_dir"users/"$user"/projects/"$project"/";
 logName=$projectDirectory"process_log.txt";
 
 ## Error handling in case something crashes.
 trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.WGseq.install_4.sh:$LINENO"; install /dev/null $projectDirectory"error.txt"; echo -e "Something went wrong. project.WGseq.install_4.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
 
-script_dir=$(pwd);
+. $main_dir"local_installed_programs.sh";
 
 echo -e "";
 echo -e "Input to : project.WGseq.install_4.sh";
-echo -e "\tuser     = "$user;
-echo -e "\tproject  = "$project;
-echo -e "\tmain_dir = "$main_dir;
+echo -e "\tuser       = "$user;
+echo -e "\tproject    = "$project;
+echo -e "\tmain_dir   = "$main_dir;
 echo -e "";
 
-# load local installed program location variables.
-. $main_dir"local_installed_programs.sh";
 
 ##==============================================================================
 ## Define locations and names to be used later.
@@ -120,7 +119,7 @@ echo -e "\t|\tend" >> $logName;
 echo -e "\tCalling OCTAVE." >> $logName;
 cd $projectDirectory;
 $octave_exec $outputName;
-cd $script_dir;
+cd $main_dir;
 
 
 echo -e "\tOCTAVE log from CNV analysis." >> $logName;
@@ -168,7 +167,7 @@ else
 	echo -e "================================================================================================";
 	cd $projectDirectory;
 	$octave_exec $outputName;
-	cd $script_dir;
+	cd $main_dir;
 	echo -e "\tOCTAVE log from ChARM analysis." >> $logName;
 	sed 's/^/\t|/;' $projectDirectory"octave.ChARM.log" >> $logName;
 fi
@@ -246,7 +245,7 @@ echo -e "== SNP analysis =======================================================
 echo -e "================================================================================================";
 cd $projectDirectory;
 $octave_exec $outputName;
-cd $script_dir;
+cd $main_dir;
 echo -e "\tOCTAVE log from SNP analysis." >> $logName;
 sed 's/^/\t|/;' $projectDirectory"octave.SNP_analysis.log" >> $logName;
 
@@ -285,7 +284,7 @@ echo -e "== Final figures ======================================================
 echo -e "================================================================================================";
 cd $projectDirectory;
 $octave_exec $outputName;
-cd $script_dir;
+cd $main_dir;
 echo -e "\tOCTAVE log from final figure generation." >> $logName;
 sed 's/^/\t|/;' $projectDirectory"octave.final_figs.log" >> $logName;
 echo -e "finished all processing, moving to Cleaning up intermediate WGseq files" >> $condensedLog;

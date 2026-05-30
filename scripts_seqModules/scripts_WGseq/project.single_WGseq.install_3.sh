@@ -341,6 +341,7 @@ echo   "========================================================================
 if [[ $hapmapInUse = 0 ]]
 then
 	echo -e "Passing processing on to 'scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh' for final analysis." >> $logName;
+	echo -e "\tCurrent directory = "$(pwd); >> $logName;
 	echo   "=========================================================================\n" >> $logName;
 	bash $main_dir"scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" $user $project 2>> $logName;
 else
