@@ -150,9 +150,9 @@ if ($ext == "zip") {
 		$name_first = $name_new;
 		$name_ext   = pathinfo($name_final, PATHINFO_EXTENSION);
 
-		// Is not a tar.gz, so decompress with gzip.
+		// Is not a tar.gz, so decompress with pigz (parallel implementation of gzip).
 		chdir($projectPath);                   // move to projectDirectory.
-		$null = shell_exec("gzip -dc ".$name." > ".$name_new); // decompress archive while keeping results in case of early file end error.
+		$null = shell_exec("pigz -dc ".$name." > ".$name_new); // decompress archive while keeping results in case of early file end error.
 		chdir($currentDir);                    // move back to script's path.
 
 		// Delete original archive.
