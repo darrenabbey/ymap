@@ -81,7 +81,7 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 
 	MAX_PROCESSED_DATA_SIZE=$(echo "($MAX_MEMORY_TARGET - $B)/$A" | bc -l);
 
-	if [[ $(echo "$FILESIZE_GB > $MAX_PROCESSED_DATA_SIZE" | bc -l) ]]; then
+	if [[ $(echo "$FILESIZE_GB > $MAX_PROCESSED_DATA_SIZE" | bc -l) = "1" ]]; then
 		# Calculate percentage of target vs original.
 		TARGET_PERCENTAGE=$(echo "$MAX_PROCESSED_DATA_SIZE/$FILESIZE_GB" | bc -l);	# Calculate the target number of paired reads.
 		TARGET_READS=$(printf %.0f $(echo "$TARGET_PERCENTAGE*$READS" | bc -l) );	# Round to whole number of reads.

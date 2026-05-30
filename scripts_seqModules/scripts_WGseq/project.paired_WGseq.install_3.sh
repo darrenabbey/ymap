@@ -69,11 +69,17 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 
 	READS_RAW1=$(wc -l < "$main_dir/users/$user/projects/$project/datafile_0.fastq");
 	READS_RAW2=$(wc -l < "$main_dir/users/$user/projects/$project/datafile_1.fastq");
-	READS1=$( echo "$READS_RAW1/4" | bc -l);
-	READS2=$( echo "$READS_RAW2/4" | bc -l);
+	READS1=$(printf %.0f $( echo "$READS_RAW1/4" | bc -l) );
+	READS2=$(printf %.0f $( echo "$READS_RAW2/4" | bc -l) );
+
+	echo -e "#\tFILESIZE1               = $FILESIZE1 (bytes)" >> $logName;
+	echo -e "#\tFILESIZE2               = $FILESIZE2 (bytes)" >> $logName;
+	echo -e "#\tREADS1                  = $READS1" >> $logName;
+	echo -e "#\tREADS2                  = $READS2" >> $logName;
 
 	# Calculate FASTQ data total size in GB.
 	FILESIZE_GB=$(echo "$FILESIZE/1000000000" | bc -l)
+	echo -e "#\tFILESIZE_GB             = $FILESIZE_GB (GB)" >> $logName;
 
 	# Fit function relating FASTQ size (GB) to memory utilization (GB).
 	#	f(x) = A x + B
@@ -88,16 +94,20 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	# Terms to fit function may need to be characterized at install.
 
 	MAX_PROCESSED_DATA_SIZE=$(echo "($MAX_MEMORY_TARGET - $B)/$A" | bc -l);
+	echo -e "#\tMAX_PROCESSED_DATA_SIZE = $MAX_PROCESSED_DATA_SIZE (GB)" >> $logName;
 
-	if [[ $(echo "$FILESIZE_GB > $MAX_PROCESSED_DATA_SIZE" | bc -l) ]]; then
+	if [[ $(echo "$FILESIZE_GB > $MAX_PROCESSED_DATA_SIZE" | bc -l) = "1" ]]; then
+		echo -e "#\t\tFILESIZE_GB > MAX_PROCESSED_DATA_SIZE" >> $logName;
 		# Calculate percentage of target vs original.
 		TARGET_PERCENTAGE=$(echo "$MAX_PROCESSED_DATA_SIZE/$FILESIZE_GB" | bc -l);	# Calculate the target number of paired reads.
 		TARGET_READS=$(printf %.0f $(echo "$TARGET_PERCENTAGE*$READS1" | bc -l) );	# Round to whole number of reads.
+		echo -e "#\tTARGET_PERCENTAGE       = $TARGET_PERCENTAGE (= MAX_PROCESSED_DATA_SIZE/FILESIZE_GB)" >> $logName;
+		echo -e "#\tTARGET_READS            = $TARGET_READS" >> $logName;
 
 		echo -e "Downsampling FASTQ data." >> $condensedLog;
 		echo -e "#\tDownsampling FASTQ data:" >> $logName;
-		echo -e "#\t\tMemory utilization target : "$MAX_MEMORY_TARGET >> $logName;
-		echo -e "#\t\tDownsampling percentage   : "$TARGET_PERCENTAGE >> $logName;
+		echo -e "#\t\tMemory utilization target : $MAX_MEMORY_TARGET(GB)" >> $logName;
+		echo -e "#\t\tDownsampling percentage   : $TARGET_PERCENTAGE" >> $logName;
 
 		# Subsample FASTQ files to target percentage.
 		cd "$main_dir/users/$user/projects/$project/";
@@ -271,9 +281,6 @@ else
 		echo -e "Generating pileup file." >> $condensedLog;
 		echo -e "command used:" >> $logName;
 		echo -e "\tbash $main_dir\"scripts_seqModules/parallel_mpileup.sh\" $user $project >> $logName;" >> $logName;
-		echo -e "\t\tRunning this command somehow crash the YMAP_daemon if the original FASTQ files were downsampled.";
-		echo -e "\t\tThe crash seems to happen a certain time after seqtk is used, even if it was used manually.";
-		echo -e "\t\tRestarting the daemon after deleting the stalled job works." >> $logName;
 		bash $main_dir"scripts_seqModules/parallel_mpileup.sh" $user $project >> $logName;
 		chmod 774 $projectDirectory"data.pileup";
 		echo -e "\tSamtools : Pileup generated." >> $logName;
