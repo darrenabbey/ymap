@@ -1,7 +1,7 @@
 function [] = CNV_SNP_hapmap_v4(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 addpath('../');
 
-workingDir      = [main_dir 'users/' user '/projects/' project '/'];
+workingDir      = [main_dir '/users/' user '/projects/' project '/'];
 fprintf('\n\n\t*===============================================================*\n');
 fprintf(    '\t| Generate CNV/SNP/LOH plot in script "CNV_SNP_hapmap_v4.m".    |\n');
 fprintf(    '\t*---------------------------------------------------------------*\n');
@@ -22,9 +22,9 @@ else
 end;
 
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
-if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
-	%%figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
-	figure_options = importdata([main_dir 'users/' user '/projects/' project '/figure_options.txt'],'\t',1);
+if exist([main_dir '/users/' user '/projects/' project '/figure_options.txt'], 'file')
+	%%figure_options = readtable([main_dir '/users/' user '/projects/' project '/figure_options.txt']);
+	figure_options = importdata([main_dir '/users/' user '/projects/' project '/figure_options.txt'],'\t',1);
 
 	option         = figure_options{10,1};
 	if strcmp(option,'False')
@@ -72,8 +72,8 @@ Low_quality_ploidy_estimate = true    % Estimate error in overall ploidy estimat
 %% =========================================================================================
 % Load FASTA file name from 'reference.txt' file for project.
 %-------------------------------------------------------------------------------------------
-userReference    = [main_dir 'users/' user '/genomes/' genome '/reference.txt'];
-defaultReference = [main_dir 'users/default/genomes/' genome '/reference.txt'];
+userReference    = [main_dir '/users/' user '/genomes/' genome '/reference.txt'];
+defaultReference = [main_dir '/users/default/genomes/' genome '/reference.txt'];
 if (exist(userReference,'file') == 0)
 	FASTA_string = strtrim(fileread(defaultReference));
 else
@@ -85,17 +85,17 @@ end;
 %% =========================================================================================
 % Control variables.
 %-------------------------------------------------------------------------------------------
-projectDir = [main_dir 'users/' user '/projects/' project '/'];
-genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
+projectDir = [main_dir '/users/' user '/projects/' project '/'];
+genomeDir  = [main_dir '/users/' genomeUser '/genomes/' genome '/'];
 if (strcmp(hapmap,'') == 1)
 	useHapmap = false;
 else
 	useHapmap = true;
-	if (exist([main_dir 'users/default/hapmaps/' hapmap '/'], 'dir') == 7)
-		hapmapDir  = [main_dir 'users/default/hapmaps/' hapmap '/'];   % system hapmap.
+	if (exist([main_dir '/users/default/hapmaps/' hapmap '/'], 'dir') == 7)
+		hapmapDir  = [main_dir '/users/default/hapmaps/' hapmap '/'];   % system hapmap.
 		hapmapUser = 'default';
-	elseif (exist([main_dir 'users/' user '/hapmaps/' hapmap '/'], 'dir') == 7)
-		hapmapDir  = [main_dir 'users/' user '/hapmaps/' hapmap '/'];  % user hapmap.
+	elseif (exist([main_dir '/users/' user '/hapmaps/' hapmap '/'], 'dir') == 7)
+		hapmapDir  = [main_dir '/users/' user '/hapmaps/' hapmap '/'];  % user hapmap.
 		hapmapUser = user;
 	else
 		useHapmap = false;
@@ -103,17 +103,17 @@ else
 	parent = '';
 end;
 if (useHapmap == false)
-	parentFile = [main_dir 'users/' user '/projects/' project '/parent.txt'];
+	parentFile = [main_dir '/users/' user '/projects/' project '/parent.txt'];
 	parent     = strtrim(fileread(parentFile));
 	if (strcmp(project,parent) == 1)
 		useParent = false;
 	else
 		useParent = true;
-		if (exist([main_dir 'users/default/projects/' parent '/'], 'dir') == 7)
-			parentDir  = [main_dir 'users/default/projects/' parent '/'];   % system parent.
+		if (exist([main_dir '/users/default/projects/' parent '/'], 'dir') == 7)
+			parentDir  = [main_dir '/users/default/projects/' parent '/'];   % system parent.
 			parentUser = 'default';
 		else
-			parentDir  = [main_dir 'users/' user '/projects/' parent '/'];  % user parent.
+			parentDir  = [main_dir '/users/' user '/projects/' parent '/'];  % user parent.
 			parentUser = user;
 		end;
 	end;

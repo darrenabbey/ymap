@@ -3,7 +3,7 @@ function [] = analyze_CNV_SNPs_hapmap(main_dir, user, genomeUser, project, paren
 testPloidy     = ploidyEstimateString
 testPloidyBase = ploidyBaseString
 
-workingDir      = [main_dir 'users/' user '/projects/' project '/'];
+workingDir      = [main_dir '/users/' user '/projects/' project '/'];
 figureDir       = workingDir;
 INDEL_verString = 'v1';
 SNP_verString   = 'v4';

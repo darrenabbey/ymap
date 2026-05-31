@@ -10,7 +10,7 @@ umask 007;
 user="$1";
 project="$2";
 hapmap="$3";
-main_dir=$(pwd)"/../..";
+main_dir="$4";
 projectDirectory="$main_dir/users/$user/projects/$project";
 logName="$projectDirectory/process_log.txt";
 

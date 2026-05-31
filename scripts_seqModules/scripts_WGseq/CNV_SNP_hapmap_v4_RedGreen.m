@@ -1,7 +1,7 @@
 function [] = CNV_SNP_hapmap_v4_RedGreen(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 addpath('../');
 
-workingDir      = [main_dir 'users/' user '/projects/' project '/'];
+workingDir      = [main_dir '/users/' user '/projects/' project '/'];
 
 % hide figures during construction.
 set(0,'DefaultFigureVisible','off');
@@ -21,14 +21,14 @@ end;
 %% =========================================================================================
 % Load workspace variables saved in "CNV_SNP_hapmap_v4.m"
 %-------------------------------------------------------------------------------------------
-projectDir  = [main_dir 'users/' user '/projects/' project '/'];
+projectDir  = [main_dir '/users/' user '/projects/' project '/'];
 load([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
 
 
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
-if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
-	%%figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
-	figure_options = importdata([main_dir 'users/' user '/projects/' project '/figure_options.txt'],'\t',1);
+if exist([main_dir '/users/' user '/projects/' project '/figure_options.txt'], 'file')
+	%%figure_options = readtable([main_dir '/users/' user '/projects/' project '/figure_options.txt']);
+	figure_options = importdata([main_dir '/users/' user '/projects/' project '/figure_options.txt'],'\t',1);
 
 	option         = figure_options{12,1};
 	if strcmp(option,'False')

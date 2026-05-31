@@ -5,9 +5,9 @@ addpath('../');
 set(0,'DefaultFigureVisible','off');
 
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
-if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
-	%%figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
-	figure_options = importdata([main_dir 'users/' user '/projects/' project '/figure_options.txt'],'\t',1);
+if exist([main_dir '/users/' user '/projects/' project '/figure_options.txt'], 'file')
+	%%figure_options = readtable([main_dir '/users/' user '/projects/' project '/figure_options.txt']);
+	figure_options = importdata([main_dir '/users/' user '/projects/' project '/figure_options.txt'],'\t',1);
 
         option         = figure_options{6,1};
         if strcmp(option,'False')
@@ -23,7 +23,7 @@ if (Make_figure == true)
 	%%=========================================================================
 	% Load project figure version.
 	%--------------------------------------------------------------------------
-	workingDir = [main_dir 'users/' user '/projects/' project '/'];
+	workingDir = [main_dir '/users/' user '/projects/' project '/'];
 	versionFile = [workingDir 'figVer.txt'];
 	if exist(versionFile, 'file') == 2
 		figVer = ['v' fileread(versionFile) '.'];
@@ -48,7 +48,7 @@ if (Make_figure == true)
 	%%=========================================================================
 	% Load FASTA file name from 'reference.txt' file for project.
 	%--------------------------------------------------------------------------
-	Reference	= [main_dir 'users/' genomeUser '/genomes/' genome '/reference.txt'];
+	Reference	= [main_dir '/users/' genomeUser '/genomes/' genome '/reference.txt'];
 	FASTA_string = strtrim(fileread(Reference));
 	[FastaPath,FastaName,FastaExt] = fileparts(FASTA_string);
 
@@ -56,8 +56,8 @@ if (Make_figure == true)
 	%%=========================================================================
 	% Control variables.
 	%--------------------------------------------------------------------------
-	projectDir = [main_dir 'users/' user '/projects/' project '/'];
-	genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
+	projectDir = [main_dir '/users/' user '/projects/' project '/'];
+	genomeDir  = [main_dir '/users/' genomeUser '/genomes/' genome '/'];
 
 	fprintf(['\n$$ projectDir : ' projectDir '\n']);
 	fprintf([  '$$ genomeDir  : ' genomeDir  '\n']);

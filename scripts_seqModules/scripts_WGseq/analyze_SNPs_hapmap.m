@@ -8,7 +8,7 @@ function [] = analyze_SNPs_hapmap(main_dir, user, genomeUser, project, parent_or
 % log file start, for in-process analysis.
 fprintf(['project : [[[' project '[[[\n']);
 
-workingDir             = [main_dir 'users/' user '/projects/' project '/'];
+workingDir             = [main_dir '/users/' user '/projects/' project '/'];
 figureDir              = workingDir;
 CNV_verString          = 'v1';
 INDEL_verString        = 'v1';

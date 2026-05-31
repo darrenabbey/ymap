@@ -8,7 +8,7 @@ set(0,'DefaultFigureVisible','off');
 %%=========================================================================
 % Load project figure version.
 %--------------------------------------------------------------------------
-workingDir = [main_dir 'users/' user '/projects/' project '/'];
+workingDir = [main_dir '/users/' user '/projects/' project '/'];
 versionFile = [workingDir 'figVer.txt'];
 if exist(versionFile, 'file') == 2
 	figVer = ['v' fileread(versionFile) '.'];
@@ -25,7 +25,7 @@ end;
 %    Chr_max_width              : max width of chrs as fraction of figure width.
 Linear_displayBREAKS   = false;
 
-manualLOH_file = [main_dir 'users/' user '/projects/' project '/manualLOH.txt'];
+manualLOH_file = [main_dir '/users/' user '/projects/' project '/manualLOH.txt'];
 fprintf(['\nLooking for "manualLOH.txt" file at : ' manualLOH_file '\n']);
 if (exist(manualLOH_file,'file') == 0)
 	fprintf(['\nNO MANUAL LOH BOX FILE WAS FOUND.\n']);
@@ -51,8 +51,8 @@ else
 	%% =========================================================================================
 	% Load FASTA file name from 'reference.txt' file for project.
 	%-------------------------------------------------------------------------------------------
-	userReference    = [main_dir 'users/' user '/genomes/' genome '/reference.txt'];
-	defaultReference = [main_dir 'users/default/genomes/' genome '/reference.txt'];
+	userReference    = [main_dir '/users/' user '/genomes/' genome '/reference.txt'];
+	defaultReference = [main_dir '/users/default/genomes/' genome '/reference.txt'];
 	if (exist(userReference,'file') == 0)
 		FASTA_string = strtrim(fileread(defaultReference));
 	else
@@ -64,24 +64,24 @@ else
 	%% =========================================================================================
 	% Control variables for Candida albicans SC5314.
 	%-------------------------------------------------------------------------------------------
-	projectDir  = [main_dir 'users/' user '/projects/' project '/'];
+	projectDir  = [main_dir '/users/' user '/projects/' project '/'];
 
-	if (exist([[main_dir 'users/default/hapmaps/' hapmap '/']],'dir') == 7)
-		hapmapDir  = [main_dir 'users/default/hapmaps/' hapmap '/'];
+	if (exist([[main_dir '/users/default/hapmaps/' hapmap '/']],'dir') == 7)
+		hapmapDir  = [main_dir '/users/default/hapmaps/' hapmap '/'];
 		hapmapUser = 'default';
 		useHapmap  = true;
-	elseif (exist([[main_dir 'users/' user '/hapmaps/' hapmap '/']],'dir') == 7)
-		hapmapDir  = [main_dir 'users/' user '/hapmaps/' hapmap '/'];
+	elseif (exist([[main_dir '/users/' user '/hapmaps/' hapmap '/']],'dir') == 7)
+		hapmapDir  = [main_dir '/users/' user '/hapmaps/' hapmap '/'];
 		hapmapUser = user;
 		useHapmap  = true;
 	else
-		hapmapDir  = [main_dir 'users/' user '/projects/' project '/'];
-		parentFile = [main_dir 'users/' user '/projects/' project '/parent.txt'];
+		hapmapDir  = [main_dir '/users/' user '/projects/' project '/'];
+		parentFile = [main_dir '/users/' user '/projects/' project '/parent.txt'];
 		hapmapUser = strtrim(fileread(parentFile));
 		useHapmap  = false;
 	end;
 
-	genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
+	genomeDir  = [main_dir '/users/' genomeUser '/genomes/' genome '/'];
 
 
 	[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
@@ -284,7 +284,7 @@ else
 	%	B
 	%-------------------------------------------------------------------------------------------
 	manualLOH           = [];
-	manualLOH_file_name = [main_dir 'users/' user '/projects/' project '/manualLOH.txt'];
+	manualLOH_file_name = [main_dir '/users/' user '/projects/' project '/manualLOH.txt'];
 	manualLOH_fid       = fopen(manualLOH_file_name, 'r');
 	lines_analyzed      = 0;
 	fprintf(['\t*----------------------*\n']);

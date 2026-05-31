@@ -26,15 +26,15 @@ trap 'bash queue_end.sh "$user" "$project" "$main_dir" $logName "Something went 
 main_dir=$base_dir;
 projectDirectory="$main_dir/users/$user/projects/$project";
 
-logName="$projectDirectory/process_log.txt"
-install /dev/null $logName;
+#logName="$projectDirectory/process_log.txt"
+#install /dev/null $logName;
 echo "% $main_dir/local_installed_programs.sh" >> $logName;
 echo "% $main_dir/config.sh" >> $logName;
 echo "% $projectDirectory" >> $logName;
 
 # Setup process_log.txt file.
 condensedLog="$projectDirectory/condensed_log.txt";
-install /dev/null $condensedLog;
+#install /dev/null $condensedLog;
 
 echo -e "#.............................................................................." >> $logName;
 echo -e "Running 'scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_3.sh'" >> $logName;
@@ -192,10 +192,7 @@ echo -e "\tploidyBase = $ploidyBase" >> $logName;
 projectParent=$(head -n 1 "$projectDirectory/parent.txt");
 echo -e "\tparentProject = $projectParent" >> $logName;
 
-
 echo -e "#============================================================================== 2" >> $logName;
-#echo -e "# Crashing here for some reason." >> $logName;
-#echo -e "#\tNo error caught, no error message." >> $logName;
 
 if [[ -f $projectDirectory/SNP_CNV_v1.txt ]]; then
 	echo -e "\tDone: SAM -> BAM, new group headers, sorted." >> $logName;
@@ -233,22 +230,12 @@ else
 		echo -e "\nRunning bowtie2.\n" >> $logName;
 		echo -e "Command used:" >> $logName;
 		echo -e "\t$bowtie2Directory\"bowtie2\" --very-sensitive -p '$cores' -x '$genomeDirectory/bowtie_index' -1 '$projectDirectory/$datafile1' -2 '$projectDirectory/$datafile2' -S '$projectDirectory/data.sam'";
-		$bowtie2Directory"bowtie2" --very-sensitive -p "$cores" -x "$genomeDirectory/bowtie_index" -1 "$projectDirectory/$datafile1" -2 "$projectDirectory/$datafile2" -S "$projectDirectory/data.sam";
-			# -S : SAM output mode.
+		$bowtie2Directory"bowtie2" --very-sensitive -p "$cores" -x "$genomeDirectory/bowtie_index" -1 "$projectDirectory/$datafile1" -2 "$projectDirectory/$datafile2" > "$projectDirectory/data.bam";
 			# -p : number of threads to use.
 			# -1 : dataset.
 		    # --very-sensitive : a default set of configurations.
-		chmod 774 "$projectDirectory/data.sam";
-		echo -e "\tBowtie : paired-end reads aligned into SAM file." >> $logName;
-
-		echo -e "\tSamtools : converting Bowtie-SAM into compressed format (BAM) file." >> $logName;
-		echo -e "Compressing SAM file => BAM file." >> $condensedLog;
-		echo -e "\nRunning samtools:view.\n";
-		$samtools_exec view -@ "$cores" -bT "$genomeDirectory/$genomeFASTA" "$projectDirectory/data.sam" > "$projectDirectory/data.temp.bam";
-		rm "$projectDirectory/data.sam";
-		echo -e "\tSamtools : Bowtie-SAM converted into compressed format (BAM) file." >> $logName;
-		mv "$projectDirectory/data.temp.bam" "$projectDirectory/data.bam";
 		chmod 774 "$projectDirectory/data.bam";
+		echo -e "\tBowtie : paired-end reads aligned into BAM file." >> $logName;
 
 		echo -e "[[=- Sorting/Indexing BAM files -=]]" >> $logName;
 		echo -e "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
@@ -296,12 +283,10 @@ fi
 
 # Find genome size and add to readStats.txt file.
 sed -n '2~2p' "$genomeDirectory/datafile_g_0.2.fasta" > "$projectDirectory/reference.temp";
-referenceSeq=$(wc "$projectDirectory/reference.temp");
-genomeChrCount=$(echo "$referenceSeq"=|cut -d' ' -f1);
-genomeLengthInit=$(echo "$referenceSeq"=|cut -d' ' -f3)
+genomeChrCount=$(wc -l < "$projectDirectory/reference.temp");
+genomeLengthInit=$(wc -m < "$projectDirectory/reference.temp");
 genomeLength=$((genomeLengthInit-genomeChrCount));
-echo "$genomeLength (genome length)" >> "$projectDirectory/readStats.txt";
-chmod 774 "$projectDirectory/readStats.txt";
+echo "$genomeLength (genome length)" >> "$projectDirectory/readStats.txt"
 
 ## Read in [read count] and [total read length] from readStats.txt file.
 readCount=$(head -n 1 "$projectDirectory/readStats.txt" | awk '{print $1}');
@@ -323,7 +308,7 @@ if [[ "$fractionMapped2" < 50 ]]; then
 	if [[ "$fractionMapped2" < 1 ]]; then
 		echo -e "0$fractionMapped2% reads mapped." >> "$projectDirectory/warning.txt";
 	else
-		echo -e "$fractionMapped2"% reads mapped." >> "$projectDirectory/warning.txt";
+		echo -e "$fractionMapped2% reads mapped." >> "$projectDirectory/warning.txt";
 	fi
 fi
 
@@ -349,8 +334,6 @@ if [[ "$hapmapInUse" = 1 ]]; then
 	fi
 fi
 
-chmod 774 "$projectDirectory*" || true;
-
 echo -e "Pileup processing is complete." >> $condensedLog;
 echo -e "\nPileup processing complete.\n" >> $logName;
 echo   "=========================================================================\n" >> $logName;
@@ -359,9 +342,9 @@ if [[ "$hapmapInUse" = 0 ]]; then
 	echo -e "\nPassing processing on to 'project.WGseq.install_4.sh' for final analysis.\n" >> $logName;
 	echo -e "\tCurrent directory = "$(pwd); >> $logName;
 	echo   "=========================================================================\n" >> $logName;
-	bash "$main_dir/scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" "$user" "$project" 2>> $logName;
+	bash "$main_dir/scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" "$user" "$project" "$main_dir" 2>> $logName;
 else
 	echo -e "\nPassing processing on to 'project.WGseq.hapmap.install_4.sh' for final analysis.\n" >> $logName;
 	echo   "================================================================================\n" >> $logName;
-	bash "$main_dir/scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh" "$user" "$project" "$hapmap" 2>> $logName;
+	bash "$main_dir/scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh" "$user" "$project" "$hapmap" "$main_dir" 2>> $logName;
 fi

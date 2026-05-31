@@ -15,7 +15,7 @@ set(0,'DefaultFigureVisible','off');
 %%=========================================================================
 % Load project figure version.
 %--------------------------------------------------------------------------
-workingDir = [main_dir 'users/' user '/projects/' project '/'];
+workingDir = [main_dir '/users/' user '/projects/' project '/'];
 versionFile = [workingDir 'figVer.txt'];
 if exist(versionFile, 'file') == 2
 	figVer = ['v' fileread(versionFile) '.'];
@@ -34,8 +34,8 @@ Chr_max_width     = 0.8;
 show_annotations  = true;
    temp_figures   = true;
 
-projectDir = [main_dir 'users/' user '/projects/' project '/'];
-genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
+projectDir = [main_dir '/users/' user '/projects/' project '/'];
+genomeDir  = [main_dir '/users/' genomeUser '/genomes/' genome '/'];
 
 %%=========================================================================
 % Load common_CNV file for project : 'CNVplot2', 'genome_CNV'.

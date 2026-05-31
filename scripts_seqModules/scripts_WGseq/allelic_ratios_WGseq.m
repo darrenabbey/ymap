@@ -8,7 +8,7 @@ set(0,'DefaultFigureVisible','off');
 %%=========================================================================
 % Load project figure version.
 %--------------------------------------------------------------------------
-workingDir = [main_dir 'users/' user '/projects/' project '/'];
+workingDir = [main_dir '/users/' user '/projects/' project '/'];
 versionFile = [workingDir 'figVer.txt'];
 if exist(versionFile, 'file') == 2
 	figVer = ['v' fileread(versionFile) '.'];
@@ -46,13 +46,13 @@ Standard_display            = false;
 Linear_display              = true;
 Linear_displayBREAKS        = false;
 
-projectDir = [main_dir 'users/' user '/projects/' project '/'];
-genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
+projectDir = [main_dir '/users/' user '/projects/' project '/'];
+genomeDir  = [main_dir '/users/' genomeUser '/genomes/' genome '/'];
 
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
-if exist([main_dir 'users/' user '/projects/' project '/figure_options.txt'], 'file')
-	%%figure_options = readtable([main_dir 'users/' user '/projects/' project '/figure_options.txt']);
-	figure_options = importdata([main_dir 'users/' user '/projects/' project '/figure_options.txt'],'\t',1);
+if exist([main_dir '/users/' user '/projects/' project '/figure_options.txt'], 'file')
+	%%figure_options = readtable([main_dir '/users/' user '/projects/' project '/figure_options.txt']);
+	figure_options = importdata([main_dir '/users/' user '/projects/' project '/figure_options.txt'],'\t',1);
 
 	option         = figure_options{9,1};
 	if strcmp(option,'False')
@@ -73,11 +73,11 @@ if (Make_figure == true)
 	% Possible error case where 'parent' and 'hapmap' have same name string.
 	% Will be resolved with later disambiguation of parent/hapmap variable earlier in module.
 	%
-	if (exist([main_dir 'users/default/hapmaps/' hapmap '/'], 'dir') == 7)
-		hapmapDir = [main_dir 'users/default/hapmaps/' hapmap '/'];   % system hapmap.
+	if (exist([main_dir '/users/default/hapmaps/' hapmap '/'], 'dir') == 7)
+		hapmapDir = [main_dir '/users/default/hapmaps/' hapmap '/'];   % system hapmap.
 		useHapmap = true;
-	elseif (exist([main_dir 'users/' user '/hapmaps/' hapmap '/'], 'dir') == 7)
-		hapmapDir = [main_dir 'users/' user '/hapmaps/' hapmap '/'];  % user hapmap.
+	elseif (exist([main_dir '/users/' user '/hapmaps/' hapmap '/'], 'dir') == 7)
+		hapmapDir = [main_dir '/users/' user '/hapmaps/' hapmap '/'];  % user hapmap.
 		useHapmap = true;
 	else
 		useHapmap = false;
@@ -89,10 +89,10 @@ if (Make_figure == true)
 	%
 	if (strcmp(project,parent) == 0)
 		useParent = true;
-		if (exist([main_dir 'users/default/projects/' parent '/'], 'dir') == 7)
-			parentDir = [main_dir 'users/default/projects/' parent '/'];   % system parent.
+		if (exist([main_dir '/users/default/projects/' parent '/'], 'dir') == 7)
+			parentDir = [main_dir '/users/default/projects/' parent '/'];   % system parent.
 		else
-			parentDir = [main_dir 'users/' user '/projects/' parent '/'];  % user parent.
+			parentDir = [main_dir '/users/' user '/projects/' parent '/'];  % user parent.
 		end;
 	else
 		useParent = false;
@@ -174,8 +174,8 @@ if (Make_figure == true)
 	% Load FASTA file name from 'reference.txt' file for project.
 	%-------------------------------------------------------------------------------------------------
 	fprintf('\t|\tLoad FASTA file name for project.\n');
-	userReference    = [main_dir 'users/' user '/genomes/' genome '/reference.txt'];
-	defaultReference = [main_dir 'users/default/genomes/' genome '/reference.txt'];
+	userReference    = [main_dir '/users/' user '/genomes/' genome '/reference.txt'];
+	defaultReference = [main_dir '/users/default/genomes/' genome '/reference.txt'];
 	if (exist(userReference,'file') == 0)
 		FASTA_string = strtrim(fileread(defaultReference));
 	else

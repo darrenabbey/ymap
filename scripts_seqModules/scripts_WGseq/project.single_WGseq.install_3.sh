@@ -12,7 +12,7 @@ project=$2;
 main_dir=$(pwd)"/../..";
 projectDirectory="/$main_dir/users/$user/projects/$project";
 logName="$projectDirectory/process_log.txt";
-install /dev/null $logName;
+#install /dev/null $logName;
 
 ## Error handling in case something crashes.
 trap 'bash queue_end.sh "$user" "$project" "$main_dir" $logName "Something went wrong. project.single_WGseq.install_3.sh:$LINENO"; install /dev/null "$projectDirectory/error.txt"; echo -e "Something went wrong. project.single_WGseq.install_3.sh:$LINENO" > "$projectDirectory/error.txt"; exit 1;' ERR;
@@ -22,7 +22,7 @@ trap 'bash queue_end.sh "$user" "$project" "$main_dir" $logName "Something went 
 ##------------------------------------------------------------------------------
 
 condensedLog="$projectDirectory/condensed_log.txt";
-install /dev/null $condensedLog;
+#install /dev/null $condensedLog;
 
 echo -e "#.............................................................................." >> $logName;
 echo -e "" >> $logName;
@@ -212,22 +212,12 @@ else
 		## Bowtie 2 command for single reads:
 		echo -e "\nRunning bowtie2.\n";
 		echo -e "\t\"bowtie2\" --very-sensitive -p $cores -x $genomeDirectory/bowtie_index -U $projectDirectory/$datafile" -S "$projectDirectory/data.sam;" >> $logName;
-		$bowtie2Directory"bowtie2" --very-sensitive -p "$cores" -x "$genomeDirectory/bowtie_index" -U "$projectDirectory/$datafile" -S "$projectDirectory/data.sam";
-			# -S : SAM output mode.
+		$bowtie2Directory"bowtie2" --very-sensitive -p "$cores" -x "$genomeDirectory/bowtie_index" -U "$projectDirectory/$datafile" > "$projectDirectory/data.bam";
 			# -p : number of threads to use.
 			# -1 : dataset.
 		    # --very-sensitive : a default set of configurations.
-		chmod 774 "$projectDirectory/data.sam";
-		echo -e "\tBowtie : single-end reads aligned into SAM file." >> $logName;
-
-		echo -e "\tSamtools : converting Bowtie-SAM into compressed format (BAM) file." >> $logName;
-		echo -e "Compressing SAM file => BAM file." >> $condensedLog;
-		echo -e "\nRunning samtools:view.\n";
-		$samtools_exec view -@ "$cores" -bT "$genomeDirectory/$genomeFASTA" "$projectDirectory/data.sam" > "$projectDirectory/data.temp.bam";
-		rm "$projectDirectory/data.sam";
-		echo -e "\tSamtools : Bowtie-SAM converted into compressed format (BAM) file." >> $logName;
-		mv "$projectDirectory/data.temp.bam" "$projectDirectory/data.bam";
 		chmod 774 "$projectDirectory/data.bam";
+		echo -e "\tBowtie : single-end reads aligned into BAM file." >> $logName;
 
 		echo -e "[[=- Sorting/Indexing BAM files -=]]" >> $logName;
 		echo -e "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
@@ -326,8 +316,6 @@ if [[ "$hapmapInUse" = 1 ]]; then
 		echo -e "\t\tDone." >> $logName;
 	fi
 fi
-
-chmod 774 "$projectDirectory*" || true;
 
 echo -e "Pileup processing is complete." >> $condensedLog;
 echo -e "\nPileup processing complete.\n" >> $logName;

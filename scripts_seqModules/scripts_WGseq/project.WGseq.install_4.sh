@@ -9,8 +9,7 @@ umask 007;
 
 user="$1";
 project="$2";
-#main_dir=$(pwd)"/../../";
-main_dir=$(pwd);
+main_dir="$3";
 projectDirectory="$main_dir/users/$user/projects/$project";
 logName="$projectDirectory/process_log.txt";
 
@@ -74,7 +73,6 @@ fi
 echo -e "\tprojectParentDirectory = $projectParentDirectory" >> $logName;
 
 
-
 ##==============================================================================
 ## Perform CNV analysis, with GC-correction, on dataset.
 ##------------------------------------------------------------------------------
@@ -104,7 +102,7 @@ echo -e "function [] = processing1()" > $outputName;
 echo -e "\tpkg load statistics;" >> $outputName;
 echo -e "\tpkg load matgeom;" >> $outputName;
 echo -e "\tdiary('$projectDirectory/octave.CNV_and_GCbias.log');" >> $outputName;
-echo -e "\tcd \"$main_dirscripts_seqModules/scripts_WGseq\";" >> $outputName;
+echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
 echo -e "\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo -e "end" >> $outputName;
 
@@ -288,7 +286,7 @@ echo -e "finished all processing, moving to Cleaning up intermediate WGseq files
 ##==============================================================================
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
-chmod 774 "$projectDirectory*" || true;
+chmod 0774 "$projectDirectory*" || true;
 echo -e "running: " "$main_dir/scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" "$user" "$project" "$main_dir" >> $logName;
 bash "$main_dir/scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" "$user" "$project" "$main_dir" 2>> $logName;
 
