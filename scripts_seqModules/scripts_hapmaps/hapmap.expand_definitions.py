@@ -1,7 +1,7 @@
 # Input Arguments
 #   1) user     : 'darren'
 #   2) hapmap   : 'test_Ca'
-#   4) main_dir : '/home/bermanj/shared/links/'
+#   4) main_dir : '/home/bermanj/shared/links'
 #   5) logName  :
 #
 # Example input line:
@@ -20,7 +20,7 @@ import string, sys;
 user       = sys.argv[1];
 hapmap     = sys.argv[2];
 main_dir   = sys.argv[3];
-hapmapDir  = main_dir+"users/"+user+"/hapmaps/"+hapmap+"/";
+hapmapDir  = main_dir+"/users/"+user+"/hapmaps/"+hapmap+"/";
 logName    = hapmapDir+"process_log.txt";
 inputFile  = hapmapDir+"haplotypeMap.txt";
 

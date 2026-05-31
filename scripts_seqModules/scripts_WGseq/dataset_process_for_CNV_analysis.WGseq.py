@@ -7,11 +7,11 @@
 #	6) logName    :
 #
 # Process input files:
-#	1) Raw CNV data                 : $workingDir"users/"$user"/projects/"$project"/SNP_CNV_v1.txt".
-#	2) FASTA file name              : $workingDir"users/default/genomes/default/reference.txt",
-#	                               or $workingDir"users/"$user"/genomes/default/reference.txt" as $FastaName.
-#	3) Coordinates of standard bins : $workingDir"users/default/genomes/"$genome"/"$FastaName".standard_bins.fasta",
-#	                               or $workingDir"users/"$user"/genomes/"$genome"/"$FastaName".standard_bins.fasta".
+#	1) Raw CNV data                 : $main_dir"/users/"$user"/projects/"$project"/SNP_CNV_v1.txt".
+#	2) FASTA file name              : $main_dir"/users/default/genomes/default/reference.txt",
+#	                               or $main_dir"/users/"$user"/genomes/default/reference.txt" as $FastaName.
+#	3) Coordinates of standard bins : $main_dir"/users/default/genomes/"$genome"/"$FastaName".standard_bins.fasta",
+#	                               or $main_dir"/users/"$user"/genomes/"$genome"/"$FastaName".standard_bins.fasta".
 
 # Generate output file:
 #	1) a simplified pileup file containing average read counts per standard bin.   [chr_num,bp_start,bp_end, data_ave]
@@ -29,7 +29,7 @@ genome     = sys.argv[3]
 genomeUser = sys.argv[4]
 main_dir   = sys.argv[5]
 logName    = sys.argv[6]
-inputFile  = main_dir+"users/"+user+"/projects/"+project+"/SNP_CNV_v1.txt"
+inputFile  = main_dir+"/users/"+user+"/projects/"+project+"/SNP_CNV_v1.txt"
 
 t0 = time.process_time();
 

@@ -60,9 +60,9 @@ hapmapUser   = sys.argv[ 8];
 main_dir     = sys.argv[ 9];
 runMode      = sys.argv[10];
 
-logName     = main_dir+"users/"+hapmapUser+"/hapmaps/"+hapmap+"/process_log.txt";
-inputFile1  = main_dir+"users/"+hapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent1.txt";
-inputFile2  = main_dir+"users/"+hapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent2.txt";
+logName     = main_dir+"/users/"+hapmapUser+"/hapmaps/"+hapmap+"/process_log.txt";
+inputFile1  = main_dir+"/users/"+hapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent1.txt";
+inputFile2  = main_dir+"/users/"+hapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent2.txt";
 
 t0 = time.process_time();
 
@@ -78,7 +78,7 @@ with open(logName, "a") as myfile:
 #============================================================================================================
 # Find location of genome being used.
 #------------------------------------------------------------------------------------------------------------
-genomeDirectory = main_dir+"users/"+genomeUser+"/genomes/"+genome+"/";
+genomeDirectory = main_dir+"/users/"+genomeUser+"/genomes/"+genome+"/";
 
 with open(logName, "a") as myfile:
 	myfile.write("|\tProcessing standard bin fragmented genome file.\n");

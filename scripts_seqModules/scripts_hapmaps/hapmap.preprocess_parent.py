@@ -35,8 +35,8 @@ runMode     = sys.argv[8];
 
 
 if (runMode == 'hapmap'):
-	logName     = main_dir+"users/"+hapmapUser+"/hapmaps/"+hapmap+"/process_log.txt";
-	inputFile1  = main_dir+"users/"+hapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent.txt";
+	logName     = main_dir+"/users/"+hapmapUser+"/hapmaps/"+hapmap+"/process_log.txt";
+	inputFile1  = main_dir+"/users/"+hapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent.txt";
 	with open(logName, "a") as myfile:
 		myfile.write("\t\t*==============================================================================*\n");
 		myfile.write("\t\t| Log of 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py'      |\n");
@@ -44,8 +44,8 @@ if (runMode == 'hapmap'):
 		myfile.write("\t\t|\trunMode = 'hapmap'\n");
 		myfile.write("\t\t|\t    Comparing project '"+project+"' to hapmap '"+hapmap+"'.\n");
 elif (runMode == 'LOH'):
-	logName     = main_dir+"users/"+projectUser+"/projects/"+project+"/process_log.txt";
-	inputFile1  = main_dir+"users/"+projectUser+"/projects/"+project+"/SNPdata_parent.txt";
+	logName     = main_dir+"/users/"+projectUser+"/projects/"+project+"/process_log.txt";
+	inputFile1  = main_dir+"/users/"+projectUser+"/projects/"+project+"/SNPdata_parent.txt";
 	with open(logName, "a") as myfile:
 		myfile.write("\t\t*==============================================================================*\n");
 		myfile.write("\t\t| Log of 'scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py'      |\n");
@@ -59,7 +59,7 @@ t0 = time.process_time();
 #============================================================================================================
 # Find location of genome being used.
 #------------------------------------------------------------------------------------------------------------
-genomeDirectory = main_dir+"users/"+genomeUser+"/genomes/"+genome+"/";
+genomeDirectory = main_dir+"/users/"+genomeUser+"/genomes/"+genome+"/";
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tProcessing standard bin fragmented genome file.\n");

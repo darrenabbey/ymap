@@ -7,7 +7,7 @@ if (useHapmap == true)
 	%% Load color names defined for hapmap;
 	colorsFile = [hapmapDir 'colors.txt'];
 	if (exist(colorsFile,'file') == 2)
-		colors_fid = fopen([main_dir 'users/' hapmapUser '/hapmaps/' hapmap '/colors.txt'], 'r');
+		colors_fid = fopen([main_dir '/users/' hapmapUser '/hapmaps/' hapmap '/colors.txt'], 'r');
 		% The swapped colors are to correct for a polarity mistake in the python preprocessing steps.
 		%    correcting the error there would require reprocessing all current datasets.
 		colorA_string = fgetl(colors_fid);

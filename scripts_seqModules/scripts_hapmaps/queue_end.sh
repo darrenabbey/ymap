@@ -7,7 +7,7 @@ main_dir=$3;
 logName=$4;
 message=$5;
 
-projectDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
+projectDirectory=$main_dir"/users/"$user"/hapmaps/"$hapmap"/";
 
 ##==============================================================================
 ## Add project end to queue log file.

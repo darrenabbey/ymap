@@ -20,9 +20,9 @@ user       = sys.argv[4];
 hapmap     = sys.argv[5];
 main_dir   = sys.argv[6];
 entryNum   = sys.argv[7];
-logName    = main_dir+"users/"+user+"/hapmaps/"+hapmap+"/process_log.txt";
-inputFile1 = main_dir+"users/"+user+"/hapmaps/"+hapmap+"/SNPdata_parent.txt";
-inputFile2 = main_dir+"users/"+user+"/hapmaps/"+hapmap+"/SNPdata_child."+entryNum+".txt";
+logName    = main_dir+"/users/"+user+"/hapmaps/"+hapmap+"/process_log.txt";
+inputFile1 = main_dir+"/users/"+user+"/hapmaps/"+hapmap+"/SNPdata_parent.txt";
+inputFile2 = main_dir+"/users/"+user+"/hapmaps/"+hapmap+"/SNPdata_child."+entryNum+".txt";
 
 t0 = time.process_time()
 
@@ -36,7 +36,7 @@ with open(logName, "a") as myfile:
 #============================================================================================================
 # Find location of genome being used.
 #------------------------------------------------------------------------------------------------------------
-genomeDirectory = main_dir+"users/"+genomeUser+"/genomes/"+genome+"/";
+genomeDirectory = main_dir+"/users/"+genomeUser+"/genomes/"+genome+"/";
 
 
 #============================================================================================================
@@ -47,7 +47,7 @@ genomeDirectory = main_dir+"users/"+genomeUser+"/genomes/"+genome+"/";
 with open(logName, "a") as myfile:
 	myfile.write("|\tProcessing haplotype map entry '"+entryNum+"' genome LOH fragment file.\n");
 # Open fragment file for haplotype map entry.
-haplotypeMapEntry_file = main_dir+"users/"+user+"/hapmaps/"+hapmap+"/haplotypeFragments."+entryNum+".txt";
+haplotypeMapEntry_file = main_dir+"/users/"+user+"/hapmaps/"+hapmap+"/haplotypeFragments."+entryNum+".txt";
 haplotypeMapEntry_data = open(haplotypeMapEntry_file,'r');
 # Setup array and counter for tracking fragment definition data.
 fragments        = [];

@@ -6,11 +6,11 @@
 #	5) logName  :
 #
 # Process input files:
-#	1) Raw SNP data                 : $workingDir"users/"$user"/projects/"$project"/SNP_CNV_v1.txt".
-#	2) FASTA file name              : $workingDir"users/default/genomes/default/reference.txt",
-#	                               or $workingDir"users/"$user"/genomes/default/reference.txt" as $FastaName.
-#	3) Coordinates of standard bins : $workingDir"users/default/genomes/"$genome"/"$FastaName".standard_bins.fasta",
-#	                               or $workingDir"users/"$user"/genomes/"$genome"/"$FastaName".standard_bins.fasta".
+#	1) Raw SNP data                 : $main_dir"/users/"$user"/projects/"$project"/SNP_CNV_v1.txt".
+#	2) FASTA file name              : $main_dir"/users/default/genomes/default/reference.txt",
+#	                               or $main_dir"/users/"$user"/genomes/default/reference.txt" as $FastaName.
+#	3) Coordinates of standard bins : $main_dir"/users/default/genomes/"$genome"/"$FastaName".standard_bins.fasta",
+#	                               or $main_dir"/users/"$user"/genomes/"$genome"/"$FastaName".standard_bins.fasta".
 
 # Generate output file:
 #	1) a simplified pileup file containing number of parental het loci that are [HOM, HET, oddHET] in dataset per standard bin.
@@ -55,17 +55,17 @@ with open(logName, "a") as myfile:
 
 # Figure out if input name 'hapmap' corresponds to a project or an actual hapmap.
 if (runMode == 'hapmap'):
-	parentDatafile  = main_dir+"users/"+hapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent.txt"
+	parentDatafile  = main_dir+"/users/"+hapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent.txt"
 	with open(logName, "a") as myfile:
 		myfile.write("\t\t|\trunMode = 'hapmap'\n")
 		myfile.write("\t\t|\t    Comparing project '"+project+"' to hapmap '"+hapmap+"'.\n")
 elif (runMode == 'LOH'):
-	parentDatafile = main_dir+"users/"+projectUser+"/projects/"+project+"/SNPdata_parent.txt"
+	parentDatafile = main_dir+"/users/"+projectUser+"/projects/"+project+"/SNPdata_parent.txt"
 	with open(logName, "a") as myfile:
 		myfile.write("\t\t|\trunMode = 'LOH'\n")
 		myfile.write("\t\t|\t    Comparing project '"+project+"' to parent project '"+hapmap+"'.\n")
 
-childDatafile = main_dir+"users/"+projectUser+"/projects/"+project+"/SNP_CNV_v1.txt"
+childDatafile = main_dir+"/users/"+projectUser+"/projects/"+project+"/SNP_CNV_v1.txt"
 
 t0 = time.process_time();
 
@@ -73,7 +73,7 @@ t0 = time.process_time();
 #============================================================================================================
 # Find location of genome being used.
 #------------------------------------------------------------------------------------------------------------
-genomeDirectory = main_dir+"users/"+genomeUser+"/genomes/"+genome+"/"
+genomeDirectory = main_dir+"/users/"+genomeUser+"/genomes/"+genome+"/"
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tProcessing standard bin fragmented genome file.\n")

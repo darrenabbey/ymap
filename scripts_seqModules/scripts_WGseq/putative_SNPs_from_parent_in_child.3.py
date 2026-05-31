@@ -69,9 +69,9 @@ main_dir           = sys.argv[5];
 
 
 
-logName            = main_dir+"users/"+projectChildUser+"/projects/"+projectChild+"/process_log.txt";
-inputFile_trimmedP = main_dir+"users/"+projectChildUser+"/projects/"+projectChild+"/trimmed_SNPs_v4.parent.txt";
-inputFile_C        = main_dir+"users/"+projectChildUser+"/projects/"+projectChild+"/SNP_CNV_v1.txt";
+logName            = main_dir+"/users/"+projectChildUser+"/projects/"+projectChild+"/process_log.txt";
+inputFile_trimmedP = main_dir+"/users/"+projectChildUser+"/projects/"+projectChild+"/trimmed_SNPs_v4.parent.txt";
+inputFile_C        = main_dir+"/users/"+projectChildUser+"/projects/"+projectChild+"/SNP_CNV_v1.txt";
 
 t0 = time.process_time()
 
@@ -84,7 +84,7 @@ with open(logName, "a") as myfile:
 #============================================================================================================
 # Find location of genome being used.
 #------------------------------------------------------------------------------------------------------------
-genomeDirectory = main_dir+"users/"+genomeUser+"/genomes/"+genome+"/"
+genomeDirectory = main_dir+"/users/"+genomeUser+"/genomes/"+genome+"/"
 
 #============================================================================================================
 # Load FastaName from 'reference.txt' for genome in use.

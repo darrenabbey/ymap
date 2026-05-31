@@ -11,22 +11,22 @@ umask 007;
 ### define script file locations.
 user=$1;
 hapmap=$2;
-main_dir=$(pwd)"/../../";
+main_dir=$(pwd)"/../..";
 
 # import locations of auxillary software for pipeline analysis.
-. $main_dir"local_installed_programs.sh";
+. $main_dir"/local_installed_programs.sh";
 
 ##============================================================================================================
 ## Define locations and names to be used later.
 ##------------------------------------------------------------------------------------------------------------
 # Determine location of hapmap.
-if [[ -d $main_dir"users/"$user"/hapmaps/"$hapmap"/" ]]
+if [[ -d $main_dir"/users/"$user"/hapmaps/"$hapmap"/" ]]
 then
-	hapmapDirectory=$main_dir"users/"$user"/hapmaps/"$hapmap"/";
+	hapmapDirectory=$main_dir"/users/"$user"/hapmaps/"$hapmap"/";
 	hapmapUser=$user;
-elif [[ -d $main_dir"users/default/hapmaps/"$hapmap"/" ]]
+elif [[ -d $main_dir"/users/default/hapmaps/"$hapmap"/" ]]
 then
-	hapmapDirectory=$main_dir"users/default/hapmaps/"$hapmap"/";
+	hapmapDirectory=$main_dir"/users/default/hapmaps/"$hapmap"/";
 	hapmapUser="default";
 fi
 logName=$hapmapDirectory"process_log.txt";

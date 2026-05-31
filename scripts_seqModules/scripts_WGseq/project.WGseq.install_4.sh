@@ -14,7 +14,7 @@ projectDirectory="$main_dir/users/$user/projects/$project";
 logName="$projectDirectory/process_log.txt";
 
 ## Error handling in case something crashes.
-trap 'bash queue_end.sh "$user" "$project" "$main_dir" "$logName" "Something went wrong. project.WGseq.install_4.sh:$LINENO"; install /dev/null "$projectDirectory/error.txt"; echo -e "Something went wrong. project.WGseq.install_4.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+trap 'bash queue_end.sh "$user" "$project" "$main_dir" "$logName" "Something went wrong. project.WGseq.install_4.sh:$LINENO"; install /dev/null "$projectDirectory/error.txt"; echo -e "Something went wrong. project.WGseq.install_4.sh:$LINENO" > $projectDirectory"/error.txt"; exit 1;' ERR;
 
 . $main_dir/local_installed_programs.sh;
 
@@ -121,7 +121,7 @@ cd "$main_dir";
 
 
 echo -e "\tOCTAVE log from CNV analysis." >> $logName;
-#sed 's/^/\t|/;' $projectDirectory"octave.CNV_and_GCbias.log" >> $logName;
+#sed 's/^/\t|/;' $projectDirectory"/octave.CNV_and_GCbias.log" >> $logName;
 cat "$projectDirectory/octave.CNV_and_GCbias.log" >> $logName;
 
 
@@ -201,13 +201,16 @@ else
 		pigz -dc "$projectParentDirectory/putative_SNPs_v4.zip" > "$projectDirectory/SNPdata_parent.txt";
 	fi
 
-	# preprocess parent for comparison.
-	$python_exec "$main_dir/scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" "$genome" "$genomeUser" "$project" "$user" "$projectParent" "$projectParentUser" "$main_dir" LOH > "$projectDirectory/SNPdata_parent.temp.txt" 2>> $logName;
+	# preprocess parent (or self if no parent) for comparison.
+	install /dev/null "$projectDirectory/SNPdata_parent.temp.txt";
+	$python_exec "$main_dir/scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" "$genome" "$genomeUser" "$project" "$user" "$projectParent" "$projectParentUser" "$main_dir" LOH > \
+		"$projectDirectory/SNPdata_parent.temp.txt" 2>> $logName;
 
 	rm "$projectDirectory/SNPdata_parent.txt";
 	mv "$projectDirectory/SNPdata_parent.temp.txt" "$projectDirectory/SNPdata_parent.txt";
 
-	$python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" "$genome" "$genomeUser" "$projectParent" "$projectParentUser" "$project" "$user" "$main_dir" "$logName" LOH > $projectDirectory"preprocessed_SNPs.txt" 2>> $logName;
+	$python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" "$genome" "$genomeUser" "$projectParent" "$projectParentUser" "$project" "$user" "$main_dir" "$logName" LOH > \
+		"$projectDirectory/preprocessed_SNPs.txt" 2>> $logName;
 	echo -e "\tpre-processing complete." >> $logName;
 fi
 
