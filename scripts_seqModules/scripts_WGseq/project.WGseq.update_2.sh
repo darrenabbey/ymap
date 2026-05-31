@@ -179,17 +179,17 @@ echo -e "\toutputName = $outputName" >> $logName;
 echo -e "function [] = processing1()" > $outputName;
 echo -e "\tpkg load statistics;" >> $outputName;
 echo -e "\tpkg load matgeom;" >> $outputName;
-echo -e "\tdiary(\'$projectDirectory/octave.CNV_and_GCbias.log\');" >> $outputName;
+echo -e "\tdiary('$projectDirectory/octave.CNV_and_GCbias.log');" >> $outputName;
 echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
-echo -e "\tanalyze_CNVs_1(\'$main_dir\',\'$user\',\'$genomeUser\',\'$project\',\'$genome\',\'$ploidyEstimate\',\'$ploidyBase\');" >> $outputName;
+echo -e "\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo -e "endfunction" >> $outputName;
 
 echo -e "\t|\tfunction [] = processing1()" >> $logName;
 echo -e "\t|\t    pkg load statistics;" >> $logName;
 echo -e "\t|\t    pkg load matgeom;" >> $logName;
-echo -e "\t|\t    diary(\'$projectDirectory/octave.CNV_and_GCbias.log\');" >> $logName;
+echo -e "\t|\t    diary('$projectDirectory/octave.CNV_and_GCbias.log');" >> $logName;
 echo -e "\t|\t    cd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $logName;
-echo -e "\t|\t    analyze_CNVs_1(\'$main_dir\',\'$user\',\'$genomeUser\',\'$project\',\'$genome\',\'$ploidyEstimate\',\'$ploidyBase\');" >> $logName;
+echo -e "\t|\t    analyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 echo -e "\t|\tend" >> $logName;
 
 ###
@@ -228,16 +228,16 @@ then
 
 	echo -e "function [] = processing3()" > $outputName;
 	echo -e "\tpkg load matgeom;" >> $outputName;
-	echo -e "\tdiary(\'$projectDirectory/octave.SNP_analysis.log\');" >> $outputName;
+	echo -e "\tdiary('$projectDirectory/octave.SNP_analysis.log');" >> $outputName;
 	echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
-	echo -e "\tanalyze_SNPs_hapmap(\'$main_dir\',\'$user\',\'$genomeUser\',\'$project\',\'$projectParent\',\'$genome\',\'$ploidyEstimate\',\'$ploidyBase\');" >> $outputName;
+	echo -e "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 	echo -e "end" >> $outputName;
 
 	echo -e "\t|\tfunction [] = processing3()" >> $logName;
 	echo -e "\t|\t    pkg load matgeom;" >> $logName;
-	echo -e "\t|\t    diary(\'$projectDirectory/octave.SNP_analysis.log\');" >> $logName;
+	echo -e "\t|\t    diary('$projectDirectory/octave.SNP_analysis.log');" >> $logName;
 	echo -e "\t|\t    cd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $logName;
-	echo -e "\t|\t    analyze_SNPs_hapmap(\'$main_dir\',\'$user\',\'$genomeUser\',\'$project\',\'$projectParent\',\'$genome\',\'$ploidyEstimate\',\'$ploidyBase\');" >> $logName;
+	echo -e "\t|\t    analyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 	echo -e "\t|\tend" >> $logName;
 
 	echo -e "\tCalling OCTAVE." >> $logName;
@@ -267,16 +267,16 @@ then
 
 	echo -e "function [] = processing4()" > $outputName;
 	echo -e "\tpkg load matgeom;" >> $outputName;
-	echo -e "\tdiary(\'$projectDirectory/octave.final_figs.log\');" >> $outputName;
+	echo -e "\tdiary('$projectDirectory/octave.final_figs.log');" >> $outputName;
 	echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
-	echo -e "\tanalyze_CNV_SNPs_hapmap(\'$main_dir\',\'$user\',\'$genomeUser\',\'$project\',\'$projectParent\',\'$genome\',\'$ploidyEstimate\',\'$ploidyBase\');" >> $outputName;
+	echo -e "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 	echo -e "end" >> $outputName;
 
 	echo -e "\t|\tfunction [] = processing4()" >> $logName;
 	echo -e "\t|\t    pkg load matgeom;" >> $logName;
-	echo -e "\t|\t    diary(\'$projectDirectory/octave.final_figs.log\');" >> $logName;
+	echo -e "\t|\t    diary('$projectDirectory/octave.final_figs.log');" >> $logName;
 	echo -e "\t|\t    cd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $logName;
-	echo -e "\t|\t    analyze_CNV_SNPs_hapmap(\'$main_dir\',\'$user\',\'$genomeUser\',\'$project\',\'$projectParent\',\'$genome\',\'$ploidyEstimate\',\'$ploidyBase\');" >> $logName;
+	echo -e "\t|\t    analyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 	echo -e "\t|\tend" >> $logName;
 
 	echo -e "\tCalling OCTAVE.   (Log will be appended here after completion.)" >> $logName;
@@ -313,16 +313,16 @@ else
 
 	echo -e "function [] = processing3()" > $outputName;
 	echo -e "\tpkg load matgeom;" >> $outputName;
-	echo -e "\tdiary(\'$projectDirectory/octave.SNP_analysis.log\');" >> $outputName;
+	echo -e "\tdiary('$projectDirectory/octave.SNP_analysis.log');" >> $outputName;
 	echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
-	echo -e "\tanalyze_SNPs_hapmap(\'$main_dir\',\'$user\',\'$genomeUser\',\'$project\',\'$hapmap\',\'$genome\',\'$ploidyEstimate\',\'$ploidyBase\');" >> $outputName;
+	echo -e "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 	echo -e "end" >> $outputName;
 
 	echo -e "\t|\tfunction [] = processing3()" >> $logName;
 	echo -e "\t|\t    pkg load matgeom;" >> $logName;
-	echo -e "\t|\t    diary(\'$projectDirectory/octave.SNP_analysis.log\');" >> $logName;
+	echo -e "\t|\t    diary('$projectDirectory/octave.SNP_analysis.log');" >> $logName;
 	echo -e "\t|\t    cd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $logName;
-	echo -e "\t|\t    analyze_SNPs_hapmap(\'$main_dir\',\'$user\',\'$genomeUser\',\'$project\',\'$hapmap\',\'$genome\',\'$ploidyEstimate\',\'$ploidyBase\');" >> $logName;
+	echo -e "\t|\t    analyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 	echo -e "\t|\tend" >> $logName;
 
 	echo -e "\t\tCalling OCTAVE." >> $logName;
@@ -352,16 +352,16 @@ else
 
 	echo -e "function [] = processing4()" > $outputName;
 	echo -e "\tpkg load matgeom;" >> $outputName;
-	echo -e "\tdiary(\'$projectDirectory/octave.final_figs.log\');" >> $outputName;
+	echo -e "\tdiary('$projectDirectory/octave.final_figs.log');" >> $outputName;
 	echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
-	echo -e "\tanalyze_CNV_SNPs_hapmap(\'$main_dir\',\'$user\',\'$genomeUser\',\'$project\',\'$hapmap\',\'$genome\',\'$ploidyEstimate\',\'$ploidyBase\');" >> $outputName;
+	echo -e "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 	echo -e "end" >> $outputName;
 
 	echo -e "\t|\tfunction [] = processing4()" >> $logName;
 	echo -e "\t|\t    pkg load matgeom;" >> $logName;
-	echo -e "\t|\t    diary(\'$projectDirectory/octave.final_figs.log\');" >> $logName;
+	echo -e "\t|\t    diary('$projectDirectory/octave.final_figs.log');" >> $logName;
 	echo -e "\t|\t    cd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $logName;
-	echo -e "\t|\t    analyze_CNV_SNPs_hapmap(\'$main_dir\',\'$user\',\'$genomeUser\',\'$project\',\'$hapmap\',\'$genome\',\'$ploidyEstimate\',\'$ploidyBase\');" >> $logName;
+	echo -e "\t|\t    analyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 	echo -e "\t|\tend" >> $logName;
 
 	echo -e "\t\tCalling OCTAVE.   (Log will be appended here after completion.)" >> $logName;

@@ -451,7 +451,7 @@ else
 			# Copy 'config_template.sh' to 'config.sh',
 			TargetFile3="config.sh"
 			cp config_template.sh $TargetFile3;
-			sudo sed -i "/BASE_DIR_temp/c\\\base_dir=\"$main_dir/\";" $TargetFile3;
+			sudo sed -i "/BASE_DIR_temp/c\\\base_dir=\"$main_dir\";" $TargetFile3;
 
 			echo -e "#";
 			echo -e "#\tSettings files localized.";

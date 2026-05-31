@@ -23,9 +23,18 @@ trap 'bash queue_end.sh "$user" "$project" "$main_dir" $logName "Something went 
 # import locations of auxillary software for pipeline analysis.
 . $main_dir/local_installed_programs.sh;
 . $main_dir/config.sh;
+main_dir=$base_dir;
+projectDirectory="$main_dir/users/$user/projects/$project";
+
+logName="$projectDirectory/process_log.txt"
+install /dev/null $logName;
+echo "% $main_dir/local_installed_programs.sh" >> $logName;
+echo "% $main_dir/config.sh" >> $logName;
+echo "% $projectDirectory" >> $logName;
 
 # Setup process_log.txt file.
 condensedLog="$projectDirectory/condensed_log.txt";
+install /dev/null $condensedLog;
 
 echo -e "#.............................................................................." >> $logName;
 echo -e "Running 'scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_3.sh'" >> $logName;
@@ -130,23 +139,19 @@ genome=$(head -n 1 "$projectDirectory/genome.txt");
 hapmap=$(tail -n 1 "$projectDirectory/genome.txt");
 dataFormat=$(head -n 1 "$projectDirectory/dataFormat.txt");
 echo -e "\t'genome.txt' file entry." >> $logName;
-echo -e "\t\tgenome = $genome" >> $logName;
-if [[ "$genome" = "$hapmap" ]]
-then
+echo -e "\tgenome = $genome" >> $logName;
+if [[ "$genome" = "$hapmap" ]]; then
 	hapmapInUse=0;
 else
 	echo -e "\t\thapmap = $hapmap" >> $logName;
 	hapmapInUse=1;
 fi
-if [[ "$hapmapInUse" = 1 ]]
-then
+if [[ "$hapmapInUse" = 1 ]]; then
 	# Determine location of hapmap being used.
-	if [[ -d "$main_dir/users/$user/hapmaps/$hapmap" ]]
-	then
+	if [[ -d "$main_dir/users/$user/hapmaps/$hapmap" ]]; then
 		hapmapDirectory="$main_dir/users/$user/hapmaps/$hapmap";
 		hapmapUser="$user";
-	elif [[ -d "$main_dir/users/default/hapmaps/$hapmap" ]]
-	then
+	elif [[ -d "$main_dir/users/default/hapmaps/$hapmap" ]]; then
 		hapmapDirectory="$main_dir/users/default/hapmaps/$hapmap";
 		hapmapUser="default";
 	fi
@@ -154,12 +159,10 @@ then
 fi
 
 # Determine location of genome being used.
-if [[ -d "$main_dir/users/$user/genomes/$genome" ]]
-then
+if [[ -d "$main_dir/users/$user/genomes/$genome" ]]; then
 	genomeDirectory="$main_dir/users/$user/genomes/$genome";
 	genomeUser="$user";
-elif [[ -d "$main_dir/users/default/genomes/$genome" ]]
-then
+elif [[ -d "$main_dir/users/default/genomes/$genome" ]]; then
 	genomeDirectory="$main_dir/users/default/genomes/$genome";
 	genomeUser="default";
 fi
@@ -174,7 +177,7 @@ datafile1=$(head -n 1 "$projectDirectory/datafiles.txt");
 echo -e "\tdatafile 1 = $datafile1" >> $logName;
 
 # Get second data file name from "datafiles.txt";
-datafile2=$(tail -n 1 "$projectDirectory"/atafiles.txt");
+datafile2=$(tail -n 1 "$projectDirectory/datafiles.txt");
 echo -e "\tdatafile 2 = $datafile2" >> $logName;
 
 # Get ploidy estimate from "ploidy.txt" in project directory.
@@ -191,10 +194,10 @@ echo -e "\tparentProject = $projectParent" >> $logName;
 
 
 echo -e "#============================================================================== 2" >> $logName;
+#echo -e "# Crashing here for some reason." >> $logName;
+#echo -e "#\tNo error caught, no error message." >> $logName;
 
-
-if [[ -f "$projectDirectory/SNP_CNV_v1.txt" ]]
-then
+if [[ -f $projectDirectory/SNP_CNV_v1.txt ]]; then
 	echo -e "\tDone: SAM -> BAM, new group headers, sorted." >> $logName;
 	echo -e "\tSamtools.pileup generated." >> $logName;
 else
@@ -222,14 +225,15 @@ else
 	echo -e "[[=- Align with Bowtie -=]]" >> $logName;
 	echo -e "Aligning reads with Bowtie2 => SAM file." >> $condensedLog;
 
-	if [[ -f "$projectDirectory/data.bam" ]]
-	then
+	if [[ -f $projectDirectory/data.bam ]]; then
 		echo -e "\tDone: SAM -> BAM, new group headers, sorted." >> $logName;
 	else
 		echo -e "\tBowtie : paired-end reads aligning into SAM file." >> $logName;
 		## Bowtie 2 command for paired reads:
-		echo -e "\nRunning bowtie2.\n";
-		$bowtie2Directory/bowtie2 --very-sensitive -p "$cores" -x "$genomeDirectory/bowtie_index" -1 "$projectDirectory/$datafile1" -2 "$projectDirectory/$datafile2" -S "$projectDirectory/data.sam";
+		echo -e "\nRunning bowtie2.\n" >> $logName;
+		echo -e "Command used:" >> $logName;
+		echo -e "\t$bowtie2Directory\"bowtie2\" --very-sensitive -p '$cores' -x '$genomeDirectory/bowtie_index' -1 '$projectDirectory/$datafile1' -2 '$projectDirectory/$datafile2' -S '$projectDirectory/data.sam'";
+		$bowtie2Directory"bowtie2" --very-sensitive -p "$cores" -x "$genomeDirectory/bowtie_index" -1 "$projectDirectory/$datafile1" -2 "$projectDirectory/$datafile2" -S "$projectDirectory/data.sam";
 			# -S : SAM output mode.
 			# -p : number of threads to use.
 			# -1 : dataset.
@@ -259,8 +263,7 @@ else
 		echo -e "\tSamtools : Bowtie-BAM sorted & indexed." >> $logName;
 	fi;
 
-	if [[ -f "$projectDirectory/data.pileup" ]]
-	then
+	if [[ -f $projectDirectory/data.pileup ]]; then
 		echo -e "\tSamtools.pileup generated." >> $logName;
 	else
 		echo -e "#============================================================================== 3" >> $logName;
@@ -316,10 +319,8 @@ echo "$readDepthAverageFound (Found read depth)" >> "$projectDirectory/readStats
 fractionMapped1=$(echo -e "scale=6; ($readDepthAverageFound / $readDepthAverageExpected)*100" | bc -l);
 fractionMapped2=$(echo -e "scale=3; $fractionMapped1 / 1" | bc -l);
 echo "$fractionMapped2 (Mapped read fraction)" >> "$projectDirectory/readStats.txt";
-if [[ "$fractionMapped2" < 50 ]]
-then
-	if [[ "$fractionMapped2" < 1 ]]
-	then
+if [[ "$fractionMapped2" < 50 ]]; then
+	if [[ "$fractionMapped2" < 1 ]]; then
 		echo -e "0$fractionMapped2% reads mapped." >> "$projectDirectory/warning.txt";
 	else
 		echo -e "$fractionMapped2"% reads mapped." >> "$projectDirectory/warning.txt";
@@ -327,10 +328,8 @@ then
 fi
 
 
-if [[ "$hapmapInUse" = 1 ]]
-then
-	if [[ -f "$projectDirectory/trimmed_SNPs_v5.txt" ]]
-	then
+if [[ "$hapmapInUse" = 1 ]]; then
+	if [[ -f $projectDirectory/trimmed_SNPs_v5.txt ]]; then
 		echo -e "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
 		echo -e "\t\tDone." >> $logName;
 	else
@@ -356,8 +355,7 @@ echo -e "Pileup processing is complete." >> $condensedLog;
 echo -e "\nPileup processing complete.\n" >> $logName;
 echo   "=========================================================================\n" >> $logName;
 
-if [[ "$hapmapInUse" = 0 ]]
-then
+if [[ "$hapmapInUse" = 0 ]]; then
 	echo -e "\nPassing processing on to 'project.WGseq.install_4.sh' for final analysis.\n" >> $logName;
 	echo -e "\tCurrent directory = "$(pwd); >> $logName;
 	echo   "=========================================================================\n" >> $logName;
