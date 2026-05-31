@@ -516,6 +516,7 @@ function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$e
 			$readStatsFile = fopen($projectPath."readStats.txt", 'w');
 			fwrite($readStatsFile, $totalReadCount." (reads count)\n".$totalReadLength." (reads total length)\n");
 			fclose($readStatsFile);
+			chmod($readStatsFile,0774);
 		} else {
 			// Load existing totalReadCount and totalReadLength from readStats.txt file.
 			$oldStats_raw        = trim(file_get_contents($projectPath."readStats.txt"));
@@ -531,6 +532,7 @@ function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$e
 			$readStatsFile = fopen($projectPath."readStats.txt", 'w');
 			fwrite($readStatsFile, $totalReadCount." (reads count)\n".$totalReadLength." (reads total length)\n");
 			fclose($readStatsFile);
+			chmod($readStatsFile,0774);
 		}
 
 		fwrite($logOutput, "\t\t| max read length = ".(string)$maxReadLength."\n");
