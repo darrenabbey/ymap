@@ -62,8 +62,12 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	READS_RAW=$(wc -l < "$main_dir/users/$user/projects/$project/datafile_0.fastq");
 	READS=$( echo "$READS_RAW/4" | bc -l);
 
+	echo -e "#\tFILESIZE                = $FILESIZE (bytes)" >> $logName;
+	echo -e "#\tREADS                   = $READS" >> $logName;
+
 	# Calculate FASTQ data total size in GB.
 	FILESIZE_GB=$(echo "$FILESIZE/1000000000" | bc -l)
+	echo -e "#\tFILESIZE_GB             = $FILESIZE_GB (GB)" >> $logName;
 
 	# Fit function relating FASTQ size (GB) to memory utilization (GB).
 	#       f(x) = A x + B
@@ -84,11 +88,13 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 		# Calculate fraction of target vs original.
 		TARGET_FRACTION=$(echo "$MAX_PROCESSED_DATA_SIZE/$FILESIZE_GB" | bc -l);	# Calculate the target number of paired reads.
 		TARGET_READS=$(printf %.0f $(echo "$TARGET_FRACTION*$READS" | bc -l) );	# Round to whole number of reads.
+		echo -e "#\tTARGET_FRACTION         = $TARGET_FRACTION (= MAX_PROCESSED_DATA_SIZE/FILESIZE_GB)" >> $logName;
+		echo -e "#\tTARGET_READS            = $TARGET_READS" >> $logName;
 
 		echo -e "Downsampling FASTQ data." >> $condensedLog;
 		echo -e "#\tDownsampling FASTQ data:" >> $logName;
-		echo -e "#\t\tMemory utilization target : "$MAX_MEMORY_TARGET >> $logName;
-		echo -e "#\t\tDownsampling fraction     : "$TARGET_FRACTION >> $logName;
+		echo -e "#\t\tMemory utilization target : $MAX_MEMORY_TARGET (GB)" >> $logName;
+		echo -e "#\t\tDownsampling fraction     : $TARGET_FRACTION" >> $logName;
 
 		# Subsample FASTQ files to target fraction.
 		cd "$main_dir/users/$user/projects/$project/";

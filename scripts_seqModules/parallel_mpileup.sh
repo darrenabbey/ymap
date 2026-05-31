@@ -56,7 +56,9 @@ wait;
 
 # Cleanup intermediate files.
 echo -e "concatenating temporary '*.pileup_' files to 'data.pileup'.";
-cat "$projectDirectory/*.pileup_" > "$projectDirectory/data.pileup";
+cd $projectDirectory
+cat *.pileup_ > data.pileup;
 
 echo -e "removing temporary '*.pileup_' files.";
-rm "$projectDirectory/*.pileup_";
+rm *.pileup_;
+cd $main_dir;

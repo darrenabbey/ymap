@@ -99,7 +99,7 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 		# Calculate fraction of target vs original.
 		TARGET_FRACTION=$(echo "$MAX_PROCESSED_DATA_SIZE/$FILESIZE_GB" | bc -l);	# Calculate the target number of paired reads.
 		TARGET_READS=$(printf %.0f $(echo "$TARGET_FRACTION*$READS1" | bc -l) );	# Round to whole number of reads.
-		echo -e "#\tTARGET_FRACTION       = $TARGET_FRACTION (= MAX_PROCESSED_DATA_SIZE/FILESIZE_GB)" >> $logName;
+		echo -e "#\tTARGET_FRACTION         = $TARGET_FRACTION (= MAX_PROCESSED_DATA_SIZE/FILESIZE_GB)" >> $logName;
 		echo -e "#\tTARGET_READS            = $TARGET_READS" >> $logName;
 
 		echo -e "Downsampling FASTQ data." >> $condensedLog;
