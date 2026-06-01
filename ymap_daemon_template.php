@@ -19,14 +19,14 @@ BASE_DIR_temp
 	function handleShutdown($signal) {
 		global $running;
 		$running = false;
-		error_log("Received shutdown signal ({$signal}). Cleaning up...");
+		error_log("Received shutdown signal ({$signal}). Cleaning up...", 0, "/var/log/ymap_daemon.log");
 	}
 
 	/**
 	 * Signal handler for SIGHUP (reload configuration)
 	 */
 	function handleReload($signal) {
-		error_log("Received SIGHUP (reload signal). Reloading config...");
+		error_log("Received SIGHUP (reload signal). Reloading config...", 0, "/var/log/ymap_daemon.log");
 		// Add logic to reload config files here
 	}
 
@@ -304,13 +304,13 @@ BASE_DIR_temp
 			gc_collect_cycles();
 
 			// Log errors but continue running
-			error_log("Error: " . $e->getMessage() . " (Line: " . $e->getLine() . ")");
+			error_log("Error: " . $e->getMessage() . " (Line: " . $e->getLine() . ")", 0, "/var/log/ymap_daemon.log");
 			sleep(5); // Avoid spamming logs on repeated errors
 		}
 	}
 
 	// Cleanup code (e.g., close database connections, save state)
-	error_log("YMAP daemon stopped successfully.");
+	error_log("YMAP daemon stopped successfully.", 0, "/var/log/ymap_daemon.log");
 
 
 	// Function to initiate and release a YMAP thread to process data for a project.

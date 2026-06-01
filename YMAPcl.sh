@@ -412,6 +412,10 @@ else
 	case $1 in
 	    "install_YMAP")
 		if [[ !  -e "/etc/init.d/ymap_daemon" ]]; then
+			##
+			## YMAP daemon installation.
+			##
+
 			## Copy 'ymap_daemon_template.sh' to /etc/init.d/ymap_daemon
 			TargetFile="/etc/init.d/ymap_daemon";
 			sudo cp ymap_daemon_template.sh $TargetFile;
@@ -431,13 +435,40 @@ else
 			## Start the service.
 			sudo service ymap_daemon start;
 
-			## Remove the service from the start-up sequence.
+			## Remove the service from the start-up sequence; to be used during uninstallation.
 			# sudo update-rc.d ymap_daemon remove;
 
-			## Examine the system log for the ymap_daemon.
+			## Examine the system log for the ymap_daemon; used in command daemon_log.
 			# sudo journalctl -u ymap_daemon.service;
-		fi;
-		if [[ ! -e "constants.php" ]]; then
+
+			echo -e "#";
+			echo -e "#	To ensure the ymap_daemon restarts after a crash, manual stesp are needed.";
+			echo -e "#		(https://www.tecmint.com/automatically-restart-service-linux/)";
+			echo -e "#";
+			echo -e "#	1) sudo systemctl edit ymap_daemon";
+			echo -e "#";
+			echo -e "#	2) Add these lines after third line.";
+			echo -e "#		[Service]";
+			echo -e "#		Restart=always";
+			echo -e "#		RestartSec=5s";
+			echo -e "#";
+			echo -e "#	3) sudo systemctl daemon-reload";
+			echo -e "#";
+			echo -e "#	4) sudo systemctl restart ymap_daemon";
+			echo -e "#";
+			echo -e "#	To confirm status:";
+			echo -e "#		sudo systemctl show ymap_daemon | grep Restart";
+			echo -e "#";
+			echo -e "#	\e[41mCurrently there is a bug causing the daemon to exit after sucessful completion\e[0m";
+			echo -e	"#	\e[41mof a data processing job, so this is necessary.\e[0m";
+			echo -e $lineThin;
+
+
+
+			##
+			## Localize settings files.
+			##
+
 			# Copy 'constants_template.php' to 'constants.php'.
 			TargetFile1="constants.php";
 			cp constants_template.php $TargetFile1;
