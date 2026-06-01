@@ -13,7 +13,7 @@ projectDirectory="$main_dir/users/$user/projects/$project";
 logName="$projectDirectory/process_log.txt";
 
 ## Error handling in case something crashes.
-trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. sam2fastq.sh:$LINENO"; echo -e "Something went wrong. sam2fastq.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+trap 'cd $main_dir"/scripts_seqModules/scripts_WGseq/"; bash queue_end.sh $user $project $main_dir $logName "Something went wrong. sam2fastq.sh:$LINENO"; echo -e "Something went wrong. sam2fastq.sh:$LINENO" > $projectDirectory"error.txt"; cd $main_dir; exit 1;' ERR;
 
 echo -e "#|---- sam2fastq.sh ---- begin." >> $logName;
 

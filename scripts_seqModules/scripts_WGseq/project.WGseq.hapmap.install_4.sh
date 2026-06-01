@@ -15,7 +15,7 @@ projectDirectory="$main_dir/users/$user/projects/$project";
 logName="$projectDirectory/process_log.txt";
 
 ## Error handling in case something crashes.
-trap 'bash queue_end.sh "$user" "$project" "$main_dir" "$logName" "Something went wrong. project.WGseq.hapmap.install_4.sh:$LINENO"; install /dev/null "$projectDirectory/error.txt"; echo -e "Something went wrong. project.WGseq.hapmap.install_4.sh:$LINENO" > "$projectDirectory/error.txt"; exit 1;' ERR;
+trap 'cd $main_dir"/scripts_seqModules/scripts_WGseq/"; bash queue_end.sh "$user" "$project" "$main_dir" "$logName" "Something went wrong. project.WGseq.hapmap.install_4.sh:$LINENO"; install /dev/null "$projectDirectory/error.txt"; echo -e "Something went wrong. project.WGseq.hapmap.install_4.sh:$LINENO" > "$projectDirectory/error.txt"; cd $main_dir; exit 1;' ERR;
 
 script_dir=$(pwd);
 

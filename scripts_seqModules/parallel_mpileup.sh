@@ -8,7 +8,7 @@ projectDirectory="$main_dir/users/$user/projects/$project";
 logNAme="$projectDirectory/process_log";
 
 ## Error handling in case something crashes.
-trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. parallel_mpileup.sh:$LINENO"; install /dev/null $projectDirectory"error.txt"; echo -e "Something went wrong. parallel_mpileup.sh:$LINENO" > $projectDirectory"/error.txt"; exit 1;' ERR;
+trap 'cd $main_dir"/scripts_seqModules/scripts_WGseq/"; bash queue_end.sh $user $project $main_dir $logName "Something went wrong. parallel_mpileup.sh:$LINENO"; install /dev/null $projectDirectory"error.txt"; echo -e "Something went wrong. parallel_mpileup.sh:$LINENO" > $projectDirectory"/error.txt"; cd $main_dir; exit 1;' ERR;
 
 # import locations of auxillary software for pipeline analysis.
 . $main_dir/local_installed_programs.sh;
