@@ -23,14 +23,15 @@ arguments_count=$#;
 
 if [ -z $1 ]; then
 	echo -e $lineThick;
-	echo -e "# YMAP2 commandline";
+	cat images/YMAP2_Logo_1.txt | sed 's/^/# /';
+	echo -e "$";
 	logged_in_status;
 	echo -e $lineThin;
+
 	echo -e "#";
-	echo -e "# Command syntax is : 'bash YMAPcl.sh [command] (option1) (option2) (...)'";
+	echo -e "# Command syntax is : 'bash YMAPcli.sh [command] (option1) (option2) (...)'";
 	echo -e "# ";
 	echo -e "#   Commands:";
-	echo -e "#";
 	if [[ ! -e "/etc/init.d/ymap_daemon" ]]; then
 		echo -e "#       \e[42minstall_YMAP  : Install the ymap_daemon into '/etc/init.d/' then start it up.\e[0m";
 		echo -e "#                         \e[42mMake localized copies of template files.\e[0m";
@@ -49,6 +50,7 @@ if [ -z $1 ]; then
 	echo -e "#	quota		: Show per account disk quota.";
 	echo -e "#	info		: Show user account information.";
 	echo -e "#	status		: Show data processing status.";
+	echo -e "#	status_daemon   : Combined 'status' and 'daemon' functions.";
 	echo -e "#	genomes		: List installed genomes.";
 	echo -e "#	hapmaps		: List installed hapmaps.";
 	echo -e "#	complete	: List file paths & names of images for completed projects.";
@@ -65,7 +67,17 @@ if [ -z $1 ]; then
 	echo -e "#	combine_figures	: ";
 	echo -e "#	build_hapmap	: complicated user interface required, may not be possible in commandline.";
 	echo -e "#	minimize	: ";
-	echo -e "# ";
+	echo -e "#";
+	echo -e "#   How to cite:";
+	echo -e "#	Abbey DA, Funt J, Lurie-Weinberger MN, Thompson DA, Regev A, Myers CL, Berman J.";
+	echo -e "#	YMAP: a pipeline for visualization of copy number variation and loss of heterozygosity";
+	echo -e "#	in eukaryotic pathogens. Genome Med. 2014 Nov 20;6(11):100. doi: 10.1186/s13073-014-0100-8.";
+	echo -e "#	PMID: 25505934; PMCID: PMC4263066.";
+	echo -e "#";
+	echo -e "#   If you're interested in a collaboration to use this tool or for processing data from organisms with";
+	echo -e "#	much larger genomes than the yeast described in the publication, please reach out to me by email at";
+	echo -e "#	\e[33mabbey007@umn.edu\e[0m or \e[33mdarrenabbey.ymap@gmail.com\e[0m or on various social medias as \e[33mthebiologistisn\e[0m.";
+	echo -e "#";
 	echo -e $lineThick;
 else
 	##
@@ -249,7 +261,7 @@ else
 
 					if [[ "$whatisit" = "project" ]]; then
 						## Adding 'end' entry to queue log.
-						queue_end_project $main_dir $userAccount $selectedName "YMAPcl.sh deleted.";
+						queue_end_project $main_dir $userAccount $selectedName "YMAPcli.sh deleted.";
 					fi;
 
 					## Actually deleting entry.
@@ -409,6 +421,7 @@ else
 	##
 
 	echo -e $lineThick;
+	noTail=false;
 	case $1 in
 	    "install_YMAP")
 		if [[ !  -e "/etc/init.d/ymap_daemon" ]]; then
@@ -426,28 +439,18 @@ else
 			## Make it executable.
 			sudo chmod +x $TargetFile;
 
+			# To reload services.
+			sudo systemctl daemon-reload;
 
-			# enable start at startup.
-			sudo systemctl daemon-reload;			# To reload services.
-			sudo systemctl enable ymap_daemon;		# Enable service to start at boot.
+			# Enable service to start at boot.
+			sudo systemctl enable ymap_daemon;
 
-			# enable start at crash.
-			#	sudo pico /etc/inittab
-			#		::restart:respawn:/etc/init.d/ymap_daemon
-			#	sudo chmod +x /etc/inittab
-			#	sudo service ymap_daemon restart
-
-			# sudo systemctl start ymap_daemon;		# To start immediately.
-			# sudo systemctl status ymap_daemon;		# For status.
-			# sudo service ymap_daemon start;		# Start the service.
-			# sudo service ymap_daemon restart;		# Restart the servoce.
-			# sudo journalctl -u ymap_daemon.service;	# Examin system log for the service, used in command "daemon_log".
-
+			# Enable start at crash.
 			echo -e "#";
 			echo -e "#	To ensure the ymap_daemon restarts after a crash, manual stesp are needed.";
 			echo -e "#		(https://www.tecmint.com/automatically-restart-service-linux/)";
 			echo -e "#";
-			echo -e "#	1) sudo systemctl edit ymap_daemon";
+			echo -e "#	1) sudo systemctl edit ymap_daemon.service";
 			echo -e "#";
 			echo -e "#	2) Add these lines after third line.";
 			echo -e "#		[Service]";
@@ -460,9 +463,12 @@ else
 			echo -e "#";
 			echo -e "#	To confirm status:";
 			echo -e "#		sudo systemctl show ymap_daemon | grep Restart";
+			echo -e "#	Should look like:";
+			echo -e "#		Restart=always";
+			echo -e "#		RestartUSec=5s";
+			echo -e "#		NRestarts=0";
+			echo -e "#		RestartKillSignal=15"
 			echo -e "#";
-			echo -e "#	\e[41mCurrently there is a bug causing the daemon to exit after sucessful completion\e[0m";
-			echo -e	"#	\e[41mof a data processing job, so this is necessary.\e[0m";
 			echo -e $lineThin;
 
 
@@ -495,7 +501,7 @@ else
 		echo -e $lineThin;
 		echo -e "#";
 		if [ -z $2 ]; then
-			echo -e "#\tUsage: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+			echo -e "#\tUsage: bash YMAPcli.sh log_in \e[31m(user)\e[0m";
 			echo -e "#";
 			echo -e "#\t\e[41mAs this is an admin interface, there is no user account password check.\e[0m";
 			echo -e "#";
@@ -553,9 +559,9 @@ else
 		if [ "$user" == "" ]; then
 			## If not logged in, allow user passed as argument.
 			if [ -z $2 ]; then
-				echo -e "#\tUsage: bash YMAPcl.sh user \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcli.sh user \e[31m(user)\e[0m";
 				echo -e "#";
-				echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+				echo -e "#\tOr first log in using the command: bash YMAPcli.sh log_in \e[31m(user)\e[0m";
 			else
 				user=$2;
 			fi;
@@ -612,9 +618,9 @@ else
 			echo -e $lineThin;
 			echo -e "#";
                         if [ -z $2 ]; then
-                                echo -e "#\tUsage: bash YMAPcl.sh status \e[31m(user)\e[0m";
+                                echo -e "#\tUsage: bash YMAPcli.sh status \e[31m(user)\e[0m";
                                 echo -e "#";
-                                echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+                                echo -e "#\tOr first log in using the command: bash YMAPcli.sh log_in \e[31m(user)\e[0m";
                         else
 				user=$2
 			fi;
@@ -678,6 +684,11 @@ else
 			fi;
 		fi;
 	    ;;
+	    "status_daemon")
+		bash YMAPcli.sh status;
+		bash YMAPcli.sh daemon;
+		noTail=true;
+	    ;;
 	    "genomes")
 		echo -e "# YMAP2 commandline : List user genomes.";
 		logged_in_status;
@@ -686,9 +697,9 @@ else
 		if [ "$user" == "" ]; then
 			## If not logged in, allow user passed as argument.
 			if [ -z $2 ]; then
-				echo -e "#\tUsage: bash YMAPcl.sh genomes \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcli.sh genomes \e[31m(user)\e[0m";
 				echo -e "#";
-				echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+				echo -e "#\tOr first log in using the command: bash YMAPcli.sh log_in \e[31m(user)\e[0m";
 			else
 				user=$2;
 			fi;
@@ -733,9 +744,9 @@ else
 		if [ "$user" == "" ]; then
 			## If not logged in, allow user passed as argument.
 			if [ -z $2 ]; then
-				echo -e "#\tUsage: bash YMAPcl.sh hapmaps \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcli.sh hapmaps \e[31m(user)\e[0m";
 				echo -e "#";
-				echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+				echo -e "#\tOr first log in using the command: bash YMAPcli.sh log_in \e[31m(user)\e[0m";
 			else
 				user=$2;
 			fi;
@@ -783,9 +794,9 @@ else
 		if [ "$user" == "" ]; then
 			## If not logged in, allow user passed as argument.
 			if [ -z $2 ]; then
-				echo -e "#\tUsage: bash YMAPcl.sh complete \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcli.sh complete \e[31m(user)\e[0m";
 				echo -e "#";
-				echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+				echo -e "#\tOr first log in using the command: bash YMAPcli.sh log_in \e[31m(user)\e[0m";
 			else
 				user=$2;
 			fi;
@@ -829,7 +840,7 @@ else
 			grep "\$MAX_QUEUE_PARALLEL" constants.php > $tempfile;
 			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
 			echo -e "#";
-			echo -e "#\tUsage: bash YMAPcl.sh queue_limit \e[31m(value)\e[0m";
+			echo -e "#\tUsage: bash YMAPcli.sh queue_limit \e[31m(value)\e[0m";
 			echo -e "#";
 			echo -e "#\t\e[41mChanging this option will prompt you for your credentials to\e[0m";
 			echo -e "#\t\e[41mrestart the yamp_daemon service that manages the queue.\e[0m";
@@ -873,7 +884,7 @@ else
 			grep "\$MAX_MEMORY_TARGET" constants.php > $tempfile;
 			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
 			echo -e "#";
-			echo -e "#\tUsage: bash YMAPcl.sh data_limit \e[31m(value)\e[0m";
+			echo -e "#\tUsage: bash YMAPcli.sh data_limit \e[31m(value)\e[0m";
 			echo -e "#";
 			echo -e "#\t\e[41mA value of '0' means there is no data size limit defined.\e[0m";
 		else
@@ -909,7 +920,7 @@ else
 			grep "\$ADMIN_EMAIL" constants.php > $tempfile;
 			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
 			echo -e "#";
-			echo -e "#\tUsage: bash YMAPcl.sh admin_email \e[31m(address)\e[0m";
+			echo -e "#\tUsage: bash YMAPcli.sh admin_email \e[31m(address)\e[0m";
 		else
 			email_pattern='^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 			if [[ ! "$2" =~ $email_pattern ]]; then
@@ -944,7 +955,7 @@ else
 			grep "\$QUOTA_GLOBAL" constants.php > $tempfile;
 			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
 			echo -e "#";
-			echo -e "#\tUsage: bash YMAPcl.sh quota \e[31m(value)\e[0m";
+			echo -e "#\tUsage: bash YMAPcli.sh quota \e[31m(value)\e[0m";
 		else
 			if ! [[ "$2" =~ ^[0-9]+$ ]]; then
 				echo -e "# YMAP2 commandline : User account disk utilization quota.";
@@ -980,31 +991,31 @@ else
 				echo -e "#";
 				case $2 in
 				    "project")
-					echo -e "#\tUsage: bash YMAPcl.sh delete project \e[31m(user)\e[0m";
+					echo -e "#\tUsage: bash YMAPcli.sh delete project \e[31m(user)\e[0m";
 					echo -e "#";
-					echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+					echo -e "#\tOr first log in using the command: bash YMAPcli.sh log_in \e[31m(user)\e[0m";
 					fail=1;
 				    ;;
 				    "genome")
-					echo -e "#\tUsage: bash YMAPcl.sh delete genome \e[31m(user)\e[0m";
+					echo -e "#\tUsage: bash YMAPcli.sh delete genome \e[31m(user)\e[0m";
 					echo -e "#";
-					echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+					echo -e "#\tOr first log in using the command: bash YMAPcli.sh log_in \e[31m(user)\e[0m";
 					fail=1;
 				    ;;
 				    "hapmap")
-					echo -e "#\tUsage: bash YMAPcl.sh delete hapmap \e[31m(user)\e[0m";
+					echo -e "#\tUsage: bash YMAPcli.sh delete hapmap \e[31m(user)\e[0m";
 					echo -e "#";
-					echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+					echo -e "#\tOr first log in using the command: bash YMAPcli.sh log_in \e[31m(user)\e[0m";
 					fail=1;
 				    ;;
 				    "user")
 					fail=0;
 				    ;;
 				    *)
-					echo -e "#\tUsage: bash YMAPcl.sh delete project \e[31m(user)\e[0m";
-					echo -e "#\tUsage: bash YMAPcl.sh delete genome \e[31m(user)\e[0m";
-					echo -e "#\tUsage: bash YMAPcl.sh delete hapmap \e[31m(user)\e[0m";
-					echo -e "#\tUsage: bash YMAPcl.sh delete user";
+					echo -e "#\tUsage: bash YMAPcli.sh delete project \e[31m(user)\e[0m";
+					echo -e "#\tUsage: bash YMAPcli.sh delete genome \e[31m(user)\e[0m";
+					echo -e "#\tUsage: bash YMAPcli.sh delete hapmap \e[31m(user)\e[0m";
+					echo -e "#\tUsage: bash YMAPcli.sh delete user";
 					echo -e "#";
 					echo -e "#\t\t\e[41mError: Wrong 2nd arguement!\e[0m";
 					fail=1;
@@ -1015,12 +1026,12 @@ else
 				logged_in_status;
 				echo -e $lineThin;
 				echo -e "#";
-				echo -e "#\tUsage: bash YMAPcl.sh delete project \e[31m(user)\e[0m";
-				echo -e "#\tUsage: bash YMAPcl.sh delete genome \e[31m(user)\e[0m";
-				echo -e "#\tUsage: bash YMAPcl.sh delete hapmap \e[31m(user)\e[0m";
-				echo -e "#\tUsage: bash YMAPcl.sh delete user";
+				echo -e "#\tUsage: bash YMAPcli.sh delete project \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcli.sh delete genome \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcli.sh delete hapmap \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcli.sh delete user";
 				echo -e "#";
-				echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+				echo -e "#\tOr first log in using the command: bash YMAPcli.sh log_in \e[31m(user)\e[0m";
 				fail=1;
 			else
 				echo -e "# YMAP2 commandline : Delete project/genome/hapmap/user.";
@@ -1038,10 +1049,10 @@ else
 				logged_in_status;
 				echo -e $lineThin;
 				echo -e "#";
-				echo -e "#\tUsage: bash YMAPcl.sh delete project";
-				echo -e "#\tUsage: bash YMAPcl.sh delete genome";
-				echo -e "#\tUsage: bash YMAPcl.sh delete hapmap";
-				echo -e "#\tUsage: bash YMAPcl.sh delete user";
+				echo -e "#\tUsage: bash YMAPcli.sh delete project";
+				echo -e "#\tUsage: bash YMAPcli.sh delete genome";
+				echo -e "#\tUsage: bash YMAPcli.sh delete hapmap";
+				echo -e "#\tUsage: bash YMAPcli.sh delete user";
 				fail=1;
 			else
 				echo -e "# YMAP2 commandline : Delete project/genome/hapmap/user.";
@@ -1070,10 +1081,10 @@ else
 				echo -e "# YMAP2 commandline : Delete project/genome/hapmap/user.";
 				logged_in_status;
 				echo -e $lineThin;
-				echo -e "#\tUsage: bash YMAPcl.sh install project \e[31m(user)\e[0m";
-				echo -e "#\tUsage: bash YMAPcl.sh install genome \e[31m(user)\e[0m";
-				echo -e "#\tUsage: bash YMAPcl.sh install hapmap \e[31m(user)\e[0m";
-				echo -e "#\tUsage: bash YMAPcl.sh install user";
+				echo -e "#\tUsage: bash YMAPcli.sh install project \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcli.sh install genome \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcli.sh install hapmap \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcli.sh install user";
 				echo -e "#";
 				echo -e "#\t\t\e[41mError: Wrong 2nd arguement!\e[0m";
 			    ;;
@@ -1090,9 +1101,9 @@ else
 			if [ "$user" == "" ]; then
 				## If not logged in, allow user passed as argument.
 				if [ -z $2 ]; then
-					echo -e "#\tUsage: bash YMAPcl.sh preview \e[31m(user)\e[0m";
+					echo -e "#\tUsage: bash YMAPcli.sh preview \e[31m(user)\e[0m";
 					echo -e "#";
-					echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+					echo -e "#\tOr first log in using the command: bash YMAPcli.sh log_in \e[31m(user)\e[0m";
 				else
 					user=$2;
 				fi;
@@ -1192,24 +1203,24 @@ else
 				echo -e "#";
 				case $2 in
 				    "project")
-					echo -e "#\tUsage: bash YMAPcl.sh install project \e[31m(user)\e[0m";
+					echo -e "#\tUsage: bash YMAPcli.sh install project \e[31m(user)\e[0m";
 					echo -e "#";
-					echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+					echo -e "#\tOr first log in using the command: bash YMAPcli.sh log_in \e[31m(user)\e[0m";
 					fail=1;
 				    ;;
 				    "genome")
-					echo -e "#\tUsage: bash YMAPcl.sh install genome \e[31m(user)\e[0m";
+					echo -e "#\tUsage: bash YMAPcli.sh install genome \e[31m(user)\e[0m";
 					echo -e "#";
-					echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+					echo -e "#\tOr first log in using the command: bash YMAPcli.sh log_in \e[31m(user)\e[0m";
 					fail=1;
 				    ;;
 				    "user")
 					fail=0;
 				    ;;
 				    *)
-					echo -e "#\tUsage: bash YMAPcl.sh install project \e[31m(user)\e[0m";
-					echo -e "#\tUsage: bash YMAPcl.sh install genome \e[31m(user)\e[0m";
-					echo -e "#\tUsage: bash YMAPcl.sh install user";
+					echo -e "#\tUsage: bash YMAPcli.sh install project \e[31m(user)\e[0m";
+					echo -e "#\tUsage: bash YMAPcli.sh install genome \e[31m(user)\e[0m";
+					echo -e "#\tUsage: bash YMAPcli.sh install user";
 					echo -e "#";
 					echo -e "#\t\t\e[41mError: incorrect 2nd arguement!\e[0m";
 					fail=1;
@@ -1220,11 +1231,11 @@ else
 				logged_in_status;
 				echo -e $lineThin;
 				echo -e "#";
-				echo -e "#\tUsage: bash YMAPcl.sh install project \e[31m(user)\e[0m";
-				echo -e "#\tUsage: bash YMAPcl.sh install genome \e[31m(user)\e[0m";
-				echo -e "#\tUsage: bash YMAPcl.sh install user";
+				echo -e "#\tUsage: bash YMAPcli.sh install project \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcli.sh install genome \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcli.sh install user";
 				echo -e "#";
-				echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+				echo -e "#\tOr first log in using the command: bash YMAPcli.sh log_in \e[31m(user)\e[0m";
 				fail=1;
 			else
 				echo -e "# YMAP2 commandline : Install project/genome/user.";
@@ -1246,9 +1257,9 @@ else
 				logged_in_status;
 				echo -e $lineThin;
 				echo -e "#";
-				echo -e "#\tUsage: bash YMAPcl.sh install project";
-				echo -e "#\tUsage: bash YMAPcl.sh install genome";
-				echo -e "#\tUsage: bash YMAPcl.sh install user";
+				echo -e "#\tUsage: bash YMAPcli.sh install project";
+				echo -e "#\tUsage: bash YMAPcli.sh install genome";
+				echo -e "#\tUsage: bash YMAPcli.sh install user";
 				fail=1;
 			else
 				echo -e "# YMAP2 commandline : Delete project/genome/hapmap/user.";
@@ -1296,9 +1307,9 @@ else
 				logged_in_status;
 				echo -e $lineThin;
 				echo -e "#";
-				echo -e "#\tUsage: bash YMAPcl.sh run \e[31m(user)\e[0m";
+				echo -e "#\tUsage: bash YMAPcli.sh run \e[31m(user)\e[0m";
 				echo -e "#";
-				echo -e "#\tOr first log in using the command: bash YMAPcl.sh log_in \e[31m(user)\e[0m";
+				echo -e "#\tOr first log in using the command: bash YMAPcli.sh log_in \e[31m(user)\e[0m";
                                 fail=1;
 			fi;
 		else
@@ -1655,11 +1666,13 @@ else
 		echo -e "#"
 		echo -e "#\t'$1' is not a defined command in the YMAP commandline interface."
 		echo -e "#"
-		echo -e "#\tRun 'bash YMAPcl.sh' to see available commands."
+		echo -e "#\tRun 'bash YMAPcli.sh' to see available commands."
 	    ;;
 	esac;
-	echo -e "#";
-	echo -e $lineThick
+	if [[ "$noTail" = "false" ]]; then
+		echo -e "#";
+		echo -e $lineThick
+	fi;
 fi;
 
 

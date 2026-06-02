@@ -114,7 +114,7 @@ function get_salt($user,$project,$genome,$hapmap) {
 	}
 
 	// Get existing salt string.
-	if (file_exists($activePath'"/salt.txt")) {
+	if (file_exists($activePath."/salt.txt")) {
 		$salt_string = trim(file_get_contents($activePath."/salt.txt"));
 	} else {
 		$salt_string = "[no salt]";
@@ -197,7 +197,7 @@ function queue_reinit($user,$project,$genome,$hapmap,$message) {
 	$line = $line.' - user:'.$user;
 
 	// Reset salt, as new process is initiated.
-	$salt_string = make_salt($user,$project,$genome,$hapmap)
+	$salt_string = make_salt($user,$project,$genome,$hapmap);
 	if (!empty($project)) {
 		$line = $line.' - project:'.$project.' - '.$salt_string;
 	} elseif (!empty($genome)) {

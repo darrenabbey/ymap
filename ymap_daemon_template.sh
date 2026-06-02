@@ -6,8 +6,8 @@
 # Required-Stop:     $network
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Regular background program processing daemon
-# Description:       ymap_daemin runs the queue manager PHP script used by YMAP
+# Short-Description: Daemon process to manage the YMAP data processing queue.
+# Description:       Daemon process to manage the YMAP data processing queue.
 ### END INIT INFO
 
 set -e
