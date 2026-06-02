@@ -67,6 +67,61 @@ function log_stuff($user,$project,$hapmap,$genome,$filename,$message) {
 //========================================================================================
 // YMAP Queue functions.
 //----------------------------------------------------------------------------------------
+function make_salt($user,$project,$genome,$hapmap) {
+	// Clean up path to find install directory.
+	$filePath = getcwd();
+	$filePath = str_replace("/scripts_genomes_enhanced_annotations","",$filePath);
+	$filePath = str_replace("/scripts_genomes","",$filePath);
+	$filePath = str_replace("/scripts_seqModules","",$filePath);
+	$filePath = str_replace("/scripts_SnpCghArray","",$filePath);
+	$filePath = str_replace("/scripts_WGseq","",$filePath);
+	$filePath = str_replace("/scripts_hapmaps","",$filePath);
+	$filePath = str_replace("/scripts_ddRADseq","",$filePath);
+
+	// Figure out which path it is we're working with.
+	if (!empty($project)) {
+		$activePath = $filePath."/users/".$user."/projects/".$project;
+	} elseif (!empty($genome)) {
+		$activePath = $filePath."/users/".$user."/genomes/".$genome;
+	} elseif (!empty($hapmap)) {
+		$activePath = $filePath."/users/".$user."/hapmaps/".$hapmap;
+	}
+
+	// Make a salt string and place it in project/genome/hapmap directory.
+	$salt_string = bin2hex(random_bytes(16 / 2));
+	file_put_contents($activePath."/salt.txt", $salt_string);
+
+	return $salt_string;
+}
+function get_salt($user,$project,$genome,$hapmap) {
+	// Clean up path to find install directory.
+	$filePath = getcwd();
+	$filePath = str_replace("/scripts_genomes_enhanced_annotations","",$filePath);
+	$filePath = str_replace("/scripts_genomes","",$filePath);
+	$filePath = str_replace("/scripts_seqModules","",$filePath);
+	$filePath = str_replace("/scripts_SnpCghArray","",$filePath);
+	$filePath = str_replace("/scripts_WGseq","",$filePath);
+	$filePath = str_replace("/scripts_hapmaps","",$filePath);
+	$filePath = str_replace("/scripts_ddRADseq","",$filePath);
+
+	// Figure out which path it is we're working with.
+	if (!empty($project)) {
+		$activePath = $filePath."/users/".$user."/projects/".$project;
+	} elseif (!empty($genome)) {
+		$activePath = $filePath."/users/".$user."/genomes/".$genome;
+	} elseif (!empty($hapmap)) {
+		$activePath = $filePath."/users/".$user."/hapmaps/".$hapmap;
+	}
+
+	// Get existing salt string.
+	if (file_exists($activePath'"/salt.txt")) {
+		$salt_string = trim(file_get_contents($activePath."/salt.txt"));
+	} else {
+		$salt_string = "[no salt]";
+	}
+
+	return $salt_string;
+}
 function queue_init($user,$project,$genome,$hapmap,$message) {
 	// find main Ymap directory, by removing possible ymap subdirectories from path of calling script.
 	$filePath = getcwd();
@@ -93,16 +148,13 @@ function queue_init($user,$project,$genome,$hapmap,$message) {
 	$line = date('Y-m-d H:i:s');
 	$line = $line.' - user:'.$user;
 
-	// Make a unique string to place in project/genome/hapmap directory.
-	$salt_string = bin2hex(random_bytes(16 / 2));
+	// Salt defind during daemon processing.
+	$salt_string = get_salt($user,$project,$genome,$hapmap);
 	if (!empty($project)) {
-		file_put_contents($filePath."/users/".$user."/projects/".$project."/salt.txt", $salt_string);
 		$line = $line.' - project:'.$project.' - '.$salt_string;
 	} elseif (!empty($genome)) {
-		file_put_contents($filePath."/users/".$user."/genomes/".$genome."/salt.txt", $salt_string);
 		$line = $line.' - genome:'.$genome.' - '.$salt_string;
 	} elseif (!empty($hapmap)) {
-		file_put_contents($filePath."/users/".$user."/hapmaps/".$hapmap."/salt.txt", $salt_string);
 		$line = $line.' - hapmap:'.$hapmap.' - '.$salt_string;
 	}
 	$line = $line.' - init';
@@ -144,25 +196,13 @@ function queue_reinit($user,$project,$genome,$hapmap,$message) {
 	$line = date('Y-m-d H:i:s');
 	$line = $line.' - user:'.$user;
 
-	// Make a unique string to place in project/genome/hapmap directory.
-	$salt_string = bin2hex(random_bytes(16 / 2));
+	// Reset salt, as new process is initiated.
+	$salt_string = make_salt($user,$project,$genome,$hapmap)
 	if (!empty($project)) {
-		if (file_exists($filePath."/users/".$user."/projects/".$project."/salt.txt")) {
-			unlink($filePath."/users/".$user."/projects/".$project."/salt.txt");
-		}
-		file_put_contents($filePath."/users/".$user."/projects/".$project."/salt.txt", $salt_string);
 		$line = $line.' - project:'.$project.' - '.$salt_string;
 	} elseif (!empty($genome)) {
-		if (file_exists($filePath."/users/".$user."/genomes/".$genome."/salt.txt")) {
-			unlink($filePath."/users/".$user."/genomes/".$genome."/salt.txt");
-		}
-		file_put_contents($filePath."/users/".$user."/genomes/".$genome."/salt.txt", $salt_string);
 		$line = $line.' - genome:'.$genome.' - '.$salt_string;
 	} elseif (!empty($hapmap)) {
-		if (file_exists($filePath."/users/".$user."/hapmaps/".$hapmap."/salt.txt")) {
-			unlink($filePath."/users/".$user."/hapmaps/".$hapmap."/salt.txt");
-		}
-		file_put_contents($filePath."/users/".$user."/hapmaps/".$hapmap."/salt.txt", $salt_string);
 		$line = $line.' - hapmap:'.$hapmap.' - '.$salt_string;
 	}
 	$line = $line.' - init';
@@ -194,14 +234,14 @@ function queue_start($user,$project,$genome,$hapmap,$message) {
 	// add comment to log file.
 	$line = date('Y-m-d H:i:s');
 	$line = $line.' - user:'.$user;
+
+	// Salt defind during daemon processing.
+	$salt_string = get_salt($user,$project,$genome,$hapmap);
 	if (!empty($project)) {
-		$salt_string = trim(file_get_contents($filePath."/users/".$user."/projects/".$project."/salt.txt"));
 		$line = $line.' - project:'.$project.' - '.$salt_string;
 	} elseif (!empty($genome)) {
-		$salt_string = trim(file_get_contents($filePath."/users/".$user."/genomes/".$genome."/salt.txt"));
 		$line = $line.' - genome:'.$genome.' - '.$salt_string;
 	} elseif (!empty($hapmap)) {
-		$salt_string = trim(file_get_contents($filePath."/users/".$user."/hapmaps/".$hapmap."/salt.txt"));
 		$line = $line.' - hapmap:'.$hapmap.' - '.$salt_string;
 	}
 	$line = $line.' - start';
@@ -233,21 +273,15 @@ function queue_end($user,$project,$genome,$hapmap,$message) {
 	// add comment to log file.
 	$line = date('Y-m-d H:i:s');
 	$line = $line.' - user:'.$user;
+
+	// Salt defind during daemon processing.
+	$salt_string = get_salt($user,$project,$genome,$hapmap);
 	if (!empty($project)) {
-		if (file_exists($filePath."/users/".$user."/projects/".$project."/salt.txt")) {
-			$salt_string = trim(file_get_contents($filePath."/users/".$user."/projects/".$project."/salt.txt"));
-			$line = $line.' - project:'.$project.' - '.$salt_string;
-		}
+		$line = $line.' - project:'.$project.' - '.$salt_string;
 	} elseif (!empty($genome)) {
-		if (file_exists($filePath."/users/".$user."/genomes/".$genome."/salt.txt")) {
-			$salt_string = trim(file_get_contents($filePath."/users/".$user."/genomes/".$genome."/salt.txt"));
-			$line = $line.' - genome:'.$genome.' - '.$salt_string;
-		}
+		$line = $line.' - genome:'.$genome.' - '.$salt_string;
 	} elseif (!empty($hapmap)) {
-		if (file_exists($filePath."/users/".$user."/hapmaps/".$hapmap."/salt.txt")) {
-			$salt_string = trim(file_get_contents($filePath."/users/".$user."/hapmaps/".$hapmap."/salt.txt"));
-			$line = $line.' - hapmap:'.$hapmap.' - '.$salt_string;
-		}
+		$line = $line.' - hapmap:'.$hapmap.' - '.$salt_string;
 	}
 	$line = $line.' - end';
 	if (!empty($message)) {

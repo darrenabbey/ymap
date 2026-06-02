@@ -22,3 +22,4 @@ echo -e "queue_end('$user','$project','','','$message');" >> $outputName;
 echo -e "?>" >> $outputName;
 php $outputName;
 rm $outputName;
+echo -e "\tConclustion of processing '$project' data." >> $logName;

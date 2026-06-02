@@ -5,7 +5,7 @@
 BASE_DIR_temp
 
 	require_once $script_directory.'constants.php';
-	//require_once $script_directory.'sharedFunctions.php';
+	require_once $script_directory.'sharedFunctions.php';
 
 	// Enable signal handling (required for pcntl functions)
 	declare(ticks=1);
@@ -289,7 +289,6 @@ BASE_DIR_temp
 					}
 					$projectDirectory = $base_dir."/users/".$user."/projects/".$project."/";
 					project_process($base_dir,$user,$project,$dataFormat,$fileName,$projectDirectory);
-					log_stuff($user,$project,"","","","YMAP_daemon:SUCCESS Dataset processing initiated.");
 				}
 			}
 
@@ -345,8 +344,16 @@ BASE_DIR_temp
 			}
 			// Run processing script.
 			chdir($base_dir."/scripts_seqModules/scripts_WGseq/");
+			$salt_string = make_salt($user,$project,$genome,$hapmap);
 			exec($conclusion_script." ".$command_string." > /dev/null &");
 			chdir($base_dir);
+			log_stuff($user,$project,"","",$salt_string,"YMAP_daemon:SUCCESS project initiated.");
 		}
+	}
+	function genome_process($base_dir,$user,$genome,$dataFormat,$fileName,$genomeDirectory) {
+		log_stuff($user,"",$genome,"","","YMAP_daemon:SUCCESS genome initiated.");
+	}
+	function hapmap_process($base_dir,$user,$hapmap,$dataFormat,$fileName,$hapmapDirectory) {
+		log_stuff($user,"","",$hapmap,"","YMAP_daemon:SUCCESS hapmap initiated.");
 	}
 ?>

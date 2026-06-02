@@ -3,8 +3,8 @@ set -e;
 
 main_dir=$(pwd);
 userDirectory=$main_dir"/users/";
-if [ -e $main_dir"/YMAPcl.dat" ]; then
-	user=$(head -n 1 $main_dir"/YMAPcl.dat");
+if [ -e $main_dir"/YMAPcli.dat" ]; then
+	user=$(head -n 1 $main_dir"/YMAPcli.dat");
 else
 	user="";
 fi;
@@ -426,20 +426,22 @@ else
 			## Make it executable.
 			sudo chmod +x $TargetFile;
 
-			## Add the service to the start-up sequence.
-			sudo update-rc.d ymap_daemon defaults;
 
-			## reload services.
-			sudo systemctl daemon-reload;
+			# enable start at startup.
+			sudo systemctl daemon-reload;			# To reload services.
+			sudo systemctl enable ymap_daemon;		# Enable service to start at boot.
 
-			## Start the service.
-			sudo service ymap_daemon start;
+			# enable start at crash.
+			#	sudo pico /etc/inittab
+			#		::restart:respawn:/etc/init.d/ymap_daemon
+			#	sudo chmod +x /etc/inittab
+			#	sudo service ymap_daemon restart
 
-			## Remove the service from the start-up sequence; to be used during uninstallation.
-			# sudo update-rc.d ymap_daemon remove;
-
-			## Examine the system log for the ymap_daemon; used in command daemon_log.
-			# sudo journalctl -u ymap_daemon.service;
+			# sudo systemctl start ymap_daemon;		# To start immediately.
+			# sudo systemctl status ymap_daemon;		# For status.
+			# sudo service ymap_daemon start;		# Start the service.
+			# sudo service ymap_daemon restart;		# Restart the servoce.
+			# sudo journalctl -u ymap_daemon.service;	# Examin system log for the service, used in command "daemon_log".
 
 			echo -e "#";
 			echo -e "#	To ensure the ymap_daemon restarts after a crash, manual stesp are needed.";
@@ -528,7 +530,7 @@ else
 					echo -e "#";
 				fi;
 				echo -e "#\tUser '$2' has been logged in.";
-				echo $2 > $main_dir"/YMAPcl.dat";
+				echo $2 > $main_dir"/YMAPcli.dat";
 			fi;
 		fi;
 	    ;;
@@ -537,7 +539,7 @@ else
 		echo -e $lineThin
 		echo -e "#";
 		if [[ ! "$user" = "" ]]; then
-			echo "" > $main_dir"/YMAPcl.dat";
+			echo "" > $main_dir"/YMAPcli.dat";
 			echo -e "#\tUser '$user' has been logged out.";
 		else
 			echo -e "#\tNo user was logged in.";

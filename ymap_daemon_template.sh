@@ -1,4 +1,15 @@
 #!/bin/bash
+#
+### BEGIN INIT INFO
+# Provides:          ymap_daemon
+# Required-Start:    $network
+# Required-Stop:     $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Regular background program processing daemon
+# Description:       ymap_daemin runs the queue manager PHP script used by YMAP
+### END INIT INFO
+
 set -e
 
 #==============================================================================
@@ -70,7 +81,7 @@ case "$1" in
         N=/etc/init.d/$NAME
         echo -e "Usage: $N {start|stop|restart|force-reload}" >&2
         exit 1
-    ;;
+	;;
 esac
 
 exit 0

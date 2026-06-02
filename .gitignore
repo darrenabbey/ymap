@@ -4,7 +4,7 @@ config.sh
 ymap_daemon.php
 ymap_daemon.sh
 constants.php
-YMAPcl.dat
+YMAPcli.dat
 .DS_Store
 .*
 !.htaccess
