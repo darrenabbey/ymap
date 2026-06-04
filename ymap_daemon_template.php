@@ -42,9 +42,9 @@ BASE_DIR_temp
 			// YOUR TASK HERE (e.g., process data, monitor files)
 			// --------------------------------------------------
 			// 0. Initialize projects list.
-			$projects_init_list  = [];
-			$projects_start_list = [];
-			$projects_end_list   = [];
+			$init_list  = [];
+			$start_list = [];
+			$end_list   = [];
 
 			// 1. Grab init/start/end project entries from queue logs.
 			$queue_dir   = $base_dir."/queue/";
@@ -64,104 +64,141 @@ BASE_DIR_temp
 							if (sizeof($line_parts) >= 3) {
 								$time            = $line_parts[0];
 								$user            = str_replace("user:", "", $line_parts[1]);
-								$project         = str_replace("project:", "", $line_parts[2]); // (or genome, or hapmap?).
+								if (str_contains($line_parts[2], "project:")) {
+									$project = str_replace("project:", "", $line_parts[2]); // (or genome, or hapmap?).
+									$entryType = "project";
+								} elseif (str_contains($line_parts[2], "genome:")) {
+									$genome  = str_replace("genome:", "", $line_parts[2]);
+									$entryType = "genome";
+								} elseif (str_contains($line_parts[2], "hapmap:")) {
+									$hapmap  = str_replace("hapmap:", "", $line_parts[2]);
+									$entryType = "hapmap";
+								} else {
+									// Unrecognized queue entry.
+								}
 								$salt            = $line_parts[3];
 								$status          = $line_parts[4];
 
-								$project_entry   = [];
-								$project_entry[] = $time;
-								$project_entry[] = $user;
-								$project_entry[] = $project;
-								$project_entry[] = $salt;
-								$project_entry[] = $status;
+								$entry   = [];
+								$entry[] = $time;
+								$entry[] = $user;
+								if ($entryType == "project") {
+									$entry[] = $project;
+								} elseif ($entryType == "genome") {
+									$entry[] = $genome;
+								} elseif ($entryType == "hapmap") {
+									$entry[] = $hapmap;
+								} else {
+									// Something went wrong.
+								}
+								$entry[] = $salt;
+								$entry[] = $status;
+								$entry[] = $entryType;
 
 								if ($status == "init") {
-									$projects_init_list[] = $project_entry;
+									$init_list[] = $entry;
 								} else if ($status == "start") {
-									$projects_start_list[] = $project_entry;
+									$start_list[] = $entry;
 								} else if ($status == "end") {
-									$projects_end_list[] = $project_entry;
+									$end_list[] = $entry;
 								}
 							}
 						}
 					}
 				}
 			}
-			$count_queue_done = sizeof($projects_end_list);
+			$count_queue_done = sizeof($end_list);
 
 			// 2. Drop start/end entries from init queue list.
-			foreach ($projects_start_list as $key1 => $project_start_entry) {
-				$count = sizeof($projects_init_list);
-				foreach (array_reverse($projects_init_list) as $key2 => $project_init_entry) {
-					$start_user    = $project_start_entry[1];
-					$start_project = $project_start_entry[2];
-					$start_salt    = $project_start_entry[3];
-					$init_user     = $project_init_entry[1];
-					$init_project  = $project_init_entry[2];
-					$init_salt     = $project_init_entry[3];
-					if (($start_user == $init_user) && ($start_project == $init_project) && ($start_salt == $init_salt)) {
+			foreach ($start_list as $key1 => $start_entry) {
+				$count = sizeof($init_list);
+				foreach (array_reverse($init_list) as $key2 => $init_entry) {
+					$start_user    = $start_entry[1];
+					$start_name    = $start_entry[2];
+					$start_salt    = $start_entry[3];
+					$init_user     = $init_entry[1];
+					$init_name     = $init_entry[2];
+					$init_salt     = $init_entry[3];
+					if (($start_user == $init_user) && ($start_name == $init_name) && ($start_salt == $init_salt)) {
 						$new_key = $count-$key2-1;
-						array_splice($projects_init_list, $new_key, 1);
+						array_splice($init_list, $new_key, 1);
 						break;
 					}
 				}
 			}
-			foreach ($projects_end_list as $key1 => $project_end_entry) {
-				$count = sizeof($projects_init_list);
-				foreach (array_reverse($projects_init_list) as $key2 => $project_init_entry) {
-					$end_user     = $project_end_entry[1];
-					$end_project  = $project_end_entry[2];
-					$end_salt     = $project_end_entry[3];
-					$init_user    = $project_init_entry[1];
-					$init_project = $project_init_entry[2];
-					$init_salt    = $project_init_entry[3];
-					if (($end_user == $init_user) && ($end_project == $init_project) && ($end_salt == $init_salt)) {
+			foreach ($end_list as $key1 => $end_entry) {
+				$count = sizeof($init_list);
+				foreach (array_reverse($init_list) as $key2 => $init_entry) {
+					$end_user     = $end_entry[1];
+					$end_name     = $end_entry[2];
+					$end_salt     = $end_entry[3];
+					$init_user    = $init_entry[1];
+					$init_name    = $init_entry[2];
+					$init_salt    = $init_entry[3];
+					if (($end_user == $init_user) && ($end_name == $init_name) && ($end_salt == $init_salt)) {
 						$new_key = $count-$key2-1;
-						array_splice($projects_init_list, $new_key, 1);
+						array_splice($init_list, $new_key, 1);
 						break;
 					}
 				}
 			}
-			$count_queue_initialized = sizeof($projects_init_list);
-			//print_r($projects_start_list);
+			$count_queue_initialized = sizeof($init_list);
+			//print_r($start_list);
 
 			// 3. Drop end entries from start queue list.
-			foreach ($projects_end_list as $key1 => $project_end_entry) {
-				$count = sizeof($projects_start_list);
-				foreach (array_reverse($projects_start_list) as $key2 => $project_start_entry) {
-					$end_user      = trim($project_end_entry[1]);
-					$end_project   = trim($project_end_entry[2]);
-					$end_salt      = trim($project_end_entry[3]);
-					$start_user    = trim($project_start_entry[1]);
-					$start_project = trim($project_start_entry[2]);
-					$start_salt    = trim($project_start_entry[3]);
-					if (($end_user == $start_user) && ($end_project == $start_project) && ($end_salt == $start_salt)) {
+			foreach ($end_list as $key1 => $end_entry) {
+				$count = sizeof($start_list);
+				foreach (array_reverse($start_list) as $key2 => $start_entry) {
+					$end_user      = trim($end_entry[1]);
+					$end_name      = trim($end_entry[2]);
+					$end_salt      = trim($end_entry[3]);
+					$start_user    = trim($start_entry[1]);
+					$start_name    = trim($start_entry[2]);
+					$start_salt    = trim($start_entry[3]);
+					if (($end_user == $start_user) && ($end_name == $start_name) && ($end_salt == $start_salt)) {
 						$new_key = $count-$key2-1;
 						//print_r($count." : ".$end_project."\t".$new_key."\n");
-						array_splice($projects_start_list, $new_key, 1);
+						array_splice($start_list, $new_key, 1);
 						break;
 					}
 				}
 			}
-			$count_queue_working = sizeof($projects_start_list);
+			$count_queue_working = sizeof($start_list);
 
-			// 4. Drop active projects without a 'bulk.txt' file.
-			$count = sizeof($projects_start_list);
-			foreach (array_reverse($projects_start_list) as $key1 => $project_entry) {
-				$user    = $project_entry[1];
-				$project = $project_entry[2];
-				$projectDirectory = $base_dir."/users/".$user."/projects/".$project."/";
-				if (!file_exists($projectDirectory."bulk.txt")) {
-					array_splice($projects_start_list, $count-$key1-1, 1);
+			// 4. Drop active projects/genomes/hapmaps without a 'bulk.txt' file.
+			$count = sizeof($start_list);
+			foreach (array_reverse($start_list) as $key1 => $entry) {
+				$user      = $entry[1];
+				$entryType = $entry[5];
+				if ($entryType == "project") {
+					$project          = $entry[2];
+					$projectDirectory = $base_dir."/users/".$user."/projects/".$project."/";
+					if (!file_exists($projectDirectory."bulk.txt")) {
+						array_splice($start_list, $count-$key1-1, 1);
+					}
+				} elseif ($entryType == "genome") {
+					$genome          = $entry[2];
+					$genomeDirectory = $base_dir."/users/".$user."/genomes/".$genome."/";
+					if (!file_exists($genomeDirectory."bulk.txt")) {
+						array_splice($start_list, $count-$key1-1, 1);
+					}
+				} elseif ($entryType == "hapmap") {
+					$hapmap          = $entry[2];
+					$hapmapDirectory = $base_dir."/users/".$user."/hapmaps/".$hapmap."/";
+					if (!file_exists($hapmapDirectory."bulk.txt")) {
+						array_splice($start_list, $count-$key1-1, 1);
+					}
+				} else {
+					// Something went wrong.
 				}
 			}
-			$count_queue_working = sizeof($projects_start_list);
+			$count_queue_working = sizeof($start_list);
 
 			// 5. Delete old log files that are done.
 			foreach ($queue_files as $key1 => $queue_file) {
 				if ((str_contains($queue_file,".log")) && ($queue_file <> date('Y-m-d')."_queue.log")) {
 					// Grap the init entries from this queue file.
-					$oldprojects_init_list = [];
+					$oldinit_list = [];
 					$oldqueue_contents = trim(file_get_contents($queue_dir.$queue_file));
 					if ($oldqueue_contents) {
 						$outline = "";
@@ -171,44 +208,65 @@ BASE_DIR_temp
 							if (sizeof($line_parts) >= 3) {
 								$time            = $oldline_parts[0];
 								$user            = str_replace("user:", "", $oldline_parts[1]);
-								$project         = str_replace("project:", "", $oldline_parts[2]); // (or genome, or hapmap?).
+
+								if (str_contains($oldline_parts[2], "project:")) {
+									$project         = str_replace("project:", "", $oldline_parts[2]);
+									$entryType = "project";
+								} elseif (str_contains($oldline_parts[2], "genome:")) {
+									$genome          = str_replace("genome:", "", $oldline_parts[2]);
+									$entryType = "genome";
+								} elseif (str_contains($oldline_parts[2], "hapmap:")) {
+									$hapmap          = str_replace("hapmap:", "", $oldline_parts[2]);
+									$entryType = "hapmap";
+								} else {
+									// Something went wrong.
+								}
+
 								$salt            = $oldline_parts[3];
 								$status          = $oldline_parts[4];
 
-								$oldproject_entry   = [];
-								$oldproject_entry[] = $time;
-								$oldproject_entry[] = $user;
-								$oldproject_entry[] = $project;
-								$oldproject_entry[] = $salt;
-								$oldproject_entry[] = $status;
+								$oldentry   = [];
+								$oldentry[] = $time;
+								$oldentry[] = $user;
+								if ($entryType == "project") {
+									$oldentry[] = $project;
+								} elseif ($entryType == "genome") {
+									$oldentry[] = $genome;
+								} elseif ($entryType == "hapmap") {
+									$oldentry[] = $hapmap;
+								} else {
+									// Something went wrong.
+								}
+								$oldentry[] = $salt;
+								$oldentry[] = $status;
 
 								if ($status == "init") {
-									$oldprojects_init_list[] = $oldproject_entry;
+									$oldinit_list[] = $oldentry;
 								}
 							}
 						}
 					}
 
 					// Remove any that match with done entries from any queue file.
-					foreach ($projects_end_list as $key1 => $project_end_entry) {
-						$count = sizeof($oldprojects_init_list);
-						foreach (array_reverse($oldprojects_init_list) as $key2 => $oldproject_init_entry) {
-							$end_user        = $project_end_entry[1];
-							$end_project     = $project_end_entry[2];
-							$end_salt        = $project_end_entry[3];
-							$oldinit_user    = $oldproject_init_entry[1];
-							$oldinit_project = $oldproject_init_entry[2];
-							$oldinit_salt    = $oldproject_init_entry[3];
-							if (($end_user == $oldinit_user) && ($end_project == $oldinit_project) && ($end_salt == $oldinit_salt)) {
+					foreach ($end_list as $key1 => $end_entry) {
+						$count = sizeof($oldinit_list);
+						foreach (array_reverse($oldinit_list) as $key2 => $oldinit_entry) {
+							$end_user        = $end_entry[1];
+							$end_name        = $end_entry[2];
+							$end_salt        = $end_entry[3];
+							$oldinit_user    = $oldinit_entry[1];
+							$oldinit_name    = $oldinit_entry[2];
+							$oldinit_salt    = $oldinit_entry[3];
+							if (($end_user == $oldinit_user) && ($end_name == $oldinit_name) && ($end_salt == $oldinit_salt)) {
 								$new_key = $count-$key2-1;
-								array_splice($oldprojects_init_list, $new_key, 1);
+								array_splice($oldinit_list, $new_key, 1);
 								break;
 							}
 						}
 					}
 
-					// If there are no entries left in {$oldprojects_init_list}, then delete the queue file.
-					if (sizeof($oldprojects_init_list) == 0) {
+					// If there are no entries left in {$oldinit_list}, then delete the queue file.
+					if (sizeof($oldinit_list) == 0) {
 						unlink($queue_dir.$queue_file);
 					}
 				}
@@ -219,7 +277,7 @@ BASE_DIR_temp
 		//	// Temporary troubleshooting output.
 		//	print_r("===================================================================\n");
 		//	print_r("YMAPs initialized: ".$count_queue_initialized."\n");
-		//	foreach ($projects_init_list as $key=>$value) {
+		//	foreach ($init_list as $key=>$value) {
 		//		print_r("\t[{$key}] ".$value[2]);
 		//		if (($key+1) % 7 == 0) {
 		//			print_r("\n");
@@ -227,11 +285,11 @@ BASE_DIR_temp
 		//			print_r("\t");
 		//		}
 		//	}
-		//	if (sizeof($projects_init_list) > 0) {
+		//	if (sizeof($init_list) > 0) {
 		//		print_r("\n");
 		//	}
 		//	print_r("YMAPs processing:  ".$count_queue_working."\n");
-		//	foreach ($projects_start_list as $key=>$value) {
+		//	foreach ($start_list as $key=>$value) {
 		//		print_r("\t[{$key}] ".$value[2]);
 		//		if (($key+1) % 7 == 0) {
 		//			print_r("\n");
@@ -239,12 +297,12 @@ BASE_DIR_temp
 		//			print_r("\t");
 		//		}
 		//	}
-		//	if (sizeof($projects_start_list) > 0) {
+		//	if (sizeof($start_list) > 0) {
 		//		print_r("\n");
 		//	}
 		//	print_r("YMAPs complete:    ".$count_queue_done."\n");
-		//	//print_r($projects_start_list);
-		//	//print_r($projects_end_list);
+		//	//print_r($start_list);
+		//	//print_r($end_list);
 		//	//-----------------------------------------------------------
 
 
@@ -253,42 +311,57 @@ BASE_DIR_temp
 				//=============================
 				// Call YMAP processes.
 				//-----------------------------
-				$user    = $projects_init_list[0][1];
-				$project = $projects_init_list[0][2];
+				$user      = $init_list[0][1];
+				$name      = $init_list[0][2];
+				$entryType = $init_list[0][5];
 
 				//print_r($user.":".$project."\n");
 
-				$project_dir   = $base_dir."/users/".$user."/projects/".$project."/";
-				if (is_dir($project_dir)) {
-					// Construct filename string from 'datafiles.txt' file.
-					if (file_exists($project_dir."datafiles.txt")) {
-						$filename_string = trim(file_get_contents($project_dir."datafiles.txt"));
-						$filename_lines  = preg_split("/\r\n|\n|\r/", $filename_string);
+				if ($entryType == "project") {
+					$dir  = $base_dir."/users/".$user."/projects/".$project."/";
+				} elseif ($entryType == "genome") {
+					$dir   = $base_dir."/users/".$user."/genomes/".$genome."/";
+				} elseif ($entryType == "hapmap") {
+					$dir   = $base_dir."/users/".$user."/hapmaps/".$hapmap."/";
+				}
+				if (is_dir($dir)) {
+					if ($entryType == "project") {
+						// Construct filename string from 'datafiles.txt' file.
+						if (file_exists($dir."datafiles.txt")) {
+							$filename_string = trim(file_get_contents($dir."datafiles.txt"));
+							$filename_lines  = preg_split("/\r\n|\n|\r/", $filename_string);
 
-						if (sizeof($filename_lines) == 2) {
-							$filename1 = $filename_lines[0];
-							$filename2 = $filename_lines[1];
-							$fileName  = $filename1.",".$filename2;
+							if (sizeof($filename_lines) == 2) {
+								$filename1 = $filename_lines[0];
+								$filename2 = $filename_lines[1];
+								$fileName  = $filename1.",".$filename2;
+							} else {
+								$fileName  = $filename_lines[0];
+							}
 						} else {
-							$fileName  = $filename_lines[0];
+							$fileName = "";
 						}
-					} else {
-						$fileName = "";
-					}
 
-					// Construct dataformat string from 'dataFormat.txt' file.
-					if (file_exists($project_dir."dataFormat.txt")) {
-						$dataformat_string = file_get_contents($project_dir."/dataFormat.txt");
-					}
-					$dataformat_lines  = preg_split("/:/", $dataformat_string);
+						// Construct dataformat string from 'dataFormat.txt' file.
+						if (file_exists($dir."dataFormat.txt")) {
+							$dataformat_string = file_get_contents($dir."/dataFormat.txt");
+						}
+						$dataformat_lines  = preg_split("/:/", $dataformat_string);
 
-					if ((int)$dataformat_lines[1] == 0) {
-						$dataFormat = "WGseq_single";
+						if ((int)$dataformat_lines[1] == 0) {
+							$dataFormat = "WGseq_single";
+						} else {
+							$dataFormat = "WGseq_paired";
+						}
+						$projectDirectory = $dir;
+						project_process($base_dir,$user,$project,$dataFormat,$fileName,$projectDirectory);
+					} elseif ($entryType == "genome") {
+						$genomeDirectory = $dir;
+						genome_process($base_dir,$user,$genome,$genomeDirectory);
+					} elseif ($entryType == "hapmap") {
 					} else {
-						$dataFormat = "WGseq_paired";
+						// Something went wrong.
 					}
-					$projectDirectory = $base_dir."/users/".$user."/projects/".$project."/";
-					project_process($base_dir,$user,$project,$dataFormat,$fileName,$projectDirectory);
 				}
 			}
 
@@ -320,11 +393,12 @@ BASE_DIR_temp
 			$_SESSION['fileName']   = $fileName;
 			$_SESSION['project']    = $project;
 			$key = "1";
-			$_SESSION['key']        = $key;		// to be removed later once everything is processed through queue.
+			$_SESSION['key']        = $key;		// to be removed later once everything is processed through queue?
 
+
+			$projecyDir=$base_dir."/users/".$user."/projects/".$project;
 			// Initiate project processing.
 			if (!file_exists($projectDirectory."update.txt")) {
-				//print_r("Init process.\n");
 				// Start an initial YMAP process.
 				switch ($dataFormat) {
 					case "WGseq_single":
@@ -336,22 +410,45 @@ BASE_DIR_temp
 				}
 				$command_string  = $user." ".$fileName." ".$project." ".$key;
 			} else {
-				//print_r("Update process.\n");
 				// Start an update YMAP process.
-				//$conclusion_script = "bash project.WGseq.update_2.sh";
 				$conclusion_script = "php project.WGseq.update_1.php";
 				$command_string  = $user." ".$project;
 			}
 			// Run processing script.
 			chdir($base_dir."/scripts_seqModules/scripts_WGseq/");
 			$salt_string = make_salt($user,$project,$genome,$hapmap);
-			exec($conclusion_script." ".$command_string." > /dev/null &");
+			exec($conclusion_script." ".$command_string." > /dev/null 2> ".$projectDir."/process_log.txt &");
 			chdir($base_dir);
 			log_stuff($user,$project,"","",$salt_string,"YMAP_daemon:SUCCESS project initiated.");
 		}
 	}
-	function genome_process($base_dir,$user,$genome,$dataFormat,$fileName,$genomeDirectory) {
-		log_stuff($user,"",$genome,"","","YMAP_daemon:SUCCESS genome initiated.");
+	function genome_process($base_dir,$user,$genome,$genomeDirectory) {
+		 if ((!file_exists($genomeDirectory."working.txt")) && (!file_exists($genomeDirectory."working_done.txt"))) {
+			// Set session variables.
+			$_SESSION['user']       = $user;
+			$_SESSION['genome']     = $genome;
+			$key = "1";
+			$_SESSION['key']        = $key;         // to be removed later once everything is processed through queue?
+
+
+			$genomeDir=$base_dir."/users/".$user."/genomes/".$genome;
+			// Initiate genome processing.
+			if (!file_exists($projectDirectory."update.txt")) {
+				// Start an initial YMAP process.
+				$conclusion_script = "php genome.install_5.php";
+				$command_string  = $user." ".$genome;
+			} else {
+				// Start an update YMAP process.
+				$conclusion_script = ""; //"php genome.update_1.php";
+				$command_string  = $user." ".$genome;
+			}
+			// Run processing script.
+			chdir($base_dir."/scripts_genomes/");
+			$salt_string = make_salt($user,$project,$genome,$hapmap);
+			exec($conclusion_script." ".$command_string." > /dev/null 2> ".$genomeDir."/process_log.txt &");
+			chdir($base_dir);
+			log_stuff($user,"",$genome,"",$salt_string,"YMAP_daemon:SUCCESS genome initiated.");
+		}
 	}
 	function hapmap_process($base_dir,$user,$hapmap,$dataFormat,$fileName,$hapmapDirectory) {
 		log_stuff($user,"","",$hapmap,"","YMAP_daemon:SUCCESS hapmap initiated.");

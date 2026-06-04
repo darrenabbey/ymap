@@ -1,34 +1,52 @@
 <?php
-	// Attempt to setup php for disconnecting from web browser.
-	ob_end_clean();
-	header("Connection: close");
-	ob_start();
-
-	session_start();
 	error_reporting(E_ALL);
-        require_once '../constants.php';
+	require_once '../constants.php';
 	require_once '../POST_validation.php';
-        ini_set('display_errors', 1);
+	ini_set('display_errors', 1);
 
-        // If the user is not logged on, redirect to login page.
-        if(!isset($_SESSION['logged_on'])){
-		session_destroy();
-                header('Location: ../');
-        }
+	$calledBy = php_sapi_name();
+	if ($calledBy === "cli") {
+		//
+		// Script run from commandline interface.
+		//
+		$user     = $argv[1];
+		$genome   = $argv[2];
+		$key      = "g_0";
+		$fileName = "";		// for expression features file processed in genome.install_4.php; not used.
+	} else {
+		//
+		// Script run from web interface.
+		//
 
-	// Load user string from session.
-	$user     = $_SESSION['user'];
+		// Attempt to setup php for disconnecting from web browser.
+		ob_end_clean();
+		header("Connection: close");
+		ob_start();
 
-	// Sanitize input strings.
-	$key      = sanitize_POST("key");
-	$fileName = sanitizeFile_POST("fileName");
+		session_start();
 
-	// Load genome string from session.
-	$genome   = $_SESSION['genome_'.$key];
+	        // If the user is not logged on, redirect to login page.
+	        if(!isset($_SESSION['logged_on'])){
+			session_destroy();
+	                header('Location: ../');
+	        }
+
+		// Load user string from session.
+		$user     = $_SESSION['user'];
+
+		// Sanitize input strings.
+		$key      = sanitize_POST("key");
+		$fileName = sanitizeFile_POST("fileName");
+
+		// Load genome string from session.
+		$genome   = $_SESSION['genome_'.$key];
+	}
 	$genome_dir = "../users/".$user."/genomes/".$genome;
 
 	// load PHP function to process input files.
 	include_once 'process_input_files.genome.php';
+
+	if (!($calledBy === "cli")) {
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
@@ -54,6 +72,8 @@
 <title>Install genome into pipeline.</title>
 </HEAD>
 <?php
+	}
+
 	// Open 'process_log.txt' file.
 	$logOutputName = $genome_dir."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'a');
@@ -64,14 +84,6 @@
 	} else {
 		fwrite($logOutput, "\tfileName:'".$fileName."'\n");
 	}
-
-	// Generate 'working.txt' to tell main page that genome installation is in process.
-	fwrite($logOutput, "\tGenerating 'working.txt' file.\n");
-	$outputName      = $genome_dir."/working.txt";
-	$output          = fopen($outputName, 'w');
-	$startTimeString = date("Y-m-d H:i:s");
-	fwrite($output, $startTimeString);
-	fclose($output);
 
 	if ($fileName == '') {
 		// No uploaded chromosome features file.
@@ -112,6 +124,7 @@
 	// exit;
 
 // The following section is to trigger the interface componant which shows status of the process, while the process has already been spawned off above.
+	if (!($calledBy === "cli")) {
 ?>
 <BODY onload = "parent.parent.resize_genome('<?php echo $key; ?>', 40);">
 	<font color="red">[Installation in process.]</font>
@@ -150,6 +163,8 @@
 </BODY>
 </HTML>
 <?php
+	}
+
 // process_log.txt output.
 	fwrite($logOutput, "\t'scripts_genomes/genome.install_5.php' has completed.\n");
 	fclose($logOutput);

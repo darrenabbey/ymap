@@ -1,23 +1,29 @@
 <?php
-	session_start();
-	error_reporting(E_ALL);
-        require_once '../constants.php';
+	require_once '../constants.php';
+	require_once '../sharedFunctions.php';
 	require_once '../POST_validation.php';
-        ini_set('display_errors', 1);
+	error_reporting(E_ALL);
+	ini_set('display_errors', 1);
 
-        // If the user is not logged on, redirect to login page.
-        if(!isset($_SESSION['logged_on'])){
-		session_destroy();
-                header('Location: ../');
-        }
+	$calledBy = php_sapi_name();
+	if ($calledBy === "cli") {
+		$user       = $argv[1];
+		$key        = "g_0";
+		$genome     = $argv[2];
+		$chr_count  = $argv[3];
+	} else {
+		session_start();
+		$user       = $_SESSION['user'];
+		$key        = sanitize_POST("key");
+		$genome     = $_SESSION['genome_'.$key];
+		$chr_count  = $_SESSION['chr_count_'.$key];
 
-	// Load user string from session.
-	$user   = $_SESSION['user'];
-	$key    = sanitize_POST("key");
-
-	// Load strings from session.
-	$genome     = $_SESSION['genome_'.$key];
-	$chr_count  = $_SESSION['chr_count_'.$key];
+	        // If the user is not logged on, redirect to login page.
+	        if(!isset($_SESSION['logged_on'])){
+			session_destroy();
+	                header('Location: ../');
+	        }
+	}
 
 	// Prevent over-limit errors.
 	if ($chr_count > $MAX_CHROM_POOL) {
@@ -26,6 +32,7 @@
 
 	$genome_dir = "../users/".$user."/genomes/".$genome;
 
+	if (!($calledBy === "cli")) {
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"
 <HTML>
@@ -37,6 +44,7 @@
 <title>Install genome into pipeline.</title>
 </HEAD>
 <?php
+	}
 	$chr_names        = json_decode(file_get_contents($genome_dir."/chr_names.json"), true);
 	$chr_lengths      = json_decode(file_get_contents($genome_dir."/chr_lengths.json"), true);;
 	$chr_draws        = array();
@@ -55,54 +63,92 @@
 	$handle       = fopen($sizeFile_1,'r');
 	$sizeString_1 = trim(fgets($handle));
 	fclose($handle);
-	if ($sizeString_1 !== "") {
-		echo "\n<script type='text/javascript'>\n";
-		echo "parent.parent.update_genome_file_size('".$key."','".$sizeString_1."');";
-		echo "\n</script>\n";
+	if (!($calledBy === "cli")) {
+		if ($sizeString_1 !== "") {
+			echo "\n<script type='text/javascript'>\n";
+			echo "parent.parent.update_genome_file_size('".$key."','".$sizeString_1."');";
+			echo "\n</script>\n";
+		}
 	}
 
 // Generate 'working2.txt' file to let pipeline know genome has been finalized and processing is moving forward.
-	$outputName      = "../users/".$user."/genomes/".$genome."/working2.txt";
-	$output          = fopen($outputName, 'w');
-	$startTimeString = date("Y-m-d H:i:s");
-	fwrite($output, $startTimeString);
-	fclose($output);
-	chmod($outputName,0774);
-	fwrite($logOutput, "\tGenerated 'working2.txt' file.\n");
+//	$outputName      = "../users/".$user."/genomes/".$genome."/working2.txt";
+//	$output          = fopen($outputName, 'w');
+//	$startTimeString = date("Y-m-d H:i:s");
+//	fwrite($output, $startTimeString);
+//	fclose($output);
+//	chmod($outputName,0774);
+//	fwrite($logOutput, "\tGenerated 'working2.txt' file.\n");
 
 // process POST data.
 	fwrite($logOutput, "\tProcessing POST data containing genome specific information.\n");
-	$rDNA_start         = sanitizeInt_POST("rDNAstart");
-	$rDNA_end           = sanitizeInt_POST("rDNAend");
-	$ploidyDefault      = sanitizeFloat_POST("ploidy");
-	$annotation_count   = sanitizeInt_POST("annotation_count");
-	$expression_regions = sanitize_POST("expression_regions");
+	if ($calledBy === "cli") {
+		$rDNA_start         = $argv[4];
+		$rDNA_end           = $argv[5];
+		$ploidyDefault      = $argv[6];
+		$annotation_count   = $argv[7];
+		$expression_regions = $argv[8];
+	} else {
+		$rDNA_start         = sanitizeInt_POST("rDNAstart");
+		$rDNA_end           = sanitizeInt_POST("rDNAend");
+		$ploidyDefault      = sanitizeFloat_POST("ploidy");
+		$annotation_count   = sanitizeInt_POST("annotation_count");
+		$expression_regions = sanitize_POST("expression_regions");
+	}
 
 	// chromosome specific options.
 	if ($chr_count != 0) {
-		for ($chr=0; $chr<$chr_count; $chr += 1) {
-			$chrID = $chr + 1;
-			if (sanitize_POSt("draw_".$chrID) == "on") {
-				$chr_draw       = 1;
-				$chr_count_used += 1;
-			} else {
-				$chr_draw = 0;
+		if ($calledBy === "cli") {
+			$chr_draw       = $argv[9];
+			$chr_shortName  = $argv[10];
+			$chr_cenStart   = $argv[11];
+			$chr_cenEnd     = $argv[12];
+			$chr_figOrder   = $argv[13];
+			$chr_reversed   = $argv[14];
+
+			$chr_draws      = explode(",", $chr_draw      );
+			foreach ($chr_draws as $drawKey => $chr_draw) {
+				if ($chr_draw == "1") {
+					$chr_draws[$drawKey] = 1;
+					$chr_count_used += 1;
+				} else {
+					$chr_draws[$drawKey] = 0;
+				}
 			}
-			$chr_shortName        = sanitize_POST("short_".$chrID);
-			$chr_cenStart         = sanitizeInt_POST("cenStart_".$chrID);
-			$chr_cenEnd           = sanitizeInt_POST("cenEnd_".$chrID);
-			$chr_figOrder         = sanitizeInt_POST("chrFigOrder_".$chrID);
-			if (sanitize_POSt("reversed_".$chrID) == "on") {
-				$chr_reversed = 1;
-			} else {
-				$chr_reversed = 0;
+			$chr_shortNames = explode(",", $chr_shortName );
+			$chr_cenStarts  = explode(",", $chr_cenStart  );
+			$chr_cenEnds    = explode(",", $chr_cenEnd    );
+			$chr_figOrders  = explode(",", $chr_figOrder  );
+			foreach ($chr_figOrders as $orderKey => $chr_figOrder) {
+				$chr_figOrders[$orderKey] = (int)$chr_figOrder;
 			}
-			$chr_draws[$chr]      = $chr_draw;
-			$chr_shortNames[$chr] = $chr_shortName;
-			$chr_cenStarts[$chr]  = $chr_cenStart;
-			$chr_cenEnds[$chr]    = $chr_cenEnd;
-			$chr_figOrders[$chr]  = $chr_figOrder;
-			$chr_reverseds[$chr]  = $chr_reversed;
+			$chr_reverseds  = explode(",", $chr_reversed  );
+		} else {
+			for ($chr=0; $chr<$chr_count; $chr += 1) {
+				$chrID = $chr + 1;
+				if (sanitize_POSt("draw_".$chrID) == "on") {
+					$chr_draw       = 1;
+					$chr_count_used += 1;
+				} else {
+					$chr_draw = 0;
+				}
+				$chr_shortName        = sanitize_POST("short_".$chrID);
+				$chr_cenStart         = sanitizeInt_POST("cenStart_".$chrID);
+				$chr_cenEnd           = sanitizeInt_POST("cenEnd_".$chrID);
+				$chr_figOrder         = sanitizeInt_POST("chrFigOrder_".$chrID);
+
+				if (sanitize_POSt("reversed_".$chrID) == "on") {
+					$chr_reversed = 1;
+				} else {
+					$chr_reversed = 0;
+				}
+				$chr_draws[$chr]      = $chr_draw;
+				$chr_shortNames[$chr] = $chr_shortName;
+				$chr_cenStarts[$chr]  = $chr_cenStart;
+				$chr_cenEnds[$chr]    = $chr_cenEnd;
+				$chr_figOrders[$chr]  = $chr_figOrder;
+				$chr_reverseds[$chr]  = $chr_reversed;
+			}
 		}
 	}
 	if (isset($_POST['rDNAchr']) && !empty($_POST['rDNAchr'])) {
@@ -112,9 +158,15 @@
 	}
 
 	// optional figure selections.
-	$figure_1           = sanitizeBoolean_POST("fig_1");
-	$figure_2           = sanitizeBoolean_POST("fig_2");
-	$figure_3           = sanitizeBoolean_POST("fig_3");
+	if ($calledBy === "cli") {
+		$figure_1 = $argv[15];
+		$figure_2 = $argv[16];
+		$figure_3 = $argv[17];
+	} else {
+		$figure_1 = sanitizeBoolean_POST("fig_1");
+		$figure_2 = sanitizeBoolean_POST("fig_2");
+		$figure_3 = sanitizeBoolean_POST("fig_3");
+	}
 
 // Generate 'chromosome_sizes.txt' :
 	fwrite($logOutput, "\tGenerating 'chromosome_sizes.txt' file.\n");
@@ -156,7 +208,7 @@
 	}
 	fclose($output);
 
-// Generate 'figure_definitions.txt' for defining arrangement of standard figure.
+	// Generate 'figure_definitions.txt' for defining arrangement of standard figure.
 	fwrite($logOutput, "\tGenerating 'figure_definitions.txt' file.\n");
 	// Determine max chromosome length among displayed chromosomes.
 	$max_length = 0;
@@ -246,6 +298,7 @@
 	$_SESSION['ploidyDefault_'.$key]    = $ploidyDefault;
 	$_SESSION['annotation_count_'.$key] = $annotation_count;
 
+
 // Create figure selections file.
 	$fileName = $genome_dir."/figure_options.txt";
 	$file     = fopen($fileName, 'w');
@@ -259,6 +312,7 @@
 // Debugging output of all variables.
 //	print_r($GLOBALS);
 	fwrite($logOutput, "\tGenerating form to request annotation information from the user.\n");
+	if (!($calledBy === "cli")) {
 ?>
 <BODY>
 	<font color="red" size="2">Enter genome annotation details:</font>
@@ -277,7 +331,7 @@
 			<th><font size="2">Fill</font></th>
 			<th><font size="2">Edge</font></th>
 		</tr>
-<?php	if ($rDNA_chr != "null") {?>
+<?php		if ($rDNA_chr != "null") {?>
 		<tr>
 			<td align="middle"><font size="2"><?php echo $chr_shortNames[$rDNA_chr-1]; ?></font></td>
 			<td align="middle"><font size="2">dot</font></td>
@@ -290,52 +344,52 @@
 		</tr>
 <?php
 		}
-			for ($annotation=0; $annotation<$annotation_count; $annotation+=1) {
-				echo "\t\t<tr>\n";
-				echo "\t\t\t<td><select name=\"annotation_chr_{$annotation}\">";
-				for ($chr=0; $chr<$chr_count; $chr += 1) {
-					$chrID = $chr + 1;
-					if ($chr_draws[$chr] == 1) {
-						echo "\t\t\t\t<option value=\"{$chrID}\">".$chr_shortNames[$chr]."</option>";
-					}
+		for ($annotation=0; $annotation<$annotation_count; $annotation+=1) {
+			echo "\t\t<tr>\n";
+			echo "\t\t\t<td><select name=\"annotation_chr_{$annotation}\">";
+			for ($chr=0; $chr<$chr_count; $chr += 1) {
+				$chrID = $chr + 1;
+				if ($chr_draws[$chr] == 1) {
+					echo "\t\t\t\t<option value=\"{$chrID}\">".$chr_shortNames[$chr]."</option>";
 				}
-				echo "</select>\t\t\t</td>\n";
-
-				echo "\t\t\t<td><select name=\"annotation_shape_{$annotation}\">";
-				echo "\t\t\t\t<option value=\"dot\">dot</option>";
-				echo "\t\t\t\t<option value=\"block\">block</option>";
-				echo "</select>\t\t\t</td>\n";
-
-				echo "\t\t\t<td><input type=\"text\" name=\"annotation_start_{$annotation}\" value=\"0\" size=\"6\"></td>\n";
-				echo "\t\t\t<td><input type=\"text\" name=\"annotation_end_{$annotation}\" value=\"0\" size=\"6\"></td>\n";
-				echo "\t\t\t<td><input type=\"text\" name=\"annotation_name_{$annotation}\" value=\"0\" size=\"6\"></td>\n";
-
-				echo "\t\t\t<td><select name=\"annotation_fillColor_{$annotation}\">";
-				echo "\t\t\t\t<option value=\"k\">black</option>";
-				echo "\t\t\t\t<option value=\"y\">yellow</option>";
-				echo "\t\t\t\t<option value=\"m\">magenta</option>";
-				echo "\t\t\t\t<option value=\"c\">cyan</option>";
-				echo "\t\t\t\t<option value=\"r\">red</option>";
-				echo "\t\t\t\t<option value=\"g\">green</option>";
-				echo "\t\t\t\t<option value=\"b\">blue</option>";
-				echo "\t\t\t\t<option value=\"w\">white</option>";
-				echo "</select>\t\t\t</td>\n";
-
-				echo "\t\t\t<td><select name=\"annotation_edgeColor_{$annotation}\">";
-				echo "\t\t\t\t<option value=\"k\">black</option>";
-				echo "\t\t\t\t<option value=\"y\">yellow</option>";
-				echo "\t\t\t\t<option value=\"m\">magenta</option>";
-				echo "\t\t\t\t<option value=\"c\">cyan</option>";
-				echo "\t\t\t\t<option value=\"r\">red</option>";
-				echo "\t\t\t\t<option value=\"g\">green</option>";
-				echo "\t\t\t\t<option value=\"b\">blue</option>";
-				echo "\t\t\t\t<option value=\"w\">white</option>";
-				echo "</select>\t\t\t</td>\n";
-
-				echo "\t\t\t<td><input type=\"text\" name=\"annotation_size_{$annotation}\" value=\"5\" size=\"6\"></td>\n";
-				echo "\t\t</tr>\n";
 			}
-		?>
+			echo "</select>\t\t\t</td>\n";
+
+			echo "\t\t\t<td><select name=\"annotation_shape_{$annotation}\">";
+			echo "\t\t\t\t<option value=\"dot\">dot</option>";
+			echo "\t\t\t\t<option value=\"block\">block</option>";
+			echo "</select>\t\t\t</td>\n";
+
+			echo "\t\t\t<td><input type=\"text\" name=\"annotation_start_{$annotation}\" value=\"0\" size=\"6\"></td>\n";
+			echo "\t\t\t<td><input type=\"text\" name=\"annotation_end_{$annotation}\" value=\"0\" size=\"6\"></td>\n";
+			echo "\t\t\t<td><input type=\"text\" name=\"annotation_name_{$annotation}\" value=\"0\" size=\"6\"></td>\n";
+
+			echo "\t\t\t<td><select name=\"annotation_fillColor_{$annotation}\">";
+			echo "\t\t\t\t<option value=\"k\">black</option>";
+			echo "\t\t\t\t<option value=\"y\">yellow</option>";
+			echo "\t\t\t\t<option value=\"m\">magenta</option>";
+			echo "\t\t\t\t<option value=\"c\">cyan</option>";
+			echo "\t\t\t\t<option value=\"r\">red</option>";
+			echo "\t\t\t\t<option value=\"g\">green</option>";
+			echo "\t\t\t\t<option value=\"b\">blue</option>";
+			echo "\t\t\t\t<option value=\"w\">white</option>";
+			echo "</select>\t\t\t</td>\n";
+
+			echo "\t\t\t<td><select name=\"annotation_edgeColor_{$annotation}\">";
+			echo "\t\t\t\t<option value=\"k\">black</option>";
+			echo "\t\t\t\t<option value=\"y\">yellow</option>";
+			echo "\t\t\t\t<option value=\"m\">magenta</option>";
+			echo "\t\t\t\t<option value=\"c\">cyan</option>";
+			echo "\t\t\t\t<option value=\"r\">red</option>";
+			echo "\t\t\t\t<option value=\"g\">green</option>";
+			echo "\t\t\t\t<option value=\"b\">blue</option>";
+			echo "\t\t\t\t<option value=\"w\">white</option>";
+			echo "</select>\t\t\t</td>\n";
+
+			echo "\t\t\t<td><input type=\"text\" name=\"annotation_size_{$annotation}\" value=\"5\" size=\"6\"></td>\n";
+			echo "\t\t</tr>\n";
+		}
+	?>
 		</table><br>
 		<input type="submit" id="form_submit_gi2" value="Save genome details..." onclick="parent.hide_hidden('Hidden_InstallNewGenome2')" disabled>
 
@@ -362,6 +416,7 @@
 </BODY>
 </HTML>
 <?php
+	}
 	fwrite($logOutput, "\t'scripts_genomes/genome_install_2.php' has completed.\n");
 	fclose($logOutput);
 ?>

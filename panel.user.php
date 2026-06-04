@@ -22,7 +22,7 @@ if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
 }
 </script>
 
-<table width="100%"><tr><td width="50%" valign="top">
+<table width="100%"><tr><td width="30%" valign="top">
 <font size='3'>Log into a preexisting user account or create a new user account.</font><br>
 <?php
 
@@ -44,10 +44,10 @@ if (isset($_SESSION['logged_on'])) {
 	echo "<button type='button' onclick=\"window.location.href='user.delete.php'\">Delete User.</button>\n";
 	echo "<br><br>\n";
 	echo "<font size='2'>\n\t";
-	echo "You can navigate through the above menu and show/close projects while new datafiles are uploading.<br>\n\t";
+	echo "You can navigate through the above menu and show/close projects while new datafiles are uploading.\n\t";
 	echo "A page reload or project/genome/hapmap creation/deletion, however, will interrupt file transfer.<br><br>\n\t";
-	echo "Depending on system load, tasks may take an hour or more to complete after data upload is complete.<br><br>\n\t";
-	echo "Reload page and select 'projects' tab to check for newly completed projects.\n";
+	echo "Depending on system load, tasks may take some time to start being processed by the queue.\n\t";
+	echo "Reload page and select 'projects' tab periodically to check for newly completed projects.\n";
 	echo "</font>\n";
 
 	if (isset($_SESSION['reload_once'])) {
@@ -68,7 +68,7 @@ if (isset($_SESSION['logged_on'])) {
 	$_SESSION['reload_once'] = "true";
 }
 ?>
-</td><td width="50%" style="border:1px solid black; border-radius:10px; padding:10px;" valign="top">
+</td><td width="70%" style="border:1px solid black; border-radius:10px; padding:10px;" valign="top">
 <b>YMAP news!</b><br><br>
 2026-05-14
 <ul>

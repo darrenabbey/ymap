@@ -4,7 +4,6 @@
 	require_once 'constants.php';
 	require_once 'sharedFunctions.php';
 	require_once 'POST_validation.php';
-	require_once 'SecureNewDirectory.php';
 	ini_set('display_errors', 1);
 
 	// If the user is not logged on, redirect to login page.

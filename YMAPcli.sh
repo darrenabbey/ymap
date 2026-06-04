@@ -162,6 +162,35 @@ else
 		queueString=$dateTime" - user:"$user" - project:"$project" - "$salt" - end - "$message;
 		echo "$queueString" >> $main_dir"/queue/"$queueLogFile;
 	}
+	function secureNewDirectory() {
+		dir=$1;
+		# Run PHP secureNewDirectory function.
+		tempfile=$(mktemp --suffix ".ymap.php");
+		echo -e "<?php" > $tempfile;
+		echo -e "chdir('$main_dir');" >> $tempfile;
+		echo -e "require_once 'constants.php';" >> $tempfile;
+		echo -e "require_once 'sharedFunctions.php';" >> $tempfile;
+		echo -e "secureNewDirectory('$dir');" >> $tempfile;
+		echo -e "?>" >> $tempfile;
+		php $tempfile;
+	}
+	function log_stuff() {
+		user=$1;
+		project=$2;
+		hapmap=$3;
+		genome=$4;
+		filename=$5;
+		message=$6;
+		# Run PHP log_stuff function.
+		tempfile=$(mktemp --suffix ".ymap.php");
+		echo -e "<?php" > $tempfile;
+		echo -e "chdir('$main_dir');" >> $tempfile;
+		echo -e "require_once 'constants.php';" >> $tempfile;
+		echo -e "require_once 'sharedFunctions.php';" >> $tempfile;
+		echo -e "log_stuff('$user','$project','$hapmap','$genome','$filename','$message');" >> $tempfile;
+		echo -e "?>" >> $tempfile;
+		php $tempfile;
+	}
 	function userInterface_delete() {
 		main_dir=$1;
 		userAccount=$2;
@@ -286,7 +315,8 @@ else
 
 		tempfile=$(mktemp --suffix ".ymap");
 
-		if [[ "$whatisit" = "project" ]]; then
+		case $whatisit in
+		    "project")
 			workingDirectory=$main_dir"/users/"$user"/projects/"
 			bulkDirectory=$main_dir"/users/"$user"/bulkdata/";
 
@@ -301,13 +331,29 @@ else
 			echo -e "#\t\tAfter installing a datafile (or multiple datafiles to be run";
 			echo -e "#\t\twith the same settings), use command 'run' to add the data";
 			echo -e "#\t\tto the processing queue.";
+			echo -e "#";
 
 			## Accept input path;
-			echo -e "#";
 			echo -e "#\tEnter the path to your data files.";
 			echo -e -n "#\t\t[path/]: ";
 			read -r selectedDirectory;
+			if [[ -z "$selectedDirectory" ]]; then
+				echo -e "#";
+				echo -e "#\tThat is not a valid path:";
+				echo -e "E\t\tPath can't be empty.";
+				echo -e "#";
+				echo -e $lineThick;
+				exit;
+			elif [[ ! -e "$selectedDirectory" ]]; then
+				echo -e "#";
+				echo -e "#\tThat is not a valid path:";
+				echo -e "E\t\tPath must exist.";
+				echo -e "#";
+				echo -e $lineThick;
+				exit;
+			fi;
 
+			## Dialog to accept user file(s).
 			startingDirectory=$(pwd);
 			cd $selectedDirectory;
 			if [ "$(find . -maxdepth 1 -type f | wc -l)" -gt 1 ]; then
@@ -331,7 +377,7 @@ else
 
 			## Rebuild interface.
 			echo -e $lineThick;
-			echo -e "# YMAP2 commandline : Install project/genome/user.";
+			echo -e "# YMAP2 commandline : Install project.";
 			logged_in_status;
 			echo -e $lineThin;
 			echo -e "#";
@@ -380,15 +426,707 @@ else
 				done;
 			fi;
 			cd $startingDirectory;
-		elif [[ "$whatisit" = "genome" ]]; then
-			echo -e "#\tInstalling a new genome [not yet implemented].";
-		elif [[ "$whatisit" = "user" ]]; then
-			echo -e "#\tInstalling a new user [not yet implemented].";
-		else
+		    ;;
+		    "genome")
+			workingDirectory=$main_dir"/users/"$user"/genomes/";
+			if [[ ! -e $workingDirectory ]]; then
+				echo -e "#\t\e[41mInvalid selection: User not found.\e[0m";
+				echo -e "#";
+				echo -e $lineThick;
+				return 1;
+			fi;
+
+			echo -e "#\tInstalling a new genome.";
+			echo -e "#\t\tAfter installing a *.FASTA to be processed, some information";
+			echo -e "#\t\twill be requested, and then the genome will be add to the";
+			echo -e "#\t\tprocessing queue.";
+			echo -e "#";
+
+			## Accept input path;
+			echo -e "#\tEnter the path to your data files.";
+			echo -e -n "#\t\t[path/]: ";
+			read -r selectedDirectory;
+			if [[ -z "$selectedDirectory" ]]; then
+				echo -e "#";
+				echo -e "#\tThat is not a valid path:";
+				echo -e "E\t\tPath can't be empty.";
+				echo -e "#";
+				echo -e $lineThick;
+				exit;
+			elif [[ ! -e "$selectedDirectory" ]]; then
+				echo -e "#";
+				echo -e "#\tThat is not a valid path:";
+				echo -e "E\t\tPath must exist.";
+				echo -e "#";
+				echo -e $lineThick;
+				exit;
+			fi;
+
+			## Dialog to grab specific file.
+			startingDirectory=$(pwd);
+			cd $selectedDirectory;
+			if [ "$(find . -maxdepth 1 -type f | wc -l)" -gt 0 ]; then
+				nameString="";
+				counter=1;
+				options=();
+				for file in *; do
+					if [ -f "$file" ]; then
+						name=$(echo -n "$file");
+						options+=($counter $name off);
+						counter=$(($counter+1));
+					fi
+				done;
+			else
+				nameString="";
+			fi;
+			cd $startingDirectory;
+			cmd=(dialog --output-fd 1 --radiolist 'Choose the file to install:' 0 0 0)
+			choices=$("${cmd[@]}" "${options[@]}")
+			clear;
+
+			cd $selectedDirectory;
+			selectedFile="";
+			if [ "$(find . -maxdepth 1 -type f | wc -l)" -gt 0 ]; then
+				counter=1;
+				for file in *; do
+					if [ -f "$file" ]; then
+						name=$(echo -n "$file");
+						if [[ $choices == *"$counter"* ]]; then
+							selectedFile=$name;
+						fi
+						counter=$(($counter+1));
+					fi
+				done;
+			fi;
+			cd $startingDirectory;
+			if [[ -z "$selectedFile" ]]; then
+				echo -e "#";
+				echo -e "#\tThat is not a valid file:";
+				echo -e "E\t\tFile can't be empty.";
+				echo -e "#";
+				echo -e $lineThick;
+				exit;
+			fi;
+
+			## Rebuild interface.
+			echo -e $lineThick;
+			echo -e "# YMAP2 commandline : Install genome.";
+			logged_in_status;
+			echo -e $lineThin;
+			echo -e "#";
+			echo -e "#\tInstalling a new genome.";
+			echo -e "#\t\tAfter installing a *.FASTA to be processed, some information";
+			echo -e "#\t\will be requested, and then the genome will be add to the";
+			echo -e "#\t\tprocessing queue.";
+			echo -e "#";
+			echo -e "#\tEnter the path to your data files.";
+			echo -e "#\t\t[path/]: "$selectedDirectory;
+			echo -e "#";
+			echo -e "#\tFASTA file selected:";
+			echo -e "#\t\t"$selectedFile;
+			echo -e "#";
+
+			## Accept name string.
+			echo -e "#\tEnter the name for your new genome.";
+			echo -e -n "#\t\t[name]: ";
+			read -r genome;
+			echo -e "#";
+			genomeDir_user="$main_dir/users/$user/genomes/$genome";
+			genomeDir_sys="$main_dir/users/default/genomes/$genome";
+			if [[ -z "$genome" ]]; then
+				echo -e "#\tThat is not a valid name:";
+				echo -e "E\t\tName can't be empty.";
+				echo -e "#";
+				echo -e $lineThick;
+				exit;
+			elif ! [[ "$genome" =~ ^[a-zA-Z0-9._]*$ ]]; then
+				echo -e "#\tThat is not a valid name:";
+				echo -e "#\t\tUse only a-z, A-Z, 0-9, '.', or '_' characters.";
+				echo -e "#";
+				echo -e $lineThick;
+				exit;
+			elif [[ -e $genomeDir_user ]] || [[ -e $genomeDir_sys ]]; then
+				echo -e "#\tGenome '$genome' directory already exists.";
+				echo -e "#";
+				echo -e $lineThick;
+				log_stuff "$user" "" "" "$genome" "" "genome:CREATE failure";
+				exit;
+			fi;
+
+			## Make genomes directory if not found.
+			genomesDir="$main_dir/users/$user/genomes";
+			if [[ -z "$genomesDir=" ]]; then
+				# User genome directory accidentally not present.
+				mkdir $genomesDir;
+				chmod 0773 $genomesDir;
+				secureNewDirectory $genomesDir;
+			fi;
+
+			mkdir $genomeDir_user;
+			chmod 0773 $genomeDir_user
+			secureNewDirectory $genomeDir_user;
+
+			# Process selected FASTA file into user directory.
+			cp $selectedDirectory$selectedFile $genomeDir_user;
+
+			# PHP: scripts_genomes/genome.install_1.php
+			cd $main_dir"/scripts_genomes";
+			php genome.install_1.php $user $selectedFile $genome "g_0" 2> $main_dir/users/$user/genomes/$genome/process_log.txt;
+			cd $main_dir;
+
+			# Log it.
+			log_stuff "$user" "" "" "$genome" "" "genome:CLI-CREATE success";
+			fail=false;
+
+			# Ask user for default ploidy for genome.
+			tempfile=$(mktemp --suffix ".ymap");
+			(dialog --form "What is the default ploidy for this genome?" 12 40 4 "Ploidy (#.#) = " 1 1 "" 1 15 4 0) 2> $tempfile;
+			results=$(cat $tempfile);
+			ploidy=$(echo "${results#* ' '}" | head -n 1);
+			if ! [[ "$ploidy" =~ ^[0-9]\.[0-9]$ ]]; then
+				echo -e "#";
+                                echo -e "#\tThat is not a valid ploidy value:";
+                                echo -e "#\t\tUse something like '1.0', '2.0', etc.";
+                                echo -e "#";
+                                echo -e $lineThick;
+                                exit;
+			fi;
+
+			# Grab chromosome sizes from json.
+			chrLengths_json=$(cat "$main_dir/users/$user/genomes/$genome/chr_lengths.json");
+			chrLengths_json=$(echo ${chrLengths_json//[\[\]]});
+			IFS=',' read -r -a chrLengths <<< "$chrLengths_json";
+
+			# Grab chromosome names from json.
+			chrNames_json=$(cat "$main_dir/users/$user/genomes/$genome/chr_names.json");
+			chrNames_json=$(echo ${chrNames_json//[\[\]\"]});
+			IFS=',' read -r -a chrNames <<< "$chrNames_json";
+
+			# Ask user what chromosomes to use for genome.
+			counter=1;
+			options=();
+			for chrName in "${chrNames[@]}"; do
+				#echo $name;
+				options+=($counter $chrName on);
+				counter=$(($counter+1));
+			done;
+			cmd=(dialog --output-fd 1 --separate-output --checklist 'Which chromosomes would you like to use?' 0 0 0)
+			selectedChrs=$("${cmd[@]}" "${options[@]}")
+			selectedChrs=$(echo ${selectedChrs[@]});
+			IFS=' ' read -r -a selectedChrs <<< $selectedChrs;
+
+			# Ask user what labels to use for selected chromosomes.
+			tempfile=$(mktemp --suffix ".ymap");
+			maxNameLength=0;
+			for chr in ${selectedChrs[@]}; do
+				name=${chrNames[$chr-1]};
+				if [[ ${#name} -gt "$maxNameLength" ]]; then
+					maxNameLength=${#name};
+				fi;
+			done;
+			options=();
+			counter=1;
+			for chr in ${selectedChrs[@]}; do
+				name=${chrNames[$chr-1]};
+				# (label y x item y x fieldLength inputLength)
+				options+=($name $counter "1" "chr"$chr $counter $(($maxNameLength+3)) "6" "6");
+				counter=$(($counter+1));
+			done;
+			tempfile=$(mktemp --suffix ".ymap");
+			# --form text height width formheight [ label y x item y x fieldLength itemLength ] ...
+			(dialog --form 'Define labels for chromosomes.' 20 $(($maxNameLength+15)) 12 ${options[@]}) 2> $tempfile;
+			chrLabels_init=$(cat $tempfile);
+			chrLabels=();
+			for element in $chrLabels_init; do
+				chrLabels+=($element);
+			done;
+
+			# Ask for centromere start coordinates.
+			options=();
+			counter=1;
+			for chr in ${selectedChrs[@]}; do
+				name=${chrNames[$chr-1]}"("${chrLabels[$counter-1]}")";
+				# (label y x item y x fieldLength inputLength)
+				options+=($name $counter "1" "0" $counter $(($maxNameLength+10)) "6" "6");
+				counter=$(($counter+1));
+			done;
+			tempfile=$(mktemp --suffix ".ymap");
+			(dialog --form 'Define CEN start coordinates.\n    (Leave as 0 if unknown.)' 20 $(($maxNameLength+15+10)) 12 ${options[@]}) 2> $tempfile;
+			cenStarts_init=$(cat $tempfile);
+			cenStarts=();
+			for element in $cenStarts_init; do
+				cenStarts+=($element);
+			done;
+
+			# Ask for centromere end coordinates.
+			tempfile=$(mktemp --suffix ".ymap");
+			(dialog --form 'Define CEN end coordinates.\n    (Leave as 0 if unknown.)' 20 $(($maxNameLength+15+10)) 12 ${options[@]}) 2> $tempfile;
+			cenEnds_init=$(cat $tempfile);
+			cenEnds=();
+			for element in $cenEnds_init; do
+				cenEnds+=($element);
+			done;
+
+			# Ask if rDNA is present on this chromosome.
+			options=();
+			counter=1;
+			for chr in ${selectedChrs[@]}; do
+				name=${chrNames[$chr-1]}"("${chrLabels[$counter-1]}")";
+				options+=($counter $name off);
+				counter=$(($counter+1));
+			done;
+			cmd=(dialog --output-fd 1 --checklist 'Is rDNA on this chromosome?\n    (Leave unselected if unknown.)' 0 0 0);
+			rdnaChromosomes=$("${cmd[@]}" "${options[@]}")
+			rdnaChromosomes=$(echo ${rdnaChromosomes[@]});
+			IFS=' ' read -r -a rdhaChromosomes <<< $rdnaChromosomes;
+
+			if [[ ! -z "$rdnaChromosomes" ]]; then
+				# Ask for rDNA start and end coordinates.
+				options=();
+				counter=1;
+				for chr in ${rdnaChromosomes[@]}; do
+					name=${chrNames[$chr-1]}"("${chrLabels[$counter-1]}")";
+					# (label y x item y x fieldLength inputLength)
+					options+=($name'[rDNA_start]' $(($counter  )) "1" "0" $(($counter  )) $(($maxNameLength+15+10)) "20" "20");
+					options+=($name'[rDNA_end]'   $(($counter+1)) "1" "0" $(($counter+1)) $(($maxNameLength+15+10)) "20" "20");
+					counter=$(($counter+2));
+				done;
+				tempfile=$(mktemp --suffix ".ymap");
+				(dialog --form 'Define rDNA coordinates.\n    (Leave as 0 if unknown.)' 20 $(($maxNameLength+43+10)) 12 ${options[@]}) 2> $tempfile;
+				rdnaCoords_init=$(cat $tempfile);
+				rdnaCoords=();
+				for element in $rdnaCoords_init; do
+					rdnaCoords+=($element);
+				done;
+			else
+				rdnaCoords=();
+			fi;
+
+			# Ask for order of chromosomes in figure.
+			options=();
+			counter=1;
+			for chr in ${selectedChrs[@]}; do
+				name=${chrNames[$chr-1]}"("${chrLabels[$counter-1]}")";
+				# (label y x item y x fieldLength inputLength)
+				options+=($name $counter "1" $counter $counter $(($maxNameLength+3+10)) "6" "6");
+				counter=$(($counter+1));
+			done;
+			tempfile=$(mktemp --suffix ".ymap");
+			(dialog --form 'Define figure chromosome order' 20 $(($maxNameLength+15+10)) 12 ${options[@]}) 2> $tempfile;
+			chrOrder=$(cat $tempfile);
+			chrOrder=$(echo ${chrOrder[@]});
+			IFS=' ' read -r -a chrOrder <<< $chrOrder;
+
+			# Ask if chromosome is reversed.
+			options=();
+			counter=1;
+			for chr in ${selectedChrs[@]}; do
+				name=${chrNames[$chr-1]}"("${chrLabels[$counter-1]}")";
+				options+=($counter $name off);
+				counter=$(($counter+1));
+			done;
+			cmd=(dialog --output-fd 1 --checklist 'Is this chromosome reversed?\n    (Leave unselected if unknown.)' 0 0 0);
+			chrReversed=$("${cmd[@]}" "${options[@]}")
+			chrReversed=$(echo ${chrReversed[@]});
+			IFS=' ' read -r -a chrReversed <<< $chrReversed;
+
+			# Ask if figures to be generated. (chromosome cartoons; repetititveness; GC-skew map)
+			options=();
+			options+=(1 "Chromosome cartoons" on);
+			options+=(2 "Repetitiveness map" on);
+			options+=(3 "GC-skew map" on);
+			# --checklist text height width list-height [ tag item status ] ...
+			cmd=(dialog --output-fd 1 --checklist 'Select reference genome figures to generate?\n    (These are separate from figures prepared from your data.)' 12 70 3);
+			selectedFigures=$("${cmd[@]}" "${options[@]}")
+			selectedFigures=$(echo ${selectedFigures[@]});
+			IFS=' ' read -r -a selectedFigures <<< $selectedFigures;
+
+			# Ask if further annotations will be defined for genome.
+			options=();
+			options+=('Annotations' "1" "1" "0" "1" "13" "6" "6");
+			tempfile=$(mktemp --suffix ".ymap");
+			# --form text height width formheight [ label y x item y x flen ilen ] ...
+			(dialog --form 'Do you have any additional genome annotations?\n    (Leave as 0 if no/unknown.)' 10 50 2 ${options[@]}) 2> $tempfile;
+			annotation_count=$(cat $tempfile);
+			clear;
+
+			## Annotation input user interface
+			annotation_chr="";
+			annotation_shape="";
+			annotation_start="";
+			annotation_end="";
+			annotation_name="";
+			annotation_fillColor="";
+			annotation_edgeColor="";
+			annotation_size="";
+			if [[ "$annotation_count" -gt "0" ]]; then
+				for ((i = 0 ; i < $annotation_count; i++)); do
+					echo -e "#\tAnnotation $i";
+
+					# dialog: select chr [chr_labels]
+					#	--radiolist text height width list-height [ tag item status ] ...
+					nameString="";
+					counter=1;
+					options=();
+					for chr in ${selectedChrs[@]}; do
+						name=${chrNames[$chr-1]}"("${chrLabels[$counter-1]}")";
+						options+=($counter $name off);
+						counter=$(($counter+1));
+					done;
+					cd $startingDirectory;
+					cmd=(dialog --output-fd 1 --radiolist 'Annotation '$(($i+1))'\n    Choose which chromosome.' 0 0 0)
+					choice=$("${cmd[@]}" "${options[@]}")
+					selectedOption=${options[$(( (choice-1)*3+1 ))]}
+					counter=1;
+					for chr in ${chrNames[@]}; do
+						name=${chrNames[$counter-1]}
+						if [[ "$selectedOption" == *"$name"* ]]; then
+							annotation_chr=$annotation_chr","$counter;
+							break;
+						fi
+						counter=$(($counter+1));
+					done;
+
+					#echo "annotation_chr = "$annotation_chr;
+					#read -p "Press any key to resume ..."
+
+					## dialog: select type [dot, block].
+					nameString="";
+					options=();
+					options+=(1 "dot" on);
+					options+=(2 "block" off);
+					cmd=(dialog --output-fd 1 --radiolist 'Annotation '$(($i+1))'\n    Choose which chromosome.' 0 0 0)
+					choice=$("${cmd[@]}" "${options[@]}")
+					selectedOption=${options[$(( (choice-1)*3+1 ))]}
+					annotation_shape=$annotation_shape","$selectedOption;
+
+					#echo "annotation_shape = "$annotation_shape;
+					#read -p "Press any key to resume ..."
+
+					# dialog: enter start bp.
+					# dialog: enter end bp.
+					# dialog: enter name.
+					# dialog: enter size.
+					options=();
+					options+=("Starting_bp:" 1 1 0 1 23 5 0);
+					options+=("Ending_bp:"   2 1 0 2 23 5 0);
+					options+=("Name"         3 1 "name" 3 23 5 0);
+					options+=("Size"         4 1 3 4 23 5 0);
+					tempfile=$(mktemp --suffix ".ymap");
+					(dialog --form "Annotation $(($i+1)) settings." 12 40 4 ${options[@]}) 2> $tempfile;
+					results=$(cat $tempfile);
+					results_=();
+					for element in $results; do
+						results_+=($element);
+					done;
+					startBp=$(echo ${results_[0]});
+					endBp=$(echo ${results_[1]});
+					name=$(echo ${results_[2]});
+					size=$(echo ${results_[3]});
+					annotation_start=$annotation_start","$startBp;
+					annotation_end=$annotation_end","$endBp;
+					annotation_name=$annotation_name","$name;
+					annotation_size=$annotation_size","$size;
+
+					#echo "annotation_start = "$annotation_start;
+					#echo "annotation_end   = "$annotation_end;
+					#echo "annotation_name  = "$annotation_name;
+					#echo "annotation_size  = "$annotation_size;
+					#read -p "Press any key to resume ..."
+
+					# dialog: select fill color [black, yellow, magenta, cyan, red, green, blue white].
+					options=();
+					options+=(1 "black_(k)"   on);
+					options+=(2 "yellow_(y)"  off);
+					options+=(3 "magenta_(m)" off);
+					options+=(4 "cyan_ (c)"   off);
+					options+=(5 "red_(r)"     off);
+					options+=(6 "green_(g)"   off);
+					options+=(7 "blue_(b)"    off);
+					options+=(8 "white_(w)"   off);
+					cmd=(dialog --output-fd 1 --radiolist 'Annotation '$(($i+1))'\n    Choose fill color.' 0 0 0)
+					choice=$("${cmd[@]}" "${options[@]}")
+					selectedOption=${options[$(( (choice-1)*3 ))]}
+					case $selectedOption in
+					    1)	fillColor="k";  ;;
+					    2)	fillColor="y";  ;;
+					    3)  fillColor="m";  ;;
+					    4)  fillColor="c";  ;;
+					    5)  fillColor="r";  ;;
+					    6)  fillColor="g";  ;;
+					    7)  fillColor="b";  ;;
+					    8)  fillColor="w";  ;;
+					esac;
+					annotation_fillColor=$annotation_fillColor","$fillColor;
+
+					#echo "annotation_fillColor  = "$annotation_fillColor;
+					#read -p "Press any key to resume ..."
+
+					# dialog: select edge color [black, yellow, magenta, cyan, red, green, blue white].
+					options=();
+					options+=(1 "black_(k)"   on);
+					options+=(2 "yellow_(y)"  off);
+					options+=(3 "magenta_(m)" off);
+					options+=(4 "cyan_ (c)"   off);
+					options+=(5 "red_(r)"     off);
+					options+=(6 "green_(g)"   off);
+					options+=(7 "blue_(b)"    off);
+					options+=(8 "white_(w)"   off);
+					cmd=(dialog --output-fd 1 --radiolist 'Annotation '$(($i+1))'\n    Choose edge color.' 0 0 0)
+					choice=$("${cmd[@]}" "${options[@]}")
+					selectedOption=${options[$(( (choice-1)*3 ))]}
+					case $selectedOption in
+					    1)  edgeColor="k";  ;;
+					    2)  edgeColor="y";  ;;
+					    3)  edgeColor="m";  ;;
+					    4)  edgeColor="c";  ;;
+					    5)  edgeColor="r";  ;;
+					    6)  edgeColor="g";  ;;
+					    7)  edgeColor="b";  ;;
+					    8)  edgeColor="w";  ;;
+					esac;
+					annotation_edgeColor=$annotation_edgeColor","$edgeColor;
+
+					#echo "annotation_edgeColor  = "$annotation_edgeColor;
+					#read -p "Press any key to resume ..."
+				done;
+				annotation_chr="${annotation_chr:1}";
+				annotation_shape="${annotation_shape:1}";
+				annotation_start="${annotation_start:1}";
+				annotation_end="${annotation_end:1}";
+				annotation_name="${annotation_name:1}";
+				annotation_size="${annotation_size:1}";
+				annotation_fillColor="${annotation_fillColor:1}";
+				annotation_edgeColor="${annotation_edgeColor:1}";
+			fi;
+
+			## Rebuild user interface.
+			clear;
+			echo -e $lineThick;
+			echo -e "# YMAP2 commandline : Install genome.";
+			logged_in_status;
+			echo -e $lineThin;
+			echo -e "#";
+			echo -e "#\tInstalling a new genome.";
+			echo -e "#\t\tAfter installing a *.FASTA to be processed, some information";
+			echo -e "#\t\will be requested, and then the genome will be add to the";
+			echo -e "#\t\tprocessing queue.";
+			echo -e "#";
+			echo -e "#\tEnter the path to your data files.";
+			echo -e "#\t\t[path/]: "$selectedDirectory;
+			echo -e "#";
+			echo -e "#\tFASTA file selected:";
+			echo -e "#\t\t"$selectedFile;
+			echo -e "#\tGenome name: "$genome;
+			echo -e "#";
+			echo -e "#\tSelected chromosomes:";
+			counter=1;
+			counterRdna=0;
+			for chr in ${selectedChrs[@]}; do
+				echo -e -n '#\t\t';
+				echo -e -n ${chrNames[$chr-1]};
+				echo -e -n ' (';
+				echo -e -n ${chrLabels[$chr-1]};
+				echo -e -n ') ';
+				if [[ ${cenStarts[$chr-1]} -gt "0" ]] || [[ ${cenEnds[$chr-1]} -gt "0" ]]; then
+					echo -e -n "cen("${cenStarts[$chr-1]}".."${cenEnds[$chr-1]}") ";
+				fi;
+				if [[ "${rdnaChromosomes[@]}" =~ "$(($chr-1))" ]]; then
+					echo -e -n "rDNA("${rdnaCoords[$counterRdna]}".."${rdnaCoords[$counterRdna+1]}") ";
+					counterRdna=$(($counterRdna+2));
+				fi;
+				echo -e -n "figOrder="${chrOrder[$chr-1]}" ";
+				if [[ "${chrReversed[@]}" =~ "$(($chr))" ]]; then
+					echo -e -n "figReversed ";
+				fi;
+				echo -e "";
+				counter=$(($counter+1));
+			done;
+			echo -e "#";
+			echo -e "#\tGenome figures to generate:";
+			if [[ "${selectedFigures[@]}" =~ "1" ]]; then
+				echo -e "#\t\tChromosome cartoons.";
+			fi;
+			if [[ "${selectedFigures[@]}" =~ "2" ]]; then
+				echo -e "#\t\tRepetitiveness map.";
+			fi;
+			if [[ "${selectedFigures[@]}" =~ "3" ]]; then
+				echo -e "#\t\tGC-skew map.";
+			fi;
+			echo -e "#";
+			echo -e "#\tAdditional annotations:";
+			echo -e "#\t\t"$annotationCount;
+
+
+			##=========================================================
+			##
+			## Reformat data for input into pipeline components.
+			##
+			##---------------------------------------------------------
+			rDNA_chr="";
+			for chr in ${rdnaChromosomes[@]}; do
+				rDNA_chr=$rDNA_chr","$chr;
+			done;
+			rDNA_chr="${rDNA_chr:1}"
+			if [[ "$rDNA_chr" = "" ]]; then
+				rDNA_chr="null";
+			fi;
+			if [[ "$rDNA_chr" != "null" ]]; then
+				rDNA_start="";
+				rDNA_end="";
+				counter=1;
+				for coord in ${rdnaCoords[@]}; do
+					if [[ ! "((counter % 2))" -eq "0" ]]; then
+						rDNA_start=$rDNA_start","$coord;
+					else
+						rDNA_end=$rDNA_end","$coord;
+					fi;
+					counter=$(($counter+1));
+				done;
+				rDNA_start="${rDNA_start:1}"
+				rDNA_end="${rDNA_end:1}"
+			else
+				rDNA_start="null";
+				rDNA_end="null";
+			fi;
+			chr_count=${#chrNames[@]};
+			ploidy_default=$ploidy;
+			expression_regions="null";
+			counter=1;
+			chr_draw="";
+			chr_order="";
+			chr_reversed="";
+			chr_labels="";
+			cen_start="";
+			cen_end="";
+			function get_index() {
+				local array=$1;
+				local value=$2;
+				for i in "${!array[@]}"; do
+					if [[ "${array[$i]}" = "$value" ]]; then
+						echo "${i}";
+					fi
+				done
+			}
+			for chrName in "${chrNames[@]}"; do
+				if [[ "${selectedChrs[@]}" =~ "$counter" ]]; then
+					for i in "${!selectedChrs[@]}"; do
+						if [[ "${selectedChrs[$i]}" = "$counter" ]]; then
+							counterKey="$((${i}+1))";
+						fi
+					done;
+					chr_draw=$chr_draw",1";
+					chr_order=$chr_order","${chrOrder[$counterKey-1]};
+					chr_labels=$chr_labels","${chrLabels[$counterKey-1]};
+					cen_start=$cen_start","${cenStarts[$counterKey-1]}
+					cen_end=$cen_end","${cenEnds[$counterKey-1]}
+					if [[ "${chrReversed[@]}" =~ "${chrOrder[$counterKey-1]}" ]]; then
+						chr_reversed=$chr_reversed",1";
+					else
+						chr_reversed=$chr_reversed",0";
+					fi;
+				else
+					chr_draw=$chr_draw",0";
+					chr_order=$chr_order",0";
+					chr_labels=$chr_labels",null";
+					cen_start=$cen_start",0";
+					cen_end=$cen_end",0";
+					chr_reversed=$chr_reversed",0"
+				fi;
+				counter=$(($counter+1));
+			done;
+			chr_draw="${chr_draw:1}";
+			chr_order="${chr_order:1}";
+			chr_reversed="${chr_reversed:1}";
+			chr_labels="${chr_labels:1}";
+			cen_start="${cen_start:1}";
+			cen_end="${cen_end:1}";
+			if [[ "${selectedFigures[@]}" =~ "1" ]]; then
+				fig1_bool="true";
+			else
+				fig1_bool="false";
+			fi;
+			if [[ "${selectedFigures[@]}" =~ "2" ]]; then
+				fig2_bool="true";
+			else
+				fig2_bool="false";
+			fi;
+			if [[ "${selectedFigures[@]}" =~ "3" ]]; then
+				fig3_bool="true";
+			else
+				fig3_bool="false";
+			fi;
+
+			##=========================================================
+			## Generates settings files in genome directory.
+			##---------------------------------------------------------
+			echo -e "Running genome.install_2.php"
+			echo -e "\tuser               = "$user;
+			echo -e "\tgenome             = "$genome;
+			echo -e "\tchr_count          = "$chr_count;
+			echo -e "\trDNA_start         = "$rDNA_start;
+			echo -e "\trDNA_end           = "$rDNA_end;
+			echo -e "\tploidy_default     = "$ploidy_default;
+			echo -e "\tannotation_count   = "$annotation_count;
+			echo -e "\texpression_regions = "$expression_regions;
+			echo -e "\tchr_draw           = "$chr_draw;
+			echo -e "\tchr_labels         = "$chr_labels;
+			echo -e "\tcen_start          = "$cen_start;
+			echo -e "\tcen_end            = "$cen_end;
+			echo -e "\tchr_order          = "$chr_order;
+			echo -e "\tchr_reversed       = "$chr_reversed;
+			echo -e "\tfig1_bool          = "$fig1_bool;
+			echo -e "\tfig2_bool          = "$fig2_bool;
+			echo -e "\tfig3_bool          = "$fig3_bool;
+
+			cd $main_dir"/scripts_genomes";
+			php genome.install_2.php $user $genome $chr_count $rDNA_start $rDNA_end $ploidy_default $annotation_count $expression_regions $chr_draw $chr_labels $cen_start $cen_end $chr_order $chr_reversed $fig1_bool $fig2_bool $fig3_bool 2> $main_dir/users/$user/genomes/$genome/process_log.txt;
+			cd $main_dir;
+			##=========================================================
+
+			##=========================================================
+			## Generates annotations file in genome directory.
+			##---------------------------------------------------------
+			echo -e "Running genome.install_3.php";
+			echo -e "\tuser                 = "$user;
+			echo -e "\tgenome               = "$genome;
+			echo -e "\trDNA_chr             = "$rDNA_chr;
+			echo -e "\trDNA_start           = "$rDNA_start;
+			echo -e "\trDNA_end             = "$rDNA_end;
+			echo -e "\tannotation_count     = "$annotation_count;
+			echo -e "\tannotation_chr       = "$annotation_chr;
+			echo -e "\tannotation_shape     = "$annotation_shape;
+			echo -e "\tannotation_start     = "$annotation_start;
+			echo -e "\tannotation_end       = "$annotation_end;
+			echo -e "\tannotation_name      = "$annotation_name;
+			echo -e "\tannotation_fillColor = "$annotation_fillColor;
+			echo -e "\tannotation_edgeColor = "$annotation_edgeColor;
+			echo -e "\tannotation_size      = "$annotation_size;
+
+			cd $main_dir"/scripts_genomes";
+			php genome.install_3.php $user $genome $rDNA_chr $rDNA_start $rDNA_end $annotation_count $annotation_chr $annotation_shape $annotation_start $annotation_end $annotation_name $annotation_fillColor $annotation_edgeColor $annotation_size 2> $main_dir/users/$user/genomes/$genome/process_log.txt;
+			cd $main_dir;
+			##=========================================================
+
+			##=========================================================
+			## This is where the task should be added to the processing queue.
+			##
+			# php genome.install_4.php			# For dealing with expression_region annotations; not used.
+			# php genome.install_5.php $user $genome	# final pre-processing
+			# bash genome.install_6.sh $user $genome	# Processing for figures; should be managed by queue.
+			##=========================================================
+			echo -e "#";
+			echo -e "#\t\e[42mGenome has been added to the processing queue.\e[0m";
+		    ;;
+		    "user")
+			echo -e "#\tInstalling a new user is not yet implemented.";
+		    ;;
+		    "*")
 			echo -e "#\t\e[41mInvalid selection: Code error.\e[0m";
 			echo -e $lineThick;
 			return 1;
-		fi;
+		    ;;
+		esac;
 	}
 	ymap_display_daemon() {
 		tempfile=$(mktemp --suffix ".ymap");
@@ -1142,7 +1880,7 @@ else
 						selectedKey=$(head -n 1 $tempfile);
 						project=${projects[$selectedKey-1]};
 
-						## Ask which figure. dragon
+						## Ask which figure.
 						projectDirectory="$main_dir/users/$user/projects/$project/";
 						nameString=""
 						maxNameLength=0;
@@ -1397,6 +2135,21 @@ else
 			results=$(cat $tempfile);
 			ploidy=$(echo "${results#* ' '}" | head -n 1);
 			ploidyBase=$(echo "${results#* ' '}" | tail -n 1);
+			if ! [[ "$ploidy" =~ ^[0-9]\.[0-9]$ ]]; then
+				echo -e "#";
+				echo -e "#\tThat is not a valid ploidy value:";
+				echo -e "#\t\tUse something like '1.0', '2.4', etc.";
+				echo -e "#";
+				echo -e $lineThick;
+				exit;
+			elif ! [[ "$ploidyBase" =~ ^[0-9]\.[0-9]$ ]]; then
+				echo -e "#";
+				echo -e "#\tThat is not a valid baseline ploidy value:";
+				echo -e "#\t\tUse something like '1.0', '2.0', etc.";
+				echo -e "#";
+				echo -e $lineThick;
+				exit;
+			fi;
 
 			# dataformat default to 1 for short- or long-read sequence data.
 			dataFormat=1;

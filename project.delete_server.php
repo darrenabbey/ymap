@@ -13,30 +13,38 @@
         }
 
 	// Load user string from session.
-	$user    = $_SESSION['user'];
-
-	// Sanitize input strings.
-	$project = sanitize_POST("project");
-	$dir     = "users/".$user."/projects/".$project;
-	$dir2    = "users/".$user."/projects/".$project."/locked.txt";
-
-	// Confirm if requested project exists and is not locked.
-
-	if (is_dir($dir) and !file_exists($dir2))  {
-		// Requested project dir does exist for logged in user: Delete installed project.
-		queue_end($user,$project,"","","User deleted project.");
-		rrmdir($dir);
-		echo "COMPLETE";
-		log_stuff($user,$project,"","","","project:DELETE success");
+	if(isset($_SESSION['user'])) {
+		$user = $_SESSION['user'];
 	} else {
-		if (file_exists($dir2)) {
-			// Project is locked.
-			echo "ERROR:".$user." project is locked by admin.";
-			log_stuff($user,$project,"","","","project:DELETE failure, project is locked by admin.");
+		$user = "";
+	}
+
+	if ($user == "") {
+		log_stuff("","","","","","user:VALIDATION failure, session expired.");
+		header('Location: .');
+	} else {
+		// Sanitize input strings.
+		$project = sanitize_POST("project");
+		$dir     = "users/".$user."/projects/".$project;
+		$dir2    = "users/".$user."/projects/".$project."/locked.txt";
+
+		// Confirm if requested project exists and is not locked.
+		if (is_dir($dir) and !file_exists($dir2))  {
+			// Requested project dir does exist for logged in user: Delete installed project.
+			queue_end($user,$project,"","","User deleted project.");
+			rrmdir($dir);
+			echo "COMPLETE";
+			log_stuff($user,$project,"","","","project:DELETE success");
 		} else {
-			// Project doesn't exist, should never happen.
-			echo "ERROR:".$user." doesn't own project.";
-			log_stuff($user,$project,"","","","project:DELETE failure, user doesn't own project.");
+			if (file_exists($dir2)) {
+				// Project is locked.
+				echo "ERROR:".$user." project is locked by admin.";
+				log_stuff($user,$project,"","","","project:DELETE failure, project is locked by admin.");
+			} else {
+				// Project doesn't exist, should never happen.
+				echo "ERROR:".$user." doesn't own project.";
+				log_stuff($user,$project,"","","","project:DELETE failure, user doesn't own project.");
+			}
 		}
 	}
 

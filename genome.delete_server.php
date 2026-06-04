@@ -30,6 +30,7 @@
 		// Confirm if requested project exists.
 		if (is_dir($dir)) {
 			// Requested project dir does exist for logged in user: Delete installed project.
+			queue_end($user,"",$genome,"","User deleted project.");
 			rrmdir($dir);
 			echo "COMPLETE";
 			log_stuff($user,"","",$genome,"","genome:DELETE success");

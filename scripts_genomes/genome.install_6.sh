@@ -384,4 +384,7 @@ echo -e "\n\t===================================================================
 ##==============================================================================
 ## Add project end to queue log file.
 ##------------------------------------------------------------------------------
-bash queue_end.sh $user $genome $main_dir $logName "genome.install_6.sh completed.";
+cd $main_dir"/scripts_genomes/";
+bash queue_end.sh "$user" "$genome" "$main_dir" "$logName" "genome.install_6.sh completed.";
+cd $main_dur;
+

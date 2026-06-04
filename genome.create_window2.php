@@ -69,18 +69,17 @@
 					echo "<th><font size=\"2\">end bp</font></th>";
 				echo "</tr>";
 
-				// if the chr_count is above $MAX_CHROM_SELECTION sorting and getting the size of the $MAX_CHROM_SELECTION chromosome to use as a reference whether to check or uncheck chromosomes
-				// also getting the size of the
+				// If '$chr_count' is above $MAX_CHROM_SELECTION, sorting and returning the largest $MAX_CHROM_SELECTION chromosome sizes. To use as a reference whether to check or uncheck chromosomes also getting the size of the...?
 				if ($chr_count > $MAX_CHROM_SELECTION) {
 					$chr_lengthsTemp = $chr_lengths;
 					rsort($chr_lengthsTemp);
-					// getting cutoff value for the $MAX_CHROM_SELECTION longest chromsomes
+					// getting cutoff value for the first $MAX_CHROM_SELECTION longest chromsomes
 					$lowestSize = $chr_lengthsTemp[$MAX_CHROM_SELECTION - 1];
 					if ($chr_count > $MAX_CHROM_POOL) {
 						$lowestSizeDisplay = $chr_lengthsTemp[$MAX_CHROM_POOL - 1];
 					}
 					unset($chr_lengthsTemp);
-					$countUsed = $MAX_CHROM_SELECTION; // will decrease for each checked chromosome
+					$countUsed = $MAX_CHROM_SELECTION;
 				}
 				for ($chr=0; $chr<$chr_count; $chr+=1) {
 					$chrID = $chr+1;
