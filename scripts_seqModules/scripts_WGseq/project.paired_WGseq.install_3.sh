@@ -337,7 +337,7 @@ fi
 echo -e "Pileup processing is complete." >> $condensedLog;
 echo -e "\nPileup processing complete.\n" >> $logName;
 echo -e "-------------------------------------------------------------------------" >> $logName;
-echo -e "Variables passed to next script." >> $logNAme;
+echo -e "Variables passed to next script." >> $logName;
 echo -e "\t\$user     = "$user >> $logName;
 echo -e "\t\$project  = "$project >> $logName;
 echo -e "\t\$main_dir = "$main_dir >> $logName;

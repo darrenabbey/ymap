@@ -1323,7 +1323,7 @@ else
 		ymap_display_daemon log;
 	    ;;
 	    "status")
-		echo -e "# YMAP2 commandline : Status of projects/genomes.";
+		echo -e "# YMAP2 commandline : Status of projects/genomes in queue.";
 		logged_in_status;
 		echo -e $lineThin;
 		echo -e "#";
