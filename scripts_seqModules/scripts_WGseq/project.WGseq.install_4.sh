@@ -7,23 +7,24 @@ set -e;
 ## All created files will have permission 760
 umask 007;
 
-user="$1";
-project="$2";
-main_dir="$3";
-projectDirectory="$main_dir/users/$user/projects/$project";
-logName="$projectDirectory/process_log.txt";
+user=$1;
+project=$2;
+main_dir=$3;
 
 ## Error handling in case something crashes.
 trap 'cd $main_dir"/scripts_seqModules/scripts_WGseq/"; bash queue_end.sh "$user" "$project" "$main_dir" "$logName" "Something went wrong. project.WGseq.install_4.sh:$LINENO"; install /dev/null "$projectDirectory/error.txt"; echo -e "Something went wrong. project.WGseq.install_4.sh:$LINENO" > $projectDirectory"/error.txt"; cd $main_dir; exit 1;' ERR;
 
-. $main_dir/local_installed_programs.sh;
+projectDirectory="$main_dir/users/$user/projects/$project";
+logName="$projectDirectory/process_log.txt";
 
-echo -e "";
-echo -e "Input to : project.WGseq.install_4.sh";
-echo -e "\tuser       = $user";
-echo -e "\tproject    = $project";
-echo -e "\tmain_dir   = $main_dir";
-echo -e "";
+echo -e "" >> $logName;
+echo -e "Input to : project.WGseq.install_4.sh" >> $logName;
+echo -e "\tuser       = $user" >> $logName;
+echo -e "\tproject    = $project" >> $logName;
+echo -e "\tmain_dir   = $main_dir" >> $logName;
+echo -e "" >> $logName;
+
+. $main_dir/local_installed_programs.sh;
 
 
 ##==============================================================================

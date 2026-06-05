@@ -47,8 +47,6 @@
 	$logOutputName = "../../users/".$user."/projects/".$project."/process_log.txt";
 	$logOutput = fopen($logOutputName, 'a');
 
-	queue_start($user,$project,"","","from: project.paired_WGseq.install_2.php");
-
 	fwrite($logOutput, "#..............................................................................\n");
 	fwrite($logOutput, "Running 'scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_2.php'.\n");
 	fwrite($logOutput, "Variables passed via command-line from 'scripts_seqModules/scripts_WGseq/project.paired_WGseq.install_1.php' :\n");

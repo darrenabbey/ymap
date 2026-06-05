@@ -163,7 +163,7 @@
 		fwrite($logOutput, "\t'scripts_genomes/genome_install_3.php' has completed.\n");
 		fwrite($logOutput, "Skipping 'scripts_genomes/genome.install_4.php'.\n");
 		make_salt($user,"",$genome,"");
-		queue_init($user,"",$genome,"","Started from: genome.install_3.php");
+		queue_init($user,"",$genome,"","from: genome.install_3.php");
 	} else {
 		if ($expression_regions == "on") {
 			//
@@ -218,7 +218,7 @@
 
 	// Generate 'working2.txt' to tell main page that genome installation is in process.
 	$outputName      = $genome_dir."/working2.txt";
-	$output          = fopen($outputName, '2');
+	$output          = fopen($outputName, 'w');
 	$startTimeString = date("Y-m-d H:i:s");
 	fwrite($output, $startTimeString);
 	fclose($output);

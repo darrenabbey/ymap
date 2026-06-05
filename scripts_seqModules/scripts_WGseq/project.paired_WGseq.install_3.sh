@@ -336,15 +336,20 @@ fi
 
 echo -e "Pileup processing is complete." >> $condensedLog;
 echo -e "\nPileup processing complete.\n" >> $logName;
-echo   "=========================================================================\n" >> $logName;
+echo -e "-------------------------------------------------------------------------" >> $logName;
+echo -e "Variables passed to next script." >> $logNAme;
+echo -e "\t\$user     = "$user >> $logName;
+echo -e "\t\$project  = "$project >> $logName;
+echo -e "\t\$main_dir = "$main_dir >> $logName;
+echo -e "-------------------------------------------------------------------------" >> $logName;
 
 if [[ "$hapmapInUse" = 0 ]]; then
 	echo -e "\nPassing processing on to 'project.WGseq.install_4.sh' for final analysis.\n" >> $logName;
-	echo -e "\tCurrent directory = "$(pwd); >> $logName;
-	echo   "=========================================================================\n" >> $logName;
+	echo -e "\tCurrent directory = "$(pwd) >> $logName;
+	echo -e "=========================================================================\n" >> $logName;
 	bash "$main_dir/scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" "$user" "$project" "$main_dir" 2>> $logName;
 else
 	echo -e "\nPassing processing on to 'project.WGseq.hapmap.install_4.sh' for final analysis.\n" >> $logName;
-	echo   "================================================================================\n" >> $logName;
+	echo -e "================================================================================\n" >> $logName;
 	bash "$main_dir/scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh" "$user" "$project" "$hapmap" "$main_dir" 2>> $logName;
 fi

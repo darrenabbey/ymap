@@ -7,10 +7,10 @@
 
 	$calledBy = php_sapi_name();
 	if ($calledBy === "cli") {
-		$user       = $argv[1];
+		$user       = sanitize_ARGV($argv,1);
 		$key        = "g_0";
-		$genome     = $argv[2];
-		$chr_count  = $argv[3];
+		$genome     = sanitize_ARGV($argv,2);
+		$chr_count  = sanitizeInt_ARGV($argv,3);
 	} else {
 		session_start();
 		$user       = $_SESSION['user'];
@@ -83,11 +83,11 @@
 // process POST data.
 	fwrite($logOutput, "\tProcessing POST data containing genome specific information.\n");
 	if ($calledBy === "cli") {
-		$rDNA_start         = $argv[4];
-		$rDNA_end           = $argv[5];
-		$ploidyDefault      = $argv[6];
-		$annotation_count   = $argv[7];
-		$expression_regions = $argv[8];
+		$rDNA_start         = sanitizeInt_ARGV($argv,4);
+		$rDNA_end           = sanitizeInt_ARGV($argv,5);
+		$ploidyDefault      = sanitizeFloat_ARGV($argv,6);
+		$annotation_count   = sanitizeInt_ARGV($argv,7);
+		$expression_regions = sanitize_ARGV($argv,8);
 	} else {
 		$rDNA_start         = sanitizeInt_POST("rDNAstart");
 		$rDNA_end           = sanitizeInt_POST("rDNAend");
@@ -159,9 +159,9 @@
 
 	// optional figure selections.
 	if ($calledBy === "cli") {
-		$figure_1 = $argv[15];
-		$figure_2 = $argv[16];
-		$figure_3 = $argv[17];
+		$figure_1 = sanitizeBoolean_ARGV($argv,15);
+		$figure_2 = sanitizeBoolean_ARGV($argv,16);
+		$figure_3 = sanitizeBoolean_ARGV($argv,17);
 	} else {
 		$figure_1 = sanitizeBoolean_POST("fig_1");
 		$figure_2 = sanitizeBoolean_POST("fig_2");

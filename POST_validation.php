@@ -133,6 +133,16 @@ function sanitizeInt_POST($POST_name) {
 	$cleanString = preg_replace("/[^\d]+/", "", $cleanString);
 	return $cleanString;
 }
+function sanitizeInt_ARGV($argv,$ARGV_key) {
+	// Pull string from input_post; clean up any leading/trailing whitespace.
+	$cleanString = trim($argv[$ARGV_key]);
+	// strip out any HTML/XML/PHP tags.
+	$cleanString = strip_tags($cleanString);
+
+	// remove everything but numerals.
+	$cleanString = preg_replace("/[^\d]+/", "", $cleanString);
+	return $cleanString;
+}
 function sanitizeInt_GET($GET_name) {
 	// Pull string from input_get; clean up any leading/trailing whitespace.
 	$cleanString = trim(filter_input(INPUT_GET, $GET_name, FILTER_DEFAULT) ?? '');

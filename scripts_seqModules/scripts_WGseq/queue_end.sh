@@ -9,13 +9,13 @@ main_dir="$3";
 logName="$4";
 message="$5";
 
-projectDirectory="$main_dir/users/$user/projects/$project";
+Directory="$main_dir/users/$user/projects/$project";
 
 ##==============================================================================
 ## Add project end to queue log file.
 ##------------------------------------------------------------------------------
 echo -e "\tEnding queue processing." >> $logName;
-outputName="$projectDirectory/finalize.php";
+outputName="$Directory/finalize.php";
 echo -e "<?php" > $outputName;
 echo -e "chdir('$main_dir');" >> $outputName;
 echo -e "require_once 'constants.php';" >> $outputName;
@@ -26,4 +26,4 @@ echo -e "log_stuff('$user','$project','','',\$salt_string,'YMAP_daemon: $message
 echo -e "?>" >> $outputName;
 php $outputName;
 rm $outputName;
-echo -e "\tConclusion of processing '$project' data." >> $logName;
+echo -e "\tConclusion of processing data: $message" >> $logName;

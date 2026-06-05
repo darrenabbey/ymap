@@ -57,7 +57,7 @@ if [ -z $1 ]; then
 	echo -e "#	preview         : Preview an image in the shell.";
 	echo -e "#	delete		: Delete a project/genome/hapmap/user.";
 	echo -e "#	install		: Install a new project/genome/user.";
-	echo -e "#				\e[32mGenome and user install are not implemented yet.\e[0m";
+	echo -e "#				\e[32mNew user installation is not implemented.\e[0m";
 	echo -e "#	run		: Configure and run installed project datasets.";
 	echo -e "#";
 	echo -e "#   Commands not implemented:"
@@ -919,28 +919,18 @@ else
 			echo -e "#\t\t"$selectedFile;
 			echo -e "#\tGenome name: "$genome;
 			echo -e "#";
+			echo -e "#\tGenome ploidy: "$ploidy;
+			echo -e "#";
 			echo -e "#\tSelected chromosomes:";
 			counter=1;
-			counterRdna=0;
 			for chr in ${selectedChrs[@]}; do
 				echo -e -n '#\t\t';
 				echo -e -n ${chrNames[$chr-1]};
 				echo -e -n ' (';
 				echo -e -n ${chrLabels[$chr-1]};
 				echo -e -n ') ';
-				if [[ ${cenStarts[$chr-1]} -gt "0" ]] || [[ ${cenEnds[$chr-1]} -gt "0" ]]; then
-					echo -e -n "cen("${cenStarts[$chr-1]}".."${cenEnds[$chr-1]}") ";
-				fi;
-				if [[ "${rdnaChromosomes[@]}" =~ "$(($chr-1))" ]]; then
-					echo -e -n "rDNA("${rdnaCoords[$counterRdna]}".."${rdnaCoords[$counterRdna+1]}") ";
-					counterRdna=$(($counterRdna+2));
-				fi;
-				echo -e -n "figOrder="${chrOrder[$chr-1]}" ";
-				if [[ "${chrReversed[@]}" =~ "$(($chr))" ]]; then
-					echo -e -n "figReversed ";
-				fi;
-				echo -e "";
 				counter=$(($counter+1));
+				echo -e "";
 			done;
 			echo -e "#";
 			echo -e "#\tGenome figures to generate:";
@@ -954,8 +944,6 @@ else
 				echo -e "#\t\tGC-skew map.";
 			fi;
 			echo -e "#";
-			echo -e "#\tAdditional annotations:";
-			echo -e "#\t\t"$annotationCount;
 
 
 			##=========================================================
@@ -1057,63 +1045,51 @@ else
 				fig3_bool="false";
 			fi;
 
+			echo -e "#\tAdditional information:";
+			echo -e "#";
+			echo -e "#\t\tchr count               = "$chr_count;
+			echo -e "#\t\tchr drawn               = "$chr_draw" (1=drawn, 0=not drawn)";
+			echo -e "#\t\tchr labels              = "$chr_labels" (null=unused)";
+			echo -e "#\t\tcen starts              = "$cen_start" (bp coordinates)";
+			echo -e "#\t\tcen ends                = "$cen_end" (bp coordinates)";
+			echo -e "#\t\tchr order               = "$chr_order" (0=unused)";
+			echo -e "#\t\tchr reversed            = "$chr_reversed" (1=reversed, 0=normal/unused)";
+			echo -e "#\t\trDNA chr(s)             = "$rDNA_chr;
+			echo -e "#\t\trDNA start(s)           = "$rDNA_start;
+			echo -e "#\t\trDNA end(s)             = "$rDNA_end;
+			echo -e "#\t\tannotation_chr(s)       = "$annotation_chr;
+			echo -e "#\t\tannotation_shape(s)     = "$annotation_shape;
+			echo -e "#\t\tannotation_start(s)     = "$annotation_start;
+			echo -e "#\t\tannotation_end(s)       = "$annotation_end;
+			echo -e "#\t\tannotation_name(s)      = "$annotation_name;
+			echo -e "#\t\tannotation_fillColor(s) = "$annotation_fillColor;
+			echo -e "#\t\tannotation_edgeColor(s) = "$annotation_edgeColor;
+			echo -e "#\t\tannotation_size(s)      = "$annotation_size;
+
 			##=========================================================
 			## Generates settings files in genome directory.
 			##---------------------------------------------------------
-			echo -e "Running genome.install_2.php"
-			echo -e "\tuser               = "$user;
-			echo -e "\tgenome             = "$genome;
-			echo -e "\tchr_count          = "$chr_count;
-			echo -e "\trDNA_start         = "$rDNA_start;
-			echo -e "\trDNA_end           = "$rDNA_end;
-			echo -e "\tploidy_default     = "$ploidy_default;
-			echo -e "\tannotation_count   = "$annotation_count;
-			echo -e "\texpression_regions = "$expression_regions;
-			echo -e "\tchr_draw           = "$chr_draw;
-			echo -e "\tchr_labels         = "$chr_labels;
-			echo -e "\tcen_start          = "$cen_start;
-			echo -e "\tcen_end            = "$cen_end;
-			echo -e "\tchr_order          = "$chr_order;
-			echo -e "\tchr_reversed       = "$chr_reversed;
-			echo -e "\tfig1_bool          = "$fig1_bool;
-			echo -e "\tfig2_bool          = "$fig2_bool;
-			echo -e "\tfig3_bool          = "$fig3_bool;
-
 			cd $main_dir"/scripts_genomes";
 			php genome.install_2.php $user $genome $chr_count $rDNA_start $rDNA_end $ploidy_default $annotation_count $expression_regions $chr_draw $chr_labels $cen_start $cen_end $chr_order $chr_reversed $fig1_bool $fig2_bool $fig3_bool 2> $main_dir/users/$user/genomes/$genome/process_log.txt;
 			cd $main_dir;
 			##=========================================================
 
-			##=========================================================
-			## Generates annotations file in genome directory.
-			##---------------------------------------------------------
-			echo -e "Running genome.install_3.php";
-			echo -e "\tuser                 = "$user;
-			echo -e "\tgenome               = "$genome;
-			echo -e "\trDNA_chr             = "$rDNA_chr;
-			echo -e "\trDNA_start           = "$rDNA_start;
-			echo -e "\trDNA_end             = "$rDNA_end;
-			echo -e "\tannotation_count     = "$annotation_count;
-			echo -e "\tannotation_chr       = "$annotation_chr;
-			echo -e "\tannotation_shape     = "$annotation_shape;
-			echo -e "\tannotation_start     = "$annotation_start;
-			echo -e "\tannotation_end       = "$annotation_end;
-			echo -e "\tannotation_name      = "$annotation_name;
-			echo -e "\tannotation_fillColor = "$annotation_fillColor;
-			echo -e "\tannotation_edgeColor = "$annotation_edgeColor;
-			echo -e "\tannotation_size      = "$annotation_size;
 
+			##=========================================================
+			## Generates annotations file in genome directory; initiates queue entry.
+			##---------------------------------------------------------
 			cd $main_dir"/scripts_genomes";
 			php genome.install_3.php $user $genome $rDNA_chr $rDNA_start $rDNA_end $annotation_count $annotation_chr $annotation_shape $annotation_start $annotation_end $annotation_name $annotation_fillColor $annotation_edgeColor $annotation_size 2> $main_dir/users/$user/genomes/$genome/process_log.txt;
 			cd $main_dir;
 			##=========================================================
 
+
 			##=========================================================
-			## This is where the task should be added to the processing queue.
-			##
-			# php genome.install_4.php			# For dealing with expression_region annotations; not used.
-			# php genome.install_5.php $user $genome	# final pre-processing
-			# bash genome.install_6.sh $user $genome	# Processing for figures; should be managed by queue.
+			## Information about genome processing scripts not called directly.
+			##---------------------------------------------------------
+			## php genome.install_4.php			# For dealing with expression_region annotations; not used.
+			## php genome.install_5.php $user $genome	# final pre-processing; this is where ymap_daemon starts.
+			## bash genome.install_6.sh $user $genome	# final figure generating and related pre-processing.
 			##=========================================================
 			echo -e "#";
 			echo -e "#\t\e[42mGenome has been added to the processing queue.\e[0m";
@@ -1347,80 +1323,11 @@ else
 		ymap_display_daemon log;
 	    ;;
 	    "status")
-		if [ "$user" == "" ]; then
-			##
-			## If not logged in.
-			##
-			echo -e "# YMAP2 commandline : User project status.";
-			logged_in_status;
-			echo -e $lineThin;
-			echo -e "#";
-                        if [ -z $2 ]; then
-                                echo -e "#\tUsage: bash YMAPcli.sh status \e[31m(user)\e[0m";
-                                echo -e "#";
-                                echo -e "#\tOr first log in using the command: bash YMAPcli.sh log_in \e[31m(user)\e[0m";
-                        else
-				user=$2
-			fi;
-		fi;
-		if [ "$user" != "" ]; then
-			##
-			## Logged in.
-			##
-			echo -e "# YMAP2 commandline : User '$user' project status.";
-			logged_in_status;
-			echo -e $lineThin;
-			echo -e "#";
-			projectDirectory=$main_dir"/users/"$user"/projects/";
-			if [ -d $projectDirectory ]; then
-				cd $projectDirectory;
-
-				## Project files installed, but not run: count files in bulkdata directory.
-				installedCount=$(ls $main_dir"/users/"$user"/bulkdata/" | wc -l);
-				if [[ "$installedCount" = "0" ]]; then
-					echo -e "#\tNo datasets have been installed and not yet initialized/run into queue.";
-				else
-					echo -e "#\t$installedCount data files have been installed and not yet initialized/run into queue.";
-				fi;
-				echo -e "#";
-
-				## Projects not started: missing "complete.txt" and "working.txt" files.
-				echo -e "#\tProjects initialized:";
-				tempfile=$(mktemp --suffix ".ymap");
-				find * -type d "!" -exec sh -c 'ls -A "{}" | grep --quiet -e "working.txt" -e "complete.txt"' \; -print > $tempfile;
-				cat $tempfile | xargs -n 7 | column -t | sed 's/^/#\t\t/' | cat;
-				echo -e "#";
-
-				## Projects not started: missing "complete.txt" and "working.txt" files.
-				echo -e "#\tProjects processing:";
-				for dir in */; do
-					if [ -e $dir"working.txt" ]; then
-						if [ ! -e $dir"complete.txt" ]; then
-							line=$( tail -n 1 $dir"condensed_log.txt" )
-							if [[ "$line" != "Cleaning and archiving." ]]; then
-								echo -e "#\t\t"$dir"\t: "$line;
-								if [ -e $dir"error.txt" ]; then
-									error=$( cat $dir"error.txt"; )
-									echo -e "#\t\t\t\e[41mError: $error\e[0m";
-								fi;
-							fi;
-						fi;
-					fi;
-				done;
-				echo -e "#";
-
-				## Projects done: include "complete.txt" file.
-				echo -e "#\tProjects completed:";
-				tempfile=$(mktemp --suffix ".ymap");
-				find * -type d -exec sh -c 'ls -A "{}" | grep --quiet "complete.txt"' \; -print > $tempfile;
-				# Convert one column into multiple columns in interface format.
-				cat $tempfile | xargs -n 7 | column -t | sed 's/^/#\t\t/' | cat;
-
-				cd $main_dir;
-			else
-				echo -e "#\t\t\e[41mError: User not registered!\e[0m";
-			fi;
-		fi;
+		echo -e "# YMAP2 commandline : Status of projects/genomes.";
+		logged_in_status;
+		echo -e $lineThin;
+		echo -e "#";
+		php queue_status.php
 	    ;;
 	    "status_daemon")
 		bash YMAPcli.sh status;
