@@ -157,9 +157,9 @@
 		$name = $value[2];
 		$type = $value[5];
 		print_r("[{$key_}] ".$user.":".$type.":".$name);
-		if (($key+1) % 7 == 0) {
-			print_r("\n");
-	} else {
+		if (($key+1) % 5 == 0) {
+			print_r("\n#\t\t");
+		} else {
 			print_r("\t");
 		}
 	}
@@ -181,7 +181,7 @@
 		}
 		$data = file($file);
 		$line = trim($data[count($data)-1]);
-		print_r("[{$key_}] ".$user.":".$type.":".$name." = \e[33m".$line."\e[0m");
+		print_r("[{$key_}] ".$user.":".$type.":".$name." = \e[33m'".$line."'\e[0m");
 		if (($key+1) % 7 == 0) {
 			print_r("\n");
 		} else {

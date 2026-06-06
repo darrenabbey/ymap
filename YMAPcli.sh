@@ -51,8 +51,6 @@ if [ -z $1 ]; then
 	echo -e "#	info		: Show user account information.";
 	echo -e "#	status		: Show status of user projects/genomes.";
 	echo -e "#	queue           : Show status of data processing queue.";
-	echo -e "E	status_queue	: Combined 'status' and;'queue' functions.";
-	echo -e "#	queue_daemon    : Combined 'queue' and 'daemon' functions.";
 	echo -e "#	genomes		: List installed genomes.";
 	echo -e "#	hapmaps		: List installed hapmaps.";
 	echo -e "#	complete	: List file paths & names of images for completed projects.";
@@ -61,6 +59,11 @@ if [ -z $1 ]; then
 	echo -e "#	install		: Install a new project/genome/user.";
 	echo -e "#				\e[32mNew user installation is not implemented.\e[0m";
 	echo -e "#	run		: Configure and run installed project datasets.";
+	echo -e "#";
+	echo -e "#   Combined commands:";
+	echo -e "#	status_queue        : Combined 'status' and;'queue' functions.";
+	echo -e "#	queue_daemon        : Combined 'queue' and 'daemon' functions.";
+	echo -e "#	status_queue_daemon : Combined 'status', 'queue', and 'daemon' functions.";
 	echo -e "#";
 	echo -e "#   Commands not implemented:"
 	echo -e "#	queue		: Shows the status of the YMAP processing queue.";
@@ -1358,8 +1361,8 @@ else
 				cd $projectDirectory;
 
 				## Project files installed, but not run: count files in bulkdata directory.
-				installedCount=$(ls $main_dir"/users/"$user"/bulkdata/" | wc -l);
-				if [[ "$installedCount" = "0" ]]; then
+				installedProjectCount=$(ls $main_dir"/users/"$user"/bulkdata/" | wc -l);
+				if [[ "$installedProjectCount" = "0" ]]; then
 					echo -e "#\tNo datasets have been installed and not yet initialized/run into queue.";
 				else
 					echo -e "#\t$installedCount data files have been installed and not yet initialized/run into queue.";
@@ -1373,14 +1376,14 @@ else
 				cat $tempfile | xargs -n 7 | column -t | sed 's/^/#\t\t/' | cat;
 				echo -e "#";
 
-				## Projects not started: missing "complete.txt" and "working.txt" files.
+				## Projects running: with "working.txt" and no "complete.txt" file.
 				echo -e "#\tProjects processing:";
 				for dir in */; do
 					if [ -e $dir"working.txt" ]; then
 						if [ ! -e $dir"complete.txt" ]; then
 							line=$( tail -n 1 $dir"condensed_log.txt" )
 							if [[ "$line" != "Cleaning and archiving." ]]; then
-								echo -e "#\t\t"$dir"\t: "$line;
+								echo -e "#\t\t"$dir"\t= \e[33m'"$line"'\e[0m";
 								if [ -e $dir"error.txt" ]; then
 									error=$( cat $dir"error.txt"; )
 									echo -e "#\t\t\t\e[41mError: $error\e[0m";
@@ -1414,11 +1417,18 @@ else
 	    "status_queue")
 		bash YMAPcli.sh status;
 		bash YMAPcli.sh queue;
+		noTail="true";
 	    ;;
 	    "queue_daemon")
 		bash YMAPcli.sh queue;
 		bash YMAPcli.sh daemon;
-		noTail=true;
+		noTail="true";
+	    ;;
+	    "status_queue_daemon")
+		bash YMAPcli.sh status;
+		bash YMAPcli.sh queue;
+		bash YMAPcli.sh daemon;
+		noTail="true";
 	    ;;
 	    "genomes")
 		echo -e "# YMAP2 commandline : List user genomes.";
