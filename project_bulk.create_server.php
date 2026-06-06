@@ -150,14 +150,17 @@
 			// Bulk settings directory doesn't exist, go about creating it.
 			//-------------------------------------------------------------
 
-			//log_stuff("","","","","","project_bulk.create_server.php: test point 5; ");
-			// Create the bulk data settings folder inside the user's projects directory.
-			if (!file_exists($projects_bulksettings)) {
-				mkdir($projects_bulksettings);
-				secureNewDirectory($projects_bulksettings);
-				chmod($$projects_bulksettings,0777);
+			// Delete pre-existing 'bulksettings' folder to ensure previous runs don't interfere with this one.
+			try {
+				deleteDirectory($projects_bulksettings);
+				// Directory deleted successfully!
+			} catch (Exception $e) {
+				// Directory not deleted!
 			}
-			//log_stuff("","","","","","project_bulk.create_server.php: test point 6; ");
+			// Create the 'bulksettings' folder inside the user's projects directory.
+			mkdir($projects_bulksettings);
+			secureNewDirectory($projects_bulksettings);
+			chmod($$projects_bulksettings,0777);
 
 			// Create figure selections file.
 			$fileName = $projects_bulksettings."/figure_options.txt";

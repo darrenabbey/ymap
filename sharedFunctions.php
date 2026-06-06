@@ -313,4 +313,34 @@ function getColors($user,$project) {
 	return [$colorString1,$colorString2];
 }
 
+function deleteDirectory($dirPath) {
+	// Check if the directory exists and is a directory
+	if (!file_exists($dirPath) || !is_dir($dirPath)) {
+		throw new InvalidArgumentException("Directory does not exist or is not a directory: $dirPath");
+	}
+	// Create recursive iterator to traverse the directory
+	$iterator = new RecursiveIteratorIterator(
+		new RecursiveDirectoryIterator($dirPath, RecursiveDirectoryIterator::SKIP_DOTS),
+		RecursiveIteratorIterator::CHILD_FIRST // Process children before parents (files before dirs)
+	);
+	foreach ($iterator as $file) {
+		if ($file->isDir()) {
+			// Delete empty subdirectory
+			if (!rmdir($file->getPathname())) {
+				throw new RuntimeException("Failed to delete directory: " . $file->getPathname());
+			}
+		} else {
+			// Delete file
+			if (!unlink($file->getPathname())) {
+				throw new RuntimeException("Failed to delete file: " . $file->getPathname());
+			}
+		}
+	}
+	// Delete the now-empty target directory
+	if (!rmdir($dirPath)) {
+		throw new RuntimeException("Failed to delete target directory: $dirPath");
+	}
+	return true;
+}
+
 ?>

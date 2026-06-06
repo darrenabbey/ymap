@@ -49,8 +49,10 @@ if [ -z $1 ]; then
 	echo -e "#	admin_email	: Show admin email, displayed in user interface for issues.";
 	echo -e "#	quota		: Show per account disk quota.";
 	echo -e "#	info		: Show user account information.";
-	echo -e "#	status		: Show data processing status.";
-	echo -e "#	status_daemon   : Combined 'status' and 'daemon' functions.";
+	echo -e "#	status		: Show status of user projects/genomes.";
+	echo -e "#	queue           : Show status of data processing queue.";
+	echo -e "E	status_queue	: Combined 'status' and;'queue' functions.";
+	echo -e "#	queue_daemon    : Combined 'queue' and 'daemon' functions.";
 	echo -e "#	genomes		: List installed genomes.";
 	echo -e "#	hapmaps		: List installed hapmaps.";
 	echo -e "#	complete	: List file paths & names of images for completed projects.";
@@ -1323,14 +1325,98 @@ else
 		ymap_display_daemon log;
 	    ;;
 	    "status")
-		echo -e "# YMAP2 commandline : Status of projects/genomes in queue.";
+		echo -e "# YMAP2 commandline : Status of user projects/genomes.";
+                logged_in_status;
+                echo -e $lineThin;
+                echo -e "#";
+		if [ "$user" == "" ]; then
+			##
+			## If not logged in.
+			##
+			echo -e "# YMAP2 commandline : User project status.";
+			logged_in_status;
+			echo -e $lineThin;
+			echo -e "#";
+			if [ -z $2 ]; then
+				echo -e "#\tUsage: bash YMAPcli.sh status \e[31m(user)\e[0m";
+				echo -e "#";
+				echo -e "#\tOr first log in using the command: bash YMAPcli.sh log_in \e[31m(user)\e[0m";
+			else
+				user=$2
+			fi;
+		fi;
+		if [ "$user" != "" ]; then
+			##
+			## Logged in.
+			##
+			echo -e "# YMAP2 commandline : User '$user' project status.";
+			logged_in_status;
+			echo -e $lineThin;
+			echo -e "#";
+			projectDirectory=$main_dir"/users/"$user"/projects/";
+			if [ -d $projectDirectory ]; then
+				cd $projectDirectory;
+
+				## Project files installed, but not run: count files in bulkdata directory.
+				installedCount=$(ls $main_dir"/users/"$user"/bulkdata/" | wc -l);
+				if [[ "$installedCount" = "0" ]]; then
+					echo -e "#\tNo datasets have been installed and not yet initialized/run into queue.";
+				else
+					echo -e "#\t$installedCount data files have been installed and not yet initialized/run into queue.";
+				fi;
+				echo -e "#";
+
+				## Projects not started: missing "complete.txt" and "working.txt" files.
+				echo -e "#\tProjects initialized:";
+				tempfile=$(mktemp --suffix ".ymap");
+				find * -type d "!" -exec sh -c 'ls -A "{}" | grep --quiet -e "working.txt" -e "complete.txt"' \; -print > $tempfile;
+				cat $tempfile | xargs -n 7 | column -t | sed 's/^/#\t\t/' | cat;
+				echo -e "#";
+
+				## Projects not started: missing "complete.txt" and "working.txt" files.
+				echo -e "#\tProjects processing:";
+				for dir in */; do
+					if [ -e $dir"working.txt" ]; then
+						if [ ! -e $dir"complete.txt" ]; then
+							line=$( tail -n 1 $dir"condensed_log.txt" )
+							if [[ "$line" != "Cleaning and archiving." ]]; then
+								echo -e "#\t\t"$dir"\t: "$line;
+								if [ -e $dir"error.txt" ]; then
+									error=$( cat $dir"error.txt"; )
+									echo -e "#\t\t\t\e[41mError: $error\e[0m";
+								fi;
+							fi;
+						fi;
+					fi;
+				done;
+				echo -e "#";
+
+				## Projects done: include "complete.txt" file.
+				echo -e "#\tProjects completed:";
+				tempfile=$(mktemp --suffix ".ymap");
+				find * -type d -exec sh -c 'ls -A "{}" | grep --quiet "complete.txt"' \; -print > $tempfile;
+				# Convert one column into multiple columns in interface format.
+				cat $tempfile | xargs -n 7 | column -t | sed 's/^/#\t\t/' | cat;
+
+				cd $main_dir;
+			else
+				echo -e "#\t\t\e[41mError: User not registered!\e[0m";
+			fi;
+		fi;
+	    ;;
+	    "queue")
+		echo -e "# YMAP2 commandline : Status of data processing queue.";
 		logged_in_status;
 		echo -e $lineThin;
 		echo -e "#";
 		php queue_status.php
 	    ;;
-	    "status_daemon")
+	    "status_queue")
 		bash YMAPcli.sh status;
+		bash YMAPcli.sh queue;
+	    ;;
+	    "queue_daemon")
+		bash YMAPcli.sh queue;
 		bash YMAPcli.sh daemon;
 		noTail=true;
 	    ;;
