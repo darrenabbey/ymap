@@ -2298,7 +2298,7 @@ else
 			#echo "ploidyBase      : "$ploidyBase;
 			#echo "dataFormat      : "$dataFormat;		# '1' for seq data.
 			#echo "showAnnotations : "$showAnnotations;	# '0' or '1' for no/yes
-			#echo "manualLOH       : "$manualLOH;
+			#echo "manualLOH       : "$manualLOH;		# "none"
 			#echo "genome          : "$genome;
 			#echo "hapmap          : "$hapmap;
 			#echo "bias_GC         : "$bias_GC;		# ''/'False' => false; other => true.
@@ -2316,7 +2316,7 @@ else
 			#echo "fig_G1          : "$fig_G1;
 			#echo "fig_G2          : "$fig_G2;
 
-			php project_bulk.create_server.php $user $ploidy $ploidyBase $dataFormat $showAnnotations $manualLOH $genome $hapmap $bias_GC $bias_end $fig_A1 $fig_A2 $fig_B1 $fig_B2 $fig_C $fig_D1 $fig_D2 $fig_E $fig_F1 $fig_F2 $fig_G1 $fig_G2 >/dev/null 2>&1 &
+			php project_bulk.create_server.php "$user" "$ploidy" "$ploidyBase" "$dataFormat" "$showAnnotations" "$manualLOH" "$genome" "$hapmap" "$bias_GC" "$bias_end" "$fig_A1" "$fig_A2" "$fig_B1" "$fig_B2" "$fig_C" "$fig_D1" "$fig_D2" "$fig_E" "$fig_F1" "$fig_F2" "$fig_G1" "$fig_G2" > /dev/null 2>&1 &
 		fi;
 	    ;;
 	    *)

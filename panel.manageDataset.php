@@ -65,12 +65,6 @@
 					echo "parent.update_interface();";
 				echo "'><br>";
 				$_SESSION['user']  = $user;
-				?>
-				<form id="bulk_process" action="run_bulk_processer.php" method="post">
-				<input	name='button_ProcessBulkDataset' type='submit' value='Admin: Process Bulk Dataset' style='background-color:#FFCCCC;'
-					onclick='parent.update_interface();'>
-				</form>
-				<?php
 			}
 
 			echo "<font color='red' size='2'> (Wait until uploads complete!)</font><br>";

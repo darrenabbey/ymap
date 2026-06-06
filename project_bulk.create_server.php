@@ -39,6 +39,8 @@
 			$user = "";
 		}
 		$commandLineInterface = false;
+
+		//log_stuff("","","","","","project_bulk.create_server.php: test point 1.");
 	}
 
 	if ($user == "") {
@@ -74,7 +76,8 @@
 				$fig_G1          = sanitizeBoolean_POST("fig_G1");
 				$fig_G2          = sanitizeBoolean_POST("fig_G2");
 			} else {
-				print_r($argv);
+				// php project_bulk.create_server.php darren3 2.0 2.0 1 0 false Candida_parapsilosis_CDC317_s01-m03-r62_CGD/ none true false true true true true true true true true true true true true
+				//print_r($argv);
 				$ploidy          = sanitizeFloat_ARGV(	$argv,2);
 				$ploidyBase      = sanitizeFloat_ARGV(	$argv,3);
 				$dataFormat      = sanitizeIntChar_ARGV($argv,4);
@@ -100,6 +103,7 @@
 				$fig_G1          = sanitizeBoolean_ARGV($argv,21);
 				$fig_G2          = sanitizeBoolean_ARGV($argv,22);
 			}
+			//log_stuff("","","","","","project_bulk.create_server.php: test point 2.");
 
 
 			$genome_dir1     = "users/".$user."/genomes/".$genome;
@@ -111,6 +115,7 @@
 				}
 				header('Location: .');
 			}
+			//log_stuff("","","","","","project_bulk.create_server.php: test point 3; ".$genome);
 
 			if (($hapmap == "none") || ($hapmap == "")) {
 				// no hapmap is used.
@@ -126,6 +131,7 @@
 					header('Location: .');
 				}
 			}
+			//log_stuff("","","","","","project_bulk.create_server.php: test point 4; ".$hapmap);
 
 			// Define some directories for later use.
 			$projects_bulkdata     = "users/".$user."/bulkdata";
@@ -144,12 +150,14 @@
 			// Bulk settings directory doesn't exist, go about creating it.
 			//-------------------------------------------------------------
 
+			//log_stuff("","","","","","project_bulk.create_server.php: test point 5; ");
 			// Create the bulk data settings folder inside the user's projects directory.
 			if (!file_exists($projects_bulksettings)) {
 				mkdir($projects_bulksettings);
 				secureNewDirectory($projects_bulksettings);
 				chmod($$projects_bulksettings,0777);
 			}
+			//log_stuff("","","","","","project_bulk.create_server.php: test point 6; ");
 
 			// Create figure selections file.
 			$fileName = $projects_bulksettings."/figure_options.txt";
@@ -168,7 +176,9 @@
 				if ($fig_G1 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
 				if ($fig_G2 != 1) { fwrite($file,"False");   } else { fwrite($file,"True"); }
 			fclose($file);
+			//log_stuff("","","","","","project_bulk.create_server.php: test point 7; ");
 			chmod($fileName,0774);
+			//log_stuff("","","","","","project_bulk.create_server.php: test point 8; ");
 
 			// Generate 'ploidy.txt' file.
 			$fileName = $projects_bulksettings."/ploidy.txt";
@@ -256,16 +266,19 @@
 			log_stuff($user,"[BULKDATA]","","","","bulkdata:CREATE settings success.");
 
 // Initialize html here.
+	if (!($calledBy === "cli")) {
 ?>
 <html>
 	<body>
 	<script type="text/javascript">
 <?php
+	}
 
 			//===========================================================================================
 			// Iterate over bulk data directory files, creating new project directories for each dataset.
 			//-------------------------------------------------------------------------------------------
 
+			//log_stuff("","","","","","project_bulk.create_server.php: test point 9; ");
 			// Scan bulk data directory
 			$bulkdata_files = scandir($projects_bulkdata);
 
@@ -434,6 +447,7 @@
 						$fileType_     = pathinfo($filename_key, PATHINFO_EXTENSION);
 						$filename_new1 = str_replace(".","-",$fileName_).".".$fileType_;
 						$exec_command = "mv ".$base_dir."/".$projects_bulkdata."/".$filename_key." ".$base_dir."/".$project_dir1."/".$filename_new1." 2>&1";
+						make_salt($user,$project,"","");
 						queue_init($user,$project,"","","from: project_bulk.create_server.php");
 						log_stuff("","","","","","1: ".$exec_command);
 						exec($exec_command,$output,$retval);
@@ -502,18 +516,22 @@
 								fclose($file);
 								chmod($fileName,0774);
 							}
+
 						}
+	if (!($calledBy === "cli")) {
 ?>
 	// Update user interface with project names.
 	var el1 = parent.document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('newly_installed_list');
 	el1.innerHTML += "<?php if ($commandLineInterface == false) { echo $_SESSION['pending_install_project_count']; } ?>. <?php echo $project; ?><br>";
 <?php
+	}
 						log_stuff($user,$project,"","","","bulkdata:CREATE individual project success.");
 					}
 				} else {
 					$skip -= 1;
 				}
 			}
+	if (!($calledBy === "cli")) {
 ?>
 	// Show bulk dataset comment.
 	var el2 = parent.document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('bulk_comment');
@@ -531,6 +549,7 @@
 	</body>
 	</html>
 <?php
+	}
 		} else {
 			log_stuff($user,"[BULKDATA]","","","","bulkdata:FAIL user account is not admin!");
 		}
