@@ -25,20 +25,25 @@
 	} else {
 		// Sanitize input strings.
 		$project = sanitize_POST("project");
-		$dir     = "users/".$user."/projects/".$project;
-
-		// Confirm if requested project exists.
-		if (is_dir($dir)) {
-			// Requested project dir does exist for logged in user: Delete installed project.
-			minimizeProject($dir);
-			echo "COMPLETE";
-			log_stuff($user,$project,"","","","project:MINIMIZE success");
+		if ($project == "") {
+			echo "ERROR:".$project." doesn't exist.";
+			log_stuff($user,$project,"","","","project:MINIMIZE failure, project name error.");
 		} else {
-			// Project doesn't exist, should never happen.
-			echo "ERROR:".$user." doesn't own project.";
-			log_stuff($user,$project,"","","","project:MINIMIZE failure, user doesn't own project.");
+			$dir     = "users/".$user."/projects/".$project;
+
+			// Confirm if requested project exists.
+			if (is_dir($dir)) {
+				// Requested project dir does exist for logged in user: Delete installed project.
+				minimizeProject($dir);
+				echo "COMPLETE";
+				log_stuff($user,$project,"","","","project:MINIMIZE success");
+			} else {
+				// Project doesn't exist, should never happen.
+				echo "ERROR:".$user." doesn't own project.";
+				log_stuff($user,$project,"","","","project:MINIMIZE failure, user doesn't own project.");
+			}
+			log_stuff($user,$project,"","","","project:MINIMIZE success.");
 		}
-		log_stuff($user,$project,"","","","project:MINIMIZE success.");
 	}
 
 	// Function for reducing project files to only necessary for display.
@@ -48,56 +53,40 @@
 		$temp_dir = $dir."/temp/";
 		mkdir($temp_dir);
 
-		// Move all project files to temp directory.
-		// Get array of all source files
-		$files = scandir($dir);
+		// Get array of all project files
+                $files = scandir($dir);
 
-		// Identify directories
-		$source = $dir;
-		$destination = $temp_dir;
-
-		// Cycle through all source files
-		foreach ($files as $file) {
-			if (in_array($file, array(".","..","temp"))) continue;
-			// If we copied this successfully, mark it for deletion
-			if (copy($source.$file, $destination.$file)) {
-				$delete[] = $source.$file;
-			}
-		}
-
-		// Delete all successfully-copied files
-		foreach ($delete as $file) {
-			unlink($file);
-		}
-
-		//==================================================
-		// Move only needed files back to project directory.
-		//--------------------------------------------------
-
-		// Get array of target source files
-		$files = scandir($temp_dir);
-
-		// Identify directories
-		$source = $temp_dir;
-		$destination = $dir;
-
-		// Cycle through all source files
+		// Move files we want to keep into temp folder.
 		foreach ($files as $file) {
 			if (in_array($file, array("complete.txt","dataFormat.txt","genome.txt","index.php","name.txt","parent.txt","process_log.txt"))) {
-				copy($source.$file, $destination.$file);
+				rename($dir.$file, $temp_dir.$file);
 			}
 			$file_ext = substr(strrchr($file, '.'), 1);
 			// mv [png|eps|bed|gff3] files.
 			if (($file_ext == "png") or ($file_ext == "eps") or ($file_ext == "bed") or ($file_ext == "gff3")) {
-				copy($source.$file, $destination.$file);
+				rename($dir.$file, $temp_dir.$file);
 			}
 		}
 
-		// Cycle through all files remaining in temp directory and delete.
-		$files = scandir($temp_dir);
+		// Refresh array of all project files
+		$files = scandir($dir);
+
+		// Delete remaining project files.
 		foreach ($files as $file) {
-			if (in_array($file, array(".",".."))) continue;
-			$delete[] = $temp_dir.$file;
+			if (in_array($file, array(".","..","temp"))) continue;
+			unlink($dir.$file);
+		}
+
+		//=============================================
+		// Move needed files back to project directory.
+		//---------------------------------------------
+
+		// Get array of remaining files
+		$files = scandir($temp_dir);
+
+		// Move the saved files back to the project directory.
+		foreach ($files as $file) {
+			rename($temp_dir.$file,$dir.$file);
 		}
 
 		// Delete temp directory.
