@@ -21,18 +21,18 @@
         <p>
             <b>IMPORTANT:</b>
             <ol>
-                <li>Filenames should only have alphanumeric characters (letters, numbers, underscores and dashes) in their names (no spaces or other special characters!).</li>
-		<li>Is your upload stuck? To resume it: When all other uploads are finished, refresh the page and re-add the files for upload.</li>
 		<li><?php
 			// Show queue status.
         	        require 'queue_status.php';
                 	$queue_count = (int)$queue_status_init + (int)$queue_status_start;
 	                if ($queue_count > 0) {
-	                        echo "<b>There are currently ".$queue_count." datasets in the queue.</b> Each takes ~40 minutes to complete. Your data will be processed in ~".number_format(($queue_count*2/3),1)." hours.";
+	                        echo "<b>There are currently ".$queue_count." datasets in the queue.</b> Each takes ~40 minutes to complete. Data uploaded now will start processing in ~".number_format(($queue_count*2/3),1)." hours.";
 			} else {
 				echo "<b>There are currently no datasets in the queue.</b> Each takes ~40 minutes to complete.";
 	                }
 		?></li>
+		<li>Filenames should only have alphanumeric characters (letters, numbers, underscores and dashes) in their names (no spaces or other special characters!).</li>
+                <li>Is your upload stuck? To resume it: Wait until all other uploads are done, refresh the page, and re-add the files for upload.</li>
             </ol>
         </p>
 	</font>
