@@ -58,7 +58,7 @@
 
 		// Move files we want to keep into temp folder.
 		foreach ($files as $file) {
-			if (in_array($file, array("complete.txt","dataFormat.txt","genome.txt","index.php","name.txt","parent.txt","process_log.txt"))) {
+			if (in_array($file, array("complete.txt","dataFormat.txt","genome.txt","index.php","name.txt","parent.txt","process_log.txt"."figVer.txt","working_done.txt"))) {
 				rename($dir.$file, $temp_dir.$file);
 			}
 			$file_ext = substr(strrchr($file, '.'), 1);

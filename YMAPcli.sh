@@ -1328,10 +1328,6 @@ else
 		ymap_display_daemon log;
 	    ;;
 	    "status")
-		echo -e "# YMAP2 commandline : Status of user projects/genomes.";
-                logged_in_status;
-                echo -e $lineThin;
-                echo -e "#";
 		if [ "$user" == "" ]; then
 			##
 			## If not logged in.

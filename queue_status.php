@@ -1,4 +1,5 @@
 <?php
+	$calledBy = php_sapi_name();
 	//==========================================================================================
 	// YMAP processing queue status
 	//------------------------------------------------------------------------------------------
@@ -149,50 +150,67 @@
 	}
 	$count_queue_working = sizeof($start_list);
 
-	//===========================================================
-	print_r("#\tYMAPs initialized: ".$count_queue_initialized."\n#\t\t");
-	foreach ($init_list as $key=>$value) {
-		$key_ = $key+1;
-		$user = $value[1];
-		$name = $value[2];
-		$type = $value[5];
-		print_r("[{$key_}] ".$user.":".$type.":".$name);
-		if (($key+1) % 5 == 0) {
-			print_r("\n#\t\t");
-		} else {
-			print_r("\t");
+	if ($calledBy === "cli") {
+		//===========================================================
+		//
+		// Called by commandline.
+		//	Output nicely formated text for commandline interface.
+		//
+		//===========================================================
+		print_r("#\tYMAPs initialized: ".$count_queue_initialized."\n#\t\t");
+		$stringLength = 0;
+		foreach ($init_list as $key=>$value) {
+			$key_   = $key+1;
+			$user   = $value[1];
+			$name   = $value[2];
+			$type   = $value[5];
+			$string = "[{$key_}] ".$user.":".$type.":".$name;
+			print_r($string);
+			$stringLength += strlen($string);
+			if ($stringLength > 80) {
+				print_r("\n#\t\t");
+				$stringLength = 0;
+			} else {
+				print_r("\t");
+			}
 		}
-	}
-	if (sizeof($init_list) > 0) {
-		print_r("\n");
-	}
-	print_r("#\n#\tYMAPs processing:  ".$count_queue_working."\n#\t\t");
-	foreach ($start_list as $key=>$value) {
-		$key_ = $key+1;
-		$user = $value[1];
-		$name = $value[2];
-		$type = $value[5];
-
-		if ($type == "project") {	$file = $main_dir."/users/".$user."/projects/".$name."/condensed_log.txt";
-		} elseif ($type == "genome") {	$file = $main_dir."/users/".$user."/genomes/".$name."/condensed_log.txt";
-		} elseif ($type == "hapmap") {	$file = $main_dir."/users/".$user."/hapmaps/".$name."/condensed_log.txt";
-		} else {
-			// Something went wrong.
-		}
-		$data = file($file);
-		$line = trim($data[count($data)-1]);
-		print_r("[{$key_}] ".$user.":".$type.":".$name." = \e[33m'".$line."'\e[0m");
-		if (($key+1) % 7 == 0) {
+		if (sizeof($init_list) > 0) {
 			print_r("\n");
-		} else {
-			print_r("\t");
 		}
+		print_r("#\n#\tYMAPs processing:  ".$count_queue_working."\n#\t\t");
+		foreach ($start_list as $key=>$value) {
+			$key_ = $key+1;
+			$user = $value[1];
+			$name = $value[2];
+			$type = $value[5];
+
+			if ($type == "project") {	$file = $main_dir."/users/".$user."/projects/".$name."/condensed_log.txt";
+			} elseif ($type == "genome") {	$file = $main_dir."/users/".$user."/genomes/".$name."/condensed_log.txt";
+			} elseif ($type == "hapmap") {	$file = $main_dir."/users/".$user."/hapmaps/".$name."/condensed_log.txt";
+			} else {
+				// Something went wrong.
+			}
+			$data = file($file);
+			$line = trim($data[count($data)-1]);
+			print_r("[{$key_}] ".$user.":".$type.":".$name." = \e[33m'".$line."'\e[0m");
+			if (($key+1) % 7 == 0) {
+				print_r("\n");
+			} else {
+				print_r("\t");
+			}
+		}
+		if (sizeof($start_list) > 0) {
+			print_r("\n");
+		}
+		print_r("#\n#\tYMAPs complete:    ".$count_queue_done."\n");
+	} else {
+		//===========================================================
+		//
+		// Called by web server.
+		//	Output simple string with initialized and started counts for web interface.
+		//
+		//===========================================================
+		$queue_status_init  = count($init_list);
+		$queue_status_start = count($start_list);
 	}
-	if (sizeof($start_list) > 0) {
-		print_r("\n");
-	}
-	print_r("#\n#\tYMAPs complete:    ".$count_queue_done."\n");
-	//print_r($start_list);
-	//print_r($end_list);
-	//===========================================================
 ?>
