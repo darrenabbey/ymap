@@ -76,6 +76,7 @@ if (isset($_SESSION['logged_on'])) {
 	<ol>
 	<li><b>YMAP now can process long-read sequence data!</b></li>
 	<li>Uploaded data is now added to a queue that will process your data while keeping system demaind under control.</li>
+	<li>Queue status and expected time until next uploaded dataset can start processing is shown in the "Manage Datasets" tab.</li>
 	<li>A warning is presented if less than 50% of uploaded sequence reads map to the reference genome.</li>
 	<li>Fewer process hangs/crashes due to better error management.</i>
 	<li>If a process crashes, a useful error message will be generated, allowing easier code troubleshooting.</li>
