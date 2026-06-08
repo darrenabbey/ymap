@@ -292,17 +292,31 @@ echo "$genomeLength (genome length)" >> "$projectDirectory/readStats.txt"
 readCount=$(head -n 1 "$projectDirectory/readStats.txt" | awk '{print $1}');
 readTotalLength=$(head -n 2 "$projectDirectory/readStats.txt" | tail -n 1 | awk '{print $1}');
 
+echo -e "##" >> $logName;
+echo -e "## Read depth calculations:" >> $logName;
+echo -e "##\t\$readTotalLength          = $readTotalLength" >> $logName;
+echo -e "##\t\$TARGET_FRACTION          = $TARGET_FRACTION" >> $logName;
+echo -e "##\t\$genomeLength             = $genomeLength" >> $logName;
+
 ## Calculate expected average read depth and add to readStats.txt file.
 readDepthAverageExpected=$(echo -e "scale=3; $readTotalLength*$TARGET_FRACTION / $genomeLength" | bc -l);
 echo "$readDepthAverageExpected (Expected read depth)" >> "$projectDirectory/readStats.txt";
+
+echo -e "##\t\$readDepthAverageExpected = $readDepthAverageExpected" >> $logName;
 
 ## Find average read depth and add to readStats.txt file.
 readDepthAverageFound=$(awk '{sum += $3; count++} END {if (count > 0) print sum/count}' "$projectDirectory/SNP_CNV_v1.txt");
 echo "$readDepthAverageFound (Found read depth)" >> "$projectDirectory/readStats.txt";
 
+echo -e "##\t\$readDepthAverageFound    = $readDepthAverageFound" >> $logName;
+
 ## Calculate fraction mapped and add to readStats.txt file.
 fractionMapped1=$(echo -e "scale=6; ($readDepthAverageFound / $readDepthAverageExpected)*100" | bc -l);
 fractionMapped2=$(echo -e "scale=3; $fractionMapped1 / 1" | bc -l);
+
+echo -e "##\t\$fractionMapped1          = $fractionMapped1" >> $logName;
+echo -e "##\t\$fractionMapped2          = $fractionMapped2" >> $logName;
+
 echo "$fractionMapped2 (Mapped read fraction)" >> "$projectDirectory/readStats.txt";
 if [[ "$fractionMapped2" < 50 ]]; then
 	if [[ "$fractionMapped2" < 1 ]]; then
@@ -311,7 +325,6 @@ if [[ "$fractionMapped2" < 50 ]]; then
 		echo -e "$fractionMapped2% reads mapped." >> "$projectDirectory/warning.txt";
 	fi
 fi
-
 
 if [[ "$hapmapInUse" = 1 ]]; then
 	if [[ -f $projectDirectory/trimmed_SNPs_v5.txt ]]; then
