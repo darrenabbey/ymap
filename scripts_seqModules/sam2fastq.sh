@@ -7,6 +7,7 @@ set -e
 user="$1";
 project="$2";
 inputFile="$3";
+outputFile="$4";
 main_dir=$(pwd);
 
 projectDirectory="$main_dir/users/$user/projects/$project";
@@ -30,7 +31,7 @@ if [ $count == "1" ]; then
 else
 	echo -e "#|\tPaired end reads." >> $logName;
 fi;
-finalOutput1="$projectDirectory/data.fastq";
+finalOutput1="$projectDirectory/$outputFile";
 finalOutput2="";
 echo -e "#|\t$samtools_exec fastq -0 /dev/null $projectDirectory$inputFile -n > $finalOutput1" >> $logName;
 $samtools_exec fastq -0 /dev/null "$projectDirectory/$inputFile" -n > $finalOutput1;

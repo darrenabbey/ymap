@@ -228,7 +228,7 @@ if ($ext == "zip") {
 
 	// Convert SAM file to FASTQ files.
 	fwrite($condensedLogOutput, "Decompressing SAM/BAM file to FASTQ.\n");
-	$null       = shell_exec("bash scripts_seqModules/sam2fastq.sh ".$user." ".$project." ".$name_new);
+	$null       = shell_exec("bash scripts_seqModules/sam2fastq.sh ".$user." ".$project." ".$name_new." "."datafile_".$key.".fastq");
 
 	// Check if file has single or paired read data.
 	fwrite($logOutput, "\t\t| SAM/BAM file: ".$absProjectPath.$name_new."\n");
@@ -257,9 +257,9 @@ if ($ext == "zip") {
 //		$paired = 1;
 //	} else {
 		// Rewrite datafiles.txt file with decomressed sam/bam data.
-		fwrite($datafiles_file, "data.fastq\n");
+		fwrite($datafiles_file, "datafile_".$key.".fastq\n");
 		fwrite($datafiles_file, "");
-		$name_new  = "data.fastq";
+		$name_new  = "datafile_".$key.".fastq";
 		$name_new2 = "";
 		$paired = 0;
 //	}
