@@ -1376,9 +1376,10 @@ else
 
 				## Projects not started: missing "complete.txt" and "working.txt" files.
 				echo -e "#\tProjects initialized:";
-				tempfile=$(mktemp --suffix ".ymap");
-				find * -type d "!" -exec sh -c 'ls -A "{}" | grep --quiet -e "working.txt" -e "complete.txt"' \; -print > $tempfile;
-				cat $tempfile | xargs -n 7 | column -t | sed 's/^/#\t\t/' | cat;
+				#tempfile=$(mktemp --suffix ".ymap");
+				#find * -type d "!" -exec sh -c 'ls -A "{}" | grep --quiet -e "working.txt" -e "complete.txt"' \; -print > $tempfile;
+				#cat $tempfile | xargs -n 7 | column -t | sed 's/^/#\t\t/' | cat;
+				find * -type d "!" -exec sh -c 'ls -A "{}" | grep --quiet -e "working.txt" -e "complete.txt"' \; -print | xargs -n 7 | column -t | sed 's/^/#\t\t/' | cat;
 				echo -e "#";
 
 				## Projects running: with "working.txt" and no "complete.txt" file.
