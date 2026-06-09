@@ -5,6 +5,7 @@ ymap_daemon.php
 ymap_daemon.sh
 constants.php
 YMAPcli.dat
+wigToBigWig
 .DS_Store
 .*
 !.htaccess
