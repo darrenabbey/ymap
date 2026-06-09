@@ -1376,9 +1376,6 @@ else
 
 				## Projects not started: missing "complete.txt" and "working.txt" files.
 				echo -e "#\tProjects initialized:";
-				#tempfile=$(mktemp --suffix ".ymap");
-				#find * -type d "!" -exec sh -c 'ls -A "{}" | grep --quiet -e "working.txt" -e "complete.txt"' \; -print > $tempfile;
-				#cat $tempfile | xargs -n 7 | column -t | sed 's/^/#\t\t/' | cat;
 				find * -type d "!" -exec sh -c 'ls -A "{}" | grep --quiet -e "working.txt" -e "complete.txt"' \; -print | xargs -n 7 | column -t | sed 's/^/#\t\t/' | cat;
 				echo -e "#";
 
@@ -1402,10 +1399,7 @@ else
 
 				## Projects done: include "complete.txt" file.
 				echo -e "#\tProjects completed:";
-				tempfile=$(mktemp --suffix ".ymap");
-				find * -type d -exec sh -c 'ls -A "{}" | grep --quiet "complete.txt"' \; -print > $tempfile;
-				# Convert one column into multiple columns in interface format.
-				cat $tempfile | xargs -n 7 | column -t | sed 's/^/#\t\t/' | cat;
+				find * -type d -exec sh -c 'ls -A "{}" | grep --quiet "complete.txt"' \; -print | xargs -n 7 | column -t | sed 's/^/#\t\t/' | cat;
 
 				cd $main_dir;
 			else
