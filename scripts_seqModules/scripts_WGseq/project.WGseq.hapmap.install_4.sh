@@ -93,7 +93,7 @@ if [[ -f "$projectDirectory/preprocessed_CNVs.txt" ]]
 then
 	echo -e "\t\tCNV data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
 else
-	install /dev/null "$projectDirectory/preprocessed_CNVs.txt";
+	#install /dev/null "$projectDirectory/preprocessed_CNVs.txt";
 	echo -e "\t\tPreprocessing CNV data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
 	$python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py" "$user" "$project" "$genome" "$genomeUser" "$main_dir" "$logName"  > "$projectDirectory/preprocessed_CNVs.txt" 2>> $logName;
 	echo -e "\t\tpre-processing complete." >> $logName;
@@ -196,9 +196,10 @@ if [[ -f "$projectDirectory/preprocessed_SNPs.txt" ]]
 then
 	echo -e "\t\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 else
-	install /dev/null "$projectDirectory/preprocessed_SNPs.txt";
+	#install /dev/null "$projectDirectory/preprocessed_SNPs.txt";
 	echo -e "\t\tPreprocessing SNP data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
-	$python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" "$genome" "$genomeUser" "$hapmap" "$hapmapUser" "$project" "$user" "$main_dir" "$logName" hapmap  > $projectDirectory"preprocessed_SNPs.txt" 2>> $logName;
+
+	$python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" "$genome" "$genomeUser" "$hapmap" "$hapmapUser" "$project" "$user" "$main_dir" "$logName" hapmap  > "$projectDirectory/preprocessed_SNPs.txt" 2>> $logName;
 	echo -e "\t\tpre-processing complete." >> $logName;
 fi
 

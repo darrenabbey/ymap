@@ -204,14 +204,12 @@ else
 
 	# preprocess parent (or self if no parent) for comparison.
 	install /dev/null "$projectDirectory/SNPdata_parent.temp.txt";
-	$python_exec "$main_dir/scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" "$genome" "$genomeUser" "$project" "$user" "$projectParent" "$projectParentUser" "$main_dir" LOH > \
-		"$projectDirectory/SNPdata_parent.temp.txt" 2>> $logName;
+	$python_exec "$main_dir/scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" "$genome" "$genomeUser" "$project" "$user" "$projectParent" "$projectParentUser" "$main_dir" LOH > "$projectDirectory/SNPdata_parent.temp.txt" 2>> $logName;
 
 	rm "$projectDirectory/SNPdata_parent.txt";
 	mv "$projectDirectory/SNPdata_parent.temp.txt" "$projectDirectory/SNPdata_parent.txt";
 
-	$python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" "$genome" "$genomeUser" "$projectParent" "$projectParentUser" "$project" "$user" "$main_dir" "$logName" LOH > \
-		"$projectDirectory/preprocessed_SNPs.txt" 2>> $logName;
+	$python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" "$genome" "$genomeUser" "$projectParent" "$projectParentUser" "$project" "$user" "$main_dir" "$logName" LOH > "$projectDirectory/preprocessed_SNPs.txt" 2>> $logName;
 	echo -e "\tpre-processing complete." >> $logName;
 fi
 

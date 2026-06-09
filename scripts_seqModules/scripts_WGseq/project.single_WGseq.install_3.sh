@@ -99,7 +99,14 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 		# Subsample FASTQ files to target fraction.
 		cd "$main_dir/users/$user/projects/$project/";
 		install /dev/null datafile_0.sample.fastq;
-		fadso single -i datafile_0.fastq -o datafile_0.sample.fastq -k $TARGET_READS;
+
+		## Use FADSO to downsample reads.
+		#fadso single -i datafile_0.fastq -o datafile_0.sample.fastq -k $TARGET_READS;
+
+		## Use SEQTK to downsample reads.
+                randSeed=$((1 + $RANDOM % 1000));
+                seqtk sample -2 -s $randSeed datafile_0.fastq $TARGET_READS > datafile_0.sample.fastq;
+
 		unlink datafile_0.fastq;
 		mv datafile_0.sample.fastq datafile_0.fastq;
 		echo -e "#\t\tdatafile_0.fastq and datafile_1.fastq downsampled." >> $logName;
@@ -267,9 +274,9 @@ fi
 
 # Find genome size and add to readStats.txt file.
 sed -n '2~2p' "$genomeDirectory/datafile_g_0.2.fasta" > "$projectDirectory/reference.temp";
-referenceSeq=$(wc "$projectDirectory/reference.temp");
-genomeChrCount=$(echo "$referenceSeq"=|cut -d' ' -f1);
-genomeLengthInit=$(echo "$referenceSeq"=|cut -d' ' -f3)
+referenceSeq="$projectDirectory/reference.temp";
+genomeChrCount=$(cat $referenceSeq | wc -l);
+genomeLengthInit=$(cat $referenceSeq | wc -c);
 genomeLength=$((genomeLengthInit-genomeChrCount));
 echo "$genomeLength (genome length)" >> "$projectDirectory/readStats.txt";
 

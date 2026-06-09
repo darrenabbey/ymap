@@ -238,31 +238,22 @@ if ($ext == "zip") {
 	//fwrite($logOutput, "\t\t|\t".$SAMheader."\n");
 	fwrite($logOutput, "\t\t| Source file count from SAM/BAM header = ".$FASTQcount."\n");
 
-	// Rewrite datafiles.txt depending on contents of SAM/BAM file.
+	// delete prior datafiles.txt file.
 	unlink($absProjectPath."datafiles.txt");
-	$datafiles_file = fopen($absProjectPath."datafiles.txt", 'w');
 
 	if ((int)$FASTQcount == 1) {
 		fwrite($logOutput, "\t\t| Single-read SAM/BAM file converted to FASTQ file, original deleted.\n");
 	} else {
 		fwrite($logOutput, "\t\t| Paired-read SAM/BAM file converted to FASTQ file, original deleted.\n");
 	}
-	// Faster just to treat all SAM/BAM files as single-end reads.
-//	if (paired == true) {
-//		// Rewrite datafiles.txt file with decomressed sam/bam data.
-//		fwrite($datafiles_file, "data_r1.fastq\n");
-//		fwrite($datafiles_file, "data_r2.fastq\n");
-//		$name_new  = "data_r1.fastq";
-//		$name_new2 = "data_r2.fastq";
-//		$paired = 1;
-//	} else {
-		// Rewrite datafiles.txt file with decomressed sam/bam data.
-		fwrite($datafiles_file, "datafile_".$key.".fastq\n");
-		fwrite($datafiles_file, "");
-		$name_new  = "datafile_".$key.".fastq";
-		$name_new2 = "";
-		$paired = 0;
-//	}
+
+	// Rewrite datafiles.txt file with decomressed sam/bam data.
+	$datafiles_file = fopen($absProjectPath."datafiles.txt", 'w');
+	fwrite($datafiles_file, "datafile_".$key.".fastq\n");
+	fwrite($datafiles_file, "");
+	$name_new  = "datafile_".$key.".fastq";
+	$name_new2 = "";
+	$paired = 0;
 	fclose($datafiles_file);
 	$ext_new   = "fastq";
 

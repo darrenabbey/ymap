@@ -35,6 +35,10 @@ $MAX_MEMORY_TARGET = 10;
 // More than one can be processed at once, but the memory utilization becomes less predictable so should not be done on memory limited servers without testing.
 $MAX_QUEUE_PARALLEL = 1;
 
+// The time estimate for completing a dataset (in minutes), used in calculating expected time for queue completion in user interface.
+// This will need to be empirically determined for each new install.
+$QUEUE_TIME_ESTIMATE = 40;
+
 
 //==============================================================================
 // The following settings should never need to be updated.

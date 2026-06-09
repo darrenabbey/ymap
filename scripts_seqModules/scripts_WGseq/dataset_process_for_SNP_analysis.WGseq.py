@@ -42,7 +42,7 @@ with open(logName, "a") as myfile:
 	myfile.write("\t\t| Log of 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'   |\n")
 	myfile.write("\t\t*---------------------------------------------------------------------------------------*\n")
 	myfile.write("\t\t| Input arguments:\n");
-	myfile.write("\t\t|     genome      ="+genome+"\n")
+	myfile.write("\t\t|     genome      = "+genome+"\n")
 	myfile.write("\t\t|     genomeUser  = "+genomeUser+"\n")
 	myfile.write("\t\t|     hapmap      = "+hapmap+"\n")
 	myfile.write("\t\t|     hapmapuser  = "+hapmapUser+"\n")

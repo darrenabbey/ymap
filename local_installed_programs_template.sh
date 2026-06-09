@@ -4,23 +4,16 @@ set -e
 #============================================================================
 # User installed executables not in PATH variable.
 #----------------------------------------------------------------------------
-# Location where bioinformatics tools are installed:
-userProgramsLocation="";
 
-# Dependency executable directories:
-bowtie2Directory=$userProgramsLocation"bowtie2-2.1.0/";
-
-# Dependency executables:
-octave_exec=$userProgramsLocation"octave -qf --no-gui";
-
-# the wigToBigWig executable:
-wigToBigWig_exec=$userProgramsLocation"wigToBigWig";
-
+# bowtie2 executable directories (if not installed to path):
+bowtie2Directory="";
 
 
 #============================================================================
 # System installed executables or name in PATH variable.
 #----------------------------------------------------------------------------
+wigToBigWig_exec="wigToBigWig";
+octave_exec="octave -qf --no-gui";
 samtools_exec="samtools";
 
 # Can be used to run PyPy (or any other Python implementation) instead of
