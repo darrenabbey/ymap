@@ -199,7 +199,7 @@
 				print_r("\t");
 			}
 		}
-		print_r("#\n#\tYMAPs complete:    ".$count_queue_done."\n");
+		print_r("\n#\tYMAPs complete:    ".$count_queue_done."\n");
 	} else {
 		//===========================================================
 		//
