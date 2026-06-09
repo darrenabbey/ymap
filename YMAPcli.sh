@@ -323,14 +323,18 @@ else
 		case $whatisit in
 		    "project")
 			workingDirectory=$main_dir"/users/"$user"/projects/"
-			bulkDirectory=$main_dir"/users/"$user"/bulkdata/";
-
 			if [[ ! -e $workingDirectory ]]; then
 				echo -e "#\t\e[41mInvalid selection: User not found.\e[0m";
 				echo -e "#";
 				echo -e $lineThick;
 				return 1;
 			fi;
+
+			bulkDirectory=$main_dir"/users/"$user"/bulkdata/";
+			if [[ ! -d $bulkDirectory ]]; then
+				mkdir -p $bulkdirectory;
+			fi;
+
 
 			echo -e "#\tInstalling a new project.";
 			echo -e "#\t\tAfter installing a datafile (or multiple datafiles to be run";
@@ -1356,8 +1360,13 @@ else
 			if [ -d $projectDirectory ]; then
 				cd $projectDirectory;
 
+				bulkDirectory=$main_dir"/users/"$user"/bulkdata/";
+				if [[ ! -d $bulkDirectory ]]; then
+					mkdir -p $bulkdirectory;
+				fi;
+
 				## Project files installed, but not run: count files in bulkdata directory.
-				installedProjectCount=$(ls $main_dir"/users/"$user"/bulkdata/" | wc -l);
+				installedProjectCount=$(ls "$bulkDirectory" | wc -l);
 				if [[ "$installedProjectCount" = "0" ]]; then
 					echo -e "#\tNo datasets have been installed and not yet initialized/run into queue.";
 				else
@@ -2056,7 +2065,11 @@ else
 			echo -e "#";
 			userAccount=$user;
 		fi;
-		if [[ $(ls $main_dir"/users/"$user"/bulkdata/" | wc -l) = "0" ]]; then
+		bulkDirectory=$main_dir"/users/"$user"/bulkdata/";
+		if [[ ! -d $bulkDirectory ]]; then
+			mkdir -p $bulkdirectory;
+		fi;
+		if [[ $(ls "$bulkDirectory" | wc -l) = "0" ]]; then
 			echo -e "#\t\e[41mNo datasets have been installed and not yet run for this user.\e[0m";
 			fail=1;
 		fi;

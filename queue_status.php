@@ -193,14 +193,11 @@
 			$data = file($file);
 			$line = trim($data[count($data)-1]);
 			print_r("[{$key_}] ".$user.":".$type.":".$name." = \e[33m'".$line."'\e[0m");
-			if (($key+1) % 7 == 0) {
-				print_r("\n");
+			if (($key+1) % 1 == 0) {
+				print_r("\n#\t\t");
 			} else {
 				print_r("\t");
 			}
-		}
-		if (sizeof($start_list) > 0) {
-			print_r("\n");
 		}
 		print_r("#\n#\tYMAPs complete:    ".$count_queue_done."\n");
 	} else {
