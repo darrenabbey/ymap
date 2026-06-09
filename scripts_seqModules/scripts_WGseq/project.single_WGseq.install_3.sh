@@ -220,7 +220,7 @@ else
 		## Bowtie 2 command for single reads:
 		echo -e "\nRunning bowtie2.\n";
 		echo -e "\t\"bowtie2\" --very-sensitive -p $cores -x $genomeDirectory/bowtie_index -U $projectDirectory/$datafile" -S "$projectDirectory/data.bam;" >> $logName;
-		$bowtie2Directory"bowtie2" --very-sensitive -p "$cores" -x "$genomeDirectory/bowtie_index" -U "$projectDirectory/$datafile" > "$projectDirectory/data.bam" 2> $logName;
+		$bowtie2Directory"bowtie2" --very-sensitive -p "$cores" -x "$genomeDirectory/bowtie_index" -U "$projectDirectory/$datafile" > "$projectDirectory/data.bam" 2>> $logName;
 			# -p : number of threads to use.
 			# -1 : dataset.
 		    # --very-sensitive : a default set of configurations.
@@ -231,12 +231,12 @@ else
 		echo -e "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
 		echo -e "Sorting BAM file." >> $condensedLog;
 		echo -e "\nRunning samtools:sort.\n";
-		$samtools_exec sort -@ "$cores" "$projectDirectory/data.bam" -o "$projectDirectory/data_sorted.bam" -T "$projectDirectory" 2> $logName;
+		$samtools_exec sort -@ "$cores" "$projectDirectory/data.bam" -o "$projectDirectory/data_sorted.bam" -T "$projectDirectory" 2>> $logName;
 		chmod 774 "$projectDirectory/data_sorted.bam";
 
 		echo -e "Indexing BAM file." >> $condensedLog;
 		echo -e "\nRunning samtools:index.\n";
-		$samtools_exec index "$projectDirectory/data_sorted.bam" 2> $logName;
+		$samtools_exec index "$projectDirectory/data_sorted.bam" 2>> $logName;
 		chmod 774 "$projectDirectory/data_sorted.bam.bai";
 		echo -e "\tSamtools : Bowtie-BAM sorted & indexed." >> $logName;
 	fi
