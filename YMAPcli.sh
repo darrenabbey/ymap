@@ -1664,7 +1664,7 @@ else
 			echo -e "#";
 			tempfile=$(mktemp --suffix ".ymap");
 			grep "\$ADMIN_EMAIL" constants.php > $tempfile;
-			awk '{ while (length > 160) { print substr($0, 1, 160); $0 = "\t     │\t\t" substr($0, 161); } print $0; }' $tempfile | sed 's/^/#\t/' | cat;
+			cat $tempfile | sed 's/^/#\t/' | cat;
 			echo -e "#";
 			echo -e "#\tUsage: bash YMAPcli.sh admin_email \e[31m(address)\e[0m";
 		else
