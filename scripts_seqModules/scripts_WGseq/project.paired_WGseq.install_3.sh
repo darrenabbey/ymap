@@ -120,6 +120,7 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 		cd "$main_dir";
 
 	else
+		TARGET_FRACTION="1";
 		echo -e "#\t\tFILESIZE_GB < MAX_PROCESSED_DATA_SIZE => FASTQ subsampling not needed." >> $logName;
 	fi;
 else
@@ -243,6 +244,7 @@ else
 		echo -e "\nRunning samtools:sort.\n";
 		$samtools_exec sort -@ "$cores" "$projectDirectory/data.bam" -o "$projectDirectory/data_sorted.bam" -T "$projectDirectory";
 		chmod 774 "$projectDirectory/data_sorted.bam";
+
 		echo -e "Indexing BAM file." >> $condensedLog;
 		echo -e "\nRunning samtools:index.\n";
 		$samtools_exec index "$projectDirectory/data_sorted.bam";
@@ -283,8 +285,9 @@ fi
 
 # Find genome size and add to readStats.txt file.
 sed -n '2~2p' "$genomeDirectory/datafile_g_0.2.fasta" > "$projectDirectory/reference.temp";
-genomeChrCount=$(wc -l < "$projectDirectory/reference.temp");
-genomeLengthInit=$(wc -m < "$projectDirectory/reference.temp");
+referenceSeq=$(wc "$projectDirectory/reference.temp");
+genomeChrCount=$(echo "$referenceSeq"=|cut -d' ' -f1);
+genomeLengthInit=$(echo "$referenceSeq"=|cut -d' ' -f3)
 genomeLength=$((genomeLengthInit-genomeChrCount));
 echo "$genomeLength (genome length)" >> "$projectDirectory/readStats.txt"
 

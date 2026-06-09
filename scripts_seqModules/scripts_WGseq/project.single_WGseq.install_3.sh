@@ -105,6 +105,7 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 		echo -e "#\t\tdatafile_0.fastq and datafile_1.fastq downsampled." >> $logName;
 		cd "$main_dir";
 	else
+		TARGET_FRACTION="1";
 		echo -e "#\t\tFILESIZE_GB < MAX_PROCESSED_DATA_SIZE => FASTQ subsampling not needed." >> $logName;
 	fi;
 else
