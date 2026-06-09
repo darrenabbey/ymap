@@ -50,8 +50,6 @@
 	fwrite($Output, date('Y-m-d H:i:s'));
 	fclose($Output);
 
-	queue_start($user,$project,"","","from: project.WGseq.update_1.php");
-
 	// Delete pre-existing final output files.
 	fwrite($logOutput, "Cleaning up old output files.\n");
 	$projectFiles   = preg_grep('~\.(png|eps|bed|gff3)$~', scandir($project_dir));
