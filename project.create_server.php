@@ -90,7 +90,7 @@
 		if (!file_exists($projects_dir)){
 			mkdir($projects_dir);
 			secureNewDirectory($projects_dir);
-			chmod($projects_dir,0773);
+			chmod($projects_dir,0777);
 		}
 
 		if (file_exists($project_dir1) || file_exists($project_dir2)) {
@@ -123,7 +123,7 @@
 			// Create the project folder inside the user's projects directory
 			mkdir($project_dir1);
 			secureNewDirectory($project_dir1);
-			chmod($project_dir1,0773);
+			chmod($project_dir1,0777);
 
 			make_salt($user,$project,"","");
 
