@@ -1,5 +1,5 @@
 <?php
-	session_start();
+	session_destroy();
 	error_reporting(E_ALL);
 	require_once 'constants.php';
 	require_once 'sharedFunctions.php';
@@ -9,6 +9,8 @@
 	// Sanitize input strings.
 	$user    = sanitize_POST("user");
 	$pw_in   = stripHTML_POST("pw");
+
+	log_stuff($user,"","","","","LOGIN test point 1.");
 
 	// Delays login processing if prior login failure.
 	if (isset($_SESSION['delay'])) {
@@ -20,6 +22,7 @@
 
 	// Validate login.
 	$login_success = validateLogin($user, $pw_in);
+	log_stuff($user,"","","","","LOGIN test point 2.");
 
 	// Delay before page reload.
 	if ($login_success == 0) {
@@ -28,29 +31,38 @@
 		session_destroy();
 		session_start();
 		$_SESSION['logged_on'] = 0;
-		$_SESSION['error'] = $error;
-		$_SESSION['delay'] = 5;
+		$_SESSION['error']     = $error;
+		$_SESSION['delay']     = 5;
+		$_SESSION['user']      = "";
 		echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\nparent.update_interface();\n}\n";
 		echo "var intervalID = window.setInterval(reload_page, ".$delay_interval.");\n</script>\n";
 	} else {
 		// login succeded.
+		log_stuff($user,"","","","","LOGIN test point 3.");
+
 		session_destroy();
 		session_start();
-		$_SESSION['logged_on'] = 1;
-		$_SESSION['user']      = $user;
-
-		// check if user is active before logging stuff.
-		if (file_exists($users_dir.$user."locked.txt")) {
-			$_SESSION['delay'] = 0;
+		if (file_exists($users_dir.$user."/locked.txt")) {
+			// User account is locked.
+			$_SESSION['logged_on'] = 0;
+			$_SESSION['error']     = "Account is currently locked.";
+			$_SESSION['delay']     = 5;
+			$_SESSION['user']      = "";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\nparent.update_interface();\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, ".$delay_interval.");\n</script>\n";
-		} else if (file_exists($users_dir.$user."active.txt")) {
-			$_SESSION['delay'] = 0;
+		} else if (file_exists($users_dir.$user."/active.txt")) {
+			// User account is active.
+			$_SESSION['logged_on'] = 1;
+			$_SESSION['user']      = $user;
+			$_SESSION['delay']     = 0;
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\nparent.update_interface();\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, ".$delay_interval.");\n</script>\n";
 		} else {
 			// Error state.
-			$_SESSION['delay'] = 0;
+			$_SESSION['logged_on'] = 0;
+			$_SESSION['error']     = "Account is in an error state.";
+			$_SESSION['delay']     = 5;
+			$_SESSION['user']      = "";
 			echo "<script type=\"text/javascript\">\nreload_page=function() {\n\tlocation.replace(\"panel.user.php\");\nparent.update_interface();\n}\n";
 			echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 		}
