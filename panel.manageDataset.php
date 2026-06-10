@@ -34,7 +34,7 @@
 	<div style="margin-left: 20;">
 		<li><?php
 			// Show queue status.
-		//	require 'queue_status.php';
+			require 'queue_status.php';
                 //	$queue_count = (int)$queue_status_init + (int)$queue_status_start;
 		//	if ($queue_count > 0) {
 		//		if ($MAX_QUEUE_PARALLEL > 1) {
