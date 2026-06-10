@@ -403,7 +403,7 @@ BASE_DIR_temp
 			exec($conclusion_script." ".$command_string." > /dev/null 2> ".$Directory."/process_log.txt &");
 			chdir($base_dir);
 			queue_start($user,$name,"","","from: ymap_daemon");
-			log_stuff($user,$name,"","",$salt_string,"YMAP_daemon:SUCCESS project initiated.");
+			log_stuff($user,$name,"","",$salt_string,"YMAP_daemon:SUCCESS project started.");
 		}
 	}
 	function genome_process($base_dir,$user,$name,$Directory) {
@@ -439,10 +439,10 @@ BASE_DIR_temp
 			exec($conclusion_script." ".$command_string." > /dev/null 2> ".$Directory."/process_log.txt &");
 			chdir($base_dir);
 			queue_start($user,"",$name,"","from: ymap_daemon");
-			log_stuff($user,"",$name,"",$salt_string,"YMAP_daemon:SUCCESS genome initiated.");
+			log_stuff($user,"",$name,"",$salt_string,"YMAP_daemon:SUCCESS genome started.");
 		}
 	}
 	function hapmap_process($base_dir,$user,$hapmap,$dataFormat,$fileName,$hapmapDirectory) {
-		log_stuff($user,"","",$hapmap,"","YMAP_daemon:SUCCESS hapmap initiated.");
+		log_stuff($user,"","",$hapmap,"","YMAP_daemon:SUCCESS hapmap started.");
 	}
 ?>
