@@ -53,6 +53,7 @@
 	<br>
 </font>
 <?php
+	log_stuff($user,"","","","","panel:manage test point 2.5");
 	if (isset($_SESSION['logged_on'])) {
 		// getting the current size of the user folder in Gigabytes
 		$currentSize = getUserUsageSize($user);
