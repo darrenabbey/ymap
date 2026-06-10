@@ -70,6 +70,18 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	READS1=$(printf %.0f $( echo "$READS_RAW1/4" | bc -l) );
 	READS2=$(printf %.0f $( echo "$READS_RAW2/4" | bc -l) );
 
+
+	## if file 2 is longer than file 1, swap them.
+	if [[ $READS2 -gt $READS1) ]]; then
+		mv "$main_dir/users/$user/projects/$project/datafile_0.fastq"    "$main_dir/users/$user/projects/$project/datafile_temp.fastq";
+		mv "$main_dir/users/$user/projects/$project/datafile_1.fastq"    "$main_dir/users/$user/projects/$project/datafile_0.fastq";
+		mv "$main_dir/users/$user/projects/$project/datafile_temp.fastq" "$main_dir/users/$user/projects/$project/datafile_1.fastq"
+
+		READStemp=$READS1;
+		READS1=$READS2;
+		READS2=$READStemp;
+	fi;
+
 	echo -e "#\tFILESIZE1               = $FILESIZE1 (bytes)" >> $logName;
 	echo -e "#\tFILESIZE2               = $FILESIZE2 (bytes)" >> $logName;
 	echo -e "#\tREADS1                  = $READS1" >> $logName;
@@ -235,13 +247,6 @@ else
 		echo -e "\tDone: SAM -> BAM, new group headers, sorted." >> $logName;
 	else
 		echo -e "\tBowtie : paired-end reads aligning into SAM file." >> $logName;
-
-		## if file 2 is longer than file 1, swap them.
-		if [[ $(wc -l "$projectDirectory/$datafile2") -gt $(wc -l "$projectDirectory/$datafile1") ]]; then
-			mv "$projectDirectory/$datafile1" "$projectDirectory/tempdata";
-			mv "$projectDirectory/$datafile2" "$projectDirectory/$datafile1";
-			mv "$projectDirectory/tempdata" "$projectDirectory/$datafile2";
-		fi;
 
 		## Bowtie 2 command for paired reads:
 		echo -e "\nRunning bowtie2.\n" >> $logName;
