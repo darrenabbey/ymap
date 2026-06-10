@@ -26,7 +26,6 @@
 		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
 	} else {
-		log_stuff($user,"","","","","project.create_server.php test point 1.");
 		// Validate input strings.
 		$project         = sanitize_POST("project");
 		$ploidy          = sanitizeFloat_POST("ploidy");
