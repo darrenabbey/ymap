@@ -7,9 +7,12 @@
         ini_set('display_errors', 1);
 
         // If the user is not logged on, redirect to login page.
-        if(!isset($_SESSION['logged_on'])) {
+        if (!isset($_SESSION['logged_on'])) {
 		session_destroy();
                 header('Location: .');
+	} else if ($_SESSION['logged_on'] == 0) {
+		session_destroy();
+		header('Location: .');
         }
 
 	// Ensure admin user is logged in.

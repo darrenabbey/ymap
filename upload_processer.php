@@ -13,7 +13,11 @@
 	if(!isset($_SESSION['logged_on'])){
 		session_destroy();
 		header('Location: .');
+	} else if ($_SESSION['logged_on'] == 0) {
+		session_destroy();
+		header('Location: .');
 	}
+
 	if(isset($_SESSION['user'])) {
 		$user   = $_SESSION['user'];
 	} else {

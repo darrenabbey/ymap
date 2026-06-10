@@ -10,6 +10,9 @@
         if(!isset($_SESSION['logged_on'])) {
 		session_destroy();
                 header('Location: .');
+	} else if ($_SESSION['logged_on'] == 0) {
+		session_destroy();
+		header('Location: .');
         } else {
 		// Load user string from session.
 		if(isset($_SESSION['user'])) {

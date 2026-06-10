@@ -1,4 +1,5 @@
 <?php
+session_start();
 function stripHTML_POST($POST_name) {
 	// Pull string from input_post; clean up any leading/trailing whitespace.
 	$cleanString = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT) ?? '');

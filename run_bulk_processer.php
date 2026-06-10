@@ -1,7 +1,13 @@
 <?php
 	session_start();
 	require_once 'constants.php';
-	if(!isset($_SESSION['logged_on'])){?><script type="text/javascript"> parent.reload(); </script><?php } else { $user = $_SESSION['user']; }
+	if(!isset($_SESSION['logged_on'])) {
+		?> <script type="text/javascript"> parent.reload(); </script> <?php
+	} else if ($_SESSION['logged_on'] == 0) {
+		?> <script type="text/javascript"> parent.reload(); </script> <?php
+	} else {
+		$user = $_SESSION['user'];
+	}
 	require_once 'constants.php';
 
 	// Call the bulk data processer and disconnect it from the browser.

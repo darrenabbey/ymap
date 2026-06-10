@@ -1,5 +1,13 @@
 <?php
 	session_start();
+
+	if (!isset($_SESSION['logged_on'])) {
+		session_destroy();
+		header('Location: .');
+	} else if ($_SESSION['logged_on'] == 0) {
+		session_destroy();
+		header('Location: .');
+	}
 ?>
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->

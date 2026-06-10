@@ -1,12 +1,19 @@
 <?php
 	session_start();
-	if(!isset($_SESSION['logged_on'])){ ?> <script type="text/javascript"> parent.reload(); </script> <?php } else { $user = $_SESSION['user']; }
+	if(!isset($_SESSION['logged_on'])){
+		?> <script type="text/javascript"> parent.reload(); </script> <?php
+	} else if ($_SESSION['logged_on'] == 0) {
+		?> <script type="text/javascript"> parent.reload(); </script> <?php
+	}
 	require_once 'constants.php';
 	require_once 'sharedFunctions.php';
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 
 	// If the user is not logged on, redirect to login page.
 	if(!isset($_SESSION['logged_on'])) {
+		session_destroy();
+		header('Location: .');
+	} else if ($_SESSION['logged_on'] == 0) {
 		session_destroy();
 		header('Location: .');
 	}

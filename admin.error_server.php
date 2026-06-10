@@ -9,8 +9,11 @@
         // If the user is not logged on, redirect to login page.
         if(!isset($_SESSION['logged_on'])) {
 		session_destroy();
-                header('Location: .');
-        }
+		header('Location: .');
+	} else if ($_SESSION['logged_on'] == 0) {
+		session_destroy();
+		header('Location: .');
+	}
 
 	// Ensure admin user is logged in.
 	$user = $_SESSION['user'];
