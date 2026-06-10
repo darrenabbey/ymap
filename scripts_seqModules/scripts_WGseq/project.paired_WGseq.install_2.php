@@ -1,5 +1,6 @@
 <?php
-	if (!isset($_SERVER["HTTP_HOST"])) {
+	$calledBy = php_sapi_name();
+	if ($calledBy === "cli") {
 		//=============================
 		// Script run from commandline.
 		//-----------------------------

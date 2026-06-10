@@ -4,7 +4,8 @@
 	require_once '../../constants.php';
 	require_once '../../POST_validation.php';
 	require_once '../../sharedFunctions.php';
-	if (!isset($_SERVER["HTTP_HOST"])) {
+	$calledBy = php_sapi_name();
+	if ($calledBy === "cli") {
 		//=============================
 		// Script run from commandline.
 		//-----------------------------

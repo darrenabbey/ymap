@@ -1,7 +1,5 @@
 <?php
-//	if (session_status() === PHP_SESSION_NONE) {
-		session_start();
-//	}
+	session_start();
 	error_reporting(E_ALL);
 	require_once 'constants.php';
 	require_once 'sharedFunctions.php';
