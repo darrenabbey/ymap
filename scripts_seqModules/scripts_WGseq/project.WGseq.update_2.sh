@@ -374,7 +374,6 @@ else
 	$octave_exec "$outputName";
 	cd "$script_dir";
 	echo -e "\t\tOCTAVE log from final figure generation." >> $logName;
-	sed 's/^/\t\t|/;' "$projectDirectory/octave.final_figs.log" >> $logName;
 fi
 
 
