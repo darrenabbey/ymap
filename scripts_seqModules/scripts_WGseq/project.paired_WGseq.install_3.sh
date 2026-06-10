@@ -81,7 +81,7 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 			READS1=$READS2;
 		else
 			# trim file 2, to length $READS_RAW1.
-			head -n $READS_RAW1 "$main_dir/users/$user/projects/$project/datafile_1.fastq" "$main_dir/users/$user/projects/$project/datafile_1_temp.fastq";
+			head -n $READS_RAW1 "$main_dir/users/$user/projects/$project/datafile_1.fastq" > "$main_dir/users/$user/projects/$project/datafile_1_temp.fastq";
 			mv "$main_dir/users/$user/projects/$project/datafile_1_remp.fastq" "$main_dir/users/$user/projects/$project/datafile_1.fastq";
 			READS2=$READS1;
 		fi;
