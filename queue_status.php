@@ -1,12 +1,12 @@
 <?php
+	session_start();
 	$calledBy = php_sapi_name();
 	//==========================================================================================
 	// YMAP processing queue status
 	//------------------------------------------------------------------------------------------
-	$main_dir=getcwd();
 
-	require_once $main_dir.'/constants.php';
-	require_once $main_dir.'/sharedFunctions.php';
+	require_once 'constants.php';
+	require_once 'sharedFunctions.php';
 
 	// 0. Initialize projects list.
 	$init_list  = [];
@@ -20,10 +20,6 @@
 		if (str_contains($queue_file,".log")) {
 			$queue_contents = trim(file_get_contents($queue_dir.$queue_file));
 			if ($queue_contents) {
-				// Queue contents example:
-				//	2026-05-08 00:08:15 - user:darrenFY - project:TJ4771_R1_clean - b1be4a21a5e6f7a1 - init - from: project_bulk.create_server.php
-				//	2026-05-08 00:08:15 - user:darrenFY - project:TJ4772_R1_clean - c75617867d1e1356 - init - from: project_bulk.create_server.php
-				//	2026-05-08 00:08:15 - user:darrenFY - project:TJ4773_R1_clean - 9537892444c7e1c4 - init - from: project_bulk.create_server.php
 				$outline = "";
 				$queue_lines = preg_split("/\R/", $queue_contents);
 				foreach($queue_lines as $key2 => $line){
