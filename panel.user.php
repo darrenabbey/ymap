@@ -11,6 +11,8 @@
 			$user = $_SESSION['user'];
 		}
 	}
+	if ($user == "") {   unset($_SESSION['logged_on']);   }
+
 	require_once 'constants.php';
 	require_once 'sharedFunctions.php';
 ?>

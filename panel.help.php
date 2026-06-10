@@ -11,6 +11,7 @@
 			$user = $_SESSION['user'];
 		}
 	}
+	if ($user == "") {   unset($_SESSION['logged_on']);   }
 ?>
 <style type="text/css">
 	html * {
