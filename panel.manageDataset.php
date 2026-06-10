@@ -13,7 +13,6 @@
 	}
 	require_once 'constants.php';
 	require_once 'sharedFunctions.php';
-	log_stuff($user,"","","","","panel:manage test point 1.");
 
 	// If too many projects are updating at the same time, the user interface stalls out.
 	// 	10 projects is double what is shown on-screen at once time.
@@ -21,7 +20,6 @@
 	$bulk_ui_projects_showAll = False;
 	$bulk_ui_projects_limit   = 11;
 
-	log_stuff($user,"","","","","panel:manage test point 2.");
 ?>
 <style type="text/css">
 	html * {
@@ -53,7 +51,6 @@
 	<br>
 </font>
 <?php
-	log_stuff($user,"","","","","panel:manage test point 2.5");
 	if (isset($_SESSION['logged_on'])) {
 		// getting the current size of the user folder in Gigabytes
 		$currentSize = getUserUsageSize($user);
@@ -66,7 +63,6 @@
 			echo "Clear space by deleting/minimizing projects or wait until datasets finish processing before adding a new dataset.</span><br><br>";
 		}
 	}
-	log_stuff($user,"","","","","panel:manage test point 3.");
 ?>
 <table width="100%" cellpadding="0"><tr>
 <td width="25%" valign="top">
@@ -113,7 +109,6 @@
 		</div>
 		<?php
 	}
-	log_stuff($user,"","","","","panel:manage test point 4.");
 	?>
 </td>
 <td width="75%" valign="top">
@@ -226,7 +221,6 @@
 </script>
 <?php
 	}
-	log_stuff($user,"","","","","panel:manage test point 5.");
 
 	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $labelRgbBackgroundColor, $user, $project) {
 		// $frameContainerIx values:

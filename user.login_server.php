@@ -10,7 +10,6 @@
 	$user    = sanitize_POST("user");
 	$pw_in   = stripHTML_POST("pw");
 
-	log_stuff($user,"","","","","LOGIN test point 1.");
 
 	// Delays login processing if prior login failure.
 	if (isset($_SESSION['delay'])) {
@@ -22,7 +21,6 @@
 
 	// Validate login.
 	$login_success = validateLogin($user, $pw_in);
-	log_stuff($user,"","","","","LOGIN test point 2.");
 
 	// Delay before page reload.
 	if ($login_success == 0) {
@@ -38,7 +36,6 @@
 		echo "var intervalID = window.setInterval(reload_page, ".$delay_interval.");\n</script>\n";
 	} else {
 		// login succeded.
-		log_stuff($user,"","","","","LOGIN test point 3.");
 
 		session_destroy();
 		session_start();
@@ -67,7 +64,6 @@
 			echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 		}
 	}
-	log_stuff($user,"","","","","LOGIN test point 4.");
 
 
 //=========================================================

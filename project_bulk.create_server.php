@@ -43,7 +43,6 @@
 		}
 		$commandLineInterface = false;
 
-		//log_stuff("","","","","","project_bulk.create_server.php: test point 1.");
 	}
 
 	if ($user == "") {
@@ -106,7 +105,6 @@
 				$fig_G1          = sanitizeBoolean_ARGV($argv,21);
 				$fig_G2          = sanitizeBoolean_ARGV($argv,22);
 			}
-			//log_stuff("","","","","","project_bulk.create_server.php: test point 2.");
 
 
 			$genome_dir1     = "users/".$user."/genomes/".$genome;
@@ -118,7 +116,6 @@
 				}
 				header('Location: .');
 			}
-			//log_stuff("","","","","","project_bulk.create_server.php: test point 3; ".$genome);
 
 			if (($hapmap == "none") || ($hapmap == "")) {
 				// no hapmap is used.
@@ -134,7 +131,6 @@
 					header('Location: .');
 				}
 			}
-			//log_stuff("","","","","","project_bulk.create_server.php: test point 4; ".$hapmap);
 
 			// Define some directories for later use.
 			$projects_bulkdata     = "users/".$user."/bulkdata";
@@ -182,9 +178,7 @@
 				if ($fig_G1 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
 				if ($fig_G2 != 1) { fwrite($file,"False");   } else { fwrite($file,"True"); }
 			fclose($file);
-			//log_stuff("","","","","","project_bulk.create_server.php: test point 7; ");
 			chmod($fileName,0774);
-			//log_stuff("","","","","","project_bulk.create_server.php: test point 8; ");
 
 			// Generate 'ploidy.txt' file.
 			$fileName = $projects_bulksettings."/ploidy.txt";
@@ -284,7 +278,6 @@
 			// Iterate over bulk data directory files, creating new project directories for each dataset.
 			//-------------------------------------------------------------------------------------------
 
-			//log_stuff("","","","","","project_bulk.create_server.php: test point 9; ");
 			// Scan bulk data directory
 			$bulkdata_files = scandir($projects_bulkdata);
 
