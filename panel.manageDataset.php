@@ -18,8 +18,7 @@
 <font size='3'>
 	Install or delete short-read or long-read sequence datasets.
 	<font size='2'>
-        <p>
-            <ol>
+	<div style="margin-left: 20;">
 		<li><?php
 			// Show queue status.
 			require 'queue_status.php';
@@ -36,9 +35,9 @@
 		?></li>
 		<li>Filenames should only have alphanumeric characters (letters, numbers, underscores and dashes) in their names (no spaces or other special characters!).</li>
                 <li>Is your upload stuck? To resume it: Wait until all other uploads are done, refresh the page, and re-add the files for upload.</li>
-            </ol>
-        </p>
+	</div>
 	</font>
+	<br>
 </font>
 <?php
 	if (isset($_SESSION['logged_on'])) {
