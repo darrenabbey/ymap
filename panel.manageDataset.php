@@ -38,9 +38,9 @@
                 	$queue_count = (int)$queue_status_init + (int)$queue_status_start;
 			if ($queue_count > 0) {
 				if ($MAX_QUEUE_PARALLEL > 1) {
-		//			echo "<b>There are currently ".$queue_count." datasets in the queue, which is running up to ".$MAX_QUEUE_PARALLEL." datasets at a time.</b> Each takes ~".$QUEUE_TIME_ESTIMATE." minutes to complete. Data uploaded now will start processing in ~".number_format(($queue_count*$QUEUE_TIME_ESTIMATE/60/$MAX_QUEUE_PARALLEL),1)." hours.";
+					echo "<b>There are currently ".$queue_count." datasets in the queue, which is running up to ".$MAX_QUEUE_PARALLEL." datasets at a time.</b> Each takes ~".$QUEUE_TIME_ESTIMATE." minutes to complete. Data uploaded now will start processing in ~".number_format(($queue_count*$QUEUE_TIME_ESTIMATE/60/$MAX_QUEUE_PARALLEL),1)." hours.";
 				} else {
-		//			echo "<b>There are currently ".$queue_count." datasets in the queue.</b> Each takes ~".$QUEUE_TIME_ESTIMATE." minutes to complete. Data uploaded now will start processing in ~".number_format(($queue_count*$QUEUE_TIME_ESTIMATE/60),1)." hours.";
+					echo "<b>There are currently ".$queue_count." datasets in the queue.</b> Each takes ~".$QUEUE_TIME_ESTIMATE." minutes to complete. Data uploaded now will start processing in ~".number_format(($queue_count*$QUEUE_TIME_ESTIMATE/60),1)." hours.";
 				}
 			} else {
 		//		echo "<b>There are currently no datasets in the queue.</b> Each takes ~40 minutes to complete.";
