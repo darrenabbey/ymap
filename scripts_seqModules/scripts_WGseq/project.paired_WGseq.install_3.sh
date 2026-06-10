@@ -235,6 +235,14 @@ else
 		echo -e "\tDone: SAM -> BAM, new group headers, sorted." >> $logName;
 	else
 		echo -e "\tBowtie : paired-end reads aligning into SAM file." >> $logName;
+
+		## if file 2 is longer than file 1, swap them.
+		if [[ $(wc -l "$projectDirectory/$datafile2") -gt $(wc -l "$projectDirectory/$datafile1") ]]; then
+			mv "$projectDirectory/$datafile1" "$projectDirectory/tempdata";
+			mv "$projectDirectory/$datafile2" "$projectDirectory/$datafile1";
+			mv "$projectDirectory/tempdata" "$projectDirectory/$datafile2";
+		fi;
+
 		## Bowtie 2 command for paired reads:
 		echo -e "\nRunning bowtie2.\n" >> $logName;
 		echo -e "Command used:" >> $logName;
