@@ -159,9 +159,9 @@
 
 		foreach($projectFolders_starting as $key_=>$project) {
 			if (!$exceededSpace) {
-				printProjectInfo("4", $key_, "CC0000", "FFFFFF", $admin_as_user, $project, "(Data upload pending.)");
+				printProjectInfo("4", $key_, "CC0000", "FFFFFF", $admin_as_user, $project, "(Waiting in queue, or upload pending.)");
 			} else {
-				printProjectInfo("4", $key_, "888888", "FFFFFF", $admin_as_user, $project, "(Data upload pending.)");
+				printProjectInfo("4", $key_, "888888", "FFFFFF", $admin_as_user, $project, "(Waiting in queue, or upload pending.)");
 			}
 		}
 		foreach($projectFolders_working as $key_=>$project) {
