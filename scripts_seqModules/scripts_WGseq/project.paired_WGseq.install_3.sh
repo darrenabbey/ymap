@@ -57,6 +57,7 @@ chmod 0774 $condensedLog;
 
 echo -e "#==============================================================================" >> $logName;
 echo -e "#\tChecking to see if FASTQ data needs to be downsampled to be processed within memory limitations." >> $logName;
+
 # Get memory target from "constants.php" file.
 MAX_MEMORY_TARGET=$(grep "MAX_MEMORY_TARGET" "$main_dir/constants.php" | tr -dc '0-9');
 if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
@@ -72,7 +73,7 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 
 
 	## if file 2 is longer than file 1, swap them.
-	if [[ $READS2 -gt $READS1) ]]; then
+	if [[ $READS2 -gt $READS1 ]]; then
 		mv "$main_dir/users/$user/projects/$project/datafile_0.fastq"    "$main_dir/users/$user/projects/$project/datafile_temp.fastq";
 		mv "$main_dir/users/$user/projects/$project/datafile_1.fastq"    "$main_dir/users/$user/projects/$project/datafile_0.fastq";
 		mv "$main_dir/users/$user/projects/$project/datafile_temp.fastq" "$main_dir/users/$user/projects/$project/datafile_1.fastq"
