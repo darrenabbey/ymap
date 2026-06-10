@@ -108,6 +108,7 @@ install /dev/null "$projectDirectory/octave.CNV_and_GCbias.log";
 echo -e "\t\toutputName = $outputName" >> $logName;
 
 echo -e "function [] = processing1()" > $outputName;
+echo -e "\tpkg load io;" >> $outputName;
 echo -e "\tpkg load statistics;" >> $outputName;
 echo -e "\tpkg load matgeom;" >> $outputName;
 echo -e "\tdiary('$projectDirectory/octave.CNV_and_GCbias.log');" >> $outputName;
@@ -116,6 +117,7 @@ echo -e "\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome'
 echo -e "end" >> $outputName;
 
 echo -e "\t|\tfunction [] = processing1()" >> $logName;
+echo -e "\t|\t    pkg load io;" >> $logName;
 echo -e "\t|\t    pkg load statistics;" >> $logName;
 echo -e "\t|\t    pkg load matgeom;" >> $logName;
 echo -e "\t|\t    diary('$projectDirectory/octave.CNV_and_GCbias.log');" >> $logName;
