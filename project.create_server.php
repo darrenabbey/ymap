@@ -26,6 +26,7 @@
 		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
 	} else {
+		log_stuff($user,"","","","","project.create_server.php test point 1.");
 		// Validate input strings.
 		$project         = sanitize_POST("project");
 		$ploidy          = sanitizeFloat_POST("ploidy");
@@ -42,46 +43,49 @@
 			$readType_WGseq_long  = sanitizeIntChar_POST("readTypeC");
 
 			$performIndelRealign = sanitize_POST("indelrealign");
-				if ($performIndelRealign == "True") {	$indelRealign = "1";
-				} else {				$indelRealign = "0";
-				}
+			if ($performIndelRealign == "True") {	$indelRealign = "1";
+			} else {				$indelRealign = "0";
+			}
+
 			$genome              = sanitize_POST("genome");
-				// Confirm if requested genome exists.
-				$genome_dir1 = "users/".$user."/genomes/".$genome;
-				$genome_dir2 = "users/default/genomes/".$genome;
-				if (!(is_dir($genome_dir1) || is_dir($genome_dir2))) {
-					// Genome doesn't exist, should never happen: Force logout.
+			// Confirm if requested genome exists.
+			$genome_dir1 = "users/".$user."/genomes/".$genome;
+			$genome_dir2 = "users/default/genomes/".$genome;
+			if (!(is_dir($genome_dir1) || is_dir($genome_dir2))) {
+				// Genome doesn't exist, should never happen: Force logout.
+				session_destroy();
+				header('Location: .');
+			}
+
+			$hapmap              = sanitize_POST("selectHapmap");
+			if (($hapmap == "none") || ($hapmap == "")) {
+				// no hapmap is used.
+			} else {
+				// Confirm if requested hapmap exists.
+				$hapmap_dir1 = "users/".$user."/hapmaps/".$hapmap;
+				$hapmap_dir2 = "users/default/hapmaps/".$hapmap;
+				if (!(is_dir($hapmap_dir1) || is_dir($hapmap_dir2))) {
+					// Hapmap doesn't exist, should never happen: Force logout.
 					session_destroy();
 					header('Location: .');
 				}
-			$hapmap              = sanitize_POST("selectHapmap");
-				if (($hapmap == "none") || ($hapmap == "")) {
-					// no hapmap is used.
-				} else {
-					// Confirm if requested hapmap exists.
-					$hapmap_dir1 = "users/".$user."/hapmaps/".$hapmap;
-					$hapmap_dir2 = "users/default/hapmaps/".$hapmap;
-					if (!(is_dir($hapmap_dir1) || is_dir($hapmap_dir2))) {
-						// Hapmap doesn't exist, should never happen: Force logout.
-						session_destroy();
-						header('Location: .');
-					}
-				}
+			}
+
 			$restrictionEnzymes  = sanitize_POST("selectRestrictionEnzymes");
 			$parent              = sanitize_POST("selectParent");
-				if (($parent == "none") || ($parent == "")) {
-					// no parent is used, so all calculations use the current project name as the parent.
-					$parent      = $project;
-				} else {
-					// Confirm if requested parent project exists.
-					$parent_dir1 = "users/".$user."/projects/".$parent;
-					$parent_dir2 = "users/default/projects/".$parent;
-					if (!(is_dir($parent_dir1) || is_dir($parent_dir2))) {
-						// Parent project doesn't exist, should never happen: Force logout.
-						session_destroy();
-						header('Location: .');
-					}
+			if (($parent == "none") || ($parent == "")) {
+				// no parent is used, so all calculations use the current project name as the parent.
+				$parent      = $project;
+			} else {
+				// Confirm if requested parent project exists.
+				$parent_dir1 = "users/".$user."/projects/".$parent;
+				$parent_dir2 = "users/default/projects/".$parent;
+				if (!(is_dir($parent_dir1) || is_dir($parent_dir2))) {
+					// Parent project doesn't exist, should never happen: Force logout.
+					session_destroy();
+					header('Location: .');
 				}
+			}
 		}
 
 		// Define some directories for later use.
