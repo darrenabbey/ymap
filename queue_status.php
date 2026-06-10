@@ -180,9 +180,9 @@
 			$entryName = $value[2];
 			$type = $value[5];
 
-			if ($type == "project") {	$file = $main_dir."/users/".$userName."/projects/".$entryName."/condensed_log.txt";
-			} elseif ($type == "genome") {	$file = $main_dir."/users/".$userName."/genomes/".$entryName."/condensed_log.txt";
-			} elseif ($type == "hapmap") {	$file = $main_dir."/users/".$userName."/hapmaps/".$entryName."/condensed_log.txt";
+			if ($type == "project") {	$file = $base_dir."/users/".$userName."/projects/".$entryName."/condensed_log.txt";
+			} elseif ($type == "genome") {	$file = $base_dir."/users/".$userName."/genomes/".$entryName."/condensed_log.txt";
+			} elseif ($type == "hapmap") {	$file = $base_dir."/users/".$userName."/hapmaps/".$entryName."/condensed_log.txt";
 			} else {
 				// Something went wrong.
 			}
