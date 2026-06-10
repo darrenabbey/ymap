@@ -1,4 +1,4 @@
-function [newX, newY] = optimize_mylowess(rawData_X,rawData_Y, numFits, maxX)
+function [newX, newY] = optimize_mylowess2(rawData_X,rawData_Y, numFits, maxX)
 
 numDat           = length(rawData_X);
 spans            = linspace(0.01,0.99, numFits);
