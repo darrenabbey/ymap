@@ -16,10 +16,9 @@
 	}
 </style>
 <font size='3'>
-	Install or delete next generation sequence and SNP/CGH microarray datasets in your user account.
+	Install or delete short-read or long-read sequence datasets.
 	<font size='2'>
         <p>
-            <b>IMPORTANT:</b>
             <ol>
 		<li><?php
 			// Show queue status.
