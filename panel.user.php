@@ -61,6 +61,7 @@ if (isset($_SESSION['logged_on'])) {
 		unset($_SESSION['reload_once']);
 	}
 } else {
+	// provide login button.
 	echo "<script type=\"text/javascript\">\n\t\n\t</script>\n\t";
 	echo "<form action='user.login_server.php' method='post'>\n\t";
 	echo "<label for='user'>Username: </label><input type='text' id='user' name='user'><br>\n\t";

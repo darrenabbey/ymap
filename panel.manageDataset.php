@@ -75,7 +75,6 @@
 				echo "parent.update_interface();";
 			echo "'><br>";
 
-			// DRAGON : trying to do bulk data processing through user interface.
 			$admin_user_flag_file = "users/".$user."/admin.txt";
 			if (file_exists($admin_user_flag_file)) {
 				echo "<input name='button_InstallBulkDataset' type='button' value='Admin: Install Bulk Dataset'  style='background-color:#FFCCCC;' onclick='";
@@ -83,7 +82,7 @@
 					echo "parent.show_hidden(\"Hidden_InstallBulkDataset\"); ";
 					echo "parent.update_interface();";
 				echo "'><br>";
-				$_SESSION['user']  = $user;
+				//$_SESSION['user']  = $user;
 			}
 
 			echo "<font color='red' size='2'> (Wait until uploads complete!)</font><br>";

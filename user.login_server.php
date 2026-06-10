@@ -67,6 +67,7 @@
 			echo "var intervalID = window.setInterval(reload_page, 1000);\n</script>\n";
 		}
 	}
+	log_stuff($user,"","","","","LOGIN test point 4.");
 
 
 //=========================================================
