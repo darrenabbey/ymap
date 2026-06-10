@@ -35,7 +35,7 @@
 	} else {
 		// login succeded.
 		session_destroy();
-		session_regenerate_id();
+		session_start();
 		$_SESSION['logged_on'] = 1;
 		$_SESSION['user']      = $user;
 
