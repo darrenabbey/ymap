@@ -26,15 +26,15 @@
 					$line_parts = explode(" - ",$line);
 					if (sizeof($line_parts) >= 3) {
 						$time            = $line_parts[0];
-						$user            = str_replace("user:", "", $line_parts[1]);
+						$userName            = str_replace("user:", "", $line_parts[1]);
 						if (str_contains($line_parts[2], "project:")) {
-							$name      = str_replace("project:", "", $line_parts[2]);
+							$entryName      = str_replace("project:", "", $line_parts[2]);
 							$entryType = "project";
 						} elseif (str_contains($line_parts[2], "genome:")) {
-							$name  = str_replace("genome:", "", $line_parts[2]);
+							$entryName  = str_replace("genome:", "", $line_parts[2]);
 							$entryType = "genome";
 						} elseif (str_contains($line_parts[2], "hapmap:")) {
-							$name  = str_replace("hapmap:", "", $line_parts[2]);
+							$entryName  = str_replace("hapmap:", "", $line_parts[2]);
 							$entryType = "hapmap";
 						} else {
 							// Unrecognized queue entry.
@@ -44,8 +44,8 @@
 
 						$entry   = [];
 						$entry[] = $time;
-						$entry[] = $user;
-						$entry[] = $name;
+						$entry[] = $userName;
+						$entry[] = $entryName;
 						$entry[] = $salt;
 						$entry[] = $status;
 						$entry[] = $entryType;
@@ -122,21 +122,21 @@
 	// 4. Drop active projects/genomes/hapmaps without a 'bulk.txt' file.
 	$count = sizeof($start_list);
 	foreach (array_reverse($start_list) as $key1 => $entry) {
-		$user      = $entry[1];
+		$userName      = $entry[1];
 		$entryType = $entry[5];
-		$name      = $entry[2];
+		$entryName      = $entry[2];
 		if ($entryType == "project") {
-			$Directory = $base_dir."/users/".$user."/projects/".$name."/";
+			$Directory = $base_dir."/users/".$userName."/projects/".$entryName."/";
 			if (!file_exists($Directory."bulk.txt")) {
 				array_splice($start_list, $count-$key1-1, 1);
 			}
 		} elseif ($entryType == "genome") {
-			$Directory = $base_dir."/users/".$user."/genomes/".$name."/";
+			$Directory = $base_dir."/users/".$userName."/genomes/".$entryName."/";
 			if (!file_exists($Directory."bulk.txt")) {
 				array_splice($start_list, $count-$key1-1, 1);
 			}
 		} elseif ($entryType == "hapmap") {
-			$Directory = $base_dir."/users/".$user."/hapmaps/".$name."/";
+			$Directory = $base_dir."/users/".$userName."/hapmaps/".$entryName."/";
 			if (!file_exists($Directory."bulk.txt")) {
 				array_splice($start_list, $count-$key1-1, 1);
 			}
@@ -157,10 +157,10 @@
 		$stringLength = 0;
 		foreach ($init_list as $key=>$value) {
 			$key_   = $key+1;
-			$user   = $value[1];
-			$name   = $value[2];
+			$userName   = $value[1];
+			$entryName   = $value[2];
 			$type   = $value[5];
-			$string = "[{$key_}] ".$user.":".$type.":".$name;
+			$string = "[{$key_}] ".$userName.":".$type.":".$entryName;
 			print_r($string);
 			$stringLength += strlen($string);
 			if ($stringLength > 80) {
@@ -176,19 +176,19 @@
 		print_r("#\n#\tYMAPs processing:  ".$count_queue_working."\n#\t\t");
 		foreach ($start_list as $key=>$value) {
 			$key_ = $key+1;
-			$user = $value[1];
-			$name = $value[2];
+			$userName = $value[1];
+			$entryName = $value[2];
 			$type = $value[5];
 
-			if ($type == "project") {	$file = $main_dir."/users/".$user."/projects/".$name."/condensed_log.txt";
-			} elseif ($type == "genome") {	$file = $main_dir."/users/".$user."/genomes/".$name."/condensed_log.txt";
-			} elseif ($type == "hapmap") {	$file = $main_dir."/users/".$user."/hapmaps/".$name."/condensed_log.txt";
+			if ($type == "project") {	$file = $main_dir."/users/".$userName."/projects/".$entryName."/condensed_log.txt";
+			} elseif ($type == "genome") {	$file = $main_dir."/users/".$userName."/genomes/".$entryName."/condensed_log.txt";
+			} elseif ($type == "hapmap") {	$file = $main_dir."/users/".$userName."/hapmaps/".$entryName."/condensed_log.txt";
 			} else {
 				// Something went wrong.
 			}
 			$data = file($file);
 			$line = trim($data[count($data)-1]);
-			print_r("[{$key_}] ".$user.":".$type.":".$name." = \e[33m'".$line."'\e[0m");
+			print_r("[{$key_}] ".$userName.":".$type.":".$entryName." = \e[33m'".$line."'\e[0m");
 			if (($key+1) % 1 == 0) {
 				print_r("\n#\t\t");
 			} else {
