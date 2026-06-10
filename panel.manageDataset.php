@@ -34,17 +34,17 @@
 	<div style="margin-left: 20;">
 		<li><?php
 			// Show queue status.
-			require 'queue_status.php';
-                	$queue_count = (int)$queue_status_init + (int)$queue_status_start;
-			if ($queue_count > 0) {
-				if ($MAX_QUEUE_PARALLEL > 1) {
-					echo "<b>There are currently ".$queue_count." datasets in the queue, which is running up to ".$MAX_QUEUE_PARALLEL." datasets at a time.</b> Each takes ~".$QUEUE_TIME_ESTIMATE." minutes to complete. Data uploaded now will start processing in ~".number_format(($queue_count*$QUEUE_TIME_ESTIMATE/60/$MAX_QUEUE_PARALLEL),1)." hours.";
-				} else {
-					echo "<b>There are currently ".$queue_count." datasets in the queue.</b> Each takes ~".$QUEUE_TIME_ESTIMATE." minutes to complete. Data uploaded now will start processing in ~".number_format(($queue_count*$QUEUE_TIME_ESTIMATE/60),1)." hours.";
-				}
-			} else {
-				echo "<b>There are currently no datasets in the queue.</b> Each takes ~40 minutes to complete.";
-			}
+		//	require 'queue_status.php';
+                //	$queue_count = (int)$queue_status_init + (int)$queue_status_start;
+		//	if ($queue_count > 0) {
+		//		if ($MAX_QUEUE_PARALLEL > 1) {
+		//			echo "<b>There are currently ".$queue_count." datasets in the queue, which is running up to ".$MAX_QUEUE_PARALLEL." datasets at a time.</b> Each takes ~".$QUEUE_TIME_ESTIMATE." minutes to complete. Data uploaded now will start processing in ~".number_format(($queue_count*$QUEUE_TIME_ESTIMATE/60/$MAX_QUEUE_PARALLEL),1)." hours.";
+		//		} else {
+		//			echo "<b>There are currently ".$queue_count." datasets in the queue.</b> Each takes ~".$QUEUE_TIME_ESTIMATE." minutes to complete. Data uploaded now will start processing in ~".number_format(($queue_count*$QUEUE_TIME_ESTIMATE/60),1)." hours.";
+		//		}
+		//	} else {
+		//		echo "<b>There are currently no datasets in the queue.</b> Each takes ~40 minutes to complete.";
+		//	}
 		?></li>
 		<li>Filenames should only have alphanumeric characters (letters, numbers, underscores and dashes) in their names (no spaces or other special characters!).</li>
                 <li>Is your upload stuck? To resume it: Wait until all other uploads are done, refresh the page, and re-add the files for upload.</li>
