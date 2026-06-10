@@ -72,19 +72,25 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	READS2=$(printf %.0f $( echo "$READS_RAW2/4" | bc -l) );
 
 
-	## if file 2 is longer than file 1, swap them.
-	if [[ $READS2 -gt $READS1 ]]; then
-		mv "$main_dir/users/$user/projects/$project/datafile_0.fastq"    "$main_dir/users/$user/projects/$project/datafile_temp.fastq";
-		mv "$main_dir/users/$user/projects/$project/datafile_1.fastq"    "$main_dir/users/$user/projects/$project/datafile_0.fastq";
-		mv "$main_dir/users/$user/projects/$project/datafile_temp.fastq" "$main_dir/users/$user/projects/$project/datafile_1.fastq"
-
-		READStemp=$READS1;
-		READS1=$READS2;
-		READS2=$READStemp;
+	## if file 1 and 2 are different sizes
+	if [[ $READS_RAW1 -ne $READS_RAW2 ]]; then
+		if [[ $READS_RAW1 -gt $READS_RAW2 ]]; then
+			# trim file 1, to length $READS_RAW2.
+			head -n $READS_RAW2 "$main_dir/users/$user/projects/$project/datafile_0.fastq" > "$main_dir/users/$user/projects/$project/datafile_0_temp.fastq";
+			mv "$main_dir/users/$user/projects/$project/datafile_0_temp.fastq" "$main_dir/users/$user/projects/$project/datafile_0.fastq";
+			READS1=$READS2;
+		else
+			# trim file 2, to length $READS_RAW1.
+			head -n $READS_RAW1 "$main_dir/users/$user/projects/$project/datafile_1.fastq" "$main_dir/users/$user/projects/$project/datafile_1_temp.fastq";
+			mv "$main_dir/users/$user/projects/$project/datafile_1_remp.fastq" "$main_dir/users/$user/projects/$project/datafile_1.fastq";
+			READS2=$READS1;
+		fi;
 	fi;
 
 	echo -e "#\tFILESIZE1               = $FILESIZE1 (bytes)" >> $logName;
 	echo -e "#\tFILESIZE2               = $FILESIZE2 (bytes)" >> $logName;
+	echo -e "#\tREADS_RAW1              = $READS_RAW1" >> $logName;
+	echo -e "#\tREADS_RAW2              = $READS_RAW2" >> $logName;
 	echo -e "#\tREADS1                  = $READS1" >> $logName;
 	echo -e "#\tREADS2                  = $READS2" >> $logName;
 
