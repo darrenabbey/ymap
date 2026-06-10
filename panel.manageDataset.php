@@ -5,11 +5,15 @@
 	} else if ($_SESSION['logged_on'] == 0) {
 		?> <script type="text/javascript"> parent.reload(); </script> <?php
 	} else {
-		$user = $_SESSION['user'];
+		if(!isset($_SESSION['user'])){
+			$user = "";
+		} else {
+			$user = $_SESSION['user'];
+		}
 	}
-	log_stuff($user,"","","","","panel:manage test point 1.");
 	require_once 'constants.php';
 	require_once 'sharedFunctions.php';
+	log_stuff($user,"","","","","panel:manage test point 1.");
 
 	// If too many projects are updating at the same time, the user interface stalls out.
 	// 	10 projects is double what is shown on-screen at once time.
