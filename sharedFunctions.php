@@ -1,5 +1,4 @@
 <?php
-session_start();
 // return the current size in GB of the user folder
 function getUserUsageSize($userName) {
 	// Just looks at total volume of user directory.
