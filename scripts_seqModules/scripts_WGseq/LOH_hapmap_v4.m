@@ -52,7 +52,7 @@ end;
 %                                 'Log2Ratio' does not properly scale CNV data by ploidy.
 %    Chr_max_width              : max width of chrs as fraction of figure width.
 fprintf('\t|\tSetup for processing.\n');
-Centromere_format_default      = 2;
+Centromere_format_default      = 3;
 Chr_max_width                  = 0.8;
 colorBars                      = true;
 blendColorBars                 = false;
@@ -1072,8 +1072,10 @@ for chr_to_draw  = 1:length(chr_order)
 				source('cartoon_stacked_0.m');
 			elseif (Centromere_format == 1)
 				source('cartoon_stacked_1.m');
-			elseif (Centromere_format == 2) % sausage! (standard plot)
+			elseif (Centromere_format == 2) % sausage!
 				source('cartoon_stacked_2.m');
+			elseif (Centromere_format == 3) % improved sausage! (standard plot)
+				source('cartoon_stacked_3.m');
 			end;
 			%standard : end show centromere.
 
@@ -1167,8 +1169,10 @@ for chr_to_draw  = 1:length(chr_order)
 				source('cartoon_linear_0.m');
 			elseif (Centromere_format == 1)
 				source('cartoon_linear_1.m');
-			elseif (Centromere_format == 2) % sausage! (standard plot)
+			elseif (Centromere_format == 2) % sausage!
 				source('cartoon_linear_2.m');
+			elseif (Centromere_format == 3) % improved sausage! (standard plot)
+				source('cartoon_linear_3.m');
 			end;
 			% linear : end show centromere/outlines.
 

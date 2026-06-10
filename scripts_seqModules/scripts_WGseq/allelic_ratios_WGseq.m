@@ -36,7 +36,7 @@ fprintf('\t|\tGenerating FirePlot of SNP allelic ratio data across genome.\n');
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
 %    bases_per_bin              : Controls bin sizes for SNP/CNV fractions of plot.
 %    Chr_max_width              : max width of chrs as fraction of figure width.
-Centromere_format_default   = 2;
+Centromere_format_default   = 3;
 Chr_max_width               = 0.8;
 colorBars                   = true;
 blendColorBars              = false;
@@ -526,8 +526,10 @@ if (Make_figure == true)
 					source('cartoon_stacked_0.m');
 				elseif (Centromere_format == 1)
 					source('cartoon_stacked_1.m');
-				elseif (Centromere_format == 2) % sausage! (standard plot)
+				elseif (Centromere_format == 2) % sausage!
 					source('cartoon_stacked_2.m');
+				elseif (Centromere_format == 3) % improved sausage! (standard plot)
+					source('cartoon_stacked_3.m');
 				end;
 				% standard : end show centromere.
 
@@ -624,8 +626,10 @@ if (Make_figure == true)
 					source('cartoon_linear_0.m');
 				elseif (Centromere_format == 1)
 					source('cartoon_linear_1.m');
-				elseif (Centromere_format == 2) % sausage! (standard plot)
+				elseif (Centromere_format == 2) % sausage!
 					source('cartoon_linear_2.m');
+				elseif (Centromere_format == 3) % improved sausage! (standard plot)
+					source('cartoon_linear_3.m');
 				end;
 				% linear : end show centromere.
 

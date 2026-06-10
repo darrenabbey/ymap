@@ -485,8 +485,10 @@ if ((useHapmap) || (useParent))
 						source('cartoon_stacked_0.m');
 					elseif (Centromere_format == 1)
 						source('cartoon_stacked_1.m');
-					elseif (Centromere_format == 2) % sausage! (standard plot)
+					elseif (Centromere_format == 2) % sausage!
 						source('cartoon_stacked_2.m');
+					elseif (Centromere_format == 3) % improved sausage! (standard plot)
+						source('cartoon_stacked_3.m');
 					end;
 					% standard : end show centromere/outlines.
 
@@ -777,8 +779,10 @@ if ((useHapmap) || (useParent))
 						source('cartoon_linear_0.m');
 					elseif (Centromere_format == 1)
 						source('cartoon_linear_1.m');
-					elseif (Centromere_format == 2) % sausage! (standard plot)
+					elseif (Centromere_format == 2) % sausage!
 						source('cartoon_linear_2.m');
+					elseif (Centromere_format == 3) % improved sausage! (standard plot)
+						source('cartoon_linear_3.m');
 					end;
 					%% linear : end show centromere/outline.
 
