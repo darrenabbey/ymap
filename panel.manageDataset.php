@@ -7,6 +7,7 @@
 	} else {
 		$user = $_SESSION['user'];
 	}
+	log_stuff($user,"","","","","panel:manage test point 1.");
 	require_once 'constants.php';
 	require_once 'sharedFunctions.php';
 
@@ -15,6 +16,8 @@
 	//	User will need to reload page to refresh once those 10 are done.
 	$bulk_ui_projects_showAll = False;
 	$bulk_ui_projects_limit   = 11;
+
+	log_stuff($user,"","","","","panel:manage test point 2.");
 ?>
 <style type="text/css">
 	html * {
@@ -58,6 +61,7 @@
 			echo "Clear space by deleting/minimizing projects or wait until datasets finish processing before adding a new dataset.</span><br><br>";
 		}
 	}
+	log_stuff($user,"","","","","panel:manage test point 3.");
 ?>
 <table width="100%" cellpadding="0"><tr>
 <td width="25%" valign="top">
@@ -104,6 +108,7 @@
 		</div>
 		<?php
 	}
+	log_stuff($user,"","","","","panel:manage test point 4.");
 	?>
 </td>
 <td width="75%" valign="top">
@@ -216,6 +221,7 @@
 </script>
 <?php
 	}
+	log_stuff($user,"","","","","panel:manage test point 5.");
 
 	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $labelRgbBackgroundColor, $user, $project) {
 		// $frameContainerIx values:
