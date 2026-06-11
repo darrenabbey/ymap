@@ -72,20 +72,20 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	READS2=$(printf %.0f $( echo "$READS_RAW2/4" | bc -l) );
 
 
-	## if file 1 and 2 are different sizes
-	if [[ $READS_RAW1 -ne $READS_RAW2 ]]; then
-		if [[ $READS_RAW1 -gt $READS_RAW2 ]]; then
-			# trim file 1, to length $READS_RAW2.
-			head -n $READS_RAW2 "$main_dir/users/$user/projects/$project/datafile_0.fastq" > "$main_dir/users/$user/projects/$project/datafile_0_temp.fastq";
-			mv "$main_dir/users/$user/projects/$project/datafile_0_temp.fastq" "$main_dir/users/$user/projects/$project/datafile_0.fastq";
-			READS1=$READS2;
-		else
-			# trim file 2, to length $READS_RAW1.
-			head -n $READS_RAW1 "$main_dir/users/$user/projects/$project/datafile_1.fastq" > "$main_dir/users/$user/projects/$project/datafile_1_temp.fastq";
-			mv "$main_dir/users/$user/projects/$project/datafile_1_temp.fastq" "$main_dir/users/$user/projects/$project/datafile_1.fastq";
-			READS2=$READS1;
-		fi;
-	fi;
+#	## if file 1 and 2 are different sizes
+#	if [[ $READS_RAW1 -ne $READS_RAW2 ]]; then
+#		if [[ $READS_RAW1 -gt $READS_RAW2 ]]; then
+#			# trim file 1, to length $READS_RAW2.
+#			head -n $READS_RAW2 "$main_dir/users/$user/projects/$project/datafile_0.fastq" > "$main_dir/users/$user/projects/$project/datafile_0_temp.fastq";
+#			mv "$main_dir/users/$user/projects/$project/datafile_0_temp.fastq" "$main_dir/users/$user/projects/$project/datafile_0.fastq";
+#			READS1=$READS2;
+#		else
+#			# trim file 2, to length $READS_RAW1.
+#			head -n $READS_RAW1 "$main_dir/users/$user/projects/$project/datafile_1.fastq" > "$main_dir/users/$user/projects/$project/datafile_1_temp.fastq";
+#			mv "$main_dir/users/$user/projects/$project/datafile_1_temp.fastq" "$main_dir/users/$user/projects/$project/datafile_1.fastq";
+#			READS2=$READS1;
+#		fi;
+#	fi;
 
 	echo -e "#\tFILESIZE1               = $FILESIZE1 (bytes)" >> $logName;
 	echo -e "#\tFILESIZE2               = $FILESIZE2 (bytes)" >> $logName;
@@ -147,12 +147,12 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 		cd "$main_dir";
 
 	else
-		TARGET_FRACTION="1";
+		#TARGET_FRACTION="1";
 		echo -e "#\t\tFILESIZE_GB < MAX_PROCESSED_DATA_SIZE => FASTQ subsampling not needed." >> $logName;
 	fi;
-else
-	# Used later to ensure low read mapping warning isn't given because of downsampling.
-	TARGET_FRACTION="1";
+#else
+#	# Used later to ensure low read mapping warning isn't given because of downsampling.
+#	TARGET_FRACTION="1";
 fi;
 echo -e "#==============================================================================" >> $logName;
 
@@ -226,18 +226,17 @@ if [[ -f $projectDirectory/SNP_CNV_v1.txt ]]; then
 	echo -e "\tDone: SAM -> BAM, new group headers, sorted." >> $logName;
 	echo -e "\tSamtools.pileup generated." >> $logName;
 else
-# Not needed becuase FASTQC is not used.
-#	##==============================================================================
-#	## Trimming/cleanup of FASTQ files.
-#	##------------------------------------------------------------------------------
-#	echo -e "#=======================================================================================#" >> $logName;
-#	echo -e "# Trimming of unbalanced FASTQ entries using 'scripts_seqModules/FASTQ_2_trimming.sh'.  #" >> $logName;
-#	echo -e "#=======================================================================================#" >> $logName;
-#	echo -e "Resolving FASTQ file errors." >> $condensedLog;
-#	currdir=$(pwd);
-#	cd "$projectDirectory";
-#	bash "$main_dir/scripts_seqModules/FASTQ_2_trimming.sh" "$projectDirectory/$datafile1" "$projectDirectory/$datafile2" >> $logName;
-#	cd $currdir;
+	##==============================================================================
+	## Trimming/cleanup of FASTQ files.
+	##------------------------------------------------------------------------------
+	echo -e "#=======================================================================================#" >> $logName;
+	echo -e "# Trimming of unbalanced FASTQ entries using 'scripts_seqModules/FASTQ_2_trimming.sh'.  #" >> $logName;
+	echo -e "#=======================================================================================#" >> $logName;
+	echo -e "Resolving FASTQ file errors." >> $condensedLog;
+	currdir=$(pwd);
+	cd "$projectDirectory";
+	bash "$main_dir/scripts_seqModules/FASTQ_2_trimming.sh" "$projectDirectory/$datafile1" "$projectDirectory/$datafile2" >> $logName;
+	cd $currdir;
 
 	##==============================================================================
 	## Initial processing of paired-WGseq dataset.
@@ -311,6 +310,21 @@ else
 fi
 
 
+#=================================
+# Build 'readStats.txt' file.
+#---------------------------------
+sed -n '2~4p' "$projectDirectory/datafile_0.fastq" > "$projectDirectory/datafile_0.fastq.temp"";	# Discared FASTQ lines except for sequence.
+sed -n '2~4p' "$projectDirectory/datafile_1.fastq" > "$projectDirectory/datafile_1.fastq.temp"";
+readCount1=$(wc -l "$projectDirectory/datafile_0.fastq.temp");						# Get number of reads.
+readCount2=$(wc -l "$projectDirectory/datafile_1.fastq.temp");
+readTotalLength1=$(wc -c "$projectDirectory/datafile_0.fastq");						# Get total sequence length.
+readTotalLength2=$(wc -c "$projectDirectory/datafile_1.fastq");
+readCount=$((readCount1 + readCount2));
+readTotalLength=$((readTotalLength1 + readTotalLength2));
+echo "$readCount (reads count)" > "$projectDirectory/readStats.txt";
+echo "$totalReadLength (reads total length)" >> "$projectDirectory/readStats.txt";
+chmod 0777 "$projectDirectory/readStats.txt";
+
 # Find genome size and add to readStats.txt file.
 sed -n '2~2p' "$genomeDirectory/datafile_g_0.2.fasta" > "$projectDirectory/reference.temp";
 referenceSeq="$projectDirectory/reference.temp";
@@ -318,36 +332,26 @@ genomeChrCount=$(cat $referenceSeq | wc -l);
 genomeLengthInit=$(cat $referenceSeq | wc -c);
 genomeLength=$((genomeLengthInit-genomeChrCount));
 echo "$genomeLength (genome length)" >> "$projectDirectory/readStats.txt"
-
-## Read in [read count] and [total read length] from readStats.txt file.
-readCount=$(head -n 1 "$projectDirectory/readStats.txt" | awk '{print $1}');
-readTotalLength=$(head -n 2 "$projectDirectory/readStats.txt" | tail -n 1 | awk '{print $1}');
-
 echo -e "##" >> $logName;
 echo -e "## Read depth calculations:" >> $logName;
 echo -e "##\t\$readTotalLength          = $readTotalLength" >> $logName;
-echo -e "##\t\$TARGET_FRACTION          = $TARGET_FRACTION" >> $logName;
 echo -e "##\t\$genomeLength             = $genomeLength" >> $logName;
 
 ## Calculate expected average read depth and add to readStats.txt file.
-readDepthAverageExpected=$(echo -e "scale=3; $readTotalLength*$TARGET_FRACTION / $genomeLength" | bc -l);
+readDepthAverageExpected=$(echo -e "scale=3; $readTotalLength / $genomeLength" | bc -l);
 echo "$readDepthAverageExpected (Expected read depth)" >> "$projectDirectory/readStats.txt";
-
 echo -e "##\t\$readDepthAverageExpected = $readDepthAverageExpected" >> $logName;
 
 ## Find average read depth and add to readStats.txt file.
 readDepthAverageFound=$(awk '{sum += $3; count++} END {if (count > 0) print sum/count}' "$projectDirectory/SNP_CNV_v1.txt");
 echo "$readDepthAverageFound (Found read depth)" >> "$projectDirectory/readStats.txt";
-
 echo -e "##\t\$readDepthAverageFound    = $readDepthAverageFound" >> $logName;
 
 ## Calculate fraction mapped and add to readStats.txt file.
 fractionMapped1=$(echo -e "scale=6; ($readDepthAverageFound / $readDepthAverageExpected)*100" | bc -l);
 fractionMapped2=$(echo -e "scale=3; $fractionMapped1 / 1" | bc -l);
-
 echo -e "##\t\$fractionMapped1          = $fractionMapped1" >> $logName;
 echo -e "##\t\$fractionMapped2          = $fractionMapped2" >> $logName;
-
 echo "$fractionMapped2 (Mapped read fraction)" >> "$projectDirectory/readStats.txt";
 if [[ "$fractionMapped2" < 50 ]]; then
 	if [[ "$fractionMapped2" < 1 ]]; then
@@ -356,6 +360,10 @@ if [[ "$fractionMapped2" < 50 ]]; then
 		echo -e "$fractionMapped2% reads mapped." >> "$projectDirectory/warning.txt";
 	fi
 fi
+#---------------------------------
+# End of 'readStats.txt' section.
+#=================================
+
 
 if [[ "$hapmapInUse" = 1 ]]; then
 	if [[ -f $projectDirectory/trimmed_SNPs_v5.txt ]]; then

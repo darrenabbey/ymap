@@ -490,41 +490,11 @@ function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$e
 	if (($line_1[0] == '@') && ($line_3[0] == '+')) {
 		// This is a FASTQ file.
 		// Is this a short-read or long-read fastq file?
-		// Determine max read length, read count, length of all reads,
-		//awk 'length($0) > 500 && /^>/ {print; exit}' filename
-
 
 		fwrite($condensedLogOutput, "Calculating FASTQ read length statistics.\n");
-		$null            = shell_exec("sed -n '2~4p' ".$projectPath.$name_new." > ".$projectPath.$name_new.".temp");		// Discared FASTQ lines except for sequence.
-		$maxReadLength   = (int)explode(" ",trim(shell_exec("wc -L ".$projectPath.$name_new.".temp")))[0];			// Get longest sequence length.
-		$totalReadCount  = (int)explode(" ",trim(shell_exec("wc -l ".$projectPath.$name_new.".temp")))[0];			// Get number of reads.
-		$totalReadLength = (int)explode(" ",trim(shell_exec("wc -c ".$projectPath.$name_new.".temp")))[0] - $totalReadCount;	// Get total sequence length.
-		unlink($projectPath.$name_new.".temp");											// Delete temp file.
-
-		fwrite($logOutput, "\t\t| Preparing readstats.txt file.\n");
-		if (!file_exists($projectPath."readStats.txt")) {
-			// Make a new readStats.txt file with read length stats.
-			$readStatsFile = fopen($projectPath."readStats.txt", 'w');
-			fwrite($readStatsFile, $totalReadCount." (reads count)\n".$totalReadLength." (reads total length)\n");
-			fclose($readStatsFile);
-			chmod($projectPath."readStats.txt",0774);
-		} else {
-			// Load existing totalReadCount and totalReadLength from readStats.txt file.
-			$oldStats_raw        = trim(file_get_contents($projectPath."readStats.txt"));
-			$oldStats_lines      = preg_split("/\R/", $oldStats_raw);
-			$totalReadCount_old  = (int)$oldStats_lines[0];
-			$totalReadLength_old = (int)$oldStats_lines[1];
-
-			// Add the new and old values.
-			$totalReadCount      = $totalReadCount  + $totalReadCount_old;
-			$totalReadLength     = $totalReadLength + $totalReadLength_old;
-
-			// Make a new readStats.txt file with new values.
-			$readStatsFile = fopen($projectPath."readStats.txt", 'w');
-			fwrite($readStatsFile, $totalReadCount." (reads count)\n".$totalReadLength." (reads total length)\n");
-			fclose($readStatsFile);
-			chmod($projectPath."readStats.txt",0774);
-		}
+		$null            = shell_exec("wc -n 4000 ".$projectPath.$name_new." | sed -n '2~4p' > ".$projectPath.$name_new.".temp");	// Discared FASTQ lines except for sequence.
+		$maxReadLength   = (int)explode(" ",trim(shell_exec("wc -L ".$projectPath.$name_new.".temp")))[0];				// Get longest sequence length.
+		//unlink($projectPath.$name_new.".temp");
 
 		fwrite($logOutput, "\t\t| max read length = ".(string)$maxReadLength."\n");
 		if ($maxReadLength <= 500) {
