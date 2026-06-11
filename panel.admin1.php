@@ -88,48 +88,118 @@ User account maintenance. <font size="2">(User quota is <?php $quota = $QUOTA_GL
 		echo     "<td width='16%'><font size='2'><b>Email Address</b></font></td>";
 		echo     "<td width='16%'><font size='2'><b>Institution</b></font></td>";
 		echo "</tr>\n";
+
+		// Output lins for admin accounts.
 		foreach($userFolders as $key=>$userFolder) {
-			echo "\t\t<tr style='";
-			if ($key % 2 == 0) { echo "; background:#DDBBBB;"; }
-			echo "'>";
-			echo "<td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
-			echo "<font size='2'>".($key+1).". ".$userFolder."</font></span>\n";
-			echo "\t\t</td><td style='text-align:center'>\n";
-			if (file_exists("users/".$userFolder."/super.txt")) {
-				echo "\t\t\t<font size='2'>[Super admin]</font>\n";
-			} else if (file_exists("users/".$userFolder."/admin.txt")) {
-				echo "\t\t\t<font size='2'>[Admin]</font>\n";
-			} else {
-				if (file_exists("users/".$userFolder."/locked.txt")) {
-					echo "\t\t\t<input type='button' value='Approve' onclick=\"key = '$key'; $.ajax({url:'admin.approveUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
-					echo "\t\t\t<input type='button' value='Delete'  onclick=\"key = '$key'; $.ajax({url:'admin.deleteUser_server.php' ,type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
-				} else if (file_exists("users/".$userFolder."/active.txt") and ($userFolder != "default/")) {
-					echo "\t\t\t<input type='button' value='Lock' onclick=\"key = '$key'; $.ajax({url:'admin.lockUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
+			if (file_exists("users/".$userFolder."/super.txt") or file_exists("users/".$userFolder."/admin.txt")) {
+				echo "\t\t<tr style='";
+				if ($key % 2 == 0) { echo "; background:#DDBBBB;"; }
+				echo "'>";
+				echo "<td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
+				echo "<font size='2'>".($key+1).". ".$userFolder."</font></span>\n";
+				echo "\t\t</td><td style='text-align:center'>\n";
+				if (file_exists("users/".$userFolder."/super.txt")) {
+					echo "\t\t\t<font size='2'>[Super admin]</font>\n";
+				} else if (file_exists("users/".$userFolder."/admin.txt")) {
+					echo "\t\t\t<font size='2'>[Admin]</font>\n";
 				}
+				echo "\t\t</td>\n";
+
+				// calculating user account size.
+				$userSizeStr = trim(shell_exec("du -sh " . "users/".$userFolder."/ | cut -f1"));
+				// printing total size.
+				echo "\t\t<td style='text-align:center'><font size='2'>".$userSizeStr."</font></td>\n";
+
+				echo "\t\t</td>\n";
+				if (file_exists("users/".$userFolder."/info.txt")) {
+					$info_array = explode("\n", file_get_contents("users/".$userFolder."/info.txt"));
+					echo "\t\t<td><font size='2'>";
+					echo str_replace("Primary Investigator Name: ","",$info_array[1]);
+					echo "\t\t</font></td>";
+
+					echo "\t\t<td><font size='2'>";
+					echo str_replace("Primary Investigator Email: ","",$info_array[2]);
+					echo "\t\t</font></td>";
+
+					echo "\t\t<td><font size='2'>";
+					echo str_replace("Research Institution: ","",$info_array[3]);
+					echo "\t\t</font></td>";
+				}
+				echo "\t\t</tr>\n";
 			}
-			echo "\t\t</td>\n";
+		}
 
-			// calculating user account size.
-			$userSizeStr = trim(shell_exec("du -sh " . "users/".$userFolder."/ | cut -f1"));
-                        // printing total size.
-			echo "\t\t<td style='text-align:center'><font size='2'>".$userSizeStr."</font></td>\n";
+		// Output lines for locked user accounts.
+		foreach($userFolders as $key=>$userFolder) {
+			if (file_exists("users/".$userFolder."/locked.txt")) {
+				echo "\t\t<tr style='";
+				if ($key % 2 == 0) { echo "; background:#DDBBBB;"; }
+				echo "'>";
+				echo "<td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
+				echo "<font size='2'>".($key+1).". ".$userFolder."</font></span>\n";
+				echo "\t\t</td><td style='text-align:center'>\n";
+				echo "\t\t\t<input type='button' value='Approve' onclick=\"key = '$key'; $.ajax({url:'admin.approveUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
+				echo "\t\t\t<input type='button' value='Delete'  onclick=\"key = '$key'; $.ajax({url:'admin.deleteUser_server.php' ,type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
+				echo "\t\t</td>\n";
 
-			echo "\t\t</td>\n";
-			if (file_exists("users/".$userFolder."/info.txt")) {
-				$info_array = explode("\n", file_get_contents("users/".$userFolder."/info.txt"));
-				echo "\t\t<td><font size='2'>";
-				echo str_replace("Primary Investigator Name: ","",$info_array[1]);
-				echo "\t\t</font></td>";
+				// calculating user account size.
+				$userSizeStr = trim(shell_exec("du -sh " . "users/".$userFolder."/ | cut -f1"));
+				// printing total size.
+				echo "\t\t<td style='text-align:center'><font size='2'>".$userSizeStr."</font></td>\n";
 
-				echo "\t\t<td><font size='2'>";
-				echo str_replace("Primary Investigator Email: ","",$info_array[2]);
-				echo "\t\t</font></td>";
+				echo "\t\t</td>\n";
+				if (file_exists("users/".$userFolder."/info.txt")) {
+					$info_array = explode("\n", file_get_contents("users/".$userFolder."/info.txt"));
+					echo "\t\t<td><font size='2'>";
+					echo str_replace("Primary Investigator Name: ","",$info_array[1]);
+					echo "\t\t</font></td>";
 
-				echo "\t\t<td><font size='2'>";
-				echo str_replace("Research Institution: ","",$info_array[3]);
-				echo "\t\t</font></td>";
+					echo "\t\t<td><font size='2'>";
+					echo str_replace("Primary Investigator Email: ","",$info_array[2]);
+					echo "\t\t</font></td>";
+
+					echo "\t\t<td><font size='2'>";
+					echo str_replace("Research Institution: ","",$info_array[3]);
+					echo "\t\t</font></td>";
+				}
+				echo "\t\t</tr>\n";
 			}
-			echo "\t\t</tr>\n";
+		}
+
+		// Output lins for all other user accounts.
+		foreach($userFolders as $key=>$userFolder) {
+			if (file_exists("users/".$userFolder."/active.txt") and ($userFolder != "default/") and !(file_exists("users/".$userFolder."/super.txt")) and !(file_exists("users/".$userFolder."/admin.txt")) and !(file_exists("users/".$userFolder."/locked.txt"))) {
+				echo "\t\t<tr style='";
+				if ($key % 2 == 0) { echo "; background:#DDBBBB;"; }
+				echo "'>";
+				echo "<td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
+				echo "<font size='2'>".($key+1).". ".$userFolder."</font></span>\n";
+				echo "\t\t</td><td style='text-align:center'>\n";
+				echo "\t\t\t<input type='button' value='Lock' onclick=\"key = '$key'; $.ajax({url:'admin.lockUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
+				echo "\t\t</td>\n";
+
+				// calculating user account size.
+				$userSizeStr = trim(shell_exec("du -sh " . "users/".$userFolder."/ | cut -f1"));
+	                        // printing total size.
+				echo "\t\t<td style='text-align:center'><font size='2'>".$userSizeStr."</font></td>\n";
+
+				echo "\t\t</td>\n";
+				if (file_exists("users/".$userFolder."/info.txt")) {
+					$info_array = explode("\n", file_get_contents("users/".$userFolder."/info.txt"));
+					echo "\t\t<td><font size='2'>";
+					echo str_replace("Primary Investigator Name: ","",$info_array[1]);
+					echo "\t\t</font></td>";
+
+					echo "\t\t<td><font size='2'>";
+					echo str_replace("Primary Investigator Email: ","",$info_array[2]);
+					echo "\t\t</font></td>";
+
+					echo "\t\t<td><font size='2'>";
+					echo str_replace("Research Institution: ","",$info_array[3]);
+					echo "\t\t</font></td>";
+				}
+				echo "\t\t</tr>\n";
+			}
 		}
 		echo "</table>";
 	} else {
