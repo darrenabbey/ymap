@@ -308,8 +308,10 @@ readTotalLength2=$(wc -c < "$projectDirectory/$datafile2");
 readCount=$((readCount1 + readCount2));
 readTotalLength=$((readTotalLength1 + readTotalLength2));
 echo "$readCount (reads count)" > "$projectDirectory/readStats.txt";
-echo "$totalReadLength (reads total length)" >> "$projectDirectory/readStats.txt";
+echo "$readTotalLength (reads total length)" >> "$projectDirectory/readStats.txt";
 chmod 0777 "$projectDirectory/readStats.txt";
+rm "$projectDirectory/$datafile.temp1";
+rm "$projectDirectory/$datafile.temp2";
 
 # Find genome size and add to readStats.txt file.
 sed -n '2~2p' "$genomeDirectory/datafile_g_0.2.fasta" > "$projectDirectory/reference.temp";

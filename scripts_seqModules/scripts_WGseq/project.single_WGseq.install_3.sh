@@ -275,10 +275,11 @@ fi
 #---------------------------------
 sed -n '2~4p' "$projectDirectory/$datafile" > "$projectDirectory/$datafile.temp";	# Discared FASTQ lines except for sequence.
 readCount=$(wc -l < "$projectDirectory/$datafile.temp");						# Get number of reads.
-readTotalLength=$(wc -c "$projectDirectory/$datafile");						# Get total sequence length.
+readTotalLength=$(wc -c < "$projectDirectory/$datafile");						# Get total sequence length.
 echo "$readCount (reads count)" > "$projectDirectory/readStats.txt";
-echo "$totalReadLength (reads total length)" >> "$projectDirectory/readStats.txt";
+echo "$readTotalLength (reads total length)" >> "$projectDirectory/readStats.txt";
 chmod 0777 "$projectDirectory/readStats.txt";
+rm "$projectDirectory/$datafile.temp";
 
 # Find genome size and add to readStats.txt file.
 sed -n '2~2p' "$genomeDirectory/datafile_g_0.2.fasta" > "$projectDirectory/reference.temp";
