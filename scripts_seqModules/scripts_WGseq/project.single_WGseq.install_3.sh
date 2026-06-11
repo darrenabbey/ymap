@@ -273,7 +273,7 @@ fi
 #=================================
 # Build 'readStats.txt' file.
 #---------------------------------
-sed -n '2~4p' "$projectDirectory/$datafile" > "$projectDirectory/$datafile.temp"";	# Discared FASTQ lines except for sequence.
+sed -n '2~4p' "$projectDirectory/$datafile" > "$projectDirectory/$datafile.temp";	# Discared FASTQ lines except for sequence.
 readCount=$(wc -l < "$projectDirectory/$datafile.temp");						# Get number of reads.
 readTotalLength=$(wc -c "$projectDirectory/$datafile");						# Get total sequence length.
 echo "$readCount (reads count)" > "$projectDirectory/readStats.txt";

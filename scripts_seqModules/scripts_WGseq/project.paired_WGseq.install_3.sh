@@ -299,8 +299,8 @@ fi
 #=================================
 # Build 'readStats.txt' file.
 #---------------------------------
-sed -n '2~4p' "$projectDirectory/$datafile1" > "$projectDirectory/$datafile1.temp"";	# Discared FASTQ lines except for sequence.
-sed -n '2~4p' "$projectDirectory/$datafile2" > "$projectDirectory/$datafile2.temp"";
+sed -n '2~4p' "$projectDirectory/$datafile1" > "$projectDirectory/$datafile1.temp";	# Discared FASTQ lines except for sequence.
+sed -n '2~4p' "$projectDirectory/$datafile2" > "$projectDirectory/$datafile2.temp";
 readCount1=$(wc -l < "$projectDirectory/$datafile1.temp");						# Get number of reads.
 readCount2=$(wc -l < "$projectDirectory/$datafile2.temp");
 readTotalLength1=$(wc -c < "$projectDirectory/$datafile1");						# Get total sequence length.
