@@ -10,6 +10,9 @@ with open(filename, "r") as r:
 		if line.startswith("@"):
 			COUNT += 1;
 			print(f'@{COUNT}');
+		elif line.startswith("+"):
+			print(f'+{COUNT}');
 		else:
 			print(line.rstrip());
+close(filename);
 

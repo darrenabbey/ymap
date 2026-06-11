@@ -33,28 +33,30 @@ tempdir=$2;
 mkdir $tempdir;
 #========================
 
-	finalName="output.fastq"
+	###
+	### This retains quality scores, rather than making up arbitrary scores.
+	###
 
-	# simplify names.
-	base_name1=$(basename $1);
+	finalName="output.fastq";
 
-	# Converts input FASTQ file to FASTA file by discarding quality scores => output is automatically in single-line format.
-	sh $BASEDIR/FASTQ_to_FASTA.sh $1 > $tempdir/$base_name1.1;
+	# Grab sequence lines | break into 300 bp fragments | erase blank lines.
+	sed -n '2~4p' < $1 | perl -p -e 's/.{'300'}/$&\n/g' | grep -v '^\s*$' > $tempdir/temp2.text &
+	# Grab quality lines | break into 300 bp fragments | erase blank lines.
+	sed -n '4~4p' < $1 | perl -p -e 's/.{'300'}/$&\n/g' | grep -v '^\s*$' > $tempdir/temp4.text &
 
-#	# Ensure FASTA entries are single-line.
-#	sh $BASEDIR/FASTA_reformat_1.sh $tempdir/$base_name1.1 > $tempdir/$base_name1.2;
+	wait;
 
-	# 1) For lines that don't start with ">", add a newline after every 300 characters. Put in placeholder headers of ">temp"
-	perl -p -e 'if (!/^[>]/) { s/.{'300'}/$&\n>temp\n/g }' $tempdir/$base_name1.1 > $tempdir/$base_name1.3;
+	lineCount=$(wc -l < $tempdir/temp2.text);
 
-	# Call python script FASTA_to_FASTQ.py
-	python3 $BASEDIR/FASTA_to_FASTQ.py $tempdir/$base_name1.3 > $tempdir/$base_name1.4;
+	# Build unique sequence header lines.
+	seq 1 $lineCount | awk '{print "@" $1}' > $tempdir/temp1.text &
+	# Build matched quality header lines.
+	seq 1 $lineCount | awk '{print "+" $1}' > $tempdir/temp3.text &
 
-	# Make sure FASTQ entries have unique header strings.
-	sh $BASEDIR/FASTQ_rename_headers.sh $tempdir/$base_name1.4 > $tempdir/$base_name1.5;
+	wait;
 
-	# Output results.
-	cp $tempdir/$base_name1.5 $CALLDIR/$finalName;
+	# interleave the four files to recreate a FASTQ file.
+	paste -d '\n' $tempdir/temp1.text $tempdir/temp2.text $tempdir/temp3.text $tempdir/temp4.text > $CALLDIR/$finalName;
 
 #========================
 # Cleanup

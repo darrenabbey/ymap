@@ -367,9 +367,9 @@ if ($ext_new == "fastq") {
 	$paired = 0;
 } else if ($ext_new == "fastq-l") {
 	fwrite($condensedLogOutput, "Converting long-reads to simulated short-reads.\n");
-	fwrite($logOutput, "\t\t| This is a FASTQ file with long-read data, pre-process into simulated illumina FASTQ data.\n");
+	fwrite($logOutput, "\t\t| This is a FASTQ file with long-read data, pre-process into simulated short-read FASTQ data.\n");
 
-	// Convert FASTQ to simulated-Illumina FASTQ.
+	// Convert FASTQ to simulated short-read FASTQ.
 	$currentDir = getcwd();
 	chdir("../../users/".$user."/projects/".$project."/");
 	$newDir = getcwd();
@@ -379,19 +379,19 @@ if ($ext_new == "fastq") {
 	fwrite($logOutput, "\t\t| working directory : ".$newDir."/temp\n");
 	fwrite($logOutput, "\t\t| data file         : ".$newDir."/".$name_new."\n");
 	fwrite($logOutput, "\t\t|\n");
-	$null = shell_exec("bash ../../../../scripts_seqModules/FASTQ_to_Illumina.sh ".$newDir."/".$name_new." ".$newDir."/temp");
+	$null = shell_exec("bash ../../../../scripts_seqModules/FASTQ_to_shortReads.sh ".$newDir."/".$name_new." ".$newDir."/temp");
 
 	// delete original file.
-	unlink($newDir."/".$name_new);
-	fwrite($logOutput, "\t\t| File converted to simulated-Illumina FASTQ file, original deleted.\n");
+        unlink($newDir."/".$name_new);
+        fwrite($logOutput, "\t\t| File converted to simulated short-read FASTQ file, original deleted.\n");
 
 	fwrite($output, "output.fastq\n");
 	$paired = 0;
 	chdir($currentDir);
 } else if ($ext_new == "fasta") {
-	fwrite($logOutput, "\t\t| This is a FASTA file, pre-process into simulated illumina FASTQ data.\n");
+	fwrite($logOutput, "\t\t| This is a FASTA file, pre-process into simulated short-read FASTQ data.\n");
 
-	// Convert FASTA to simulated-Illumina FASTQ.
+	// Convert FASTA to simulated short-read FASTQ.
 	$currentDir = getcwd();
 	chdir("../../users/".$user."/projects/".$project."/");
 	$newDir = getcwd();
@@ -401,11 +401,11 @@ if ($ext_new == "fastq") {
 	fwrite($logOutput, "\t\t| working directory : ".$newDir."/temp\n");
 	fwrite($logOutput, "\t\t| data file         : ".$newDir."/".$name_new."\n");
 	fwrite($logOutput, "\t\t|\n");
-	$null = shell_exec("bash ../../../../scripts_seqModules/FASTA_to_Illumina.sh ".$newDir."/".$name_new." ".$newDir."/temp");
+	$null = shell_exec("bash ../../../../scripts_seqModules/FASTA_to_shortReads.sh ".$newDir."/".$name_new." ".$newDir."/temp");
 
 	// delete original file.
 	unlink($newDir."/".$name_new);
-	fwrite($logOutput, "\t\t| File converted to simulated-Illumina FASTQ file, original deleted.\n");
+	fwrite($logOutput, "\t\t| File converted to simulated short-read FASTQ file, original deleted.\n");
 
 	fwrite($output, "output.fastq\n");
 	$paired = 0;
@@ -494,8 +494,8 @@ function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$e
 
 		fwrite($condensedLogOutput, "Calculating FASTQ read length statistics.\n");
 		$null            = shell_exec("head -n 4000 ".$projectPath.$name_new." | sed -n '2~4p' > ".$projectPath.$name_new.".temp");	// Discared FASTQ lines except for sequence, for the first 1000 reads.
-		$maxReadLength   = (int)trim(shell_exec("cat ".$projectPath.$name_new.".temp | wc -L"));				// Get longest sequence length.
-		//unlink($projectPath.$name_new.".temp");
+		$maxReadLength   = (int)trim(shell_exec("wc -L < ".$projectPath.$name_new.".temp"));					// Get longest sequence length.
+		unlink($projectPath.$name_new.".temp");
 
 		fwrite($logOutput, "\t\t| max read length = ".(string)$maxReadLength."\n");
 		if ($maxReadLength <= 500) {

@@ -58,34 +58,23 @@ chmod 0774 $condensedLog;
 echo -e "#==============================================================================" >> $logName;
 echo -e "#\tChecking to see if FASTQ data needs to be downsampled to be processed within memory limitations." >> $logName;
 
+# Get first data file name from "datafiles.txt";
+datafile1=$(head -n 1 "$projectDirectory/datafiles.txt");
+# Get second data file name from "datafiles.txt";
+datafile2=$(tail -n 1 "$projectDirectory/datafiles.txt");
+
 # Get memory target from "constants.php" file.
 MAX_MEMORY_TARGET=$(grep "MAX_MEMORY_TARGET" "$main_dir/constants.php" | tr -dc '0-9');
 if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	# Get FASTQ data total size in bytes.
-	FILESIZE1=$(stat -c%s "$main_dir/users/$user/projects/$project/datafile_0.fastq")
-	FILESIZE2=$(stat -c%s "$main_dir/users/$user/projects/$project/datafile_1.fastq")
+	FILESIZE1=$(stat -c%s "$main_dir/users/$user/projects/$project/$datafile1")
+	FILESIZE2=$(stat -c%s "$main_dir/users/$user/projects/$project/$datafile2")
 	FILESIZE=$(($FILESIZE1 + $FILESIZE2));
 
-	READS_RAW1=$(cat "$main_dir/users/$user/projects/$project/datafile_0.fastq" | wc -l);
-	READS_RAW2=$(cat "$main_dir/users/$user/projects/$project/datafile_1.fastq" | wc -l);
+	READS_RAW1=$(wc -l < "$main_dir/users/$user/projects/$project/$datafile1");
+	READS_RAW2=$(wc -l < "$main_dir/users/$user/projects/$project/$datafile2");
 	READS1=$(printf %.0f $( echo "$READS_RAW1/4" | bc -l) );
 	READS2=$(printf %.0f $( echo "$READS_RAW2/4" | bc -l) );
-
-
-#	## if file 1 and 2 are different sizes
-#	if [[ $READS_RAW1 -ne $READS_RAW2 ]]; then
-#		if [[ $READS_RAW1 -gt $READS_RAW2 ]]; then
-#			# trim file 1, to length $READS_RAW2.
-#			head -n $READS_RAW2 "$main_dir/users/$user/projects/$project/datafile_0.fastq" > "$main_dir/users/$user/projects/$project/datafile_0_temp.fastq";
-#			mv "$main_dir/users/$user/projects/$project/datafile_0_temp.fastq" "$main_dir/users/$user/projects/$project/datafile_0.fastq";
-#			READS1=$READS2;
-#		else
-#			# trim file 2, to length $READS_RAW1.
-#			head -n $READS_RAW1 "$main_dir/users/$user/projects/$project/datafile_1.fastq" > "$main_dir/users/$user/projects/$project/datafile_1_temp.fastq";
-#			mv "$main_dir/users/$user/projects/$project/datafile_1_temp.fastq" "$main_dir/users/$user/projects/$project/datafile_1.fastq";
-#			READS2=$READS1;
-#		fi;
-#	fi;
 
 	echo -e "#\tFILESIZE1               = $FILESIZE1 (bytes)" >> $logName;
 	echo -e "#\tFILESIZE2               = $FILESIZE2 (bytes)" >> $logName;
@@ -128,22 +117,19 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 
 		# Subsample FASTQ files to target fraction.
 		cd "$main_dir/users/$user/projects/$project/";
-		install /dev/null datafile_0.sample.fastq;
-		install /dev/null datafile_1.sample.fastq;
-
-		## Use FADSO to downsample reads.
-		#fadso pair -1 datafile_0.fastq -2 datafile_1.fastq -a datafile_0.sample.fastq -b datafile_1.sample.fastq -k $TARGET_READS;
+		install /dev/null $datafile1.sample;
+		install /dev/null $datafile2.sample;
 
 		## Use SEQTK to downsample reads.
 		randSeed=$((1 + $RANDOM % 1000));
-		seqtk sample -2 -s $randSeed datafile_0.fastq $TARGET_READS > datafile_0.sample.fastq;
-		seqtk sample -2 -s $randSeed datafile_1.fastq $TARGET_READS > datafile_1.sample.fastq;
+		seqtk sample -2 -s $randSeed $datafile1 $TARGET_READS > $datafile1.sample;
+		seqtk sample -2 -s $randSeed $datafile2 $TARGET_READS > $datafile2.sample;
 
-		unlink datafile_0.fastq;
-		unlink datafile_1.fastq;
-		mv datafile_0.sample.fastq datafile_0.fastq;
-		mv datafile_1.sample.fastq datafile_1.fastq;
-		echo -e "#\t\tdatafile_0.fastq and datafile_1.fastq downsampled." >> $logName;
+		unlink $datafile1;
+		unlink $datafile2;
+		mv $datafile1.sample $datafile1;
+		mv $datafile2.sample $datafile2;
+		echo -e "#\t\t$datafile1 and $datafile2 downsampled." >> $logName;
 		cd "$main_dir";
 
 	else
@@ -313,12 +299,12 @@ fi
 #=================================
 # Build 'readStats.txt' file.
 #---------------------------------
-sed -n '2~4p' "$projectDirectory/datafile_0.fastq" > "$projectDirectory/datafile_0.fastq.temp"";	# Discared FASTQ lines except for sequence.
-sed -n '2~4p' "$projectDirectory/datafile_1.fastq" > "$projectDirectory/datafile_1.fastq.temp"";
-readCount1=$(cat "$projectDirectory/datafile_0.fastq.temp" | wc -l);						# Get number of reads.
-readCount2=$(cat "$projectDirectory/datafile_1.fastq.temp" | wc -l);
-readTotalLength1=$(cat "$projectDirectory/datafile_0.fastq" | wc -c);						# Get total sequence length.
-readTotalLength2=$(cat "$projectDirectory/datafile_1.fastq" | wc -c);
+sed -n '2~4p' "$projectDirectory/$datafile1" > "$projectDirectory/$datafile1.temp"";	# Discared FASTQ lines except for sequence.
+sed -n '2~4p' "$projectDirectory/$datafile2" > "$projectDirectory/$datafile2.temp"";
+readCount1=$(wc -l < "$projectDirectory/$datafile1.temp");						# Get number of reads.
+readCount2=$(wc -l < "$projectDirectory/$datafile2.temp");
+readTotalLength1=$(wc -c < "$projectDirectory/$datafile1");						# Get total sequence length.
+readTotalLength2=$(wc -c < "$projectDirectory/$datafile2");
 readCount=$((readCount1 + readCount2));
 readTotalLength=$((readTotalLength1 + readTotalLength2));
 echo "$readCount (reads count)" > "$projectDirectory/readStats.txt";
@@ -328,8 +314,8 @@ chmod 0777 "$projectDirectory/readStats.txt";
 # Find genome size and add to readStats.txt file.
 sed -n '2~2p' "$genomeDirectory/datafile_g_0.2.fasta" > "$projectDirectory/reference.temp";
 referenceSeq="$projectDirectory/reference.temp";
-genomeChrCount=$(cat $referenceSeq | wc -l);
-genomeLengthInit=$(cat $referenceSeq | wc -c);
+genomeChrCount=$(wc -l < $referenceSeq);
+genomeLengthInit=$(wc -c < $referenceSeq);
 genomeLength=$((genomeLengthInit-genomeChrCount));
 echo "$genomeLength (genome length)" >> "$projectDirectory/readStats.txt"
 echo -e "##" >> $logName;
