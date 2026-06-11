@@ -494,7 +494,7 @@ function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$e
 		fwrite($condensedLogOutput, "Calculating FASTQ read length statistics.\n");
 		$null            = shell_exec("wc -n 4000 ".$projectPath.$name_new." | sed -n '2~4p' > ".$projectPath.$name_new.".temp");	// Discared FASTQ lines except for sequence.
 		$maxReadLength   = (int)explode(" ",trim(shell_exec("wc -L ".$projectPath.$name_new.".temp")))[0];				// Get longest sequence length.
-		//unlink($projectPath.$name_new.".temp");
+		unlink($projectPath.$name_new.".temp");
 
 		fwrite($logOutput, "\t\t| max read length = ".(string)$maxReadLength."\n");
 		if ($maxReadLength <= 500) {
