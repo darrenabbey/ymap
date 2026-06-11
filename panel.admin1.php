@@ -90,13 +90,14 @@ User account maintenance. <font size="2">(User quota is <?php $quota = $QUOTA_GL
 		echo "</tr>\n";
 
 		// Output lins for admin accounts.
-		foreach($userFolders as $key=>$userFolder) {
+		$key_ = 0;
+		foreach($userFolders as $key1=>$userFolder) {
 			if (file_exists("users/".$userFolder."/super.txt") or file_exists("users/".$userFolder."/admin.txt")) {
 				echo "\t\t<tr style='";
-				if ($key % 2 == 0) { echo "; background:#DDBBBB;"; }
+				if ($key_ % 2 == 0) { echo "; background:#DDBBBB;"; }
 				echo "'>";
 				echo "<td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
-				echo "<font size='2'>".($key+1).". ".$userFolder."</font></span>\n";
+				echo "<font size='2'>".($key_+1).". ".$userFolder."</font></span>\n";
 				echo "\t\t</td><td style='text-align:center'>\n";
 				if (file_exists("users/".$userFolder."/super.txt")) {
 					echo "\t\t\t<font size='2'>[Super admin]</font>\n";
@@ -126,6 +127,7 @@ User account maintenance. <font size="2">(User quota is <?php $quota = $QUOTA_GL
 					echo "\t\t</font></td>";
 				}
 				echo "\t\t</tr>\n";
+				$key_ = $key_+1;
 			}
 		}
 
@@ -133,10 +135,10 @@ User account maintenance. <font size="2">(User quota is <?php $quota = $QUOTA_GL
 		foreach($userFolders as $key=>$userFolder) {
 			if (file_exists("users/".$userFolder."/locked.txt")) {
 				echo "\t\t<tr style='";
-				if ($key % 2 == 0) { echo "; background:#DDBBBB;"; }
+				if ($key_ % 2 == 0) { echo "; background:#DDBBBB;"; }
 				echo "'>";
 				echo "<td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
-				echo "<font size='2'>".($key+1).". ".$userFolder."</font></span>\n";
+				echo "<font size='2'>".($key__+1).". ".$userFolder."</font></span>\n";
 				echo "\t\t</td><td style='text-align:center'>\n";
 				echo "\t\t\t<input type='button' value='Approve' onclick=\"key = '$key'; $.ajax({url:'admin.approveUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
 				echo "\t\t\t<input type='button' value='Delete'  onclick=\"key = '$key'; $.ajax({url:'admin.deleteUser_server.php' ,type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
@@ -163,6 +165,7 @@ User account maintenance. <font size="2">(User quota is <?php $quota = $QUOTA_GL
 					echo "\t\t</font></td>";
 				}
 				echo "\t\t</tr>\n";
+				$key_ = $key_+1;
 			}
 		}
 
@@ -170,10 +173,10 @@ User account maintenance. <font size="2">(User quota is <?php $quota = $QUOTA_GL
 		foreach($userFolders as $key=>$userFolder) {
 			if (file_exists("users/".$userFolder."/active.txt") and ($userFolder != "default/") and !(file_exists("users/".$userFolder."/super.txt")) and !(file_exists("users/".$userFolder."/admin.txt")) and !(file_exists("users/".$userFolder."/locked.txt"))) {
 				echo "\t\t<tr style='";
-				if ($key % 2 == 0) { echo "; background:#DDBBBB;"; }
+				if ($key_ % 2 == 0) { echo "; background:#DDBBBB;"; }
 				echo "'>";
 				echo "<td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
-				echo "<font size='2'>".($key+1).". ".$userFolder."</font></span>\n";
+				echo "<font size='2'>".($key_+1).". ".$userFolder."</font></span>\n";
 				echo "\t\t</td><td style='text-align:center'>\n";
 				echo "\t\t\t<input type='button' value='Lock' onclick=\"key = '$key'; $.ajax({url:'admin.lockUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
 				echo "\t\t</td>\n";
