@@ -66,8 +66,8 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	FILESIZE2=$(stat -c%s "$main_dir/users/$user/projects/$project/datafile_1.fastq")
 	FILESIZE=$(($FILESIZE1 + $FILESIZE2));
 
-	READS_RAW1=$(wc -l < "$main_dir/users/$user/projects/$project/datafile_0.fastq");
-	READS_RAW2=$(wc -l < "$main_dir/users/$user/projects/$project/datafile_1.fastq");
+	READS_RAW1=$(cat "$main_dir/users/$user/projects/$project/datafile_0.fastq" | wc -l);
+	READS_RAW2=$(cat "$main_dir/users/$user/projects/$project/datafile_1.fastq" | wc -l);
 	READS1=$(printf %.0f $( echo "$READS_RAW1/4" | bc -l) );
 	READS2=$(printf %.0f $( echo "$READS_RAW2/4" | bc -l) );
 
@@ -315,10 +315,10 @@ fi
 #---------------------------------
 sed -n '2~4p' "$projectDirectory/datafile_0.fastq" > "$projectDirectory/datafile_0.fastq.temp"";	# Discared FASTQ lines except for sequence.
 sed -n '2~4p' "$projectDirectory/datafile_1.fastq" > "$projectDirectory/datafile_1.fastq.temp"";
-readCount1=$(wc -l "$projectDirectory/datafile_0.fastq.temp");						# Get number of reads.
-readCount2=$(wc -l "$projectDirectory/datafile_1.fastq.temp");
-readTotalLength1=$(wc -c "$projectDirectory/datafile_0.fastq");						# Get total sequence length.
-readTotalLength2=$(wc -c "$projectDirectory/datafile_1.fastq");
+readCount1=$(cat "$projectDirectory/datafile_0.fastq.temp" | wc -l);						# Get number of reads.
+readCount2=$(cat "$projectDirectory/datafile_1.fastq.temp" | wc -l);
+readTotalLength1=$(cat "$projectDirectory/datafile_0.fastq" | wc -c);						# Get total sequence length.
+readTotalLength2=$(cat "$projectDirectory/datafile_1.fastq" | wc -c);
 readCount=$((readCount1 + readCount2));
 readTotalLength=$((readTotalLength1 + readTotalLength2));
 echo "$readCount (reads count)" > "$projectDirectory/readStats.txt";

@@ -59,7 +59,7 @@ MAX_MEMORY_TARGET=$(grep "MAX_MEMORY_TARGET" "$main_dir/constants.php" | tr -dc 
 if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	# Get FASTQ data total size in bytes.
 	FILESIZE=$(stat -c%s "$main_dir/users/$user/projects/$project/datafile_0.fastq")
-	READS_RAW=$(wc -l < "$main_dir/users/$user/projects/$project/datafile_0.fastq");
+	READS_RAW=$(cat "$main_dir/users/$user/projects/$project/datafile_0.fastq" | wc -l);
 	READS=$( echo "$READS_RAW/4" | bc -l);
 
 	echo -e "#\tFILESIZE                = $FILESIZE (bytes)" >> $logName;
@@ -275,8 +275,8 @@ fi
 # Build 'readStats.txt' file.
 #---------------------------------
 sed -n '2~4p' "$projectDirectory/datafile_0.fastq" > "$projectDirectory/datafile_0.fastq.temp"";	# Discared FASTQ lines except for sequence.
-readCount=$(wc -l "$projectDirectory/datafile_0.fastq.temp");						# Get number of reads.
-readTotalLength=$(wc -c "$projectDirectory/datafile_0.fastq");						# Get total sequence length.
+readCount=$(cat "$projectDirectory/datafile_0.fastq.temp" | wc -l);						# Get number of reads.
+readTotalLength=$(cat "$projectDirectory/datafile_0.fastq" | wc -c);						# Get total sequence length.
 echo "$readCount (reads count)" > "$projectDirectory/readStats.txt";
 echo "$totalReadLength (reads total length)" >> "$projectDirectory/readStats.txt";
 chmod 0777 "$projectDirectory/readStats.txt";
@@ -284,8 +284,8 @@ chmod 0777 "$projectDirectory/readStats.txt";
 # Find genome size and add to readStats.txt file.
 sed -n '2~2p' "$genomeDirectory/datafile_g_0.2.fasta" > "$projectDirectory/reference.temp";
 referenceSeq="$projectDirectory/reference.temp";
-genomeChrCount=$(wc -l $referenceSeq);
-genomeLengthInit=$(wc -c $referenceSeq);
+genomeChrCount=$(cat $referenceSeq | wc -l);
+genomeLengthInit=$(cat $referenceSeq | wc -c);
 genomeLength=$((genomeLengthInit-genomeChrCount));
 echo "$genomeLength (genome length)" >> "$projectDirectory/readStats.txt";
 echo -e "##" >> $logName;
