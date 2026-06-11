@@ -202,6 +202,7 @@ User account maintenance. <font size="2">(User quota is <?php $quota = $QUOTA_GL
 					echo "\t\t</font></td>";
 				}
 				echo "\t\t</tr>\n";
+				$key_ = $key_+1;
 			}
 		}
 		echo "</table>";
