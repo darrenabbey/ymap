@@ -138,7 +138,7 @@ User account maintenance. <font size="2">(User quota is <?php $quota = $QUOTA_GL
 				if ($key_ % 2 == 0) { echo "; background:#DDBBBB;"; }
 				echo "'>";
 				echo "<td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
-				echo "<font size='2'>".($key__+1).". ".$userFolder."</font></span>\n";
+				echo "<font size='2'>".($key_+1).". ".$userFolder."</font></span>\n";
 				echo "\t\t</td><td style='text-align:center'>\n";
 				echo "\t\t\t<input type='button' value='Approve' onclick=\"key = '$key'; $.ajax({url:'admin.approveUser_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
 				echo "\t\t\t<input type='button' value='Delete'  onclick=\"key = '$key'; $.ajax({url:'admin.deleteUser_server.php' ,type:'post',data:{key:key},success:function(answer){console.log(answer);}}); setTimeout(()=> {location.replace('panel.admin1.php')},500);\">\n";
