@@ -9,7 +9,7 @@ The pipeline can help you analyze your genomic datasets for non-yeast species, b
 
 There are significant differences in the installation process between the main branch and the "ymap2_octave" branch running on the public server.<br>
   1. [https://github.com/darrenabbey/ymap/wiki/Setting-up-YMAP](https://github.com/darrenabbey/ymap/wiki/Setting-up-YMAP)<br>
-  2. [https://github.com/darrenabbey/ymap/wiki/Setting-up-YMAP2](https://github.com/darrenabbey/ymap/wiki/Setting-up-YMAP2)<br>
+  2. [https://github.com/darrenabbey/ymap/wiki/Setting-up-YMAP2](https://github.com/darrenabbey/ymap/wiki/Setting-up-YMAP2)<br><br>
 
 The paper introducing the project can be found at: https://genomemedicine.biomedcentral.com/articles/10.1186/s13073-014-0100-8
 
