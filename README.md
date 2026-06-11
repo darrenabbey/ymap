@@ -8,8 +8,8 @@ YMAP is running live at http://cse-helix24.cs.umn.edu/ymap/ for use by the yeast
 The pipeline can help you analyze your genomic datasets for non-yeast species, but the user interface and figures produced were designed with relatively small genome sizes in mind. (Candida albicans is about 14.7 Mbase in size.) If you want to experiment with using Ymap with larger genomes, I advise you to set up a local installation. Genomes that are very small will also likely not produce very useful output.
 
 There are significant differences in the installation process between the main branch and the "ymap2_octave" branch running on the public server.<br>
-1 [https://github.com/darrenabbey/ymap/wiki/Setting-up-YMAP](https://github.com/darrenabbey/ymap/wiki/Setting-up-YMAP)
-2 [https://github.com/darrenabbey/ymap/wiki/Setting-up-YMAP2](https://github.com/darrenabbey/ymap/wiki/Setting-up-YMAP2)
+  1. [https://github.com/darrenabbey/ymap/wiki/Setting-up-YMAP](https://github.com/darrenabbey/ymap/wiki/Setting-up-YMAP)<br>
+  2. [https://github.com/darrenabbey/ymap/wiki/Setting-up-YMAP2](https://github.com/darrenabbey/ymap/wiki/Setting-up-YMAP2)<br>
 
 The paper introducing the project can be found at: https://genomemedicine.biomedcentral.com/articles/10.1186/s13073-014-0100-8
 
