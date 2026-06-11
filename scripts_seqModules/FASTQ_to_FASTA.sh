@@ -28,17 +28,24 @@ CALLDIR=${PWD}
 tempdir=$(mktemp -d);
 #========================
 
-	# move input file to temp dir.
-	cp $1 $tempdir;
+	#
+	# A much faster way to do this step.
+	#
+	sed -n '1~4p' < $1 > $tempdir/temp1.text;               # keeps only header lines.
+	sed -n '2~4p' < $1 > $tempdir/temp2.text;               # keeps only sequence lines.
+	paste -d '\n' $tempdir/temp1.text $tempdir/temp2.text;  # interleave the two files to create a FASTA formatted file.
 
-	# simplify names.
-	base_name1=$(basename $1);
-
-	#echo ">default_read_name";
-	#cat $tempdir/$base_name1 | head -n 2 | tail -n 1;
-
-	# Call python script FASTQ_to_FASTA.py
-	python3 $BASEDIR/FASTQ_to_FASTA.py $tempdir/$base_name1;
+#	# move input file to temp dir.
+#	cp $1 $tempdir;
+#
+#	# simplify names.
+#	base_name1=$(basename $1);
+#
+#	#echo ">default_read_name";
+#	#cat $tempdir/$base_name1 | head -n 2 | tail -n 1;
+#
+#	# Call python script FASTQ_to_FASTA.py
+#	python3 $BASEDIR/FASTQ_to_FASTA.py $tempdir/$base_name1;
 
 #========================
 # Cleanup

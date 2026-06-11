@@ -38,14 +38,14 @@ mkdir $tempdir;
 	# simplify names.
 	base_name1=$(basename $1);
 
-	# Converts input FASTQ file to FASTA file by discarding quality scores.
+	# Converts input FASTQ file to FASTA file by discarding quality scores => output is automatically in single-line format.
 	sh $BASEDIR/FASTQ_to_FASTA.sh $1 > $tempdir/$base_name1.1;
 
-	# Ensure FASTA entries are single-line.
-	sh $BASEDIR/FASTA_reformat_1.sh $tempdir/$base_name1.1 > $tempdir/$base_name1.2;
+#	# Ensure FASTA entries are single-line.
+#	sh $BASEDIR/FASTA_reformat_1.sh $tempdir/$base_name1.1 > $tempdir/$base_name1.2;
 
 	# 1) For lines that don't start with ">", add a newline after every 300 characters. Put in placeholder headers of ">temp"
-	perl -p -e 'if (!/^[>]/) { s/.{'300'}/$&\n>temp\n/g }' $tempdir/$base_name1.2 > $tempdir/$base_name1.3;
+	perl -p -e 'if (!/^[>]/) { s/.{'300'}/$&\n>temp\n/g }' $tempdir/$base_name1.1 > $tempdir/$base_name1.3;
 
 	# Call python script FASTA_to_FASTQ.py
 	python3 $BASEDIR/FASTA_to_FASTQ.py $tempdir/$base_name1.3 > $tempdir/$base_name1.4;
