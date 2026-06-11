@@ -46,7 +46,13 @@ mkdir $tempdir;
 
 	wait;
 
-	lineCount=$(wc -l < $tempdir/temp2.text);
+	# Remove very short lines:
+	awk 'length($0) >= 20' $tempdir/temp2.text > $tempdir/temp2_.text &
+	awk 'length($0) >= 20' $tempdir/temp4.text > $tempdir/temp4_.text &
+
+	wait;
+
+	lineCount=$(wc -l < $tempdir/temp2_.text);
 
 	# Build unique sequence header lines.
 	seq 1 $lineCount | awk '{print "@" $1}' > $tempdir/temp1.text &
@@ -56,7 +62,7 @@ mkdir $tempdir;
 	wait;
 
 	# interleave the four files to recreate a FASTQ file.
-	paste -d '\n' $tempdir/temp1.text $tempdir/temp2.text $tempdir/temp3.text $tempdir/temp4.text > $CALLDIR/$finalName;
+	paste -d '\n' $tempdir/temp1.text $tempdir/temp2_.text $tempdir/temp3.text $tempdir/temp4_.text > $CALLDIR/$finalName;
 
 #========================
 # Cleanup

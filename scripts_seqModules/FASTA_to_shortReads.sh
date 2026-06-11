@@ -47,10 +47,13 @@ mkdir $tempdir;
 	# Grab sequence lines | break into 300 bp fragments | erase blank lines.
 	sed -n '2~2p' < $tempdir/temp.text | perl -p -e 's/.{'300'}/$&\n/g' | grep -v '^\s*$' > $tempdir/temp2.text;
 
-	# Make fake quality scores.
-	sed -i 's/[^#\n]/Z/g' $tempdir/temp2.text > $tempdir/temp4.text;
+	# Remove very short lines:
+        awk 'length($0) >= 20' $tempdir/temp2.text > $tempdir/temp2_.text &
 
-	lineCount=$(wc -l < $tempdir/temp2.text);
+	# Make fake quality scores.
+	sed -i 's/[^#\n]/Z/g' $tempdir/temp2_.text > $tempdir/temp4.text;
+
+	lineCount=$(wc -l < $tempdir/temp2_.text);
 
         # Build unique sequence header lines.
         seq 1 $lineCount | awk '{print "@" $1}' > $tempdir/temp1.text;
@@ -58,7 +61,7 @@ mkdir $tempdir;
 	seq 1 $lineCount | awk '{print "+" $1}' > $tempdir/temp3.text;
 
 	# interleave the four files to recreate a FASTQ file.
-        paste -d '\n' $tempdir/temp1.text $tempdir/temp2.text $tempdir/temp3.text $tempdir/temp4.text > $CALLDIR/$finalName;
+        paste -d '\n' $tempdir/temp1.text $tempdir/temp2_.text $tempdir/temp3.text $tempdir/temp4.text > $CALLDIR/$finalName;
 
 #========================
 # Cleanup
