@@ -366,6 +366,7 @@ if ($ext_new == "fastq") {
 	fwrite($output, $name_new."\n");
 	$paired = 0;
 } else if ($ext_new == "fastq-l") {
+	fwrite($condensedLogOutput, "Converting long-reads to simulated short-reads.\n");
 	fwrite($logOutput, "\t\t| This is a FASTQ file with long-read data, pre-process into simulated illumina FASTQ data.\n");
 
 	// Convert FASTQ to simulated-Illumina FASTQ.
