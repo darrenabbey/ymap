@@ -10,9 +10,9 @@ function SYSTEM_force_minimize($userName,$projectName) {
 			$dir     = $base_dir."users/".$userName."/projects/".$projectName;
 			if (is_dir($dir)) {
 				minimizeProject($dir);
-				log_stuff($userName,$projectNAme,"","","","SYSTEM_CLEANER: project:MINIMIZE success");
+				log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:MINIMIZE success");
 			} else {
-				log_stuff($userName,$projectNAme,"","","","SYSTEM_CLEANER: project:MINIMIZE failure, user doesn't own project.");
+				log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:MINIMIZE failure, user doesn't own project.");
 			}
 			log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:MINIMIZE success.");
 		}
