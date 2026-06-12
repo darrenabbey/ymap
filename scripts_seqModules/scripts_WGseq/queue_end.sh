@@ -23,6 +23,7 @@ echo -e "require_once 'sharedFunctions.php';" >> $outputName;
 echo -e "queue_end('$user','$project','','','$message');" >> $outputName;
 echo -e "\$salt_string = get_salt('$user','$project','$genome','$hapmap');" >> $outputName;
 echo -e "log_stuff('$user','$project','','',\$salt_string,'YMAP_daemon: $message');" >> $outputName;
+echo -e "SYSTEM_force_minimize('$user','$project');" >> $outputName;
 echo -e "?>" >> $outputName;
 php $outputName;
 rm $outputName;

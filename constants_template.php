@@ -29,7 +29,7 @@ $ADMIN_EMAIL = "admin@email.address";
 // A zero value here means the check is not performed.
 // A non-zero value here is interpreted in Gb; any larger datafiles will be subsampled down to this size before processing.
 //	Only use integer numbers here. A decimal number will not be properly interpreted by non-PHP components which also look to this file.
-$MAX_MEMORY_TARGET = 10;
+$MAX_FASTQ_TARGET = 1.7;
 
 // The maximum number of datasets to be analyzed in parallel by the processing queue.
 // More than one can be processed at once, but the memory utilization becomes less predictable so should not be done on memory limited servers without testing.
@@ -39,6 +39,9 @@ $MAX_QUEUE_PARALLEL = 1;
 // This will need to be empirically determined for each new install.
 $QUEUE_TIME_ESTIMATE = 40;
 
+// On space-liminted systems, this option tells YMAP to automatically minimize each project when complete.
+// This limits the ability to do some analyses that are less often done by users.
+$MINIMIZE_WHEN_DONE = False;
 
 //==============================================================================
 // The following settings should never need to be updated.

@@ -19,6 +19,7 @@ echo -e "chdir('$main_dir');" >> $outputName;
 echo -e "require_once 'constants.php';" >> $outputName;
 echo -e "require_once 'sharedFunctions.php';" >> $outputName;
 echo -e "queue_end('$user','$project','','','$message');" >> $outputName;
+echo -e "SYSTEM_force_minimize('$user','$project');" >> $outputName;
 echo -e "?>" >> $outputName;
 php $outputName;
 rm $outputName;
