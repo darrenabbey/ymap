@@ -87,7 +87,7 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	echo -e "#\tFILESIZE_GB             = $FILESIZE_GB (GB)" >> $logName;
 
 	MAX_PROCESSED_DATA_SIZE=$MAX_FASTQ_TARGET;
-	echo -e "#\t\$MAX_PROCESSED_DATA_SIZE = $MAX_PROCESSED_DATA_SIZE" >> $logName;
+	echo -e "#\tMAX_PROCESSED_DATA_SIZE = $MAX_PROCESSED_DATA_SIZE (GB)" >> $logName;
 
 	if [[ $(echo "$FILESIZE_GB > $MAX_PROCESSED_DATA_SIZE" | bc -l) = "1" ]]; then
 		echo -e "#\t\tFILESIZE_GB > MAX_PROCESSED_DATA_SIZE => FASTQ subsampling needed." >> $logName;
