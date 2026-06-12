@@ -1,22 +1,20 @@
 <?php
 // return the current size in GB of the user folder
 function SYSTEM_force_minimize($userName,$projectName) {
-	if ($user == "") {
+	if ($userName == "") {
 		log_stuff("","","","","","SYSTEM_CLEANER: user:VALIDATION failure, session expired.");
 	} else {
-		// Sanitize input strings.
-		$project = sanitize_POST("project");
-		if ($project == "") {
-			log_stuff($user,$project,"","","","SYSTEM_CLEANER: project:MINIMIZE failure, project name error.");
+		if ($projectName == "") {
+			log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:MINIMIZE failure, project name error.");
 		} else {
-			$dir     = $base_dir."users/".$user."/projects/".$project;
+			$dir     = $base_dir."users/".$userName."/projects/".$projectName;
 			if (is_dir($dir)) {
 				minimizeProject($dir);
-				log_stuff($user,$project,"","","","SYSTEM_CLEANER: project:MINIMIZE success");
+				log_stuff($userName,$projectNAme,"","","","SYSTEM_CLEANER: project:MINIMIZE success");
 			} else {
-				log_stuff($user,$project,"","","","SYSTEM_CLEANER: project:MINIMIZE failure, user doesn't own project.");
+				log_stuff($userName,$projectNAme,"","","","SYSTEM_CLEANER: project:MINIMIZE failure, user doesn't own project.");
 			}
-			log_stuff($user,$project,"","","","SYSTEM_CLEANER: project:MINIMIZE success.");
+			log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:MINIMIZE success.");
 		}
 	}
 }
