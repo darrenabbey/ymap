@@ -1,28 +1,32 @@
 <?php
 function SYSTEM_cleanup($userName,$projectName,$main_dir) {
 	if ($userName == "") {
-                log_stuff("","","","","","SYSTEM_CLEANER: project:ERROR_CLEANUP failure, user name error.");
-        } else {
-                if ($projectName == "") {
-                        log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP failure, project name error.");
-                } else {
-                        $dir     = $main_dir."/users/".$userName."/projects/".$projectName;
-                        if (is_dir($dir)) {
+		log_stuff("","","","","","SYSTEM_CLEANER: project:ERROR_CLEANUP failure, user name error.");
+	} else {
+		if ($projectName == "") {
+			log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP failure, project name error.");
+		} else {
+			$dir     = $main_dir."/users/".$userName."/projects/".$projectName;
+			if (is_dir($dir)) {
 				// DO STUFF HERE.
-				unlink($dir."/datafile_*");
-				unlink($dir."/data.pileup");
-				unlink($dir."/data_sorted.bam");
-				unlink($dir."/data.bam");
-				unlink($dir."/putative_SNPs_v4.txt");
-				unlink($dir."/SNP_CNV_v1.txt");
-				unlink($dir."/data_sorted.bam.bai");
-                                log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP success");
-                        } else {
-                                log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP failure, user doesn't own project.");
-                        }
-                        log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP success.");
-                }
-        }
+				if (is_file($dir."/error.txt")) {
+					unlink($dir."/datafile_*");
+					unlink($dir."/data.pileup");
+					unlink($dir."/data_sorted.bam");
+					unlink($dir."/data.bam");
+					unlink($dir."/putative_SNPs_v4.txt");
+					unlink($dir."/SNP_CNV_v1.txt");
+					unlink($dir."/data_sorted.bam.bai");
+					log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP success");
+				} else {
+					log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP not needed, no error.txt file.");
+				}
+			} else {
+				log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP failure, user doesn't own project.");
+			}
+			log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP success.");
+		}
+	}
 }
 function SYSTEM_force_minimize($userName,$projectName,$main_dir) {
 	if ($userName == "") {
