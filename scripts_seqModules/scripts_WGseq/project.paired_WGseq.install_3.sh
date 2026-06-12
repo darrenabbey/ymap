@@ -96,7 +96,11 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	# Terms to fit function may need to be characterized at install.
 
 	MAX_PROCESSED_DATA_SIZE=$(echo "($MAX_MEMORY_TARGET - $B)/$A" | bc -l);
-	echo -e "#\tMAX_PROCESSED_DATA_SIZE = $MAX_PROCESSED_DATA_SIZE (GB)" >> $logName;
+	echo -e "#\t\$A                       = $A" >> $logName;
+	echo -e "#\t\$B                       = $B" >> $logName;
+	echo -e "#\t\$MAX_MEMORY_TARGET       = $MAX_MEMORY_TARGET" >> $logName;
+	echo -e "#\t\$MAX_PROCESSED_DATA_SIZE = ($MAX_MEMORY_TARGET - $B)/$A" >> $logName;
+	echo -e "#\t                         = $MAX_PROCESSED_DATA_SIZE (GB)" >> $logName;
 
 	if [[ $(echo "$FILESIZE_GB > $MAX_PROCESSED_DATA_SIZE" | bc -l) = "1" ]]; then
 		echo -e "#\t\tFILESIZE_GB > MAX_PROCESSED_DATA_SIZE => FASTQ subsampling needed." >> $logName;
