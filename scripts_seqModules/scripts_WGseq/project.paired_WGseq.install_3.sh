@@ -64,7 +64,10 @@ datafile1=$(head -n 1 "$projectDirectory/datafiles.txt");
 datafile2=$(tail -n 1 "$projectDirectory/datafiles.txt");
 
 # Get memory target from "constants.php" file.
-MAX_MEMORY_TARGET=$(grep "MAX_MEMORY_TARGET" "$main_dir/constants.php" | tr -dc '0-9');
+MAX_FASTQ_TARGET_string1=$(grep "MAX_FASTQ_TARGET" "$main_dir/constants.php");
+MAX_FASTQ_TARGET_string2=$(echo "${MAX_FASTQ_TARGET_string1/'$MAX_FASTQ_TARGET = '/''}");
+MAX_FASTQ_TARGET=$(echo "${MAX_FASTQ_TARGET_string2/';'/''}");
+
 if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	# Get FASTQ data total size in bytes.
 	FILESIZE1=$(stat -c%s "$main_dir/users/$user/projects/$project/$datafile1");
@@ -83,24 +86,8 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	echo -e "#\tREADS2                  = $READS2" >> $logName;
 	echo -e "#\tFILESIZE_GB             = $FILESIZE_GB (GB)" >> $logName;
 
-	# Fit function relating FASTQ size (GB) to memory utilization (GB).
-	#	f(x) = A x + B
-	#		f(x) = memory utilization (GB)
-	#		x = FASTQ size (GB)
-	# To calculate the data that will produce a specific memory utilization, we invert the function.
-	#	f(y) = (y - B)/A
-	#		f(y) = FASTQ size (GB)
-	#		y = memory utilization (GB)
-	A="2.4168477588029";
-	B="-1.13116709532669";
-	# Terms to fit function may need to be characterized at install.
-
-	MAX_PROCESSED_DATA_SIZE=$(echo "($MAX_MEMORY_TARGET - $B)/$A" | bc -l);
-	echo -e "#\t\$A                       = $A" >> $logName;
-	echo -e "#\t\$B                       = $B" >> $logName;
-	echo -e "#\t\$MAX_MEMORY_TARGET       = $MAX_MEMORY_TARGET" >> $logName;
-	echo -e "#\t\$MAX_PROCESSED_DATA_SIZE = ($MAX_MEMORY_TARGET - $B)/$A" >> $logName;
-	echo -e "#\t                         = $MAX_PROCESSED_DATA_SIZE (GB)" >> $logName;
+	MAX_PROCESSED_DATA_SIZE=$MAX_FASTQ_TARGET;
+	echo -e "#\t\$MAX_PROCESSED_DATA_SIZE = $MAX_PROCESSED_DATA_SIZE" >> $logName;
 
 	if [[ $(echo "$FILESIZE_GB > $MAX_PROCESSED_DATA_SIZE" | bc -l) = "1" ]]; then
 		echo -e "#\t\tFILESIZE_GB > MAX_PROCESSED_DATA_SIZE => FASTQ subsampling needed." >> $logName;
