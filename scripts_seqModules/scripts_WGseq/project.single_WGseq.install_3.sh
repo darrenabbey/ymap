@@ -85,6 +85,7 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 
 		echo -e "Downsampling FASTQ data." >> $condensedLog;
 		echo -e "#\tDownsampling FASTQ data:" >> $logName;
+
 		echo -e "#\t\tDownsampling fraction     : $TARGET_FRACTION" >> $logName;
 
 		# Subsample FASTQ files to target fraction.
