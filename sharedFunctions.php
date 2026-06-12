@@ -9,7 +9,7 @@ function SYSTEM_force_minimize($userName,$projectName) {
 		if ($project == "") {
 			log_stuff($user,$project,"","","","SYSTEM_CLEANER: project:MINIMIZE failure, project name error.");
 		} else {
-			$dir     = "users/".$user."/projects/".$project;
+			$dir     = $base_dir."users/".$user."/projects/".$project;
 			if (is_dir($dir)) {
 				minimizeProject($dir);
 				log_stuff($user,$project,"","","","SYSTEM_CLEANER: project:MINIMIZE success");
