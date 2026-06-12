@@ -251,7 +251,7 @@ else
 		$bowtie2Directory"bowtie2" --very-sensitive -p "$cores" -x "$genomeDirectory/bowtie_index" -1 "$projectDirectory/$datafile1" -2 "$projectDirectory/$datafile2" > "$projectDirectory/data.bam" 2>> $logName;
 			# -p : number of threads to use.
 			# -1 : dataset.
-		    # --very-sensitive : a default set of configurations.
+			# --very-sensitive : a default set of configurations.
 		chmod 774 "$projectDirectory/data.bam";
 		echo -e "\tBowtie : paired-end reads aligned into BAM file." >> $logName;
 
@@ -268,6 +268,7 @@ else
 		chmod 774 "$projectDirectory/data_sorted.bam.bai";
 		echo -e "\tSamtools : Bowtie-BAM sorted & indexed." >> $logName;
 	fi;
+exit;
 
 	if [[ -f $projectDirectory/data.pileup ]]; then
 		echo -e "\tSamtools.pileup generated." >> $logName;

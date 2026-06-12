@@ -234,11 +234,12 @@
 		//	5: project in bulk-processing-queue.
 
 		$projectNameFile = "users/".$user."/projects/".$project."/name.txt";
-		$projectNameString = file_get_contents($projectNameFile);
-		$projectNameString = trim($projectNameString);
-
-		$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
-		$projectNameString  = trim($projectNameString);
+		if (is_file($projectNameFile)) {
+			$projectNameString = file_get_contents($projectNameFile);
+			$projectNameString = trim($projectNameString);
+		} else {
+			$projectNameString = $project;
+		}
 		echo "<span id='p_label_".$key."' style='color:#".$labelRgbColor."; background-color:#".$labelRgbBackgroundColor.";'>\n\t\t\t\t";
 		echo "<font size='2'>".($key+1).".";
 
