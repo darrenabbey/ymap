@@ -99,7 +99,6 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 
 		echo -e "Downsampling FASTQ data." >> $condensedLog;
 		echo -e "#\tDownsampling FASTQ data:" >> $logName;
-		echo -e "#\t\tMemory utilization target : $MAX_MEMORY_TARGET (GB)" >> $logName;
 		echo -e "#\t\tDownsampling fraction     : $TARGET_FRACTION" >> $logName;
 
 		# Subsample FASTQ files to target fraction.
@@ -323,7 +322,7 @@ referenceSeq="$projectDirectory/reference.temp";
 genomeChrCount=$(wc -l < $referenceSeq);
 genomeLengthInit=$(wc -c < $referenceSeq);
 genomeLength=$((genomeLengthInit-genomeChrCount));
-echo "$genomeLength (genome length)" >> "$projectDirectory/readStats.txt"
+echo "$genomeLength (genome length)" >> "$projectDirectory/readStats.txt";
 echo -e "##" >> $logName;
 echo -e "## Read depth calculations:" >> $logName;
 echo -e "##\t\$readTotalLength          = $readTotalLength" >> $logName;
