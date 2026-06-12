@@ -46,6 +46,7 @@
 				echo "<b>There are currently no datasets in the queue.</b> Each takes ~".$QUEUE_TIME_ESTIMATE." minutes to complete.";
 			}
 		?></li>
+		<li>Queue capacity and completion time predictions may be adjusted as admin learns the capacity of this server.</li>
 		<li>Filenames should only have alphanumeric characters (letters, numbers, underscores and dashes) in their names (no spaces or other special characters!).</li>
                 <li>Is your upload stuck? To resume it: Wait until all other uploads are done, refresh the page, and re-add the files for upload.</li>
 	</div>

@@ -13,7 +13,7 @@ then
 	echo "# them into many entries at 300bp long per entry, repeated at every offset to try";
 	echo "# and generate simulated Illumina reads for input into YMAP for homolog identification.";
 	echo "#";
-	echo "# Output is a *.fastq file. Headers in FASTQ file do not reflect headers in original FASTQ,";
+	echo "# Output is 'output.fastq' in the calling directory. Headers in FASTQ file do not reflect headers in original FASTQ,";
 	echo "# but are unique as needed for alignment purposes.";
 	echo "#";
 	echo;
