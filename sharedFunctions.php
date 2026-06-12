@@ -1,6 +1,7 @@
 <?php
 // return the current size in GB of the user folder
 function SYSTEM_force_minimize($userName,$projectName) {
+	$base_dir=getcwd();
 	if ($userName == "") {
 		log_stuff("","","","","","SYSTEM_CLEANER: user:VALIDATION failure, session expired.");
 	} else {
