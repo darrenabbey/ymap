@@ -1,15 +1,39 @@
 <?php
-// return the current size in GB of the user folder
-function SYSTEM_force_minimize($userName,$projectName) {
-	$base_dir=getcwd();
+function SYSTEM_cleanup($userName,$projectName,$main_dir) {
 	if ($userName == "") {
-		log_stuff("","","","","","SYSTEM_CLEANER: user:VALIDATION failure, session expired.");
+                log_stuff("","","","","","SYSTEM_CLEANER: project:ERROR_CLEANUP failure, user name error.");
+        } else {
+                if ($projectName == "") {
+                        log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP failure, project name error.");
+                } else {
+                        $dir     = $main_dir."/users/".$userName."/projects/".$projectName;
+                        if (is_dir($dir)) {
+				// DO STUFF HERE.
+				unlink($dir."/datafile_*");
+				unlink($dir."/data.pileup");
+				unlink($dir."/data_sorted.bam");
+				unlink($dir."/data.bam");
+				unlink($dir."/putative_SNPs_v4.txt");
+				unlink($dir."/SNP_CNV_v1.txt");
+				unlink($dir."/data_sorted.bam.bai");
+                                log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP success");
+                        } else {
+                                log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP failure, user doesn't own project.");
+                        }
+                        log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP success.");
+                }
+        }
+}
+function SYSTEM_force_minimize($userName,$projectName,$main_dir) {
+	if ($userName == "") {
+		log_stuff("","","","","","SYSTEM_CLEANER: project:MINIMIZE failure, user name error.");
 	} else {
 		if ($projectName == "") {
 			log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:MINIMIZE failure, project name error.");
 		} else {
-			$dir     = $base_dir."users/".$userName."/projects/".$projectName;
+			$dir     = $main_dir."/users/".$userName."/projects/".$projectName;
 			if (is_dir($dir)) {
+				// DO STUFF HERE.
 				minimizeProject($dir);
 				log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:MINIMIZE success");
 			} else {
