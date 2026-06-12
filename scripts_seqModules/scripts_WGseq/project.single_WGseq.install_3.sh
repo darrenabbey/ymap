@@ -60,15 +60,12 @@ echo -e "#\tChecking to see if FASTQ data needs to be downsampled to be processe
 MAX_MEMORY_TARGET=$(grep "MAX_MEMORY_TARGET" "$main_dir/constants.php" | tr -dc '0-9');
 if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	# Get FASTQ data total size in bytes.
-	FILESIZE=$(stat -c%s "$main_dir/users/$user/projects/$project/$datafile")
+	FILESIZE=$(stat -c%s "$main_dir/users/$user/projects/$project/$datafile");
 	READS_RAW=$(wc -l < "$main_dir/users/$user/projects/$project/$datafile");
 	READS=$( echo "$READS_RAW/4" | bc -l);
-
+	FILESIZE_GB=$(echo "$FILESIZE/1000000000" | bc -l);
 	echo -e "#\tFILESIZE                = $FILESIZE (bytes)" >> $logName;
 	echo -e "#\tREADS                   = $READS" >> $logName;
-
-	# Calculate FASTQ data total size in GB.
-	FILESIZE_GB=$(echo "$FILESIZE/1000000000" | bc -l)
 	echo -e "#\tFILESIZE_GB             = $FILESIZE_GB (GB)" >> $logName;
 
 	# Fit function relating FASTQ size (GB) to memory utilization (GB).
@@ -108,6 +105,15 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 
 		unlink $datafile;
 		mv $datafile.sample $datafile;
+
+		FILESIZE=$(stat -c%s "$main_dir/users/$user/projects/$project/$datafile");
+		READS_RAW=$(wc -l < "$main_dir/users/$user/projects/$project/$datafile");
+		READS=$( echo "$READS_RAW/4" | bc -l);
+		FILESIZE_GB=$(echo "$FILESIZE/1000000000" | bc -l)
+		echo -e "#\tFILESIZE (after)        = $FILESIZE (bytes)" >> $logName;
+		echo -e "#\tREADS (after)           = $READS" >> $logName;
+		echo -e "#\tFILESIZE_GB (after)     = $FILESIZE_GB (GB)" >> $logName;
+
 		echo -e "#\t\t$datafile downsampled." >> $logName;
 		cd "$main_dir";
 	else

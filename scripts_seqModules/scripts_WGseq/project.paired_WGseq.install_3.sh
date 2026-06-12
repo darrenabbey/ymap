@@ -67,24 +67,20 @@ datafile2=$(tail -n 1 "$projectDirectory/datafiles.txt");
 MAX_MEMORY_TARGET=$(grep "MAX_MEMORY_TARGET" "$main_dir/constants.php" | tr -dc '0-9');
 if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 	# Get FASTQ data total size in bytes.
-	FILESIZE1=$(stat -c%s "$main_dir/users/$user/projects/$project/$datafile1")
-	FILESIZE2=$(stat -c%s "$main_dir/users/$user/projects/$project/$datafile2")
+	FILESIZE1=$(stat -c%s "$main_dir/users/$user/projects/$project/$datafile1");
+	FILESIZE2=$(stat -c%s "$main_dir/users/$user/projects/$project/$datafile2");
 	FILESIZE=$(($FILESIZE1 + $FILESIZE2));
-
 	READS_RAW1=$(wc -l < "$main_dir/users/$user/projects/$project/$datafile1");
 	READS_RAW2=$(wc -l < "$main_dir/users/$user/projects/$project/$datafile2");
 	READS1=$(printf %.0f $( echo "$READS_RAW1/4" | bc -l) );
 	READS2=$(printf %.0f $( echo "$READS_RAW2/4" | bc -l) );
-
+	FILESIZE_GB=$(echo "$FILESIZE/1000000000" | bc -l);
 	echo -e "#\tFILESIZE1               = $FILESIZE1 (bytes)" >> $logName;
 	echo -e "#\tFILESIZE2               = $FILESIZE2 (bytes)" >> $logName;
 	echo -e "#\tREADS_RAW1              = $READS_RAW1" >> $logName;
 	echo -e "#\tREADS_RAW2              = $READS_RAW2" >> $logName;
 	echo -e "#\tREADS1                  = $READS1" >> $logName;
 	echo -e "#\tREADS2                  = $READS2" >> $logName;
-
-	# Calculate FASTQ data total size in GB.
-	FILESIZE_GB=$(echo "$FILESIZE/1000000000" | bc -l)
 	echo -e "#\tFILESIZE_GB             = $FILESIZE_GB (GB)" >> $logName;
 
 	# Fit function relating FASTQ size (GB) to memory utilization (GB).
@@ -129,6 +125,23 @@ if [[ "$MAX_MEMORY_TARGET" -gt "0" ]]; then
 		unlink $datafile2;
 		mv $datafile1.sample $datafile1;
 		mv $datafile2.sample $datafile2;
+
+		FILESIZE1=$(stat -c%s "$main_dir/users/$user/projects/$project/$datafile1");
+		FILESIZE2=$(stat -c%s "$main_dir/users/$user/projects/$project/$datafile2");
+		FILESIZE=$(($FILESIZE1 + $FILESIZE2));
+		READS_RAW1=$(wc -l < "$main_dir/users/$user/projects/$project/$datafile1");
+		READS_RAW2=$(wc -l < "$main_dir/users/$user/projects/$project/$datafile2");
+		READS1=$(printf %.0f $( echo "$READS_RAW1/4" | bc -l) );
+		READS2=$(printf %.0f $( echo "$READS_RAW2/4" | bc -l) );
+		FILESIZE_GB=$(echo "$FILESIZE/1000000000" | bc -l);
+		echo -e "#\tFILESIZE1 (after)       = $FILESIZE1 (bytes)" >> $logName;
+		echo -e "#\tFILESIZE2 (after)       = $FILESIZE2 (bytes)" >> $logName;
+		echo -e "#\tREADS_RAW1 (after)      = $READS_RAW1" >> $logName;
+		echo -e "#\tREADS_RAW2 (after)      = $READS_RAW2" >> $logName;
+		echo -e "#\tREADS1 (after)          = $READS1" >> $logName;
+		echo -e "#\tREADS2 (after)          = $READS2" >> $logName;
+		echo -e "#\tFILESIZE_GB (after)     = $FILESIZE_GB (GB)" >> $logName;
+
 		echo -e "#\t\t$datafile1 and $datafile2 downsampled." >> $logName;
 		cd "$main_dir";
 
