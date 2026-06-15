@@ -210,12 +210,12 @@ else
 
 	# Align fastq against genome.
 	echo -e "[[=- Align with Bowtie -=]]" >> $logName;
-	echo -e "Aligning reads with Bowtie2 => SAM file." >> $condensedLog;
+	echo -e "Aligning reads with Bowtie2." >> $condensedLog;
 
 	if [[ -f $projectDirectory/data.bam ]]; then
-		echo -e "\tDone: SAM -> BAM, new group headers, sorted." >> $logName;
+		echo -e "\tDone: FASTQ -> BAM, new group headers, sorted." >> $logName;
 	else
-		echo -e "\tBowtie : single-end reads aligning into SAM file." >> $logName;
+		echo -e "\tBowtie : single-end reads aligning into BAM file." >> $logName;
 		## Bowtie 2 command for single reads:
 		echo -e "\nRunning bowtie2.\n";
 		echo -e "\t\"bowtie2\" --very-sensitive -p $cores -x $genomeDirectory/bowtie_index -U $projectDirectory/$datafile" -S "$projectDirectory/data.bam;" >> $logName;
