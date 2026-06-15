@@ -51,6 +51,8 @@ if [ -z $1 ]; then
 	echo -e "#	info		: Show user account information.";
 	echo -e "#	status		: Show status of user projects/genomes.";
 	echo -e "#	queue           : Show status of data processing queue.";
+	echo -e "#	queue_pause	: Pauses the processing queue for admin activity.";
+	echo -e "#	queue_unpause   : Unpauses the processing queue when admin activity is done.";
 	echo -e "#	genomes		: List installed genomes.";
 	echo -e "#	hapmaps		: List installed hapmaps.";
 	echo -e "#	complete	: List file paths & names of images for completed projects.";
@@ -1413,6 +1415,16 @@ else
 		echo -e $lineThin;
 		echo -e "#";
 		php queue_status.php
+	    ;;
+	    "queue_pause")
+		echo -e "# YMAP2 commandline : Processing queue paused for admin activity.";
+		echo -e "#";
+		echo "Processing queue paused for admin activity." > $main_dir"/queue/error.txt";
+	    ;;
+	    "queue_unpause")
+		echo -e "# YMAP2 commandline : Processing queue unpaused after admin activity.";
+		echo -e "#";
+		rm $main_dir"/queue/error.txt";
 	    ;;
 	    "status_queue")
 		bash YMAPcli.sh status;

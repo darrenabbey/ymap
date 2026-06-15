@@ -52,6 +52,11 @@ BASE_DIR_temp
 			// 1. Grab init/start/end project entries from queue logs.
 			$queue_dir   = $base_dir."/queue/";
 			$queue_files = array_slice(scandir($queue_dir), 2);
+			if (is_file($base_dir."/queue/error.txt")) {
+				$ADMIN_ONLY = True;
+			} else {
+				$ADMIN_ONLY = False;
+			}
 			foreach ($queue_files as $key1 => $queue_file) {
 				if (str_contains($queue_file,".log")) {
 					$queue_contents = trim(file_get_contents($queue_dir.$queue_file));
@@ -90,12 +95,24 @@ BASE_DIR_temp
 								$entry[] = $status;
 								$entry[] = $entryType;
 
-								if ($status == "init") {
-									$init_list[] = $entry;
-								} else if ($status == "start") {
-									$start_list[] = $entry;
-								} else if ($status == "end") {
-									$end_list[] = $entry;
+								if ($ADMIN_ONLY == True) {
+									if (is_file($base_dir."/users/".$user."/super.txt")) {
+										if ($status == "init") {
+											$init_list[] = $entry;
+										} else if ($status == "start") {
+											$start_list[] = $entry;
+										} else if ($status == "end") {
+											$end_list[] = $entry;
+										}
+									}
+								} else {
+									if ($status == "init") {
+										$init_list[] = $entry;
+									} else if ($status == "start") {
+										$start_list[] = $entry;
+									} else if ($status == "end") {
+										$end_list[] = $entry;
+									}
 								}
 							}
 						}
