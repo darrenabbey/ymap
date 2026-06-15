@@ -82,11 +82,9 @@ if [[ "$MAX_FASTQ_TARGET" > "0" ]]; then
 	MAX_PROCESSED_DATA_SIZE=$(echo $MAX_FASTQ_TARGET | sed -e "s/\r//g");	# Strip off training ^M that is somehow introduced.
 	echo -e "#\tFILESIZE1 (bytes)            = $FILESIZE1" >> $logName;
 	echo -e "#\tFILESIZE2 (bytes)            = $FILESIZE2" >> $logName;
-	echo -e "#\tREADS_RAW1                   = $READS_RAW1" >> $logName;
-	echo -e "#\tREADS_RAW2                   = $READS_RAW2" >> $logName;
 	echo -e "#\tREADS1                       = $READS1" >> $logName;
 	echo -e "#\tREADS2                       = $READS2" >> $logName;
-	echo -e "#\tFILESIZE_GB (GB)             = $FILESIZE_GB" >> $logName;
+	echo -e "#\tFILESIZE_GB (total, GB)      = $FILESIZE_GB" >> $logName;
 	echo -e "#\tMAX_PROCESSED_DATA_SIZE (GB) = $MAX_PROCESSED_DATA_SIZE" >> $logName;
 
 	if [[ $(echo "$FILESIZE_GB > $MAX_PROCESSED_DATA_SIZE" | bc -l) = 1 ]]; then
@@ -127,8 +125,6 @@ if [[ "$MAX_FASTQ_TARGET" > "0" ]]; then
 		FILESIZE_GB=$(echo "$FILESIZE/1000000000" | bc -l);
 		echo -e "#\tFILESIZE1 (bytes, after)     = $FILESIZE1" >> $logName;
 		echo -e "#\tFILESIZE2 (bytes, after)     = $FILESIZE2" >> $logName;
-		echo -e "#\tREADS_RAW1 (after)           = $READS_RAW1" >> $logName;
-		echo -e "#\tREADS_RAW2 (after)           = $READS_RAW2" >> $logName;
 		echo -e "#\tREADS1 (after)               = $READS1" >> $logName;
 		echo -e "#\tREADS2 (after)               = $READS2" >> $logName;
 		echo -e "#\tFILESIZE_GB (GB, after)      = $FILESIZE_GB" >> $logName;
