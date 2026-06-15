@@ -274,16 +274,21 @@ $octave_exec "$outputName";
 cd "$script_dir";
 echo -e "\t\tOCTAVE log from final figure generation." >> $logName;
 sed 's/^/\t\t|/;' "$projectDirectory/octave.final_figs.log" >> $logName;
+cd "$main_dir";
+echo -e "finished all processing, moving to Cleaning up intermediate WGseq files" >> $condensedLog;
 
 
 ##==============================================================================
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
-echo -e "running: " "$main_dir/scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" "$user" "$project" "$main_dir" >> $logName;
-bash "$main_dir/scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" "$user" "$project" "$main_dir" 2>> $logName;
-
+echo -e "running: " "scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" "$user" "$project" "$main_dir" >> $logName;
+cd $main_dir"/scripts_seqModules/scripts_WGseq/";
+bash "cleaning_WGseq.sh" "$user" "$project" "$main_dir" 2>> $logName;
+cd $main_dir;
 
 ##==============================================================================
 ## Add project end to queue log file.
 ##------------------------------------------------------------------------------
+cd $main_dir"/scripts_seqModules/scripts_WGseq/";
 bash queue_end.sh "$user" "$project" "$main_dir" "$logName" "project.WGseq.hapmap.install_4.sh completed.";
+cd $main_dir;
