@@ -10,7 +10,7 @@ umask 007;
 user=$1;
 project=$2;
 main_dir=$(pwd)"/../..";
-projectDirectory="/$main_dir/users/$user/projects/$project";
+projectDirectory="$main_dir/users/$user/projects/$project";
 logName="$projectDirectory/process_log.txt";
 #install /dev/null $logName;
 
@@ -56,6 +56,7 @@ datafile=$(head -n 1 "$projectDirectory/datafiles.txt");
 
 echo -e "#==============================================================================" >> $logName;
 echo -e "#\tChecking to see if FASTQ data needs to be downsampled to be processed within memory limitations." >> $logName;
+echo -e "#------------------------------------------------------------------------------" >> $logName;
 
 # Get memory target from "constants.php" file.
 MAX_FASTQ_TARGET_string1=$(grep "MAX_FASTQ_TARGET" "$main_dir/constants.php");
@@ -68,25 +69,25 @@ if [[ "$MAX_FASTQ_TARGET" > "0" ]]; then
 	READS_RAW=$(wc -l < "$main_dir/users/$user/projects/$project/$datafile");
 	READS=$( echo "$READS_RAW/4" | bc -l);
 	FILESIZE_GB=$(echo "$FILESIZE/1000000000" | bc -l);
-	echo -e "#\tFILESIZE                = $FILESIZE (bytes)" >> $logName;
-	echo -e "#\tREADS                   = $READS" >> $logName;
-	echo -e "#\tFILESIZE_GB             = $FILESIZE_GB (GB)" >> $logName;
-
 	MAX_PROCESSED_DATA_SIZE=$MAX_FASTQ_TARGET;
-	echo -e "#\tMAX_PROCESSED_DATA_SIZE = $MAX_PROCESSED_DATA_SIZE (GB)" >> $logName;
+	MAX_PROCESSED_DATA_SIZE=$(echo $MAX_FASTQ_TARGET | sed -e "s/\r//g");   # Strip off training ^M that is somehow introduced.
+	echo -e "#\tFILESIZE (bytes)             = $FILESIZE" >> $logName;
+	echo -e "#\tREADS                        = $READS" >> $logName;
+	echo -e "#\tFILESIZE_GB (GB)             = $FILESIZE_GB" >> $logName;
+	echo -e "#\tMAX_PROCESSED_DATA_SIZE (GB) = $MAX_PROCESSED_DATA_SIZE" >> $logName;
 
-	if [[ $(echo "$FILESIZE_GB > $MAX_PROCESSED_DATA_SIZE" | bc -l) = "1" ]]; then
-		echo -e "#\t\tFILESIZE_GB > MAX_PROCESSED_DATA_SIZE => FASTQ subsampling needed." >> $logName;
+	if [[ $(echo "$FILESIZE_GB > $MAX_PROCESSED_DATA_SIZE" | bc -l) = 1 ]]; then
+		echo -e "#\tFILESIZE_GB > MAX_PROCESSED_DATA_SIZE => FASTQ subsampling needed.\n" >> $logName;
+		echo -e "#------------------------------------------------------------------------------" >> $logName;
 		# Calculate fraction of target vs original.
 		TARGET_FRACTION=$(echo "$MAX_PROCESSED_DATA_SIZE/$FILESIZE_GB" | bc -l);	# Calculate the target number of paired reads.
 		TARGET_READS=$(printf %.0f $(echo "$TARGET_FRACTION*$READS" | bc -l) );	# Round to whole number of reads.
-		echo -e "#\tTARGET_FRACTION         = $TARGET_FRACTION (= MAX_PROCESSED_DATA_SIZE/FILESIZE_GB)" >> $logName;
-		echo -e "#\tTARGET_READS            = $TARGET_READS" >> $logName;
+		echo -e "#\tTARGET_FRACTION              = $TARGET_FRACTION (= MAX_PROCESSED_DATA_SIZE/FILESIZE_GB)" >> $logName;
+		echo -e "#\tTARGET_READS                 = $TARGET_READS" >> $logName;
 
 		echo -e "Downsampling FASTQ data." >> $condensedLog;
-		echo -e "#\tDownsampling FASTQ data:" >> $logName;
-
-		echo -e "#\t\tDownsampling fraction     : $TARGET_FRACTION" >> $logName;
+		echo -e "#\tDownsampling FASTQ data..." >> $logName;
+		echo -e "#" >> $logName;
 
 		# Subsample FASTQ files to target fraction.
 		cd "$main_dir/users/$user/projects/$project/";
@@ -103,19 +104,20 @@ if [[ "$MAX_FASTQ_TARGET" > "0" ]]; then
 		READS_RAW=$(wc -l < "$main_dir/users/$user/projects/$project/$datafile");
 		READS=$( echo "$READS_RAW/4" | bc -l);
 		FILESIZE_GB=$(echo "$FILESIZE/1000000000" | bc -l)
-		echo -e "#\tFILESIZE (after)        = $FILESIZE (bytes)" >> $logName;
-		echo -e "#\tREADS (after)           = $READS" >> $logName;
-		echo -e "#\tFILESIZE_GB (after)     = $FILESIZE_GB (GB)" >> $logName;
+		echo -e "#\tFILESIZE (bytes, after)      = $FILESIZE" >> $logName;
+		echo -e "#\tREADS (after)                = $READS" >> $logName;
+		echo -e "#\tFILESIZE_GB (GB, after)      = $FILESIZE_GB" >> $logName;
 
 		echo -e "#\t\t$datafile downsampled." >> $logName;
 		cd "$main_dir";
 	else
-		#TARGET_FRACTION="1";
-		echo -e "#\t\tFILESIZE_GB < MAX_PROCESSED_DATA_SIZE => FASTQ subsampling not needed." >> $logName;
+		echo -e "#" >> $logName;
+		echo -e "#\tFILESIZE_GB <= MAX_PROCESSED_DATA_SIZE => FASTQ subsampling not needed." >> $logName;
+		echo -e "#" >> $logName;
 	fi;
 else
 	echo -e "#" >> $logName;
-	echo -e "#\t\FASTQ subsampling disabled in constants.php file." >> $logName;
+	echo -e "#\tFASTQ subsampling disabled in constants.php file." >> $logName;
 	echo -e "#" >> $logName;
 fi;
 echo -e "#==============================================================================" >> $logName;
@@ -217,7 +219,7 @@ else
 		## Bowtie 2 command for single reads:
 		echo -e "\nRunning bowtie2.\n";
 		echo -e "\t\"bowtie2\" --very-sensitive -p $cores -x $genomeDirectory/bowtie_index -U $projectDirectory/$datafile" -S "$projectDirectory/data.bam;" >> $logName;
-		$bowtie2Directory"bowtie2" --very-sensitive -p "$cores" -x "$genomeDirectory/bowtie_index" -U "$projectDirectory/$datafile" > "$projectDirectory/data.bam" 2>> $logName;
+		$bowtie2Directory"bowtie2" --very-sensitive -p "$cores" -x "$genomeDirectory/bowtie_index" -U "$projectDirectory/$datafile" | $samtools_exec view -b > "$projectDirectory/data.bam" 2>> $logName;
 			# -p : number of threads to use.
 			# -1 : dataset.
 		    # --very-sensitive : a default set of configurations.
@@ -228,7 +230,7 @@ else
 		echo -e "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
 		echo -e "Sorting BAM file." >> $condensedLog;
 		echo -e "\nRunning samtools:sort.\n";
-		$samtools_exec sort -@ "$cores" "$projectDirectory/data.bam" -o "$projectDirectory/data_sorted.bam" -T "$projectDirectory" 2>> $logName >> $logName;
+		$samtools_exec sort -@ "$cores" "$projectDirectory/data.bam" -o "$projectDirectory/data_sorted.bam" -T "$projectDirectory" 2>> $logName;
 		chmod 774 "$projectDirectory/data_sorted.bam";
 
 		echo -e "Indexing BAM file." >> $condensedLog;

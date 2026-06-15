@@ -57,6 +57,7 @@ chmod 0774 $condensedLog;
 
 echo -e "#==============================================================================" >> $logName;
 echo -e "#\tChecking to see if FASTQ data needs to be downsampled to be processed within memory limitations." >> $logName;
+echo -e "#------------------------------------------------------------------------------" >> $logName;
 
 # Get first data file name from "datafiles.txt";
 datafile1=$(head -n 1 "$projectDirectory/datafiles.txt");
@@ -64,9 +65,9 @@ datafile1=$(head -n 1 "$projectDirectory/datafiles.txt");
 datafile2=$(tail -n 1 "$projectDirectory/datafiles.txt");
 
 # Get memory target from "constants.php" file.
-MAX_FASTQ_TARGET_string1=$(grep "MAX_FASTQ_TARGET" "$main_dir/constants.php");
-MAX_FASTQ_TARGET_string2=$(echo "${MAX_FASTQ_TARGET_string1/'$MAX_FASTQ_TARGET = '/''}");
-MAX_FASTQ_TARGET=$(echo "${MAX_FASTQ_TARGET_string2/';'/''}");
+MAX_FASTQ_TARGET_string1=$(grep -e "MAX_FASTQ_TARGET" "$main_dir/constants.php");
+MAX_FASTQ_TARGET_string2=$(echo -e "${MAX_FASTQ_TARGET_string1/'$MAX_FASTQ_TARGET = '/''}");
+MAX_FASTQ_TARGET=$(echo -e "${MAX_FASTQ_TARGET_string2/';'/''}");
 
 if [[ "$MAX_FASTQ_TARGET" > "0" ]]; then
 	# Get FASTQ data total size in bytes.
@@ -78,29 +79,28 @@ if [[ "$MAX_FASTQ_TARGET" > "0" ]]; then
 	READS1=$(printf %.0f $( echo "$READS_RAW1/4" | bc -l) );
 	READS2=$(printf %.0f $( echo "$READS_RAW2/4" | bc -l) );
 	FILESIZE_GB=$(echo "$FILESIZE/1000000000" | bc -l);
-	echo -e "#\tFILESIZE1               = $FILESIZE1 (bytes)" >> $logName;
-	echo -e "#\tFILESIZE2               = $FILESIZE2 (bytes)" >> $logName;
-	echo -e "#\tREADS_RAW1              = $READS_RAW1" >> $logName;
-	echo -e "#\tREADS_RAW2              = $READS_RAW2" >> $logName;
-	echo -e "#\tREADS1                  = $READS1" >> $logName;
-	echo -e "#\tREADS2                  = $READS2" >> $logName;
-	echo -e "#\tFILESIZE_GB             = $FILESIZE_GB (GB)" >> $logName;
+	MAX_PROCESSED_DATA_SIZE=$(echo $MAX_FASTQ_TARGET | sed -e "s/\r//g");	# Strip off training ^M that is somehow introduced.
+	echo -e "#\tFILESIZE1 (bytes)            = $FILESIZE1" >> $logName;
+	echo -e "#\tFILESIZE2 (bytes)            = $FILESIZE2" >> $logName;
+	echo -e "#\tREADS_RAW1                   = $READS_RAW1" >> $logName;
+	echo -e "#\tREADS_RAW2                   = $READS_RAW2" >> $logName;
+	echo -e "#\tREADS1                       = $READS1" >> $logName;
+	echo -e "#\tREADS2                       = $READS2" >> $logName;
+	echo -e "#\tFILESIZE_GB (GB)             = $FILESIZE_GB" >> $logName;
+	echo -e "#\tMAX_PROCESSED_DATA_SIZE (GB) = $MAX_PROCESSED_DATA_SIZE" >> $logName;
 
-	MAX_PROCESSED_DATA_SIZE=$MAX_FASTQ_TARGET;
-	echo -e "#\tMAX_PROCESSED_DATA_SIZE = $MAX_PROCESSED_DATA_SIZE (GB)" >> $logName;
-
-	if [[ $(echo "$FILESIZE_GB > $MAX_PROCESSED_DATA_SIZE" | bc -l) = "1" ]]; then
+	if [[ $(echo "$FILESIZE_GB > $MAX_PROCESSED_DATA_SIZE" | bc -l) = 1 ]]; then
 		echo -e "#\t\tFILESIZE_GB > MAX_PROCESSED_DATA_SIZE => FASTQ subsampling needed." >> $logName;
+		echo -e "#------------------------------------------------------------------------------" >> $logName;
 		# Calculate fraction of target vs original.
 		TARGET_FRACTION=$(echo "$MAX_PROCESSED_DATA_SIZE/$FILESIZE_GB" | bc -l);	# Calculate the target number of paired reads.
 		TARGET_READS=$(printf %.0f $(echo "$TARGET_FRACTION*$READS1" | bc -l) );	# Round to whole number of reads.
-		echo -e "#\tTARGET_FRACTION         = $TARGET_FRACTION (= MAX_PROCESSED_DATA_SIZE/FILESIZE_GB)" >> $logName;
-		echo -e "#\tTARGET_READS            = $TARGET_READS" >> $logName;
+		echo -e "#\tTARGET_FRACTION              = $TARGET_FRACTION (= MAX_PROCESSED_DATA_SIZE/FILESIZE_GB)" >> $logName;
+		echo -e "#\tTARGET_READS                 = $TARGET_READS" >> $logName;
 
 		echo -e "Downsampling FASTQ data." >> $condensedLog;
-		echo -e "#\tDownsampling FASTQ data:" >> $logName;
-
-		echo -e "#\t\tDownsampling fraction     : $TARGET_FRACTION" >> $logName;
+		echo -e "#\tDownsampling FASTQ data..." >> $logName;
+		echo -e "#" >> $logName;
 
 		# Subsample FASTQ files to target fraction.
 		cd "$main_dir/users/$user/projects/$project/";
@@ -125,24 +125,25 @@ if [[ "$MAX_FASTQ_TARGET" > "0" ]]; then
 		READS1=$(printf %.0f $( echo "$READS_RAW1/4" | bc -l) );
 		READS2=$(printf %.0f $( echo "$READS_RAW2/4" | bc -l) );
 		FILESIZE_GB=$(echo "$FILESIZE/1000000000" | bc -l);
-		echo -e "#\tFILESIZE1 (after)       = $FILESIZE1 (bytes)" >> $logName;
-		echo -e "#\tFILESIZE2 (after)       = $FILESIZE2 (bytes)" >> $logName;
-		echo -e "#\tREADS_RAW1 (after)      = $READS_RAW1" >> $logName;
-		echo -e "#\tREADS_RAW2 (after)      = $READS_RAW2" >> $logName;
-		echo -e "#\tREADS1 (after)          = $READS1" >> $logName;
-		echo -e "#\tREADS2 (after)          = $READS2" >> $logName;
-		echo -e "#\tFILESIZE_GB (after)     = $FILESIZE_GB (GB)" >> $logName;
+		echo -e "#\tFILESIZE1 (bytes, after)     = $FILESIZE1" >> $logName;
+		echo -e "#\tFILESIZE2 (bytes, after)     = $FILESIZE2" >> $logName;
+		echo -e "#\tREADS_RAW1 (after)           = $READS_RAW1" >> $logName;
+		echo -e "#\tREADS_RAW2 (after)           = $READS_RAW2" >> $logName;
+		echo -e "#\tREADS1 (after)               = $READS1" >> $logName;
+		echo -e "#\tREADS2 (after)               = $READS2" >> $logName;
+		echo -e "#\tFILESIZE_GB (GB, after)      = $FILESIZE_GB" >> $logName;
 
 		echo -e "#\t\t$datafile1 and $datafile2 downsampled." >> $logName;
 		cd "$main_dir";
 
 	else
-		#TARGET_FRACTION="1";
-		echo -e "#\t\tFILESIZE_GB < MAX_PROCESSED_DATA_SIZE => FASTQ subsampling not needed." >> $logName;
+		echo -e "#" >> $logName;
+		echo -e "#\tFILESIZE_GB <= MAX_PROCESSED_DATA_SIZE => FASTQ subsampling not needed." >> $logName;
+		echo -e "#" >> $logName;
 	fi;
 else
 	echo -e "#" >> $logName;
-	echo -e "#\t\FASTQ subsampling disabled in constants.php file." >> $logName;
+	echo -e "#\tFASTQ subsampling disabled in constants.php file." >> $logName;
 	echo -e "#" >> $logName;
 fi;
 echo -e "#==============================================================================" >> $logName;
@@ -245,7 +246,7 @@ else
 		echo -e "\nRunning bowtie2.\n" >> $logName;
 		echo -e "Command used:" >> $logName;
 		echo -e "\t$bowtie2Directory\"bowtie2\" --very-sensitive -p '$cores' -x '$genomeDirectory/bowtie_index' -1 '$projectDirectory/$datafile1' -2 '$projectDirectory/$datafile2' -S '$projectDirectory/data.sam'" >> $logName;
-		$bowtie2Directory"bowtie2" --very-sensitive -p "$cores" -x "$genomeDirectory/bowtie_index" -1 "$projectDirectory/$datafile1" -2 "$projectDirectory/$datafile2" > "$projectDirectory/data.bam" 2>> $logName;
+		$bowtie2Directory"bowtie2" --very-sensitive -p "$cores" -x "$genomeDirectory/bowtie_index" -1 "$projectDirectory/$datafile1" -2 "$projectDirectory/$datafile2" | $samtools_exec view -b > "$projectDirectory/data.bam" 2>> $logName;
 			# -p : number of threads to use.
 			# -1 : dataset.
 			# --very-sensitive : a default set of configurations.
