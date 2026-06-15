@@ -217,7 +217,7 @@ else
 		## Bowtie 2 command for single reads:
 		echo -e "\nRunning bowtie2.\n";
 		echo -e "\t\"bowtie2\" --very-sensitive -p $cores -x $genomeDirectory/bowtie_index -U $projectDirectory/$datafile" -S "$projectDirectory/data.bam;" >> $logName;
-		$bowtie2Directory"bowtie2" --very-sensitive -p "$cores" -x "$genomeDirectory/bowtie_index" -U "$projectDirectory/$datafile" > "$projectDirectory/data.bam" 2>> $logName >> $logName;
+		$bowtie2Directory"bowtie2" --very-sensitive -p "$cores" -x "$genomeDirectory/bowtie_index" -U "$projectDirectory/$datafile" > "$projectDirectory/data.bam" 2>> $logName;
 			# -p : number of threads to use.
 			# -1 : dataset.
 		    # --very-sensitive : a default set of configurations.
@@ -256,12 +256,12 @@ else
 	echo -e "Processing pileup for CNVs & SNPs." >> $condensedLog;
 
 	( echo -e "\tPython : Processing pileup for SNPs." >> $logName;
-	$python_exec "$main_dir/scripts_seqModules/counts_SNPs_v5.py" "$projectDirectory/data.pileup" > "$projectDirectory/putative_SNPs_v4.txt" 2>> $logName >> $logName;
+	$python_exec "$main_dir/scripts_seqModules/counts_SNPs_v5.py" "$projectDirectory/data.pileup" > "$projectDirectory/putative_SNPs_v4.txt" 2>> $logName;
 	chmod 774 "$projectDirectory/putative_SNPs_v4.txt";
 	echo -e "\tPython : Pileup processed for SNPs." >> $logName; ) &
 
 	( echo -e "\tPython : Processing pileup for SNP-CNV." >> $logName;
-	$python_exec "$main_dir/scripts_seqModules/counts_CNVs-SNPs_v1.py" "$projectDirectory/data.pileup" > "$projectDirectory/SNP_CNV_v1.txt" 2>> $logName >> $logName;
+	$python_exec "$main_dir/scripts_seqModules/counts_CNVs-SNPs_v1.py" "$projectDirectory/data.pileup" > "$projectDirectory/SNP_CNV_v1.txt" 2>> $logName;
 	chmod 774 "$projectDirectory/SNP_CNV_v1.txt";
 	echo -e "\tPython : Pileup processed for SNP-CNV." >> $logName; ) &
 
@@ -335,7 +335,7 @@ if [[ "$hapmapInUse" = 1 ]]; then
 		echo -e "\t\t|\thapmap     = $hapmap"     >> $logName;
 		echo -e "\t\t|\thapmapUser = $hapmapUser" >> $logName;
 		echo -e "\t\t|\tmain_dir   = $main_dir"   >> $logName;
-		$python_exec "$main_dir/scripts_seqModules/putative_SNPs_from_hapmap_in_child.py" "$genome" "$genomeUser" "$project" "$user" "$hapmap" "$hapmapUser" "$main_dir" > "$projectDirectory/trimmed_SNPs_v5.txt" 2>> $logName >> $logName;
+		$python_exec "$main_dir/scripts_seqModules/putative_SNPs_from_hapmap_in_child.py" "$genome" "$genomeUser" "$project" "$user" "$hapmap" "$hapmapUser" "$main_dir" > "$projectDirectory/trimmed_SNPs_v5.txt" 2>> $logName;
 		echo -e "\t\tDone." >> $logName;
 	fi
 fi
@@ -353,9 +353,9 @@ if [[ $hapmapInUse = 0 ]]; then
 	echo -e "Passing processing on to 'scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh' for final analysis." >> $logName;
 	echo -e "\tCurrent directory = "$(pwd) >> $logName;
 	echo -e "=========================================================================\n" >> $logName;
-	bash "$main_dir/scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" "$user" "$project" "$main_dir" 2>> $logName >> $logName;
+	bash "$main_dir/scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" "$user" "$project" "$main_dir" 2>> $logName;
 else
 	echo -e "Passing processing on to 'scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh' for final analysis." >> $logName;
 	echo -e "=========================================================================\n" >> $logName;
-	bash "$main_dir/scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh" "$user" "$project" "$hapmap" "$main_dir" 2>> $logName >> $logName;
+	bash "$main_dir/scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh" "$user" "$project" "$hapmap" "$main_dir" 2>> $logName;
 fi
