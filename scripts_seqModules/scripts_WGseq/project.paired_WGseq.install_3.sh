@@ -68,7 +68,7 @@ MAX_FASTQ_TARGET_string1=$(grep "MAX_FASTQ_TARGET" "$main_dir/constants.php");
 MAX_FASTQ_TARGET_string2=$(echo "${MAX_FASTQ_TARGET_string1/'$MAX_FASTQ_TARGET = '/''}");
 MAX_FASTQ_TARGET=$(echo "${MAX_FASTQ_TARGET_string2/';'/''}");
 
-if [[ "$MAX_FASTQ_TARGET" -gt "0" ]]; then
+if [[ "$MAX_FASTQ_TARGET" > "0" ]]; then
 	# Get FASTQ data total size in bytes.
 	FILESIZE1=$(stat -c%s "$main_dir/users/$user/projects/$project/$datafile1");
 	FILESIZE2=$(stat -c%s "$main_dir/users/$user/projects/$project/$datafile2");
@@ -142,7 +142,7 @@ if [[ "$MAX_FASTQ_TARGET" -gt "0" ]]; then
 	fi;
 else
 	echo -e "#" >> $logName;
-	echo -e "#\t\$MAX_FASTQ_TARGET               = $MAX_FASTQ_TARGET" >> $logName;
+	echo -e "#\t\FASTQ subsampling disabled in constants.php file." >> $logName;
 	echo -e "#" >> $logName;
 fi;
 echo -e "#==============================================================================" >> $logName;
