@@ -157,6 +157,7 @@ if ((useHapmap) || (useParent))
 							else
 								allelic_ratio			= allelic_ratios(SNP);
 							end;
+
 							if (isa(coordinates(SNP),'cell') == 1)
 								if (isscalar(coordinates(SNP){1}) == 1)
 									coordinate              = coordinates(SNP){1};
@@ -166,15 +167,17 @@ if ((useHapmap) || (useParent))
 							else
 								coordinate			= coordinates(SNP);
 							end;
-							if (length(allelic_ratios) > 1)
+
+							if (isa(allele_strings,'cell') == 1)
 								if (length(allelic_ratios) > 1)
 									allele_string           = allele_strings{SNP};
 								else
 									allele_string           = allele_strings;
 								end;
 							else
-								allele_string			= allele_strings;
+								allele_string                   = allele_strings;
 							end;
+
 							baseCall				= allele_string(1);
 							homologA				= allele_string(3);
 							homologB				= allele_string(5);

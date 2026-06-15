@@ -50,7 +50,7 @@ function SYSTEM_force_minimize($userName,$projectName,$main_dir) {
 function minimizeProject($dir) {
 	$dir = $dir."/";
 	// Make a temp directory.
-	$temp_dir = $dir."/temp/";
+	$temp_dir = $dir."temp/";
 	mkdir($temp_dir);
 
 	// Get array of all project files
@@ -59,13 +59,17 @@ function minimizeProject($dir) {
 	// Move files we want to keep into temp folder.
 	foreach ($files as $file) {
 	//	// Move specific text files.
-	//	if (in_array($file, array("complete.txt","dataFormat.txt","genome.txt","index.php","name.txt","parent.txt","process_log.txt"."figVer.txt","working_done.txt"))) {
+	//	if (in_array($file, array("complete.txt","dataFormat.txt","figVer.txt","genome.txt","index.php","name.txt","parent.txt","process_log.txt","working_done.txt"))) {
 	//		rename($dir.$file, $temp_dir.$file);
 	//	}
-		$file_ext = substr(strrchr($file, '.'), 1);
-		// Move [png|eps|bed|gff3|txt] files.
-		if (($file_ext == "png") or ($file_ext == "eps") or ($file_ext == "bed") or ($file_ext == "gff3") or ($file_ext == "txt")) {
+		if (($file == "colors.txt") or ($file == "complete.txt") or ($file == "dataFormat.txt") or ($file == "figVer.txt") or ($file == "genome.txt") or ($file == "index.php") or ($file == "name.txt") or ($file == "parent.txt") or ($file == "process_log.txt") or ($file == "readStats.txt") or ($file == "salt.txt") or ($file == "warning.txt") or ($file == "working_done.txt")) {
 			rename($dir.$file, $temp_dir.$file);
+		}
+		$file_ext  = substr(strrchr($file, '.'), 1);
+		if (($file_ext == "png") or ($file_ext == "eps") or ($file_ext == "bed") or ($file_ext == "gff3")) {
+			if (!str_contains($file,'ChARM_test') and !str_contains($file,'Rsquared')) {
+				rename($dir.$file, $temp_dir.$file);
+			}
 		}
 	}
 
@@ -87,6 +91,7 @@ function minimizeProject($dir) {
 
 	// Move the saved files back to the project directory.
 	foreach ($files as $file) {
+		if (in_array($file, array(".",".."))) continue;
 		rename($temp_dir.$file,$dir.$file);
 	}
 
