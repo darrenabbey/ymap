@@ -58,11 +58,12 @@ function minimizeProject($dir) {
 
 	// Move files we want to keep into temp folder.
 	foreach ($files as $file) {
+		// Move specific text files.
 		if (in_array($file, array("complete.txt","dataFormat.txt","genome.txt","index.php","name.txt","parent.txt","process_log.txt"."figVer.txt","working_done.txt"))) {
 			rename($dir.$file, $temp_dir.$file);
 		}
 		$file_ext = substr(strrchr($file, '.'), 1);
-		// mv [png|eps|bed|gff3] files.
+		// Move [png|eps|bed|gff3] files.
 		if (($file_ext == "png") or ($file_ext == "eps") or ($file_ext == "bed") or ($file_ext == "gff3")) {
 			rename($dir.$file, $temp_dir.$file);
 		}

@@ -121,49 +121,57 @@ if ((useHapmap) || (useParent))
 					%
 					% Determining colors for each SNP coordinate from calculated cutoffs.
 					%
-					localCopyEstimate					= round(CNVplot2{chr}(chr_bin)*ploidy*ploidyAdjust);
 					allelic_ratios						= [chr_SNPdata{chr,1}{chr_bin} chr_SNPdata{chr,2}{chr_bin}];
 					coordinates						= [chr_SNPdata{chr,3}{chr_bin} chr_SNPdata{chr,4}{chr_bin}];
 
-					if (length(chr_SNPdata{chr,1}{chr_bin}) == 1) && (length(chr_SNPdata{chr,2}{chr_bin}) == 1)
-						allele_strings					= {chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}};
+					if (sizeof(chr_SNPdata{chr,5}{chr_bin_SNP}) == 0)
+						phased_alleles = '';
 					else
-						allele_strings					= [chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}];
-						%% dragon : troubleshooting warning of implicit numerical conversion.
-						%fprintf('^^^ Troubleshooting warning of implicit numerical to char conversion.\n');
-						%printf(['^^^ ' allele_strings '\n']);
+						phased_alleles = chr_SNPdata{chr,5}{chr_bin_SNP};
 					end;
+					if (sizeof(chr_SNPdata{chr,6}{chr_bin_SNP}) == 0)
+						unphased_alleles = '';
+					else
+						unphased_alleles = chr_SNPdata{chr,6}{chr_bin_SNP};
+					end;
+					allele_strings                                          = [phased_alleles unphased_alleles];
 
-
-%## CODE BLOCK COPIED FROM 'CNV_SNP_hapmap_v4.m'.
-%#						if (sizeof(chr_SNPdata{chr,5}{chr_bin_SNP}) == 0)
-%#			                                phased_alleles = '';
-%#			                        else
-%#			                                phased_alleles = chr_SNPdata{chr,5}{chr_bin_SNP};
-%#			                        end;
-%#			                        if (sizeof(chr_SNPdata{chr,6}{chr_bin_SNP}) == 0)
-%#			                                unphased_alleles = '';
-%#			                        else
-%#			                                unphased_alleles = chr_SNPdata{chr,6}{chr_bin_SNP};
-%#			                        end;
-%#			                        allele_strings                                          = [phased_alleles unphased_alleles];
-
+%					if (length(chr_SNPdata{chr,1}{chr_bin}) == 1) && (length(chr_SNPdata{chr,2}{chr_bin}) == 1)
+%						allele_strings					= {chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}};
+%					else
+%						allele_strings					= [chr_SNPdata{chr,5}{chr_bin} chr_SNPdata{chr,6}{chr_bin}];
+%						%% dragon : troubleshooting warning of implicit numerical conversion.
+%						%fprintf('^^^ Troubleshooting warning of implicit numerical to char conversion.\n');
+%						%printf(['^^^ ' allele_strings '\n']);
+%					end;
 
 					if (length(allelic_ratios) > 0)
 						for SNP = 1:length(allelic_ratios)
 							% Load phased SNP data from earlier defined structure.
 							if (isa(allelic_ratios(SNP),'cell') == 1)
-								allelic_ratio			= allelic_ratios(SNP){1};
+								if (isscalar(allelic_ratios(SNP){1}) == 1)
+									allelic_ratio           = allelic_ratios(SNP){1};
+								else
+									allelic_ratio           = str2num(cell2mat(allelic_ratios(SNP)));
+								end;
 							else
 								allelic_ratio			= allelic_ratios(SNP);
 							end;
 							if (isa(coordinates(SNP),'cell') == 1)
-								coordinate			= coordinates(SNP){1};
+								if (isscalar(coordinates(SNP){1}) == 1)
+									coordinate              = coordinates(SNP){1};
+								else
+									coordinate              = str2num(cell2mat(coordinates(SNP)));
+								end;
 							else
 								coordinate			= coordinates(SNP);
 							end;
 							if (length(allelic_ratios) > 1)
-								allele_string			= allele_strings{SNP};
+								if (length(allelic_ratios) > 1)
+									allele_string           = allele_strings{SNP};
+								else
+									allele_string           = allele_strings;
+								end;
 							else
 								allele_string			= allele_strings;
 							end;
