@@ -193,9 +193,9 @@
 			}
 		}
 		if (sizeof($init_list) > 0) {
-			print_r("\n");
+			print_r("\n#");
 		}
-		print_r("#\n#\tYMAPs processing:  ".$count_queue_working."\n#\t\t");
+		print_r("\n#\tYMAPs processing:  ".$count_queue_working."\n#\t\t");
 		foreach ($start_list as $key=>$value) {
 			$key_ = $key+1;
 			$userName = $value[1];
