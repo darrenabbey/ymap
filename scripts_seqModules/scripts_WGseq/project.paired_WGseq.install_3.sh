@@ -140,9 +140,10 @@ if [[ "$MAX_FASTQ_TARGET" -gt "0" ]]; then
 		#TARGET_FRACTION="1";
 		echo -e "#\t\tFILESIZE_GB < MAX_PROCESSED_DATA_SIZE => FASTQ subsampling not needed." >> $logName;
 	fi;
-#else
-#	# Used later to ensure low read mapping warning isn't given because of downsampling.
-#	TARGET_FRACTION="1";
+else
+	echo -e "#" >> $logName;
+	echo -e "#\t\$MAX_FASTQ_TARGET               = $MAX_FASTQ_TARGET" >> $logName;
+	echo -e "#" >> $logName;
 fi;
 echo -e "#==============================================================================" >> $logName;
 
@@ -190,12 +191,8 @@ echo -e "\tgenomeDirectory = $genomeDirectory" >> $logName;
 genomeFASTA=$(head -n 1 "$genomeDirectory/reference.txt");
 echo -e "\tgenomeFASTA = $genomeFASTA" >> $logName;
 
-# Get first data file name from "datafiles.txt";
-datafile1=$(head -n 1 "$projectDirectory/datafiles.txt");
+# Show data file names";
 echo -e "\tdatafile 1 = $datafile1" >> $logName;
-
-# Get second data file name from "datafiles.txt";
-datafile2=$(tail -n 1 "$projectDirectory/datafiles.txt");
 echo -e "\tdatafile 2 = $datafile2" >> $logName;
 
 # Get ploidy estimate from "ploidy.txt" in project directory.
@@ -247,8 +244,8 @@ else
 		## Bowtie 2 command for paired reads:
 		echo -e "\nRunning bowtie2.\n" >> $logName;
 		echo -e "Command used:" >> $logName;
-		echo -e "\t$bowtie2Directory\"bowtie2\" --very-sensitive -p '$cores' -x '$genomeDirectory/bowtie_index' -1 '$projectDirectory/$datafile1' -2 '$projectDirectory/$datafile2' -S '$projectDirectory/data.sam'";
-		$bowtie2Directory"bowtie2" --very-sensitive -p "$cores" -x "$genomeDirectory/bowtie_index" -1 "$projectDirectory/$datafile1" -2 "$projectDirectory/$datafile2" > "$projectDirectory/data.bam" 2>> $logName;
+		echo -e "\t$bowtie2Directory\"bowtie2\" --very-sensitive -p '$cores' -x '$genomeDirectory/bowtie_index' -1 '$projectDirectory/$datafile1' -2 '$projectDirectory/$datafile2' -S '$projectDirectory/data.sam'" >> $logName;
+		$bowtie2Directory"bowtie2" --very-sensitive -p "$cores" -x "$genomeDirectory/bowtie_index" -1 "$projectDirectory/$datafile1" -2 "$projectDirectory/$datafile2" > "$projectDirectory/data.bam" 2>> $logName >> $logName;
 			# -p : number of threads to use.
 			# -1 : dataset.
 			# --very-sensitive : a default set of configurations.
@@ -259,16 +256,15 @@ else
 		echo -e "\tSamtools : Bowtie-BAM sorting & indexing." >> $logName;
 		echo -e "Sorting BAM file." >> $condensedLog;
 		echo -e "\nRunning samtools:sort.\n";
-		$samtools_exec sort -@ "$cores" "$projectDirectory/data.bam" -o "$projectDirectory/data_sorted.bam" -T "$projectDirectory" 2>> $logName;
+		$samtools_exec sort -@ "$cores" "$projectDirectory/data.bam" -o "$projectDirectory/data_sorted.bam" -T "$projectDirectory" 2>> $logName >> $logName;
 		chmod 774 "$projectDirectory/data_sorted.bam";
 
 		echo -e "Indexing BAM file." >> $condensedLog;
 		echo -e "\nRunning samtools:index.\n";
-		$samtools_exec index "$projectDirectory/data_sorted.bam" 2>> $logName;
+		$samtools_exec index "$projectDirectory/data_sorted.bam" 2>> $logName >> $logName;
 		chmod 774 "$projectDirectory/data_sorted.bam.bai";
 		echo -e "\tSamtools : Bowtie-BAM sorted & indexed." >> $logName;
 	fi;
-exit;
 
 	if [[ -f $projectDirectory/data.pileup ]]; then
 		echo -e "\tSamtools.pileup generated." >> $logName;
@@ -288,35 +284,34 @@ exit;
 	echo -e "Processing pileup for CNVs & SNPs." >> $condensedLog;
 
 	( echo -e "\tPython : Processing pileup for SNPs." >> $logName;
-	$python_exec "$main_dir/scripts_seqModules/counts_SNPs_v5.py" "$projectDirectory/data.pileup" > "$projectDirectory/putative_SNPs_v4.txt" 2>> $logName;
+	$python_exec "$main_dir/scripts_seqModules/counts_SNPs_v5.py" "$projectDirectory/data.pileup" > "$projectDirectory/putative_SNPs_v4.txt" 2>> $logName >> $logName;
 	chmod 774 "$projectDirectory/putative_SNPs_v4.txt";
 	echo -e "\tPython : Pileup processed for SNPs." >> $logName; ) &
 
 	( echo -e "\tPython : Processing pileup for SNP-CNV." >> $logName;
-	$python_exec "$main_dir/scripts_seqModules/counts_CNVs-SNPs_v1.py" "$projectDirectory/data.pileup" > "$projectDirectory/SNP_CNV_v1.txt" 2>> $logName;
+	$python_exec "$main_dir/scripts_seqModules/counts_CNVs-SNPs_v1.py" "$projectDirectory/data.pileup" > "$projectDirectory/SNP_CNV_v1.txt" 2>> $logName >> $logName;
 	chmod 774 "$projectDirectory/SNP_CNV_v1.txt";
 	echo -e "\tPython : Pileup processed for SNP-CNV." >> $logName; ) &
 
 	wait;
 fi
 
-
 #=================================
 # Build 'readStats.txt' file.
 #---------------------------------
 sed -n '2~4p' "$projectDirectory/$datafile1" > "$projectDirectory/$datafile1.temp";	# Discared FASTQ lines except for sequence.
 sed -n '2~4p' "$projectDirectory/$datafile2" > "$projectDirectory/$datafile2.temp";
-readCount1=$(wc -l < "$projectDirectory/$datafile1.temp");						# Get number of reads.
+readCount1=$(wc -l < "$projectDirectory/$datafile1.temp");				# Get number of reads.
 readCount2=$(wc -l < "$projectDirectory/$datafile2.temp");
-readTotalLength1=$(wc -c < "$projectDirectory/$datafile1");						# Get total sequence length.
+readTotalLength1=$(wc -c < "$projectDirectory/$datafile1");				# Get total sequence length.
 readTotalLength2=$(wc -c < "$projectDirectory/$datafile2");
 readCount=$((readCount1 + readCount2));
 readTotalLength=$((readTotalLength1 + readTotalLength2));
 echo "$readCount (reads count)" > "$projectDirectory/readStats.txt";
 echo "$readTotalLength (reads total length)" >> "$projectDirectory/readStats.txt";
 chmod 0777 "$projectDirectory/readStats.txt";
-rm "$projectDirectory/$datafile.temp1";
-rm "$projectDirectory/$datafile.temp2";
+rm "$projectDirectory/$datafile1.temp";
+rm "$projectDirectory/$datafile2.temp";
 
 # Find genome size and add to readStats.txt file.
 sed -n '2~2p' "$genomeDirectory/datafile_g_0.2.fasta" > "$projectDirectory/reference.temp";
@@ -372,7 +367,7 @@ if [[ "$hapmapInUse" = 1 ]]; then
 		echo -e "\t\t|\thapmap     = $hapmap"     >> $logName;
 		echo -e "\t\t|\thapmapUser = $hapmapUser" >> $logName;
 		echo -e "\t\t|\tmain_dir   = $main_dir"   >> $logName;
-		$python_exec "$main_dir/scripts_seqModules/putative_SNPs_from_hapmap_in_child.py" "$genome" "$genomeUser" "$project" "$user" "$hapmap" "$hapmapUser" "$main_dir" > "$projectDirectory/trimmed_SNPs_v5.txt" 2>> $logName;
+		$python_exec "$main_dir/scripts_seqModules/putative_SNPs_from_hapmap_in_child.py" "$genome" "$genomeUser" "$project" "$user" "$hapmap" "$hapmapUser" "$main_dir" > "$projectDirectory/trimmed_SNPs_v5.txt" 2>> $logName >> $logName;
 		echo -e "\t\tDone." >> $logName;
 
 		chmod 774 "$projectDirectory/trimmed_SNPs_v5.txt";
@@ -392,9 +387,9 @@ if [[ "$hapmapInUse" = 0 ]]; then
 	echo -e "\nPassing processing on to 'project.WGseq.install_4.sh' for final analysis.\n" >> $logName;
 	echo -e "\tCurrent directory = "$(pwd) >> $logName;
 	echo -e "=========================================================================\n" >> $logName;
-	bash "$main_dir/scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" "$user" "$project" "$main_dir" 2>> $logName;
+	bash "$main_dir/scripts_seqModules/scripts_WGseq/project.WGseq.install_4.sh" "$user" "$project" "$main_dir" 2>> $logName >> $logName;
 else
 	echo -e "\nPassing processing on to 'project.WGseq.hapmap.install_4.sh' for final analysis.\n" >> $logName;
 	echo -e "================================================================================\n" >> $logName;
-	bash "$main_dir/scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh" "$user" "$project" "$hapmap" "$main_dir" 2>> $logName;
+	bash "$main_dir/scripts_seqModules/scripts_WGseq/project.WGseq.hapmap.install_4.sh" "$user" "$project" "$hapmap" "$main_dir" 2>> $logName >> $logName;
 fi
