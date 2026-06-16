@@ -493,7 +493,7 @@ function blank_and_content_tab() {
 		}
 	}
 	function openProject(user,project,key,projectName,color1,color2,parent,figVer,warning) {
-		if (key.includes("_admin")) {
+		if (key.includes("_super1")) {
 			var visualize_iframe     = document.getElementById('panel_super1_iframe');
 			var show_button_element  = visualize_iframe.contentDocument.getElementById("show_p"+key);
 			var show_button_element2 = visualize_iframe.contentDocument.getElementById("showAllUser");
@@ -746,7 +746,7 @@ function blank_and_content_tab() {
 		console.log('#         genomesShown = "'+genomesShown+'"');
 	}
 	function closeProject(user,project,key,projectName,color1,color2,parent,figVer) {
-		if (key.includes("_admin")) {
+		if (key.includes("_super1")) {
 			var visualize_iframe    = document.getElementById('panel_super1_iframe');
 			var show_button_element = visualize_iframe.contentDocument.getElementById("show_p"+key);
 		} else {
@@ -1046,7 +1046,7 @@ function restore_shown_figures() {
 					colorString1    = entry_parts[5];
 					colorString2    = entry_parts[6];
 
-					if (!key.includes("_admin")) {
+					if (!key.includes("_super1")) {
 						console.log('#:    Project '+i+' = '+currentProject);
 						var show_button_element = visualize_iframe.contentDocument.getElementById("show_p"+key);
 						show_button_element.checked = true;
@@ -1080,7 +1080,7 @@ function restore_shown_figures() {
 					key             = entry_parts[2];
 					genomeNameText  = entry_parts[3];
 
-					if (!key.includes("_admin")) {
+					if (!key.includes("_super1")) {
 						console.log('#:    Genome '+i+' = '+currentGenome);
 						var show_button_element = genome_iframe.contentDocument.getElementById("show_g"+key);
 						show_button_element.checked = true;
