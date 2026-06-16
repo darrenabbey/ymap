@@ -95,7 +95,7 @@ if (isset($_SESSION['logged_on'])) {
 	<li>If a process crashes, a useful error message will be generated, allowing easier code troubleshooting.</li>
 	<li>The install process has been greatly simplified if you want to setup your own local YMAP server. This option will give you the opportunity to use a bulk data processing module that isn't available on the public server.</li>
 	<li>The web interface of YMAP includes several admin tabs for user and analysis management.</li>
-	<li>There is a new commandline admin interface ("YMAPcl.sh") that can use most features of the web interface of YMAP. </li>
+	<li>There is a new commandline admin interface ("YMAPcli.sh") that can use most features of the web interface of YMAP. </li>
 	</ol>
 <br>
 <li>There have been user interface and final output figure improvements.</li>
