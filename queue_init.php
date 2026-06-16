@@ -3,12 +3,12 @@
 	require_once 'constants.php';
 	require_once 'sharedFunctions.php';
 
-	$user    = $ARGV[1];
-	$project = $ARGV[2];
-	$genome  = "";
-	$hapmap  = "";
-	$message = "from: admin manual intervention.";
+	$userName    = $argv[1];
+	$projectName = $argv[2];
+	$genomeName  = "";
+	$hapmapName  = "";
+	$message     = "from: admin manual intervention.";
 
-	make_salt($user,$project,$genome,$hapmap);
-	queue_init($user,$project,$genome,$hapmap,$message);
+	make_salt($userName,$projectName,$genomeName,$hapmapName);
+	queue_init($userName,$projectName,$genomeName,$hapmapName,$message);
 ?>
