@@ -314,15 +314,16 @@
 			$nameFile        = "users/".$user."/projects/".$project."/name.txt";
 			$parent_file     = "users/".$user."/projects/".$project."/parent.txt";
 			if (file_exists($nameFile) and file_exists($parent_file)) {
+
+				$projectNameString = file_get_contents($nameFile);
+				$projectNameString = trim($projectNameString);
+
 				$warning_file    = "users/".$user."/projects/".$project."/warning.txt";
 				if (file_exists($warning_file)) {
 					$warning_string = trim(file_get_contents($warning_file));
 				} else {
 					$warning_string = "";
 				}
-
-				$projectNameString = file_get_contents($nameFile);
-				$projectNameString = trim($projectNameString);
 
 				$dataFormat_file        = "users/".$user."/projects/".$project."/dataFormat.txt";
 				if (file_exists($dataFormat_file)) {

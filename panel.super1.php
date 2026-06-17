@@ -217,7 +217,7 @@
 		if (file_exists($warning_file)) {
 			$warning_string = trim(file_get_contents($warning_file));
 		} else {
-			$warning_string = "null";
+			$warning_string = "";
 		}
 
 		echo "<table style='background-color:".$bgColor.";' width='100%'><tr><td>\n";
