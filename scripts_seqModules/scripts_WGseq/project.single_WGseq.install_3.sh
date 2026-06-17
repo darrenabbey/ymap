@@ -61,7 +61,7 @@ echo -e "#----------------------------------------------------------------------
 # Get memory target from "constants.php" file.
 MAX_FASTQ_TARGET_string1=$(grep "MAX_FASTQ_TARGET" "$main_dir/constants.php");
 MAX_FASTQ_TARGET_string2=$(echo "${MAX_FASTQ_TARGET_string1/'$MAX_FASTQ_TARGET = '/''}");
-MAX_FASTQ_TARGET=$(echo "${MAX_FASTQ_TARGET_string2/';'/''}");
+MAX_FASTQ_TARGET=${MAX_FASTQ_TARGET_string2%;*};
 
 if [[ "$MAX_FASTQ_TARGET" > "0" ]]; then
 	# Get FASTQ data total size in bytes.
@@ -70,7 +70,6 @@ if [[ "$MAX_FASTQ_TARGET" > "0" ]]; then
 	READS=$( echo "$READS_RAW/4" | bc -l);
 	FILESIZE_GB=$(echo "$FILESIZE/1000000000" | bc -l);
 	MAX_PROCESSED_DATA_SIZE=$MAX_FASTQ_TARGET;
-	MAX_PROCESSED_DATA_SIZE=$(echo $MAX_FASTQ_TARGET | sed -e "s/\r//g");   # Strip off training ^M that is somehow introduced.
 	echo -e "#\tFILESIZE (bytes)             = $FILESIZE" >> $logName;
 	echo -e "#\tREADS                        = $READS" >> $logName;
 	echo -e "#\tFILESIZE_GB (GB)             = $FILESIZE_GB" >> $logName;
@@ -198,7 +197,7 @@ else
 	echo -e "Resolving FASTQ file errors." >> $condensedLog;
 	currdir=$(pwd);
 	cd $projectDirectory;
-	bash "$main_dir/scripts_seqModules/FASTQ_1_trimming.sh" "$projectDirectory/$datafile" >> $logName;
+	bash "$main_dir/scripts_seqModules/FASTQ_1_trimming.sh" "$projectDirectory/$datafile" $user $project $main_dir >> $logName;
 	cd $currdir;
 
 	##==============================================================================

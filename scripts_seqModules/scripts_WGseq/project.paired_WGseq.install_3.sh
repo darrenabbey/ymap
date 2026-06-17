@@ -67,7 +67,7 @@ datafile2=$(tail -n 1 "$projectDirectory/datafiles.txt");
 # Get memory target from "constants.php" file.
 MAX_FASTQ_TARGET_string1=$(grep -e "MAX_FASTQ_TARGET" "$main_dir/constants.php");
 MAX_FASTQ_TARGET_string2=$(echo -e "${MAX_FASTQ_TARGET_string1/'$MAX_FASTQ_TARGET = '/''}");
-MAX_FASTQ_TARGET=$(echo -e "${MAX_FASTQ_TARGET_string2/';'/''}");
+MAX_FASTQ_TARGET=${MAX_FASTQ_TARGET_string2%;*};
 
 if [[ "$MAX_FASTQ_TARGET" > "0" ]]; then
 	# Get FASTQ data total size in bytes.
@@ -79,13 +79,13 @@ if [[ "$MAX_FASTQ_TARGET" > "0" ]]; then
 	READS1=$(printf %.0f $( echo "$READS_RAW1/4" | bc -l) );
 	READS2=$(printf %.0f $( echo "$READS_RAW2/4" | bc -l) );
 	FILESIZE_GB=$(echo "$FILESIZE/1000000000" | bc -l);
-	MAX_PROCESSED_DATA_SIZE=$(echo $MAX_FASTQ_TARGET | sed -e "s/\r//g");	# Strip off training ^M that is somehow introduced.
+	MAX_PROCESSED_DATA_SIZE=$MAX_FASTQ_TARGET;
 	echo -e "#\tFILESIZE1 (bytes)            = $FILESIZE1" >> $logName;
 	echo -e "#\tFILESIZE2 (bytes)            = $FILESIZE2" >> $logName;
 	echo -e "#\tREADS1                       = $READS1" >> $logName;
 	echo -e "#\tREADS2                       = $READS2" >> $logName;
 	echo -e "#\tFILESIZE_GB (total, GB)      = $FILESIZE_GB" >> $logName;
-	echo -e "#\tMAX_PROCESSED_DATA_SIZE (GB) = $MAX_PROCESSED_DATA_SIZE" >> $logName;
+	echo -e "#\tMAX_PROCESSED_DATA_SIZE (GB) = $MAX_PROCESSED_DATA_SIZE (GB)" >> $logName;
 
 	if [[ $(echo "$FILESIZE_GB > $MAX_PROCESSED_DATA_SIZE" | bc -l) = 1 ]]; then
 		echo -e "#\t\tFILESIZE_GB > MAX_PROCESSED_DATA_SIZE => FASTQ subsampling needed." >> $logName;
@@ -219,7 +219,7 @@ else
 	echo -e "Resolving FASTQ file errors." >> $condensedLog;
 	currdir=$(pwd);
 	cd "$projectDirectory";
-	bash "$main_dir/scripts_seqModules/FASTQ_2_trimming.sh" "$projectDirectory/$datafile1" "$projectDirectory/$datafile2" >> $logName;
+	bash "$main_dir/scripts_seqModules/FASTQ_2_trimming.sh" "$projectDirectory/$datafile1" "$projectDirectory/$datafile2" $user $project $main_dir >> $logName;
 	cd $currdir;
 
 	##==============================================================================

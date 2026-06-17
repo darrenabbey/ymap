@@ -2,19 +2,28 @@
 set -e
 
 # If no data file option is given, describe script purpose and input.
-if [ -z $1 ] || [ -z $2 ]
+if [ -z $5 ]
 then
 	echo;
-	echo -e "# Command syntax is : 'sh FASTQ_trimming.sh [dataset_R1] [dataset_R2]'";
+	echo -e "# Command syntax is : 'sh FASTQ_trimming.sh [dataset_R1] [dataset_R2] [userName] [projectName] [main_dir]'";
 	echo -e "# ";
-	echo -e "#        [dataset_R1] & [dataset_R2] : Left & right read files to be trimmed of unbalanced reads.";
+	echo -e "#	[dataset_R1] & [dataset_R2] : Left & right read files to be trimmed of unbalanced reads.";
+	echo -e "#	[userName] & [projectName] & [main_dir] : YMAP pipeline specific variables for error catching.";
 	echo -e "# ";
 	echo -e "# This file attempts to cleanup a pair of FASTQ files which are not validly formatted due to extra";
-	echo -e "#      and/or unbalanced lines.  This formatting problem results in FASTQC crashing.";
+	echo -e "#	and/or unbalanced lines.  This formatting problem results in FASTQC crashing.";
 	echo -e "# ";
 	echo;
 	exit 1;   # exit with error.
 else
+	## Error handling in case something crashes.
+	user=$3;
+	project=$4;
+	main_dir=$5;
+	projectDirectory="$main_dir/users/$user/projects/$project";
+	logName="$projectDirectory/process_log.txt";
+	trap 'cd $main_dir"/scripts_seqModules/scripts_WGseq/"; bash queue_end.sh "$user" "$project" "$main_dir" $logName "Something went wrong. FASTQ_2_trimming.sh:$LINENO"; install /dev/null "$projectDirectory/error.txt"; echo -e "Something went wrong. FASTQ_2_trimming.sh:$LINENO" > "$projectDirectory/error.txt";cd $main_dir; exit 1;' ERR;
+
 	findStr=".fastq";
 	replaceStr=".residue.fastq";
 	residueName1=$(echo $1 | sed -e "s/$findStr$/$replaceStr/g");

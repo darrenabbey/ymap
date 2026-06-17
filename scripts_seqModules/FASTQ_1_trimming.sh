@@ -5,16 +5,25 @@ set -e
 if [ -z $1 ]
 then
 	echo;
-	echo -e "# Command syntax is : 'bash FASTQ_trimming.sh [dataset]'";
+	echo -e "# Command syntax is : 'bash FASTQ_trimming.sh [dataset] [userName] [projectName] [main_dir]'";
 	echo -e "# ";
-	echo -e "#        [dataset] : read file to be trimmed of incomplete final read.";
+	echo -e "#	[dataset] : read file to be trimmed of incomplete final read.";
+	echo -e "#	[userName] & [projectName] & [main_dir] : YMAP pipeline specific variables for error catching.";
 	echo -e "# ";
 	echo -e "# This script attempts to cleanup a FASTQ file which is not validly formatted due to early";
-	echo -e "#      termination of data transfer.  This formatting problem results in FASTQC crashing.";
+	echo -e "#	termination of data transfer.  This formatting problem results in FASTQC crashing.";
 	echo -e "# ";
 	echo;
 	exit 1;   # exit with error.
 else
+	## Error handling in case something crashes.
+        user=$3;
+        project=$4;
+        main_dir=$5; 
+        projectDirectory="$main_dir/users/$user/projects/$project";
+        logName="$projectDirectory/process_log.txt";
+        trap 'cd $main_dir"/scripts_seqModules/scripts_WGseq/"; bash queue_end.sh "$user" "$project" "$main_dir" $logName "Something went wrong. FASTQ_1_trimming.sh:$LINENO"; install /dev/null "$projectDirectory/error.txt"; echo -e "Something went wrong. FASTQ_1_trimming.sh:$LINENO" > "$projectDirectory/error.txt";cd $main_dir; exit 1;' ERR;
+
 	findStr=".fastq";
 	replaceStr=".residue.fastq";
 	residueName1=$(echo $1 | sed -e "s/$findStr$/$replaceStr/g");
