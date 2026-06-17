@@ -26,7 +26,7 @@
 		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
 	} else {
-		//log_stuff($user,"","",$project_to_copy,"","ADMIN testing.");
+		//log_stuff($user,$project_to_copy,"","","","ADMIN testing.");
 		$super_user_flag_file = "users/".$user."/super.txt";
 		if (file_exists($super_user_flag_file)) {  // Super-user privilidges.
 			$admin_logged_in = "true";
@@ -88,9 +88,9 @@
 
 		// Copy from source project directory to destination project directory.
 		if (file_exists($dest)) {
-			log_stuff($user,"","",$project_to_copy,"","ADMIN fail: attempted to copy project to admin user, but project name is already in use.");
+			log_stuff($user,$project_to_copy,"","","","ADMIN fail: attempted to copy project to admin user, but project name is already in use.");
 		} else {
-			log_stuff($user,"","",$project_to_copy,"","ADMIN success: copied project to admin user.");
+			log_stuff($user,$project_to_copy,"","","","ADMIN success: copied project to admin user.");
 			mkdir($dest, 0773, true);
 			foreach (scandir($src) as $file) {
 				if (!is_readable($src.'/'.$file)) continue;
