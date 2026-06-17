@@ -78,7 +78,7 @@
 						<label for="readTypeA">Read type : </label><select name="readTypeA" id="readTypeA">
 							<option value="0">single-end short-reads; FASTQ/ZIP/GZ file. </option>
 							<option value="1">paired-end short-reads; FASTQ/ZIP/GZ files.</option>
-							<option value="2">SAM/BAM file.                              </option>
+							<option value="0">SAM/BAM file.                              </option>
 							<option value="3">TXT file.                                  </option>
 							</select><br>
 					</div>
