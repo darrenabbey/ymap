@@ -158,24 +158,30 @@ fprintf('\nMedian Filter');
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
 	    	fprintf(['\n\t' num2str(chr) ':' num2str(num_chrs) ':' num2str(length(CNVplot2{chr})) ]);
-	    	for data = 1:length(CNVplot2{chr})
-			window_start   = max(data-window_halfwidth, 1);
-			window_end     = min(data+window_halfwidth, length(CNVplot2{chr}));
-			window         = CNVplot2{chr}(window_start:window_end);
-			if (window_start == 1)
-				if (length(window) < window_width)
-					for jj = 1:(window_width - length(window))
-						window = [CNVplot2{chr}(1) window];
+		if (length(CNVplot2{chr}) > 2)
+		    	for data = 1:length(CNVplot2{chr})
+				window_start   = max(data-window_halfwidth, 1);
+				window_end     = min(data+window_halfwidth, length(CNVplot2{chr}));
+				window         = CNVplot2{chr}(window_start:window_end);
+				if (window_start == 1)
+					if (length(window) < window_width)
+						for jj = 1:(window_width - length(window))
+							window = [CNVplot2{chr}(1) window];
+						end;
+					end;
+				elseif (window_end == length(CNVplot2{chr}))
+					if (length(window) < window_width)
+						for jj = 1:(window_width - length(window))
+							window = [window CNVplot2{chr}(end)];
+						end;
 					end;
 				end;
-			elseif (window_end == length(CNVplot2{chr}))
-				if (length(window) < window_width)
-					for jj = 1:(window_width - length(window))
-						window = [window CNVplot2{chr}(end)];
-					end;
-				end;
+				CNV_median{chr}(data) = median(window);
 			end;
-			CNV_median{chr}(data) = median(window);
+		else
+			for data = 1:length(CNVplot2{chr})
+				CNV_median{chr}(data) = CNVplot2{chr}(data);
+			end;
 		end;
 	end;
 end;
@@ -202,20 +208,26 @@ fprintf('\nDifferentiation Filter');
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
 		fprintf(['\n\t' num2str(chr) ':' num2str(num_chrs) ':' num2str(length(CNV_median_smoothed{chr})) ]);
-		for data = 1:length(CNV_median_smoothed{chr})
-			window_start   = max(data-1, 1);
-			window_end     = min(data+1, length(CNV_median_smoothed{chr}));
-			if (window_start == 1)
-				window(1) = CNV_median_smoothed{chr}(data  );
-				window(2) = CNV_median_smoothed{chr}(data+1);
-			elseif (window_end == length(CNV_median_smoothed{chr}))
-				window(1) = CNV_median_smoothed{chr}(data-1);
-				window(2) = CNV_median_smoothed{chr}(data  );
-			else
-				window(1) = CNV_median_smoothed{chr}(data-1);
-				window(2) = CNV_median_smoothed{chr}(data+1);
+		if (length(CNV_median_smoothed{chr}) > 2)
+			for data = 1:length(CNV_median_smoothed{chr})
+				window_start   = max(data-1, 1);
+				window_end     = min(data+1, length(CNV_median_smoothed{chr}));
+				if (window_start == 1)
+					window(1) = CNV_median_smoothed{chr}(data  );
+					window(2) = CNV_median_smoothed{chr}(data+1);
+				elseif (window_end == length(CNV_median_smoothed{chr}))
+					window(1) = CNV_median_smoothed{chr}(data-1);
+					window(2) = CNV_median_smoothed{chr}(data  );
+				else
+					window(1) = CNV_median_smoothed{chr}(data-1);
+					window(2) = CNV_median_smoothed{chr}(data+1);
+				end;
+				CNV_differentiated{chr}(data) = (window(2)-window(1))/2;
 			end;
-			CNV_differentiated{chr}(data) = (window(2)-window(1))/2;
+		else
+			for data = 1:length(CNV_median_smoothed{chr})
+				CNV_differentiated{chr}(data) = CNV_median_smoothed{chr}(data);
+			end;
 		end;
 	end;
 end;
