@@ -1843,7 +1843,7 @@ else
 	    ;;
 	    "preview")
 		# if "tiv" installed, show graphics.
-		if [[ -x "$(command -v tiv)" ]]; then
+		if [[ -x "$(command -v timg)" ]]; then
 			echo -e "# YMAP2 commandline : Preview figure.";
 			logged_in_status;
 			echo -e $lineThin;
@@ -1918,7 +1918,7 @@ else
 						logged_in_status;
 						echo -e $lineThin;
 						echo -e "#";
-						tiv "$projectDirectory$imageFile";
+						timg "$projectDirectory$imageFile";
 					fi;
 				else
 					echo -e "#\tUser '$user' doesn't seem to exist.";
@@ -1929,9 +1929,9 @@ else
 			logged_in_status;
 			echo -e $lineThin;
 			echo -e "#";
-			echo -e "#\tCommandline tool 'tiv' is not installed, so no graphical output is not enabled.";
+			echo -e "#\tCommandline tool 'timg' is not installed, so no graphical output is not enabled.";
 			echo -e "#";
-			echo -e "#\ttiv can be installed from 'https://github.com/stefanhaustein/TerminalImageViewer'.";
+			echo -e "#\ttimg can be installed by: sudo apt install timg";
 		fi;
 	    ;;
 ##
