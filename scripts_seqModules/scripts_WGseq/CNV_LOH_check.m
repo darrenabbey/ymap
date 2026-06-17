@@ -805,6 +805,10 @@ while (chrCopyNum_changed == true)
 	endif;
 endwhile;
 
+% Redraw CNV figures after analysis completes.
+CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,'not-used',displayBREAKS,'not-used',true);
+
+
 fprintf('\n');
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
