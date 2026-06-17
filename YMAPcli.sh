@@ -1416,7 +1416,7 @@ else
 	    "queue_pause")
 		echo -e "# YMAP2 commandline : Processing queue paused for admin activity.";
 		echo -e "#";
-		echo "Processing queue paused for admin activity." > $main_dir"/queue/error.txt";
+		echo "Processing queue paused for admin activity. (You can still install new datasets.)" > $main_dir"/queue/error.txt";
 	    ;;
 	    "queue_unpause")
 		echo -e "# YMAP2 commandline : Processing queue unpaused after admin activity.";
