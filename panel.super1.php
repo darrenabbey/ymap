@@ -227,7 +227,7 @@
 			echo "<input id='show_p".$key."_super1' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."_super1','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','".$warning_string."');\" style=\"visibility:hidden;\">";
 		} else {
 			// Limit files list to valid output file types.
-			$projectFiles   = preg_grep('~\.(png|eps|bed|gff3)$~', scandir("users/$user/projects/$project/"));
+			$projectFiles   = preg_grep('~\.(png|eps|bed|gff3|zip)$~', scandir("users/$user/projects/$project/"));
 			sort($projectFiles);
 			$json_file_list = json_encode($projectFiles);
 			echo "<input id='show_p".$key."_super1' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."_super1','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','".$warning_string."'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
