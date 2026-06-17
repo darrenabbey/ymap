@@ -56,13 +56,7 @@
 						$entry[] = $entryType;
 
 						if ($status == "init") {
-							if ($SUPER_ONLY == True) {
-								if (is_file($base_dir."/users/".$userName."/super.txt")) {
-									$init_list[] = $entry;
-								}
-							} else {
-								$init_list[] = $entry;
-							}
+							$init_list[] = $entry;
 						} else if ($status == "start") {
 							$start_list[] = $entry;
 						} else if ($status == "end") {
