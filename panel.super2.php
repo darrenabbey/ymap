@@ -46,7 +46,7 @@
 </style>
 <?php
 	if ($super_logged_in == "true") {
-		echo "<font size='4'><b>Super review of user installed datasets: View projects in process or stalled.<b></font><br>";
+		echo "<font size='4'><b>Super review of user installed datasets: View projects in process or crashed.<b></font><br>";
 	} else if ($admin_logged_in == "true") {
 		echo "<font size='4'><b>No admin user functions at this time.<b></font><br>";
 	} else {
