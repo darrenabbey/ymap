@@ -58,7 +58,7 @@ BASE_DIR_temp
 				$SUPER_ONLY = False;
 			}
 			foreach ($queue_files as $key1 => $queue_file) {
-				if (str_contains($queue_file,".log")) {
+				if (str_contains($queue_file,"_queue.log")) {
 					$queue_contents = trim(file_get_contents($queue_dir.$queue_file));
 					if ($queue_contents) {
 						// Queue contents example:
@@ -199,7 +199,7 @@ BASE_DIR_temp
 
 			// 5. Delete old log files that are done.
 			foreach ($queue_files as $key1 => $queue_file) {
-				if ((str_contains($queue_file,".log")) && ($queue_file <> date('Y-m-d')."_queue.log")) {
+				if ((str_contains($queue_file,"_queue.log")) && ($queue_file <> date('Y-m-d')."_queue.log")) {
 					// Grap the init entries from this queue file.
 					$oldinit_list = [];
 					$oldqueue_contents = trim(file_get_contents($queue_dir.$queue_file));
