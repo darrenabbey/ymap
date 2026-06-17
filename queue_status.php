@@ -17,9 +17,9 @@
 	$queue_dir   = $base_dir."/queue/";
 	$queue_files = array_slice(scandir($queue_dir), 2);
 	if (is_file($base_dir."/queue/error.txt")) {
-		$ADMIN_ONLY = True;
+		$SUPER_ONLY = True;
 	} else {
-		$ADMIN_ONLY = False;
+		$SUPER_ONLY = False;
 	}
 	foreach ($queue_files as $key1 => $queue_file) {
 		if (str_contains($queue_file,".log")) {
@@ -55,24 +55,18 @@
 						$entry[] = $status;
 						$entry[] = $entryType;
 
-						if ($ADMIN_ONLY == True) {
-							if (is_file($base_dir."/users/".$userName."/super.txt")) {
-								if ($status == "init") {
+						if ($status == "init") {
+							if ($SUPER_ONLY == True) {
+								if (is_file($base_dir."/users/".$userName."/super.txt")) {
 									$init_list[] = $entry;
-								} else if ($status == "start") {
-									$start_list[] = $entry;
-								} else if ($status == "end") {
-									$end_list[] = $entry;
 								}
-							}
-						} else {
-							if ($status == "init") {
+							} else {
 								$init_list[] = $entry;
-							} else if ($status == "start") {
-								$start_list[] = $entry;
-							} else if ($status == "end") {
-								$end_list[] = $entry;
 							}
+						} else if ($status == "start") {
+							$start_list[] = $entry;
+						} else if ($status == "end") {
+							$end_list[] = $entry;
 						}
 					}
 				}
@@ -170,7 +164,7 @@
 		//	Output nicely formated text for commandline interface.
 		//
 		//===========================================================
-		if ($ADMIN_ONLY == True) {
+		if ($SUPER_ONLY == True) {
 			print_r("#\t\e[41mQUEUE paused for admin activity: Use 'queue_unpause' to reactivate.\e[0m\n");
 			print_r("#\n");
 		}
