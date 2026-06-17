@@ -80,7 +80,7 @@ if [ -z $1 ]; then
 	echo -e "#";
 	echo -e "#   If you're interested in a collaboration to use this tool or for processing data from organisms with";
 	echo -e "#	much larger genomes than the yeast described in the publication, please reach out to me by email at";
-	echo -e "#	\e[33mabbey007@umn.edu\e[0m or \e[33mdarrenabbey.ymap@gmail.com\e[0m or on various social medias as \e[33mthebiologistisn\e[0m.";
+	echo -e "#	\e[33mabbey007@umn.edu\e[0m or \e[33mdarrenabbey.ymap@gmail.com\e[0m or on various social medias (\e[33mthebiologistisn\e[0m).";
 	echo -e "#";
 	echo -e $lineThick;
 else
