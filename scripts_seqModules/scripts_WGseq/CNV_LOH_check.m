@@ -280,15 +280,15 @@ while (chrCopyNum_changed == true)
 	countIters += 1;
 	chrCopyNum_changed = false;
 
-	if (countIters == 1)
-		%%================================================================================================
-		% Load CNV estimates per standard bin..
-		%-------------------------------------------------------------------------------------------------
-		fprintf('\n### Loading "Common_CNV" data file, to be used in copy number estimation.\n');
-		load([projectDir 'Common_CNV.mat']);   % 'CNVplot2', 'genome_CNV'
-		[chr_breaks, chrCopyNum, ploidyAdjust, chrCopyRsquared] = FindChrSizes_4(workingDir, segmental_aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use, false);
-		CNVfit_Rsquared = chrCopyRsquared;
-	endif;
+%	if (countIters == 1)
+%		%%================================================================================================
+%		% Load CNV estimates per standard bin..
+%		%-------------------------------------------------------------------------------------------------
+%		fprintf('\n### Loading "Common_CNV" data file, to be used in copy number estimation.\n');
+%		load([projectDir 'Common_CNV.mat']);   % 'CNVplot2', 'genome_CNV'
+%		[chr_breaks, chrCopyNum, ploidyAdjust, chrCopyRsquared] = FindChrSizes_4(workingDir, segmental_aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use, false);
+%		CNVfit_Rsquared = chrCopyRsquared;
+%	endif;
 
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
@@ -552,17 +552,15 @@ while (chrCopyNum_changed == true)
 					Rsquared_CNVtest_vector = [];
 					Rsquared_SNPtest_vector = [];
 					for copyNum = 1:9
-						fprintf(['    copyNum    = ' num2str(copyNum) '\n']);
-						fprintf(['\tworkingDir = ' num2str(workingDir) '\n']);
-						fprintf(['\tchr_breaks = ']); 
-						temp = chr_breaks
-						fprintf(['\n']);
-						fprintf(['\tploidy     = ' num2str(ploidy) '\n']);
-						fprintf(['\tchr        = ' num2str(chr) '\n']);
-						fprintf(['\tsegment    = ' num2str(segment) '\n']);
+						%fprintf(['    copyNum    = ' num2str(copyNum) '\n']);
+						%fprintf(['\tchr_breaks = ']);
+						%fprintf(['\n']);
+						%fprintf(['\tploidy     = ' num2str(ploidy) '\n']);
+						%fprintf(['\tchr        = ' num2str(chr) '\n']);
+						%fprintf(['\tsegment    = ' num2str(segment) '\n']);
+
 						Rsquared_CNV            = testPloidyEstimate_CNV(workingDir, CNVplot2, chr_breaks, ploidy, chr, segment, copyNum, makeFitFigures);
 						Rsquared_CNVtest_vector = [Rsquared_CNVtest_vector Rsquared_CNV];
-
 						testPloidyEstimate_SNP;
 						Rsquared_SNP            = Rsquared;
 						if isnan(Rsquared_SNP)
@@ -572,48 +570,48 @@ while (chrCopyNum_changed == true)
 					endfor;
 
 					%% Logging output of CNV test values.
-					fprintf('\tmax(Rsquared_CNVtest_vector) = ');
-					for i = 1:length(Rsquared_CNVtest_vector)
-						if (max(Rsquared_CNVtest_vector) == Rsquared_CNVtest_vector(i))
-							fprintf('[');
-						endif;
-						fprintf([num2str(Rsquared_CNVtest_vector(i))]);
-						if (max(Rsquared_CNVtest_vector) == Rsquared_CNVtest_vector(i))
-							fprintf(']');
-						endif;
-						fprintf(' ');
-					endfor;
-					fprintf('\n');
+					%fprintf('\tmax(Rsquared_CNVtest_vector) = ');
+					%for i = 1:length(Rsquared_CNVtest_vector)
+					%	if (max(Rsquared_CNVtest_vector) == Rsquared_CNVtest_vector(i))
+					%		fprintf('[');
+					%	endif;
+					%	fprintf([num2str(Rsquared_CNVtest_vector(i))]);
+					%	if (max(Rsquared_CNVtest_vector) == Rsquared_CNVtest_vector(i))
+					%		fprintf(']');
+					%	endif;
+					%	fprintf(' ');
+					%endfor;
+					%fprintf('\n');
 
 					%% Logging output of SNP test values..
-					fprintf('\tmax(Rsquared_SNPtest_vector) = ');
-					for i = 1:length(Rsquared_SNPtest_vector)
-						if (max(Rsquared_SNPtest_vector) == Rsquared_SNPtest_vector(i))
-							fprintf('[');
-						endif;
-						fprintf([num2str(Rsquared_SNPtest_vector(i))]);
-						if (max(Rsquared_SNPtest_vector) == Rsquared_SNPtest_vector(i))
-							fprintf(']');
-						endif;
-						fprintf(' ');
-					endfor;
-					fprintf('\n');
+					%fprintf('\tmax(Rsquared_SNPtest_vector) = ');
+					%for i = 1:length(Rsquared_SNPtest_vector)
+					%	if (max(Rsquared_SNPtest_vector) == Rsquared_SNPtest_vector(i))
+					%		fprintf('[');
+					%	endif;
+					%	fprintf([num2str(Rsquared_SNPtest_vector(i))]);
+					%	if (max(Rsquared_SNPtest_vector) == Rsquared_SNPtest_vector(i))
+					%		fprintf(']');
+					%	endif;
+					%	fprintf(' ');
+					%endfor;
+					%fprintf('\n');
 
 					Rsquared_distance_vector = sqrt((1-Rsquared_CNVtest_vector).^2 + (1-Rsquared_SNPtest_vector).^2);
 
 					%% Logging output of combined CNV/SNP test values..
-					fprintf('\tmin(Rsquared_distance_vector) = ');
-					for i = 1:length(Rsquared_distance_vector)
-						if (min(Rsquared_distance_vector) == Rsquared_distance_vector(i))
-							fprintf('[');
-						endif;
-						fprintf([num2str(Rsquared_distance_vector(i))]);
-						if (min(Rsquared_distance_vector) == Rsquared_distance_vector(i))
-							fprintf(']');
-						endif;
-						fprintf(' ');
-					endfor;
-					fprintf('\n')
+					%fprintf('\tmin(Rsquared_distance_vector) = ');
+					%for i = 1:length(Rsquared_distance_vector)
+					%	if (min(Rsquared_distance_vector) == Rsquared_distance_vector(i))
+					%		fprintf('[');
+					%	endif;
+					%	fprintf([num2str(Rsquared_distance_vector(i))]);
+					%	if (min(Rsquared_distance_vector) == Rsquared_distance_vector(i))
+					%		fprintf(']');
+					%	endif;
+					%	fprintf(' ');
+					%endfor;
+					%fprintf('\n')
 
 					%%% Find best fit CNV estimate by looking at (the more reliable?) SNP ratios.
 					Rsquared_CNVtest_vector_min  = min(Rsquared_CNVtest_vector);
@@ -638,6 +636,7 @@ while (chrCopyNum_changed == true)
 				%%% If CNV estimate changed, update boolean.
 				if (chrCopyNum_new{chr}(segment) != chrCopyNum{chr}(segment))
 					chrCopyNum_changed = true;
+					fprintf(['\tchrCopyNum_new{' num2str(chr) '}(' num2str(segment) ') = ' num2str(chrCopyNum_new{chr}(segment)) '\n\t\t chrCopyNum{' num2str(chr) '}(' num2str(segment) ') = ' num2str(chrCopyNum{chr}(segment)) '\n']);
 				end;
 			end;
 		end;
