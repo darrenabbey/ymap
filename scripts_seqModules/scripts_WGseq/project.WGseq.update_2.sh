@@ -380,12 +380,15 @@ fi
 ##==============================================================================
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
-chmod 774 "$projectDirectory*" || true;
 echo -e "running: " "$main_dir/scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" "$user" "$project" "$main_dir" >> $logName;
-bash "$main_dir/scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" "$user" "$project" "$main_dir" 2>> $logName;
+cd $main_dir"/scripts_seqModules/scripts_WGseq/";
+bash cleaning_WGseq.sh "$user" "$project" "$main_dir" 2>> $logName;
+cd $main_dir;
 
 
 ##==============================================================================
 ## Add project end to queue log file.
 ##------------------------------------------------------------------------------
-bash queue_end.sh "$user" "$project" "$main_dir" "$logName" "project.WGseq.update_2.sh completed.";
+cd $main_dir"/scripts_seqModules/scripts_WGseq/";
+bash queue_end.sh "$user" "$project" "$main_dir" "$logName" "project.WGseq.install_4.sh completed.";
+cd $main_dur;

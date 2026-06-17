@@ -290,7 +290,7 @@ echo -e "finished all processing, moving to Cleaning up intermediate WGseq files
 ##------------------------------------------------------------------------------
 echo -e "running: " "$main_dir/scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" "$user" "$project" "$main_dir" >> $logName;
 cd $main_dir"/scripts_seqModules/scripts_WGseq/";
-bash "scripts_WGseq/cleaning_WGseq.sh" "$user" "$project" "$main_dir" 2>> $logName;
+bash cleaning_WGseq.sh "$user" "$project" "$main_dir" 2>> $logName;
 cd $main_dir;
 
 
