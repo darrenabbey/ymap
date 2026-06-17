@@ -16,7 +16,7 @@ include(".pepper.php");
 //------------------------------------------------------------------------------
 
 // Quota (in Gb) for all accounts where no quota.txt exits in user folder.
-$QUOTA_GLOBAL = 15;
+$QUOTA_GLOBAL = 5;
 
 // Admin contact email address.
 $ADMIN_EMAIL = "admin@email.address";
