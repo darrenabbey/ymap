@@ -66,7 +66,7 @@ function minimizeProject($dir) {
 			rename($dir.$file, $temp_dir.$file);
 		}
 		$file_ext  = substr(strrchr($file, '.'), 1);
-		if (($file_ext == "png") or ($file_ext == "bed") or ($file_ext == "gff3")) {
+		if ($file_ext == "png") {
 			if (!str_contains($file,'ChARM_test') and !str_contains($file,'Rsquared')) {
 				rename($dir.$file, $temp_dir.$file);
 			}

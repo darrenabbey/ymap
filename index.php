@@ -686,7 +686,7 @@ function blank_and_content_tab() {
 			}
 
 			if (file_list.indexOf(output_figures_archive) != -1) {
-				string1 += "; Output file archive <a href='"+output_figures_archive+"' download='figures."+project+".zip'><img src='images/icon_zip_15b.png' alt-text='[ZIP] button' align='center''></a>";
+				string1 += "; <a href='"+output_figures_archive+"' download='figures."+project+".zip'><img src='images/icon_zip_15b.png' alt-text='[ZIP] button' align='center''></a> archive of PNG/EPS/BED/GFF3 files.";
 			}
 
 			string1 += "</font>";
