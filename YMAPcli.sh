@@ -1918,7 +1918,10 @@ else
 						logged_in_status;
 						echo -e $lineThin;
 						echo -e "#";
-						timg "$projectDirectory$imageFile --title";
+						echo -e "#\t Preview of:";
+						echo -e "#\t\t$projectDirectory$imageFile";
+						echo -e "#";
+						timg "$projectDirectory$imageFile";
 					fi;
 				else
 					echo -e "#\tUser '$user' doesn't seem to exist.";
