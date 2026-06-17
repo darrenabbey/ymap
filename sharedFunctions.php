@@ -24,7 +24,6 @@ function SYSTEM_cleanup($userName,$projectName,$main_dir) {
 			} else {
 				log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP failure, user doesn't own project.");
 			}
-			log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP success.");
 		}
 	}
 }
@@ -39,11 +38,10 @@ function SYSTEM_force_minimize($userName,$projectName,$main_dir) {
 			if (is_dir($dir)) {
 				// DO STUFF HERE.
 				minimizeProject($dir);
-				log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:MINIMIZE success");
+				log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:MINIMIZE success.");
 			} else {
 				log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:MINIMIZE failure, user doesn't own project.");
 			}
-			log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:MINIMIZE success.");
 		}
 	}
 }
