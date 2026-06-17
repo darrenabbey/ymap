@@ -68,9 +68,6 @@ if [ -z $1 ]; then
 	echo -e "#	status_queue_daemon : Combined 'status', 'queue', and 'daemon' functions.";
 	echo -e "#";
 	echo -e "#   Commands not implemented:"
-	echo -e "#	queue		: Shows the status of the YMAP processing queue.";
-	echo -e "#	queue flush	: Clean up corrupted queue log. May be needed if queue refuses to run";
-	echo -e "E				 installed data files.";
 	echo -e "#	combine_figures	: ";
 	echo -e "#	build_hapmap	: complicated user interface required, may not be possible in commandline.";
 	echo -e "#	minimize	: ";
