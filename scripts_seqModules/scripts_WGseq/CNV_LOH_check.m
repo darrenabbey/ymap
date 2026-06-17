@@ -798,7 +798,7 @@ while (chrCopyNum_changed == true)
 	%%================================================================================================
 	% Redo CNV_v6_6.m to update calculation of CNV estimates per standard genome bin
 	%-------------------------------------------------------------------------------------------------
-	CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,'not-used',displayBREAKS,'not-used');
+	CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,'not-used',displayBREAKS,'not-used',false);
 
 	if (countIters == 10)
 		chrCopyNum_changed = false;

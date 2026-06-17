@@ -1,4 +1,4 @@
-function [] = CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,rDNA_verString,displayBREAKS, referenceCHR); %% rDNA_verString & referenceCHR are not used.
+function [] = CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,rDNA_verString,displayBREAKS, referenceCHR, drawFigures); %% rDNA_verString & referenceCHR are not used.
 addpath('../');
 
 % hide figures during construction.
@@ -16,47 +16,55 @@ else
 	figVer = '';
 end;
 
-fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
-if exist([main_dir '/users/' user '/projects/' project '/figure_options.txt'], 'file')
-	%%
-	%% readtable is not implemented in Octave.
-	%%
-	%figure_options = readtable([main_dir '/users/' user '/projects/' project '/figure_options.txt']);
+fprintf('\t|\tNot drawing CNV plots during CNV_LOH_check.m analysis.\n');
+if (drawFigures == true)
+	fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
+	if exist([main_dir '/users/' user '/projects/' project '/figure_options.txt'], 'file')
+		%%
+		%% readtable is not implemented in Octave.
+		%%
+		%figure_options = readtable([main_dir '/users/' user '/projects/' project '/figure_options.txt']);
 
-	figure_options = importdata([main_dir '/users/' user '/projects/' project '/figure_options.txt'],'\t',1);
+		figure_options = importdata([main_dir '/users/' user '/projects/' project '/figure_options.txt'],'\t',1);
 
-	option         = figure_options{2,1};
-	if strcmp(option,'False')
-		Make_figure_bias_GC = false;
-	else
-		Make_figure_bias_GC = true;
-	end;
+		option         = figure_options{2,1};
+		if strcmp(option,'False')
+			Make_figure_bias_GC = false;
+		else
+			Make_figure_bias_GC = true;
+		end;
 
-	option         = figure_options{3,1};
-	if strcmp(option,'False')
-		Make_figure_bias_end = false;
+		option         = figure_options{3,1};
+		if strcmp(option,'False')
+			Make_figure_bias_end = false;
+		else
+			Make_figure_bias_end = true;
+		end;
+
+		option         = figure_options{4,1};
+		if strcmp(option,'False')
+			Make_figure_linear = false;
+		else
+			Make_figure_linear = true;
+		end;
+
+		option         = figure_options{5,1};
+		if strcmp(option,'False')
+			Make_figure_standard = false;
+		else
+			Make_figure_standard = true;
+		end;
 	else
 		Make_figure_bias_end = true;
-	end;
-
-	option         = figure_options{4,1};
-	if strcmp(option,'False')
-		Make_figure_linear = false;
-	else
-		Make_figure_linear = true;
-	end;
-
-	option         = figure_options{5,1};
-	if strcmp(option,'False')
-		Make_figure_standard = false;
-	else
+		Make_figure_bias_GC  = true;
+		Make_figure_linear   = true;
 		Make_figure_standard = true;
 	end;
 else
-	Make_figure_bias_end = true;
-	Make_figure_bias_GC  = true;
-	Make_figure_linear   = true;
-	Make_figure_standard = true;
+	Make_figure_bias_end = false;
+	Make_figure_bias_GC  = false;
+	Make_figure_linear   = false;
+	Make_figure_standard = false;
 end;
 
 %% ========================================================================
