@@ -332,6 +332,13 @@
 						if (in_array($next_project,$bulkdata_files)) {
 							$skip = 1;
 						}
+					} elseif (substr($project,-2) == "_1") {
+						$project      = substr($project,0,-2);
+						$next_project = $project."_2".$ext;
+						$project2     = $next_project;
+						if (in_array($next_project,$bulkdata_files)) {
+							$skip = 1;
+						}
 					} elseif (str_contains($project,"_R1")) {
 						$project_head = substr($project_raw,0,strpos($project,"_R1"));
 						$project_tail = substr($project_raw,strpos($project,"_R1")+3);
