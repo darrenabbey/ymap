@@ -27,5 +27,4 @@ echo -e "if (\$MINIMIZE_WHEN_DONE=True) {   SYSTEM_force_minimize('$user','$proj
 echo -e "SYSTEM_cleanup('$user','$project','$main_dir');" >> $outputName;
 echo -e "?>" >> $outputName;
 php $outputName;
-rm $outputName;
 echo -e "\tConclusion of processing data: $message" >> $logName;
