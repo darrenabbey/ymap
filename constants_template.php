@@ -28,7 +28,6 @@ $ADMIN_EMAIL = "admin@email.address";
 // Limiting the data size here can be used to keep the memory utilization within expected bounds.
 // A zero value here means the check is not performed.
 // A non-zero value here is interpreted in Gb; any larger datafiles will be subsampled down to this size before processing.
-//	Only use integer numbers here. A decimal number will not be properly interpreted by non-PHP components which also look to this file.
 $MAX_FASTQ_TARGET = 1.7;
 
 // The maximum number of datasets to be analyzed in parallel by the processing queue.
