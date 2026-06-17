@@ -88,7 +88,7 @@ if [[ "$MAX_FASTQ_TARGET" > "0" ]]; then
 	echo -e "#\tMAX_PROCESSED_DATA_SIZE (GB) = $MAX_PROCESSED_DATA_SIZE (GB)" >> $logName;
 
 	if [[ $(echo "$FILESIZE_GB > $MAX_PROCESSED_DATA_SIZE" | bc -l) = 1 ]]; then
-		echo -e "#\t\tFILESIZE_GB > MAX_PROCESSED_DATA_SIZE => FASTQ subsampling needed." >> $logName;
+		echo -e "#\t\tFILESIZE_GB > MAX_PROCESSED_DATA_SIZE : FASTQ subsampling needed." >> $logName;
 		echo -e "#------------------------------------------------------------------------------" >> $logName;
 		# Calculate fraction of target vs original.
 		TARGET_FRACTION=$(echo "$MAX_PROCESSED_DATA_SIZE/$FILESIZE_GB" | bc -l);	# Calculate the target number of paired reads.
@@ -134,7 +134,7 @@ if [[ "$MAX_FASTQ_TARGET" > "0" ]]; then
 
 	else
 		echo -e "#" >> $logName;
-		echo -e "#\tFILESIZE_GB <= MAX_PROCESSED_DATA_SIZE => FASTQ subsampling not needed." >> $logName;
+		echo -e "#\tFILESIZE_GB <= MAX_PROCESSED_DATA_SIZE : FASTQ subsampling not needed." >> $logName;
 		echo -e "#" >> $logName;
 	fi;
 else
