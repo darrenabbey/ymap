@@ -22,7 +22,6 @@
 		//
 		// Script run from web interface.
 		//
-		session_start();
 
 	        // If the user is not logged on, redirect to login page.
 	        if(!isset($_SESSION['logged_on'])){
