@@ -141,7 +141,13 @@ if ($ext == "zip") {
 	if ($fileCount == 0) {
 		// Figure out filename contained in gz archive.
 		// If one file, then filename is same as archive, without gz.
-		$name_new   = str_replace(".gz","", $name);
+
+		// cleanup name of file after interrupted upload(s).
+		$name_new   = str_replace(" (2)","", $name);
+		$name_new   = str_replace(" (3)","", $name_new);
+		$name_new   = str_replace(" (4)","", $name_new);
+
+		$name_new   = str_replace(".gz","", $name_new);
 		$name_final = str_replace("-fastq",".fastq",$name_new);
 		$name_final = str_replace("-FASTQ",".fastq",$name_final);
 		$name_final = str_replace("-fq",".fastq",$name_final);
