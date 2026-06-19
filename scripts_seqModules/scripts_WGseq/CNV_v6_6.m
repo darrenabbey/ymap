@@ -468,7 +468,8 @@ if (performEndbiasCorrection)
 	rawData_X1     = chr_EndDistanceData_extended_clean;
 	rawData_Y1     = chr_CNVdata_extended_clean;
 	rawData_Y1_    = chr_CNVdata_extended_clean_;
-	if (~isempty(rawData_X1) && ~isempty(rawData_Y1))
+	% Perform correction only if the data has more then two value since otherwise interpl() will crash.
+	if (size(rawData_X2,2) > 2 && size(rawData_Y2,2) > 2)
 		fprintf(['Lowess X:Y size : [' num2str(size(rawData_X1,1)) ',' num2str(size(rawData_X1,2)) ']:[' num2str(size(rawData_Y1,1)) ',' num2str(size(rawData_Y1,2)) ']\n']);
 		[fitX1, fitY1]  = optimize_mylowess(rawData_X1,rawData_Y1, 10,0);
 		[fitX1_,fitY1_] = optimize_mylowess(rawData_X1,rawData_Y1_,10,0);
@@ -546,30 +547,34 @@ if (performGCbiasCorrection)
 	% Perform LOWESS fitting : GC_bias.
 	rawData_X2     = GCratioData_clean;
 	rawData_Y2     = CNVdata_clean;
-	% perform correction only if the data has more then one value since
-	% otherwise inner functions of octave will cause crash
-	if (size(rawData_X2,2) > 1 && size(rawData_Y2,2) > 1)
-	fprintf(['Lowess X:Y size : [' num2str(size(rawData_X2,1)) ',' num2str(size(rawData_X2,2)) ']:[' num2str(size(rawData_Y2,1)) ',' num2str(size(rawData_Y2,2)) ']\n']);
-	[fitX2, fitY2] = optimize_mylowess2(rawData_X2,rawData_Y2,10, 0);
-	% Correct data using normalization to LOWESS fitting
-	Y_target = 1;
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
-			rawData_chr_X2{chr}        = chr_GCratioData{chr};
-			rawData_chr_Y2{chr}        = normalizedData_chr_Y1_{chr}; % CNVplot{chr};
-			fitData_chr_Y2{chr}        = interp1(fitX2,fitY2,rawData_chr_X2{chr},'spline');
+	% Perform correction only if the data has more then two value since otherwise interpl() will crash.
+	if (size(rawData_X2,2) > 2 && size(rawData_Y2,2) > 2)
+		fprintf(['Lowess X:Y size : [' num2str(size(rawData_X2,1)) ',' num2str(size(rawData_X2,2)) ']:[' num2str(size(rawData_Y2,1)) ',' num2str(size(rawData_Y2,2)) ']\n']);
+		[fitX2, fitY2] = optimize_mylowess2(rawData_X2,rawData_Y2,10, 0);
+		% Correct data using normalization to LOWESS fitting
+		Y_target = 1;
+		for chr = 1:num_chrs
+			if (chr_in_use(chr) == 1)
+				if (size(rawData_chr_X2{chr},2) > 2 && size(rawData_chr_Y2{chr},2) > 2)
+					fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
+					rawData_chr_X2{chr}        = chr_GCratioData{chr};
+					rawData_chr_Y2{chr}        = normalizedData_chr_Y1_{chr}; % CNVplot{chr};
+					fitData_chr_Y2{chr}        = interp1(fitX2,fitY2,rawData_chr_X2{chr},'spline');
 
-			% Filter by dividing out the fit curve.
-			normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
+					% Filter by dividing out the fit curve.
+					normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
 
-			% Filter by subtracting out the fit curve : no strong rationale for this.
-			%normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
+					% Filter by subtracting out the fit curve : no strong rationale for this.
+					%normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
 
-			%Filter by average of above two methods.
-			%try1                       = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
-			%try2                       = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
-			%normalizedData_chr_Y2{chr} = (try1+try2)/2;
+					%Filter by average of above two methods.
+					%try1                       = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
+					%try2                       = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
+					%normalizedData_chr_Y2{chr} = (try1+try2)/2;
+				else
+					% There's not enough data on this chromosome to do GC bias correction.
+					normalizedData_chr_Y2{chr} = normalizedData_chr_Y1_{chr};
+				end;
 			end;
 		end;
 	else
