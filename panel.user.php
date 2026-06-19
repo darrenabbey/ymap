@@ -4,14 +4,23 @@
 		?> <script type="text/javascript"> parent.reload(); </script> <?php
 	} else if ($_SESSION['logged_on'] == 0) {
 		?> <script type="text/javascript"> parent.reload(); </script> <?php
+	} else if ($_SESSION['logged_on'] == 1) {
+		$_SESSION['logged_on'] = 2;
+		if(!isset($_SESSION['user'])){
+			$user = "";
+			unset($_SESSION['logged_on']);
+		} else {
+			$user = $_SESSION['user'];
+		}
+		?> <script type="text/javascript"> parent.location.href = '/ymap/'; </script> <?php
 	} else {
 		if(!isset($_SESSION['user'])){
 			$user = "";
+			unset($_SESSION['logged_on']);
 		} else {
 			$user = $_SESSION['user'];
 		}
 	}
-	if ($user == "") {   unset($_SESSION['logged_on']);   }
 
 	require_once 'constants.php';
 	require_once 'sharedFunctions.php';
