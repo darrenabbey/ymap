@@ -115,7 +115,7 @@
 
 			// Push in-process projects to display.
 			foreach($projectFolders_working as $key_=>$project) {
-				printProjectInfo("2", $key_, "BB9900", "FFFFFF", $admin_as_user, $project, $sumKey);
+				printProjectInfo("2", $sumKey, "BB9900", "FFFFFF", $admin_as_user, $project, $sumKey);
 				$sumKey += 1;
 			}
 		}
