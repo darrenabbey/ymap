@@ -206,11 +206,13 @@
 				break;
 			case "1": //"WGseq_short":
 				unlink("users/".$user."/projects/".$project."/working.txt");
+				file_put_contents("users/".$user."/projects/".$project."/bulk.txt", "updating");
 				queue_reinit($user,$project,"","","project.update_server.php");
 				//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
 				break;
 			case "2": //"WGseq_long";
 				unlink("users/".$user."/projects/".$project."/working.txt");
+				file_put_contents("users/".$user."/projects/".$project."/bulk.txt", "updating");
 				queue_reinit($user,$project,"","","project.update_server.php");
 				//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
 				break;
@@ -219,6 +221,7 @@
 				break;
 			case "4": //"FASTA":
 				unlink("users/".$user."/projects/".$project."/working.txt");
+				file_put_contents("users/".$user."/projects/".$project."/bulk.txt", "updating");
 				queue_reinit($user,$project,"","","project.update_server.php");
 				//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
 				break;

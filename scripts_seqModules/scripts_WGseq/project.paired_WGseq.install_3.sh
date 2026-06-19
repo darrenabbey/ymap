@@ -351,11 +351,10 @@ fi
 
 
 if [[ "$hapmapInUse" = 1 ]]; then
+	echo -e "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
 	if [[ -f $projectDirectory/trimmed_SNPs_v5.txt ]]; then
-		echo -e "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
-		echo -e "\t\tDone." >> $logName;
+		echo -e "\t\tAlready done." >> $logName;
 	else
-		echo -e "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
 		echo -e "\t\t| Inputs to python script:" >> $logName;
 		echo -e "\t\t|\tgenome     = $genome"     >> $logName;
 		echo -e "\t\t|\tgenomeUser = $genomeUser" >> $logName;

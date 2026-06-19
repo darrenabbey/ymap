@@ -237,8 +237,9 @@
 								$parentName      = trim(str_replace($projectsDir1,"",$parentName));
 								$parentName      = trim(str_replace($projectsDir2,"",$parentName));
 
-								// Output found strings if parent project isn't minimized.
-								if (!file_exists($folder."/minimized.txt")) {
+								// Output found strings if parent project has usable data.
+								//if (!file_exists($folder."/minimized.txt")) {
+								if (file_exists($folder."/putative_SNPs_v4.zip")) {
 									echo "\t\t\t\t\t\t\t";
 									echo "['{$parentName}', '{$genome_string}', {$dataFormat_string}, '{$projectNameString}']";
 									echo ",\n";

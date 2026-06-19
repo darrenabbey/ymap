@@ -155,9 +155,8 @@
 
 
 <hr width="100%">
-<font size='3'>Minimize and copy projects to default user account.</font><br>
+<font size='3'>Copy projects to default user account.</font><br>
 <font size='2'>(Function to remove default user projects is lower on the page.)</font><br>
-<font size='2'>(Minimized projects can only be viewed, can't be used for further analysis.)</font><br><br>
 <table width="100%" cellpadding="0"><tr>
 <td width="100%" valign="top">
 <?php
@@ -178,7 +177,7 @@
 
 			echo "<table width='100%'>";
 			echo "<tr><td width='30%'><font size='2'><b>Projects</b></font></td>";
-			echo "<td width='30%'><font size='2'><b>Minimize then Copy Project</b></font></td>";
+			echo "<td width='30%'><font size='2'><b>Copy Project</b></font></td>";
 			echo "<td><font size='2'><b>Project \"name.txt\" Contents</b></font></td>";
 			echo "</tr>\n";
 			foreach($projectFolders as $key=>$project) {
@@ -189,10 +188,7 @@
 				echo "<td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
 				echo "<font size='2'>".($key+1).". ".$project."</font></span>\n";
 				echo "\t\t</td><td>\n";
-				if (file_exists("users/".$user."/projects/".$project."/complete.txt") && !file_exists("users/".$user."/projects/".$project."/minimized.txt")) {
-					echo "\t\t\t<input type='button' value='Minimize project' onclick=\"key = '$key'; $.ajax({url:'admin.minimizeProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin2.php');\">\n";
-				}
-				if (file_exists("users/".$user."/projects/".$project."/complete.txt") && file_exists("users/".$user."/projects/".$project."/minimized.txt")) {
+				if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
 					echo "\t\t\t<input type='button' value='Copy project to default user' onclick=\"key = '$key'; $.ajax({url:'admin.copyProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin2.php');\">\n";
 				}
 				echo "\t\t</td><td>\n";

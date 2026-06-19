@@ -46,10 +46,7 @@
 	fwrite($condensedLogOutput, "Updating.\n");
 	fclose($condensedLogOutput);
 
-	$OutputName = $project_dir."/working.txt";
-	$Output     = fopen($OutputName, 'w');
-	fwrite($Output, date('Y-m-d H:i:s'));
-	fclose($Output);
+	file_put_contents($project_dir."/working.txt", "updating");
 
 	// Delete pre-existing final output files.
 	fwrite($logOutput, "Cleaning up old output files.\n");

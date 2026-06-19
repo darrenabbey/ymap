@@ -54,22 +54,18 @@ hapmap=$(tail -n 1 "$projectDirectory/genome.txt");
 dataFormat=$(head -n 1 "$projectDirectory/dataFormat.txt");
 echo -e "\t'genome.txt' file entry." >> $logName;
 echo -e "\t\tgenome = $genome" >> $logName;
-if [[ "$genome" = "$hapmap" ]]
-then
+if [[ "$genome" = "$hapmap" ]]; then
 	hapmapInUse=0;
 else
 	echo -e "\t\thapmap = $hapmap" >> $logName;
 	hapmapInUse=1;
 fi
-if [[ "$hapmapInUse" = 1 ]]
-then
+if [[ "$hapmapInUse" = 1 ]]; then
 	# Determine location of hapmap being used.
-	if [[ -d "$main_dir/users/$user/hapmaps/$hapmap" ]]
-	then
+	if [[ -d "$main_dir/users/$user/hapmaps/$hapmap" ]]; then
 		hapmapDirectory="$main_dir/users/$user/hapmaps/$hapmap";
 		hapmapUser="$user";
-	elif [[ -d "$main_dir/users/default/hapmaps/$hapmap" ]]
-	then
+	elif [[ -d "$main_dir/users/default/hapmaps/$hapmap" ]]; then
 		hapmapDirectory="$main_dir/users/default/hapmaps/$hapmap";
 		hapmapUser="default";
 	fi
@@ -77,12 +73,10 @@ then
 fi
 
 # Determine location of genome being used.
-if [[ -d "$main_dir/users/$user/genomes/$genome" ]]
-then
+if [[ -d "$main_dir/users/$user/genomes/$genome" ]]; then
 	genomeDirectory="$main_dir/users/$user/genomes/$genome";
 	genomeUser="$user";
-elif [[ -d "$main_dir/users/default/genomes/$genome" ]]
-then
+elif [[ -d "$main_dir/users/default/genomes/$genome" ]]; then
 	genomeDirectory="$main_dir/users/default/genomes/$genome";
 	genomeUser="default";
 fi
@@ -104,14 +98,23 @@ echo -e "\tploidyBase = $ploidyBase" >> $logName;
 projectParent=$(head -n 1 "$projectDirectory/parent.txt");
 echo -e "\tparentProject = $projectParent" >> $logName;
 
+# Determine location of project being used.
+if [[ -d "$main_dir/users/$user/projects/$projectParent" ]]; then
+	projectParentDirectory="$main_dir/users/$user/projects/$projectParent";
+	projectParentUser="$user";
+elif [[ -d "$main_dir/users/default/projects/$projectParent" ]]; then
+	projectParentDirectory="$main_dir/users/default/projects/$projectParent";
+	projectParentUser="default";
+fi
+echo -e "\tprojectParentDirectory = $projectParentDirectory" >> $logName;
+
 echo -e "#============================================================================== 2" >> $logName;
 
 
 ##==============================================================================
 ## Unzip SNP archive file: putative_SNPs_v4.zip
 ##------------------------------------------------------------------------------
-if [[ -f "$projectDirectory/putative_SNPs_v4.txt" ]]
-then
+if [[ -f "$projectDirectory/putative_SNPs_v4.txt" ]]; then
 	echo -e "\tSNP data already decompressed." >> $logName;
 else
 	echo -e "Decompressing SNP data." >> $condensedLog;
@@ -120,12 +123,11 @@ else
 	pigz -dc putative_SNPs_v4.zip > putative_SNPs_v4.txt;
 	cd "$local_dir";
 fi
-if [[ -f "$projectDirectory/SNP_CNV_v1.txt" ]]
-then
+if [[ -f "$projectDirectory/SNP_CNV_v1.txt" ]]; then
 	echo -e "\tSNP data already decompressed." >> $logName;
 else
 	echo -e "Decompressing CNV/SNP data." >> $condensedLog;
-	echo -e "\tDecompressing SNP data." >> $logName;
+	echo -e "\tDecompressing CNV/SNP data." >> $logName;
 	cd "$projectDirectory";
 	pigz -dc SNP_CNV_v1.zip > SNP_CNV_v1.txt;
 	#unzip -j -o SNP_CNV_v1.zip;
@@ -138,8 +140,7 @@ fi
 echo -e "#==========================#" >> $logName;
 echo -e "# Preprocessing CNV/SNPs.  #" >> $logName;
 echo -e "#==========================#" >> $logName;
-if [[ -f "$projectDirectory/preprocessed_CNVs.txt" ]]
-then
+if [[ -f "$projectDirectory/preprocessed_CNVs.txt" ]]; then
         echo -e "\tCNV data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
 else
 	install /dev/null "$projectDirectory/preprocessed_CNVs.txt";
@@ -148,17 +149,56 @@ else
         $python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py" "$user" "$project" "$genome" "$genomeUser" "$main_dir" "$logName" > "$projectDirectory/preprocessed_CNVs.txt" 2>> $logName;
         echo -e "\tpre-processing complete." >> $logName;
 fi
-if [[ -f "$projectDirectory/preprocessed_SNPs.txt" ]]
-then
+if [[ -f "$projectDirectory/preprocessed_SNPs.txt" ]]; then
         echo -e "\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 else
 	install /dev/null "$projectDirectory/preprocessed_SNPs.txt";
 	echo -e "Preprocessing SNPs." >> $condensedLog;
         echo -e "\tPreprocessing SNP data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
+	if [[ -e "$projectParentDirectory/putative_SNPs_v4.txt" ]]; then
+		echo -e "\tParent SNP data already decompressed." >> $logName;
+		cp "$projectParentDirectory/putative_SNPs_v4.txt" "$projectDirectory/SNPdata_parent.txt";
+	else
+		echo -e "\tDecompressing parent SNP data." >> $logName;
+		echo -e "\t\tpigz -dc '$projectParentDirectory/putative_SNPs_v4.zip' > '$projectDirectory/SNPdata_parent.txt';" >> $logName;
+		pigz -dc "$projectParentDirectory/putative_SNPs_v4.zip" > "$projectDirectory/SNPdata_parent.txt";
+	fi
 
-        $python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" "$genome" "$genomeUser" "$project" "$user" "$project" "$user" "$main_dir" "$logName" LOH > "$projectDirectory/preprocessed_SNPs.txt" 2>> $logName;
+	if [[ "$hapmapInUse" = 1 ]]; then
+		# preprocess SNP data vs hapmap.
+		$python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" "$genome" "$genomeUser" "$hapmap" "$hapmapUser" "$project" "$user" "$main_dir" "$logName" hapmap > "$projectDirectory/preprocessed_SNPs.txt" 2>> $logName;
+	else
+		# preprocess parent (or self if no parent) for comparison.
+		install /dev/null "$projectDirectory/SNPdata_parent.temp.txt";
+		$python_exec "$main_dir/scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" "$genome" "$genomeUser" "$project" "$user" "$projectParent" "$projectParentUser" "$main_dir" LOH > "$projectDirectory/SNPdata_parent.temp.txt" 2>> $logName;
+		mv "$projectDirectory/SNPdata_parent.temp.txt" "$projectDirectory/SNPdata_parent.txt";
+
+		# Preprocess SNP data vs self.
+	        $python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" "$genome" "$genomeUser" "$project" "$user" "$project" "$user" "$main_dir" "$logName" LOH > "$projectDirectory/preprocessed_SNPs.txt" 2>> $logName;
+	fi;
         echo -e "\tpre-processing complete." >> $logName;
 fi
+
+if [[ "$hapmapInUse" = 1 ]]; then
+	echo -e "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
+	if [[ -f $projectDirectory/trimmed_SNPs_v5.txt ]]; then
+		echo -e "\t\tAlready done." >> $logName;
+	else
+		echo -e "\t\t| Inputs to python script:" >> $logName;
+		echo -e "\t\t|\tgenome     = $genome"     >> $logName;
+		echo -e "\t\t|\tgenomeUser = $genomeUser" >> $logName;
+		echo -e "\t\t|\tproject    = $project"    >> $logName;
+		echo -e "\t\t|\tuser       = $user"       >> $logName;
+		echo -e "\t\t|\thapmap     = $hapmap"     >> $logName;
+		echo -e "\t\t|\thapmapUser = $hapmapUser" >> $logName;
+		echo -e "\t\t|\tmain_dir   = $main_dir"   >> $logName;
+		$python_exec "$main_dir/scripts_seqModules/putative_SNPs_from_hapmap_in_child.py" "$genome" "$genomeUser" "$project" "$user" "$hapmap" "$hapmapUser" "$main_dir" > "$projectDirectory/trimmed_SNPs_v5.txt" 2>> $logName;
+		echo -e "\t\tDone." >> $logName;
+
+		chmod 774 "$projectDirectory/trimmed_SNPs_v5.txt";
+	fi
+fi
+
 
 
 ##==============================================================================
@@ -194,24 +234,17 @@ echo -e "\t|\t    cd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $logNam
 echo -e "\t|\t    analyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
 echo -e "\t|\tend" >> $logName;
 
-###
-### Temporary comment out to speed up troubleshooting of CNV_LOH_check.m code.
-###
 echo -e "\tCalling OCTAVE." >> $logName;
 cd "$projectDirectory";
-$octave_exec "$outputName";
+$octave_exec "$outputName" 2>> $logName;
 cd "$script_dir";
-echo -e "\tOCTAVE log from CNV analysis." >> $logName;
-sed 's/^/\t|/;' "$projectDirectory/octave.CNV_and_GCbias.log" >> $logName;
 
 
-if [[ "$hapmapInUse" = 0 ]]
-then
+if [[ "$hapmapInUse" = 0 ]]; then
 	##==============================================================================
 	## Perform SNP/LOH analysis on dataset.
 	##------------------------------------------------------------------------------
-	if [[ "$project" = "$projectParent" ]]
-	then
+	if [[ "$project" = "$projectParent" ]]; then
 		echo -e "#==========================#" >> $logName;
 		echo -e "# SNP analysis of dataset. #" >> $logName;
 		echo -e "#==========================#" >> $logName;
@@ -247,7 +280,7 @@ then
 	echo -e "== SNP analysis ================================================================================";
 	echo -e "================================================================================================";
 	cd "$projectDirectory";
-	$octave_exec "$outputName";
+	$octave_exec "$outputName" 2>> $logName;
 	cd "$script_dir";
 	echo -e "\tOCTAVE log from SNP analysis." >> $logName;
 	sed 's/^/\t|/;' "$projectDirectory/octave.SNP_analysis.log" >> $logName;
@@ -286,7 +319,7 @@ then
 	echo -e "== Final figures ===============================================================================";
 	echo -e "================================================================================================";
 	cd "$projectDirectory";
-	$octave_exec "$outputName";
+	$octave_exec "$outputName" 2>> $logName;
 	cd "$script_dir";
 	echo -e "\tOCTAVE log from final figure generation." >> $logName;
 	sed 's/^/\t|/;' "$projectDirectory/octave.final_figs.log" >> $logName;
@@ -295,16 +328,9 @@ else
 	##==============================================================================
 	## Perform SNP/LOH analysis on dataset.
 	##------------------------------------------------------------------------------
-	if [[ "$hapmapInUse" = 1 ]]
-	then
-		echo -e "#===========================================#" >> $logName;
-		echo -e "# SNP/LOH analysis of dataset, with hapmap. #" >> $logName;
-		echo -e "#===========================================#" >> $logName;
-	else
-		echo -e "#==============================================#" >> $logName;
-		echo -e "# SNP/LOH analysis of dataset, with reference. #" >> $logName;
-		echo -e "#==============================================#" >> $logName;
-	fi;
+	echo -e "#===========================================#" >> $logName;
+	echo -e "# SNP/LOH analysis of dataset, with hapmap. #" >> $logName;
+	echo -e "#===========================================#" >> $logName;
 
 	echo -e "Mapping SNPs." >> $condensedLog;
 	echo -e "\t\tGenerating OCTAVE script to perform SNP analysis of dataset." >> $logName;
@@ -332,7 +358,7 @@ else
 	echo -e "== SNP analysis ================================================================================";
 	echo -e "================================================================================================";
 	cd "$projectDirectory";
-	$octave_exec "$outputName";
+	$octave_exec "$outputName" 2>> $logName;
 	cd "$script_dir";
 	echo -e "\t\tOCTAVE log from SNP analysis." >> $logName;
 	sed 's/^/\t\t\t|/;' "$projectDirectory/octave.SNP_analysis.log" >> $logName;
@@ -371,7 +397,7 @@ else
 	echo -e "== CNV/SNP/LOH figure generation ===============================================================";
 	echo -e "================================================================================================";
 	cd "$projectDirectory";
-	$octave_exec "$outputName";
+	$octave_exec "$outputName" 2>> $logName;
 	cd "$script_dir";
 	echo -e "\t\tOCTAVE log from final figure generation." >> $logName;
 fi

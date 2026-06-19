@@ -253,12 +253,11 @@
 		if ($frameContainerIx == "1") {
 			// define update dataset button, which passes key value to update project page in iframe of main page.
 			if (!file_exists("users/".$user."/projects/".$project."/locked.txt")) {
-				if (!file_exists("users/".$user."/projects/".$project."/minimized.txt") && file_exists("users/".$user."/projects/".$project."/complete.txt")) {
+				if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
 					echo "<button id='project_update_".$key."' type='button' onclick='";
 					echo "parent.document.getElementById(\"Hidden_UpdateDataset_Frame\").contentWindow.location.href = \"project.update_window.php?key=".$key."\";\n";
 					echo "parent.show_hidden(\"Hidden_UpdateDataset\"); ";
 					echo "getElementById(\"project_update_".$key."\").style.display = \"none\";";
-					echo "getElementById(\"project_minimize_".$key."\").style.display = \"none\";";
 					echo "'>Update</button>";
 				}
 			}
@@ -299,15 +298,9 @@
 		echo "</font></span>\n\t\t\t\t";
 
 		echo "<span id='p_delete_".$key."'></span>\n";
-		if (!file_exists("users/".$user."/projects/".$project."/minimized.txt") && file_exists("users/".$user."/projects/".$project."/complete.txt")) {
-			echo "<span id='p_minimize_".$key."'></span>\n";
-		}
 
                 if (!file_exists("users/".$user."/projects/".$project."/locked.txt")) {
 			echo "<button id='project_delete_".$key."' type='button' onclick=\"parent.deleteProjectConfirmation('".$project."','".$key."');\">Delete</button>";
-			if (!file_exists("users/".$user."/projects/".$project."/minimized.txt") && file_exists("users/".$user."/projects/".$project."/complete.txt")) {
-				echo "<button id='project_minimize_".$key."' type='button' onclick=\"parent.minimizeProjectConfirmation('".$project."','".$key."');\">Minimize</button>";
-			}
 		} else {
 			echo "<font size='2' color='red'>[Project locked for admin review.]</font>";
 		}

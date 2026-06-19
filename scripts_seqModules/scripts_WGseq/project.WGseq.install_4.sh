@@ -64,12 +64,12 @@ echo -e "\tparentProject = $projectParent" >> $logName;
 # Determine location of project being used.
 if [[ -d "$main_dir/users/$user/projects/$projectParent" ]]
 then
-    projectParentDirectory="$main_dir/users/$user/projects/$projectParent";
-    projectParentUser="$user";
+	projectParentDirectory="$main_dir/users/$user/projects/$projectParent";
+	projectParentUser="$user";
 elif [[ -d "$main_dir/users/default/projects/$projectParent" ]]
 then
-    projectParentDirectory="$main_dir/users/default/projects/$projectParent";
-    projectParentUser="default";
+	projectParentDirectory="$main_dir/users/default/projects/$projectParent";
+	projectParentUser="default";
 fi
 echo -e "\tprojectParentDirectory = $projectParentDirectory" >> $logName;
 
@@ -82,7 +82,7 @@ echo -e "# CNV analysis of dataset. #" >> $logName;
 echo -e "#==========================#" >> $logName;
 echo -e "Preprocessing CNV data." >> $condensedLog;
 
-if [[ -f "$projectDirectory/preprocessed_CNVs.txt" ]]
+if [[ -e "$projectDirectory/preprocessed_CNVs.txt" ]]
 then
 	echo -e "\tCNV data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
 else
@@ -119,7 +119,7 @@ echo -e "\t|\tend" >> $logName;
 
 echo -e "\tCalling OCTAVE." >> $logName;
 cd "$projectDirectory";
-$octave_exec "$outputName";
+$octave_exec "$outputName" 2>> $logName;
 cd "$main_dir";
 
 
@@ -136,7 +136,7 @@ echo -e "# ChARM analysis of dataset. #" >> $logName;
 echo -e "#============================#" >> $logName;
 echo -e "Analyzing CNV edges." >> $condensedLog;
 
-if [[ -f "$projectDirectory/Common_ChARM.mat" ]]
+if [[ -e "$projectDirectory/Common_ChARM.mat" ]]
 then
 	echo -e "\tChARM analysis already completed." >> $logName;
 else
@@ -167,7 +167,7 @@ else
 	echo -e "== ChARM analysis ==============================================================================";
 	echo -e "================================================================================================";
 	cd "$projectDirectory";
-	$octave_exec "$outputName";
+	$octave_exec "$outputName" 2>> $logName;
 	cd "$main_dir";
 	echo -e "\tOCTAVE log from ChARM analysis." >> $logName;
 	sed 's/^/\t|/;' "$projectDirectory/octave.ChARM.log" >> $logName;
@@ -189,14 +189,13 @@ else
 	echo -e "Preprocessing SNP data, with reference." >> $condensedLog;
 fi
 
-if [[ -f "$projectDirectory/preprocessed_SNPs.txt" ]]
+if [[ -e "$projectDirectory/preprocessed_SNPs.txt" ]]
 then
 	echo -e "\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 else
 	install /dev/null "$projectDirectory/preprocessed_SNPs.txt";
 	echo -e "\tPreprocessing SNP data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
-	if [[ -f "$projectParentDirectory/putative_SNPs_v4.txt" ]]
-	then
+	if [[ -e "$projectParentDirectory/putative_SNPs_v4.txt" ]]; then
 		echo -e "\tParent SNP data already decompressed." >> $logName;
 		cp "$projectParentDirectory/putative_SNPs_v4.txt" "$projectDirectory/SNPdata_parent.txt";
 	else
@@ -241,7 +240,7 @@ echo -e "=======================================================================
 echo -e "== SNP analysis ================================================================================";
 echo -e "================================================================================================";
 cd "$projectDirectory";
-$octave_exec "$outputName";
+$octave_exec "$outputName" 2>> $logName;
 cd "$main_dir";
 echo -e "\tOCTAVE log from SNP analysis." >> $logName;
 sed 's/^/\t|/;' "$projectDirectory/octave.SNP_analysis.log" >> $logName;
@@ -280,7 +279,7 @@ echo -e "=======================================================================
 echo -e "== Final figures ===============================================================================";
 echo -e "================================================================================================";
 cd "$projectDirectory";
-$octave_exec "$outputName";
+$octave_exec "$outputName" 2>> $logName;
 cd "$main_dir";
 echo -e "finished all processing, moving to Cleaning up intermediate WGseq files" >> $condensedLog;
 

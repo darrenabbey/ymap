@@ -62,13 +62,11 @@ ploidyBase=$(tail -n 1 "$projectDirectory/ploidy.txt");
 echo -e "\tploidyBase = $ploidyBase" >> $logName;
 
 # Determine location of hapmap being used.
-if [[ -d "$main_dir/users/$user/hapmaps/$hapmap" ]]
-then
+if [[ -d "$main_dir/users/$user/hapmaps/$hapmap" ]]; then
 	hapmapDirectory="$main_dir/users/$user/hapmaps/$hapmap";
 	hapmapUser="$user";
 	hapmapUsed=1
-elif [[ -d "$main_dir/users/default/hapmaps/$hapmap" ]]
-then
+elif [[ -d "$main_dir/users/default/hapmaps/$hapmap" ]]; then
 	hapmapDirectory="$main_dir/users/default/hapmaps/$hapmap";
 	hapmapUser="default";
 	hapmapUsed=1;
@@ -180,19 +178,10 @@ fi
 ##==============================================================================
 ## Perform SNP/LOH analysis on dataset.
 ##------------------------------------------------------------------------------
-if [[ hapmapUsed = 1 ]]
-then
-	echo -e "#===========================================#" >> $logName;
-	echo -e "# SNP/LOH analysis of dataset, with hapmap. #" >> $logName;
-	echo -e "#===========================================#" >> $logName;
-	echo -e "Preprocessing SNP data, with hapmap." >> $condensedLog;
-else
-	echo -e "#==============================================#" >> $logName;
-	echo -e "# SNP/LOH analysis of dataset, with reference. #" >> $logName;
-	echo -e "#==============================================#" >> $logName;
-	echo -e "Preprocessing SNP data, with reference." >> $condensedLog;
-fi;
-
+echo -e "#===========================================#" >> $logName;
+echo -e "# SNP/LOH analysis of dataset, with hapmap. #" >> $logName;
+echo -e "#===========================================#" >> $logName;
+echo -e "Preprocessing SNP data, with hapmap." >> $condensedLog;
 
 if [[ -f "$projectDirectory/preprocessed_SNPs.txt" ]]
 then
@@ -201,7 +190,7 @@ else
 	#install /dev/null "$projectDirectory/preprocessed_SNPs.txt";
 	echo -e "\t\tPreprocessing SNP data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 
-	$python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" "$genome" "$genomeUser" "$hapmap" "$hapmapUser" "$project" "$user" "$main_dir" "$logName" hapmap  > "$projectDirectory/preprocessed_SNPs.txt" 2>> $logName;
+	$python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" "$genome" "$genomeUser" "$hapmap" "$hapmapUser" "$project" "$user" "$main_dir" "$logName" hapmap > "$projectDirectory/preprocessed_SNPs.txt" 2>> $logName;
 	echo -e "\t\tpre-processing complete." >> $logName;
 fi
 

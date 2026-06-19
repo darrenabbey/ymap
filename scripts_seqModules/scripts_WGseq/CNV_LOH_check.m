@@ -633,10 +633,12 @@ while (chrCopyNum_changed == true)
 				endif;
 				fprintf(['\tchr' num2str(chr) '.' num2str(segment) ': ' num2str(chrCopyNum_new{chr}(segment)) '\n']);
 
-				%%% If CNV estimate changed, update boolean.
+				%%% If CNV estimate changed, update boolean and log it.
 				if (chrCopyNum_new{chr}(segment) != chrCopyNum{chr}(segment))
 					chrCopyNum_changed = true;
-					fprintf(['\tchrCopyNum_new{' num2str(chr) '}(' num2str(segment) ') = ' num2str(chrCopyNum_new{chr}(segment)) '\n\t\t chrCopyNum{' num2str(chr) '}(' num2str(segment) ') = ' num2str(chrCopyNum{chr}(segment)) '\n']);
+					fprintf('chrCopyNum_changed = true\n');
+					fprintf(['\tchrCopyNum_new{' num2str(chr) '}(' num2str(segment) ') = ' num2str(chrCopyNum_new{chr}(segment)) '\n']);
+					fprintf(['\tchrCopyNum{' num2str(chr) '}(' num2str(segment) ') = ' num2str(chrCopyNum{chr}(segment)) '\n']);
 				end;
 			end;
 		end;

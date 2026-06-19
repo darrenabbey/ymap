@@ -10,13 +10,13 @@ function SYSTEM_cleanup($userName,$projectName,$main_dir) {
 			if (is_dir($dir)) {
 				// DO STUFF HERE.
 				if (is_file($dir."/error.txt")) {
-					unlink($dir."/datafile_*");
-					unlink($dir."/data.pileup");
-					unlink($dir."/data_sorted.bam");
-					unlink($dir."/data.bam");
-					unlink($dir."/putative_SNPs_v4.txt");
-					unlink($dir."/SNP_CNV_v1.txt");
-					unlink($dir."/data_sorted.bam.bai");
+					if (is_file($dir."/datafile_*")) {		unlink($dir."/datafile_*");   }
+					if (is_file($dir."/data.pileup")) {		unlink($dir."/data.pileup");   }
+					if (is_file($dir."/data_sorted.bam")) {		unlink($dir."/data_sorted.bam");   }
+					if (is_file($dir."/data.bam")) {		unlink($dir."/data.bam");   }
+					if (is_file($dir."/putative_SNPs_v4.txt")) {	unlink($dir."/putative_SNPs_v4.txt");   }
+					if (is_file($dir."/SNP_CNV_v1.txt")) {		unlink($dir."/SNP_CNV_v1.txt");   }
+					if (is_file($dir."/data_sorted.bam.bai")) {	unlink($dir."/data_sorted.bam.bai");   }
 					log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP success");
 				} else {
 					log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP not needed, no error.txt file.");
@@ -56,7 +56,7 @@ function minimizeProject($dir) {
 
 	// Move files we want to keep into temp folder.
 	foreach ($files as $file) {
-		if (($file == "colors.txt") or ($file == "complete.txt") or ($file == "dataFormat.txt") or ($file == "error.txt") or ($file == "figVer.txt") or ($file == "genome.txt") or ($file == "index.php") or ($file == "name.txt") or ($file == "output_figures.zip") or ($file == "parent.txt") or ($file == "process_log.txt") or ($file == "readStats.txt") or ($file == "salt.txt") or ($file == "warning.txt") or ($file == "working_done.txt")) {
+		if (($file == "colors.txt") or ($file == "complete.txt") or ($file == "dataFormat.txt") or ($file == "error.txt") or ($file == "figVer.txt") or ($file == "genome.txt") or ($file == "index.php") or ($file == "name.txt") or ($file == "output_figures.zip") or ($file == "parent.txt") or ($file == "ploidy.txt") or ($file == "process_log.txt") or ($file == "readStats.txt") or ($file == "salt.txt") or ($file == "showAnnotations.txt") or ($file == "warning.txt") or ($file == "working_done.txt")) {
 			rename($dir.$file, $temp_dir.$file);
 		}
 		$file_ext  = substr(strrchr($file, '.'), 1);
@@ -64,6 +64,9 @@ function minimizeProject($dir) {
 			if (!str_contains($file,'ChARM_test') and !str_contains($file,'Rsquared')) {
 				rename($dir.$file, $temp_dir.$file);
 			}
+		}
+		if (($file == "SNP_CNV_v1.zip") or ($file == "putative_SNPs_v4.zip") or ($file == "octave_logs.zip")) {
+			rename($dir.$file, $temp_dir.$file);
 		}
 	}
 
@@ -91,11 +94,6 @@ function minimizeProject($dir) {
 
 	// Delete temp directory.
 	rmdir($temp_dir);
-
-	// Make minimized.txt file in project dir to mark project as minimized.
-	$minimizedFile = $dir."/minimized.txt";
-	$minimized     = fopen($minimizedFile, 'w');
-	fclose($minimized);
 }
 
 

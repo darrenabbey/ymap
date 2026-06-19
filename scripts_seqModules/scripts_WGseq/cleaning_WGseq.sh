@@ -10,6 +10,7 @@ user="$1";
 project="$2";
 main_dir="$3";
 projectDirectory="$main_dir/users/$user/projects/$project";
+scriptDirectory=$PWD;
 logName="$projectDirectory/process_log.txt";
 
 ## Error handling in case something crashes.
@@ -138,43 +139,43 @@ if [[ -f "$projectDirectory/datafiles.txt" ]]; then
 fi
 
 
+##==============================================================================
+## Generate ZIP archives
+##------------------------------------------------------------------------------
+cd "$projectDirectory";
+
+# Compress octave log files.
+if [[ -f octave_logs.zip ]]; then
+        rm octave_logs.zip;
+fi
+zip -j -9 octave_logs.zip octave.*.log;
+
 # Compress 'putative_SNPs_v1.txt' and 'SNP_CNVs_v1.txt'.
-if [[ -f "$projectDirectory/putative_SNPs_v4.txt" ]]; then
-	zip -j -9 "$projectDirectory/putative_SNPs_v4.zip" "$projectDirectory/putative_SNPs_v4.txt";
-	rm "$projectDirectory/putative_SNPs_v4.txt";
+if [[ -f putative_SNPs_v4.txt ]]; then
+	zip -j -9 putative_SNPs_v4.zip putative_SNPs_v4.txt;
+	rm putative_SNPs_v4.txt;
 	echo -e "\tputative_SNPs_v4.txt => putative_SNPs_v4.zip" >> $logName;
 fi
-if [[ -f "$projectDirectory/SNP_CNV_v1.txt" ]]; then
-	zip -j -9 "$projectDirectory/SNP_CNV_v1.zip" "$projectDirectory/SNP_CNV_v1.txt";
-	rm "$projectDirectory/SNP_CNV_v1.txt";
+if [[ -f SNP_CNV_v1.txt ]]; then
+	zip -j -9 SNP_CNV_v1.zip SNP_CNV_v1.txt;
+	rm SNP_CNV_v1.txt;
 	echo -e "\tSNP_CNV_v1.txt => SNP_CNV_v1.zip" >> $logName;
 fi
 
-
-##==============================================================================
-## Generate ZIP archive of output files.
-##------------------------------------------------------------------------------
-cd "$projectDirectory";
+# Compress output files.
 if [[ -f output_figures.zip ]]; then
 	rm output_figures.zip;
 fi
 zip -j output_figures.zip fig.*.eps fig.*.png *.bed *.gff3 -x "fig.Rsquared*" "fig.Charm*" @;
 
+cd "$scriptDirectory";
+
 
 ## Generate "complete.txt" to indicate processing has completed normally.
-timesLogFile="$projectDirectory/completion_times.log";
 timestamp=$(date +%T);
-if [[ -f "$timesLogFile" ]]; then
-	echo -n "$user($project)[WGseq " >> $timesLogFile;
-	cat "$projectDirectory/dataFormat.txt" >> $timesLogFile;
-	echo -n "]\t" >> $timesLogFile;
-	cat "$projectDirectory/working.txt" >> $timesLogFile;
-	echo -e " -> $timestamp" >> $timesLogFile;
-fi
-
 completeFile="$projectDirectory/complete.txt";
 echo -e "complete" > $completeFile;
-echo "$timestamp" >> $completeFile;
+echo -e "$timestamp" >> $completeFile;
 echo -e "\tGenerated 'complete.txt' file." >> $logName;
 chmod 0774 "$completeFile";
 
