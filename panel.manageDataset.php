@@ -253,7 +253,7 @@
 		if ($frameContainerIx == "1") {
 			// define update dataset button, which passes key value to update project page in iframe of main page.
 			if (!file_exists("users/".$user."/projects/".$project."/locked.txt")) {
-				if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
+				if (file_exists("users/".$user."/projects/".$project."/complete.txt") && file_exists("users/".$user."/projects/".$project."/putative_SNPs_v4.zip") && file_exists("users/".$user."/projects/".$project."/SNP_CNV_v1.zip")) {
 					echo "<button id='project_update_".$key."' type='button' onclick='";
 					echo "parent.document.getElementById(\"Hidden_UpdateDataset_Frame\").contentWindow.location.href = \"project.update_window.php?key=".$key."\";\n";
 					echo "parent.show_hidden(\"Hidden_UpdateDataset\"); ";
