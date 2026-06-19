@@ -39,8 +39,7 @@ $MAX_QUEUE_PARALLEL = 1;
 $QUEUE_TIME_ESTIMATE = 40;
 
 // On space-liminted systems, this option tells YMAP to automatically minimize each project when complete.
-// This limits the ability to do some analyses that are less often done by users.
-$MINIMIZE_WHEN_DONE = False;
+$MINIMIZE_WHEN_DONE = True;
 
 //==============================================================================
 // The following settings should never need to be updated.
