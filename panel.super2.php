@@ -86,53 +86,37 @@
 			// Cleanup admin_as_user names;
 			$admin_as_user = substr($admin_as_user, 0, -1);
 
-			// Only show projects from user accounts, not admin accounts.
-			if (file_exists("users/".$admin_as_user."/admin.txt") == false) {
-				// Get list of projects per user.
-				$projectsDir      = "users/".$admin_as_user."/projects/";
-				$projectFolders   = array_diff(glob($projectsDir."*"), array('..', '.'));
+			// Get list of projects per user.
+			$projectsDir      = "users/".$admin_as_user."/projects/";
+			$projectFolders   = array_diff(glob($projectsDir."*"), array('..', '.'));
 
-				// Sort directories by date, newest first.
-				array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
+			// Sort directories by date, newest first.
+			array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
 
-				// Trim path from each folder string.
-				foreach($projectFolders as $key=>$folder) {
-					$projectFolders[$key] = str_replace($projectsDir,"",$folder);
+			// Trim path from each folder string.
+			foreach($projectFolders as $key=>$folder) {
+				$projectFolders[$key] = str_replace($projectsDir,"",$folder);
+			}
+
+			// Split project list into ready/working/starting lists for sequential display.
+			$projectFolders_working  = array();
+			foreach($projectFolders as $key=>$project) {
+				if (file_exists("users/".$admin_as_user."/projects/".$project."/working.txt")) {
+					array_push($projectFolders_working, $project);
 				}
+			}
+			$userProjectCount_working  = count($projectFolders_working);
 
-				// Split project list into ready/working/starting lists for sequential display.
-				//$projectFolders_starting = array();
-				$projectFolders_working  = array();
-				//$projectFolders_complete = array();
-				foreach($projectFolders as $key=>$project) {
-					//if (file_exists("users/".$admin_as_user."/projects/".$project."/complete.txt")) {
-					//	array_push($projectFolders_complete,$project);
-					//} else if (file_exists("users/".$admin_as_user."/projects/".$project."/working.txt")) {
-					if (file_exists("users/".$admin_as_user."/projects/".$project."/working.txt")) {
-						array_push($projectFolders_working, $project);
-					}
-					//} else if (is_dir("users/".$admin_as_user."/projects/".$project)) {
-					//	array_push($projectFolders_starting,$project);
-					//}
-				}
-				//$userProjectCount_starting = count($projectFolders_starting);
-				$userProjectCount_working  = count($projectFolders_working);
-				//$userProjectCount_complete = count($projectFolders_complete);
+			// Sort complete and working projects alphabetically.
+			array_multisort($projectFolders_working,  SORT_ASC, $projectFolders_working);
 
-				// Sort complete and working projects alphabetically.
-				//array_multisort($projectFolders_starting, SORT_ASC, $projectFolders_starting);
-				array_multisort($projectFolders_working,  SORT_ASC, $projectFolders_working);
-				//array_multisort($projectFolders_complete, SORT_ASC, $projectFolders_complete);
+			// Add to user project count.
+			$userProjectCount = $userProjectCount + count($projectFolders_working);
 
-				// Add to user project count.
-				$userProjectCount = $userProjectCount + count($projectFolders_working);
-
-				// Push in-process projects to display.
-				foreach($projectFolders_working as $key_=>$project) {
-					//printProjectInfo("2", $key_+count($projectFolders_starting), "BB9900", "FFFFFF", $admin_as_user, $project, $sumKey);
-					printProjectInfo("2", $key_, "BB9900", "FFFFFF", $admin_as_user, $project, $sumKey);
-					$sumKey += 1;
-				}
+			// Push in-process projects to display.
+			foreach($projectFolders_working as $key_=>$project) {
+				printProjectInfo("2", $key_, "BB9900", "FFFFFF", $admin_as_user, $project, $sumKey);
+				$sumKey += 1;
 			}
 		}
 	}
@@ -241,48 +225,40 @@ if (isset($_SESSION['logged_on'])) {
 		// Cleanup admin_as_user names;
 		$admin_as_user = substr($admin_as_user, 0, -1);
 
-		if ($admin_as_user != $user) {
-			// Get list of projects per user.
-			$projectsDir      = "users/".$admin_as_user."/projects/";
-			$projectFolders   = array_diff(glob($projectsDir."*"), array('..', '.'));
-			// Sort directories by date, newest first.
-			array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
-			// Trim path from each folder string.
-			foreach($projectFolders as $key=>$folder) {   $projectFolders[$key] = str_replace($projectsDir,"",$folder);   }
-			// Split project list into ready/working/starting lists for sequential display.
-			$projectFolders_working  = array();
+		// Get list of projects per user.
+		$projectsDir      = "users/".$admin_as_user."/projects/";
+		$projectFolders   = array_diff(glob($projectsDir."*"), array('..', '.'));
+		// Sort directories by date, newest first.
+		array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
+		// Trim path from each folder string.
+		foreach($projectFolders as $key=>$folder) {   $projectFolders[$key] = str_replace($projectsDir,"",$folder);   }
+		// Split project list into ready/working/starting lists for sequential display.
+		$projectFolders_working  = array();
 
-			foreach($projectFolders as $key=>$project) {
-				if (file_exists("users/".$admin_as_user."/projects/".$project."/complete.txt")) {
-				} else if (file_exists("users/".$admin_as_user."/projects/".$project."/working.txt")) {
-					if (!file_exists("users/".$admin_as_user."/admin.txt")) {
-						array_push($projectFolders_working, $project);
-					}
-				}
+		foreach($projectFolders as $key=>$project) {
+			if (file_exists("users/".$admin_as_user."/projects/".$project."/complete.txt")) {
+			} else if (file_exists("users/".$admin_as_user."/projects/".$project."/working.txt")) {
+				array_push($projectFolders_working, $project);
 			}
-
-			$userProjectCount_working  = count($projectFolders_working);
-			// Sort complete and working projects alphabetically.
-			array_multisort($projectFolders_working,  SORT_ASC, $projectFolders_working);
-
-			foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.
-				$key      = $key_ + $userProjectCount_starting;
-				//$project  = $projectFolders[$key];
-				//$handle   = fopen("users/".$admin_as_user."/projects/".$project."/dataFormat.txt", "r");
-				//$dataFormat = fgets($handle);
-				//fclose($handle);
-				echo "\n// javascript for project #".$key+$sumKey."_super2, '".$project."'\n";
-				echo "var el_p            = document.getElementById('frameContainer.p2_".$key+$sumKey."_super2');\n";
-				echo "el_p.innerHTML      = '<iframe id=\"p_".$key+$sumKey."_super2\" name=\"p_".$key+$sumKey."_super2\" class=\"upload\" style=\"height:38px; border:0px;\" ";
-				echo     "src=\"project.admin_working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
-				echo "var p_iframe        = document.getElementById('p_".$key+$sumKey."_super2');\n";
-				echo "var p_js            = p_iframe.contentWindow;\n";
-				echo "p_js.user           = \"".$admin_as_user."\";\n";
-				echo "p_js.project        = \"".$project."\";\n";
-				echo "p_js.key            = \"p_".$key+$sumKey."_super2\";\n";
-			}
-			$sumKey += count($projectFolders_working);
 		}
+
+		$userProjectCount_working  = count($projectFolders_working);
+		// Sort complete and working projects alphabetically.
+		array_multisort($projectFolders_working,  SORT_ASC, $projectFolders_working);
+
+		foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.
+			$key      = $key_ + $userProjectCount_starting;
+			echo "\n// javascript for project #".$key+$sumKey."_super2, '".$project."'\n";
+			echo "var el_p            = document.getElementById('frameContainer.p2_".$key+$sumKey."_super2');\n";
+			echo "el_p.innerHTML      = '<iframe id=\"p_".$key+$sumKey."_super2\" name=\"p_".$key+$sumKey."_super2\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+			echo     "src=\"project.admin_working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
+			echo "var p_iframe        = document.getElementById('p_".$key+$sumKey."_super2');\n";
+			echo "var p_js            = p_iframe.contentWindow;\n";
+			echo "p_js.user           = \"".$admin_as_user."\";\n";
+			echo "p_js.project        = \"".$project."\";\n";
+			echo "p_js.key            = \"p_".$key+$sumKey."_super2\";\n";
+		}
+		$sumKey += count($projectFolders_working);
 	}
 }
 ?>
