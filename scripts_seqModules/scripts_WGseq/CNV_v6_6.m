@@ -469,7 +469,7 @@ if (performEndbiasCorrection)
 	rawData_Y1     = chr_CNVdata_extended_clean;
 	rawData_Y1_    = chr_CNVdata_extended_clean_;
 	% Perform correction only if the data has more then two value since otherwise interpl() will crash.
-	if (size(rawData_X2,2) > 2 && size(rawData_Y2,2) > 2)
+	if (size(rawData_X1,2) > 2 && size(rawData_Y1,2) > 2)
 		fprintf(['Lowess X:Y size : [' num2str(size(rawData_X1,1)) ',' num2str(size(rawData_X1,2)) ']:[' num2str(size(rawData_Y1,1)) ',' num2str(size(rawData_Y1,2)) ']\n']);
 		[fitX1, fitY1]  = optimize_mylowess(rawData_X1,rawData_Y1, 10,0);
 		[fitX1_,fitY1_] = optimize_mylowess(rawData_X1,rawData_Y1_,10,0);
@@ -555,7 +555,7 @@ if (performGCbiasCorrection)
 		Y_target = 1;
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
-				if (size(rawData_chr_X2{chr},2) > 2 && size(rawData_chr_Y2{chr},2) > 2)
+				if (size(rawData_X2{chr},2) > 2 && size(rawData_Y2{chr}) > 2)
 					fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
 					rawData_chr_X2{chr}        = chr_GCratioData{chr};
 					rawData_chr_Y2{chr}        = normalizedData_chr_Y1_{chr}; % CNVplot{chr};
