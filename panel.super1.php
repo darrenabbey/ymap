@@ -161,9 +161,16 @@
 
 		foreach($projectFolders_starting as $key_=>$project) {
 			if (!$exceededSpace) {
-				printProjectInfo("4", $key_, "CC0000", "FFFFFF", $admin_as_user, $project, "(Waiting in queue, or upload pending.)");
+				$color1 = "CC0000";
+				$color2 = "FFFFFF";
 			} else {
-				printProjectInfo("4", $key_, "888888", "FFFFFF", $admin_as_user, $project, "(Waiting in queue, or upload pending.)");
+				$color1 = "888888";
+				$color2 = "FFFFFF";
+			}
+			if (file_exists("users/".$admin_as_user."/projects/".$project."/bulk.txt")) {
+				printProjectInfo("4", $key_, $color1, $color2, $admin_as_user, $project, "(Waiting in queue.)");
+			} else {
+				printProjectInfo("4", $key_, $color1, $color2, $admin_as_user, $project, "(Upload pending.)");
 			}
 		}
 		foreach($projectFolders_working as $key_=>$project) {
