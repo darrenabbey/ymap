@@ -230,8 +230,10 @@ end;
 %----------------------------------------------------------------------
 datafile = [projectDir 'dataBiases.txt'];
 if (exist(datafile,'file') == 0)
-	performGCbiasCorrection    = true;
-	performEndbiasCorrection   = true;
+	performLengthbiasCorrection = false;
+	performGCbiasCorrection     = true;
+	performRepetbiasCorrection  = false;
+	performEndbiasCorrection    = false;
 else
 	biases_fid = fopen(datafile, 'r');
 	bias1      = fgetl(biases_fid);	% performLengthbiasCorrection
@@ -555,7 +557,7 @@ if (performGCbiasCorrection)
 		Y_target = 1;
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
-				if (size(rawData_X2{chr},2) > 2 && size(rawData_Y2{chr}) > 2)
+				if (size(chr_GCratioData{chr},2) > 2 && size(normalizedData_chr_Y1_{chr}) > 2)
 					fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
 					rawData_chr_X2{chr}        = chr_GCratioData{chr};
 					rawData_chr_Y2{chr}        = normalizedData_chr_Y1_{chr}; % CNVplot{chr};
@@ -573,6 +575,8 @@ if (performGCbiasCorrection)
 					%normalizedData_chr_Y2{chr} = (try1+try2)/2;
 				else
 					% There's not enough data on this chromosome to do GC bias correction.
+					rawData_chr_X2{chr}        = chr_GCratioData{chr};
+					rawData_chr_Y2{chr}        = normalizedData_chr_Y1_{chr};
 					normalizedData_chr_Y2{chr} = normalizedData_chr_Y1_{chr};
 				end;
 			end;
