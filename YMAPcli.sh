@@ -62,6 +62,7 @@ if [ -z $1 ]; then
 	echo -e "#	install		: Install a new project/genome/user.";
 	echo -e "#				\e[32mNew user installation is not implemented.\e[0m";
 	echo -e "#	run		: Configure and run installed project datasets.";
+	echo -e "#	restore_project : Restore a project back to a user account after updating it in the admin account.";
 	echo -e "#";
 	echo -e "#   Combined commands:";
 	echo -e "#	status_queue        : Combined 'status' and;'queue' functions.";
@@ -2440,6 +2441,12 @@ else
 
 			php project_bulk.create_server.php "$user" "$ploidy" "$ploidyBase" "$dataFormat" "$showAnnotations" "$manualLOH" "$genome" "$hapmap" "$bias_GC" "$bias_end" "$fig_A1" "$fig_A2" "$fig_B1" "$fig_B2" "$fig_C" "$fig_D1" "$fig_D2" "$fig_E" "$fig_F1" "$fig_F2" "$fig_G1" "$fig_G2" > /dev/null 2>&1 &
 		fi;
+	    ;;
+	    "restore_project")
+		#echo -e "       The folder you want to restore to the original user.";
+		#echo -e "       The current admin user account to restore from.";
+		bash restore.sh
+		echo -e "#\tNot fully implemented yet.";
 	    ;;
 	    *)
 		echo -e "# YMAP2 commandline : Unknown command.";

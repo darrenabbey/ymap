@@ -558,7 +558,7 @@ if (performGCbiasCorrection)
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
 			%	if (size(chr_GCratioData{chr},2) > 2 && size(normalizedData_chr_Y1{chr}) > 2)
-			%	if (size(rawData_chr_X2{chr},2) > 2)
+			%	if (size(chr_GCratioData{chr}) > 2)
 					fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
 					rawData_chr_X2{chr}        = chr_GCratioData{chr};
 					rawData_chr_Y2{chr}        = normalizedData_chr_Y1{chr}; % CNVplot{chr};
