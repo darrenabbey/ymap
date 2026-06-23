@@ -757,16 +757,21 @@ if (Make_figure_bias_end)
 		system(['chmod 774 ' projectDir 'fig.bias_chr_end.' figVer 'png']);
 	end;
 end;
+
 if (Make_figure_bias_GC)
 	if (performGCbiasCorrection)
 		bias_GC_fig = figure();
+
+		%=======================================
+		% First subfigure pair.
+		%---------------------------------------
 
 		% Make raw GC% bias plot.
 		subplot(2,6,1:2);
 		hold on;
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
-				plot(rawData_chr_X2{chr},rawData_chr_Y2{chr},'k.','markersize',1);		% raw data
+				plot(rawData_chr_X2{chr},normalizedData_chr_Y1{chr},'k.','markersize',1);		% raw data
 			end;
 		end;
 		plot(fitX2,fitY2,'r','LineWidth',2);						% LOWESS fit curve.
@@ -778,18 +783,22 @@ if (Make_figure_bias_GC)
 		axis square;
 		title('Reads vs. GC bias');
 
-% dragon
 		% Make y-value histogram
 		subplot(2,6,3);
 		data = [];
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
-			data = [data, rawData_chr_Y2{chr}];
+			data = [data, normalizedData_chr_Y1{chr}];
 			end;
 		end;
 		endBias_histogram(data,4);
 		ylabel('CNV data');
 		title('CNV histogram');
+
+
+		%=======================================
+		% Second subfigure pair.
+		%---------------------------------------
 
 		% Make corrected GC% bias plot.
 		subplot(2,6,4:5);
@@ -808,7 +817,6 @@ if (Make_figure_bias_GC)
 		axis square;
 		title('GC bias Corrected');
 
-% dragon
 		% Make y-value histogram
 		subplot(2,6,6);
 		data = [];
