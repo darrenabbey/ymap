@@ -46,7 +46,14 @@
 	fwrite($condensedLogOutput, "Updating.\n");
 	fclose($condensedLogOutput);
 
-	file_put_contents($project_dir."/working.txt", "updating");
+	// Generate 'working.txt' file to let pipeline know processing is started.
+	$fileName = $project_dir."/working.txt";
+	$file     = fopen($fileName, 'w');
+	$startTimeString = date("Y-m-d H:i:s");
+	fwrite($file, $startTimeString);
+	fclose($file);
+	chmod($fileName,0774);
+	fwrite($logOutput, "\tGenerated 'working.txt' file.\n");
 
 	// Delete pre-existing final output files.
 	fwrite($logOutput, "Cleaning up old output files.\n");
