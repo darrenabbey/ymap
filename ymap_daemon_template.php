@@ -407,7 +407,7 @@ BASE_DIR_temp
 			} else {
 				// Start an update YMAP process.
 				$conclusion_script = "php project.WGseq.update_1.php";
-				$command_string  = $userNAme." ".$entryName;
+				$command_string  = $userName." ".$entryName;
 			}
 			// Run processing script.
 			chdir($base_dir."/scripts_seqModules/scripts_WGseq/");
