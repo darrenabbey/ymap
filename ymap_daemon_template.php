@@ -5,7 +5,7 @@ ini_set('memory_limit', '5M');
 	//------------------------------------------------------------------------------------------
 BASE_DIR_temp
 
-	$visualOutput = true;
+	$visualOutput = false;
 
 	require_once $script_directory.'constants.php';
 	require_once $script_directory.'sharedFunctions.php';
