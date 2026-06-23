@@ -1,11 +1,11 @@
 <?php
-ini_set('memory_limit', '2M');
+ini_set('memory_limit', '5M');
 	//==========================================================================================
 	// YMAP processing queue daemon setp:
 	//------------------------------------------------------------------------------------------
 BASE_DIR_temp
 
-	$visualOutput = false;
+	$visualOutput = true;
 
 	require_once $script_directory.'constants.php';
 	require_once $script_directory.'sharedFunctions.php';
@@ -58,7 +58,7 @@ BASE_DIR_temp
 				$SUPER_ONLY = False;
 			}
 			foreach ($queue_files as $key1 => $queue_file) {
-				if (str_contains($queue_file,"_queue.log")) {
+				if (str_contains($queue_file,".log")) {
 					$queue_contents = trim(file_get_contents($queue_dir.$queue_file));
 					if ($queue_contents) {
 						// Queue contents example:
@@ -71,15 +71,15 @@ BASE_DIR_temp
 							$line_parts = explode(" - ",$line);
 							if (sizeof($line_parts) >= 3) {
 								$time            = $line_parts[0];
-								$user            = str_replace("user:", "", $line_parts[1]);
+								$userName        = str_replace("user:", "", $line_parts[1]);
 								if (str_contains($line_parts[2], "project:")) {
-									$name      = str_replace("project:", "", $line_parts[2]);
+									$entryName = str_replace("project:", "", $line_parts[2]);
 									$entryType = "project";
 								} elseif (str_contains($line_parts[2], "genome:")) {
-									$name  = str_replace("genome:", "", $line_parts[2]);
+									$entryName = str_replace("genome:", "", $line_parts[2]);
 									$entryType = "genome";
 								} elseif (str_contains($line_parts[2], "hapmap:")) {
-									$name  = str_replace("hapmap:", "", $line_parts[2]);
+									$entryName  = str_replace("hapmap:", "", $line_parts[2]);
 									$entryType = "hapmap";
 								} else {
 									// Unrecognized queue entry.
@@ -89,8 +89,8 @@ BASE_DIR_temp
 
 								$entry   = [];
 								$entry[] = $time;
-								$entry[] = $user;
-								$entry[] = $name;
+								$entry[] = $userName;
+								$entry[] = $entryName;
 								$entry[] = $salt;
 								$entry[] = $status;
 								$entry[] = $entryType;
@@ -173,21 +173,21 @@ BASE_DIR_temp
 			// 4. Drop active projects/genomes/hapmaps without a 'bulk.txt' file.
 			$count = sizeof($start_list);
 			foreach (array_reverse($start_list) as $key1 => $entry) {
-				$user      = $entry[1];
+				$userName  = $entry[1];
 				$entryType = $entry[5];
-				$name      = $entry[2];
+				$entryName = $entry[2];
 				if ($entryType == "project") {
-					$Directory = $base_dir."/users/".$user."/projects/".$name."/";
+					$Directory = $base_dir."/users/".$userName."/projects/".$entryName."/";
 					if (!file_exists($Directory."bulk.txt")) {
 						array_splice($start_list, $count-$key1-1, 1);
 					}
 				} elseif ($entryType == "genome") {
-					$Directory = $base_dir."/users/".$user."/genomes/".$name."/";
+					$Directory = $base_dir."/users/".$userName."/genomes/".$entryName."/";
 					if (!file_exists($Directory."bulk.txt")) {
 						array_splice($start_list, $count-$key1-1, 1);
 					}
 				} elseif ($entryType == "hapmap") {
-					$Directory = $base_dir."/users/".$user."/hapmaps/".$name."/";
+					$Directory = $base_dir."/users/".$userName."/hapmaps/".$entryName."/";
 					if (!file_exists($Directory."bulk.txt")) {
 						array_splice($start_list, $count-$key1-1, 1);
 					}
@@ -199,7 +199,7 @@ BASE_DIR_temp
 
 			// 5. Delete old log files that are done.
 			foreach ($queue_files as $key1 => $queue_file) {
-				if ((str_contains($queue_file,"_queue.log")) && ($queue_file <> date('Y-m-d')."_queue.log")) {
+				if ((str_contains($queue_file,".log")) && ($queue_file <> date('Y-m-d')."_queue.log")) {
 					// Grap the init entries from this queue file.
 					$oldinit_list = [];
 					$oldqueue_contents = trim(file_get_contents($queue_dir.$queue_file));
@@ -210,16 +210,16 @@ BASE_DIR_temp
 							$oldline_parts = explode(" - ",$oldline);
 							if (sizeof($line_parts) >= 3) {
 								$time            = $oldline_parts[0];
-								$user            = str_replace("user:", "", $oldline_parts[1]);
+								$userName        = str_replace("user:", "", $oldline_parts[1]);
 
 								if (str_contains($oldline_parts[2], "project:")) {
-									$name      = str_replace("project:", "", $oldline_parts[2]);
+									$entryName = str_replace("project:", "", $oldline_parts[2]);
 									$entryType = "project";
 								} elseif (str_contains($oldline_parts[2], "genome:")) {
-									$name      = str_replace("genome:", "", $oldline_parts[2]);
+									$entryName = str_replace("genome:", "", $oldline_parts[2]);
 									$entryType = "genome";
 								} elseif (str_contains($oldline_parts[2], "hapmap:")) {
-									$name      = str_replace("hapmap:", "", $oldline_parts[2]);
+									$entryName = str_replace("hapmap:", "", $oldline_parts[2]);
 									$entryType = "hapmap";
 								} else {
 									// Something went wrong.
@@ -230,8 +230,8 @@ BASE_DIR_temp
 
 								$oldentry   = [];
 								$oldentry[] = $time;
-								$oldentry[] = $user;
-								$oldentry[] = $name;
+								$oldentry[] = $userName;
+								$oldentry[] = $entryName;
 								$oldentry[] = $salt;
 								$oldentry[] = $status;
 
@@ -307,18 +307,19 @@ BASE_DIR_temp
 				//=============================
 				// Call YMAP processes.
 				//-----------------------------
-				$user      = $init_list[0][1];
-				$name      = $init_list[0][2];
+				// Grab the first entry from the init list.
+				$userName  = $init_list[0][1];
+				$entryName = $init_list[0][2];
 				$entryType = $init_list[0][5];
 
-				//print_r($user.":".$name.":".$entryType."\n");
+				//print_r($userName.":".$entryName.":".$entryType."\n");
 
 				if ($entryType == "project") {
-					$dir  = $base_dir."users/".$user."/projects/".$name."/";
+					$dir  = $base_dir."users/".$userName."/projects/".$entryName."/";
 				} elseif ($entryType == "genome") {
-					$dir   = $base_dir."users/".$user."/genomes/".$name."/";
+					$dir   = $base_dir."users/".$userName."/genomes/".$entryName."/";
 				} elseif ($entryType == "hapmap") {
-					$dir   = $base_dir."users/".$user."/hapmaps/".$name."/";
+					$dir   = $base_dir."users/".$userName."/hapmaps/".$entryName."/";
 				}
 				//print_r("# ".$dir."\n");
 				if (is_dir($dir)) {
@@ -348,12 +349,12 @@ BASE_DIR_temp
 						if ((int)$dataformat_lines[1] == 0) {
 							$dataFormat = "WGseq_single";
 						} else {
-							$dataFormat = "WGseq_paired";
+						 	$dataFormat = "WGseq_paired";
 						}
-						project_process($base_dir,$user,$name,$dataFormat,$fileName,$dir);
+						project_process($base_dir,$userName,$entryName,$dataFormat,$fileName,$dir);
 					} elseif ($entryType == "genome") {
-						//print_r("# ".$user.":".$name.":".$entryType." trying to start.\n");
-						genome_process($base_dir,$user,$name,$dir);
+						//print_r("# ".$userName.":".$entryName.":".$entryType." trying to start.\n");
+						genome_process($base_dir,$userName,$entryName,$dir);
 					} elseif ($entryType == "hapmap") {
 					} else {
 						// Something went wrong.
@@ -382,12 +383,12 @@ BASE_DIR_temp
 
 
 	// Function to initiate and release a YMAP thread to process data for a project.
-	function project_process($base_dir,$user,$name,$dataFormat,$fileName,$Directory) {
+	function project_process($base_dir,$userName,$entryName,$dataFormat,$fileName,$Directory) {
 		if ((!file_exists($Directory."working.txt")) && (!file_exists($Directory."complete.txt"))) {
 			// Set session variables.
-			$_SESSION['user']       = $user;
+			$_SESSION['user']       = $userName;
 			$_SESSION['fileName']   = $fileName;
-			$_SESSION['project']    = $name;
+			$_SESSION['project']    = $entryName;
 			$key = "1";
 			$_SESSION['key']        = $key;		// to be removed later once everything is processed through queue?
 
@@ -402,28 +403,28 @@ BASE_DIR_temp
 						$conclusion_script = "php project.paired_WGseq.install_1.php";
 						break;
 				}
-				$command_string  = $user." ".$fileName." ".$name." ".$key;
+				$command_string  = $userName." ".$fileName." ".$entryName." ".$key;
 			} else {
 				// Start an update YMAP process.
 				$conclusion_script = "php project.WGseq.update_1.php";
-				$command_string  = $user." ".$name;
+				$command_string  = $userNAme." ".$entryName;
 			}
 			// Run processing script.
 			chdir($base_dir."/scripts_seqModules/scripts_WGseq/");
-			$salt_string = get_salt($user,$name,'','');
+			$salt_string = get_salt($userName,$entryName,'','');
 			exec($conclusion_script." ".$command_string." > /dev/null 2> ".$Directory."/process_log.txt &");
 			chdir($base_dir);
-			queue_start($user,$name,"","","from: ymap_daemon");
-			log_stuff($user,$name,"","",$salt_string,"YMAP_daemon:SUCCESS project started.");
+			queue_start($userName,$entryName,"","","from: ymap_daemon");
+			log_stuff($userName,$entryName,"","",$salt_string,"YMAP_daemon:SUCCESS project started.");
 		}
 	}
-	function genome_process($base_dir,$user,$name,$Directory) {
+	function genome_process($base_dir,$userName,$entryName,$Directory) {
 		//print_r("# testpoint1: ".$Directory."\n");
 		if ((!file_exists($Directory."working3.txt")) && (!file_exists($Directory."working_done.txt"))) {
 			//print_r("# testpoint2\n");
 			// Set session variables.
-			$_SESSION['user']       = $user;
-			$_SESSION['genome']     = $name;
+			$_SESSION['user']       = $userName;
+			$_SESSION['genome']     = $entryName;
 			$key = "1";
 			$_SESSION['key']        = $key;         // to be removed later once everything is processed through queue?
 
@@ -438,22 +439,22 @@ BASE_DIR_temp
 			if (!file_exists($Directory."update.txt")) {
 				// Start an initial YMAP process.
 				$conclusion_script = "php genome.install_5.php";
-				$command_string  = $user." ".$name;
+				$command_string  = $userName." ".$entryName;
 			} else {
 				// Start an update YMAP process.
 				$conclusion_script = ""; //"php genome.update_1.php";
-				$command_string  = $user." ".$name;
+				$command_string  = $userName." ".$entryName;
 			}
 			// Run processing script.
 			chdir($base_dir."/scripts_genomes/");
-			$salt_string = get_salt($user,'',$name,'');
+			$salt_string = get_salt($userName,'',$entryName,'');
 			exec($conclusion_script." ".$command_string." > /dev/null 2> ".$Directory."/process_log.txt &");
 			chdir($base_dir);
-			queue_start($user,"",$name,"","from: ymap_daemon");
-			log_stuff($user,"",$name,"",$salt_string,"YMAP_daemon:SUCCESS genome started.");
+			queue_start($userName,"",$entryName,"","from: ymap_daemon");
+			log_stuff($userName,"",$entryName,"",$salt_string,"YMAP_daemon:SUCCESS genome started.");
 		}
 	}
-	function hapmap_process($base_dir,$user,$hapmap,$dataFormat,$fileName,$hapmapDirectory) {
-		log_stuff($user,"","",$hapmap,"","YMAP_daemon:SUCCESS hapmap started.");
+	function hapmap_process($base_dir,$userName,$hapmap,$dataFormat,$fileName,$hapmapDirectory) {
+		log_stuff($userName,"","",$hapmap,"","YMAP_daemon:SUCCESS hapmap started.");
 	}
 ?>
