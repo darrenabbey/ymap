@@ -557,7 +557,8 @@ if (performGCbiasCorrection)
 		Y_target = 1;
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
-				if (size(chr_GCratioData{chr},2) > 2 && size(normalizedData_chr_Y1{chr}) > 2)
+			%	if (size(chr_GCratioData{chr},2) > 2 && size(normalizedData_chr_Y1{chr}) > 2)
+			%	if (size(rawData_chr_X2{chr},2) > 2)
 					fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
 					rawData_chr_X2{chr}        = chr_GCratioData{chr};
 					rawData_chr_Y2{chr}        = normalizedData_chr_Y1{chr}; % CNVplot{chr};
@@ -565,20 +566,12 @@ if (performGCbiasCorrection)
 
 					% Filter by dividing out the fit curve.
 					normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
-
-					% Filter by subtracting out the fit curve : no strong rationale for this.
-					%normalizedData_chr_Y2{chr} = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
-
-					%Filter by average of above two methods.
-					%try1                       = rawData_chr_Y2{chr}./fitData_chr_Y2{chr};
-					%try2                       = rawData_chr_Y2{chr}-fitData_chr_Y2{chr} + 1;
-					%normalizedData_chr_Y2{chr} = (try1+try2)/2;
-				else
-					% There's not enough data on this chromosome to do GC bias correction.
-					rawData_chr_X2{chr}        = chr_GCratioData{chr};
-					rawData_chr_Y2{chr}        = normalizedData_chr_Y1{chr};
-					normalizedData_chr_Y2{chr} = normalizedData_chr_Y1{chr};
-				end;
+			%	else
+			%		% There's not enough data on this chromosome to do GC bias correction.
+			%		rawData_chr_X2{chr}        = chr_GCratioData{chr};
+			%		rawData_chr_Y2{chr}        = normalizedData_chr_Y1{chr};
+			%		normalizedData_chr_Y2{chr} = normalizedData_chr_Y1{chr};
+			%	end;
 			end;
 		end;
 	else
