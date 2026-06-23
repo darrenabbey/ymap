@@ -49,6 +49,7 @@ if [ -z $1 ]; then
 	echo -e "#	admin_email	: Show admin email, displayed in user interface for issues.";
 	echo -e "#	quota		: Show per account disk quota.";
 	echo -e "#	info		: Show user account information.";
+	echo -e "#	users_info	: Show all users account information.";
 	echo -e "#	status		: Show status of user projects/genomes.";
 	echo -e "#	queue           : Show status of data processing queue.";
 	echo -e "#	queue_pause	: Pauses the processing queue for admin activity.";
@@ -1315,6 +1316,15 @@ else
 		else
 			echo -e "#\t\t\e[41mError: User directory not found!\e[0m";
 		fi;
+	    ;;
+	    "users_info")
+		echo -e "# YMAP2 commandline : User account contact information.";
+		logged_in_status;
+		echo -e $lineThin;
+		echo -e "#";
+		tempfile=$(mktemp --suffix ".ymap");
+		bash grab_user_info.sh > $tempfile;
+		cat $tempfile | sed 's/^/#\t/' | cat;
 	    ;;
 	    "daemon")
 		echo -e "# YMAP2 commandline : ymap_daemon service status.";
