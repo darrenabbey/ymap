@@ -234,19 +234,19 @@
 				</td></tr>
 				<tr bgcolor="#FFFFCC"><td>
 				<div id="hiddenFormSection9" style="display:inline">
-					<input type="checkbox" id="fig_bias_1"      name="fig_A1" value="True"         ><span id="label_bias_1" style="color:black">GC-content bias figure.</span><br>
+					<input type="checkbox" id="fig_bias_1"      name="fig_A1" value="True" checked ><span id="label_bias_1" style="color:black">GC-content bias figure.</span><br>
 					<input type="checkbox" id="fig_bias_2"      name="fig_A2" value="True" disabled><span id="label_bias_2" style="color:grey">Chromosome-end bias figure.</span><br><br>
 
 					<input type="checkbox" id="fig_Cnv_1"       name="fig_B1" value="True"         >Linear CNV map figure.<br>
 					<input type="checkbox" id="fig_Cnv_2"       name="fig_B2" value="True"         >Full CNV map figure.<br>
-					<input type="checkbox" id="fig_CnvHigh"     name="fig_C"  value="True"         >Linear high-top CNV map figure.<br><br>
+					<input type="checkbox" id="fig_CnvHigh"     name="fig_C"  value="True" checked >Linear high-top CNV map figure.<br><br>
 
 					<input type="checkbox" id="fig_Snp_1"       name="fig_D1" value="True"         >Linear SNP/LOH map figure.<br>
 					<input type="checkbox" id="fig_Snp_2"       name="fig_D2" value="True"         >Full SNP/LOH map figure.<br>
 					<input type="checkbox" id="fig_fireplot_2"  name="fig_E"  value="True"         >Linear alleleic ratio (fire-plot) map figure.<br><br>
 
 					<input type="checkbox" id="fig_CnvSnp_1"    name="fig_F1" value="True" checked >Linear CNV/SNP/LOH map figure.<br>
-					<input type="checkbox" id="fig_CnvSnp_2"    name="fig_F2" value="True"         >Full CNV/SNP/LOH map figure.<br>
+					<input type="checkbox" id="fig_CnvSnp_2"    name="fig_F2" value="True" checked >Full CNV/SNP/LOH map figure.<br>
 					<input type="checkbox" id="fig_CnvSnpAlt_1" name="fig_G1" value="True"         >Linear CNV/SNP/LOH map figure with alternate color scheme.<br>
 					<input type="checkbox" id="fig_CnvSnpAlt_2" name="fig_G2" value="True"         >Full CNV/SNP/LOH map figure with alternate color scheme.
 				</div>
