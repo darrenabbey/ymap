@@ -532,7 +532,7 @@ if (performGCbiasCorrection)
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
 			GCratioData_all        = [GCratioData_all        chr_GCratioData{chr}];
-			CNVdata_all_n1         = [CNVdata_all_n1         normalizedData_chr_Y1_{chr}  ];
+			CNVdata_all_n1         = [CNVdata_all_n1         normalizedData_chr_Y1{chr}  ];
 		end;
 	end;
 	% Clean up data by:
@@ -557,10 +557,10 @@ if (performGCbiasCorrection)
 		Y_target = 1;
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
-				if (size(chr_GCratioData{chr},2) > 2 && size(normalizedData_chr_Y1_{chr}) > 2)
+				if (size(chr_GCratioData{chr},2) > 2 && size(normalizedData_chr_Y1{chr}) > 2)
 					fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
 					rawData_chr_X2{chr}        = chr_GCratioData{chr};
-					rawData_chr_Y2{chr}        = normalizedData_chr_Y1_{chr}; % CNVplot{chr};
+					rawData_chr_Y2{chr}        = normalizedData_chr_Y1{chr}; % CNVplot{chr};
 					fitData_chr_Y2{chr}        = interp1(fitX2,fitY2,rawData_chr_X2{chr},'spline');
 
 					% Filter by dividing out the fit curve.
@@ -576,24 +576,24 @@ if (performGCbiasCorrection)
 				else
 					% There's not enough data on this chromosome to do GC bias correction.
 					rawData_chr_X2{chr}        = chr_GCratioData{chr};
-					rawData_chr_Y2{chr}        = normalizedData_chr_Y1_{chr};
-					normalizedData_chr_Y2{chr} = normalizedData_chr_Y1_{chr};
+					rawData_chr_Y2{chr}        = normalizedData_chr_Y1{chr};
+					normalizedData_chr_Y2{chr} = normalizedData_chr_Y1{chr};
 				end;
 			end;
 		end;
 	else
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
-				normalizedData_chr_Y2{chr} = normalizedData_chr_Y1_{chr};
+				normalizedData_chr_Y2{chr} = normalizedData_chr_Y1{chr};
 			end;
 		end;
 		% disabling perform GC bias correction since data is invalid or empty and so the figure should not be created
-		performGCbiasCorrection = 0;
+		performGCbiasCorrection = false;
 	end;
 else
 	for chr = 1:num_chrs
 		if (chr_in_use(chr) == 1)
-			normalizedData_chr_Y2{chr} = normalizedData_chr_Y1_{chr};
+			normalizedData_chr_Y2{chr} = normalizedData_chr_Y1{chr};
 		end;
 	end;
 end;
@@ -718,7 +718,7 @@ if (Make_figure_bias_end)
 		hold on;
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
-				plot(rawData_chr_X1{chr},normalizedData_chr_Y1_{chr},'k.','markersize',1); % corrected data.
+				plot(rawData_chr_X1{chr},normalizedData_chr_Y1{chr},'k.','markersize',1); % corrected data.
 			end;
 		end;
 		plot([fitX1(1) fitX1(end)],[Y_target Y_target], 'Color', [1 0 0], 'LineWidth',2);          % normalization line.
@@ -736,7 +736,7 @@ if (Make_figure_bias_end)
 		data = [];
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
-			data = [data, normalizedData_chr_Y1_{chr}];
+			data = [data, normalizedData_chr_Y1{chr}];
 			end;
 		end;
 		endBias_histogram(data,4);
