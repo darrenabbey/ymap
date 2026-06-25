@@ -98,7 +98,7 @@
 		$directory = opendir($sourceDirectory);
 		if (is_dir($destinationDirectory) === false) {
 			mkdir($destinationDirectory);
-			chmod($destinationDirectory, 0766);
+			shell_exec('chmod ugo+rw $destinationDirectory');
 		}
 		while (($file = readdir($directory)) !== false) {
 			if ($file === '.' || $file === '..') {  continue;   }
