@@ -422,21 +422,21 @@ var systemProjectCount = "<?php echo $systemProjectCount; ?>";
 	//| javascript to load "project.working.php" for each working project. |
 	//'--------------------------------------------------------------------'
 	if (($super_logged_in == "true") and isset($_SESSION['logged_on'])) {
-		foreach($projectFolders_working as $key =>$project) {   // frameContainer.p2_[$key] : working.
-			$key      = $key_ + $userProjectCount_starting;
-			$project  = $projectFolders[$key];
+		foreach($projectFolders_working as $key_ =>$project) {   // frameContainer.p2_[$key] : working.
+			$key_real = array_search($project,$projectFolders);
+			$project  = $projectFolders[$key_real];
 			$handle   = fopen("users/".$admin_as_user."/projects/".$project."/dataFormat.txt", "r");
 			$dataFormat = fgets($handle);
 			fclose($handle);
-			echo "\n// javascript for project #".$key."_super1, '".$project."'\n";
-			echo "var el_p            = document.getElementById('frameContainer.p2_".$key."_super1');\n";
-			echo "el_p.innerHTML      = '<iframe id=\"p_".$key."_super1\" name=\"p_".$key."_super1\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+			echo "\n// javascript for project #".$key_real."_super1, '".$project."'\n";
+			echo "var el_p            = document.getElementById('frameContainer.p2_".$key_real."_super1');\n";
+			echo "el_p.innerHTML      = '<iframe id=\"p_".$key_real."_super1\" name=\"p_".$key_real."_super1\" class=\"upload\" style=\"height:38px; border:0px;\" ";
 			echo     "src=\"project.admin_working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"90%\" frameborder=\"0\"></iframe>';\n";
-			echo "var p_iframe        = document.getElementById('p_".$key."_super1');\n";
+			echo "var p_iframe        = document.getElementById('p_".$key_real."_super1');\n";
 			echo "var p_js            = p_iframe.contentWindow;\n";
 			echo "p_js.user           = \"".$admin_as_user."\";\n";
 			echo "p_js.project        = \"".$project."\";\n";
-			echo "p_js.key            = \"p_".$key."_super1\";\n";
+			echo "p_js.key            = \"p_".$key_real."_super1\";\n";
 		}
 	}
 ?>
