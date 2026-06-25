@@ -422,7 +422,7 @@ var systemProjectCount = "<?php echo $systemProjectCount; ?>";
 	//| javascript to load "project.working.php" for each working project. |
 	//'--------------------------------------------------------------------'
 	if (($super_logged_in == "true") and isset($_SESSION['logged_on'])) {
-		foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.
+		foreach($projectFolders_working as $key =>$project) {   // frameContainer.p2_[$key] : working.
 			$key      = $key_ + $userProjectCount_starting;
 			$project  = $projectFolders[$key];
 			$handle   = fopen("users/".$admin_as_user."/projects/".$project."/dataFormat.txt", "r");

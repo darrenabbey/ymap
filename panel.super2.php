@@ -230,7 +230,7 @@
 //.--------------------------------------------------------------------.
 //| javascript to load "project.working.php" for each working project. |
 //'--------------------------------------------------------------------'
-if (isset($_SESSION['logged_on'])) {
+if (($super_logged_in == "true") and isset($_SESSION['logged_on'])) {
 	$sumKey = 0;
 	foreach($userFolders as $userKey=>$admin_as_user) {
 		// Cleanup admin_as_user names;
