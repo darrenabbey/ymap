@@ -147,7 +147,6 @@
 			if (strcmp($bias_end,"") == 0) { $bias_end = "False"; }
 			fwrite($file2,"False\n".$bias_GC."\nFalse\n".$bias_end);
 		} else if ($dataFormat == "1") { // WGseq
-			fwrite($logOutput, "\ttest1.\n");
 			$bias_GC     = filter_input(INPUT_POST, "1_bias2", FILTER_SANITIZE_STRING);
 			$bias_end    = filter_input(INPUT_POST, "1_bias4", FILTER_SANITIZE_STRING);
 			if (strcmp($bias_GC ,"") == 0) { $bias_GC  = "False"; }
