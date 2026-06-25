@@ -125,13 +125,14 @@
 
 			// Push in-process projects to display.
 			foreach($projectFolders_working as $key_=>$project) {
-				printProjectInfo("2", $sumKey, "BB9900", "FFFFFF", $admin_as_user, $project, $sumKey);
+				$key_userProject = array_search($project,$projectFolders);
+				printProjectInfo("2", $sumKey, "BB9900", "FFFFFF", $admin_as_user, $project, $sumKey,$key_userProject);
 				$sumKey += 1;
 			}
 		}
 	}
 
-	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $labelRgbBackgroundColor, $user, $project, $key_display) {
+	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $labelRgbBackgroundColor, $user, $project, $key_display,$key_userProject) {
 		if ($key_display%2 == 0) {
 			$bgColor = "#FFDDDD";
 		} else {
@@ -172,16 +173,16 @@
 			echo "parent.show_hidden(\"Hidden_Admin\"); ";
 			echo "parent.update_interface();";
 			echo "localStorage.setItem(\"user\",\"".$user."\");";
-			echo "localStorage.setItem(\"projectKey\",\"".$key."\");";
+			echo "localStorage.setItem(\"projectKey\",\"".$key_userProject."\");";
 			echo "localStorage.setItem(\"projectName\",\"".$project."\");";
 			echo "localStorage.setItem(\"projectError\",".json_encode($error).");";
 		echo "'>";
 		if (file_exists("users/".$user."/projects/".$project."/locked.txt")) {
-			echo "<input type='button' value='Unlock.' onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.super2.php')},100);\">";
+			echo "<input type='button' value='Unlock.' onclick=\"user = '$user'; key = '$key_userProject'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key_userProject,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.super2.php')},100);\">";
 		} else {
-			echo "<input type='button' value='Lock.'   onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.lockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.super2.php')},100);\">";
+			echo "<input type='button' value='Lock.'   onclick=\"user = '$user'; key = '$key_userProject'; $.ajax({url:'admin.lockUserProject_server.php',type:'post',data:{key:key_userProject,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.super2.php')},100);\">";
 		}
-		echo "<input type='button' value='Copy to admin.'  onclick=\"key = '$key'; user = '$user'; $.ajax({url:'admin.copyProjectToAdmin_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); location.replace('panel.super2.php');\">";
+		echo "<input type='button' value='Copy to admin.'  onclick=\"user = '$user'; key = '$key_userProject'; $.ajax({url:'admin.copyProjectToAdmin_server.php',type:'post',data:{key:key_userProject,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); location.replace('panel.super2.php');\">";
 
 		echo "\t\t</form>\n";
 
