@@ -98,6 +98,7 @@
 		$directory = opendir($sourceDirectory);
 		if (is_dir($destinationDirectory) === false) {
 			mkdir($destinationDirectory);
+			chmod($destinationDirectory,0776);
 		}
 		while (($file = readdir($directory)) !== false) {
 			if ($file === '.' || $file === '..') {  continue;   }
@@ -105,6 +106,7 @@
 				recurseCopy("$sourceDirectory/$file", "$destinationDirectory/$file");
 			} else {
 				copy("$sourceDirectory/$file", "$destinationDirectory/$file");
+				chmod("$destinationDirectory/$file",0776);
 			}
 		}
 		closedir($directory);
