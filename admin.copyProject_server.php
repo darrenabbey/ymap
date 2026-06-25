@@ -37,8 +37,9 @@
 			$admin_logged_in = "true";
 
 			// Load user string from session.
-			$user     = $_SESSION['user'];
-			$user_key = sanitizeInt_POST('key');
+			$user        = $_SESSION['user'];
+
+			$project_key = sanitizeInt_POST('key');
 
 			// Determine user account associated with key.
 			$projectsDir    = "users/".$user."/projects/";
@@ -57,12 +58,13 @@
 			// Sort directories by date, newest first.
 			sort($projectFolders);
 
-
 			// Trim path from each folder string.
 			foreach($projectFolders as $key=>$folder) {
 				$projectFolders[$key] = str_replace($projectDir,"",$folder);
 			}
-			$project_to_copy = $projectFolders[$user_key];
+
+			// Determine project to copy from provided project key.
+			$project_to_copy = $projectFolders[$project_key];
 
 			$src  = "users/".$user."/projects/".$project_to_copy;
 			$dest = "users/default/projects/".$project_to_copy;
