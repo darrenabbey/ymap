@@ -148,7 +148,7 @@
 				array_push($projectFolders_complete,$project);
 			} else if (file_exists("users/".$admin_as_user."/projects/".$project."/working.txt")) {
 				array_push($projectFolders_working, $project);
-			} else if (file_exists("users/".$user."/projects/".$project."/name.txt")) {
+			} else if (file_exists("users/".$admin_as_user."/projects/".$project."/name.txt")) {
 				array_push($projectFolders_starting,$project);
 			} else {
 				array_push($projectFolders_subDir,$project);
