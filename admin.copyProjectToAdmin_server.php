@@ -22,6 +22,8 @@
 		$user = "";
 	}
 
+	log_stuff($user,"","","","","TESTING0: ");
+
 	if ($user == "") {
 		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
