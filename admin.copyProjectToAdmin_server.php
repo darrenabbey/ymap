@@ -37,9 +37,9 @@
 			$super_logged_in = "true";
 
 			// Load user string from session.
-			$user          = $_SESSION['user'];
 			$admin_as_user = sanitize_POST('user');
 			$project_key   = sanitizeInt_POST('key');
+			log_stuff($user,"","","","","TESTING: ".$admin_as_user." ".$project_key);
 
 			// Determine user account associated with key.
 			$projectsDir    = "users/".$admin_as_user."/projects/";
