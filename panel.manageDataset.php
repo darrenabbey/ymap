@@ -149,7 +149,7 @@
 		foreach($projectFolders as $key=>$folder) {   $projectFolders[$key] = str_replace($projectsDir,"",$folder);   }
 
 		// Split project list into ready/working/initiated lists for sequential display.
-		$projectFolders_subDir       = array();
+		$projectFolders_subdir       = array();
 		$projectFolders_complete     = array();
 		$projectFolders_bulk         = array();
 		$projectFolders_bulk_working = array();
@@ -169,7 +169,7 @@
 			} else if (file_exists("users/".$user."/projects/".$project."/name.txt")) {
 				array_push($projectFolders_initiated,$project);
 			} else {
-                                array_push($projectFolders_subDir,$project);
+                                array_push($projectFolders_subdir,$project);
 			}
 		}
 		array_multisort(array_map('filemtime', $projectFolders_complete    ), SORT_ASC, $projectFolders_complete    );
@@ -184,7 +184,7 @@
 		$userProjectCount_initiated    = count($projectFolders_initiated);
 
 		// Sort bulk, working, and complete projects alphabetically.
-		array_multisort($projectFolders_subDir,       SORT_ASC, $projectFolders_subDir);
+		array_multisort($projectFolders_subdir,       SORT_ASC, $projectFolders_subdir);
 		array_multisort($projectFolders_complete,     SORT_ASC, $projectFolders_complete    );
 		array_multisort($projectFolders_bulk,         SORT_ASC, $projectFolders_bulk        );
 		array_multisort($projectFolders_bulk_working, SORT_ASC, $projectFolders_bulk_working);
@@ -201,7 +201,6 @@
 			echo "<b><font size='2'>User installed datasets:</font></b>\n\t\t\t\t";
 		}
 		echo "<br>\n\t\t\t\t";
-
 
 		// 1: project complete.
 		// 2: project working.
@@ -264,7 +263,7 @@
 		// 4: project initiated, quota filled.
 		// 5: project in bulk-processing-queue.
 
-		foreach($projectFolders_subDir as $key1_=>$subdir) {
+		foreach($projectFolders_subdir as $key1_=>$subdir) {
 			echo "<font size='2'><b>".$subdir."</b></font><br>\n";
 			$prefix = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
@@ -433,16 +432,16 @@ var systemProjectCount = "<?php echo $systemProjectCount; ?>";
 //'----------------'
 if (isset($_SESSION['logged_on'])) {
 	foreach($projectFolders_initiated as $key_=>$project) {	// frameContainer.p3_[$key] : initiated.
-		$key      = $key_;
-		$project  = $projectFolders[$key];
+		$key_real = array_search($project,$projectFolders);
+		$project  = $projectFolders[$key_real];
 		// Read in dataFormat string for project.
 		$handle     = fopen("users/".$user."/projects/".$project."/dataFormat.txt", "r");
 		$dataFormat = fgets($handle);
 		fclose($handle);
-		echo "\n// javascript for project #".$key.", '".$project."'\n";
-		echo "var el_p               = document.getElementById('frameContainer.p3_".$key."');\n";
+		echo "\n// javascript for project #".$key_real.", '".$project."'\n";
+		echo "var el_p               = document.getElementById('frameContainer.p3_".$key_real."');\n";
 		// Javascript to build file load button interface.
-		echo "el_p.innerHTML         = '<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" ";
+		echo "el_p.innerHTML         = '<iframe id=\"p_".$key_real."\" name=\"p_".$key_real."\" class=\"upload\" ";
 		if ((strlen($dataFormat) > 1) && ($dataFormat[2] == '1')) {
 			// paired files to be uploaded.
 			echo "style=\"height:76px\" src=\"uploader.2.php\"";
@@ -451,12 +450,12 @@ if (isset($_SESSION['logged_on'])) {
 			echo "style=\"height:38px\" src=\"uploader.1.php\"";
 		}
 		echo " marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
-		echo "var p_iframe           = document.getElementById('p_".$key."');\n";
+		echo "var p_iframe           = document.getElementById('p_".$key_real."');\n";
 		echo "var p_js               = p_iframe.contentWindow;\n";
 		echo "p_js.display_string    = new Array();\n";
 		echo "p_js.user              = '".$user."';\n";
 		echo "p_js.project           = '".$project."';\n";
-		echo "p_js.key               = 'p_".$key."';\n";
+		echo "p_js.key               = 'p_".$key_real."';\n";
 		if ($dataFormat == '0') {
 			// SnpCgh microarray
 			echo "p_js.display_string[0] = 'Add : SnpCgh array data...';\n";
@@ -502,59 +501,59 @@ if (isset($_SESSION['logged_on'])) {
 		}
 	}
 	foreach($projectFolders_bulk_working as $key_=>$project) {      // frameContainer.p5_[$key] : in bulk-processing queue.
-		$key      = array_search($project,$projectFolders);
-		$project  = $projectFolders[$key];
-		echo "\n// javascript for project #".$key.", '".$project."'\n";
-		echo "var el_p5           = document.getElementById('frameContainer.p5_".$key."');\n";
+		$key_real = array_search($project,$projectFolders);
+		$project  = $projectFolders[$key_real];
+		echo "\n// javascript for project #".$key_real.", '".$project."'\n";
+		echo "var el_p5           = document.getElementById('frameContainer.p5_".$key_real."');\n";
 		if ($bulk_ui_projects_showAll) {
-			echo "el_p5.innerHTML      = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+			echo "el_p5.innerHTML      = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<iframe id=\"p_".$key_real."\" name=\"p_".$key_real."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
 			echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"90%\" frameborder=\"0\"></iframe>';\n";
 		} else {
 			if ($key_ < $bulk_ui_projects_limit) {
-				echo "el_p5.innerHTML      = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+				echo "el_p5.innerHTML      = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<iframe id=\"p_".$key_real."\" name=\"p_".$key_real."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
 				echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"90%\" frameborder=\"0\"></iframe>';\n";
 			} else {
 			}
 		}
-		echo "var p_iframe        = document.getElementById('p_".$key."');\n";
+		echo "var p_iframe        = document.getElementById('p_".$key_real."');\n";
 		echo "var p_js            = p_iframe.contentWindow;\n";
 		echo "p_js.user           = \"".$user."\";\n";
 		echo "p_js.project        = \"".$project."\";\n";
-		echo "p_js.key            = \"p_".$key."\";\n";
+		echo "p_js.key            = \"p_".$key_real."\";\n";
 	}
 	foreach($projectFolders_bulk as $key_=>$project) {      // frameContainer.p5_[$key] : in bulk-processing queue.
-		$key      = array_search($project,$projectFolders);
-		$project  = $projectFolders[$key];
-		echo "\n// javascript for project #".$key.", '".$project."'\n";
-		echo "var el_p5           = document.getElementById('frameContainer.p5_".$key."');\n";
+		$key_real = array_search($project,$projectFolders);
+		$project  = $projectFolders[$key_real];
+		echo "\n// javascript for project #".$key_real.", '".$project."'\n";
+		echo "var el_p5           = document.getElementById('frameContainer.p5_".$key_real."');\n";
 		if ($bulk_ui_projects_showAll) {
-			echo "el_p5.innerHTML      = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+			echo "el_p5.innerHTML      = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<iframe id=\"p_".$key_real."\" name=\"p_".$key_real."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
 			echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"90%\" frameborder=\"0\"></iframe>';\n";
 		} else {
 			if ($key_ < $bulk_ui_projects_limit) {
-				echo "el_p5.innerHTML      = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+				echo "el_p5.innerHTML      = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<iframe id=\"p_".$key_real."\" name=\"p_".$key_real."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
 				echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"90%\" frameborder=\"0\"></iframe>';\n";
 			} else {
 			}
 		}
-		echo "var p_iframe        = document.getElementById('p_".$key."');\n";
+		echo "var p_iframe        = document.getElementById('p_".$key_real."');\n";
 		echo "var p_js            = p_iframe.contentWindow;\n";
 		echo "p_js.user           = \"".$user."\";\n";
 		echo "p_js.project        = \"".$project."\";\n";
-		echo "p_js.key            = \"p_".$key."\";\n";
+		echo "p_js.key            = \"p_".$key_real."\";\n";
 	}
 	foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.
-		$key      = array_search($project,$projectFolders);
-		$project  = $projectFolders[$key];
-		echo "\n// javascript for project #".$key.", '".$project."'\n";
-		echo "var el_p2           = document.getElementById('frameContainer.p2_".$key."');\n";
-		echo "el_p2.innerHTML     = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+		$key_real = array_search($project,$projectFolders);
+		$project  = $projectFolders[$key_real];
+		echo "\n// javascript for project #".$key_real.", '".$project."'\n";
+		echo "var el_p2           = document.getElementById('frameContainer.p2_".$key_real."');\n";
+		echo "el_p2.innerHTML     = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<iframe id=\"p_".$key_real."\" name=\"p_".$key_real."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
 		echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"90%\" frameborder=\"0\"></iframe>';\n";
-		echo "var p_iframe        = document.getElementById('p_".$key."');\n";
+		echo "var p_iframe        = document.getElementById('p_".$key_real."');\n";
 		echo "var p_js            = p_iframe.contentWindow;\n";
 		echo "p_js.user           = \"".$user."\";\n";
 		echo "p_js.project        = \"".$project."\";\n";
-		echo "p_js.key            = \"p_".$key."\";\n";
+		echo "p_js.key            = \"p_".$key_real."\";\n";
 	}
 }
 ?>
