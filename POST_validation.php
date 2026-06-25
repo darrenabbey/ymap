@@ -25,8 +25,8 @@ function sanitize_POST($POST_name) {
 	$cleanString = str_replace(" ","_", $cleanString);
 	// remove whitespace.
 	$cleanString = preg_replace("/[\s]+/", "", $cleanString);
-	// remove everything but alphanumeric characters, underlines, dashes, and periods.
-	$cleanString = preg_replace("/[^\w\-_.]+/", "", $cleanString);
+	// remove everything but alphanumeric characters, underlines, dashes, forward slash, and periods.
+	$cleanString = preg_replace("/[^\w\-_.\/]+/", "", $cleanString);
 	return $cleanString;
 }
 function sanitize_ARGV($argv,$ARGV_key) {
@@ -40,7 +40,7 @@ function sanitize_ARGV($argv,$ARGV_key) {
 	// remove whitespace.
 	$cleanString = preg_replace("/[\s]+/", "", $cleanString);
 	// remove everything but alphanumeric characters, underlines, dashes, and periods.
-	$cleanString = preg_replace("/[^\w\-_.]+/", "", $cleanString);
+	$cleanString = preg_replace("/[^\w\-_.\/]+/", "", $cleanString);
 	return $cleanString;
 }
 
@@ -50,8 +50,8 @@ function sanitizeProjectsShown_POST($POST_name) {   // for cleaning projectsShow
 	// strip out any HTML/XML/PHP tags.
 	$cleanString = strip_tags($cleanString);
 
-	// remove everything but alphanumeric characters, underlines, dashes, periods, spaces, :; chars.
-	$cleanString = preg_replace("/[^\w\-_.:; ]+/", "", $cleanString);
+	// remove everything but alphanumeric characters, underlines, dashes, periods, spaces, forward-slash :; chars.
+	$cleanString = preg_replace("/[^\w\-_.:; \/]+/", "", $cleanString);
         return $cleanString;
 }
 function sanitizeBoolean_POST($POST_name) {

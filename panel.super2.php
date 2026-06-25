@@ -60,7 +60,7 @@
 		// Sort directories.
 		array_multisort($userFolders, SORT_ASC, $userFolders);
 		// Trim path from each folder string.
-		foreach($userFolders as $key=>$folder) {   $userFolders[$key] = str_replace($userDir,"",$folder);   }
+		foreach($userFolders as $key_=>$folder) {   $userFolders[$key_] = str_replace($userDir,"",$folder);   }
 		$userCount = count($userFolders);
 
 		// Make panel reload button:
@@ -88,19 +88,29 @@
 
 			// Get list of projects per user.
 			$projectsDir      = "users/".$admin_as_user."/projects/";
-			$projectFolders   = array_diff(glob($projectsDir."*"), array('..', '.'));
+			$projectFolders = [];
+			$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($projectsDir), RecursiveIteratorIterator::SELF_FIRST);
+			foreach($objects as $name => $object){
+				if (is_dir($name)) {
+					$name_ = str_replace($projectsDir,"",$name);
+					if (str_contains($name_,"..") or str_contains($name_,".")) {
+					} else {
+						$projectFolders[] = $name_;
+					}
+				}
+			}
 
 			// Sort directories by date, newest first.
 			array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
 
 			// Trim path from each folder string.
-			foreach($projectFolders as $key=>$folder) {
-				$projectFolders[$key] = str_replace($projectsDir,"",$folder);
+			foreach($projectFolders as $key_=>$folder) {
+				$projectFolders[$key_] = str_replace($projectsDir,"",$folder);
 			}
 
 			// Split project list into ready/working/starting lists for sequential display.
 			$projectFolders_working  = array();
-			foreach($projectFolders as $key=>$project) {
+			foreach($projectFolders as $key_=>$project) {
 				if (file_exists("users/".$admin_as_user."/projects/".$project."/working.txt")) {
 					array_push($projectFolders_working, $project);
 				}
@@ -121,8 +131,8 @@
 		}
 	}
 
-	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $labelRgbBackgroundColor, $user, $project, $sumKey) {
-		if ($key%2 == 0) {
+	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $labelRgbBackgroundColor, $user, $project, $key_display) {
+		if ($key_display%2 == 0) {
 			$bgColor = "#FFDDDD";
 		} else {
 			$bgColor = "#DDBBBB";
@@ -141,8 +151,8 @@
 		$projectNameString = trim($projectNameString);
 
 		echo "<table style='background-color:".$bgColor.";' width='100%'><tr><td>\n";
-		echo "<span id='p_label_".$sumkey."_super2' style='color:#".$labelRgbColor."; background-color:#".$labelRgbBackgroundColor.";'>\n\t\t\t\t";
-		echo "<font size='2'>[".$user."] ".($sumKey+1).". &nbsp; &nbsp;";
+		echo "<span id='p_label_".$key."_super2' style='color:#".$labelRgbColor."; background-color:#".$labelRgbBackgroundColor.";'>\n\t\t\t\t";
+		echo "<font size='2'>[".$user."] ".($key_display+1).". &nbsp; &nbsp;";
 
 		echo $projectNameString." ";
 		echo "</font></span> ".$genome_name."\n";
@@ -176,7 +186,7 @@
 		echo "\t\t</form>\n";
 
 		echo "\t\t</font>\n\t\n\t\t\t\t";
-		echo "<div id='frameContainer.p".$frameContainerIx."_".$sumKey."_super2'></div>\n\n\t\t\t\t";
+		echo "<div id='frameContainer.p".$frameContainerIx."_".($key)."_super2'></div>\n\n\t\t\t\t";
 		echo "</td></tr></table>";
 	}
 	function getGenomeName($user,$project) {
@@ -227,9 +237,21 @@ if (isset($_SESSION['logged_on'])) {
 
 		// Get list of projects per user.
 		$projectsDir      = "users/".$admin_as_user."/projects/";
-		$projectFolders   = array_diff(glob($projectsDir."*"), array('..', '.'));
+		$projectFolders = [];
+		$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($projectsDir), RecursiveIteratorIterator::SELF_FIRST);
+		foreach($objects as $name => $object){
+			if (is_dir($name)) {
+				$name_ = str_replace($projectsDir,"",$name);
+				if (str_contains($name_,"..") or str_contains($name_,".")) {
+				} else {
+					$projectFolders[] = $name_;
+				}
+			}
+		}
+
 		// Sort directories by date, newest first.
-		array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
+		sort($projectFolders);
+
 		// Trim path from each folder string.
 		foreach($projectFolders as $key=>$folder) {   $projectFolders[$key] = str_replace($projectsDir,"",$folder);   }
 		// Split project list into ready/working/starting lists for sequential display.
@@ -245,20 +267,18 @@ if (isset($_SESSION['logged_on'])) {
 		$userProjectCount_working  = count($projectFolders_working);
 		// Sort complete and working projects alphabetically.
 		array_multisort($projectFolders_working,  SORT_ASC, $projectFolders_working);
-
-		foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.
-			$key      = $key_ + $userProjectCount_starting;
-			echo "\n// javascript for project #".$key+$sumKey."_super2, '".$project."'\n";
-			echo "var el_p            = document.getElementById('frameContainer.p2_".$key+$sumKey."_super2');\n";
-			echo "el_p.innerHTML      = '<iframe id=\"p_".$key+$sumKey."_super2\" name=\"p_".$key+$sumKey."_super2\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+		foreach($projectFolders_working as $key=>$project) {   // frameContainer.p2_[$key] : working.
+			echo "\n// javascript for project #".$sumKey."_super2, '".$project."'\n";
+			echo "var el_p            = document.getElementById('frameContainer.p2_".$sumKey."_super2');\n";
+			echo "el_p.innerHTML      = '<iframe id=\"p_".$sumKey."_super2\" name=\"p_".$sumKey."_super2\" class=\"upload\" style=\"height:38px; border:0px;\" ";
 			echo     "src=\"project.admin_working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
-			echo "var p_iframe        = document.getElementById('p_".$key+$sumKey."_super2');\n";
+			echo "var p_iframe        = document.getElementById('p_".$sumKey."_super2');\n";
 			echo "var p_js            = p_iframe.contentWindow;\n";
 			echo "p_js.user           = \"".$admin_as_user."\";\n";
 			echo "p_js.project        = \"".$project."\";\n";
-			echo "p_js.key            = \"p_".$key+$sumKey."_super2\";\n";
+			echo "p_js.key            = \"p_".$sumKey."_super2\";\n";
+			$sumKey += 1;
 		}
-		$sumKey += count($projectFolders_working);
 	}
 }
 ?>

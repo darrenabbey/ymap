@@ -41,17 +41,17 @@
 		} else {
 			if (file_exists($dir2)) {
 				// Project is locked.
-				echo "ERROR:".$user." project is locked by admin.";
+				echo "ERROR:".$user." project '".$project."' is locked by admin.";
 				log_stuff($user,$project,"","","","project:DELETE failure, project is locked by admin.");
 			} else {
 				// Project doesn't exist, should never happen.
-				echo "ERROR:".$user." doesn't own project.";
+				echo "ERROR:".$user." doesn't own project:'".$project."'\n";
 				log_stuff($user,$project,"","","","project:DELETE failure, user doesn't own project.");
 			}
 		}
 	}
 
-	// Function for recursive rmdir, to clean out full genome directory.
+	// Function for recursive rmdir, to clean out full project directory.
 	function rrmdir($dir) {
 		if (is_dir($dir)) {
 			$objects = scandir($dir);

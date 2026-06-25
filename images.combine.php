@@ -75,8 +75,9 @@
 				$project_dir = "users/".$fig_user."/projects/".$fig_project;
 				if (!is_dir($project_dir)) {
 					// project doesn't exist, should never happen: Force logout.
-					session_destroy();
-					echo "<script type='text/javascript'> parent.location.reload(); </script>";
+					//session_destroy();
+					//echo "<script type='text/javascript'> parent.location.reload(); </script>";
+					echo "<script type='text/javascript'> console.log('$project_dir'); </script>";
 				}
 
 				// load figure version from project.

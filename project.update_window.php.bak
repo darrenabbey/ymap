@@ -28,18 +28,18 @@
 		//======================
 		// Find project folder.
 		//----------------------
-		$projectsDir      = "users/".$user."/projects/";
+		$projectsDir = "users/".$user."/projects/";
 		$projectFolders = [];
-                $objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($projectsDir), RecursiveIteratorIterator::SELF_FIRST);
-                foreach($objects as $name => $object){
-                        if (is_dir($name)) {
-                                $name_ = str_replace($projectsDir,"",$name);
-                                if (str_contains($name_,"..") or str_contains($name_,".")) {
-                                } else {
-                                        $projectFolders[] = $name_;
-                                }
-                        }
-                }
+		$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($projectsDir), RecursiveIteratorIterator::SELF_FIRST);
+		foreach($objects as $name => $object){
+			if (is_dir($name)) {
+				$name_ = str_replace($projectsDir,"",$name);
+				if (str_contains($name_,"..") or str_contains($name_,".")) {
+				} else {
+					$projectFolders[] = $name_;
+				}
+			}
+		}
 
 		// Sort directories by date, newest first.
 		sort($projectFolders);
@@ -70,7 +70,7 @@
 		$userProjectCount_working  = count($projectFolders_working);
 		$userProjectCount_complete = count($projectFolders_complete);
 
-		// Sort complete and working projects alphabetically.
+		// Sort working and complete projects alphabetically.
 		array_multisort($projectFolders_subDir,   SORT_ASC, $projectFolders_subDir);
 		array_multisort($projectFolders_working,  SORT_ASC, $projectFolders_working);
 		array_multisort($projectFolders_complete, SORT_ASC, $projectFolders_complete);
@@ -88,12 +88,49 @@
 			foreach($projectFolders_complete as $key_=>$project) {   if (str_contains($project,$subdir)) {   $displayed_entries[] = $project;   }   }
 		}
 
+		$prefix = "";
+                // Add bulk projects being worked on to user interface.
+                $key = 0;
+                foreach($projectFolders_working as $key_=>$project) {
+                        if (!in_array($project, $displayed_entries)) {
+                                addBulkProjectsBeingWorkedOnToUserInterface($key_,$user,$project,$prefix,0);
+                                $key += 1;
+                        }
+                }
+
+                // Add projects not yet started to user interface.
+                foreach($projectFolders_starting as $key_=>$project) {
+                        if (!in_array($project, $displayed_entries)) {
+                                addProjectsNotYetStartedToUserInterface($key_,$user,$project,$prefix,$key_count1);
+                                $key += 1;
+                        }
+                }
+
+                // Add other projects being worked on to user interface.
+                foreach($projectFolders_working as $key_=>$project) {
+                        if (!in_array($project, $displayed_entries)) {
+                                addOtherProjectsBeingWorkedOnToUserInterface($key_,$user,$project,$prefix,$key_count2);
+                                $key += 1;
+                        }
+                }
+
+                // Add completed projects to user interface.
+                foreach($projectFolders_complete as $key_=>$project) {
+                        if (!in_array($project, $displayed_entries)) {
+                                addCompletedProjectsToUserInterface($key_,$user,$project,$prefix,$key_count3);
+                                $key += 1;
+                        }
+                }
+
+
+
+
 		// Grab key from GET string.
 		$key = sanitizeInt_GET("key");
-		$key = intval($key);// - $userProjectCount_starting - $userProjectCount_working;
+		$key = intval($key) - $userProjectCount_starting - $userProjectCount_working;
 
 		// Grab name string from 'name.txt'.
-		$project                 = $projectFolders[$key];
+		$project                 = $projectFolders_complete[$key];
 		$projectNameString       = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 		$name                    = $projectNameString;
 

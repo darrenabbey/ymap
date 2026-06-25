@@ -53,9 +53,10 @@
 		fwrite($logOutput, "#..............................................................................\n");
 		fwrite($logOutput, "Running 'project.update_server.php'.\n");
 		fwrite($logOutput, "Variables passed :\n");
-		fwrite($logOutput, "\tuser     = '".$user."'\n");
-		fwrite($logOutput, "\tproject  = '".$project."'\n");
+		fwrite($logOutput, "\tuser         = '".$user."'\n");
+		fwrite($logOutput, "\tproject      = '".$project."'\n");
 		fwrite($logOutput, "#============================================================================== 1\n");
+		fwrite($logOutput, "\tproject_dir  = '".$project_dir."'\n");
 
 		$condensedLogOutputName = $project_dir."/condensed_log.txt";
 		$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
@@ -126,7 +127,6 @@
 
 		// set session variables.
 		$_SESSION['project']    = $project;
-		$_SESSION['key']        = $key;
 
 		// Figure out dataFormat.
 		// Grab data format numbers from 'dataFormat.txt'.
@@ -135,6 +135,7 @@
 		$dataType                = $dataStrings[0];
 		$readType                = $dataStrings[1];
 		$performIndelRealignment = $dataStrings[2];
+		fwrite($logOutput, "\tGrabbed 'dataFormat.txt' file.\n");
 
 		// Regenerate 'dataBiases.txt' file.
 		$fileName2 = "users/".$user."/projects/".$project."/dataBiases.txt";
@@ -146,6 +147,7 @@
 			if (strcmp($bias_end,"") == 0) { $bias_end = "False"; }
 			fwrite($file2,"False\n".$bias_GC."\nFalse\n".$bias_end);
 		} else if ($dataFormat == "1") { // WGseq
+			fwrite($logOutput, "\ttest1.\n");
 			$bias_GC     = filter_input(INPUT_POST, "1_bias2", FILTER_SANITIZE_STRING);
 			$bias_end    = filter_input(INPUT_POST, "1_bias4", FILTER_SANITIZE_STRING);
 			if (strcmp($bias_GC ,"") == 0) { $bias_GC  = "False"; }

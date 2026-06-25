@@ -736,8 +736,18 @@ end;
 
 fclose(alleleRatiosFid);
 
+if (isempty(strfind(project,'/')))
+	projectName_ = project;
+else
+	idx = strfind(project,'/');
+	projectName_ = substr(project,idx+1);
+end
+fprintf(['[***]\tprojectName_  = ' projectName_ '\n']);
+
 %% change file permissions.
-system(['chmod 774 ' projectDir 'allele_ratios.' project  '.bed']);
+system(['chmod 774 ' projectDir 'allele_ratios.' projectName_  '.bed']);
+
+
 
 %% =========================================================================================
 % Setup for main figure generation.

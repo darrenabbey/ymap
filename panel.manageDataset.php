@@ -128,15 +128,28 @@
 	$userProjectCount = 0;
 	if (isset($_SESSION['logged_on'])) {
 		$projectsDir      = "users/".$user."/projects/";
-		$projectFolders   = array_diff(glob($projectsDir."*"), array('..', '.'));
+		$projectFolders = [];
+		$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($projectsDir), RecursiveIteratorIterator::SELF_FIRST);
+		foreach($objects as $name => $object){
+			if (is_dir($name)) {
+				$name_ = str_replace($projectsDir,"",$name);
+				if (str_contains($name_,"..") or str_contains($name_,".")) {
+				} else {
+					$projectFolders[] = $name_;
+				}
+			}
+		}
 
 		// Sort directories by date, newest first.
-		array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
+		//array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
+		sort($projectFolders);
+		//print_r($projectFolders);
 
 		// Trim path from each folder string.
 		foreach($projectFolders as $key=>$folder) {   $projectFolders[$key] = str_replace($projectsDir,"",$folder);   }
 
 		// Split project list into ready/working/initiated lists for sequential display.
+		$projectFolders_subDir       = array();
 		$projectFolders_complete     = array();
 		$projectFolders_bulk         = array();
 		$projectFolders_bulk_working = array();
@@ -153,10 +166,17 @@
 				}
 			} else if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
 				array_push($projectFolders_working, $project);
-			} else if (is_dir("users/".$user."/projects/".$project)) {
+			} else if (file_exists("users/".$user."/projects/".$project."/name.txt")) {
 				array_push($projectFolders_initiated,$project);
+			} else {
+                                array_push($projectFolders_subDir,$project);
 			}
 		}
+		array_multisort(array_map('filemtime', $projectFolders_complete    ), SORT_ASC, $projectFolders_complete    );
+		array_multisort(array_map('filemtime', $projectFolders_bulk        ), SORT_ASC, $projectFolders_bulk        );
+		array_multisort(array_map('filemtime', $projectFolders_bulk_working), SORT_ASC, $projectFolders_bulk_working);
+		array_multisort(array_map('filemtime', $projectFolders_working     ), SORT_ASC, $projectFolders_working     );
+		array_multisort(array_map('filemtime', $projectFolders_initiated   ), SORT_ASC, $projectFolders_initiated   );
 		$userProjectCount_complete     = count($projectFolders_complete);
 		$userProjectCount_bulk         = count($projectFolders_bulk);
 		$userProjectCount_bulk_working = count($projectFolders_bulk_working);
@@ -164,15 +184,15 @@
 		$userProjectCount_initiated    = count($projectFolders_initiated);
 
 		// Sort bulk, working, and complete projects alphabetically.
+		array_multisort($projectFolders_subDir,       SORT_ASC, $projectFolders_subDir);
 		array_multisort($projectFolders_complete,     SORT_ASC, $projectFolders_complete    );
 		array_multisort($projectFolders_bulk,         SORT_ASC, $projectFolders_bulk        );
 		array_multisort($projectFolders_bulk_working, SORT_ASC, $projectFolders_bulk_working);
 		array_multisort($projectFolders_working,      SORT_ASC, $projectFolders_working     );
 		array_multisort($projectFolders_initiated,    SORT_ASC, $projectFolders_initiated   );
+
+
 		// Build new 'projectFolders' array;
-		$projectFolders   = array();
-		$projectFolders   = array_merge($projectFolders_initiated, $projectFolders_bulk_working, $projectFolders_bulk, $projectFolders_working, $projectFolders_complete);
-		//$projectFolders   = array_merge($projectFolders_complete, $projectFolders_bulk, $projectFolders_bulk_working, $projectFolders_working, $projectFolders_initiated);
 		$userProjectCount = count($projectFolders);
 		// displaying size if it's bigger then 0
 		if ($currentSize > 0) {
@@ -188,32 +208,54 @@
 		// 3: project initiated, quota not filled.
 		// 4: project initiated, quota filled.
 		// 5: project in bulk-processing-queue.
+		$key_offset = 0;
+		$prefix="";
 		foreach($projectFolders_initiated as $key_=>$project) {
 			// add initiated bulk/other projects to user interface.
-			if (!$exceededSpace) {
-				printProjectInfo("3", $key_, "CC0000", "FFFFFF", $user, $project);
-			} else {
-				printProjectInfo("4", $key_, "888888", "FFFFFF", $user, $project);
+			if (!str_contains($project,"/")) {
+				$key_real = array_search($project,$projectFolders);
+				if (!$exceededSpace) {
+					printProjectInfo("3", $key_real, "CC0000", "FFFFFF", $user, $project,$key_offset,$prefix);
+				} else {
+					printProjectInfo("4", $key_real, "888888", "FFFFFF", $user, $project,$key_offset,$prefix);
+				}
+				$key_offset += 1;
 			}
-		} //dragon
+		}
 		foreach($projectFolders_bulk_working as $key_=>$project) {
 			// add working bulk projects to user interface.
-			printProjectInfo("5", $key_ + $userProjectCount_initiated, "000000", "CCCCCC", $user, $project);
+			if (!str_contains($project,"/")) {
+				$key_real = array_search($project,$projectFolders);
+				printProjectInfo("5", $key_real, "000000", "CCCCCC", $user, $project,$key_offset,$prefix);
+				$key_offset += 1;
+			}
 		}
 		foreach($projectFolders_bulk as $key_=>$project) {
 			// add working bulk projects to user interface.
-			printProjectInfo("5", $key_ + $userProjectCount_initiated + $userProjectCount_bulk_working, "000000", "CCCCCC", $user, $project);
+			if (!str_contains($project,"/")) {
+				$key_real = array_search($project,$projectFolders);
+				printProjectInfo("5", $key_real, "000000", "CCCCCC", $user, $project,$key_offset,$prefix);
+				$key_offset += 1;
+			}
 		}
 		foreach($projectFolders_working as $key_=>$project) {
 			// add other working projects to user interface.
-			printProjectInfo("2", $key_ + $userProjectCount_initiated + $userProjectCount_bulk_working + $userProjectCount_bulk, "BB9900", "FFFFFF", $user, $project);
+			if (!str_contains($project,"/")) {
+				$key_real = array_search($project,$projectFolders);
+				printProjectInfo("2", $key_real, "BB9900", "FFFFFF", $user, $project,$key_offset,$prefix);
+				$key_offset += 1;
+			}
 		}
 		foreach($projectFolders_complete as $key_=>$project) {
 			// add complete bulk/other projects to user interface.
-			if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
-				printProjectInfo("1", $key_ + $userProjectCount_initiated + $userProjectCount_bulk_working + $userProjectCount_bulk + $userProjectCount_working, "000000", "CCFFCC", $user, $project);
-			} else {
-				printProjectInfo("1", $key_ + $userProjectCount_initiated + $userProjectCount_bulk_working + $userProjectCount_bulk + $userProjectCount_working, "00CC00", "FFFFFF", $user, $project);
+			if (!str_contains($project,"/")) {
+				$key_real = array_search($project,$projectFolders);
+				if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+					printProjectInfo("1", $key_real, "000000", "CCFFCC", $user, $project,$key_offset,$prefix);
+				} else {
+					printProjectInfo("1", $key_real, "00CC00", "FFFFFF", $user, $project,$key_offset,$prefix);
+				}
+				$key_offset += 1;
 			}
 		}
 		// 1: project complete.
@@ -221,6 +263,63 @@
 		// 3: project initiated, quota not filled.
 		// 4: project initiated, quota filled.
 		// 5: project in bulk-processing-queue.
+
+		foreach($projectFolders_subDir as $key1_=>$subdir) {
+			echo "<font size='2'><b>".$subdir."</b></font><br>\n";
+			$prefix = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+
+			foreach($projectFolders_initiated as $key_=>$project) {
+				if (str_contains($project,$subdir)) {
+					// add initiated bulk/other projects to user interface.
+					$key_real = array_search($project,$projectFolders);
+					if (!$exceededSpace) {
+						printProjectInfo("3", $key_real, "CC0000", "FFFFFF", $user, $project,$key_offset,$prefix);
+					} else {
+						printProjectInfo("4", $key_real, "888888", "FFFFFF", $user, $project,$key_offset,$prefix);
+					}
+					$key_offset += 1;
+				}
+			}
+			foreach($projectFolders_bulk_working as $key_=>$project) {
+				if (str_contains($project,$subdir)) {
+					// add working bulk projects to user interface.
+					$key_real = array_search($project,$projectFolders);
+					printProjectInfo("5", $key_real, "000000", "CCCCCC", $user, $project,$key_offset,$prefix);
+					$key_offset += 1;
+				}
+			}
+			foreach($projectFolders_bulk as $key_=>$project) {
+				if (str_contains($project,$subdir)) {
+					// add working bulk projects to user interface.
+					$key_real = array_search($project,$projectFolders);
+					printProjectInfo("5", $key_real, "000000", "CCCCCC", $user, $project,$key_offset,$prefix);
+					$key_offset += 1;
+				}
+			}
+			foreach($projectFolders_working as $key_=>$project) {
+				if (str_contains($project,$subdir)) {
+					// add other working projects to user interface.
+					$key_real = array_search($project,$projectFolders);
+					printProjectInfo("2", $key_real, "BB9900", "FFFFFF", $user, $project,$key_offset,$prefix);
+					$key_offset += 1;
+				}
+			}
+			foreach($projectFolders_complete as $key_=>$project) {
+				if (str_contains($project,$subdir)) {
+					// add complete bulk/other projects to user interface.
+					$key_real = array_search($project,$projectFolders);
+					if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+						printProjectInfo("1", $key_real, "000000", "CCFFCC", $user, $project,$key_offset,$prefix);
+					} else {
+						printProjectInfo("1", $key_real, "00CC00", "FFFFFF", $user, $project,$key_offset,$prefix);
+					}
+					$key_offset  += 1	;
+				}
+			}
+		}
+
+
+
 		echo "\n";
 ?>
 <script type='text/javascript'>
@@ -231,7 +330,7 @@
 <?php
 	}
 
-	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $labelRgbBackgroundColor, $user, $project) {
+	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $labelRgbBackgroundColor, $user, $project,$key_display,$prefix) {
 		// $frameContainerIx values:
 		//	1: project complete.
 		//	2: project working.
@@ -246,8 +345,8 @@
 		} else {
 			$projectNameString = $project;
 		}
-		echo "<span id='p_label_".$key."' style='color:#".$labelRgbColor."; background-color:#".$labelRgbBackgroundColor.";'>\n\t\t\t\t";
-		echo "<font size='2'>".($key+1).".";
+		echo $prefix."<span id='p_label_".$key."' style='color:#".$labelRgbColor."; background-color:#".$labelRgbBackgroundColor.";'>\n\t\t\t\t";
+		echo "<font size='2'>".($key_display+1).".";
 
 
 		if ($frameContainerIx == "1") {
@@ -403,17 +502,17 @@ if (isset($_SESSION['logged_on'])) {
 		}
 	}
 	foreach($projectFolders_bulk_working as $key_=>$project) {      // frameContainer.p5_[$key] : in bulk-processing queue.
-		$key      = $key_ + $userProjectCount_initiated;
+		$key      = array_search($project,$projectFolders);
 		$project  = $projectFolders[$key];
 		echo "\n// javascript for project #".$key.", '".$project."'\n";
-		echo "var el_p            = document.getElementById('frameContainer.p5_".$key."');\n";
+		echo "var el_p5           = document.getElementById('frameContainer.p5_".$key."');\n";
 		if ($bulk_ui_projects_showAll) {
-			echo "el_p.innerHTML      = '<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
-			echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
+			echo "el_p5.innerHTML      = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+			echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"90%\" frameborder=\"0\"></iframe>';\n";
 		} else {
 			if ($key_ < $bulk_ui_projects_limit) {
-				echo "el_p.innerHTML      = '<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
-				echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
+				echo "el_p5.innerHTML      = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+				echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"90%\" frameborder=\"0\"></iframe>';\n";
 			} else {
 			}
 		}
@@ -424,17 +523,17 @@ if (isset($_SESSION['logged_on'])) {
 		echo "p_js.key            = \"p_".$key."\";\n";
 	}
 	foreach($projectFolders_bulk as $key_=>$project) {      // frameContainer.p5_[$key] : in bulk-processing queue.
-		$key      = $key_ + $userProjectCount_initiated + $userProjectCount_bulk_working;
+		$key      = array_search($project,$projectFolders);
 		$project  = $projectFolders[$key];
 		echo "\n// javascript for project #".$key.", '".$project."'\n";
-		echo "var el_p            = document.getElementById('frameContainer.p5_".$key."');\n";
+		echo "var el_p5           = document.getElementById('frameContainer.p5_".$key."');\n";
 		if ($bulk_ui_projects_showAll) {
-			echo "el_p.innerHTML      = '<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
-			echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
+			echo "el_p5.innerHTML      = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+			echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"90%\" frameborder=\"0\"></iframe>';\n";
 		} else {
 			if ($key_ < $bulk_ui_projects_limit) {
-				echo "el_p.innerHTML      = '<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
-				echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
+				echo "el_p5.innerHTML      = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+				echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"90%\" frameborder=\"0\"></iframe>';\n";
 			} else {
 			}
 		}
@@ -445,12 +544,12 @@ if (isset($_SESSION['logged_on'])) {
 		echo "p_js.key            = \"p_".$key."\";\n";
 	}
 	foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.
-		$key      = $key_ + $userProjectCount_initiated + $userProjectCount_bulk_working + $userProjectCount_bulk;
+		$key      = array_search($project,$projectFolders);
 		$project  = $projectFolders[$key];
 		echo "\n// javascript for project #".$key.", '".$project."'\n";
-		echo "var el_p            = document.getElementById('frameContainer.p2_".$key."');\n";
-		echo "el_p.innerHTML      = '<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
-		echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
+		echo "var el_p2           = document.getElementById('frameContainer.p2_".$key."');\n";
+		echo "el_p2.innerHTML     = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<iframe id=\"p_".$key."\" name=\"p_".$key."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+		echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"90%\" frameborder=\"0\"></iframe>';\n";
 		echo "var p_iframe        = document.getElementById('p_".$key."');\n";
 		echo "var p_js            = p_iframe.contentWindow;\n";
 		echo "p_js.user           = \"".$user."\";\n";

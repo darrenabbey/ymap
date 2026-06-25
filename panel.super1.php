@@ -119,14 +119,27 @@
 	if (($super_logged_in == "true") and isset($_SESSION['logged_on'])) {
 		$userProjectCount = 0;
 		$projectsDir      = "users/".$admin_as_user."/projects/";
-		$projectFolders   = array_diff(glob($projectsDir."*"), array('..', '.'));
+		$projectFolders = [];
+		$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($projectsDir), RecursiveIteratorIterator::SELF_FIRST);
+		foreach($objects as $name => $object){
+			if (is_dir($name)) {
+				$name_ = str_replace($projectsDir,"",$name);
+				if (str_contains($name_,"..") or str_contains($name_,".")) {
+				} else {
+					$projectFolders[] = $name_;
+				}
+			}
+		}
+
 		// Sort directories by date, newest first.
-		array_multisort(array_map('filemtime', $projectFolders), SORT_DESC, $projectFolders);
+		sort($projectFolders);
+
 		// Trim path from each folder string.
 		foreach($projectFolders as $key=>$folder) {
 			$projectFolders[$key] = str_replace($projectsDir,"",$folder);
 		}
 		// Split project list into starting/working/complete lists for sequential display.
+		$projectFolders_subDir   = array();
 		$projectFolders_starting = array();
 		$projectFolders_working  = array();
 		$projectFolders_complete = array();
@@ -135,20 +148,26 @@
 				array_push($projectFolders_complete,$project);
 			} else if (file_exists("users/".$admin_as_user."/projects/".$project."/working.txt")) {
 				array_push($projectFolders_working, $project);
-			} else if (is_dir("users/".$admin_as_user."/projects/".$project)) {
+			} else if (file_exists("users/".$user."/projects/".$project."/name.txt")) {
 				array_push($projectFolders_starting,$project);
+			} else {
+				array_push($projectFolders_subDir,$project);
 			}
 		}
+		array_multisort(array_map('filemtime', $projectFolders_complete), SORT_ASC, $projectFolders_complete);
+		array_multisort(array_map('filemtime', $projectFolders_working), SORT_ASC, $projectFolders_working);
+		array_multisort(array_map('filemtime', $projectFolders_starting), SORT_ASC, $projectFolders_starting);
 		$userProjectCount_starting = count($projectFolders_starting);
 		$userProjectCount_working  = count($projectFolders_working);
 		$userProjectCount_complete = count($projectFolders_complete);
+
 		// Sort complete and working projects alphabetically.
+		array_multisort($projectFolders_subDir,   SORT_ASC, $projectFolders_subDir);
 		array_multisort($projectFolders_starting, SORT_ASC, $projectFolders_starting);
 		array_multisort($projectFolders_working,  SORT_ASC, $projectFolders_working);
 		array_multisort($projectFolders_complete, SORT_ASC, $projectFolders_complete);
+
 		// Build new 'projectFolders' array;
-		$projectFolders   = array();
-		$projectFolders   = array_merge($projectFolders_starting, $projectFolders_working, $projectFolders_complete);
 		$userProjectCount = count($projectFolders);
 
 		// displaying size if it's bigger then 0
@@ -159,30 +178,83 @@
 		}
 		echo "<br>\n\t\t\t\t";
 
+		$displayed_entries = [];
+		$prefix = "";
+		$key_display = 0;
 		foreach($projectFolders_starting as $key_=>$project) {
-			if (!$exceededSpace) {
-				$color1 = "CC0000";
-				$color2 = "FFFFFF";
-			} else {
-				$color1 = "888888";
-				$color2 = "FFFFFF";
-			}
-			if (file_exists("users/".$admin_as_user."/projects/".$project."/bulk.txt")) {
-				printProjectInfo("4", $key_, $color1, $color2, $admin_as_user, $project, "(Waiting in queue.)");
-			} else {
-				printProjectInfo("4", $key_, $color1, $color2, $admin_as_user, $project, "(Upload pending.)");
+			if (!str_contains($project,"/")) {
+				$key_real = array_search($project,$projectFolders);
+				if (!$exceededSpace) {
+					$color1 = "CC0000";
+					$color2 = "FFFFFF";
+				} else {
+					$color1 = "888888";
+					$color2 = "FFFFFF";
+				}
+				if (file_exists("users/".$admin_as_user."/projects/".$project."/bulk.txt")) {
+					printProjectInfo("4", $key_real, $color1, $color2, $admin_as_user, $project, "(Waiting in queue.)",$prefix,$key_display);
+				} else {
+					printProjectInfo("4", $key_real, $color1, $color2, $admin_as_user, $project, "(Upload pending.)",$prefix,$key_display);
+				}
+				$key_display += 1;
 			}
 		}
 		foreach($projectFolders_working as $key_=>$project) {
-			printProjectInfo("2", $key_ + count($projectFolders_starting), "BB9900", "FFFFFF", $admin_as_user, $project, "");
+			if (!str_contains($project,"/")) {
+				$key_real = array_search($project,$projectFolders);
+				printProjectInfo("2", $key_real, "BB9900", "FFFFFF", $admin_as_user, $project, "",$prefix,$key_display);
+				$key_display += 1;
+			}
 		}
 		foreach($projectFolders_complete as $key_=>$project) {
-			printProjectInfo("1", $key_ + count($projectFolders_starting) + count($projectFolders_working), "00AA00", "FFFFFF", $admin_as_user, $project, "");
+			if (!str_contains($project,"/")) {
+				$key_real = array_search($project,$projectFolders);
+				printProjectInfo("1", $key_real, "00AA00", "FFFFFF", $admin_as_user, $project, "",$prefix,$key_display);
+				$key_display +=1;
+			}
+		}
+
+		foreach($projectFolders_subDir as $key1_=>$subdir) {
+			echo "<font size='2'><b>".$subdir."</b></font><br>\n";
+			$prefix = "&nbsp;&nbsp;&nbsp;";
+
+			foreach($projectFolders_starting as $key_=>$project) {
+				if (str_contains($project,$subdir)) {
+					$key_real = array_search($project,$projectFolders);
+					if (!$exceededSpace) {
+						$color1 = "CC0000";
+						$color2 = "FFFFFF";
+					} else {
+						$color1 = "888888";
+						$color2 = "FFFFFF";
+					}
+					if (file_exists("users/".$admin_as_user."/projects/".$project."/bulk.txt")) {
+						printProjectInfo("4", $key_real, $color1, $color2, $admin_as_user, $project, "(Waiting in queue.)",$prefix,$key_display);
+					} else {
+						printProjectInfo("4", $key_real, $color1, $color2, $admin_as_user, $project, "(Upload pending.)",$prefix,$key_display);
+					}
+					$key_display += 1;
+				}
+			}
+			foreach($projectFolders_working as $key_=>$project) {
+				if (str_contains($project,$subdir)) {
+					$key_real = array_search($project,$projectFolders);
+					printProjectInfo("2", $key_real, "BB9900", "FFFFFF", $admin_as_user, $project, "",$prefix,$key_display);
+					$key_display += 1;
+				}
+			}
+			foreach($projectFolders_complete as $key_=>$project) {
+				if (str_contains($project,$subdir)) {
+					$key_real = array_search($project,$projectFolders);
+					printProjectInfo("1", $key_real, "00AA00", "FFFFFF", $admin_as_user, $project, "",$prefix,$key_display);
+					$key_display += 1;
+				}
+			}
 		}
 	}
 
-	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $labelRgbBackgroundColor, $user, $project, $comment) {
-		if ($key%2 == 0) {
+	function printProjectInfo($frameContainerIx, $key_real, $labelRgbColor, $labelRgbBackgroundColor, $user, $project, $comment, $prefix,$key_display) {
+		if ($key_display%2 == 0) {
 			$bgColor   = "#FFDDDD";
 			$greyColor = "#888888";
 		} else {
@@ -227,17 +299,21 @@
 			$warning_string = "";
 		}
 
-		echo "<table style='background-color:".$bgColor.";' width='100%'><tr><td>\n";
-		echo "<span id='p_label_".$key."_super1' style='color:#".$labelRgbColor."; background-color:#".$labelRgbBackgroundColor.";'>\n\t\t\t\t";
-		echo "<font size='2'>".($key+1).".";
+		if ($prefix == "") {
+			echo "<table style='background-color:".$bgColor."; border: 0px; border-collapse: collapse;' width='100%'><tr><td>\n";
+		} else {
+			echo "<table style='background-color:".$bgColor."; border: 0px; border-collapse: collapse;' width='100%'><tr><td style='background-color:#FFDDDD;'>".$prefix."</td><td>\n";
+		}
+		echo "<span id='p_label_".$key_real."_super1' style='color:#".$labelRgbColor."; background-color:#".$labelRgbBackgroundColor.";'>\n\t\t\t\t";
+		echo "<font size='2'>".($key_display+1).".";
 		if ($frameContainerIx != "1") {
-			echo "<input id='show_p".$key."_super1' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."_super1','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','".$warning_string."');\" style=\"visibility:hidden;\">";
+			echo "<input id='show_p".$key_real."_super1' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key_real."_super1','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','".$warning_string."');\" style=\"visibility:hidden;\">";
 		} else {
 			// Limit files list to valid output file types.
 			$projectFiles   = preg_grep('~\.(png|eps|bed|gff3|zip)$~', scandir("users/$user/projects/$project/"));
 			sort($projectFiles);
 			$json_file_list = json_encode($projectFiles);
-			echo "<input id='show_p".$key."_super1' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."_super1','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','".$warning_string."'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
+			echo "<input id='show_p".$key_real."_super1' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key_real."_super1','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','".$warning_string."'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
 		}
 
 		echo $projectNameString." ".$comment;
@@ -267,7 +343,7 @@
 			echo "<font size='1' style='color:".$greyColor.";'> - Completed: ".$figDate."</font>";
 
 			echo "<br><form action=''>";
-			echo "<input type='button' value='Copy to admin.' onclick=\"key = '$key'; user = '$user'; $.ajax({url:'admin.copyProjectToAdmin_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}});location.replace('panel.super1.php');\">";
+			echo "<input type='button' value='Copy to admin.' onclick=\"key = '$key_real'; user = '$user'; $.ajax({url:'admin.copyProjectToAdmin_server.php',type:'post',data:{key:key_real,user:user},success:function(answer){console.log(answer);}});location.replace('panel.super1.php');\">";
 			echo "</form>";
 		} elseif ($frameContainerIx == "2") {
 			$errorFile     = "users/".$user."/projects/".$project."/error.txt";
@@ -284,23 +360,23 @@
 				echo "parent.show_hidden(\"Hidden_super1\"); ";
 				echo "parent.update_interface();";
 				echo "localStorage.setItem(\"user\",\"".$user."\");";
-				echo "localStorage.setItem(\"projectKey\",\"".$key."\");";
+				echo "localStorage.setItem(\"projectKey\",\"".$key_real."\");";
 				echo "localStorage.setItem(\"projectName\",\"".$project."\");";
 				echo "localStorage.setItem(\"projectError\",".json_encode($error).");";
 			echo "'>";
 			if (file_exists("users/".$user."/projects/".$project."/locked.txt")) {
-				echo "<input type='button' value='Unlock.' onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=>{location.replace('panel.admin2.php');},100);\">";
+				echo "<input type='button' value='Unlock.' onclick=\"user = '$user'; key = '$key_real'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key_real,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=>{location.replace('panel.admin2.php');},100);\">";
 			} else {
-				echo "<input type='button' value='Lock.'   onclick=\"user = '$user'; key = '$key'; $.ajax({url:'admin.lockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=>{location.replace('panel.admin2.php');},100);\">";
+				echo "<input type='button' value='Lock.'   onclick=\"user = '$user'; key = '$key_real'; $.ajax({url:'admin.lockUserProject_server.php',type:'post',data:{key:key_real,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=>{location.replace('panel.admin2.php');},100);\">";
 			}
-			echo "<input type='button' value='Copy to admin.'  onclick=\"key = '$key'; user = '$user'; $.ajax({url:'admin.copyProjectToAdmin_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); location.replace('panel.admin2.php');\">";
+			echo "<input type='button' value='Copy to admin.'  onclick=\"key = '$key_real'; user = '$user'; $.ajax({url:'admin.copyProjectToAdmin_server.php',type:'post',data:{key:key_real,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); location.replace('panel.admin2.php');\">";
 
 			echo "</form>";
 		} elseif ($frameContainerIx == "4") {
 		}
 
 		echo "</font></span>\n\t\t\t\t";
-		echo "<div id='frameContainer.p".$frameContainerIx."_".$key."_super1'></div>\n\n\t\t\t\t";
+		echo "<div id='frameContainer.p".$frameContainerIx."_".$key_real."_super1'></div>\n\n\t\t\t\t";
 		echo "</td></tr></table>";
 	}
 	function getGenomeName($user,$project) {
@@ -355,7 +431,7 @@ var systemProjectCount = "<?php echo $systemProjectCount; ?>";
 			echo "\n// javascript for project #".$key."_super1, '".$project."'\n";
 			echo "var el_p            = document.getElementById('frameContainer.p2_".$key."_super1');\n";
 			echo "el_p.innerHTML      = '<iframe id=\"p_".$key."_super1\" name=\"p_".$key."_super1\" class=\"upload\" style=\"height:38px; border:0px;\" ";
-			echo     "src=\"project.admin_working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n";
+			echo     "src=\"project.admin_working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"90%\" frameborder=\"0\"></iframe>';\n";
 			echo "var p_iframe        = document.getElementById('p_".$key."_super1');\n";
 			echo "var p_js            = p_iframe.contentWindow;\n";
 			echo "p_js.user           = \"".$admin_as_user."\";\n";

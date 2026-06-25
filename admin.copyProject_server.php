@@ -41,11 +41,22 @@
 			$user_key = sanitizeInt_POST('key');
 
 			// Determine user account associated with key.
-			$projectDir      = "users/".$user."/projects/";
-			$projectFolders  = array_diff(glob($projectDir."*\/"), array('..', '.', 'users/default/'));
+			$projectsDir    = "users/".$user."/projects/";
+			$projectFolders = [];
+			$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($projectsDir), RecursiveIteratorIterator::SELF_FIRST);
+			foreach($objects as $name => $object){
+				if (is_dir($name)) {
+					$name_ = str_replace($projectsDir,"",$name);
+					if (str_contains($name_,"..") or str_contains($name_,".")) {
+					} else {
+						$projectFolders[] = $name_;
+					}
+				}
+			}
 
 			// Sort directories by date, newest first.
-			array_multisort($projectFolders, SORT_ASC, $projectFolders);
+			sort($projectFolders);
+
 
 			// Trim path from each folder string.
 			foreach($projectFolders as $key=>$folder) {
@@ -53,7 +64,7 @@
 			}
 			$project_to_copy = $projectFolders[$user_key];
 
-			$src  = $projectDir.$project_to_copy;
+			$src  = "users/".$user."/projects/".$project_to_copy;
 			$dest = "users/default/projects/".$project_to_copy;
 
 			// Copy from source project directory to destination project directory.
@@ -61,12 +72,24 @@
 				log_stuff($user,"","",$project_to_copy,"","ADMIN fail: attempted to copy project to default user, but project name is already in use.");
 			} else {
 				log_stuff($user,"","",$project_to_copy,"","ADMIN success: copied project to default user.");
-				mkdir($dest, 0773, true);
-				foreach (scandir($src) as $file) {
-					if (!is_readable($src . '/' . $file)) continue;
-		                        copy($src . '/' . $file, $dest . '/' . $file);
-				}
+				mkdir($dest, 0776, true);
+				recurseCopy($src, $dest);
 			}
 		}
+	}
+	function recurseCopy(string $sourceDirectory, string $destinationDirectory): void {
+		$directory = opendir($sourceDirectory);
+		if (is_dir($destinationDirectory) === false) {
+			mkdir($destinationDirectory);
+		}
+		while (($file = readdir($directory)) !== false) {
+			if ($file === '.' || $file === '..') {  continue;   }
+			if (is_dir("$sourceDirectory/$file") === true) {
+				recurseCopy("$sourceDirectory/$file", "$destinationDirectory/$file");
+			} else {
+				copy("$sourceDirectory/$file", "$destinationDirectory/$file");
+			}
+		}
+		closedir($directory);
 	}
 ?>

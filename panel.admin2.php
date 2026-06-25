@@ -164,11 +164,22 @@
 		//| Admin account projects |
 		//'-----------------------'
 		if (($admin_logged_in == "true") and isset($_SESSION['logged_on'])) {
-			$projectDir     = "users/".$_SESSION['user']."/projects/";
-			$projectFolders = array_diff(glob($projectDir."*\/"), array('..', '.'));
+			$projectsDir     = "users/".$user."/projects/";
+			$projectFolders = [];
+			$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($projectsDir), RecursiveIteratorIterator::SELF_FIRST);
+			foreach($objects as $name => $object){
+				if (is_dir($name)) {
+					$name_ = str_replace($projectsDir,"",$name);
+					if (str_contains($name_,"..") or str_contains($name_,".")) {
+					} else {
+						$projectFolders[] = $name_;
+					}
+				}
+			}
 
 			// Sort directories by date, newest first.
-			array_multisort($projectFolders, SORT_ASC, $projectFolders);
+			sort($projectFolders);
+
 			// Trim path from each folder string.
 			foreach($projectFolders as $key=>$folder) {
 				$projectFolders[$key] = str_replace($projectDir,"",$folder);
@@ -180,23 +191,33 @@
 			echo "<td width='30%'><font size='2'><b>Copy Project</b></font></td>";
 			echo "<td><font size='2'><b>Project \"name.txt\" Contents</b></font></td>";
 			echo "</tr>\n";
+			$key_display = 0;
 			foreach($projectFolders as $key=>$project) {
 				echo "\t\t<tr style='";
 				if ($key % 2 == 0) { echo "; background:#DDBBBB;"; }
 				echo "'>";
-
-				echo "<td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
-				echo "<font size='2'>".($key+1).". ".$project."</font></span>\n";
-				echo "\t\t</td><td>\n";
-				if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
-					echo "\t\t\t<input type='button' value='Copy project to default user' onclick=\"key = '$key'; $.ajax({url:'admin.copyProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin2.php');\">\n";
+				if (file_exists("users/".$user."/projects/".$project."/name.txt")) {
+					echo "<td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
+					if (str_contains($project,"/")) {
+						echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+					}
+					echo "<font size='2'>".($key_display+1).". ".$project."</font></span>\n";
+					echo "\t\t</td><td>\n";
+					if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
+						echo "\t\t\t<input type='button' value='Copy project to default user' onclick=\"key = '$key'; $.ajax({url:'admin.copyProject_server.php',type:'post',data:{key:key},success:function(answer){console.log(answer);}});location.replace('panel.admin2.php');\">\n";
+					}
+					echo "\t\t</td><td>\n";
+					$nameFile          = "users/".$user."/projects/".$project."/name.txt";
+					$projectNameString = file_get_contents($nameFile);
+					$projectNameString = trim($projectNameString);
+					echo "<font size='2'>".$projectNameString."</font>";
+					$key_display += 1;
+				} else {
+					echo "<td>\n\t\t\t<span id='project_label_".$key."' style='color:#000000;'>";
+					echo "<font size='2'><b>".$project."</b></font></span>\n";
+					echo "\t\t</td><td>\n";
+					echo "\t\t</td><td>\n";
 				}
-				echo "\t\t</td><td>\n";
-				$nameFile          = "users/".$user."/projects/".$project."name.txt";
-				$projectNameString = file_get_contents($nameFile);
-				$projectNameString = trim($projectNameString);
-				echo "<font size='2'>".$projectNameString."</font>";
-
 				echo "\t\t</td></tr>\n";
 			}
 			echo "</table>";
