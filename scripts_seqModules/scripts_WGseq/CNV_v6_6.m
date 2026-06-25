@@ -436,7 +436,7 @@ if (performEndbiasCorrection)
 
 	% Clean up data by:
 	%    deleting GC ratio data near zero.
-	%    deleting CNV data beyond 3* the median value.  (rDNA, etc.)
+	%    deleting CNV data beyond 6* the median value.  (rDNA, etc.)
 	CNVdata_clean                                        = CNVdata_all_n1;
 	GCratioData_clean                                    = GCratioData_all;
 	chr_EndDistanceData_clean                            = chr_EndDistanceData_all;

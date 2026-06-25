@@ -49,14 +49,16 @@ BASE_DIR_temp
 			$start_list = [];
 			$end_list   = [];
 
-			// 1. Grab init/start/end project entries from queue logs.
-			$queue_dir   = $base_dir."/queue/";
-			$queue_files = array_slice(scandir($queue_dir), 2);
+			// 0. Check if queue is paused or not.
 			if (is_file($base_dir."/queue/error.txt")) {
 				$SUPER_ONLY = True;
 			} else {
 				$SUPER_ONLY = False;
 			}
+
+			// 1. Grab init/start/end project entries from queue logs.
+			$queue_dir   = $base_dir."/queue/";
+			$queue_files = array_slice(scandir($queue_dir), 2);
 			foreach ($queue_files as $key1 => $queue_file) {
 				if (str_contains($queue_file,".log")) {
 					$queue_contents = trim(file_get_contents($queue_dir.$queue_file));

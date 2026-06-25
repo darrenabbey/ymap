@@ -56,7 +56,7 @@ function minimizeProject($dir) {
 
 	// Move files we want to keep into temp folder.
 	foreach ($files as $file) {
-		if (($file == "colors.txt") or ($file == "complete.txt") or ($file == "dataBiases.txt") or ($file == "dataFormat.txt") or ($file == "error.txt") or ($file == "figVer.txt") or ($file == "genome.txt") or ($file == "index.php") or ($file == "name.txt") or ($file == "output_figures.zip") or ($file == "parent.txt") or ($file == "ploidy.txt") or ($file == "process_log.txt") or ($file == "readStats.txt") or ($file == "salt.txt") or ($file == "showAnnotations.txt") or ($file == "warning.txt") or ($file == "working.txt")) {
+		if (($file == "bulk.txt") or ($file == "colors.txt") or ($file == "complete.txt") or ($file == "dataBiases.txt") or ($file == "dataFormat.txt") or ($file == "error.txt") or ($file == "figVer.txt") or ($file == "genome.txt") or ($file == "index.php") or ($file == "name.txt") or ($file == "output_figures.zip") or ($file == "parent.txt") or ($file == "ploidy.txt") or ($file == "process_log.txt") or ($file == "readStats.txt") or ($file == "salt.txt") or ($file == "showAnnotations.txt") or ($file == "warning.txt") or ($file == "working.txt")) {
 			rename($dir.$file, $temp_dir.$file);
 		}
 		$file_ext  = substr(strrchr($file, '.'), 1);

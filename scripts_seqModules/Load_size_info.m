@@ -86,7 +86,7 @@ function [linear_fig_height,linear_fig_width,linear_left_padding,linear_chr_gap,
 	%// calculate ratio between smallest chromosome size to largest.
 	ratio = min(chr_size_cleaned)/max(chr_size_cleaned);
 	rotate = 0;
-	if (max_chrom_label_size > 5)
+	if (max_chrom_label_size > 10)
 		rotate = 90;
 	elseif ((lower_boundary <= ratio) && (ratio <= upper_boundary))
 		%// set rotate to 45 here to use.
