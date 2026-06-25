@@ -49,8 +49,8 @@ BASE_DIR_temp
 			$start_list = [];
 			$end_list   = [];
 
-			// 0. Check if queue is paused or not.
-			if (is_file($base_dir."/queue/error.txt")) {
+			// 0. Check if queue is pause (super user only) mode or not.
+			if (file_exists($base_dir."/queue/error.txt")) {
 				$SUPER_ONLY = True;
 			} else {
 				$SUPER_ONLY = False;
