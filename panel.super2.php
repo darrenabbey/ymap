@@ -178,11 +178,11 @@
 			echo "localStorage.setItem(\"projectError\",".json_encode($error).");";
 		echo "'>";
 		if (file_exists("users/".$user."/projects/".$project."/locked.txt")) {
-			echo "<input type='button' value='Unlock.' onclick=\"user = '$user'; key = '$key_userProject'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key_userProject,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.super2.php')},100);\">";
+			echo "<input type='button' value='Unlock.' onclick=\"user = '$user'; key = '$key_userProject'; $.ajax({url:'admin.unlockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.super2.php')},100);\">";
 		} else {
-			echo "<input type='button' value='Lock.'   onclick=\"user = '$user'; key = '$key_userProject'; $.ajax({url:'admin.lockUserProject_server.php',type:'post',data:{key:key_userProject,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.super2.php')},100);\">";
+			echo "<input type='button' value='Lock.'   onclick=\"user = '$user'; key = '$key_userProject'; $.ajax({url:'admin.lockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=> {location.replace('panel.super2.php')},100);\">";
 		}
-		echo "<input type='button' value='Copy to admin.'  onclick=\"user = '$user'; key = '$key_userProject'; $.ajax({url:'admin.copyProjectToAdmin_server.php',type:'post',data:{key:key_userProject,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); location.replace('panel.super2.php');\">";
+		echo "<input type='button' value='Copy to admin.'  onclick=\"user = '$user'; key = '$key_userProject'; $.ajax({url:'admin.copyProjectToAdmin_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); location.replace('panel.super2.php');\">";
 
 		echo "\t\t</form>\n";
 
