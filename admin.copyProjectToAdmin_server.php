@@ -97,8 +97,7 @@
 	function recurseCopy(string $sourceDirectory, string $destinationDirectory): void {
 		$directory = opendir($sourceDirectory);
 		if (is_dir($destinationDirectory) === false) {
-			mkdir($destinationDirectory);
-			shell_exec("chmod ugo+rw ".$destinationDirectory);
+			mkdir("$destinationDirectory",0776);
 		}
 		while (($file = readdir($directory)) !== false) {
 			if ($file === '.' || $file === '..') {  continue;   }
