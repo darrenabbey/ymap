@@ -27,6 +27,7 @@
 		header('Location: .');
 	} else {
 		$super_user_flag_file = "users/".$user."/super.txt";
+		log_stuff($user,"","","","","TESTING1: ");
 		if (!(file_exists($super_user_flag_file))) {  // Super-user privilidges.
 			// not an admin account, redirect to login page.
 			$admin_logged_in = "false";
@@ -39,7 +40,7 @@
 			// Load user string from session.
 			$admin_as_user = sanitize_POST('user');
 			$project_key   = sanitizeInt_POST('key');
-			log_stuff($user,"","","","","TESTING: ".$admin_as_user." ".$project_key);
+			log_stuff($user,"","","","","TESTING2: ".$admin_as_user." ".$project_key);
 
 			// Determine user account associated with key.
 			$projectsDir    = "users/".$admin_as_user."/projects/";
