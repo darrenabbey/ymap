@@ -32,6 +32,7 @@
 			log_stuff($user,$project,"","","","project:UPDATE failure, no such project for this user.");
 			header('Location: .');
 		}
+		$name            = whitelistHTML_POST("name");
 		$ploidy          = sanitizeFloat_POST("ploidy");
 		$ploidyBase      = sanitizeFloat_POST("ploidyBase");
 		$dataFormat      = sanitizeIntChar_POST("dataFormat");
@@ -62,6 +63,14 @@
 		$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
 		fwrite($condensedLogOutput, "Added to processing queue.\n");
 		fclose($condensedLogOutput);
+
+		// Update 'name.txt' file.
+		$fileName = $project_dir."/name.txt";
+		$file     = fopen($fileName, 'w');
+		fwrite($file, $name);
+		fclose($file);
+		chmod($fileName,0774);
+		fwrite($logOutput, "\tUpdated 'name.txt' file.\n");
 
 		// Update 'ploidy.txt' file.
 		$fileName = $project_dir."/ploidy.txt";

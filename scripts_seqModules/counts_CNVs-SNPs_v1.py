@@ -72,7 +72,7 @@ for i in my_file:	# process pileup file line by line.
 		T                         = len(re.findall("T", reads_noIndels_noStartEnd));
 		G                         = len(re.findall("G", reads_noIndels_noStartEnd));
 		C                         = len(re.findall("C", reads_noIndels_noStartEnd));
-		ref_count                 = len(re.findall("\.", reads_noIndels_noStartEnd)) + len(re.findall("\,", reads_noIndels_noStartEnd));
+		ref_count                 = len(re.findall(".", reads_noIndels_noStartEnd)) + len(re.findall(",", reads_noIndels_noStartEnd));
 			# count of reads identical to reference at this locus.
 	else:
         # There are no reads at this position.

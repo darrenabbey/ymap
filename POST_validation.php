@@ -11,7 +11,7 @@ function stripHTML_POST($POST_name) {
 function whitelistHTML_POST($POST_name) {
 	// remove all but whitelisted html tags.
 	$dirtyString  = trim(filter_input(INPUT_POST, $POST_name, FILTER_DEFAULT) ?? '');
-	$cleanString  = strip_tags($dirtyString, '<b><i><u><br>');
+	$cleanString  = strip_tags($dirtyString, ['b','i','u','br']);
 
 	return $cleanString;
 }

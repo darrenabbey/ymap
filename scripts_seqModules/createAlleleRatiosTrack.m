@@ -1,19 +1,20 @@
 fprintf(['[***] openAlleleRatiosTrack.m\n']);
 fprintf(['[***]\tprojectDir   = ' projectDir '\n']);
-fprintf(['[***]\tprojectName  = ' projectName '\n']);
+fprintf(['[***]\tproject  = ' project    '\n']);
 
-if (isempty(strfind(projectName,'/')))
-	projectName_ = projectName;
+if (isempty(strfind(project,'/')))
+	project_ = project;
 else
-	idx = strfind(projectName,'/');
-	projectName_ = substr(projectName,idx+1);
+	idx = strfind(project,'/');
+	project_ = substr(project,idx+1);
 end
-fprintf(['[***]\tprojectName_  = ' projectName_ '\n']);
+fprintf(['[***]\tproject_  = ' project_ '\n']);
 
-alleleRatiosFid = fopen(fullfile(projectDir, ['allele_ratios.' projectName_  '.bed']), 'w');
+alleleRatiosFid = fopen(fullfile(projectDir, ['allele_ratios.' project_  '.bed']), 'w');
 if (alleleRatiosFid == -1)
 	printf('[***] openAlleleRatiosTrack.m: Not a valid filename, skipping.');
 else
+	fprintf(alleleRatiosFid, ['track name=' project_ 'AlleleRatios description="' project_ ' allele ratios" useScore=0 itemRGB=On\n']);
 	for chr = 1:num_chrs
 		% avoid running over chromosomes with empty copy number
 		if ( (chr_in_use(chr) == 1) && (~isempty(chrCopyNum{chr})) )
@@ -408,15 +409,14 @@ else
 		end;
 	end;
 
-	fclose(alleleRatiosFid);
-
 	if (isempty(strfind(project,'/')))
-		projectName_ = project;
+		project_ = project;
 	else
 		idx = strfind(project,'/');
-		projectName_ = substr(project,idx+1);
+		project_ = substr(project,idx+1);
 	end
 	printf('[***] openAlleleRatiosTrack.m: SNP ratio track file created.');
 
-	fprintf(alleleRatiosFid, ['track name=' projectName_ 'AlleleRatios description="' projectName ' allele ratios" useScore=0 itemRGB=On\n']);
+	fclose(alleleRatiosFid);
+	system(['chmod 774 ' projectDir 'allele_ratios.' project_  '.bed']);
 end

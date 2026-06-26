@@ -344,10 +344,6 @@ chr_SNPdata = temp_holding;
 source('../createAlleleRatiosTrack.m');
 
 
-%% change file permissions.
-system(['chmod 774 ' projectDir 'allele_ratios.' projectName_  '.bed']);
-
-
 %% =========================================================================================
 % Setup for main figure generation.
 %-------------------------------------------------------------------------------------------

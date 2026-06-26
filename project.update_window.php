@@ -117,6 +117,11 @@
 
 		// Figure out parent project name.
 		$parent                  = strip_tags(trim(file_get_contents("users/".$user."/projects/".$project."/parent.txt")));
+
+		// Load existing bias correction options.
+
+		// Load existing figure selection options.
+
 	} else {
 		$genome				= "";
 		$project			= "";
@@ -143,9 +148,15 @@
 		</p></div>
 		<div id="projectCreationInformation"><p>
 			<form action="project.update_server.php" onsubmit="parent.document.getElementById('Hidden_UpdateDataset').style.display = 'none';" method="post">
-				<table><tr bgcolor="#CCFFCC"><td>
+				<table><tr bgcolor="#CCCCFF"><td>
 					<label for="project">Dataset Name : </label><input type="text" name="project" id="project" value="<?php echo $project; ?>" readonly style="background-color:#CCFFCC">
 				</td><td>
+					Initial project name.
+				</td></tr>
+				<tr bgcolor="#CCFFCC"><td>
+					<label for="ploidy">Display Name : </label><input type="text" name="name"  id="name" value="<?php echo $name; ?>"><br>
+				</td><td>
+					Version of the project name to be used in figures.
 				</td></tr>
 				<tr bgcolor="#CCCCFF"><td>
 					<label for="ploidy">Ploidy of experiment : </label><input type="text" name="ploidy"  id="ploidy" value="<?php echo $ploidy; ?>"><br>
