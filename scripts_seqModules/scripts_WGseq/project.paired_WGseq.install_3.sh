@@ -300,8 +300,8 @@ sed -n '2~4p' "$projectDirectory/$datafile1" > "$projectDirectory/$datafile1.tem
 sed -n '2~4p' "$projectDirectory/$datafile2" > "$projectDirectory/$datafile2.temp";
 readCount1=$(wc -l < "$projectDirectory/$datafile1.temp");				# Get number of reads.
 readCount2=$(wc -l < "$projectDirectory/$datafile2.temp");
-readTotalLength1=$(wc -c < "$projectDirectory/$datafile1");				# Get total sequence length.
-readTotalLength2=$(wc -c < "$projectDirectory/$datafile2");
+readTotalLength1=$(wc -c < "$projectDirectory/$datafile1.temp");				# Get total sequence length.
+readTotalLength2=$(wc -c < "$projectDirectory/$datafile2.temp");
 readCount=$((readCount1 + readCount2));
 readTotalLength=$((readTotalLength1 + readTotalLength2));
 echo "$readCount (reads count)" > "$projectDirectory/readStats.txt";
