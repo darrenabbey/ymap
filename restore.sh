@@ -12,10 +12,20 @@ else
 
 	if [ -d "users/$userName/projects/$projectName/" ]; then
 		sudo cp "users/$2/projects/$1/"* "users/$userName/projects/$projectName/";
+
 		sudo rm "users/$userName/projects/$projectName/name.txt";
 		sudo echo "$projectName" > "users/$userName/projects/$projectName/name.txt";
 		sudo chown www-data:www-data "users/$userName/projects/$projectName/name.txt";
+
+		##
+		## Improperly assumes parent is current dataset!
+		##
+		#sudo rm "../../$userName/projects/$projectName/parent.txt";
+		#sudo echo "$projectName" > "../../$userName/projects/$projectName/parent.txt";
+		#sudo chown www-data:www-data "../../$userName/projects/$projectName/parent.txt";
+
 		echo "Project '$projectName' restored to user '$userName'.";
+		echo "\t'parent.txt' in user project is incorrect!";
 	else
 		echo "Project '$projectName' or user '$userName' not found.";
 	fi;

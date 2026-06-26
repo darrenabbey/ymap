@@ -600,7 +600,7 @@ end;
 
 
 %%================================================================================================
-% Generate bias correction figures.
+% Generate chromosome end bias correction figure.
 %-------------------------------------------------------------------------------------------------
 if (Make_figure_bias_end)
 	%% Generate figure showing subplots of LOWESS fittings.
@@ -608,10 +608,9 @@ if (Make_figure_bias_end)
 		bias_end_fig = figure();
 
 		%%=========================================================
-		% Original plots.
+		% Original plots. (top subfigures)
 		%----------------------------------------------------------
-
-		%% Make median normalized data subplot.
+		%% Make genome median normalized data subplot.
 		subplot(2,6,1:2);
 		hold on;
 		for chr = 1:num_chrs
@@ -629,7 +628,6 @@ if (Make_figure_bias_end)
 		axis square;
 		title('Reads vs. NearestEnd');
 
-% dragon
 		% Make y-value histogram
 		subplot(2,6,3);
 		data = [];
@@ -658,7 +656,6 @@ if (Make_figure_bias_end)
 		axis square;
 		title('NearestEnd Corrected (algorithm 1)');
 
-% dragon
 		% Make y-value histogram
 		subplot(2,6,6);
 		data = [];
@@ -672,10 +669,10 @@ if (Make_figure_bias_end)
 
 
 		%%=========================================================
-		% Attempting to normalize by chromosome median CNV before fitting.
+		% Attempting to normalize by chromosome median CNV before fitting. (bottom subfigures)
 		%----------------------------------------------------------
 
-		%% Make median normalized data subplot.
+		%% Make chromosome median normalized data subplot.
 		subplot(2,6,7:8);
 		hold on;
 		for chr = 1:num_chrs
@@ -693,7 +690,6 @@ if (Make_figure_bias_end)
 		axis square;
 		title('Median normalized Reads vs. NearestEnd');
 
-% dragon
 		% Make y-value histogram
 		subplot(2,6,9);
 		data = [];
@@ -710,7 +706,7 @@ if (Make_figure_bias_end)
 		hold on;
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
-				plot(rawData_chr_X1{chr},normalizedData_chr_Y1{chr},'k.','markersize',1); % corrected data.
+				plot(rawData_chr_X1{chr},normalizedData_chr_Y1_{chr},'k.','markersize',1); % corrected data.
 			end;
 		end;
 		plot([fitX1(1) fitX1(end)],[Y_target Y_target], 'Color', [1 0 0], 'LineWidth',2);          % normalization line.
@@ -720,9 +716,8 @@ if (Make_figure_bias_end)
 		xlim([0 largest_chr_bin_count/2]);
 		ylim([0 4]);
 		axis square;
-		title('NearestEnd Corrected (algorithm 2)');
+		title('NearestEnd Corrected\n(algorithm 2, in development)');
 
-% dragon
 		% Make y-value histogram
 		subplot(2,6,12);
 		data = [];
@@ -750,6 +745,10 @@ if (Make_figure_bias_end)
 	end;
 end;
 
+
+%%================================================================================================
+% Generate GC% bias correction figure.
+%-------------------------------------------------------------------------------------------------
 if (Make_figure_bias_GC)
 	if (performGCbiasCorrection)
 		bias_GC_fig = figure();

@@ -1,25 +1,23 @@
-function [] = createCnvTrack(outputDir, projectName, CNVplot2, basesPerBin, chrNames, maxPloidyToDisplay, ploidyMultiplier)
-
-maxPloidyToDisplay = round(maxPloidyToDisplay);
-
 fprintf(['[***] createCnvTrack.m\n']);
-fprintf(['[***]\toutputDir    = ' outputDir '\n']);
-fprintf(['[***]\tprojectName  = ' projectName '\n']);
+fprintf(['[***]\tprojectDir  = ' projectDir '\n']);
+fprintf(['[***]\tproject     = ' project '\n']);
 
-if (isempty(strfind(projectName,'/')))
-	projectName_ = projectName;
+maxPloidyToDisplay = round(ploidyBase*2);
+ploidyMultiplier   = ploidy*ploidyAdjust;
+
+if (isempty(strfind(project,'/')))
+	project_ = project;
 else
-	idx = strfind(projectName,'/');
-	projectName_ = substr(projectName,idx+1);
+	idx = strfind(project,'/');
+	project_ = substr(project,idx+1);
 end
-fprintf(['[***]\tprojectName_  = ' projectName_ '\n']);
+fprintf(['[***]\tproject_  = ' project_ '\n']);
 
-fprintf(['[***]\toutputFile   = ' outputDir 'cnv.' projectName_ '.gff3\n']);
-cnvTrackFid = fopen(fullfile(outputDir, ['cnv.' projectName_ '.gff3']), 'w');
+fprintf(['[***]\toutputFile   = ' projectDir 'cnv.' project_ '.gff3\n']);
+cnvTrackFid = fopen(fullfile(projectDir, ['cnv.' project_ '.gff3']), 'w');
 if (cnvTrackFid == -1)
-        printf('[***] createCnvTrack.m: Not a valid filename, skipping.');
+        printf('[***] createCnvTrack.m: Not a valid filename, skipping.\n');
 else
-	printf('[***] createCnvTrack.m: CNV track file created.');
 	fprintf(cnvTrackFid, ...
 			[ '##gff-version 3\n\n' ...
 			'[CNV]\n' ...
@@ -34,25 +32,24 @@ else
 			'bump = 0\n' ...
 			'scale = none\n' ...
 			'balloon hover = Estimated CNV is $description\n' ...
-			'key = ' projectName_ ' CNVs\n\n' ], ...
+			'key = ' project_ ' CNVs\n\n' ], ...
 			maxPloidyToDisplay);
 
-	roundedBasesPerBin = round(basesPerBin);
+	roundedbases_per_bin = round(bases_per_bin);
 	for chr = 1:length(CNVplot2)
 		for chrBin = 1:length(CNVplot2{chr})
 			localCopyEstimate = CNVplot2{chr}(chrBin) * ploidyMultiplier;
 
-			binStart = (chrBin - 1) * roundedBasesPerBin + 1;
-			binEnd = binStart + roundedBasesPerBin - 1;
+			binStart = (chrBin - 1) * roundedbases_per_bin + 1;
+			binEnd = binStart + roundedbases_per_bin - 1;
 			fprintf(cnvTrackFid, '%s\tYmap\tCNV\t%d\t%d\t%.1f\t.\t.\tNote=%.1f\n', ...
-				chrNames{chr}, binStart, binEnd, localCopyEstimate, localCopyEstimate);
+				chr_name{chr}, binStart, binEnd, localCopyEstimate, localCopyEstimate);
 		end
 	end
 
 	fclose(cnvTrackFid);
 
 	%% change permissions of file.
-	system(['chmod 774 ' outputDir 'cnv.' projectName_ '.gff3']);
-end
-
+	system(['chmod 774 ' projectDir 'cnv.' project_ '.gff3']);
+	printf('[***] createCnvTrack.m: CNV track file created.\n');
 end
