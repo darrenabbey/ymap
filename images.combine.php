@@ -34,7 +34,7 @@
 		$projectsShown = substr($projectsShown, 0, -1);
 	} else {
 		$user          = trim(file_get_contents("YMAPcli.dat"));
-		$projectsShown = "";
+		$projectsShown = "darren:mas202_MRS-g3_illumina:0:<b>mas202</b> MRS-g3_illumina:0:cyan:magenta;darren:mas202_TRE-g5_illumina:1:<b>mas202</b> TRE-g5_illumina:0:cyan:magenta";
 	}
 
 	// auxillary functions
@@ -124,6 +124,12 @@
 
 		// Grab genome from user 1st project.
 		$genomeName = trim(file_get_contents("users/".$fig_user."/projects/".$fig_project."/genome.txt"));
+
+
+		if (!($calledBy === "cli")) {
+			print_r("users/".$fig_user."/genomes/".$genomeName."/\n");
+			print_r("users/default/genomes/".$genomeName."/\n");
+		}
 		if (file_exists("users/".$fig_user."/genomes/".$genomeName."/")) {
 			$genomeDir = "users/".$fig_user."/genomes/".$genomeName."/";
 		} else if(file_exists("users/default/genomes/".$genomeName."/")) {
