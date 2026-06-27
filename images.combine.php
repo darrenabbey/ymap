@@ -89,6 +89,7 @@
 			// user doesn't exist, should never happen: Force logout.
 			session_destroy();
 			echo "<script type='text/javascript'> parent.location.reload(); </script>";
+			exit;
 		}
 		// Confirm requested project exists.
 		$project_dir = "users/".$fig_user."/projects/".$fig_project;
@@ -97,6 +98,7 @@
 			//session_destroy();
 			//echo "<script type='text/javascript'> parent.location.reload(); </script>";
 			echo "<script type='text/javascript'> console.log('$project_dir'); </script>";
+			//reload
 		}
 
 		// load figure version from project.
@@ -130,9 +132,10 @@
 			// genome not found?
 			$genomeName = "";
 			$genomeDir  = "";
-			session_destroy();
-			echo "<script type='text/javascript'> parent.location.reload(); </script>";
-			exit;
+			//session_destroy();
+			//echo "<script type='text/javascript'> parent.location.reload(); </script>";
+			echo "<script type='text/javascript'> console.log('$genomeName'); </script>";
+			//exit;
 		}
 
 		// Grab display name from 1st user project.
@@ -146,9 +149,10 @@
 			// project not found?
 			$projectName = "";
 			$projectDir  = "";
-			session_destroy();
-			echo "<script type='text/javascript'> parent.location.reload(); </script>";
-			exit;
+			//session_destroy();
+			//echo "<script type='text/javascript'> parent.location.reload(); </script>";
+			echo "<script type='text/javascript'> console.log('$projectDir'); </script>";
+			//exit;
 		}
 
 		// Grab linear image fragments from genoem.
@@ -220,9 +224,10 @@
 				// project not found?
 				$projectName = "";
 				$projectDir  = "";
-				session_destroy();
-				echo "<script type='text/javascript'> parent.location.reload(); </script>";
-				exit;
+				//session_destroy();
+				//echo "<script type='text/javascript'> parent.location.reload(); </script>";
+				echo "<script type='text/javascript'> console.log('$fig_project'); </script>";
+				//exit;
 			}
 
 
