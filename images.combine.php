@@ -123,8 +123,7 @@
 		elseif (file_exists($fig_SNP))         { $initial_image = $fig_SNP; }
 
 		// Grab genome from user 1st project.
-		$genomeName = trim(file_get_contents("users/".$fig_user."/projects/".$fig_project."/genome.txt"));
-
+		$genomeName = trim(fgets(fopen("users/".$fig_user."/projects/".$fig_project."/genome.txt", 'r')));
 
 		if ($calledBy === "cli") {
 			print_r("users/".$fig_user."/genomes/".$genomeName."/\n");
@@ -213,7 +212,7 @@
 			echo "<script type='text/javascript'>console.log('2 Combine images from: ".$fig_user.":".$fig_project.":".$fig_key."');</script>";
 
 			// Grab genome from user project.
-			$newGenomeName = trim(file_get_contents("users/".$fig_user."/projects/".$fig_project."/genome.txt"));
+			$newGenomeName = trim(fgets(fopen("users/".$fig_user."/projects/".$fig_project."/genome.txt", 'r')));
 			if (!(file_exists("users/".$fig_user."/genomes/".$newGenomeName."/") || file_exists("users/default/genomes/".$newGenomeName."/"))) {
 				// genome not found?
 				$newGenomeName = "";
