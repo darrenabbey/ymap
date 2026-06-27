@@ -119,9 +119,71 @@
 		$parent                  = strip_tags(trim(file_get_contents("users/".$user."/projects/".$project."/parent.txt")));
 
 		// Load existing bias correction options.
+		//	False		fragment_length_bias (ddRADseq)
+		//	True		GC-content_bias (WGseq, ddRADseq)
+		//	False		[not used, leftover from previous?]
+		//	True		chromosome_end_bias (WGseq, ddRADseq)
+		if (file_exists("users/".$user."/projects/".$project."/dataBiases.txt")) {
+			$array = file("users/".$user."/projects/".$project."/dataBiases.txt");
+			foreach($array as $key => $line) {
+				$dataBiasSelections[$key] = trim($line);
+			}
+			if ($dataBiasSelections[0] == "True") {   $bias1 = "checked";   } else {   $bias1 = "";   }
+			if ($dataBiasSelections[1] == "True") {   $bias2 = "checked";   } else {   $bias2 = "";   }
+			if ($dataBiasSelections[2] == "True") {   $bias3 = "checked";   } else {   $bias3 = "";   }
+			if ($dataBiasSelections[3] == "True") {   $bias4 = "checked";   } else {   $bias4 = "";   }
+		} else {
+			$bias1 = "";
+			$bias2 = "checked";
+			$bias3 = "";
+			$bias4 = "";
+		}
 
 		// Load existing figure selection options.
-
+		//	Figures	[header]
+		//	True		GC content bias figure.
+		//	True		Chromosome end bias figure.
+		//	False		Linear CNV map figure.
+		//	False		Full CNV map figure.
+		//	True		Linear high-top CNV map figure.
+		//	False		Linear SNP/LOH map figure.
+		//	False		Full SNP/LOH map figure.
+		//	False		Linear alleleic ratio (fire-plot) map figure.
+		//	True		Linear CNV/SNP/LOH map figure.
+		//	True		Full CNV/SNP/LOH map figure.
+		//	False		Linear CNV/SNP/LOH map figure with alternate color scheme.
+		//	False		Full CNV/SNP/LOH map figure with alternate color scheme.
+		if (file_exists("users/".$user."/projects/".$project."/figure_options.txt")) {
+			$array = file("users/".$user."/projects/".$project."/figure_options.txt");
+			foreach($array as $key => $line) {
+				$figureOptionSelections[$key] = trim($line);
+			}
+			if ($figureOptionSelections[ 1] == "True") {   $fig_A1 = "checked";   } else {   $fig_A1 = "";   }
+			if ($figureOptionSelections[ 2] == "True") {   $fig_A2 = "checked";   } else {   $fig_A2 = "disabled";   }
+			if ($figureOptionSelections[ 3] == "True") {   $fig_B1 = "checked";   } else {   $fig_B1 = "";   }
+			if ($figureOptionSelections[ 4] == "True") {   $fig_B2 = "checked";   } else {   $fig_B2 = "";   }
+			if ($figureOptionSelections[ 5] == "True") {   $fig_C  = "checked";   } else {   $fig_C  = "";   }
+			if ($figureOptionSelections[ 6] == "True") {   $fig_D1 = "checked";   } else {   $fig_D1 = "";   }
+			if ($figureOptionSelections[ 7] == "True") {   $fig_D2 = "checked";   } else {   $fig_D2 = "";   }
+			if ($figureOptionSelections[ 8] == "True") {   $fig_E  = "checked";   } else {   $fig_E  = "";   }
+			if ($figureOptionSelections[ 9] == "True") {   $fig_F1 = "checked";   } else {   $fig_F1 = "";   }
+			if ($figureOptionSelections[10] == "True") {   $fig_F2 = "checked";   } else {   $fig_F2 = "";   }
+			if ($figureOptionSelections[11] == "True") {   $fig_G1 = "checked";   } else {   $fig_G1 = "";   }
+			if ($figureOptionSelections[12] == "True") {   $fig_G2 = "checked";   } else {   $fig_G2 = "";   }
+		} else {
+			$fig_A1 = "";
+			if ($bias4 == "") {	$fig_A2 = "disabled";	} else {	$fig_A2 = "";	}
+			$fig_B1 = "";
+			$fig_B2 = "";
+			$fig_C  = "";
+			$fig_D1 = "";
+			$fig_D2 = "";
+			$fig_E  = "";
+			$fig_F1 = "";
+			$fig_F2 = "";
+			$fig_G1 = "";
+			$fig_G2 = "";
+		}
 	} else {
 		$genome				= "";
 		$project			= "";
@@ -143,7 +205,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
 		<title>[Needs Title]</title>
 	</HEAD>
-	<BODY onload="UpdateForm();">
+	<BODY onload="UpdateForm(); UpdateBiasWG();">
 		<div id="loginControls"><p>
 		</p></div>
 		<div id="projectCreationInformation"><p>
@@ -255,19 +317,19 @@
 				<tr bgcolor="#CCFFCC"><td>
 					<div id="hiddenFormSection9a" style="display:none">
 						<!-- SnpCgh array --!>
-						<input type="checkbox"      name="0_bias2" value="True" onchange="UpdateFigureSelections();" checked        >GC-content bias<br>
-						<input type="checkbox"      name="0_bias4" value="True" onchange="UpdateBiasWG(); UpdateFigureSelections();">chromosome-end bias
+						<input type="checkbox"      name="0_bias2" value="True" onchange="UpdateFigureSelections();" <?php echo $bias2; ?>>GC-content bias<br>
+						<input type="checkbox"      name="0_bias4" value="True" onchange="UpdateBiasWG(); UpdateFigureSelections();" <?php echo $bias4; ?>>chromosome-end bias
 					</div>
 					<div id="hiddenFormSection9b" style="display:inline">
 						<!-- WGseq --!>
-						<input type="checkbox"      id="1_bias2" name="1_bias2" value="True" onchange="UpdateFigureSelections();" checked        >GC-content bias<br>
-						<input type="checkbox"      id="1_bias4" name="1_bias4" value="True" onchange="UpdateBiasWG(); UpdateFigureSelections();">chromosome-end bias (forces using GC content bias)
+						<input type="checkbox"      id="1_bias2" name="1_bias2" value="True" onchange="UpdateFigureSelections();" <?php echo $bias2; ?>>GC-content bias<br>
+						<input type="checkbox"      id="1_bias4" name="1_bias4" value="True" onchange="UpdateBiasWG(); UpdateFigureSelections();" <?php echo $bias4; ?>>chromosome-end bias (forces using GC content bias)
 					</div>
 					<div id="hiddenFormSection9c" style="display:none">
 						<!-- ddRADseq --!>
-						<input type="checkbox"      name="2_bias1" value="True" checked>fragment-length bias<br>
-						<input type="checkbox"      name="2_bias2" value="True" onchange="UpdateFigureSelections();" checked        >GC-content bias<br>
-						<input type="checkbox"      name="2_bias4" value="True" onchange="UpdateBiasWG(); UpdateFigureSelections();">chromosome-end bias
+						<input type="checkbox"      name="2_bias1" value="True" <?php echo $bias1; ?>>fragment-length bias<br>
+						<input type="checkbox"      name="2_bias2" value="True" onchange="UpdateFigureSelections();" <?php echo $bias2; ?>>GC-content bias<br>
+						<input type="checkbox"      name="2_bias4" value="True" onchange="UpdateBiasWG(); UpdateFigureSelections();" <?php echo $bias4; ?>>chromosome-end bias
 					</div>
 				</td><td>
 				GC% bias correction is almost always ideal.<br>
@@ -276,21 +338,21 @@
 				</td></tr>
 				<tr bgcolor="#FFFFCC"><td>
 				<div id="hiddenFormSection9" style="display:inline">
-					<input type="checkbox" id="fig_bias_1"      name="fig_A1" value="True" checked ><span id="label_bias_1" style="color:black">GC-content bias figure.</span><br>
-					<input type="checkbox" id="fig_bias_2"      name="fig_A2" value="True" disabled><span id="label_bias_2" style="color:grey">Chromosome-end bias figure.</span><br><br>
+					<input type="checkbox" id="fig_bias_1"      name="fig_A1" value="True" <?php echo $fig_A1; ?>><span id="label_bias_1" style="color:black">GC-content bias figure.</span><br>
+					<input type="checkbox" id="fig_bias_2"      name="fig_A2" value="True" <?php echo $fig_A2; ?>><span id="label_bias_2" style="color:<?php if ($fig_A2 == "disabled") { echo "grey"; } else { echo "black"; } ?>">Chromosome-end bias figure.</span><br><br>
 
-					<input type="checkbox" id="fig_Cnv_1"       name="fig_B1" value="True"         >Linear CNV map figure.<br>
-					<input type="checkbox" id="fig_Cnv_2"       name="fig_B2" value="True"         >Full CNV map figure.<br>
-					<input type="checkbox" id="fig_CnvHigh"     name="fig_C"  value="True" checked >Linear high-top CNV map figure.<br><br>
+					<input type="checkbox" id="fig_Cnv_1"       name="fig_B1" value="True" <?php echo $fig_B1; ?>>Linear CNV map figure.<br>
+					<input type="checkbox" id="fig_Cnv_2"       name="fig_B2" value="True" <?php echo $fig_B2; ?>>Full CNV map figure.<br>
+					<input type="checkbox" id="fig_CnvHigh"     name="fig_C"  value="True" <?php echo $fig_C; ?>>Linear high-top CNV map figure.<br><br>
 
-					<input type="checkbox" id="fig_Snp_1"       name="fig_D1" value="True"         >Linear SNP/LOH map figure.<br>
-					<input type="checkbox" id="fig_Snp_2"       name="fig_D2" value="True"         >Full SNP/LOH map figure.<br>
-					<input type="checkbox" id="fig_fireplot_2"  name="fig_E"  value="True"         >Linear alleleic ratio (fire-plot) map figure.<br><br>
+					<input type="checkbox" id="fig_Snp_1"       name="fig_D1" value="True" <?php echo $fig_D1; ?>>Linear SNP/LOH map figure.<br>
+					<input type="checkbox" id="fig_Snp_2"       name="fig_D2" value="True" <?php echo $fig_D2; ?>>Full SNP/LOH map figure.<br>
+					<input type="checkbox" id="fig_fireplot_2"  name="fig_E"  value="True" <?php echo $fig_E; ?>>Linear alleleic ratio (fire-plot) map figure.<br><br>
 
-					<input type="checkbox" id="fig_CnvSnp_1"    name="fig_F1" value="True" checked >Linear CNV/SNP/LOH map figure.<br>
-					<input type="checkbox" id="fig_CnvSnp_2"    name="fig_F2" value="True" checked >Full CNV/SNP/LOH map figure.<br>
-					<input type="checkbox" id="fig_CnvSnpAlt_1" name="fig_G1" value="True"         >Linear CNV/SNP/LOH map figure with alternate color scheme.<br>
-					<input type="checkbox" id="fig_CnvSnpAlt_2" name="fig_G2" value="True"         >Full CNV/SNP/LOH map figure with alternate color scheme.
+					<input type="checkbox" id="fig_CnvSnp_1"    name="fig_F1" value="True" <?php echo $fig_F1; ?>>Linear CNV/SNP/LOH map figure.<br>
+					<input type="checkbox" id="fig_CnvSnp_2"    name="fig_F2" value="True" <?php echo $fig_F2; ?>>Full CNV/SNP/LOH map figure.<br>
+					<input type="checkbox" id="fig_CnvSnpAlt_1" name="fig_G1" value="True" <?php echo $fig_G1; ?>>Linear CNV/SNP/LOH map figure with alternate color scheme.<br>
+					<input type="checkbox" id="fig_CnvSnpAlt_2" name="fig_G2" value="True" <?php echo $fig_G2; ?>>Full CNV/SNP/LOH map figure with alternate color scheme.
 				</div>
 				</td><td>
 				Select which figure types you would like generated for your dataset.
@@ -348,17 +410,13 @@
 				}
 			}
 			UpdateBiasWG=function() {
-                                if (document.getElementById("1_bias4").checked)
-                                {
-                                        document.getElementById("1_bias2").disabled = true;
-                                        document.getElementById("1_bias2").checked = true;
-                                }
-                                else
-                                {
-                                        document.getElementById("1_bias2").disabled = false;
-                                        document.getElementById("1_bias2").checked = true;
-                                }
-                        }
+				if (document.getElementById("1_bias4").checked) {
+					document.getElementById("1_bias2").disabled = true;
+					document.getElementById("1_bias2").checked = true;
+				} else {
+					document.getElementById("1_bias2").disabled = false;
+				}
+			}
 			UpdateFigureSelections=function() {
 				if (document.getElementById("1_bias2").checked) {
 					document.getElementById("fig_bias_1").disabled = false;
