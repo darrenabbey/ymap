@@ -47,16 +47,16 @@
 		imagesavealpha($image, true);
 	}
 
-	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
-	echo "projectsShown = '".$projectsShown."'<br><br>\n";
+	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n\n";
+	echo "projectsShown = '".$projectsShown."'<br><br>\n\n";
 
 	// general variables
 	$linearCartoonHeight = 139; //139 the height in px of the cartoon without labels 136 valid so + 4px.
 
 	if ($projectsShown == "" ) {
-		echo "<script type='text/javascript'> console.log('1 No images to combine.'); parent.document.getElementById('combined_fig_options').style.display = 'none'; </script>";
+		echo "<script type='text/javascript'> console.log('1 No images to combine.'); parent.document.getElementById('combined_fig_options').style.display = 'none';</script>\n\n";
 	} else {
-		echo "<script type='text/javascript'> console.log('1 Combine images from: [".$projectsShown."]'); parent.document.getElementById('combined_fig_options').style.display = 'inline'; </script>";
+		echo "<script type='text/javascript'> console.log('1 Combine images from: [".$projectsShown."]'); parent.document.getElementById('combined_fig_options').style.display = 'inline';</script>\n\n";
 
 		//=======================================================
 		// Clean up any previously constructed combined figures.
