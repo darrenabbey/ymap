@@ -54,9 +54,9 @@
 	$linearCartoonHeight = 139; //139 the height in px of the cartoon without labels 136 valid so + 4px.
 
 	if ($projectsShown == "" ) {
-		echo "<script type='text/javascript'> console.log('1 No images to combine.'); parent.document.getElementById('combined_fig_options').style.display = 'none';</script>\n\n";
+		echo "<script type='text/javascript'>console.log('1 No images to combine.'); parent.document.getElementById('combined_fig_options').style.display = 'none';</script>\n\n";
 	} else {
-		echo "<script type='text/javascript'> console.log('1 Combine images from: [".$projectsShown."]'); parent.document.getElementById('combined_fig_options').style.display = 'inline';</script>\n\n	";
+		echo "<script type='text/javascript'>console.log('1 Combine images from: [".$projectsShown."]'); parent.document.getElementById('combined_fig_options').style.display = 'inline';</script>\n\n";
 
 		//=======================================================
 		// Clean up any previously constructed combined figures.
@@ -97,7 +97,7 @@
 			// project doesn't exist, should never happen: Force logout.
 			//session_destroy();
 			//echo "<script type='text/javascript'> parent.location.reload(); </script>";
-			echo "<script type='text/javascript'> console.log('\$project_dir = $project_dir'); </script>";
+			echo "<script type='text/javascript'>console.log('\$project_dir = $project_dir');</script>";
 			//reload
 		}
 
@@ -126,7 +126,7 @@
 		$genomeName = trim(file_get_contents("users/".$fig_user."/projects/".$fig_project."/genome.txt"));
 
 
-		if (!($calledBy === "cli")) {
+		if ($calledBy === "cli") {
 			print_r("users/".$fig_user."/genomes/".$genomeName."/\n");
 			print_r("users/default/genomes/".$genomeName."/\n");
 		}
@@ -140,7 +140,7 @@
 			$genomeDir  = "";
 			//session_destroy();
 			//echo "<script type='text/javascript'> parent.location.reload(); </script>";
-			echo "<script type='text/javascript'> console.log('\$genomeName = $genomeName'); </script>";
+			echo "<script type='text/javascript'>console.log('\$genomeName = $genomeName');</script>";
 			//exit;
 		}
 
@@ -157,7 +157,7 @@
 			$projectDir  = "";
 			//session_destroy();
 			//echo "<script type='text/javascript'> parent.location.reload(); </script>";
-			echo "<script type='text/javascript'> console.log('\$projectDir = $projectDir'); </script>";
+			echo "<script type='text/javascript'>console.log('\$projectDir = $projectDir');</script>";
 			//exit;
 		}
 
@@ -210,7 +210,7 @@
 			$fig_user    = $entry_parts[0];
 			$fig_project = $entry_parts[1];
 			$fig_key     = $entry_parts[2];
-			echo "<script type='text/javascript'> console.log('2 Combine images from: ".$fig_user.":".$fig_project.":".$fig_key."'); </script>";
+			echo "<script type='text/javascript'>console.log('2 Combine images from: ".$fig_user.":".$fig_project.":".$fig_key."');</script>";
 
 			// Grab genome from user project.
 			$newGenomeName = trim(file_get_contents("users/".$fig_user."/projects/".$fig_project."/genome.txt"));
@@ -231,8 +231,8 @@
 				$projectName = "";
 				$projectDir  = "";
 				//session_destroy();
-				//echo "<script type='text/javascript'> parent.location.reload(); </script>";
-				echo "<script type='text/javascript'> console.log('$fig_project'); </script>";
+				//echo "<script type='text/javascript'>parent.location.reload();</script>";
+				echo "<script type='text/javascript'>console.log('$fig_project');</script>";
 				//exit;
 			}
 
