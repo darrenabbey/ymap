@@ -56,7 +56,7 @@
 	if ($projectsShown == "" ) {
 		echo "<script type='text/javascript'> console.log('1 No images to combine.'); parent.document.getElementById('combined_fig_options').style.display = 'none';</script>\n\n";
 	} else {
-		echo "<script type='text/javascript'> console.log('1 Combine images from: [".$projectsShown."]'); parent.document.getElementById('combined_fig_options').style.display = 'inline';</script>\n\n";
+		echo "<script type='text/javascript'> console.log('1 Combine images from: [".$projectsShown."]'); parent.document.getElementById('combined_fig_options').style.display = 'inline';</script>\n\n	";
 
 		//=======================================================
 		// Clean up any previously constructed combined figures.
@@ -97,7 +97,7 @@
 			// project doesn't exist, should never happen: Force logout.
 			//session_destroy();
 			//echo "<script type='text/javascript'> parent.location.reload(); </script>";
-			echo "<script type='text/javascript'> console.log('$project_dir'); </script>";
+			echo "<script type='text/javascript'> console.log('\$project_dir = $project_dir'); </script>";
 			//reload
 		}
 
@@ -140,7 +140,7 @@
 			$genomeDir  = "";
 			//session_destroy();
 			//echo "<script type='text/javascript'> parent.location.reload(); </script>";
-			echo "<script type='text/javascript'> console.log('$genomeName'); </script>";
+			echo "<script type='text/javascript'> console.log('\$genomeName = $genomeName'); </script>";
 			//exit;
 		}
 
@@ -157,7 +157,7 @@
 			$projectDir  = "";
 			//session_destroy();
 			//echo "<script type='text/javascript'> parent.location.reload(); </script>";
-			echo "<script type='text/javascript'> console.log('$projectDir'); </script>";
+			echo "<script type='text/javascript'> console.log('\$projectDir = $projectDir'); </script>";
 			//exit;
 		}
 
