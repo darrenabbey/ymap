@@ -146,10 +146,10 @@
 		// Grab display name from 1st user project.
 		if (file_exists("users/".$fig_user."/projects/".$fig_project."/")) {
 			$projectDir = "users/".$fig_user."/projects/".$fig_project."/";
-			$projectName = trim(file_get_contents("users/".$fig_user."/projects/".$fig_project."/name.txt"));
+			$projectName = strip_tags(trim(file_get_contents("users/".$fig_user."/projects/".$fig_project."/name.txt")));
 		} else if(file_exists("users/default/projects/".$fig_project."/")) {
 			$projectDir = "users/default/projects/".$fig_project."/";
-			$projectName = trim(file_get_contents("users/default/projects/".$fig_project."/name.txt"));
+			$projectName = strip_tags(trim(file_get_contents("users/default/projects/".$fig_project."/name.txt")));
 		} else {
 			// project not found?
 			$projectName = "";
@@ -221,10 +221,10 @@
 			// Grab display name from user project.
 			if (file_exists("users/".$fig_user."/projects/".$fig_project."/")) {
 				$projectDir = "users/".$fig_user."/projects/".$fig_project."/";
-				$projectName = trim(file_get_contents("users/".$fig_user."/projects/".$fig_project."/name.txt"));
+				$projectName = strip_tags(trim(file_get_contents("users/".$fig_user."/projects/".$fig_project."/name.txt")));
 			} else if(file_exists("users/default/projects/".$fig_project."/")) {
 				$projectDir = "users/default/projects/".$fig_project."/";
-				$projectName = trim(file_get_contents("users/default/projects/".$fig_project."/name.txt"));
+				$projectName = strip_tags(trim(file_get_contents("users/default/projects/".$fig_project."/name.txt")));
 			} else {
 				// project not found?
 				$projectName = "";
@@ -314,7 +314,7 @@
 				imagecopy($working4, $image_bottom, 0, $height_offset, 0, 0,  $imageWidth, $imageHeight_bottom);
 				// add in project name.
 				if ($genomeName == $newGenomeName) {
-					imagestring($working1,5,10,$height_offset+20,$projectName,$black);
+					imagestring($working1,5,10,$height_offset+20,"[".$projectName."]",$black);
 					imagestring($working2,5,10,$height_offset+20,$projectName,$black);
 					imagestring($working3,5,10,$height_offset+20,$projectName,$black);
 					imagestring($working4,5,10,$height_offset+20,$projectName,$black);
