@@ -168,17 +168,16 @@
 		// Load imagees
 		$image_top    = imagecreatefrompng($imageFile_top   );
 		$image_middle = imagecreatefrompng($imageFile_middle);
-		$image_bottom = imagecreatefrompng($imageFile_bottom);
 
 		// Get heights/width of image fragments.
 		$imageHeight_top    = imagesy($image_top);
 		$imageHeight_middle = imagesy($image_middle);
-		$imageHeight_bottom = imagesy($image_bottom);
+		$imageHeight_bottom = 40;
 		$imageHeight        = $imageHeight_top+$imageHeight_middle+$imageHeight_bottom;
 		$imageWidth         = imagesx($image_top);
 
 		// define a white bottom panel (some genomes show annotations on individual figures.
-		$image_bottom = imagecreate($imageWidth,$imageHeight_bottom);
+		$image_bottom = imagecreate($imageWidth,40);
 		$white = imagecolorallocate($image_bottom, 255, 255, 255);
 		imagefilledrectangle($image_bottom,0,0,30,30,$white);
 
