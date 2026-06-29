@@ -344,10 +344,10 @@
 				imagecopy($working4, $image_bottom, 0, $height_offset, 0, 0,  $imageWidth, $imageHeight_bottom);
 				// add in project name.
 				if ($genomeName == $newGenomeName) {
-					imagestring($working1,5,10,$height_offset+20,"{ ".$projectName." }",$black);
-					imagestring($working2,5,10,$height_offset+20,$projectName,$black);
-					imagestring($working3,5,10,$height_offset+20,$projectName,$black);
-					imagestring($working4,5,10,$height_offset+20,$projectName,$black);
+					imagestring($working1,5,10,$height_offset+20,"[ ".$projectName." ]",$black);
+					imagestring($working2,5,10,$height_offset+20,"[ ".$projectName." ]",$black);
+					imagestring($working3,5,10,$height_offset+20,"[ ".$projectName." ]",$black);
+					imagestring($working4,5,10,$height_offset+20,"[ ".$projectName." ]",$black);
 				} else {
 					imagestring($working1,5,10,$height_offset+20,$projectName." : Was not analyzed with the same genome name as above.",$black);
 					imagestring($working2,5,10,$height_offset+20,$projectName." : Was not analyzed with the same genome name as above.",$black);
