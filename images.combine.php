@@ -179,7 +179,7 @@
 
 		// define a white bottom panel (some genomes show annotations on individual figures.
 		$image_bottom = imagecreate($imageWidth,$imageHeight_bottom);
-		imagecolorallocate($image_bottom, 255, 255, 255);
+		//imagecolorallocate($image_bottom, 255, 255, 255);
 
 		// determine number of images to combine.
 		$numImages     = count($projectsShown_entries);
@@ -314,15 +314,15 @@
 				imagecopy($working4, $image_bottom, 0, $height_offset, 0, 0,  $imageWidth, $imageHeight_bottom);
 				// add in project name.
 				if ($genomeName == $newGenomeName) {
-					imagestring($working1,5,10,$height_offset+20,"[ ".$projectName." ]",$black);
-					imagestring($working2,5,10,$height_offset+20,"[ ".$projectName." ]",$black);
-					imagestring($working3,5,10,$height_offset+20,"[ ".$projectName." ]",$black);
-					imagestring($working4,5,10,$height_offset+20,"[ ".$projectName." ]",$black);
+					imagestring($working1,5,10,$height_offset+20,$projectName,$black);
+					imagestring($working2,5,10,$height_offset+20,$projectName,$black);
+					imagestring($working3,5,10,$height_offset+20,$projectName,$black);
+					imagestring($working4,5,10,$height_offset+20,$projectName,$black);
 				} else {
-					imagestring($working1,5,10,$height_offset+20,$projectName." : Was not analyzed with the same genome name as above.",$black);
-					imagestring($working2,5,10,$height_offset+20,$projectName." : Was not analyzed with the same genome name as above.",$black);
-					imagestring($working3,5,10,$height_offset+20,$projectName." : Was not analyzed with the same genome name as above.",$black);
-					imagestring($working4,5,10,$height_offset+20,$projectName." : Was not analyzed with the same genome name as above.",$black);
+					imagestring($working1,5,10,$height_offset+20,$projectName." : Was not analyzed with the same genome name as above, so isn't displayed.",$black);
+					imagestring($working2,5,10,$height_offset+20,$projectName." : Was not analyzed with the same genome name as above, so isn't displayed.",$black);
+					imagestring($working3,5,10,$height_offset+20,$projectName." : Was not analyzed with the same genome name as above, so isn't displayed.",$black);
+					imagestring($working4,5,10,$height_offset+20,$projectName." : Was not analyzed with the same genome name as above, so isn't displayed.",$black);
 				}
 				$height_offset += $imageHeight_bottom;
 
@@ -344,15 +344,15 @@
 				imagecopy($working4, $image_bottom, 0, $height_offset, 0, 0,  $imageWidth, $imageHeight_bottom);
 				// add in project name.
 				if ($genomeName == $newGenomeName) {
-					imagestring($working1,5,10,$height_offset+20,"[ ".$projectName." ]",$black);
-					imagestring($working2,5,10,$height_offset+20,"[ ".$projectName." ]",$black);
-					imagestring($working3,5,10,$height_offset+20,"[ ".$projectName." ]",$black);
-					imagestring($working4,5,10,$height_offset+20,"[ ".$projectName." ]",$black);
+					imagestring($working1,5,10,$height_offset+20,$projectName,$black);
+					imagestring($working2,5,10,$height_offset+20,$projectName,$black);
+					imagestring($working3,5,10,$height_offset+20,$projectName,$black);
+					imagestring($working4,5,10,$height_offset+20,$projectName,$black);
 				} else {
-					imagestring($working1,5,10,$height_offset+20,$projectName." : Was not analyzed with the same genome name as above.",$black);
-					imagestring($working2,5,10,$height_offset+20,$projectName." : Was not analyzed with the same genome name as above.",$black);
-					imagestring($working3,5,10,$height_offset+20,$projectName." : Was not analyzed with the same genome name as above.",$black);
-					imagestring($working4,5,10,$height_offset+20,$projectName." : Was not analyzed with the same genome name as above.",$black);
+					imagestring($working1,5,10,$height_offset+20,$projectName." : Was not analyzed with the same genome name as above, so isn't displayed.",$black);
+					imagestring($working2,5,10,$height_offset+20,$projectName." : Was not analyzed with the same genome name as above, so isn't displayed.",$black);
+					imagestring($working3,5,10,$height_offset+20,$projectName." : Was not analyzed with the same genome name as above, so isn't displayed.",$black);
+					imagestring($working4,5,10,$height_offset+20,$projectName." : Was not analyzed with the same genome name as above, so isn't displayed.",$black);
 				}
 				$height_offset += $imageHeight_bottom;
 
