@@ -171,7 +171,7 @@
 
 		// Get heights/width of image fragments.
 		$imageHeight_top    = imagesy($image_top);
-		$imageHeight_middle = imagesy($image_middle);
+		$imageHeight_middle = imagesy($image_middle)+10;
 		$imageHeight_bottom = 40;
 		$imageHeight        = $imageHeight_top+$imageHeight_middle+$imageHeight_bottom;
 		$imageWidth         = imagesx($image_top);
@@ -294,7 +294,6 @@
                         $black = imagecolorallocate($working1,   0,   0,   0);
 
 			// Grab center fragment of project images.
-			$imageHeight_middle += 10;
 			$image1_middle = imagecrop($image1, ['x'=>0,'y'=>($imageHeight_top-10),'width'=>$imageWidth,'height'=>($imageHeight_middle)]);
 			$image2_middle = imagecrop($image2, ['x'=>0,'y'=>($imageHeight_top-10),'width'=>$imageWidth,'height'=>($imageHeight_middle)]);
 			$image3_middle = imagecrop($image3, ['x'=>0,'y'=>($imageHeight_top-10),'width'=>$imageWidth,'height'=>($imageHeight_middle)]);
