@@ -137,10 +137,10 @@
 			// genome not found?
 			$genomeName = "";
 			$genomeDir  = "";
-			//session_destroy();
-			//echo "<script type='text/javascript'> parent.location.reload(); </script>";
-			echo "<script type='text/javascript'>console.log('\$genomeName = $genomeName');</script>";
-			//exit;
+			session_destroy();
+			echo "<script type='text/javascript'> parent.location.reload(); </script>";
+			//echo "<script type='text/javascript'>console.log('\$genomeName = $genomeName');</script>";
+			exit;
 		}
 
 		// Grab display name from 1st user project.
@@ -154,10 +154,10 @@
 			// project not found?
 			$projectName = "";
 			$projectDir  = "";
-			//session_destroy();
-			//echo "<script type='text/javascript'> parent.location.reload(); </script>";
-			echo "<script type='text/javascript'>console.log('\$projectDir = $projectDir');</script>";
-			//exit;
+			session_destroy();
+			echo "<script type='text/javascript'> parent.location.reload(); </script>";
+			//echo "<script type='text/javascript'>console.log('\$projectDir = $projectDir');</script>";
+			exit;
 		}
 
 		// Grab linear image fragments from genoem.
@@ -179,7 +179,8 @@
 
 		// define a white bottom panel (some genomes show annotations on individual figures.
 		$image_bottom = imagecreate($imageWidth,$imageHeight_bottom);
-		imagecolorallocate($image_bottom, 255, 255, 255);
+		$white = imagecolorallocate($image_bottom, 255, 255, 255);
+		imagefilledrectangle($image_bottom,0,0,30,30,$white);
 
 		// determine number of images to combine.
 		$numImages     = count($projectsShown_entries);
@@ -229,10 +230,10 @@
 				// project not found?
 				$projectName = "";
 				$projectDir  = "";
-				//session_destroy();
-				//echo "<script type='text/javascript'>parent.location.reload();</script>";
-				echo "<script type='text/javascript'>console.log('$fig_project');</script>";
-				//exit;
+				session_destroy();
+				echo "<script type='text/javascript'>parent.location.reload();</script>";
+				//echo "<script type='text/javascript'>console.log('$fig_project');</script>";
+				exit;
 			}
 
 
