@@ -161,11 +161,13 @@
 	if ($calledBy === "cli") {
 		$figure_1 = sanitizeBoolean_ARGV($argv,15);
 		$figure_2 = sanitizeBoolean_ARGV($argv,16);
-		$figure_3 = sanitizeBoolean_ARGV($argv,17);
+		// Always generate chromosome cartoon figure.
+		$figure_3 = true;
 	} else {
 		$figure_1 = sanitizeBoolean_POST("fig_1");
 		$figure_2 = sanitizeBoolean_POST("fig_2");
-		$figure_3 = sanitizeBoolean_POST("fig_3");
+		// Always generate chromosome cartoon figure.
+		$figure_3 = true;
 	}
 
 // Generate 'chromosome_sizes.txt' :
@@ -303,9 +305,9 @@
 	$fileName = $genome_dir."/figure_options.txt";
 	$file     = fopen($fileName, 'w');
 		fwrite($file,"Figures\n");
-		if ($figure_1 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
-		if ($figure_2 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
-		if ($figure_3 != 1) { fwrite($file,"False"  ); } else { fwrite($file,"True"  ); }
+		if ($figure_1) { fwrite($file,"True\n"); } else { fwrite($file,"False\n"); }
+		if ($figure_2) { fwrite($file,"True\n"); } else { fwrite($file,"False\n"); }
+		if ($figure_3) { fwrite($file,"True"  ); } else { fwrite($file,"False"  ); }
 	fclose($file);
 	chmod($fileName,0774);
 
