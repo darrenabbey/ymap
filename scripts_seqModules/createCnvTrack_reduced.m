@@ -5,6 +5,10 @@ fprintf(['[***]\tproject     = ' project '\n']);
 maxPloidyToDisplay = round(ploidyBase*2);
 ploidyMultiplier   = ploidy*ploidyAdjust;
 
+%%
+%% Reduce the data to bins falling outside the expected ploidy (ploidyBase).
+%%
+
 if (isempty(strfind(project,'/')))
 	project_ = project;
 else
@@ -13,8 +17,8 @@ else
 end
 fprintf(['[***]\tproject_  = ' project_ '\n']);
 
-fprintf(['[***]\toutputFile   = ' projectDir 'cnv.' project_ '.gff3\n']);
-cnvTrackFid = fopen(fullfile(projectDir, ['cnv.' project_ '.gff3']), 'w');
+fprintf(['[***]\toutputFile   = ' projectDir 'cnv.' project_ '.CNVs.gff3\n']);
+cnvTrackFid = fopen(fullfile(projectDir, ['cnv.' project_ '.CNVs.gff3']), 'w');
 if (cnvTrackFid == -1)
         printf('[***] createCnvTrack.m: Not a valid filename, skipping.\n');
 else
@@ -37,13 +41,22 @@ else
 
 	roundedbases_per_bin = round(bases_per_bin);
 	for chr = 1:length(CNVplot2)
+		skipLine = false;
 		for chrBin = 1:length(CNVplot2{chr})
 			localCopyEstimate = CNVplot2{chr}(chrBin) * ploidyMultiplier;
 			binStart = (chrBin - 1) * roundedbases_per_bin + 1;
 			binEnd = binStart + roundedbases_per_bin - 1;
 
-			fprintf(cnvTrackFid, '%s\tYmap\tCNV\t%d\t%d\t%.1f\t.\t.\tNote=%s:%d-%d:%.1f\n', ...
-				chr_name{chr}, binStart, binEnd, localCopyEstimate, chr_label{chr}, binStart, binEnd, localCopyEstimate);
+			if (round(localCopyEstimate) == ploidyBase)
+				if (skipLine == false)
+					fprintf(cnvTrackFid,[chr_name{chr} '\tYmap\tCNV\t-\t-\t-\t-\t-\t-\n']);
+				end;
+				skipLine = true;
+			else
+				skipLine = false;
+				fprintf(cnvTrackFid, '%s\tYmap\tCNV\t%d\t%d\t%.1f\t.\t.\tNote=%s:%d-%d:%.1f\n', ...
+					chr_name{chr}, binStart, binEnd, localCopyEstimate, chr_label{chr}, binStart, binEnd, localCopyEstimate);
+			end;
 		end
 	end
 
