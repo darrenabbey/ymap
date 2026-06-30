@@ -74,7 +74,7 @@ for i in my_file:	# process pileup file line by line.
 		T                         = len(re.findall("T", reads_noIndels_noStartEnd))
 		G                         = len(re.findall("G", reads_noIndels_noStartEnd))
 		C                         = len(re.findall("C", reads_noIndels_noStartEnd))
-		ref_count                 = len(re.findall("\.", reads_noIndels_noStartEnd)) + len(re.findall("\,", reads_noIndels_noStartEnd))
+		ref_count                 = len(re.findall(".", reads_noIndels_noStartEnd)) + len(re.findall(",", reads_noIndels_noStartEnd))
 	else:
 		A                         = 0;
 		T                         = 0;
