@@ -288,8 +288,14 @@ if (Make_figure == true)
 					startY = maxY/2;
 					if (Low_quality_ploidy_estimate == true)
 						endY = CNVhistValue*ploidy*ploidyAdjust;
+						if isna(CNVhistValue)
+							endY = ploidy*ploidyAdjust;
+						end;
 					else
 						endY = CNVhistValue*ploidy;
+						if isna(CNVhistValue)
+							endY = ploidy;
+						end;
 					end;
 					y_ = [startY endY endY startY];
 					% makes a blackbar for each bin.
@@ -579,8 +585,14 @@ if (Make_figure == true)
 					startY = maxY/2;
 					if (Low_quality_ploidy_estimate == true)
 						endY = CNVhistValue*ploidy*ploidyAdjust;
+						if isna(CNVhistValue)
+							endY = ploidy*ploidyAdjust;
+						end;
 					else
 						endY = CNVhistValue*ploidy;
+						if isna(CNVhistValue)
+							endY = ploidy;
+						end;
 					end;
 					y_ = [startY endY endY startY];
 

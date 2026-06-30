@@ -287,9 +287,10 @@ largestChr = largestChr(1);
 
 
 %% =========================================================================================
-% Generate CNV track file.
+% Generate CNV track files.
 %-------------------------------------------------------------------------------------------
 source('../createCnvTrack.m');
+source('../createCnvTrack_reduced.m');
 
 
 %% =========================================================================================
@@ -542,8 +543,14 @@ for chr_to_draw  = 1:length(chr_order)
 				startY = maxY/2;
 				if (Low_quality_ploidy_estimate)
 					endY = min(maxY,CNVhistValue*ploidy*ploidyAdjust);
+					if isna(CNVhistValue)
+						endY = ploidy*ploidyAdjust;
+					end;
 				else
 					endY = min(maxY,CNVhistValue*ploidy);
+					if isna(CNVhistValue)
+						endY = ploidy;
+					end;
 				end;
 				y_ = [startY endY endY startY];
 
@@ -839,8 +846,14 @@ for chr_to_draw  = 1:length(chr_order)
 				startY = maxY/2;
 				if (Low_quality_ploidy_estimate)
 					endY = min(maxY,CNVhistValue*ploidy*ploidyAdjust);
+					if isna(CNVhistValue)
+						endY = ploidy*ploidyAdjust;
+					end;
 				else
 					endY = min(maxY,CNVhistValue*ploidy);
+					if isna(CNVhistValue)
+						endY = ploidy;
+					end;
 				end;
 				y_ = [startY endY endY startY];
 				% makes a blackbar for each bin.

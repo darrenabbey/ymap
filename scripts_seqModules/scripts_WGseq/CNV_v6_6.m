@@ -997,8 +997,14 @@ for chr_to_draw  = 1:length(chr_order)
 				startY = maxY/2;
 				if (Low_quality_ploidy_estimate)
 					endY = min(maxY,CNVhistValue*ploidy*ploidyAdjust);
+					if isna(CNVhistValue)
+						endY = ploidy*ploidyAdjust;
+					end;
 				else
 					endY = min(maxY,CNVhistValue*ploidy);
+					if isna(CNVhistValue)
+						endY = ploidy;
+					end;
 				end;
 				y_ = [startY endY endY startY];
 
@@ -1264,8 +1270,14 @@ for chr_to_draw  = 1:length(chr_order)
 				startY = maxY/2;
 				if (Low_quality_ploidy_estimate)
 					endY = CNVhistValue*ploidy*ploidyAdjust;
+					if isna(CNVhistValue)
+						endY = ploidy*ploidyAdjust;
+					end;
 				else
 					endY = CNVhistValue*ploidy;
+					if isna(CNVhistValue)
+						endY = ploidy;
+					end;
 				end;
 				y_ = [startY endY endY startY];
 
