@@ -144,18 +144,22 @@
 		$genome_name = str_replace("+ ","",$genome_name);
 
 		// get project name string.
-		$projectNameFile = "users/".$user."/projects/".$project."/name.txt";
-		$projectNameString = file_get_contents($projectNameFile);
-		$projectNameString = trim($projectNameString);
-
 		$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 		$projectNameString = trim($projectNameString);
+
+		// Get project folder name.
+                $position = strpos($project, '/');
+                $project_ = $position !== false ? trim(substr($project,$position+1)) : $project;
 
 		echo "<table style='background-color:".$bgColor.";' width='100%'><tr><td>\n";
 		echo "<span id='p_label_".$key."_super2' style='color:#".$labelRgbColor."; background-color:#".$labelRgbBackgroundColor.";'>\n\t\t\t\t";
 		echo "<font size='2'>[".$user."] ".($key_display+1).". &nbsp; &nbsp;";
 
-		echo $projectNameString." ";
+		if ($project_ == $projectNameString) {
+			echo $projectNameString." ";
+		} else {
+			echo $project_." (".$projectNameString.") ";
+		}
 		echo "</font></span> ".$genome_name."\n";
 
 		// Load error.txt from project folder into $_SESSION.

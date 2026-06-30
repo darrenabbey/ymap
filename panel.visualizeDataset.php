@@ -288,6 +288,11 @@
 			// getting project name.
 			$nameFile        = "users/".$user."/projects/".$project."/name.txt";
 			$parent_file     = "users/".$user."/projects/".$project."/parent.txt";
+
+			// Get project folder name.
+			$position = strpos($project, '/');
+			$project_ = $position !== false ? trim(substr($project,$position+1)) : $project;
+
 			if (file_exists($nameFile) and file_exists($parent_file)) {
 				$projectNameString = file_get_contents($nameFile);
 				$projectNameString = trim($projectNameString);
@@ -311,7 +316,11 @@
 				echo $prefix."<span id='p_label_".$key."' style='color:#000000; background-color:#FFFFCC;'>\n\t\t";
 				echo "<font size='2'>".($key_display+1).".";
 				echo "<input id='show_p".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','');\" style=\"visibility:hidden;\">";
-				echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
+				if ($project_ == $projectNameString) {
+					echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
+				} else {
+					echo "\n\t\t".$project_." (".$projectNameString.")</font></span> ".$genome_name."\n\t\t";
+				}
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
 				echo "<div id='frameContainer.p2_".$key."'></div>";
@@ -321,7 +330,7 @@
 				echo $prefix."<span id='p_label_".$key."' style='color:#888888;'>\n\t\t";
 				echo "<font size='2'>".($key_display+1).".";
 				echo "<input id='show_p".$key."' type='checkbox'>";
-				echo "\n\t\t".$project."</font></span> ".$genome_name."\n\t\t";
+				echo "\n\t\t".$project_."</font></span> ".$genome_name."\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
 				echo "<div id='frameContainer.p2_".$key."'></div>";
@@ -353,6 +362,11 @@
 		// getting project name.
 		$nameFile        = "users/".$user."/projects/".$project."/name.txt";
 		$parent_file     = "users/".$user."/projects/".$project."/parent.txt";
+
+		// Get project folder name.
+		$position = strpos($project, '/');
+		$project_ = $position !== false ? trim(substr($project,$position+1)) : $project;
+
 		if (file_exists($nameFile) and file_exists($parent_file)) {
 			$projectNameString = file_get_contents($nameFile);
 			$projectNameString = trim($projectNameString);
@@ -382,7 +396,11 @@
 			}
 			echo "<font size='2'>".($key_display+1).".";
 			echo "<input id='show_p".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','');\" style=\"visibility:hidden;\">";
-			echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
+			if ($project_ == $projectNameString) {
+				echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
+			} else {
+				echo "\n\t\t".$project_." (".$projectNameString.")</font></span> ".$genome_name."\n\t\t";
+			}
 			echo "<span id='p_".$project."_type'></span>\n\t\t";
 			echo "<br>\n\t\t";
 			echo "<div id='frameContainer.p2_".$key."'></div>";
@@ -392,7 +410,7 @@
 			echo $prefix."<span id='p_label_".$key."' style='color:#888888;'>\n\t\t";
 			echo "<font size='2'>".($key_display+1).".";
 			echo "<input id='show_p".$key."' type='checkbox'>";
-			echo "\n\t\t".$project."</font></span> ".$genome_name."\n\t\t";
+			echo "\n\t\t".$project_."</font></span> ".$genome_name."\n\t\t";
 			echo "<span id='p_".$project."_type'></span>\n\t\t";
 			echo "<br>\n\t\t";
 			echo "<div id='frameContainer.p2_".$key."'></div>";
@@ -424,6 +442,11 @@
 			// getting project name.
 			$nameFile        = "users/".$user."/projects/".$project."/name.txt";
 			$parent_file     = "users/".$user."/projects/".$project."/parent.txt";
+
+			// Get project folder name.
+			$position = strpos($project, '/');
+			$project_ = $position !== false ? trim(substr($project,$position+1)) : $project;
+
 			if (file_exists($nameFile) and file_exists($parent_file)) {
 				$projectNameString = file_get_contents($nameFile);
 				$projectNameString = trim($projectNameString);
@@ -447,7 +470,11 @@
 				echo $prefix."<span id='p_label_".$key."' style='color:#BB9900;'>\n\t\t";
 				echo "<font size='2'>".($key_display+1).".";
 				echo "<input id='show_p".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','');\" style=\"visibility:hidden;\">";
-				echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
+				if ($project_ == $projectNameString) {
+					echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
+				} else {
+					echo "\n\t\t".$project_." (".$projectNameString.")</font></span> ".$genome_name."\n\t\t";
+				}
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
 				echo "<div id='frameContainer.p2_".$key."'></div>";
@@ -457,7 +484,7 @@
 				echo $prefix."<span id='p_label_".$key."' style='color:#888888;'>\n\t\t";
 				echo "<font size='2'>".($key_display+1).".";
 				echo "<input id='show_p".$key."' type='checkbox'>";
-				echo "\n\t\t".$project."</font></span> ".$genome_name."\n\t\t";
+				echo "\n\t\t".$project_."</font></span> ".$genome_name."\n\t\t";
 				echo "<span id='p_".$project."_type'></span>\n\t\t";
 				echo "<br>\n\t\t";
 				echo "<div id='frameContainer.p2_".$key."'></div>";
@@ -496,6 +523,11 @@
 		// getting project name.
 		$nameFile        = "users/".$user."/projects/".$project."/name.txt";
 		$parent_file     = "users/".$user."/projects/".$project."/parent.txt";
+
+		// Get project folder name.
+		$position = strpos($project, '/');
+		$project_ = $position !== false ? trim(substr($project,$position+1)) : $project;
+
 		if (file_exists($nameFile) and file_exists($parent_file)) {
 			$projectNameString = file_get_contents($nameFile);
 			$projectNameString = trim($projectNameString);
@@ -539,7 +571,11 @@
 			}
 			echo "<font size='2'>".($key_display+1).".";
 			echo "<input id='show_p".$key."' type='checkbox' onclick=\"parent.openProject('$user','$project','$key','$projectNameString','$colorString1','$colorString2','$parentString','$figVer','$warning_string'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
-			echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
+			if ($project_ == $projectNameString) {
+				echo "\n\t\t".$projectNameString."</font></span> ".$genome_name."\n\t\t";
+			} else {
+				echo "\n\t\t".$project_." (".$projectNameString.")</font></span> ".$genome_name."\n\t\t";
+			}
 			echo "<font size='1' style='color:#999999;'> - Completed: ".$figDate."</font>";
 			echo "<span id='p2_".$project."_delete'></span><span id='p_".$project."_type'></span>\n\t\t";
 			echo "<br>\n\t\t";
@@ -550,7 +586,7 @@
 			echo $prefix."<span id='p_label_".$key."' style='color:#888888;'>\n\t\t";
 			echo "<font size='2'>".($key_display+1).".";
 			echo "<input id='show_p".$key."' type='checkbox'>";
-			echo "\n\t\t".$project."</font></span> ".$genome_name."\n\t\t";
+			echo "\n\t\t".$project_."</font></span> ".$genome_name."\n\t\t";
 			echo "<span id='p_".$project."_type'></span>\n\t\t";
 			echo "<br>\n\t\t";
 			echo "<div id='frameContainer.p2_".$key."'></div>";
@@ -710,7 +746,6 @@
 		$key = $key_ + $userProjectCount_starting + $userProjectCount_working + $userProjectCount_complete;
 		echo "<font size='2'>".($key+1).".";
 		echo "<input id='show_p".$key."_sys' type='checkbox' onclick=\"parent.openProject('default','".$project."','".$key."_sys','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','');\" data-file-list='".$json_file_list."'>";
-
 		echo $projectNameString."</font>";
 		echo "<br>\n\t\t";
 	}

@@ -192,9 +192,9 @@
 					$color2 = "FFFFFF";
 				}
 				if (file_exists("users/".$admin_as_user."/projects/".$project."/bulk.txt")) {
-					printProjectInfo("4", $key_real, $color1, $color2, $admin_as_user, $project, "(Waiting in queue.)",$prefix,$key_display);
+					printProjectInfo("4", $key_real, $color1, $color2, $admin_as_user, $project, "[Waiting in queue.]",$prefix,$key_display);
 				} else {
-					printProjectInfo("4", $key_real, $color1, $color2, $admin_as_user, $project, "(Upload pending.)",$prefix,$key_display);
+					printProjectInfo("4", $key_real, $color1, $color2, $admin_as_user, $project, "[Upload pending.]",$prefix,$key_display);
 				}
 				$key_display += 1;
 			}
@@ -229,9 +229,9 @@
 						$color2 = "FFFFFF";
 					}
 					if (file_exists("users/".$admin_as_user."/projects/".$project."/bulk.txt")) {
-						printProjectInfo("4", $key_real, $color1, $color2, $admin_as_user, $project, "(Waiting in queue.)",$prefix,$key_display);
+						printProjectInfo("4", $key_real, $color1, $color2, $admin_as_user, $project, "[Waiting in queue.]",$prefix,$key_display);
 					} else {
-						printProjectInfo("4", $key_real, $color1, $color2, $admin_as_user, $project, "(Upload pending.)",$prefix,$key_display);
+						printProjectInfo("4", $key_real, $color1, $color2, $admin_as_user, $project, "[Upload pending.]",$prefix,$key_display);
 					}
 					$key_display += 1;
 				}
@@ -289,8 +289,13 @@
 			$figDate = 0;
 		}
 
+		// Get project display name.
 		$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 		$projectNameString = trim($projectNameString);
+
+		// Get project folder name.
+		$position = strpos($project, '/');
+		$project_ = $position !== false ? trim(substr($project,$position+1)) : $project;
 
 		$warning_file    = "users/".$user."/projects/".$project."/warning.txt";
 		if (file_exists($warning_file)) {
@@ -316,7 +321,12 @@
 			echo "<input id='show_p".$key_real."_super1' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key_real."_super1','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','".$warning_string."'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
 		}
 
-		echo $projectNameString." ".$comment;
+
+		if ($project_ == $projectNameString) {
+			echo $projectNameString." ".$comment;
+		} else {
+			echo $project_." (".$projectNameString.") ".$comment;
+		}
 		echo "</font></span> ".$genome_name."\n\t\t";
 
 		// display total size of files only if the project is finished processeing

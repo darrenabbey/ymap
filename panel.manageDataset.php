@@ -337,16 +337,16 @@
 		//	4: project initiated, quota filled.
 		//	5: project in bulk-processing-queue.
 
-		$projectNameFile = "users/".$user."/projects/".$project."/name.txt";
-		if (is_file($projectNameFile)) {
-			$projectNameString = file_get_contents($projectNameFile);
-			$projectNameString = trim($projectNameString);
-		} else {
-			$projectNameString = $project;
-		}
+		// Get display name.
+		$projectNameString = file_get_contents("users/".$user."/projects/".$project."/name.txt");
+		$projectNameString = trim($projectNameString);
+
+		// Get project folder name.
+		$position = strpos($project, '/');
+		$project_ = $position !== false ? trim(substr($project,$position+1)) : $project;
+
 		echo $prefix."<span id='p_label_".$key."' style='color:#".$labelRgbColor."; background-color:#".$labelRgbBackgroundColor.";'>\n\t\t\t\t";
 		echo "<font size='2'>".($key_display+1).".";
-
 
 		if ($frameContainerIx == "1") {
 			// define update dataset button, which passes key value to update project page in iframe of main page.
@@ -361,7 +361,11 @@
 			}
 		}
 
-		echo " <div style='display: inline-block'> ".$projectNameString." </div>";
+		if ($project_ == $projectNameString) {
+			echo " <div style='display: inline-block'> ".$projectNameString." </div>";
+		} else {
+			echo " <div style='display: inline-block'> ".$project_." (".$projectNameString.") </div>";
+		}
 
 		// checks condensed log to see if initial processing is done.
 		if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
