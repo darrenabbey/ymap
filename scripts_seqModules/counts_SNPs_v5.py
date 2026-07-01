@@ -18,70 +18,82 @@ my_file = open(sys.argv[1]);
 #	'\+[0-9]+[ATCGNatcgn]+' : indicates an insertion.
 #	'\-[0-9]+[ATCGNatcgn]+' : indicates a deletion.
 def dump_indels(astr):
-	result = ""
-	blackout = 0
-	for i in range(0, len(astr)):
-		if astr[i] == "+" or astr[i] == "-":
-			start = i+1
-			val = ""
-			while astr[start] > '0' and astr[start] <= '9':
-				val += astr[start]
-				start += 1
-			if val == "":
-				blackout = 1
+	result = "";
+	i = 0;
+	astr_len = len(astr);
+
+	while i < astr_len:
+		char = astr[i];
+
+		if char == "+" or char == "-":
+			# Look ahead to parse the full integer length of the indel
+			start = i + 1;
+			val_str = "";
+
+			# Safe boundary check along with proper digit matching (includes '0')
+			while start < astr_len and '0' <= astr[start] <= '9':
+				val_str += astr[start];
+				start += 1;
+
+			if val_str:
+				indel_len = int(val_str);
+				# Skip past the +/- character, the digits, and the indel bases
+				i = start + indel_len;
 			else:
-				blackout = int(val) + 1
+				# Fallback if a standalone +/- sign is found without digits
+				i += 1;
 		else:
-			if blackout != 0:
-				blackout -= 1
-			else:
-				if astr[i] == "A" or astr[i] == "T" or astr[i] == "G" or astr[i] == "C" or astr[i] == "." or astr[i] == ",": result += astr[i]
-	return result
+			# Process base match, mismatch, or reference tokens
+			if char in "ATGC.atgc,":
+				result += char;
+			i += 1;
+	return result;
 
 #------------------------------------------------------------------------------------------------------------
 # dump_startend(astr) removes any marks indicating a start or end of a read segment from the read base data.
 #	'\$'  : indicates the start of a read.
 #	'\^.' : indicates the end of a read, with a single character describing quality of that read.
 def dump_startend(astr):
-	result   = ""
-	lastchar = ""
-	oldchar  = ""
-	for i in range(0, len(astr)):
-		newchar = astr[i]
-		if newchar == "$":
-			oldchar = ""
-		elif oldchar == "^":
-			oldchar = ""
-		elif newchar == "^":
-			oldchar = "^"
+	result = ""
+	i = 0
+	astr_len = len(astr)
+
+	while i < astr_len:
+		char = astr[i]
+
+		if char == "^":
+			# Skip the '^' token and the single mapping quality character following it.
+			i += 2
+		elif char == "$":
+			# Skip the '$' read-end token
+			i += 1
 		else:
-			result += newchar
-			oldchar = newchar
-	return result
+			# Keep the valid sequence character
+			result += char
+			i += 1
+	return result;
 
 #------------------------------------------------------------------------------------------------------------
 for i in my_file:	# process pileup file line by line.
-	line                              = i.strip().split();
-	chrom                             = line[0]				# chromosome label for locus.
-	pos                               = line[1]				# coordinate for locus (in bp).
-	ref_base                          = line[2]				# reference base at this locus.
-	total                             = line[3]				# total count of reads at locus.
+	line                              = i.strip().split('\t');
+	if not line or len(line) < 4:
+		continue;
+	chrom                             = line[0];				# chromosome label for locus.
+	pos                               = line[1];				# coordinate for locus (in bp).
+	ref_base                          = line[2].upper();			# reference base at this locus.
+	total                             = line[3];				# total count of reads at locus.
 	if (len(line) > 4):
-		reads                     = line[4].upper()			# string defining locus => capitalized.
-		reads_noStartEnd          = dump_startend(reads)		# locus string without indels.
-		reads_noIndels_noStartEnd = dump_indels(reads_noStartEnd)	# locus string without indels or end/start/quality.
-		A                         = len(re.findall("A", reads_noIndels_noStartEnd))
-		T                         = len(re.findall("T", reads_noIndels_noStartEnd))
-		G                         = len(re.findall("G", reads_noIndels_noStartEnd))
-		C                         = len(re.findall("C", reads_noIndels_noStartEnd))
-		ref_count                 = len(re.findall(".", reads_noIndels_noStartEnd)) + len(re.findall(",", reads_noIndels_noStartEnd))
+		reads                     = line[4];				# string defining locus
+		reads_noStartEnd          = dump_startend(reads);		# locus string without indels.
+		reads_noIndels_noStartEnd = dump_indels(reads_noStartEnd);	# locus string without indels or end/start/quality.
+                A                         = reads_noIndels_noStartEnd.count("A") + reads_noIndels_noStartEnd.count("a");
+                T                         = reads_noIndels_noStartEnd.count("T") + reads_noIndels_noStartEnd.count("t");
+                G                         = reads_noIndels_noStartEnd.count("G") + reads_noIndels_noStartEnd.count("g");
+                C                         = reads_noIndels_noStartEnd.count("C") + reads_noIndels_noStartEnd.count("c");
+		ref_count                 = reads_noIndels_noStartEnd.count(".") + reads_noIndels_noStartEnd.count(",");
+		ref_count                 = len(re.findall(".", reads_noIndels_noStartEnd)) + len(re.findall(",", reads_noIndels_noStartEnd));
 	else:
-		A                         = 0;
-		T                         = 0;
-		G                         = 0;
-		C                         = 0;
-		ref_count                 = 0;
-		# count of reads identical to reference at this locus.
+		A = T = G = C = ref_count = 0;
 
 	#print chrom + '\t' + pos + '\t' + ref_base + '\t' + str(A) + '\t' + str(T) + '\t' +  str(G) + '\t' +  str(C) + '\t' +  str(ref_count)
 	# Adds reference base count to appropriate counter.
@@ -91,22 +103,20 @@ for i in my_file:	# process pileup file line by line.
 	# if samtools output does not contain '.,' characters for matching to reference, then ref_base = 'N'
 	#    and no correction is needed for previous 'ATCG' counts.
 	if ref_base == "A":
-		A = ref_count
+		A += ref_count;
 	elif ref_base == "T":
-		T = ref_count
+		T += ref_count;
 	elif ref_base == "C":
-		C = ref_count
+		C += ref_count;
 	elif ref_base == "G":
-		G = ref_count
+		G += ref_count;
 
 	# boolean interpretation of alternate bases from reference present in reads for locus.
 	# isA+isT+isG+isC > 1 when more than one base is seen at this locus.
-	isA = isT = isG = isC = 0
-	if A != 0: isA = 1
-	if T != 0: isT = 1
-	if G != 0: isG = 1
-	if C != 0: isC = 1
+	isA = 1 if A > 0 else 0
+	isT = 1 if T > 0 else 0
+	isG = 1 if G > 0 else 0
+	isC = 1 if C > 0 else 0
 
 	if isA+isT+isG+isC > 1:		# Only deal with loci where more than one base is seen.
-		print(chrom + '\t' + pos + '\t' + ref_base + '\t' + str(A) + '\t' + str(T) + '\t' +  str(G) + '\t' +  str(C))
-
+		print(f"{chrom}\t{pos}\t{ref_base}\t{A}\t{T}\t{G}\t{C}")

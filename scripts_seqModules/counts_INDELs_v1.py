@@ -15,61 +15,73 @@ my_file = file(sys.argv[1],'r').xreadlines();
 #	'\+[0-9]+[ATCGNatcgn]+' : indicates an insertion.
 #	'\-[0-9]+[ATCGNatcgn]+' : indicates a deletion.
 def dump_indels(astr):
-        result = "";
-        blackout = 0;
-        for i in range(0, len(astr)):
-                if astr[i] == "+" or astr[i] == "-":
-                        start = i+1;
-                        val = "";
-                        while astr[start] > '0' and astr[start] <= '9':
-                                val += astr[start];
-                                start += 1;
-                        if val == "":
-                                blackout = 1;
-                        else:
-                                blackout = int(val) + 1;
-                else:
-                        if blackout != 0:
-                                blackout -= 1;
-                        else:
-                                if astr[i] == "A" or astr[i] == "T" or astr[i] == "G" or astr[i] == "C": result += astr[i];
-        return result;
+	result = "";
+	i = 0;
+	astr_len = len(astr);
+
+	while i < astr_len:
+		char = astr[i];
+
+		if char == "+" or char == "-":
+			# Look ahead to parse the full integer length of the indel
+			start = i + 1;
+			val_str = "";
+
+			# Safe boundary check along with proper digit matching (includes '0')
+			while start < astr_len and '0' <= astr[start] <= '9':
+				val_str += astr[start];
+				start += 1;
+
+			if val_str:
+				indel_len = int(val_str);
+				# Skip past the +/- character, the digits, and the indel bases
+				i = start + indel_len;
+			else:
+				# Fallback if a standalone +/- sign is found without digits
+				i += 1;
+		else:
+			# Process base match, mismatch, or reference tokens
+			if char in "ATGC.atgc,":
+				result += char;
+			i += 1;
+	return result;
 
 #------------------------------------------------------------------------------------------------------------
 # dump_startend(astr) removes any marks indicating a start or end of a read segment from the read base data.
 #	'\$'  : indicates the start of a read.
 #	'\^.' : indicates the end of a read, with a single character describing quality of that read.
 def dump_startend(astr):
-	result   = "";
-	lastchar = "";
-	oldchar  = "";
-	for i in range(0, len(astr)):
-		newchar = astr[i];
-		if newchar == "$":
-			oldchar = "";
-		elif oldchar == "^":
-			oldchar = "";
-		elif newchar == "^":
-			oldchar = "^";
+	result = ""
+	i = 0
+	astr_len = len(astr)
+
+	while i < astr_len:
+		char = astr[i]
+
+		if char == "^":
+			# Skip the '^' token and the single mapping quality character following it.
+			i += 2
+		elif char == "$":
+			# Skip the '$' read-end token
+			i += 1
 		else:
-			result += newchar;
-			oldchar = newchar;
+			# Keep the valid sequence character
+			result += char
+			i += 1
 	return result;
 
 #------------------------------------------------------------------------------------------------------------
 for i in my_file:	# process pileup file line by line.
-	line                      = string.split(string.strip(i), ' ');
+	line                      = i.strip().split('\t');
 	chrom                     = line[0];				# chromosome label for locus.
 	pos                       = line[1];				# coordinate for locus (in bp).
 	total                     = line[3];				# total count of reads at locus.
-	if (len(line) > 4):
-		reads             = string.upper(line[4]);		# string defining locus => capitalized.
-		reads_noStartEnd  = dump_startend(reads);		# locus string without indels.
-		inserts           = len(re.findall("\+", reads_noStartEnd));
-		deletions         = len(re.findall("\-", reads_noStartEnd));
-	else:
-		inserts           = 0;
-		deletions         = 0;
+	reads                     = line[4];
+        reads_noStartEnd          = dump_startend(reads)
+	# Count individual indel events by finding literal '+' and '-' characters.
+	inserts   = reads_noStartEnd.count("+");
+	deletions = reads_noStartEnd.count("-");
 
-	if inserts+deletions > 0:		# Only deal with loci with an INDEL.
-		print chrom + '\t' + pos + '\t' + str(total) + '\t' + str(inserts) + '\t' + str(deletions);
+	# Only deal with loci with an INDEL.
+	if inserts + deletions > 0:
+		print(f"{chrom}\t{pos}\t{total}\t{inserts}\t{deletions}")

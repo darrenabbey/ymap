@@ -34,14 +34,17 @@ def find_aveQuality(astr):
 
 #------------------------------------------------------------------------------------------------------------
 for i in my_file:	# process pileup file line by line.
-	line             = string.split(string.strip(i), ' ');
+	line             = i.strip().split('\t');
 	chrom            = line[0];			# chromosome label for locus.
 	pos              = line[1];			# coordinate for locus (in bp).
 	ref_base         = line[2];			# reference base at this locus.
 	total            = line[3];			# total count of reads at locus.
-	if (len(line) > 4):
-		quality  = line[4];			# 'max mapping quality'
+	if (len(line) > 5):
+		read_bases = line[4]           # This is your sequence string
+		quality    = line[5]           # This is your 'max mapping quality' string
 	else:
-		quality  = '';
+		read_bases = ""
+		quality    = ""
 
-	print chrom + '\t' + pos + '\t' + total;
+	print(f"{chrom}\t{pos}\t{total}")
+
