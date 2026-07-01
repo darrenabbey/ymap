@@ -41,18 +41,21 @@ else
 
 	roundedbases_per_bin = round(bases_per_bin);
 	for chr = 1:length(CNVplot2)
+		fprintf(cnvTrackFid,'# chromosome %d:\n', chr);
 		for chrBin = 1:length(CNVplot2{chr})
 			localCopyEstimate = CNVplot2{chr}(chrBin) * ploidyMultiplier;
 			binStart = (chrBin - 1) * roundedbases_per_bin + 1;
 			binEnd = binStart + roundedbases_per_bin - 1;
 
 			if (round(localCopyEstimate) == ploidyBase)
-				fprintf(cnvTrackFid,[chr_name{chr} '\tYmap\tCNV\t-\t-\t-\t-\t-\t-\n']);
+				fprintf(cnvTrackFid, '%s\tYmap\tCNV\t%d\t%d\t.\t.\t.\t.\n', ...
+					chr_name{chr}, binStart, binEnd);
 			else
 				fprintf(cnvTrackFid, '%s\tYmap\tCNV\t%d\t%d\t%.1f\t.\t.\tNote=%s:%d-%d:%.1f\n', ...
 					chr_name{chr}, binStart, binEnd, localCopyEstimate, chr_label{chr}, binStart, binEnd, localCopyEstimate);
 			end;
 		end
+		fprintf(cnvTrackFid,'\n');
 	end
 
 	fclose(cnvTrackFid);
