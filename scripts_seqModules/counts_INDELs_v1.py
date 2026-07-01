@@ -72,7 +72,7 @@ def dump_startend(astr):
 
 #------------------------------------------------------------------------------------------------------------
 for i in my_file:	# process pileup file line by line.
-	line                      = i.strip().split('\t');
+	line                      = i.strip().split();
 	chrom                     = line[0];				# chromosome label for locus.
 	pos                       = line[1];				# coordinate for locus (in bp).
 	total                     = line[3];				# total count of reads at locus.

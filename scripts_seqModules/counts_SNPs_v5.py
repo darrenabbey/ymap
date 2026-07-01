@@ -75,7 +75,7 @@ def dump_startend(astr):
 
 #------------------------------------------------------------------------------------------------------------
 for i in my_file:	# process pileup file line by line.
-	line                              = i.strip().split('\t');
+	line                              = i.strip().split();
 	if not line or len(line) < 4:
 		continue;
 	chrom                             = line[0];				# chromosome label for locus.

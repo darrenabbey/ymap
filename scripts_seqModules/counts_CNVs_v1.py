@@ -34,7 +34,7 @@ def find_aveQuality(astr):
 
 #------------------------------------------------------------------------------------------------------------
 for i in my_file:	# process pileup file line by line.
-	line             = i.strip().split('\t');
+	line             = i.strip().split();
 	chrom            = line[0];			# chromosome label for locus.
 	pos              = line[1];			# coordinate for locus (in bp).
 	ref_base         = line[2];			# reference base at this locus.
