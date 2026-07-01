@@ -119,7 +119,7 @@ if [[ -f "$projectDirectory/putative_SNPs_v4.txt" ]]; then
 else
 	echo -e "Decompressing SNP data." >> $condensedLog;
 	echo -e "\tDecompressing SNP data." >> $logName;
-	echo -e "\t\t$projectDirectory." >> $logName;
+	echo -e "\t\t$projectDirectory/putative_SNPs_v4.zip" >> $logName;
 	cd "$projectDirectory";
 	pigz -dc putative_SNPs_v4.zip > putative_SNPs_v4.txt;
 	cd "$local_dir";
@@ -129,6 +129,7 @@ if [[ -f "$projectDirectory/SNP_CNV_v1.txt" ]]; then
 else
 	echo -e "Decompressing CNV/SNP data." >> $condensedLog;
 	echo -e "\tDecompressing CNV/SNP data." >> $logName;
+	echo -e "\t\t$projectDirectory/SNP_CNV_v1.zip" >> $logName;
 	cd "$projectDirectory";
 	pigz -dc SNP_CNV_v1.zip > SNP_CNV_v1.txt;
 	#unzip -j -o SNP_CNV_v1.zip;
