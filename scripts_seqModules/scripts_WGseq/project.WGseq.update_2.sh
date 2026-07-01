@@ -119,6 +119,7 @@ if [[ -f "$projectDirectory/putative_SNPs_v4.txt" ]]; then
 else
 	echo -e "Decompressing SNP data." >> $condensedLog;
 	echo -e "\tDecompressing SNP data." >> $logName;
+	echo -e "\t\t$projectDirectory." >> $logName;
 	cd "$projectDirectory";
 	pigz -dc putative_SNPs_v4.zip > putative_SNPs_v4.txt;
 	cd "$local_dir";
