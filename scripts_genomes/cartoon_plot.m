@@ -197,8 +197,101 @@ if (Make_cartoon)
 	end;
 
 	fprintf([  '$$$ Cartoon figures saved.\n']);
+
+	%%=========================================================================
+	%%= Process the generated linear chromosome cartoon into fragments. =======
+	%%=========================================================================
+	img = imread( [genomeDir 'fig.cartoon.2.png'] );
+	if size(img, 3) == 3
+		gray = rgb2gray(img);
+	else
+		gray = img;
+	end
+	[img_height, img_width] = size(gray);
+
+	% Mask to white vs non-white.
+	is_white_full = (gray == 255);
+
+	% Get y-coordinates where white changes to non-white or vice-versa.
+	v_transitions = (is_white_full(2:end, :) ~= is_white_full(1:end-1, :));
+
+	% initialize line trackers.
+	L1_all = zeros(1, img_width);
+	L2_all = zeros(1, img_width);
+	valid_columns = false(1, img_width);
+
+	% Scan every column from bottom to top
+	for x = 1:img_width
+		% Get row indices for transitions in this column (+1 adjustment for diff offset)
+                rows_trans_col = find(v_transitions(:, x)) + 1;
+
+		% Sort descending to establish true bottom-to-top tracking sequence
+		rows_trans_col = sort(rows_trans_col, 'descend');
+		total_trans_col = length(rows_trans_col);
+
+		% Each column must have enough transitions to be evaluable
+		if total_trans_col > 1
+			valid_columns(x) = true;
+
+			% Check if 3 lines are present (each line creates 2 transitions)
+			if total_trans_col >= 5
+				% 3 lines present: Skip the bottom line (indices 1 and 2)
+				%       Line 2 uses the 3rd transition.
+				L2_all(x) = rows_trans_col(3);
+				%       Line 1 uses the 6th transition (fallback to max available if text noise cuts it short)
+				target_idx_L1 = min(6, total_trans_col);
+				L1_all(x) = rows_trans_col(target_idx_L1);
+			else
+				% 2 lines present: Keep both lines
+				%       Line 2 uses the 1st transition.
+				L2_all(x) = rows_trans_col(1);
+				%       Line 1 uses the 4th transition (fallback to max available if needed)
+				target_idx_L1 = min(4, total_trans_col);
+				L1_all(x) = rows_trans_col(target_idx_L1);
+			end;
+		end;
+	end;
+
+	% Ensure we found structural data on at least some columns before fragmenting
+	if any(valid_columns)
+		% Filter out un-evaluable columns to ensure accurate math
+		L1_valid = L1_all(valid_columns);
+		L2_valid = L2_all(valid_columns);
+
+		% -----------------------------------------------------------------
+		% RESOLVE GLOBAL THRESHOLDS BASED ON LARGER VERTICAL DISTANCE
+		% -----------------------------------------------------------------
+		% Calculate the exact vertical cartoon gap height for every single column
+		gaps = abs(L1_valid - L2_valid);
+
+		% Find the column index that yields the absolute largest gap profile
+		[max_gap, max_idx] = max(gaps);
+
+		% Assign the global flat clipping horizons from the winning column
+		L1 = L1_valid(max_idx);
+		L2 = L2_valid(max_idx);
+
+		% -----------------------------------------------------------------
+		% 5. Fragment Image parts (Slicing from 'img' to preserve color)
+		% -----------------------------------------------------------------
+		% Fragment Image 1) Top: White pixels above the upper line threshold
+		frag1 = img(1 : (L1-1), :, :);
+		imwrite(frag1, [genomeDir 'fig.cartoon.2.top.png']);
+
+                % Fragment Image 2) Middle: White pixels captured within the line thresholds
+		frag2 = img(L1 : (L2-1), :, :);
+		imwrite(frag2, [genomeDir 'fig.cartoon.2.middle.png']);
+
+		% Fragment Image 3) Bottom: White pixels below the lower line threshold
+		frag3 = img(L2 : img_height, :, :);
+		imwrite(frag3, [genomeDir 'fig.cartoon.2.bottom.png']);
+
+		printf('$$$ Cartoon figure fragments made.\n');
+	else
+		fprintf('$$$ Error: No valid structural transitions discovered across the image.\n');
+	end;
 else
-	fprintf([  '$$$ Not making cartoon figures.\n']);
+	printf([  '$$$ Not making cartoon figures.\n']);
 end;
 
 end

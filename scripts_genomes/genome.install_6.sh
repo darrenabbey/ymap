@@ -251,6 +251,7 @@ else
 
 	echo -e "function [] = processing3()" > $outputName;
 	echo -e "\tpkg load matgeom;" >> $outputName;
+	echo -e "\tpkg load image;" >> $outputName;
 	echo -e "\tdiary('"$genomeDirectory"octave.cartoon.log');" >> $outputName;
 	echo -e "\tcd "$main_dir"scripts_genomes/;" >> $outputName;
 	echo -e "\tcartoon_plot('"$main_dir"','"$user"','"$genome"','"$skew_kmerLength"','"$skew_kmerStep"');" >> $outputName;
