@@ -86,12 +86,11 @@ for i in my_file:	# process pileup file line by line.
 		reads                     = line[4];				# string defining locus
 		reads_noStartEnd          = dump_startend(reads);		# locus string without indels.
 		reads_noIndels_noStartEnd = dump_indels(reads_noStartEnd);	# locus string without indels or end/start/quality.
-                A                         = reads_noIndels_noStartEnd.count("A") + reads_noIndels_noStartEnd.count("a");
-                T                         = reads_noIndels_noStartEnd.count("T") + reads_noIndels_noStartEnd.count("t");
-                G                         = reads_noIndels_noStartEnd.count("G") + reads_noIndels_noStartEnd.count("g");
-                C                         = reads_noIndels_noStartEnd.count("C") + reads_noIndels_noStartEnd.count("c");
+		A                         = reads_noIndels_noStartEnd.count("A") + reads_noIndels_noStartEnd.count("a");
+		T                         = reads_noIndels_noStartEnd.count("T") + reads_noIndels_noStartEnd.count("t");
+		G                         = reads_noIndels_noStartEnd.count("G") + reads_noIndels_noStartEnd.count("g");
+		C                         = reads_noIndels_noStartEnd.count("C") + reads_noIndels_noStartEnd.count("c");
 		ref_count                 = reads_noIndels_noStartEnd.count(".") + reads_noIndels_noStartEnd.count(",");
-		ref_count                 = len(re.findall(".", reads_noIndels_noStartEnd)) + len(re.findall(",", reads_noIndels_noStartEnd));
 	else:
 		A = T = G = C = ref_count = 0;
 

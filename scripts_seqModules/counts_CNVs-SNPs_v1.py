@@ -83,11 +83,10 @@ for i in my_file:	# process pileup file line by line.
 		reads_noStartEnd          = dump_startend(reads);		# locus string without indels.
 		reads_noIndels_noStartEnd = dump_indels(reads_noStartEnd);	# locus string without indels or end/start/quality.
 		A                         = reads_noIndels_noStartEnd.count("A") + reads_noIndels_noStartEnd.count("a");
-                T                         = reads_noIndels_noStartEnd.count("T") + reads_noIndels_noStartEnd.count("t");
-                G                         = reads_noIndels_noStartEnd.count("G") + reads_noIndels_noStartEnd.count("g");
-                C                         = reads_noIndels_noStartEnd.count("C") + reads_noIndels_noStartEnd.count("c");
+		T                         = reads_noIndels_noStartEnd.count("T") + reads_noIndels_noStartEnd.count("t");
+		G                         = reads_noIndels_noStartEnd.count("G") + reads_noIndels_noStartEnd.count("g");
+		C                         = reads_noIndels_noStartEnd.count("C") + reads_noIndels_noStartEnd.count("c");
 		ref_count                 = reads_noIndels_noStartEnd.count(".") + reads_noIndels_noStartEnd.count(",");  # count of reads identical to reference at this locus.
-
 	else:
 		# There are no reads at this position.
 		A = T = G = C = ref_count = 0;
@@ -100,13 +99,13 @@ for i in my_file:	# process pileup file line by line.
 	# if samtools output does not contain '.,' characters for matching to reference, then ref_base = 'N'
 	#    and no correction is needed for previous 'ATCG' counts.
 	if ref_base == "A":
-                A += ref_count
-        elif ref_base == "T":
-                T += ref_count
-        elif ref_base == "C":
-                C += ref_count
-        elif ref_base == "G":
-                G += ref_count
+		A += ref_count
+	elif ref_base == "T":
+		T += ref_count
+	elif ref_base == "C":
+		C += ref_count
+	elif ref_base == "G":
+		G += ref_count
 
 	# boolean interpretation of alternate bases from reference present in reads for locus.
 	# isA+isT+isG+isC > 1 when more than one base is seen at this locus.
