@@ -50,6 +50,9 @@ else
 			if (round(localCopyEstimate) == ploidyBase)
 				fprintf(cnvTrackFid, '%s\tYmap\tCNV\t%d\t%d\t.\t.\t.\t.\n', ...
 					chr_name{chr}, binStart, binEnd);
+			elseif isna(localCopyEstimate)
+				fprintf(cnvTrackFid, '%s\tYmap\tCNV\t%d\t%d\t.\t.\t.\t.\n', ...
+					chr_name{chr}, binStart, binEnd);
 			else
 				fprintf(cnvTrackFid, '%s\tYmap\tCNV\t%d\t%d\t%.1f\t.\t.\tNote=%s:%d-%d:%.1f\n', ...
 					chr_name{chr}, binStart, binEnd, localCopyEstimate, chr_label{chr}, binStart, binEnd, localCopyEstimate);
