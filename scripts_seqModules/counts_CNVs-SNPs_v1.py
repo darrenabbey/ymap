@@ -23,27 +23,42 @@ def dump_indels(astr):
 	while i < astr_len:
 		char = astr[i];
 
-		if char == "+" or char == "-":
-			# Look ahead to parse the full integer length of the indel
+		if char in "-+":
+			# Look ahead to parse the full integer length of the indel.
 			start = i + 1;
 			val_str = "";
 
-			# Safe boundary check along with proper digit matching (includes '0')
+			# Safe boundary check along with proper digit matching (includes '0').
 			while start < astr_len and '0' <= astr[start] <= '9':
 				val_str += astr[start];
 				start += 1;
 
 			if val_str:
 				indel_len = int(val_str);
-				# Skip past the +/- character, the digits, and the indel bases
+				# Skip past the +/- character, the digits, and the indel bases.
 				i = start + indel_len;
 			else:
-				# Fallback if a standalone +/- sign is found without digits
+				# Fallback if a standalone +/- sign is found without digits.
 				i += 1;
+		elif char in "*#<>":
+			# Explicitly ignore overlapping deletions and boundary placeholders "*#".
+			# Explicitly ignore spliced/skipped read segments "<>".
+			i += 1
+		elif char == "^":
+			# Pass through BOTH the '^' and its mandatory trailing mapping quality character together.
+			if i + 1 < astr_len:
+				result += astr[i : i + 2]
+				i += 2
+			else:
+				result += char
+				i += 1
+		elif char in "ATGC.atgc,$":
+			# Process base match, mismatch, or reference tokens.
+			result += char;
+			i += 1;
 		else:
-			# Process base match, mismatch, or reference tokens
-			if char in "ATGC.atgc,":
-				result += char;
+			# Pass-through other characters.
+			result += char;
 			i += 1;
 	return result;
 
@@ -60,17 +75,37 @@ def dump_startend(astr):
 	while i < astr_len:
 		char = astr[i]
 
-		if char == "^":
-			# Skip the '^' token and the single mapping quality character following it.
+		if char in "-+":
+			# Pass the +/- token through.
+			result += char
+			start = i + 1
+			val_str = ""
+
+			# Parse the full integer length of the indel.
+			while start < astr_len and '0' <= astr[start] <= '9':
+				val_str += astr[start]
+				start += 1
+
+			if val_str:
+				indel_len = int(val_str)
+				# Pass the digits and the exact indel bases through.
+				end_idx = start + indel_len
+				result += astr[i + 1 : end_idx]
+				i = end_idx
+			else:
+				i += 1
+		elif char == "^":
+			# Safely skip '^' and its quality character.
 			i += 2
 		elif char == "$":
-			# Skip the '$' read-end token
+			# Skip the '$' read-end token.
 			i += 1
 		else:
-			# Keep the valid sequence character
+			# Keep all other valid sequence, placeholder, and junction characters.
 			result += char
 			i += 1
 	return result;
+
 
 #------------------------------------------------------------------------------------------------------------
 for i in my_file:	# process pileup file line by line.
