@@ -131,38 +131,67 @@
 		fwrite($logOutput, "\tGrabbed 'dataFormat.txt' file.\n");
 
 		// Get existing showAnnotations selection.
-		$fileName            = $project_dir."/showAnnotations.txt";
-		$fileID              = fopen($fileName, 'r');
-		$showAnnotations_old = (int)trim(fgets($fileID));
-		fclose($fileID);
+		if (file_exists($project_dir."/showAnnotations.txt")) {
+			$fileName            = $project_dir."/showAnnotations.txt";
+			$fileID              = fopen($fileName, 'r');
+			$showAnnotations_old = (int)trim(fgets($fileID));
+			fclose($fileID);
+		} else {
+			$showAnnotations_old = false;
+			fwrite($logOutput, "\t'showAnnotations.txt' file not found, using defaults.\n");
+		}
 
 		// Get existing data bias correction selections.
-		$fileName            = $project_dir."/dataBiases.txt";
-		$fileID              = fopen($fileName, 'r');
-		$bias_length_old     = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-		$bias_GC_old         = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-		$bias_unused         = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-		$bias_end_old        = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-		fclose($fileID);
-		fwrite($logOutput, "\tGrabbed 'dataBiases.txt' file.\n");
+		if (file_exists($project_dir."/dataBiases.txt")) {
+			$fileName            = $project_dir."/dataBiases.txt";
+			$fileID              = fopen($fileName, 'r');
+			$bias_length_old     = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			$bias_GC_old         = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			$bias_unused         = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			$bias_end_old        = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			fclose($fileID);
+			fwrite($logOutput, "\tGrabbed 'dataBiases.txt' file.\n");
+		} else {
+			$bias_length_old = false;
+			$bias_GC_old     = true;
+			$bias_unused     = false;
+			$bias_end_old    = false;
+			fwrite($logOutput, "\t'dataBiases.txt' file not found, using defaults.\n");
+		}
 
 		// Get existing figure selections.
-		$fileName            = $project_dir."/figure_options.txt";
-		$fileID              = fopen($fileName, 'r');
-		$fig_A1_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-		$fig_A2_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-		$fig_B1_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-		$fig_B2_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-		$fig_C_old           = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-		$fig_D1_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-		$fig_D2_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-		$fig_E_old           = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-		$fig_F1_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-		$fig_F2_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-		$fig_G1_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-		$fig_G2_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-		fclose($fileID);
-		fwrite($logOutput, "\tGrabbed 'figure_options.txt' file.\n");
+		if (file_exists($project_dir."/figure_options.txt")) {
+			$fileName            = $project_dir."/figure_options.txt";
+			$fileID              = fopen($fileName, 'r');
+			$fig_A1_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			$fig_A2_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			$fig_B1_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			$fig_B2_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			$fig_C_old           = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			$fig_D1_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			$fig_D2_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			$fig_E_old           = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			$fig_F1_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			$fig_F2_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			$fig_G1_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			$fig_G2_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			fclose($fileID);
+			fwrite($logOutput, "\tGrabbed 'figure_options.txt' file.\n");
+		} else {
+			$fig_A1_old          = true;
+			$fig_A2_old          = false;
+			$fig_B1_old          = false;
+			$fig_B2_old          = false;
+			$fig_C_old           = true;
+			$fig_D1_old          = false;
+			$fig_D2_old          = false;
+			$fig_E_old           = false;
+			$fig_F1_old          = true;
+			$fig_F2_old          = true;
+			$fig_G1_old          = false;
+			$fig_G2_old          = false;
+			fwrite($logOutput, "\t'figure_options.txt' file not found, using defaults.\n");
+		}
 
 //
 // ================================================================================================================
