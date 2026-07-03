@@ -97,6 +97,7 @@ if (isset($_SESSION['logged_on'])) {
 	<li><b>You can now organize your dataset into groups.</b> You can create a new group using the "Manage Datasets" panel, and move existing datasets into a group using the "Update" button associated with each dataset.</li>
 	<li>An example chromosome-cartoon figure is now generated during reference genome installation.</li>
 	<li>The "Combine figures viewed below" button at left now includes dataset names in the figure, as well as better overall spacing.</li>
+	<li>A second GFF3 file is prepared for each dataset, isolating the coordinates with a copy number estimate higher or lower than expected.</li>
 </ul>
 
 2026-05-14<ul>
