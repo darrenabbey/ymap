@@ -51,7 +51,7 @@
 		}
 	}
 
-	// Function for recursive rmdir, to clean out full project directory.
+	// Function for recursive rmdir, to clean out full project directory and subdirectories.
 	function rrmdir($dir) {
 		if (is_dir($dir)) {
 			$objects = scandir($dir);

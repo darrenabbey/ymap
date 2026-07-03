@@ -45,6 +45,56 @@
 					Unique name for this dataset.
 				</td></tr>
 				<tr bgcolor="#CCCCFF"><td>
+                                        <label for="displayName">Display Name : </label><input type="text" name="displayName" id="displayName">
+                                </td><td>
+                                        Name to use in figures for this dataset, defaults to name entered above if left blank.
+                                </td></tr>
+				<tr bgcolor="#CCFFCC"><td>
+					<div id="hiddenFormSection3" style="display:inline">
+					<label for="groupKey">Dataset group : </label><select name="groupKey" id="groupKey">
+					<?php
+					// Get list of projects.
+					$projectsDir    = "users/".$user."/projects/";
+					$projectFolders = [];
+					$objects        = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($projectsDir), RecursiveIteratorIterator::SELF_FIRST);
+					foreach($objects as $name => $object){
+						if (is_dir($name)) {
+							$name_ = str_replace($projectsDir,"",$name);
+							if (str_contains($name_,"..") or str_contains($name_,".")) {
+							} else {
+								$projectFolders[] = $name_;
+							}
+						}
+					}
+
+					// Get list of project groups.
+					$projectFolders_subdir       = array();
+					foreach($projectFolders as $key=>$project) {
+						if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
+						} else if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+						} else if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
+						} else if (file_exists("users/".$user."/projects/".$project."/name.txt")) {
+						} else {
+							array_push($projectFolders_subdir,$project);
+						}
+					}
+					sort($projectFolders_subdir);
+
+					// Output selection box options.
+					echo "\n\t\t\t\t\t<option value='0'>[none]</option>";
+					foreach ($projectFolders_subdir as $key => $group) {
+						echo "\n\t\t\t\t\t<option value='".($key+1)."'>".$group. "</option>";
+					}
+					?>
+						</select><br>
+					</div>
+				</td><td valign="top">
+					Dataset group for this dataset to be placed in.
+				</td></tr>
+
+
+
+				<tr bgcolor="#CCCCFF"><td>
 					<label for="ploidy">Ploidy of experiment : </label><input type="text" name="ploidy"  id="ploidy" value="2.0"><br>
 				</td><td>
 					A ploidy estimate for the strain being analyzed.

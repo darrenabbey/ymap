@@ -893,6 +893,14 @@ function blank_and_content_tab() {
 	<br>
 	<iframe id="Hidden_InstallBulkDataset_Frame" src="project_bulk.create_window.php"></iframe>
 </DIV>
+<DIV id="Hidden_MakeNewFolder" style="display: none; position: absolute; border: solid black 1px; padding: 5px; text-align: justify;">
+	<table width="100%"><tr>
+        <td width="95%" align="left">Add new dataset group.</td>
+        <td width="5%" align="right"><div onmousedown="document.getElementById('Hidden_MakeNewFolder').style.display = 'none';" style="display:inline-block;"><b>[X]</b></div></td>
+        </tr></table>
+        <br>
+        <iframe id="Hidden_MakeNewFolder_Frame" src="project.createGroup_window.php"></iframe>
+</DIV>
 <DIV id="Hidden_UpdateDataset" style="display: none; position: absolute; border: solid black 1px; padding: 5px; text-align: justify;">
 	<table width="100%"><tr>
 	<td width="95%" align="left">Update Dataset</td>

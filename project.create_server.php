@@ -28,11 +28,58 @@
 	} else {
 		// Validate input strings.
 		$project         = sanitize_POST("project");
+		$displayName     = whitelistHTML_POST("displayName");
+		$groupKey        = sanitizeIntChar_POST("groupKey");
 		$ploidy          = sanitizeFloat_POST("ploidy");
 		$ploidyBase      = sanitizeFloat_POST("ploidyBase");
 		$dataFormat      = sanitizeIntChar_POST("dataFormat");
 		$showAnnotations = sanitizeIntChar_POST("showAnnotations");
 		$manualLOH       = sanitizeTabbed_POST("manualLOH");
+
+		// sort out displayName;
+		if ($displayName == "") {
+			if ($group == "") {
+				$displayName = $project;
+			} else {
+				$displayName = str_replace($group."/", "", $project);
+			}
+		}
+
+		// Get group directory name, if selected.
+		if ($groupKey == 0) {
+			$group = "";
+		} else {
+			// Get list of projects.
+			$projectsDir    = "users/".$user."/projects/";
+			$projectFolders = [];
+			$objects        = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($projectsDir), RecursiveIteratorIterator::SELF_FIRST);
+			foreach($objects as $name => $object){
+				if (is_dir($name)) {
+					$name_ = str_replace($projectsDir,"",$name);
+					if (str_contains($name_,"..") or str_contains($name_,".")) {
+					} else {
+						$projectFolders[] = $name_;
+					}
+				}
+			}
+			sort($projectFolders);
+
+			// Get list of project groups.
+			$projectFolders_subdir = array();
+			foreach($projectFolders as $key=>$projectName) {
+				if (file_exists("users/".$user."/projects/".$projectName."/complete.txt")) {
+				} else if (file_exists("users/".$user."/projects/".$projectName."/bulk.txt")) {
+				} else if (file_exists("users/".$user."/projects/".$projectName."/working.txt")) {
+				} else if (file_exists("users/".$user."/projects/".$projectName."/name.txt")) {
+				} else {
+					array_push($projectFolders_subdir,$projectName);
+				}
+			}
+			sort($projectFolders_subdir);
+
+			$group = $projectFolders_subdir[$groupKey-1]."/";
+		}
+		$project = $group.$project;
 
 		// Validate additional inputs found when dealing with ddRADseq or WGseq data types.
 		if ($dataFormat != "0") {
@@ -88,9 +135,10 @@
 		}
 
 		// Define some directories for later use.
-		$projects_dir  = "users/".$user."/projects";
-		$project_dir1  = "users/".$user."/projects/".$project;
-		$project_dir2  = "users/default/projects/".$project;
+		$projects_dir     = "users/".$user."/projects";
+		$projectGroup_dir = "users/".$user."/projects/".$group;
+		$project_dir1     = "users/".$user."/projects/".$project;
+		$project_dir2     = "users/default/projects/".$project;
 
 		// Deals with accidental deletion of user/projects dir.
 		if (!file_exists($projects_dir)){
@@ -134,10 +182,10 @@
 			make_salt($user,$project,"","");
 
 			// Generate 'name.txt' file containing:
-			//      one line; name of genome.
+			//      one line; name of genome to be displayed.
 			$outputName   = $project_dir1."/name.txt";
 			$output       = fopen($outputName, 'w');
-			fwrite($output, $project);
+			fwrite($output, $displayName);
 			fclose($output);
 			chmod($outputName,0774);
 
@@ -177,9 +225,14 @@
 
 			// Generate 'dataFormat.txt' and 'dataBiases.txt' files.
 			// dataFormat.txt file: #:#:# where 1st # indicates type of data, 2nd # indicates format of input data, & 3rd # indicates if indel-realignment should be done.
-			// 1st #: 0=SnpCghArray; 1=WGseq (short-read); 2=WGseq (long-read); 3=ddRADseq; 4=FASTQ.
-			// 2nd #: 0=single-end-reads FASTQ/ZIP/GZ; 1=paired-end-reads FASTQ/ZIP/GZ; 2=SAM/BAM; 3=TXT.
-			// 3rd #: 0=False, no indel-realignment; 1=True, performe indel-realignment.
+			//	1st #: 0=SnpCghArray; 1=WGseq (short-read); 2=WGseq (long-read); 3=ddRADseq; 4=FASTQ.
+			//	2nd #: 0=single-end-reads FASTQ/ZIP/GZ; 1=paired-end-reads FASTQ/ZIP/GZ; 2=SAM/BAM; 3=TXT.
+			//	3rd #: 0=False, no indel-realignment; 1=True, performe indel-realignment.
+			// dataBiases.txt file (four booleans, one per line).
+			//	1st: fragment-length bias correction (ddRadSeq only).
+			//	2nd: GC-content bias correction.
+			//	3rd: [Unused] Previously used for repetitiveness bias correction, but this had minimal impact.
+			//	4th: Chromosome end bias correction.
 			$fileName1 = $project_dir1."/dataFormat.txt";
 			$file1     = fopen($fileName1, 'w');
 			$fileName2 = $project_dir1."/dataBiases.txt";

@@ -31,24 +31,22 @@
 		$projectsDir      = "users/".$user."/projects/";
 		$projectFolders = [];
                 $objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($projectsDir), RecursiveIteratorIterator::SELF_FIRST);
-                foreach($objects as $name => $object){
-                        if (is_dir($name)) {
-                                $name_ = str_replace($projectsDir,"",$name);
+                foreach($objects as $entry => $object){
+                        if (is_dir($entry)) {
+                                $name_ = str_replace($projectsDir,"",$entry);
                                 if (str_contains($name_,"..") or str_contains($name_,".")) {
                                 } else {
                                         $projectFolders[] = $name_;
                                 }
                         }
                 }
-
-		// Sort directories by date, newest first.
 		sort($projectFolders);
 
 		// Trim path from each folder string.
 		foreach($projectFolders as $key_=>$folder) {   $projectFolders[$key_] = str_replace($projectsDir,"",$folder);   }
 
 		// Split project list into ready/working/starting lists for sequential display.
-		$projectFolders_subDir   = array();
+		$projectFolders_subdir   = array();
 		$projectFolders_starting = array();
 		$projectFolders_working  = array();
 		$projectFolders_complete = array();
@@ -60,24 +58,17 @@
 			} else if (file_exists("users/".$user."/projects/".$project."/name.txt")) {
 				array_push($projectFolders_starting,$project);
 			} else {
-				array_push($projectFolders_subDir,$project);
+				array_push($projectFolders_subdir,$project);
 			}
 		}
-		array_multisort(array_map('filemtime', $projectFolders_complete), SORT_ASC, $projectFolders_complete);
-		array_multisort(array_map('filemtime', $projectFolders_working ), SORT_ASC, $projectFolders_working );
-		array_multisort(array_map('filemtime', $projectFolders_starting), SORT_ASC, $projectFolders_starting);
-		$userProjectCount_starting = count($projectFolders_starting);
-		$userProjectCount_working  = count($projectFolders_working);
-		$userProjectCount_complete = count($projectFolders_complete);
-
-		// Sort complete and working projects alphabetically.
-		array_multisort($projectFolders_subDir,   SORT_ASC, $projectFolders_subDir);
-		array_multisort($projectFolders_working,  SORT_ASC, $projectFolders_working);
-		array_multisort($projectFolders_complete, SORT_ASC, $projectFolders_complete);
+		sort($projectFolders_subdir);
+		sort($projectFolders_starting);
+		sort($projectFolders_working);
+		sort($projectFolders_complete);
 
 		// Figure out which projects are in subdirs.
 		$displayed_entries = [];
-		foreach($projectFolders_subDir as $key1_=>$subdir) {
+		foreach($projectFolders_subdir as $key1_=>$subdir) {
 			// bulk projects being worked on to user interface.
 			foreach($projectFolders_working as $key_=>$project) {   if (str_contains($project,$subdir)) {   $displayed_entries[] = $project;   }   }
 
@@ -90,12 +81,64 @@
 
 		// Grab key from GET string.
 		$key = sanitizeInt_GET("key");
-		$key = intval($key);// - $userProjectCount_starting - $userProjectCount_working;
+		$key = intval($key);
 
 		// Grab name string from 'name.txt'.
 		$project                 = $projectFolders[$key];
 		$projectNameString       = file_get_contents("users/".$user."/projects/".$project."/name.txt");
 		$name                    = $projectNameString;
+
+		// Grab old project group name.
+		if (str_contains($project,'/')) {
+			$pos   = strpos($project, '/');
+			$group = substr($project, 0, $pos);
+		} else {
+			$group = "";
+		}
+
+		// Determine group key.
+		sort($projectFolders_subdir);
+		if (in_array($group, $projectFolders_subdir)) {
+			$groupKey = array_search($group, $projectFolders_subdir)+1;
+		} else {
+			$groupKey = 0;
+		}
+
+		// Get group directory name, if selected.
+		if ($groupKey == 0) {
+			$group = "";
+		} else {
+			// Get list of projects.
+			$projectsDir    = "users/".$user."/projects/";
+			$projectFolders = [];
+			$objects        = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($projectsDir), RecursiveIteratorIterator::SELF_FIRST);
+			foreach($objects as $entry => $object){
+				if (is_dir($entry)) {
+					$name_ = str_replace($projectsDir,"",$entry);
+					if (str_contains($name_,"..") or str_contains($name_,".")) {
+					} else {
+						$projectFolders[] = $name_;
+					}
+				}
+			}
+			sort($projectFolders);
+
+                        // Get list of project groups.
+                        $projectFolders_subdir = array();
+                        foreach($projectFolders as $key=>$projectName) {
+                                if (file_exists("users/".$user."/projects/".$projectName."/complete.txt")) {
+                                } else if (file_exists("users/".$user."/projects/".$projectName."/bulk.txt")) {
+                                } else if (file_exists("users/".$user."/projects/".$projectName."/working.txt")) {
+                                } else if (file_exists("users/".$user."/projects/".$projectName."/name.txt")) {
+                                } else {
+                                        array_push($projectFolders_subdir,$projectName);
+                                }
+                        }
+                        sort($projectFolders_subdir);
+
+                        $group = $projectFolders_subdir[$groupKey-1]."/";
+                }
+
 
 		// Grab genome and hapmap names from 'genome.txt'.
 		$genomeFileStrings       = file_get_contents("users/".$user."/projects/".$project."/genome.txt");
@@ -220,6 +263,32 @@
 				</td><td>
 					Version of the project name to be used in figures.
 				</td></tr>
+
+				<tr bgcolor="#CCFFCC"><td>
+                                        <div id="hiddenFormSection3" style="display:inline">
+                                        <label for="groupKey">Dataset group : </label><select name="groupKey" id="groupKey">
+                                        <?php
+                                        // Output selection box options.
+					if ($groupKey == 0) {
+						echo "\n\t\t\t\t\t<option value='0' selected>[none]</option>";
+					} else {
+	                                        echo "\n\t\t\t\t\t<option value='0'>[none]</option>";
+					}
+                                        foreach ($projectFolders_subdir as $key => $groupName) {
+						if ($key+1 == $groupKey) {
+							echo "\n\t\t\t\t\t<option value='".($key+1)."' selected>".$groupName."</option>";
+						} else {
+							echo "\n\t\t\t\t\t<option value='".($key+1)."'>".$groupName."</option>";
+						}
+                                        }
+                                        ?>
+                                                </select><br>
+                                        </div>
+                                </td><td valign="top">
+                                        Dataset group for this dataset to be placed in.
+                                </td></tr>
+
+
 				<tr bgcolor="#CCCCFF"><td>
 					<label for="ploidy">Ploidy of experiment : </label><input type="text" name="ploidy"  id="ploidy" value="<?php echo $ploidy; ?>"><br>
 				</td><td>

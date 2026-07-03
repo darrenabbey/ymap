@@ -87,19 +87,25 @@
 				echo "parent.document.getElementById(\"Hidden_InstallNewDataset_Frame\").contentWindow.location.reload(); ";
 				echo "parent.show_hidden(\"Hidden_InstallNewDataset\"); ";
 				echo "parent.update_interface();";
-			echo "'><br>";
+			echo "'>";
+			echo "<font color='red' size='2'> (Wait until uploads complete!)</font>";
 
 			$admin_user_flag_file = "users/".$user."/admin.txt";
 			if (file_exists($admin_user_flag_file)) {
-				echo "<input name='button_InstallBulkDataset' type='button' value='Admin: Install Bulk Dataset'  style='background-color:#FFCCCC;' onclick='";
+				echo "<br><input name='button_InstallBulkDataset' type='button' value='Install Bulk Dataset'  style='background-color:#FFCCCC;' onclick='";
 					echo "parent.document.getElementById(\"Hidden_InstallBulkDataset_Frame\").contentWindow.location.reload(); ";
 					echo "parent.show_hidden(\"Hidden_InstallBulkDataset\"); ";
 					echo "parent.update_interface();";
-				echo "'><br>";
-				//$_SESSION['user']  = $user;
+				echo "'>";
+				echo "<font color='red' size='2'> (Wait until uploads complete!)</font><br>";
 			}
 
-			echo "<font color='red' size='2'> (Wait until uploads complete!)</font><br>";
+			echo "<input name='button_MakeNewFolder' type='button' value='Add Dataset Group' onclick='";
+				echo "parent.document.getElementById(\"Hidden_MakeNewFolder_Frame\").contentWindow.location.reload(); ";
+				echo "parent.show_hidden(\"Hidden_MakeNewFolder\"); ";
+				echo "parent.update_interface();";
+			echo "'>";
+			echo "<font color='red' size='2'> (Refresh page after!)</font><br>";
 		}
 
 		$_SESSION['pending_install_project_count'] = 0;
@@ -262,11 +268,10 @@
 		// 3: project initiated, quota not filled.
 		// 4: project initiated, quota filled.
 		// 5: project in bulk-processing-queue.
+		$prefix = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
 		foreach($projectFolders_subdir as $key1_=>$subdir) {
-			echo "<font size='2'><b>".$subdir."</b></font><br>\n";
-			$prefix = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-
+			printProjectFolderInfo($subdir,$projectFolders);
 			foreach($projectFolders_initiated as $key_=>$project) {
 				if (str_contains($project,$subdir)) {
 					// add initiated bulk/other projects to user interface.
@@ -327,6 +332,26 @@
 	}
 </script>
 <?php
+	}
+	function printProjectFolderInfo($subdir,$projectFolders) {
+		$key_real = array_search($subdir,$projectFolders);
+		echo "<br><font size='2'><b>".$subdir."</b></font>\n";
+
+		// Only allow delete if project group is empty.
+		$foundList = array_filter($projectFolders, function($item) use ($subdir) { return str_contains($item, $subdir); });
+		$count = count($foundList);
+		if ($count == 1) {
+			echo "<span id='p_delete_".$key_real."'></span>\n";
+			if (!file_exists("users/".$user."/projects/".$project."/locked.txt")) {
+				echo "<button id='project_delete_".$key_real."' type='button' onclick=\"parent.deleteProjectConfirmation('".$subdir."','".$key_real."');\">Delete</button>";
+			} else {
+				echo "<font size='2' color='red'>[Project group locked for admin review.]</font>";
+			}
+			echo "\t\t\t\t";
+			echo "<div id='frameContainer.p".$frameContainerIx."_".$key_real."'></div>\n\n\t\t\t\t";
+		} else {
+			echo "<br>";
+		}
 	}
 
 	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $labelRgbBackgroundColor, $user, $project,$key_display,$prefix) {
@@ -408,7 +433,7 @@
 		}
 
 		echo "\t\t\t\t";
-			echo "<div id='frameContainer.p".$frameContainerIx."_".$key."'></div>\n\n\t\t\t\t";
+		echo "<div id='frameContainer.p".$frameContainerIx."_".$key."'></div>\n\n\t\t\t\t";
 	}
 
 	?>
