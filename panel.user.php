@@ -92,33 +92,40 @@ if (isset($_SESSION['logged_on'])) {
 ?>
 </td><td width="70%" style="border:1px solid black; border-radius:10px; padding:10px;" valign="top">
 <b>YMAP news!</b><br><br>
-2026-05-14
-<ul>
-<li>YMAP is back! While we were offline, I took the opportunity to do some major system updates.</li>
-	<ol>
-	<li><b>YMAP now can process long-read sequence data!</b></li>
-	<li>Uploaded data is now added to a queue that will process your data while keeping system demaind under control.</li>
-	<li>Queue status and expected time until next uploaded dataset can start processing is shown in the "Manage Datasets" tab.</li>
-	<li>A warning is presented if less than 50% of uploaded sequence reads map to the reference genome.</li>
-	<li>Fewer process hangs/crashes due to better error management.</i>
-	<li>If a process crashes, a useful error message will be generated, allowing easier code troubleshooting.</li>
-	<li>The install process has been greatly simplified if you want to setup your own local YMAP server. This option will give you the opportunity to use a bulk data processing module that isn't available on the public server.</li>
-	<li>The web interface of YMAP includes several admin tabs for user and analysis management.</li>
-	<li>There is a new commandline admin interface ("YMAPcli.sh") that can use most features of the web interface of YMAP. </li>
-	</ol>
-<br>
-<li>There have been user interface and final output figure improvements.</li>
-	<ol>
-	<li>Chromosome cartoons have a more polished look.</li>
-	<li>The combined figure command now produces a figure with dataset names added above each subfigure.</li>
-	<li>Some buttons have been repositioned to help avoid accidental deletion of data.</li>
-	</ol>
-<br>
-<li>Additional functions are planned to be added at the time of a planned paper where the name will transition to YMAP2.</li>
-	<ol>
-	<li>Natively handling diploid reference genomes.</li>
-	<li>Processing data for much larger genomes?</li>
-	<li>...</li>
-	<li><b><font color="red">What feature immprovements would you like to see?</font></b></li>
-	</ol>
+
+2026-07-02<ul>
+	<li><b>You can now organize your dataset into groups.</b> You can create a new group using the "Manage Datasets" panel, and move existing datasets into a group using the "Update" button associated with each dataset.</li>
+	<li>An example chromosome-cartoon figure is now generated during reference genome installation.</li>
+	<li>The "Combine figures viewed below" button at left now includes dataset names in the figure, as well as better overall spacing.</li>
+</ul>
+
+2026-05-14<ul>
+	<li>YMAP is back! While we were offline, I took the opportunity to do some major system updates.</li>
+		<ol>
+		<li><b>YMAP now can process long-read sequence data!</b></li>
+		<li>Uploaded data is now added to a queue that will process your data while keeping system demaind under control.</li>
+		<li>Queue status and expected time until next uploaded dataset can start processing is shown in the "Manage Datasets" tab.</li>
+		<li>A warning is presented if less than 50% of uploaded sequence reads map to the reference genome.</li>
+		<li>Fewer process hangs/crashes due to better error management.</i>
+		<li>If a process crashes, a useful error message will be generated, allowing easier code troubleshooting.</li>
+		<li>The install process has been greatly simplified if you want to setup your own local YMAP server. This option will give you the opportunity to use a bulk data processing module that isn't available on the public server.</li>
+		<li>The web interface of YMAP includes several admin tabs for user and analysis management.</li>
+		<li>There is a new commandline admin interface ("YMAPcli.sh") that can use most features of the web interface of YMAP. </li>
+		</ol>
+	<br>
+	<li>There have been user interface and final output figure improvements.</li>
+		<ol>
+		<li>Chromosome cartoons have a more polished look.</li>
+		<li>The combined figure command now produces a figure with dataset names added above each subfigure.</li>
+		<li>Some buttons have been repositioned to help avoid accidental deletion of data.</li>
+		</ol>
+	<br>
+	<li>Additional functions are planned to be added at the time of a planned paper where the name will transition to YMAP2.</li>
+		<ol>
+		<li>Natively handling diploid reference genomes.</li>
+		<li>Processing data for much larger genomes?</li>
+		<li>...</li>
+		<li><b><font color="red">What feature immprovements would you like to see?</font></b></li>
+		</ol>
+</ul>
 </td></tr></table>
