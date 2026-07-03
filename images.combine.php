@@ -171,7 +171,7 @@
 
 		// Get heights/width of image fragments.
 		$imageHeight_top    = imagesy($image_top);
-		$imageHeight_middle = imagesy($image_middle)+11;
+		$imageHeight_middle = imagesy($image_middle)+10;
 		$imageHeight_bottom = 40;
 		$imageHeight        = $imageHeight_top+$imageHeight_middle+$imageHeight_bottom;
 		$imageWidth         = imagesx($image_top);
@@ -294,14 +294,14 @@
                         $black = imagecolorallocate($working1,   0,   0,   0);
 
 			// Grab center fragment of project images.
-			$image1_middle = imagecrop($image1, ['x'=>0,'y'=>($imageHeight_top-11),'width'=>$imageWidth,'height'=>($imageHeight_middle)]);
-			$image2_middle = imagecrop($image2, ['x'=>0,'y'=>($imageHeight_top-11),'width'=>$imageWidth,'height'=>($imageHeight_middle)]);
-			$image3_middle = imagecrop($image3, ['x'=>0,'y'=>($imageHeight_top-11),'width'=>$imageWidth,'height'=>($imageHeight_middle)]);
-			$image4_middle = imagecrop($image4, ['x'=>0,'y'=>($imageHeight_top-11),'width'=>$imageWidth,'height'=>($imageHeight_middle)]);
-			imagefilledrectangle($image1_middle,48,0,$imageWidth-48,9,$white);
-			imagefilledrectangle($image2_middle,48,0,$imageWidth-48,9,$white);
-			imagefilledrectangle($image3_middle,48,0,$imageWidth-48,9,$white);
-			imagefilledrectangle($image4_middle,48,0,$imageWidth-48,9,$white);
+			$image1_middle = imagecrop($image1, ['x'=>0,'y'=>($imageHeight_top-10),'width'=>$imageWidth,'height'=>($imageHeight_middle)]);
+			$image2_middle = imagecrop($image2, ['x'=>0,'y'=>($imageHeight_top-10),'width'=>$imageWidth,'height'=>($imageHeight_middle)]);
+			$image3_middle = imagecrop($image3, ['x'=>0,'y'=>($imageHeight_top-10),'width'=>$imageWidth,'height'=>($imageHeight_middle)]);
+			$image4_middle = imagecrop($image4, ['x'=>0,'y'=>($imageHeight_top-10),'width'=>$imageWidth,'height'=>($imageHeight_middle)]);
+			imagefilledrectangle($image1_middle,48,0,$imageWidth-48,8,$white);
+			imagefilledrectangle($image2_middle,48,0,$imageWidth-48,8,$white);
+			imagefilledrectangle($image3_middle,48,0,$imageWidth-48,8,$white);
+			imagefilledrectangle($image4_middle,48,0,$imageWidth-48,8,$white);
 
 			if ($entry_key == 0) {
 				// Copy top image fragment.
