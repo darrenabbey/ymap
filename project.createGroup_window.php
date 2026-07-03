@@ -39,7 +39,7 @@
 		</p></div>
 		<div id="groupCreationInformation"><p>
 			<form action="project.createGroup_server.php" method="post">
-				<table><tr bgcolor="#CCFFCC"><td>
+				<table width="100%"><tr bgcolor="#CCFFCC"><td>
 					<label for="group">Project group name : </label><input type="text" name="group" id="group">
 				</td><td>
 					Unique name for a folder to organize datasets into.

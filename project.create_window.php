@@ -39,7 +39,7 @@
 		</p></div>
 		<div id="projectCreationInformation"><p>
 			<form action="project.create_server.php" method="post">
-				<table><tr bgcolor="#CCFFCC"><td>
+				<table width="100%"><tr bgcolor="#CCFFCC"><td>
 					<label for="project">Dataset Name : </label><input type="text" name="project" id="project">
 				</td><td>
 					Unique name for this dataset.
