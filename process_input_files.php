@@ -7,8 +7,16 @@ fwrite($logOutput, "\t\t*=======================================================
 fwrite($logOutput, "\t\t| Log of 'process_input_files.php'                       |\n");
 fwrite($logOutput, "\t\t*--------------------------------------------------------*\n");
 fwrite($logOutput, "\t\t| Before uploaded file check.\n");
-fwrite($logOutput, "\t\t|\text         = '".$ext."'\n");
-fwrite($logOutput, "\t\t|\tname        = '".$name."'\n");
+fwrite($logOutput, "\t\t|\t\$ext                = '".$ext."'\n");
+fwrite($logOutput, "\t\t|\t\$name               = '".$name."'\n");
+fwrite($logOutput, "\t\t|\t\$projectPath        = '".$projectPAth."'\n");
+fwrite($logOutput, "\t\t|\t\$key                = '".$key."'\n");
+fwrite($logOutput, "\t\t|\t\$user               = '".$user."'\n");
+fwrite($logOutput, "\t\t|\t\$project            = '".$project."'\n");
+fwrite($logOutput, "\t\t|\t\$output             = '".$output."'\n");
+fwrite($logOutput, "\t\t|\t\$condensedLogOutput = '".$condensedLogOutput."'\n");
+fwrite($logOutput, "\t\t|\t\$logOutput          = '".$logOutput."'\n");
+fwrite($logOutput, "\t\t*--------------------------------------------------------*\n");
 
 // Replace all "." in $name with "-" except the final one.
 $fragments = explode(".",$name);
