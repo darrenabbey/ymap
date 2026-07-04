@@ -526,7 +526,7 @@ function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$e
 
 	// Is this a fastq file?
 	$universal_phred_mask = implode('', array_map('chr', range(33, 126)));
-	if (($line_1[0] == '@') && (preg_match('/^[ATCGatcg]+$/', $line_2)) && ($line_3[0] == '+') && (strspn($line_4, $universal_phred_mask) === strlen($line_4) && $line_4 !== '')) {
+	if (($line_1[0] == '@') && (preg_match('/^[ATCGatcg]+$/', $line_2)) && ($line_3[0] == '+') && (preg_match('/^[!-~]+$/', $line_4))) {
 		// This is a FASTQ file.
 		// Is this a short-read or long-read fastq file?
 
