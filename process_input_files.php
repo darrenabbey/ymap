@@ -293,14 +293,14 @@ if ($ext == "zip") {
 if ($message != "") {
 	fwrite($logOutput, "\t\t| ".$message."\n");
 }
-fwrite($logOutput, "\t\t|\text_new     = ".$ext_new."\n");
+fwrite($logOutput, "\t\t|\text_new     = '".$ext_new."'\n");
 if ($name_new2 == "") {
-	fwrite($logOutput, "\t\t|\tname_new    = ".$name_new."\n");
+	fwrite($logOutput, "\t\t|\tname_new    = '".$name_new."'\n");
 } else {
-	fwrite($logOutput, "\t\t|\tname_new    = ".$name_new."\n");
-	fwrite($logOutput, "\t\t|\tname_new2   = ".$name_new2."\n");
+	fwrite($logOutput, "\t\t|\tname_new    = '".$name_new."'\n");
+	fwrite($logOutput, "\t\t|\tname_new2   = '".$name_new2."'\n");
 }
-fwrite($logOutput, "\t\t|\tprojectPath = ".$projectPath."\n");
+fwrite($logOutput, "\t\t|\tprojectPath = '".$projectPath."'\n");
 fwrite($logOutput, "\t\t*--------------------------------------------------------*\n");
 fwrite($logOutput, "\t\t| Validating uploaded data.\n");
 
