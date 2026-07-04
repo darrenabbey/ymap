@@ -312,9 +312,11 @@ if ($ext_new == "fastq") {
 	$ext_new = validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$ext_new);
 	if (str_contains($ext_new,"none")) {
 		//unlink($projectPath.$name_new);
+		fwrite($logOutput, "\t\t|\tFASTQ validation failed.\n");
 	} else {
 		if ($name_new2 <> "") {
 			$ext_new = validate_fastq($projectPath,$name_new2,$condensedLogOutput,$logOutput,$ext_new);
+			fwrite($logOutput, "\t\t|\tSecond FASTQ file validation failed.\n");
 		}
 	}
 } else if ($ext_new == "fasta") {
