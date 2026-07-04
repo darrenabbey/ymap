@@ -509,7 +509,7 @@ return $paired;
 function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$ext_new) {
 	// Looking at first four lines of text to check basic format requirements are met.
 	$file_name   = $projectPath.$name_new;
-	fwrite($logOutput, "\t\t| test point 1: ".$file_name);
+	fwrite($logOutput, "\t\t| test point 1: ".$file_name."\n");
 	$file_handle = fopen($file_name,'r');
 	$line_1      = fgets($file_handle);
 	$line_2      = fgets($file_handle);
