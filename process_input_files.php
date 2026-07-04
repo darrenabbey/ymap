@@ -510,7 +510,7 @@ function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$e
 	// Looking at first four lines of text to check basic format requirements are met.
 	$file_name   = $projectPath.$name_new;
 	$file_handle = fopen($file_name,'r');
-	if ($file_handle == 1) {
+	if (is_bool($file_handle)) {
 		fwrite($logOutput, "\t\t| File not found or permissions error.\n");
 		fwrite($logOutput, "\t\t|\tcurrent directory = '".getcwd()."'\n");
 		fwrite($logOutput, "\t\t|\tfile name         = '".$file_name."'\n");
