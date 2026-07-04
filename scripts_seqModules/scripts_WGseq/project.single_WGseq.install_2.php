@@ -37,6 +37,7 @@
 <?php
 	require_once '../../constants.php';
 	require_once '../../sharedFunctions.php';
+	require_once '../../process_input_files.php';
 
 // Deal with passed variables.
 	$fileName = $argv[1];
@@ -46,13 +47,6 @@
 // Initialize log file.
 	$logOutputName = "../../users/".$user."/projects/".$project."/process_log.txt";
 	$logOutput     = fopen($logOutputName, 'a');
-
-	try {
-		require_once '../../process_input_files.php';
-	} catch (\Throwable $e) {
-		// Catch absolutely any error, exception, or compilation failure.
-		fwrite($logOutput, $e->getMessage());
-	}
 
 	fwrite($logOutput, "#..............................................................................\n");
 	fwrite($logOutput, "Running 'scripts_seqModules/scripts_WGseq/project.single_WGseq.install_2.php'.\n");
@@ -99,7 +93,14 @@
 		fwrite($logOutput, "\tGenerated 'upload_size_1.txt' file.\n");
 
 		// Process the uploaded file.
-		$paired = process_input_files($ext,$name,$projectPath,$key,$user,$project,$output, $condensedLogOutput,$logOutput);
+		try {
+			$paired = process_input_files($ext,$name,$projectPath,$key,$user,$project,$output, $condensedLogOutput,$logOutput);
+		} catch (\Throwable $e) {
+			// Catch absolutely any error, exception, or compilation failure.
+			fwrite($logOutput, "Error during: process_input_files.php");
+			fwrite($logOutput, $e->getMessage());
+		}
+
 		// formatting.
 		if ($key < count($fileNames)-1) {
 			fwrite($output,"\n");
