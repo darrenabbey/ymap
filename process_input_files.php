@@ -7,8 +7,8 @@ fwrite($logOutput, "\t\t*=======================================================
 fwrite($logOutput, "\t\t| Log of 'process_input_files.php'                       |\n");
 fwrite($logOutput, "\t\t*--------------------------------------------------------*\n");
 fwrite($logOutput, "\t\t| Before uploaded file check.\n");
-fwrite($logOutput, "\t\t|\text         = ".$ext."\n");
-fwrite($logOutput, "\t\t|\tname        = ".$name."\n");
+fwrite($logOutput, "\t\t|\text         = '".$ext."'\n");
+fwrite($logOutput, "\t\t|\tname        = '".$name."'\n");
 
 // Replace all "." in $name with "-" except the final one.
 $fragments = explode(".",$name);
@@ -311,7 +311,7 @@ if ($ext_new == "fastq") {
 	// validate fastq file(s).
 	$ext_new = validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$ext_new);
 	if (str_contains($ext_new,"none")) {
-		unlink($projectPath."data_r2.fastq");
+		//unlink($projectPath.$name_new);
 	} else {
 		if ($name_new2 <> "") {
 			$ext_new = validate_fastq($projectPath,$name_new2,$condensedLogOutput,$logOutput,$ext_new);
