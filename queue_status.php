@@ -185,16 +185,17 @@
 		}
 		print_r("\n#\tYMAPs processing:  ".$count_queue_working." / ".$MAX_QUEUE_PARALLEL."\n#\t\t");
 		foreach ($start_list as $key=>$value) {
-			$key_ = $key+1;
-			$userName = $value[1];
+			$key_      = $key+1;
+			$userName  = $value[1];
 			$entryName = $value[2];
-			$type = $value[5];
+			$type      = $value[5];
 
 			if ($type == "project") {	$file = $base_dir."/users/".$userName."/projects/".$entryName."/condensed_log.txt";
 			} elseif ($type == "genome") {	$file = $base_dir."/users/".$userName."/genomes/".$entryName."/condensed_log.txt";
 			} elseif ($type == "hapmap") {	$file = $base_dir."/users/".$userName."/hapmaps/".$entryName."/condensed_log.txt";
 			} else {
-				// Something went wrong.
+				// Something went wrong, skip this entry.
+				continue;
 			}
 			$data = file($file);
 			$line = trim($data[count($data)-1]);

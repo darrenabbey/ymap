@@ -6,7 +6,7 @@ fwrite($logOutput, "\tPHP : Process uploaded data files into standard forms for 
 fwrite($logOutput, "\t\t*========================================================*\n");
 fwrite($logOutput, "\t\t| Log of 'process_input_files.php'                       |\n");
 fwrite($logOutput, "\t\t*--------------------------------------------------------*\n");
-fwrite($logOutput, "\t\t| Before archive decompression.\n");
+fwrite($logOutput, "\t\t| Before uploaded file check.\n");
 fwrite($logOutput, "\t\t|\text         = ".$ext."\n");
 fwrite($logOutput, "\t\t|\tname        = ".$name."\n");
 
@@ -126,6 +126,7 @@ if ($ext == "zip") {
 		$ext_new  = "none1";
 		$name_new = "";
 	}
+	$message = "After archive decompression.";
 } else if ($ext == "gz") {
 	fwrite($condensedLogOutput, "Decompressing GZ file : ".$name."\n");
 	fwrite($logOutput, "\t\t| This is a GZ archive of : ".$name."\n");
@@ -224,6 +225,7 @@ if ($ext == "zip") {
 		$ext_new  = "none1";
 		$name_new = "";
 	}
+	$message = "After archive decompression.";
 } else if (($ext == "sam") || ($ext == "bam")) {
 	fwrite($logOutput, "\t\t| This is a SAM/BAM file.\n");
 
@@ -267,24 +269,30 @@ if ($ext == "zip") {
 	unlink($absProjectPath.$name);
 
 	chdir($currentDir);
+	$message = "After archive decompression.";
 } else if ($ext == "fq") {
 	// if short extension for fastq, fq is found, rename to fastq.
 	$ext_new   = "fastq";
 	$name_new  = $name;
 	$name_new2 = "";
+	$message   = "After extension standardization.";
 } else if (($ext == "fna") || ($ext == "ffn") || ($ext == "faa") || ($ext == "frn") || ($ext == "fa")) {
 	// alternate extensions for fasta, rename to fasta.
 	$ext_new   = "fasta";
 	$name_new  = $name;
 	$name_new2 = "";
+	$message   = "After extension standardization.";
 } else {
 	// Not a compressed archive, hand off to next section.
 	$ext_new   = $ext;
 	$name_new  = $name;
 	$name_new2 = "";
+	$message   = "";
 }
 
-fwrite($logOutput, "\t\t| After archive decompression.\n");
+if ($message != "") {
+	fwrite($logOutput, "\t\t| ".$message."\n");
+}
 fwrite($logOutput, "\t\t|\text_new     = ".$ext_new."\n");
 if ($name_new2 == "") {
 	fwrite($logOutput, "\t\t|\tname_new    = ".$name_new."\n");
@@ -293,7 +301,8 @@ if ($name_new2 == "") {
 	fwrite($logOutput, "\t\t|\tname_new2   = ".$name_new2."\n");
 }
 fwrite($logOutput, "\t\t|\tprojectPath = ".$projectPath."\n");
-
+fwrite($logOutput, "\t\t*--------------------------------------------------------*\n");
+fwrite($logOutput, "\t\t| Validating uploaded data.\n");
 
 //=======================================
 // Validate FASTQ, FASTA, and CSV/TDT/TXT files.
