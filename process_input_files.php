@@ -523,23 +523,22 @@ function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$e
 		fclose($file_handle);
 	}
 	// Is this a fastq file?
-	$universal_phred_mask = implode('', array_map('chr', range(33, 126)));
 	if (($line_1[0] == '@') && (preg_match('/^[ATCGatcg]+$/', $line_2)) && ($line_3[0] == '+') && (preg_match('/^[!-~]+$/', $line_4))) {
 		// This is a FASTQ file.
 		// Is this a short-read or long-read fastq file?
 
 		fwrite($condensedLogOutput, "Calculating FASTQ read length statistics.\n");
 		$null            = shell_exec("head -n 4000 ".$projectPath.$name_new." | sed -n '2~4p' > ".$projectPath.$name_new.".temp");	// Discared FASTQ lines except for sequence, for the first 1000 reads.
-		$maxReadLength   = (int)trim(shell_exec("wc -L < ".$projectPath.$name_new.".temp"));					// Get longest sequence length.
+		$maxReadLength   = (int)trim(shell_exec("wc -L < ".$projectPath.$name_new.".temp"));						// Get longest sequence length.
 		unlink($projectPath.$name_new.".temp");
 
-		fwrite($logOutput, "\t\t| max read length = ".(string)$maxReadLength."\n");
+		fwrite($logOutput, "\t\t|\tmax read length = ".(string)$maxReadLength."\n");
 		if ($maxReadLength <= 500) {
-			// short-reads: no problems.
+			// short-reads: no problem for YMAP1 or YMAP2.
 		} else {
 			// long-reads: generate error for YMAP1.
 			//unlink($projectPath.$name_first);
-			//$ext_new = "none4"; //YMAP1 doesn't process long-reads, so error code.
+			//$ext_new = "none4";
 
 			// long-reads: no problem for YMAP2.
 			$ext_new = "fastq-l"; //YMAP2 does process long-reads, so file type.
@@ -547,7 +546,7 @@ function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$e
 	} else {
 		// format is wrong for a FASTQ file.
 		unlink($projectPath.$name_first);
-		fwrite($logOutput, "\t\t| FASTQ file format incorrect!!!\n");
+		fwrite($logOutput, "\t\t|\tFASTQ file format incorrect!!!\n");
 		$ext_new = "none2";
 	}
 	return $ext_new;
