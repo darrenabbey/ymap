@@ -522,8 +522,6 @@ function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$e
 		$line_4      = fgets($file_handle);
 		fclose($file_handle);
 	}
-	fwrite($logOutput, "\t\t| test point 2.");
-
 	// Is this a fastq file?
 	$universal_phred_mask = implode('', array_map('chr', range(33, 126)));
 	if (($line_1[0] == '@') && (preg_match('/^[ATCGatcg]+$/', $line_2)) && ($line_3[0] == '+') && (preg_match('/^[!-~]+$/', $line_4))) {
