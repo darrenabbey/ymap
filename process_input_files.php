@@ -509,6 +509,7 @@ return $paired;
 function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$ext_new) {
 	// Looking at first four lines of text to check basic format requirements are met.
 	$file_name   = $projectPath.$name_new;
+	fwrite($logOutput, "\t\t| test point 0: ".getcwd()."\n");
 	fwrite($logOutput, "\t\t| test point 1: ".$file_name."\n");
 	$file_handle = fopen($file_name,'r');
 	$line_1      = fgets($file_handle);
@@ -519,7 +520,8 @@ function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$e
 	fwrite($logOutput, "\t\t| test point 2.");
 
 	// Is this a fastq file?
-	if (($line_1[0] == '@') && ($line_3[0] == '+')) {
+	$universal_phred_mask = implode('', array_map('chr', range(33, 126)));
+	if (($line_1[0] == '@') && (preg_match('/^[ATCGatcg]+$/', $line_2)) && ($line_3[0] == '+') && (strspn($line_4, $universal_phred_mask) === strlen($line_4) && $line_4 !== '')) {
 		// This is a FASTQ file.
 		// Is this a short-read or long-read fastq file?
 
