@@ -509,14 +509,19 @@ return $paired;
 function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$ext_new) {
 	// Looking at first four lines of text to check basic format requirements are met.
 	$file_name   = $projectPath.$name_new;
-	fwrite($logOutput, "\t\t| test point 0: ".getcwd()."\n");
-	fwrite($logOutput, "\t\t| test point 1: ".$file_name."\n");
 	$file_handle = fopen($file_name,'r');
-	$line_1      = fgets($file_handle);
-	$line_2      = fgets($file_handle);
-	$line_3      = fgets($file_handle);
-	$line_4      = fgets($file_handle);
-	fclose($file_handle);
+	if ($file_handle == 1) {
+		fwrite($logOutput, "\t\t| File not found or permissions error.\n");
+		fwrite($logOutput, "\t\t|\tcurrent directory = '".getcwd()."'\n");
+		fwrite($logOutput, "\t\t|\tfile name         = '".$file_name."'\n");
+		return;
+	} else {
+		$line_1      = fgets($file_handle);
+		$line_2      = fgets($file_handle);
+		$line_3      = fgets($file_handle);
+		$line_4      = fgets($file_handle);
+		fclose($file_handle);
+	}
 	fwrite($logOutput, "\t\t| test point 2.");
 
 	// Is this a fastq file?
