@@ -310,13 +310,17 @@ fwrite($logOutput, "\t\t| Validating uploaded data.\n");
 if ($ext_new == "fastq") {
 	// validate fastq file(s).
 	$ext_new = validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$ext_new);
+	fwrite($logOutput, "\t\t|\tFASTQ validation check done.\n");
 	if (str_contains($ext_new,"none")) {
 		//unlink($projectPath.$name_new);
 		fwrite($logOutput, "\t\t|\tFASTQ validation failed.\n");
 	} else {
 		if ($name_new2 <> "") {
 			$ext_new = validate_fastq($projectPath,$name_new2,$condensedLogOutput,$logOutput,$ext_new);
-			fwrite($logOutput, "\t\t|\tSecond FASTQ file validation failed.\n");
+			fwrite($logOutput, "\t\t|\tSecond FASTQ validation done.\n");
+			if (str_contains($ext_new2,"none")) {
+				fwrite($logOutput, "\t\t|\tSecond FASTQ validation failed.\n");
+			}
 		}
 	}
 } else if ($ext_new == "fasta") {
