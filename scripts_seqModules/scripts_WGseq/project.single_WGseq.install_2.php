@@ -97,7 +97,7 @@
 			$paired = process_input_files($ext,$name,$projectPath,$key,$user,$project,$output, $condensedLogOutput,$logOutput);
 		} catch (\Throwable $e) {
 			// Catch absolutely any error, exception, or compilation failure.
-			fwrite($logOutput, "Error during: process_input_files.php");
+			fwrite($logOutput, "Error during: process_input_files.php\n");
 			fwrite($logOutput, $e->getMessage());
 		}
 

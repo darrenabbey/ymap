@@ -9,7 +9,7 @@ fwrite($logOutput, "\t\t*-------------------------------------------------------
 fwrite($logOutput, "\t\t| Before uploaded file check.\n");
 fwrite($logOutput, "\t\t|\t\$ext                = '".$ext."'\n");
 fwrite($logOutput, "\t\t|\t\$name               = '".$name."'\n");
-fwrite($logOutput, "\t\t|\t\$projectPath        = '".$projectPAth."'\n");
+fwrite($logOutput, "\t\t|\t\$projectPath        = '".$projectPath."'\n");
 fwrite($logOutput, "\t\t|\t\$key                = '".$key."'\n");
 fwrite($logOutput, "\t\t|\t\$user               = '".$user."'\n");
 fwrite($logOutput, "\t\t|\t\$project            = '".$project."'\n");
@@ -509,13 +509,14 @@ return $paired;
 function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$ext_new) {
 	// Looking at first four lines of text to check basic format requirements are met.
 	$file_name   = $projectPath.$name_new;
+	fwrite($logOutput, "\t\t| test point 1: ".$file_name);
 	$file_handle = fopen($file_name,'r');
 	$line_1      = fgets($file_handle);
 	$line_2      = fgets($file_handle);
 	$line_3      = fgets($file_handle);
 	$line_4      = fgets($file_handle);
 	fclose($file_handle);
-	fwrite($logOutput, "\t\t| test point 1.");
+	fwrite($logOutput, "\t\t| test point 2.");
 
 	// Is this a fastq file?
 	if (($line_1[0] == '@') && ($line_3[0] == '+')) {
