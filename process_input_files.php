@@ -507,6 +507,7 @@ function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$e
 	$line_3      = fgets($file_handle);
 	$line_4      = fgets($file_handle);
 	fclose($file_handle);
+	fwrite($logOutput, "\t\t| test point 1.");
 
 	// Is this a fastq file?
 	if (($line_1[0] == '@') && ($line_3[0] == '+')) {
