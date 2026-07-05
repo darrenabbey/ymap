@@ -523,7 +523,7 @@ function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$e
 		fclose($file_handle);
 	}
 	// Is this a fastq file?
-	if (($line_1[0] == '@') && (preg_match('/^[ATCGatcg]+$/', $line_2)) && ($line_3[0] == '+') && (preg_match('/^[!-~]+$/', $line_4))) {
+	if (($line_1[0] == '@') && preg_match('/^[ACGTRYSWKMBDHVNacgtryswkmbdhvn]+$/', $line_2) && ($line_3[0] == '+') && (preg_match('/^[!-~]+$/', $line_4))) {
 		// This is a FASTQ file.
 		// Is this a short-read or long-read fastq file?
 
