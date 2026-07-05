@@ -361,7 +361,7 @@ build_readstats_file(){
 	echo "$fractionMapped2 (Mapped read fraction)" >> "$projectDirectory/$fileOut";
 }
 build_readstats_file "readStats.txt"  "SNP_CNV_v1.txt";
-mappedReads1-$fractionMapped2;
+mappedReads1=$fractionMapped2;
 build_readstats_file "readStats.txt2" "SNP_CNV_v1.txt2";
 mappedReads2=$fractionMapped2;
 
