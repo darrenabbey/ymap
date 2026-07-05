@@ -504,17 +504,23 @@ if (performEndbiasCorrection)
 		for chr = 1:num_chrs
 			if (chr_in_use(chr) == 1)
 				fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
-				rawData_chr_X1{chr}         = chr_EndDistanceData{chr};
-				rawData_chr_Y1{chr}         = CNVplot{chr};
+				rawData_chr_X1{chr}          = chr_EndDistanceData{chr};
+				rawData_chr_Y1{chr}          = CNVplot{chr};
 				if (medianCNV(chr) > 0)
-					rawData_chr_Y1_{chr}        = CNVplot{chr}/medianCNV(chr);
+					rawData_chr_Y1_{chr} = CNVplot{chr}/medianCNV(chr);
+				else
+					rawData_chr_Y1_{chr} = CNVplot{chr};
 				end;
 
-				fitData_chr_Y1{chr}         = interp1(fitX1,fitY1, rawData_chr_X1{chr},'spline');
-				fitData_chr_Y1_{chr}        = interp1(fitX1,fitY1_,rawData_chr_X1{chr},'spline');
+				fitData_chr_Y1{chr}          = interp1(fitX1,fitY1, rawData_chr_X1{chr},'spline');
+				fitData_chr_Y1_{chr}         = interp1(fitX1,fitY1_,rawData_chr_X1{chr},'spline');
 
-				normalizedData_chr_Y1{chr}  = rawData_chr_Y1{chr}./fitData_chr_Y1{chr}*Y_target';
-				normalizedData_chr_Y1_{chr} = rawData_chr_Y1_{chr}./fitData_chr_Y1_{chr}*Y_target*medianCNV(chr);
+				normalizedData_chr_Y1{chr}   = rawData_chr_Y1{chr}./fitData_chr_Y1{chr}*Y_target';
+				if (medianCNV(chr) > 0)
+					normalizedData_chr_Y1_{chr}  = rawData_chr_Y1_{chr}./fitData_chr_Y1_{chr}*Y_target*medianCNV(chr);
+				else
+					normalizedData_chr_Y1_{chr}  = rawData_chr_Y1_{chr}./fitData_chr_Y1_{chr}*Y_target;
+				end;
 
 				% setting all NaN values to zero (since dividing by zero
 				% can occur in empty dataset)
