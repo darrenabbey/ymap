@@ -331,14 +331,24 @@ build_readstats_file(){
 	echo -e "##\t\$fractionMapped1          = $fractionMapped1" >> $logName;
 	echo -e "##\t\$fractionMapped2          = $fractionMapped2" >> $logName;
 }
-build_readstats_file "readStats.txt2" "SNP_CNV_v1.txt2";
 build_readstats_file "readStats.txt"  "SNP_CNV_v1.txt";
+mappedReads1-$fractionMapped2;
+build_readstats_file "readStats.txt2" "SNP_CNV_v1.txt2";
+mappedReads2=$fractionMapped2;
 
-if [[ "$fractionMapped2" < 50 ]]; then
-	if [[ "$fractionMapped2" < 1 ]]; then
-		echo -e "0$fractionMapped2% reads mapped." > "$projectDirectory/warning.txt";
+if [[ "$mappedReads1" < 10 ]]; then
+	if [[ "$mappedReads2" > 10 ]]; then
+		## Poor mapping quality, switch to no quality filters.
+		mv "$projectDirectory/putative_SNPs_v4.txt2"    "$projectDirectory/putative_SNPs_v4.txt";
+		mv "$projectDirectory/SNP_CNV_v1.txt2"          "$projectDirectory/SNP_CNV_v1.txt";
+		echo -e "Low read-mapping quality." > "$projectDirectory/warning.txt";
 	else
-		echo -e "$fractionMapped2% reads mapped." > "$projectDirectory/warning.txt";
+		## Reads from wrong species mapped?
+		if [[ "$mappedReads1" < 1 ]]; then
+			echo -e "0$mappedReads1% reads mapped." > "$projectDirectory/warning.txt";
+		else
+			echo -e "$mappedReads1% reads mapped." > "$projectDirectory/warning.txt";
+		fi
 	fi
 fi
 #---------------------------------
