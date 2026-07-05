@@ -485,7 +485,7 @@ if (performEndbiasCorrection)
 		% To raw data.
 		[minFitY1, minFitY1key]   = min(fitY1);
 		fprintf(['minFitY1        = ' num2str(size(minFitY1))     '\n']);
-		fprintf(['minFitY1key     = ' num2str(size(minFitY1Key))  '\n']);
+		fprintf(['minFitY1key     = ' num2str(size(minFitY1key))  '\n']);
 		fitY1_raw                 = fitY1;
 		fitY1(minFitY1key:end)    = minFitY1;
 		test = fitY1-fitY1_raw
@@ -493,7 +493,7 @@ if (performEndbiasCorrection)
 		% To data after normalization by chromosome median.
 		[minFitY1_, minFitY1key_] = min(fitY1_);
 		fprintf(['minFitY1_       = ' num2str(size(minFitY1_))    '\n']);
-		fprintf(['minFitY1key_    = ' num2str(size(minFitY1Key_)) '\n']);
+		fprintf(['minFitY1key_    = ' num2str(size(minFitY1key_)) '\n']);
 		fitY1_raw_                = fitY1_;
 		fitY1_(minFitY1key_:end)  = minFitY1_;
 		test_ = fitY1_-fitY1_raw_
