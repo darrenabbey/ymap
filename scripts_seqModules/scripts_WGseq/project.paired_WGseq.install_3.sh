@@ -270,12 +270,19 @@ else
 
 		echo -e "[[=- In-house SNP/CNV analysis -=]]" >> $logName;
 		echo -e "\tSamtools : Generating pileup.   (for SNP/CNV analysis)" >> $logName;
-		echo -e "Generating pileup file." >> $condensedLog;
-		echo -e "command used:" >> $logName;
+		echo -e "Generating pileup files." >> $condensedLog;
+
+		echo -e "command used for normal pileup output:" >> $logName;
 		echo -e "\tbash \"$main_dir/scripts_seqModules/parallel_mpileup.sh\" \"$user\" \"$project\" \"$main_dir\" >> $logName;" >> $logName;
 		bash "$main_dir/scripts_seqModules/parallel_mpileup.sh" "$user" "$project" "$main_dir" >> $logName;
 		chmod 774 "$projectDirectory/data.pileup";
-		echo -e "\tSamtools : Pileup generated." >> $logName;
+
+		echo -e "command used to force all reads to be output in pileup:" >> $logName;
+		echo -e "\tbash \"$main_dir/scripts_seqModules/parallel_mpileup.sh\" \"$user\" \"$project\" \"$main_dir\" >> $logName;" >> $logName;
+		bash "$main_dir/scripts_seqModules/parallel_mpileup_force.sh" "$user" "$project" "$main_dir" >> $logName;
+		chmod 774 "$projectDirectory/data.pileup2";
+
+		echo -e "\tSamtools : Pileups generated." >> $logName;
 	fi;
 
 	echo -e "Processing pileup for CNVs & SNPs." >> $condensedLog;
