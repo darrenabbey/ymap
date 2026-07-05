@@ -469,28 +469,33 @@ if (performEndbiasCorrection)
 	%% Perform LOWESS fitting : end bias.
 	rawData_X1     = chr_EndDistanceData_extended_clean;
 	rawData_Y1     = chr_CNVdata_extended_clean;
-	%rawData_Y1_    = chr_CNVdata_extended_clean_;
+	rawData_Y1_    = chr_CNVdata_extended_clean_;
 	% Perform correction only if the data has more then two value since otherwise interpl() will crash.
 	if (size(rawData_X1,2) > 2 && size(rawData_Y1,2) > 2)
 		fprintf(['Lowess X:Y size : [' num2str(size(rawData_X1,1)) ',' num2str(size(rawData_X1,2)) ']:[' num2str(size(rawData_Y1,1)) ',' num2str(size(rawData_Y1,2)) ']\n']);
 		[fitX1, fitY1]  = optimize_mylowess(rawData_X1,rawData_Y1, 10,0);
-		%[fitX1_,fitY1_] = optimize_mylowess(rawData_X1,rawData_Y1_,10,0);
+		[fitX1_,fitY1_] = optimize_mylowess(rawData_X1,rawData_Y1_,10,0);
 		fprintf(['rawData_X1 size = ' num2str(size(rawData_X1,2)) '\n']);
 		fprintf(['rawData_Y1 size = ' num2str(size(rawData_Y1,2)) '\n']);
-		fprintf(['fitX1 size      = ' num2str(size(fitX1))      '\n']);
-		fprintf(['fitY1 size      = ' num2str(size(fitY1))      '\n']);
+		fprintf(['fitX1 size      = ' num2str(size(fitX1))        '\n']);
+		fprintf(['fitY1 size      = ' num2str(size(fitY1))        '\n']);
 
 		%% Find minimum coordinate of fits, then apply that value to every location to the right in the fit (towards the chromosome center).
 		% To raw data.
 		[minFitY1, minFitY1key]   = min(fitY1)
+		fprintf(['minFitY1        = ' num2str(size(minFitY1))     '\n']);
+		fprintf(['minFitY1key     = ' num2str(size(minFitY1Key))  '\n']);
 		fitY1_raw                 = fitY1;
 		fitY1(minFitY1key:end)    = minFitY1;
 		test = fitY1-fitY1_raw
+
 		% To data after normalization by chromosome median.
-		%[minFitY1_, minFitY1key_] = min(fitY1_)
-		%fitY1_raw_                = fitY1_;
-		%fitY1_(minFitY1key_:end)  = minFitY1_;
-		%test_ = fitY1_-fitY1_raw_
+		[minFitY1_, minFitY1key_] = min(fitY1_);
+		fprintf(['minFitY1_       = ' num2str(size(minFitY1_))    '\n']);
+		fprintf(['minFitY1key_    = ' num2str(size(minFitY1Key_)) '\n']);
+		fitY1_raw_                = fitY1_;
+		fitY1_(minFitY1key_:end)  = minFitY1_;
+		test_ = fitY1_-fitY1_raw_
 
 		% Correct data using normalization to LOWESS fitting
 		Y_target = 1;
@@ -499,13 +504,14 @@ if (performEndbiasCorrection)
 				fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
 				rawData_chr_X1{chr}         = chr_EndDistanceData{chr};
 				rawData_chr_Y1{chr}         = CNVplot{chr};
-				%rawData_chr_Y1_{chr}        = CNVplot{chr}/medianCNV(chr);
+				if (minFitY1_ > 0)
+				rawData_chr_Y1_{chr}        = CNVplot{chr}/medianCNV(chr);
 
 				fitData_chr_Y1{chr}         = interp1(fitX1,fitY1, rawData_chr_X1{chr},'spline');
-				%fitData_chr_Y1_{chr}        = interp1(fitX1,fitY1_,rawData_chr_X1{chr},'spline');
+				fitData_chr_Y1_{chr}        = interp1(fitX1,fitY1_,rawData_chr_X1{chr},'spline');
 
 				normalizedData_chr_Y1{chr}  = rawData_chr_Y1{chr}./fitData_chr_Y1{chr}*Y_target';
-				%normalizedData_chr_Y1_{chr} = rawData_chr_Y1_{chr}./fitData_chr_Y1_{chr}*Y_target*medianCNV(chr);
+				normalizedData_chr_Y1_{chr} = rawData_chr_Y1_{chr}./fitData_chr_Y1_{chr}*Y_target*medianCNV(chr);
 
 				% setting all NaN values to zero (since dividing by zero
 				% can occur in empty dataset)
