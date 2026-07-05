@@ -197,6 +197,9 @@
 				// Something went wrong, skip this entry.
 				continue;
 			}
+			if (file_exists($file) == False) {
+				file_put_contents($file,"Initializing\n");
+			}
 			$data = file($file);
 			$line = trim($data[count($data)-1]);
 			print_r("[{$key_}] ".$userName.":".$type.":".$entryName." = \e[33m'".$line."'\e[0m");
