@@ -292,9 +292,19 @@ else
 	chmod 774 "$projectDirectory/putative_SNPs_v4.txt";
 	echo -e "\tPython : Pileup processed for SNPs." >> $logName; ) &
 
+	( echo -e "\tPython : Processing pileup(forced) for SNPs." >> $logName;
+	$python_exec "$main_dir/scripts_seqModules/counts_SNPs_v5.py" "$projectDirectory/data.pileup2" > "$projectDirectory/putative_SNPs_v4.txt2" 2>> $logName;
+	chmod 774 "$projectDirectory/putative_SNPs_v4.txt2";
+	echo -e "\tPython : Pileup processed for SNPs." >> $logName; ) &
+
 	( echo -e "\tPython : Processing pileup for SNP-CNV." >> $logName;
 	$python_exec "$main_dir/scripts_seqModules/counts_CNVs-SNPs_v1.py" "$projectDirectory/data.pileup" > "$projectDirectory/SNP_CNV_v1.txt" 2>> $logName;
 	chmod 774 "$projectDirectory/SNP_CNV_v1.txt";
+	echo -e "\tPython : Pileup processed for SNP-CNV." >> $logName; ) &
+
+	( echo -e "\tPython : Processing pileup(forced) for SNP-CNV." >> $logName;
+	$python_exec "$main_dir/scripts_seqModules/counts_CNVs-SNPs_v1.py" "$projectDirectory/data.pileup" > "$projectDirectory/SNP_CNV_v1.txt2" 2>> $logName;
+	chmod 774 "$projectDirectory/SNP_CNV_v1.txt2";
 	echo -e "\tPython : Pileup processed for SNP-CNV." >> $logName; ) &
 
 	wait;
@@ -303,48 +313,56 @@ fi
 #=================================
 # Build 'readStats.txt' file.
 #---------------------------------
-sed -n '2~4p' "$projectDirectory/$datafile1" > "$projectDirectory/$datafile1.temp";	# Discared FASTQ lines except for sequence.
-sed -n '2~4p' "$projectDirectory/$datafile2" > "$projectDirectory/$datafile2.temp";
-readCount1=$(wc -l < "$projectDirectory/$datafile1.temp");				# Get number of reads.
-readCount2=$(wc -l < "$projectDirectory/$datafile2.temp");
-readTotalLength1=$(wc -c < "$projectDirectory/$datafile1.temp");				# Get total sequence length.
-readTotalLength2=$(wc -c < "$projectDirectory/$datafile2.temp");
-readCount=$((readCount1 + readCount2));
-readTotalLength=$((readTotalLength1 + readTotalLength2));
-echo "$readCount (reads count)" > "$projectDirectory/readStats.txt";
-echo "$readTotalLength (reads total length)" >> "$projectDirectory/readStats.txt";
-chmod 0777 "$projectDirectory/readStats.txt";
-rm "$projectDirectory/$datafile1.temp";
-rm "$projectDirectory/$datafile2.temp";
+build_readstats_file(){
+	fileOut=$1;
+	fileIn=$2;
 
-# Find genome size and add to readStats.txt file.
-sed -n '2~2p' "$genomeDirectory/datafile_g_0.2.fasta" > "$projectDirectory/reference.temp";
-referenceSeq="$projectDirectory/reference.temp";
-genomeChrCount=$(wc -l < $referenceSeq);
-genomeLengthInit=$(wc -c < $referenceSeq);
-genomeLength=$((genomeLengthInit-genomeChrCount));
-echo "$genomeLength (genome length)" >> "$projectDirectory/readStats.txt";
-echo -e "##" >> $logName;
-echo -e "## Read depth calculations:" >> $logName;
-echo -e "##\t\$readTotalLength          = $readTotalLength" >> $logName;
-echo -e "##\t\$genomeLength             = $genomeLength" >> $logName;
+	sed -n '2~4p' "$projectDirectory/$datafile1" > "$projectDirectory/$datafile1.temp";	# Discared FASTQ lines except for sequence.
+	sed -n '2~4p' "$projectDirectory/$datafile2" > "$projectDirectory/$datafile2.temp";
+	readCount1=$(wc -l < "$projectDirectory/$datafile1.temp");				# Get number of reads.
+	readCount2=$(wc -l < "$projectDirectory/$datafile2.temp");
+	readTotalLength1=$(wc -c < "$projectDirectory/$datafile1.temp");				# Get total sequence length.
+	readTotalLength2=$(wc -c < "$projectDirectory/$datafile2.temp");
+	readCount=$((readCount1 + readCount2));
+	readTotalLength=$((readTotalLength1 + readTotalLength2));
+	echo "$readCount (reads count)" > "$projectDirectory/$fileOut";
+	echo "$readTotalLength (reads total length)" >> "$projectDirectory/$fileOut";
+	chmod 0777 "$projectDirectory/$fileOut";
+	rm "$projectDirectory/$datafile1.temp";
+	rm "$projectDirectory/$datafile2.temp";
 
-## Calculate expected average read depth and add to readStats.txt file.
-readDepthAverageExpected=$(echo -e "scale=3; $readTotalLength / $genomeLength" | bc -l);
-echo "$readDepthAverageExpected (Expected read depth)" >> "$projectDirectory/readStats.txt";
-echo -e "##\t\$readDepthAverageExpected = $readDepthAverageExpected" >> $logName;
+	# Find genome size and add to $fileOut.txt file.
+	sed -n '2~2p' "$genomeDirectory/datafile_g_0.2.fasta" > "$projectDirectory/reference.temp";
+	referenceSeq="$projectDirectory/reference.temp";
+	genomeChrCount=$(wc -l < $referenceSeq);
+	genomeLengthInit=$(wc -c < $referenceSeq);
+	genomeLength=$((genomeLengthInit-genomeChrCount));
+	echo "$genomeLength (genome length)" >> "$projectDirectory/$fileOut";
+	echo -e "##" >> $logName;
+	echo -e "## Read depth calculations:" >> $logName;
+	echo -e "##\t\$readTotalLength          = $readTotalLength" >> $logName;
+	echo -e "##\t\$genomeLength             = $genomeLength" >> $logName;
 
-## Find average read depth and add to readStats.txt file.
-readDepthAverageFound=$(awk '{sum += $3; count++} END {if (count > 0) print sum/count}' "$projectDirectory/SNP_CNV_v1.txt");
-echo "$readDepthAverageFound (Found read depth)" >> "$projectDirectory/readStats.txt";
-echo -e "##\t\$readDepthAverageFound    = $readDepthAverageFound" >> $logName;
+	## Calculate expected average read depth and add to $fileOut.txt file.
+	readDepthAverageExpected=$(echo -e "scale=3; $readTotalLength / $genomeLength" | bc -l);
+	echo "$readDepthAverageExpected (Expected read depth)" >> "$projectDirectory/$fileOut";
+	echo -e "##\t\$readDepthAverageExpected = $readDepthAverageExpected" >> $logName;
 
-## Calculate fraction mapped and add to readStats.txt file.
-fractionMapped1=$(echo -e "scale=6; ($readDepthAverageFound / $readDepthAverageExpected)*100" | bc -l);
-fractionMapped2=$(echo -e "scale=3; $fractionMapped1 / 1" | bc -l);
-echo -e "##\t\$fractionMapped1          = $fractionMapped1" >> $logName;
-echo -e "##\t\$fractionMapped2          = $fractionMapped2" >> $logName;
-echo "$fractionMapped2 (Mapped read fraction)" >> "$projectDirectory/readStats.txt";
+	## Find average read depth and add to $fileOut.txt file.
+	readDepthAverageFound=$(awk '{sum += $3; count++} END {if (count > 0) print sum/count}' "$projectDirectory/$fileIn");
+	echo "$readDepthAverageFound (Found read depth)" >> "$projectDirectory/$fileOut";
+	echo -e "##\t\$readDepthAverageFound    = $readDepthAverageFound" >> $logName;
+
+	## Calculate fraction mapped and add to $fileOut.txt file.
+	fractionMapped1=$(echo -e "scale=6; ($readDepthAverageFound / $readDepthAverageExpected)*100" | bc -l);
+	fractionMapped2=$(echo -e "scale=3; $fractionMapped1 / 1" | bc -l);
+	echo -e "##\t\$fractionMapped1          = $fractionMapped1" >> $logName;
+	echo -e "##\t\$fractionMapped2          = $fractionMapped2" >> $logName;
+	echo "$fractionMapped2 (Mapped read fraction)" >> "$projectDirectory/$fileOut";
+}
+build_readstats_file "readStats.txt2" "SNP_CNV_v1.txt2";
+build_readstats_file "readStats.txt"  "SNP_CNV_v1.txt";
+
 if [[ "$fractionMapped2" < 50 ]]; then
 	if [[ "$fractionMapped2" < 1 ]]; then
 		echo -e "0$fractionMapped2% reads mapped." > "$projectDirectory/warning.txt";
@@ -352,6 +370,7 @@ if [[ "$fractionMapped2" < 50 ]]; then
 		echo -e "$fractionMapped2% reads mapped." > "$projectDirectory/warning.txt";
 	fi
 fi
+
 #---------------------------------
 # End of 'readStats.txt' section.
 #=================================
