@@ -303,7 +303,7 @@ else
 	echo -e "\tPython : Pileup processed for SNP-CNV." >> $logName; ) &
 
 	( echo -e "\tPython : Processing pileup(forced) for SNP-CNV." >> $logName;
-	$python_exec "$main_dir/scripts_seqModules/counts_CNVs-SNPs_v1.py" "$projectDirectory/data.pileup" > "$projectDirectory/SNP_CNV_v1.txt2" 2>> $logName;
+	$python_exec "$main_dir/scripts_seqModules/counts_CNVs-SNPs_v1.py" "$projectDirectory/data.pileup2" > "$projectDirectory/SNP_CNV_v1.txt2" 2>> $logName;
 	chmod 774 "$projectDirectory/SNP_CNV_v1.txt2";
 	echo -e "\tPython : Pileup processed for SNP-CNV." >> $logName; ) &
 
