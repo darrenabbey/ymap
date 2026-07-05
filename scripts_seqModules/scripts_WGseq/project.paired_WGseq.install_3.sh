@@ -347,9 +347,9 @@ echo -e "##\t\$fractionMapped2          = $fractionMapped2" >> $logName;
 echo "$fractionMapped2 (Mapped read fraction)" >> "$projectDirectory/readStats.txt";
 if [[ "$fractionMapped2" < 50 ]]; then
 	if [[ "$fractionMapped2" < 1 ]]; then
-		echo -e "0$fractionMapped2% reads mapped." >> "$projectDirectory/warning.txt";
+		echo -e "0$fractionMapped2% reads mapped." > "$projectDirectory/warning.txt";
 	else
-		echo -e "$fractionMapped2% reads mapped." >> "$projectDirectory/warning.txt";
+		echo -e "$fractionMapped2% reads mapped." > "$projectDirectory/warning.txt";
 	fi
 fi
 #---------------------------------
