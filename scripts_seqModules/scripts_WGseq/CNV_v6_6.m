@@ -475,10 +475,10 @@ if (performEndbiasCorrection)
 		fprintf(['Lowess X:Y size : [' num2str(size(rawData_X1,1)) ',' num2str(size(rawData_X1,2)) ']:[' num2str(size(rawData_Y1,1)) ',' num2str(size(rawData_Y1,2)) ']\n']);
 		[fitX1, fitY1]  = optimize_mylowess(rawData_X1,rawData_Y1, 10,0);
 		[fitX1_,fitY1_] = optimize_mylowess(rawData_X1,rawData_Y1_,10,0);
-		fprintf(['rawData_X1 size = ' size(rawData_X1,2) '\n'];
-		fprintf(['rawData_Y1 size = ' size(rawData_Y1,2) '\n'];
-		fprintf(['fitX1 size      = ' size(fitX1) '\n'];
-		fprintf(['fitY1 size      = ' size(fitY1) '\n'];
+		fprintf(['rawData_X1 size = ' num2str(size(rawData_X1,2)) '\n'];
+		fprintf(['rawData_Y1 size = ' num2str(size(rawData_Y1,2)) '\n'];
+		fprintf(['fitX1 size      = ' num2str(size(fitX1)) '\n'];
+		fprintf(['fitY1 size      = ' num2str(size(fitY1)) '\n'];
 
 		%% Find minimum coordinate of fits, then apply that value to every location to the right in the fit (towards the chromosome center).
 		% To raw data.
