@@ -547,6 +547,19 @@ function validate_fastq($projectPath,$name_new,$condensedLogOutput,$logOutput,$e
 		// format is wrong for a FASTQ file.
 		unlink($projectPath.$name_first);
 		fwrite($logOutput, "\t\t|\tFASTQ file format incorrect!!!\n");
+		if ($line_1[0] != '@') {
+			fwrite($logOutput, "\t\t|\t\tSequence header line error.\n");
+		}
+		if (preg_match('/^[ATCGatcg]+$/', $line_2) == false) {
+			fwrite($logOutput, "\t\t|\t\tSequence line error.\n");
+		}
+		if ($line_3[0] != '+') {
+			fwrite($logOutput, "\t\t|\t\tQuality header line error.\n");
+		}
+		if (preg_match('/^[!-~]+$/', $line_4) == false) {
+			fwrite($logOutput, "\t\t|\t\tQuality line error.\n");
+		}
+
 		$ext_new = "none2";
 	}
 	return $ext_new;
