@@ -469,7 +469,7 @@ if (performEndbiasCorrection)
 	%% Perform LOWESS fitting : end bias.
 	rawData_X1     = chr_EndDistanceData_extended_clean;
 	rawData_Y1     = chr_CNVdata_extended_clean;
-	rawData_Y1_    = chr_CNVdata_extended_clean_;
+	%rawData_Y1_    = chr_CNVdata_extended_clean_;
 	% Perform correction only if the data has more then two value since otherwise interpl() will crash.
 	if (size(rawData_X1,2) > 2 && size(rawData_Y1,2) > 2)
 		fprintf(['Lowess X:Y size : [' num2str(size(rawData_X1,1)) ',' num2str(size(rawData_X1,2)) ']:[' num2str(size(rawData_Y1,1)) ',' num2str(size(rawData_Y1,2)) ']\n']);
@@ -487,10 +487,10 @@ if (performEndbiasCorrection)
 		fitY1(minFitY1key:end)    = minFitY1;
 		test = fitY1-fitY1_raw
 		% To data after normalization by chromosome median.
-		[minFitY1_, minFitY1key_] = min(fitY1_)
-		fitY1_raw_                = fitY1_;
-		fitY1_(minFitY1key_:end)  = minFitY1_;
-		test_ = fitY1_-fitY1_raw_
+		%[minFitY1_, minFitY1key_] = min(fitY1_)
+		%fitY1_raw_                = fitY1_;
+		%fitY1_(minFitY1key_:end)  = minFitY1_;
+		%test_ = fitY1_-fitY1_raw_
 
 		% Correct data using normalization to LOWESS fitting
 		Y_target = 1;
@@ -499,13 +499,14 @@ if (performEndbiasCorrection)
 				fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
 				rawData_chr_X1{chr}         = chr_EndDistanceData{chr};
 				rawData_chr_Y1{chr}         = CNVplot{chr};
-				rawData_chr_Y1_{chr}        = CNVplot{chr}/medianCNV(chr);
+				%rawData_chr_Y1_{chr}        = CNVplot{chr}/medianCNV(chr);
 
 				fitData_chr_Y1{chr}         = interp1(fitX1,fitY1, rawData_chr_X1{chr},'spline');
-				fitData_chr_Y1_{chr}        = interp1(fitX1,fitY1_,rawData_chr_X1{chr},'spline');
+				%fitData_chr_Y1_{chr}        = interp1(fitX1,fitY1_,rawData_chr_X1{chr},'spline');
 
 				normalizedData_chr_Y1{chr}  = rawData_chr_Y1{chr}./fitData_chr_Y1{chr}*Y_target';
-				normalizedData_chr_Y1_{chr} = rawData_chr_Y1_{chr}./fitData_chr_Y1_{chr}*Y_target*medianCNV(chr);
+				%normalizedData_chr_Y1_{chr} = rawData_chr_Y1_{chr}./fitData_chr_Y1_{chr}*Y_target*medianCNV(chr);
+
 				% setting all NaN values to zero (since dividing by zero
 				% can occur in empty dataset)
 				normalizedData_chr_Y1{chr}(isnan(normalizedData_chr_Y1{chr}))=0;
