@@ -482,7 +482,7 @@ if (performEndbiasCorrection)
 
 		%% Find minimum coordinate of fits, then apply that value to every location to the right in the fit (towards the chromosome center).
 		% To raw data.
-		[minFitY1, minFitY1key]   = min(fitY1)
+		[minFitY1, minFitY1key]   = min(fitY1);
 		fprintf(['minFitY1        = ' num2str(size(minFitY1))     '\n']);
 		fprintf(['minFitY1key     = ' num2str(size(minFitY1Key))  '\n']);
 		fitY1_raw                 = fitY1;
