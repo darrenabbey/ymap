@@ -504,8 +504,9 @@ if (performEndbiasCorrection)
 				fprintf(['chr' num2str(chr) ' : ' num2str(length(chr_GCratioData{chr})) ' ... ' num2str(length(CNVplot{chr})) '\t; numbins = ' num2str(ceil(chr_size(chr)/bases_per_bin)) '\n']);
 				rawData_chr_X1{chr}         = chr_EndDistanceData{chr};
 				rawData_chr_Y1{chr}         = CNVplot{chr};
-				if (minFitY1_ > 0)
-				rawData_chr_Y1_{chr}        = CNVplot{chr}/medianCNV(chr);
+				if (medianCNV(chr) > 0)
+					rawData_chr_Y1_{chr}        = CNVplot{chr}/medianCNV(chr);
+				end;
 
 				fitData_chr_Y1{chr}         = interp1(fitX1,fitY1, rawData_chr_X1{chr},'spline');
 				fitData_chr_Y1_{chr}        = interp1(fitX1,fitY1_,rawData_chr_X1{chr},'spline');
