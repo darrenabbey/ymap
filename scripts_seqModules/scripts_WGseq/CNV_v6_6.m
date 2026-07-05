@@ -494,7 +494,7 @@ if (performEndbiasCorrection)
 		[minFitY1_, minFitY1key_] = min(fitY1_);
 		fprintf(['minFitY1_       = ' num2str(size(minFitY1_))    '\n']);
 		fprintf(['minFitY1key_    = ' num2str(size(minFitY1key_)) '\n']);
-		fitY1_raw_                = fitY1_;
+		fitY1_raw_                = fitY1_
 		fitY1_(minFitY1key_:end)  = minFitY1_;
 		test_ = fitY1_-fitY1_raw_
 
