@@ -93,6 +93,15 @@ if (isset($_SESSION['logged_on'])) {
 </td><td width="70%" style="border:1px solid black; border-radius:10px; padding:10px;" valign="top">
 <b>YMAP news!</b><br><br>
 
+2026-07-06<ul>
+	<li><b>Lodderomyces elongisporus NRLL YB-4239 (GCA_030384665.1) reference genome installed.</b></li>
+	<li><font size="2">
+	Lois L Hoyer, Elizabeth K Hogan, Brian A Freeman, Kimberly K O Walden, Alvaro G Hernández<br>
+	An improved Lodderomyces elongisporus NRRL YB-4239 genome assembly substantiated by its electrophoretic karyotype.<br>
+	Microbiol Resour Announc. 2023 Oct 19;12(10):e0059623. doi: 10.1128/MRA.00596-23. Epub 2023 Sep 29.<br>
+	PMID: 37772887 PMCID: PMC10586162 DOI: 10.1128/MRA.00596-23</font></li>
+</ul>
+
 2026-07-02<ul>
 	<li><b>You can now organize your dataset into groups.</b> You can create a new group using the "Manage Datasets" panel, and move existing datasets into a group using the "Update" button associated with each dataset.</li>
 	<li>An example chromosome-cartoon figure is now generated during reference genome installation.</li>
