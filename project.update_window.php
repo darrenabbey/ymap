@@ -384,7 +384,11 @@
 								$hapmapName    = $folder;
 								$hapmapName    = str_replace($hapmapsDir1,"",$hapmapName);
 								$hapmapName    = str_replace($hapmapsDir2,"",$hapmapName);
-								echo "\n\t\t\t\t\t<option value='".$hapmapName."'>".$hapmapName."</option>";
+								if ($hapmapName == $hapmap) {
+									echo "\n\t\t\t\t\t<option value='".$hapmapName."' selected>".$hapmapName."</option>";
+								} else {
+									echo "\n\t\t\t\t\t<option value='".$hapmapName."'>".$hapmapName."</option>";
+								}
 							}
 						}
 						?>
