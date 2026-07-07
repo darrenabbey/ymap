@@ -180,15 +180,6 @@
 					</div>
 				</td></tr>
 				<tr bgcolor="#CCCCFF"><td>
-					<?php
-					// figure out which hapmaps have been defined for this species, if any.
-					$hapmapsDir1       = "users/default/hapmaps/";
-					$hapmapsDir2       = "users/".$user."/hapmaps/";
-					$hapmapFolders1    = array_diff(glob($hapmapsDir1."*"), array('..', '.'));
-					$hapmapFolders2    = array_diff(glob($hapmapsDir2."*"), array('..', '.'));
-					$hapmapFolders_raw = array_merge($hapmapFolders1,$hapmapFolders2);
-					// Go through each $hapmapFolder and look at 'genome.txt'; build javascript array of hapmapName:genome pairs.
-					?>
 					<div id="hiddenFormSection5" style="display:none">
 						Restriction enzymes :
 						<select id="selectRestrictionEnzymes" name="selectRestrictionEnzymes" onchange="UpdateParent();">

@@ -259,7 +259,7 @@
 					Initial project name.
 				</td></tr>
 				<tr bgcolor="#CCFFCC"><td>
-					<label for="ploidy">Display Name : </label><input type="text" name="name"  id="name" value="<?php echo $name; ?>"><br>
+					<label for="name">Display Name : </label><input type="text" name="name"  id="name" value="<?php echo $name; ?>"><br>
 				</td><td>
 					Version of the project name to be used in figures.
 				</td></tr>
@@ -361,12 +361,32 @@
 				</td></tr>
 				<tr bgcolor="#CCCCFF"><td>
 					<div id="hiddenFormSection5" style="display:inline">
-						<label for="hapmap">Haplotype map : </label><select name="hapmap" id="hapmap" readonly style="background-color:#CCCCFF">
-						<?php 	if ($hapmap == "") {
-								echo "\n\t\t\t\t\t<option value='none'>none</option>";
-							} else {
-								echo "\n\t\t\t\t\t<option value='".$hapmap."'>".$hapmap."</option>";
-							} ?>
+						<label for="hapmap">Haplotype map : </label><select id="hapmap" name="hapmap" style="background-color:#CCCCFF">
+						<?php
+						// figure out which hapmaps have been defined, if any.
+						$hapmapsDir1       = "users/default/hapmaps/";
+						$hapmapsDir2       = "users/".$user."/hapmaps/";
+						$hapmapFolders1    = array_diff(glob($hapmapsDir1."*"), array('..', '.'));
+						$hapmapFolders2    = array_diff(glob($hapmapsDir2."*"), array('..', '.'));
+						$hapmapFolders_raw = array_merge($hapmapFolders1,$hapmapFolders2);
+
+						foreach ($hapmapFolders_raw as $key=>$folder) {
+							$filename = $folder."/genome.txt";
+							if (!file_exists($filename)) {
+								continue;
+							}
+							$handle        = fopen($filename, "r");
+							$genome_string = trim(fgets($handle));
+							fclose($handle);
+							if ($genome_string == $genome) {
+								// only include hapmap if defined for current species.
+								$hapmapName    = $folder;
+								$hapmapName    = str_replace($hapmapsDir1,"",$hapmapName);
+								$hapmapName    = str_replace($hapmapsDir2,"",$hapmapName);
+								echo "\n\t\t\t\t\t<option value='".$hapmapName."'>".$hapmapName."</option>";
+							}
+						}
+						?>
 						</select>
 					</div>
 				</td><td valign="top">
@@ -374,8 +394,10 @@
 				</td></tr>
 				<tr bgcolor="#CCFFCC"><td>
 					<div id="hiddenFormSection7" style="display:inline">
-						<label for="parent">Parental strain : </label><select id="selectParent" name="selectParent" style="background-color:#CCFFCC">
-						<?php echo "\n\t\t\t\t\t<option value='".$parent."'>".$parent."</option>"; ?>
+						<label for="parent">Parental strain : </label><select id="parent" name="parent" style="background-color:#CCFFCC">
+						<?php
+						echo "\n\t\t\t\t\t<option value='".$parent."'>".$parent."</option>";
+						?>
 						</select>
 					</div>
 				</td><td valign="top">

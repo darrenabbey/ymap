@@ -37,6 +37,7 @@
 		$ploidy          = sanitizeFloat_POST("ploidy");
 		$ploidyBase      = sanitizeFloat_POST("ploidyBase");
 		$showAnnotations = sanitizeIntChar_POST("showAnnotations");
+		$hapmap          = sanitizer_POST("hapmap");
 
 		// Define some directories for later use.
 		$project_dir  = "users/".$user."/projects/".$project;
@@ -140,6 +141,19 @@
 			$showAnnotations_old = false;
 			fwrite($logOutput, "\t'showAnnotations.txt' file not found, using defaults.\n");
 		}
+
+		// Get existing hapmap.
+		$fileName       = $project_dir."/genome.txt";
+		$fileID         = fopen($fileName, 'r');
+		$genome_old     = trim(fgets($fileID));
+		$hapmap_old     = trim(fgets($fileID));
+		fclose($fileID);
+
+		// Get existing parent.
+		$fileName       = $project_dir."/parent.txt";
+		$fileID         = fopen($fileName, 'r');
+		$parent_old     = trim(fgets($fileID));
+		fclose($fileID);
 
 		// Get existing data bias correction selections.
 		if (file_exists($project_dir."/dataBiases.txt")) {
@@ -261,6 +275,20 @@
 			fclose($file);
 			chmod($fileName,0774);
 			fwrite($logOutput, "\tUpdated 'ploidy.txt' file.\n");
+			$UpdateFigures = true;
+		}
+
+		// Update 'genome.txt' file.
+		if ($hapmap == $hapmap_old) {
+			fwrite($logOutput, "\t'genome.txt' file hapmap entry did not need to be updated.\n");
+		} else {
+			$fileName = $project_dir."/genome.txt";
+			$file     = fopen($fileName, 'w');
+			fwrite($file, $genome_old);
+			fwrite($file, $hapmap);
+			fclose($file);
+			chmod($fileName,0774);
+			fwrite($logOutput, "\tUpdated 'genome.txt' file hapmap entry.\n");
 			$UpdateFigures = true;
 		}
 
