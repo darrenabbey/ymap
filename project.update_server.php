@@ -178,16 +178,16 @@
 			fclose($fileID);
 			fwrite($logOutput, "\tGrabbed 'figure_options.txt' file.\n");
 		} else {
-			$fig_A1_old          = true;
+			$fig_A1_old          = false;
 			$fig_A2_old          = false;
 			$fig_B1_old          = false;
 			$fig_B2_old          = false;
-			$fig_C_old           = true;
+			$fig_C_old           = false;
 			$fig_D1_old          = false;
 			$fig_D2_old          = false;
 			$fig_E_old           = false;
-			$fig_F1_old          = true;
-			$fig_F2_old          = true;
+			$fig_F1_old          = false;
+			$fig_F2_old          = false;
 			$fig_G1_old          = false;
 			$fig_G2_old          = false;
 			fwrite($logOutput, "\t'figure_options.txt' file not found, using defaults.\n");
@@ -235,7 +235,6 @@
 			fclose($file);
 			chmod($fileName,0774);
 			fwrite($logOutput, "\tUpdated 'name.txt' file.\n");
-			$UpdateFigures = true;
 		}
 
 		// Update 'ploidy.txt' file.
@@ -295,14 +294,12 @@
 		if (($bias_GC === $bias_GC_old) && ($bias_end === $bias_end_old) && ($bias_length === $bias_length_old)) {
 			fwrite($logOutput, "\t'dataBiases.txt' file did not need to be updated.\n");
 		} else {
-			fwrite($logOutput, "\ttest point 3.\n");
 			// Regenerate 'dataBiases.txt' file.
 			$fileName2 = "users/".$user."/projects/".$project."/dataBiases.txt";
 			$file2     = fopen($fileName2, 'w');
 			$bias_length_str = $bias_length ? 'True' : 'False';
 			$bias_GC_str     = $bias_GC ? 'True' : 'False';
 			$bias_end_str    = $bias_end ? 'True' : 'False';
-			fwrite($logOutput, "\ttest point 4.\n");
 			fwrite($file2, "$bias_length_str\n$bias_GC_str\nFalse\n$bias_end_str");
 			fclose($file2);
 			chmod($fileName1,0774);
