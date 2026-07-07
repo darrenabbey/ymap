@@ -158,6 +158,8 @@ echo -e "\t'genome.txt' file entry." >> $logName;
 echo -e "\tgenome = $genome" >> $logName;
 if [[ "$genome" = "$hapmap" ]]; then
 	hapmapInUse=0;
+elif [[ "$hapmap" = "none" ]]; then
+	hapmapInUse=0;
 else
 	echo -e "\t\thapmap = $hapmap" >> $logName;
 	hapmapInUse=1;

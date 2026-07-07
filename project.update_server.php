@@ -149,6 +149,28 @@
 		$hapmap_old     = trim(fgets($fileID));
 		fclose($fileID);
 
+		// get existing hapmap user.
+		// figure out which hapmaps have been defined, if any.
+		$hapmapsDir1       = "users/default/hapmaps/";
+		$hapmapsDir2       = "users/".$user."/hapmaps/";
+		$hapmapFolders1    = array_diff(glob($hapmapsDir1."*"), array('..', '.'));
+		$hapmapFolders2    = array_diff(glob($hapmapsDir2."*"), array('..', '.'));
+		$hapmapUser        = "";
+		foreach ($hapmapFolders1 as $key=>$folder) {
+			if ($hapmap_old == $folder) {
+				$hapmapUser = 'default';
+				break;
+			}
+		}
+		if ($hapmapUser == "") {
+			foreach ($hapmapFolders2 as $key=>$folder) {
+				if ($hapmap_old == $folder) {
+					$hapmapUser = $user;
+					break;
+				}
+			}
+		}
+
 		// Get existing parent.
 		$fileName       = $project_dir."/parent.txt";
 		$fileID         = fopen($fileName, 'r');
