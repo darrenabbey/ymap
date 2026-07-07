@@ -44,8 +44,12 @@ with open(logName, "a") as myfile:
 	myfile.write("\t\t| Input arguments:\n");
 	myfile.write("\t\t|     genome      = "+genome+"\n")
 	myfile.write("\t\t|     genomeUser  = "+genomeUser+"\n")
-	myfile.write("\t\t|     hapmap      = "+hapmap+"\n")
-	myfile.write("\t\t|     hapmapuser  = "+hapmapUser+"\n")
+	if (runMode == 'hapmap'):
+		myfile.write("\t\t|     hapmap      = "+hapmap+"\n")
+		myfile.write("\t\t|     hapmapUser  = "+hapmapUser+"\n")
+	else:
+		myfile.write("\t\t|     parent      = "+hapmap+"\n")
+		myfile.write("\t\t|     parentUser  = "+hapmapUser+"\n")
 	myfile.write("\t\t|     project     = "+project+"\n")
 	myfile.write("\t\t|     projectUser = "+projectUser+"\n")
 	myfile.write("\t\t|     main_dir    = "+main_dir+"\n")
