@@ -253,9 +253,9 @@
 			$destination = "users/".$user."/projects/".$group_new."/".$projectTrimmed;
 
 			if (rename($source, $destination)) {
-				echo "UPDATE: Folder moved successfully.";
+				fwrite($logOutput, "\tProject moved to another group.\n");
 			} else {
-				echo "UPDATE: Error, unable to move folder.";
+				fwrite($logOutput, "\t.Project was not moved to another group.\n");
 			}
 			$project = $group_new."/".$projectTrimmed;
 		}
