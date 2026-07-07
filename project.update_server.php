@@ -323,14 +323,14 @@
 			fwrite($logOutput, "\t'dataBiases.txt' file did not need to be updated.\n");
 		} else {
 			// Regenerate 'dataBiases.txt' file.
-			$fileName2 = "users/".$user."/projects/".$project."/dataBiases.txt";
-			$file2     = fopen($fileName2, 'w');
+			$fileName = "users/".$user."/projects/".$project."/dataBiases.txt";
+			$file     = fopen($fileName, 'w');
 			$bias_length_str = $bias_length ? 'True' : 'False';
 			$bias_GC_str     = $bias_GC ? 'True' : 'False';
 			$bias_end_str    = $bias_end ? 'True' : 'False';
-			fwrite($file2, "$bias_length_str\n$bias_GC_str\nFalse\n$bias_end_str");
-			fclose($file2);
-			chmod($fileName1,0774);
+			fwrite($file, "$bias_length_str\n$bias_GC_str\nFalse\n$bias_end_str");
+			fclose($file);
+			chmod($fileName,0774);
 			fwrite($logOutput, "\tUpdated 'dataBiases.txt' file.\n");
 			$UpdateFigures = true;
 		}
