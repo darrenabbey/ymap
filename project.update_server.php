@@ -404,12 +404,16 @@
 			fwrite($logOutput, "\tGenerated 'working.txt' file.\n");
 
 			// Remove 'working_done.txt' file to let pipeline know processing isn't done.
-			unlink($project_dir."/working_done.txt");
-			fwrite($logOutput, "\tRemoved 'working_done.txt' file.\n");
+			if file_exists($project_dir."/working_done.txt") {
+				unlink($project_dir."/working_done.txt");
+				fwrite($logOutput, "\tRemoved 'working_done.txt' file.\n");
+			}
 
 			// Remove 'complete.txt' file to let pipeline know processing isn't done.
-			unlink($project_dir."/complete.txt");
-			fwrite($logOutput, "\tRemoved 'complete.txt' file.\n");
+			if file_exists($project_dir."/complete.txt") {
+				unlink($project_dir."/complete.txt");
+				fwrite($logOutput, "\tRemoved 'complete.txt' file.\n");
+			}
 
 			// set session variables.
 			$_SESSION['project'] = $project;
@@ -422,13 +426,17 @@
 					$conclusion_script = "scripts_SnpCghArray/project.SnpCgh.update.php";
 					break;
 				case 1: //"WGseq_short":
-					unlink("users/".$user."/projects/".$project."/working.txt");
+					if file_exists($project_dir."/working.txt") {
+						unlink("users/".$user."/projects/".$project."/working.txt");
+					}
 					file_put_contents("users/".$user."/projects/".$project."/bulk.txt", "updating");
 					queue_reinit($user,$project,"","","project.update_server.php");
 					//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
 					break;
 				case 2: //"WGseq_long";
-					unlink("users/".$user."/projects/".$project."/working.txt");
+					if file_exists($project_dir."/working.txt") {
+						unlink("users/".$user."/projects/".$project."/working.txt");
+					}
 					file_put_contents("users/".$user."/projects/".$project."/bulk.txt", "updating");
 					queue_reinit($user,$project,"","","project.update_server.php");
 					//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
@@ -437,7 +445,9 @@
 					$conclusion_script = "scripts_seqModules/scripts_ddRADseq/project.ddRADseq.update_1.php";
 					break;
 				case 4: //"FASTA":
-					unlink("users/".$user."/projects/".$project."/working.txt");
+					if file_exists($project_dir."/working.txt") {
+						unlink("users/".$user."/projects/".$project."/working.txt");
+					}
 					file_put_contents("users/".$user."/projects/".$project."/bulk.txt", "updating");
 					queue_reinit($user,$project,"","","project.update_server.php");
 					//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
