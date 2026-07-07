@@ -149,9 +149,9 @@ if [[ -f "$projectDirectory/preprocessed_CNVs.txt" ]]; then
 else
 	install /dev/null "$projectDirectory/preprocessed_CNVs.txt";
 	echo -e "Preprocessing CNVs." >> $condensedLog;
-        echo -e "\tPreprocessing CNV data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
-        $python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py" "$user" "$project" "$genome" "$genomeUser" "$main_dir" "$logName" > "$projectDirectory/preprocessed_CNVs.txt" 2>> $logName;
-        echo -e "\tpre-processing complete." >> $logName;
+	echo -e "\tPreprocessing CNV data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py'" >> $logName;
+	$python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py" "$user" "$project" "$genome" "$genomeUser" "$main_dir" "$logName" > "$projectDirectory/preprocessed_CNVs.txt" 2>> $logName;
+	echo -e "\tpre-processing complete." >> $logName;
 fi
 if [[ -f "$projectDirectory/preprocessed_SNPs.txt" ]]; then
         echo -e "\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
