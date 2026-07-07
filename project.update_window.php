@@ -362,6 +362,7 @@
 				<tr bgcolor="#CCCCFF"><td>
 					<div id="hiddenFormSection5" style="display:inline">
 						<label for="hapmap">Haplotype map : </label><select id="hapmap" name="hapmap">
+						<option value="none">[None selected]</option>
 						<?php
 						// figure out which hapmaps have been defined, if any.
 						$hapmapsDir1       = "users/default/hapmaps/";
