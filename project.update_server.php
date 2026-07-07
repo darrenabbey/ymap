@@ -423,7 +423,7 @@
 			$conclusion_script = "";
 			switch ($dataType) {
 				case 0: //"SnpCghArray":
-					$conclusion_script = "scripts_SnpCghArray/project.SnpCgh.update.php";
+					// $conclusion_script = "scripts_SnpCghArray/project.SnpCgh.update.php";
 					break;
 				case 1: //"WGseq_short":
 					if (file_exists($project_dir."/working.txt")) {
@@ -442,7 +442,7 @@
 					//$conclusion_script = "scripts_seqModules/scripts_WGseq/project.WGseq.update_1.php";
 					break;
 				case 3: //"ddRADseq":
-					$conclusion_script = "scripts_seqModules/scripts_ddRADseq/project.ddRADseq.update_1.php";
+					//$conclusion_script = "scripts_seqModules/scripts_ddRADseq/project.ddRADseq.update_1.php";
 					break;
 				case 4: //"FASTA":
 					if (file_exists($project_dir."/working.txt")) {
