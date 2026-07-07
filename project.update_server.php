@@ -284,7 +284,7 @@
 		} else {
 			$fileName = $project_dir."/genome.txt";
 			$file     = fopen($fileName, 'w');
-			fwrite($file, $genome_old);
+			fwrite($file, $genome_old."\n");
 			fwrite($file, $hapmap);
 			fclose($file);
 			chmod($fileName,0774);
