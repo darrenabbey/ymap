@@ -37,7 +37,7 @@
 		$ploidy          = sanitizeFloat_POST("ploidy");
 		$ploidyBase      = sanitizeFloat_POST("ploidyBase");
 		$showAnnotations = sanitizeIntChar_POST("showAnnotations");
-		$hapmap          = sanitizer_POST("hapmap");
+		$hapmap          = sanitize_POST("hapmap");
 
 		// Define some directories for later use.
 		$project_dir  = "users/".$user."/projects/".$project;
