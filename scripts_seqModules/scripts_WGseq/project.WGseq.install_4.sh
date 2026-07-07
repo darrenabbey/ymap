@@ -121,11 +121,9 @@ echo -e "\tCalling OCTAVE." >> $logName;
 cd "$projectDirectory";
 $octave_exec "$outputName" 2>> $logName;
 cd "$main_dir";
-
-
-echo -e "\tOCTAVE log from CNV analysis." >> $logName;
+#echo -e "\tOCTAVE log from CNV analysis." >> $logName;
 #sed 's/^/\t|/;' $projectDirectory"/octave.CNV_and_GCbias.log" >> $logName;
-cat "$projectDirectory/octave.CNV_and_GCbias.log" >> $logName;
+#cat "$projectDirectory/octave.CNV_and_GCbias.log" >> $logName;
 
 
 ##==============================================================================
@@ -169,8 +167,8 @@ else
 	cd "$projectDirectory";
 	$octave_exec "$outputName" 2>> $logName;
 	cd "$main_dir";
-	echo -e "\tOCTAVE log from ChARM analysis." >> $logName;
-	sed 's/^/\t|/;' "$projectDirectory/octave.ChARM.log" >> $logName;
+	#echo -e "\tOCTAVE log from ChARM analysis." >> $logName;
+	#sed 's/^/\t|/;' "$projectDirectory/octave.ChARM.log" >> $logName;
 fi
 
 ##==============================================================================
@@ -242,8 +240,8 @@ echo -e "=======================================================================
 cd "$projectDirectory";
 $octave_exec "$outputName" 2>> $logName;
 cd "$main_dir";
-echo -e "\tOCTAVE log from SNP analysis." >> $logName;
-sed 's/^/\t|/;' "$projectDirectory/octave.SNP_analysis.log" >> $logName;
+#echo -e "\tOCTAVE log from SNP analysis." >> $logName;
+#sed 's/^/\t|/;' "$projectDirectory/octave.SNP_analysis.log" >> $logName;
 
 
 ##==============================================================================

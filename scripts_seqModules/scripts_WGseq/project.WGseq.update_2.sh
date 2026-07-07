@@ -286,8 +286,8 @@ if [[ "$hapmapInUse" = 0 ]]; then
 	cd "$projectDirectory";
 	$octave_exec "$outputName" 2>> $logName;
 	cd "$script_dir";
-	echo -e "\tOCTAVE log from SNP analysis." >> $logName;
-	sed 's/^/\t|/;' "$projectDirectory/octave.SNP_analysis.log" >> $logName;
+	#echo -e "\tOCTAVE log from SNP analysis." >> $logName;
+	#sed 's/^/\t|/;' "$projectDirectory/octave.SNP_analysis.log" >> $logName;
 
 
 	##==============================================================================
@@ -325,8 +325,8 @@ if [[ "$hapmapInUse" = 0 ]]; then
 	cd "$projectDirectory";
 	$octave_exec "$outputName" 2>> $logName;
 	cd "$script_dir";
-	echo -e "\tOCTAVE log from final figure generation." >> $logName;
-	sed 's/^/\t|/;' "$projectDirectory/octave.final_figs.log" >> $logName;
+	#echo -e "\tOCTAVE log from final figure generation." >> $logName;
+	#sed 's/^/\t|/;' "$projectDirectory/octave.final_figs.log" >> $logName;
 	echo -e "finished all processing, moving to Cleaning up intermediate WGseq files" >> $condensedLog;
 else
 	##==============================================================================
@@ -364,8 +364,8 @@ else
 	cd "$projectDirectory";
 	$octave_exec "$outputName" 2>> $logName;
 	cd "$script_dir";
-	echo -e "\t\tOCTAVE log from SNP analysis." >> $logName;
-	sed 's/^/\t\t\t|/;' "$projectDirectory/octave.SNP_analysis.log" >> $logName;
+	#echo -e "\t\tOCTAVE log from SNP analysis." >> $logName;
+	#sed 's/^/\t\t\t|/;' "$projectDirectory/octave.SNP_analysis.log" >> $logName;
 
 
 	##==============================================================================
@@ -403,7 +403,7 @@ else
 	cd "$projectDirectory";
 	$octave_exec "$outputName" 2>> $logName;
 	cd "$script_dir";
-	echo -e "\t\tOCTAVE log from final figure generation." >> $logName;
+	#echo -e "\t\tOCTAVE log from final figure generation." >> $logName;
 fi
 
 
