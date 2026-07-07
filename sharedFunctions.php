@@ -279,6 +279,9 @@ function queue_reinit($user,$project,$genome,$hapmap,$message) {
 	$filePath = str_replace("/scripts_hapmaps","",$filePath);
 	$filePath = str_replace("/scripts_ddRADseq","",$filePath);
 
+	// define log file.
+	$log_file = $filePath."/queue/".date('Y-m-d')."_queue.log";
+
 	if (!empty($project)) {
 		// Add an update.txt file into project to let queue know it is an update process.
 		$update_file = $filePath."/users/".$user."/projects/".$project."/update.txt";
@@ -287,9 +290,6 @@ function queue_reinit($user,$project,$genome,$hapmap,$message) {
 		fclose($myfile);
 		chmod($log_file, 0774);
 	}
-
-	// define log file.
-	$log_file = $filePath."/queue/".date('Y-m-d')."_queue.log";
 
 	// check if log file exists, create if not.
 	if (!file_exists($log_file)) {
