@@ -459,7 +459,7 @@
 			chdir("users/".$user);
 
 			// Open processing script.
-			if ($conclustion_script <> "") {
+			if ($conclusion_script <> "") {
 				fwrite($logOutput, "\tCalling next script: ".$conclusion_script."\n");
 				header("Location: ".$conclusion_script);
 			}
