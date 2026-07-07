@@ -146,7 +146,11 @@
 		$fileName       = $project_dir."/genome.txt";
 		$fileID         = fopen($fileName, 'r');
 		$genome_old     = trim(fgets($fileID));
-		$hapmap_old     = trim(fgets($fileID));
+		if (feof($fileID) == false) {
+			$hapmap_old = trim(fgets($fileID));
+		} else {
+			$hapmap_old = "none";
+		}
 		fclose($fileID);
 
 		// get existing hapmap user.
@@ -156,17 +160,19 @@
 		$hapmapFolders1    = array_diff(glob($hapmapsDir1."*"), array('..', '.'));
 		$hapmapFolders2    = array_diff(glob($hapmapsDir2."*"), array('..', '.'));
 		$hapmapUser        = "";
-		foreach ($hapmapFolders1 as $key=>$folder) {
-			if ($hapmap_old == $folder) {
-				$hapmapUser = 'default';
-				break;
-			}
-		}
-		if ($hapmapUser == "") {
-			foreach ($hapmapFolders2 as $key=>$folder) {
+		if ($hapmap_old != "none" ) {
+			foreach ($hapmapFolders1 as $key=>$folder) {
 				if ($hapmap_old == $folder) {
-					$hapmapUser = $user;
+					$hapmapUser = 'default';
 					break;
+				}
+			}
+			if ($hapmapUser == "") {
+				foreach ($hapmapFolders2 as $key=>$folder) {
+					if ($hapmap_old == $folder) {
+						$hapmapUser = $user;
+						break;
+					}
 				}
 			}
 		}
@@ -307,7 +313,9 @@
 			$fileName = $project_dir."/genome.txt";
 			$file     = fopen($fileName, 'w');
 			fwrite($file, $genome_old."\n");
-			fwrite($file, $hapmap);
+			if ($hapmap_old != "none" ) {
+				fwrite($file, $hapmap);
+			}
 			fclose($file);
 			chmod($fileName,0774);
 			fwrite($logOutput, "\tUpdated 'genome.txt' file hapmap entry.\n");
