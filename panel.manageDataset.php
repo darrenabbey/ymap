@@ -88,7 +88,7 @@
 				echo "parent.show_hidden(\"Hidden_InstallNewDataset\"); ";
 				echo "parent.update_interface();";
 			echo "'>";
-			echo "<font color='red' size='2'> (Wait until uploads complete!)</font>";
+			//echo "<font color='red' size='2'> (Wait until uploads complete!)</font>";
 
 			$admin_user_flag_file = "users/".$user."/admin.txt";
 			if (file_exists($admin_user_flag_file)) {
@@ -97,15 +97,14 @@
 					echo "parent.show_hidden(\"Hidden_InstallBulkDataset\"); ";
 					echo "parent.update_interface();";
 				echo "'>";
-				echo "<font color='red' size='2'> (Wait until uploads complete!)</font><br>";
+				//echo "<font color='red' size='2'> (Wait until uploads complete!)</font><br>";
+				echo "<br>";
 			}
 
 			echo "<input name='button_MakeNewFolder' type='button' value='Add Dataset Group' onclick='";
 				echo "parent.document.getElementById(\"Hidden_MakeNewFolder_Frame\").contentWindow.location.reload(); ";
 				echo "parent.show_hidden(\"Hidden_MakeNewFolder\"); ";
-				echo "parent.update_interface();";
-			echo "'>";
-			echo "<font color='red' size='2'> (Refresh page after!)</font><br>";
+			echo "'><br>";
 		}
 
 		$_SESSION['pending_install_project_count'] = 0;

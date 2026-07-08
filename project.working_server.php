@@ -132,6 +132,14 @@ body {font-family: arial;}
 			</html>
 			<?php
 		}
+
+		// Refresh panels.
+		if (parent.document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('pending_comment').style.visibility != 'visible') {
+			parent.document.getElementById('panel_manageDataset_iframe'   ).contentWindow.location.reload();
+			parent.document.getElementById('panel_visualizeDataset_iframe'   ).contentWindow.location.reload();
+			parent.document.getElementById('panel_admin2_iframe'   ).contentWindow.location.reload();
+		}
+
 	} else if (file_exists($dirFigureBase."error.txt")) {
 		echo "\n<!-- error file found.\n--!>";
 		// Load error.txt from project folder.
