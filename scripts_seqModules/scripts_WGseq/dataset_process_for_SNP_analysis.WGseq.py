@@ -248,7 +248,7 @@ log_count        = 0
 log_offset       = 0
 
 print('### Number of Chromosomes = ' + str(chrCount))
-or x in range(0,chrCount):
+for x in range(0,chrCount):
 	if (chrNums[x] != 0):
 		print('### \t' + str(x+1) + ' : ' + str(chrNames[x]))
 print("###" + str(numFragments))
