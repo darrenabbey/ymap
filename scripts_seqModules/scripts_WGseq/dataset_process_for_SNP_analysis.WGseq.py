@@ -7,8 +7,10 @@
 #
 # Process input files:
 #	1) Raw SNP data                 : $main_dir"/users/"$user"/projects/"$project"/SNP_CNV_v1.txt".
-#	2) FASTA file name              : $main_dir"/users/default/genomes/default/reference.txt",				or	$main_dir"/users/"$user"/genomes/default/reference.txt" as $FastaName.
-#	3) Coordinates of standard bins : $main_dir"/users/default/genomes/"$genome"/"$FastaName".standard_bins.fasta",		or	$main_dir"/users/"$user"/genomes/"$genome"/"$FastaName".standard_bins.fasta".
+#	2) FASTA file name              : $main_dir"/users/default/genomes/default/reference.txt",
+#	                               or $main_dir"/users/"$user"/genomes/default/reference.txt" as $FastaName.
+#	3) Coordinates of standard bins : $main_dir"/users/default/genomes/"$genome"/"$FastaName".standard_bins.fasta",
+#	                               or $main_dir"/users/"$user"/genomes/"$genome"/"$FastaName".standard_bins.fasta".
 
 # Generate output file:
 #	1) a simplified pileup file containing number of parental het loci that are [HOM, HET, oddHET] in dataset per standard bin.
@@ -181,65 +183,56 @@ with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tDetermining number of chromosomes of interest in genome.\n")
 
 chrName_maxcount = 0
-for line in figureDefinitionData:
-	line = line.strip()
-	if not line or line.startswith("#"):
-		continue
-
-	line_parts = line.split()
-	if (len(line_parts) >= 4):
-		chr_num_str = line_parts[0]
-		if chr_num_str.isdigit():
-			chr_num    = int(chr_num_str)
-			chr_use    = int(float(line_parts[1]))
-
-			if (chr_num > chrName_maxcount) and (chr_use == 1):
-				chrName_maxcount = chr_num
+	for line in figureDefinitionData:
+		if (len(line) > 0):
+		if (line[0] != "#"):
+			line_parts = line.strip().split();
+			if (len(line_parts) > 0):
+				chr_num = line_parts[0]
+				if chr_num.isdigit():
+					chr_num    = int(float(line_parts[0]))
+					chr_use    = int(float(line_parts[1]))
+					chr_label  = line_parts[2]
+					chr_name   = line_parts[3]
+					if chr_num > chrName_maxcount:
+						chrName_maxcount = chr_num
+figureDefinitionFile.close()
 
 # Pre-allocate chrName_array
-chrNames = [None] * chrName_maxcount
+chrName = []
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tGathering name strings for chromosomes.\n")
 
 # Gather name strings for chromosomes, in order.
+figureDefinitionFile  = open(figureDefinition_file,'r')
 chrCounter = 0;
 chrNums    = [];
+chrNames   = [];
 chrLabels  = [];
 chrShorts  = [];
 
-with open(logName, "a") as log_file:
-	for line in figureDefinitionData:
-		line = line.strip()
-		if not line or line.startswith("#"):
-			continue
-
-		line_parts = line.split()
-		if not line_parts:
-			continue
-
-		chr_num_str = line_parts[0]
-		if chr_num_str.isdigit():
-			chr_num = int(chr_num_str)
-			chr_use = int(float(line_parts[1]))
-
-			if chr_use == 1 and chr_num <= chrName_maxcount:
-				chrNums.append(chr_num)
-				chrCounter += 1
-
-				chr_label = line_parts[2]
-				chrLabels.append(chr_label)
-
-				chr_name = line_parts[3]
-				chrNames[chr_num - 1] = chr_name  # Fills pre-allocated array slot
-
-				chr_nameShort = chr_label
-				chrShorts.append(chr_nameShort)
-
-				log_file.write(f"\t\t|\t\t{chr_num} : {chr_name} = {chr_nameShort}\n")
-
-chr_dict = {name: idx + 1 for idx, name in enumerate(chrNames) if name is not None}
-chrCount = chrName_maxcount
+for line in figureDefinitionData:
+	if (len(line) > 0):
+		if (line[0] != "#"):
+			line_parts = line.strip().split();
+			if (len(line_parts) > 0):
+				chr_num = line_parts[0]
+				if chr_num.isdigit():
+					chr_num                        = int(float(line_parts[0]))
+					chrNums.append(chr_num);
+					chr_use                        = int(float(line_parts[1]))
+					chr_label                      = line_parts[2]
+					chrLabels.append(chr_label);
+					chr_name                       = line_parts[3]
+					chrNames.append(chr_name);
+					chr_nameShort                  = chr_label
+					chrShorts.append(chr_nameShort);
+					chrName.append(chr_name)
+					with open(logName, "a") as myfile:
+						myfile.write("\t\t|\t\t" + str(chr_num) + " : " + chr_name + " = " + chr_nameShort + "\n")
+					chrCounter += 1
+figureDefinitionFile.close()
 
 # Put the chromosome count into a smaller name for later use.
 chrCount = chrName_maxcount
@@ -255,8 +248,8 @@ log_count        = 0
 log_offset       = 0
 
 print('### Number of Chromosomes = ' + str(chrCount))
-for x in range(0, len(chrNums)):
-	if (chrNums[x] != 0) and (x < len(chrNames)):
+or x in range(0,chrCount):
+	if (chrNums[x] != 0):
 		print('### \t' + str(x+1) + ' : ' + str(chrNames[x]))
 print("###" + str(numFragments))
 with open(logName, "a") as myfile:
@@ -306,7 +299,11 @@ for line in data:
 			dataAve     = round(dataSum/float(dataLength))
 			phaseCall   = int(dataAve) #  [0,1] for homologs 'a' and 'b'.
 		# Identify which chromosome this data point corresponds to.
-		P_chr = chr_dict.get(P_chr_name, 0)
+		P_chr = 0
+		for x in range(0,chrCount):
+			if (chrNums[x] != 0):
+				if chrName[x] == P_chr_name:
+					P_chr = x+1
 
 		################################################################################
 		# All hapmap dataset coordinates are heterozygous in the parent by definition. #
@@ -380,9 +377,9 @@ for line in data:
 				# Simulated illumina reads have no SNPs at all.
 				# searchTarget  = 'SNP_CNV_v1.txt'
 				C_chr           = 0
-				for x in range(0,len(chrNums)):
+				for x in range(0,chrCount):
 					if (chrNums[x] != 0):
-						if chrNames[x] == C_chr_name:
+						if chrName[x] == C_chr_name:
 							C_chr = x+1
 
 				#print("1|P:C "+str(P_chr)+":"+str(C_chr)+" "+str(P_position)+":"+str(C_position)+"|")
@@ -395,7 +392,7 @@ for line in data:
 						C_position      = int(childLine_parts[1])
 						for x in range(0,chrCount):
 							if (chrNums[x] != 0):
-								if chrNames[x] == C_chr_name:
+								if chrName[x] == C_chr_name:
 									C_chr = x+1
 					else:
 						C_chr = P_chr
@@ -410,7 +407,7 @@ for line in data:
 						C_position      = int(childLine_parts[1])
 						for x in range(0,chrCount):
 							if (chrNums[x] != 0):
-								if chrNames[x] == C_chr_name:
+								if chrName[x] == C_chr_name:
 									C_chr = x+1
 					else:
 						C_position = P_position
@@ -468,7 +465,7 @@ for line in data:
 				C_chr = 0;
 				for x in range(0,chrCount):
 					if (chrNums[x] != 0):
-						if chrNames[x] == P_chr_name:
+						if chrName[x] == P_chr_name:
 							C_chr = x+1;
 
 				#===============================================================================================================
