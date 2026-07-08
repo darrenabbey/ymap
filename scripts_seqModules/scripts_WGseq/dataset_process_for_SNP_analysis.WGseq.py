@@ -7,10 +7,8 @@
 #
 # Process input files:
 #	1) Raw SNP data                 : $main_dir"/users/"$user"/projects/"$project"/SNP_CNV_v1.txt".
-#	2) FASTA file name              : $main_dir"/users/default/genomes/default/reference.txt",
-#	                               or $main_dir"/users/"$user"/genomes/default/reference.txt" as $FastaName.
-#	3) Coordinates of standard bins : $main_dir"/users/default/genomes/"$genome"/"$FastaName".standard_bins.fasta",
-#	                               or $main_dir"/users/"$user"/genomes/"$genome"/"$FastaName".standard_bins.fasta".
+#	2) FASTA file name              : $main_dir"/users/default/genomes/default/reference.txt",				or	$main_dir"/users/"$user"/genomes/default/reference.txt" as $FastaName.
+#	3) Coordinates of standard bins : $main_dir"/users/default/genomes/"$genome"/"$FastaName".standard_bins.fasta",		or	$main_dir"/users/"$user"/genomes/"$genome"/"$FastaName".standard_bins.fasta".
 
 # Generate output file:
 #	1) a simplified pileup file containing number of parental het loci that are [HOM, HET, oddHET] in dataset per standard bin.
@@ -132,13 +130,13 @@ while True:
 				# Fragment is usable, so the details should be placed into fragments structure.
 				# split the chr string by '.' character, then trim off the first three characters ('chr') from the final substring.
 				#   string has format of : ">Ca_a.chr1"
-				line_parts         = chrGenomeAndNum_string.split(".");
-				chrNum_string      = line_parts[len(line_parts)-1];
+				split_chr_string   = chrGenomeAndNum_string.split(".");
+				chrNum_string      = split_chr_string[-1];
 				chr_num            = int(float(chrNum_string.replace("chr","")));
 				#   string has format of : "(9638..10115)"
 				coordinates        = bp_coordinate_string.replace('(','').replace(')','').replace('..',' ').split()
-				bp_start           = int(float(coordinates[0]))
-				bp_end             = int(float(coordinates[1]))
+				bp_start           = int(coordinates[0])
+				bp_end             = int(coordinates[1])
 				phasedData         = '(' # start of string for phased data.
 				unphasedData       = '(' # start of string for unphased data.
 				phasedCoordinate   = '(' # start of string for phased data coordinates.
@@ -181,53 +179,68 @@ figureDefinitionData   = figureDefinitionFile.readlines()
 # Determine the number of chromosomes of interest in genome.
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tDetermining number of chromosomes of interest in genome.\n")
+
 chrName_maxcount = 0
 for line in figureDefinitionData:
-	if (len(line) > 0):
-		if (line[0] != "#"):
-			line_parts = line.strip().split();
-			if (len(line_parts) > 0):
-				chr_num = line_parts[0]
-				if chr_num.isdigit():
-					chr_num    = int(float(line_parts[0]))
-					chr_use    = int(float(line_parts[1]))
-					chr_label  = line_parts[2]
-					chr_name   = line_parts[3]
-					if chr_num > chrName_maxcount:
-						chrName_maxcount = chr_num
-figureDefinitionFile.close()
+	line = line.strip()
+	if not line or line.startswith("#"):
+		continue
+
+	line_parts = line.split()
+	if (len(line_parts) >= 4):
+		chr_num_str = line_parts[0]
+		if chr_num_str.isdigit():
+			chr_num    = int(chr_num_str)
+			chr_use    = int(float(line_parts[1]))
+
+			if (chr_num > chrName_maxcount) and (chr_use == 1):
+				chrName_maxcount = chr_num
+
 # Pre-allocate chrName_array
-chrName = []
+chrNames = [None] * chrName_maxcount
+
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tGathering name strings for chromosomes.\n")
+
 # Gather name strings for chromosomes, in order.
-figureDefinitionFile  = open(figureDefinition_file,'r')
 chrCounter = 0;
 chrNums    = [];
-chrNames   = [];
 chrLabels  = [];
 chrShorts  = [];
-for line in figureDefinitionData:
-	if (len(line) > 0):
-		if (line[0] != "#"):
-			line_parts = line.strip().split();
-			if (len(line_parts) > 0):
-				chr_num = line_parts[0]
-				if chr_num.isdigit():
-					chr_num                        = int(float(line_parts[0]))
-					chrNums.append(chr_num);
-					chr_use                        = int(float(line_parts[1]))
-					chr_label                      = line_parts[2]
-					chrLabels.append(chr_label);
-					chr_name                       = line_parts[3]
-					chrNames.append(chr_name);
-					chr_nameShort                  = chr_label
-					chrShorts.append(chr_nameShort);
-					chrName.append(chr_name)
-					with open(logName, "a") as myfile:
-						myfile.write("\t\t|\t\t" + str(chr_num) + " : " + chr_name + " = " + chr_nameShort + "\n")
-					chrCounter += 1
-figureDefinitionFile.close()
+
+with open(logName, "a") as log_file:
+	for line in figureDefinitionData:
+		line = line.strip()
+		if not line or line.startswith("#"):
+			continue
+
+		line_parts = line.split()
+		if not line_parts:
+			continue
+
+		chr_num_str = line_parts[0]
+		if chr_num_str.isdigit():
+			chr_num = int(chr_num_str)
+			chr_use = int(float(line_parts[1]))
+
+			if chr_use == 1 and chr_num <= chrName_maxcount:
+				chrNums.append(chr_num)
+				chrCounter += 1
+
+				chr_label = line_parts[2]
+				chrLabels.append(chr_label)
+
+				chr_name = line_parts[3]
+				chrNames[chr_num - 1] = chr_name  # Fills pre-allocated array slot
+
+				chr_nameShort = chr_label
+				chrShorts.append(chr_nameShort)
+
+				log_file.write(f"\t\t|\t\t{chr_num} : {chr_name} = {chr_nameShort}\n")
+
+chr_dict = {name: idx + 1 for idx, name in enumerate(chrNames) if name is not None}
+chrCount = chrName_maxcount
+
 # Put the chromosome count into a smaller name for later use.
 chrCount = chrName_maxcount
 with open(logName, "a") as myfile:
@@ -242,9 +255,9 @@ log_count        = 0
 log_offset       = 0
 
 print('### Number of Chromosomes = ' + str(chrCount))
-for x in range(0,chrCount):
-	if (chrNums[x] != 0):
-		print('### \t' + str(x+1) + ' : ' + str(chrName[x]))
+for x in range(0, len(chrNums)):
+	if (chrNums[x] != 0) and (x < len(chrNames)):
+		print('### \t' + str(x+1) + ' : ' + str(chrNames[x]))
 print("###" + str(numFragments))
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tGathering read coverage data for each fragment.\n")
@@ -271,33 +284,30 @@ for line in data:
 	#       Ca21chr1_C_albicans_SC5314   3706    T         C         1            [11]
 	if line[0] != "#":
 		count += 1
-		parentLine    = line.strip()
-		parentLine    = parentLine.split('\t')
+		parentLine    = line.strip().split('\t')
 		P_chr_name    = parentLine[0]        # chr name of bp.                  : Ca21chrR_C_albicans_SC5314
 		P_position    = int(parentLine[1])   # chr position of bp.              : 2286371
 		P_allele1     = parentLine[2]        # allele 1.                        : T
 		P_allele2     = parentLine[3]        # allele 2.                        : A
 		phasingData_1 = parentLine[4:]       # list of phasing data points.   remove any non-useful data points (10,11,12).   resulting in, 0s and 1s...  sum phase info = round(sum(list)/len(list))
-		phasingData_2 = [x for x in phasingData_1 if int(x) != 10]   # remove no phase condition '10' = het coordinate not found in dataset.
-		phasingData_3 = [x for x in phasingData_2 if int(x) != 11]   # remove no phase condition '11' = het coordinate not associated with LOH fragment definition.
-		phasingData   = [x for x in phasingData_3 if int(x) != 12]   # remove no phase condition '12' = het coordinate allele not in hapmap.
+		phasingData   = [int(x) for x in phasingData_1 if int(x) not in (10, 11, 12)]
+		# remove no phase condition '10' = het coordinate not found in dataset.
+		# remove no phase condition '11' = het coordinate not associated with LOH fragment definition.
+		# remove no phase condition '12' = het coordinate allele not in hapmap.
+
 		# Determine summary phase call for locus, used to apply counts to proper output columns.
 		if len(phasingData) == 0:
 			# no phasing data available, or runMode == 'LOH'
 			phaseCall = 10 # homolog undefined.
 		else:
 			# at least one phasing data point.
-			phasingData = [int(i) for i in phasingData]
 			dataLength  = len(phasingData)
 			dataSum     = sum(phasingData)
 			dataAve     = round(dataSum/float(dataLength))
 			phaseCall   = int(dataAve) #  [0,1] for homologs 'a' and 'b'.
 		# Identify which chromosome this data point corresponds to.
-		P_chr = 0
-		for x in range(0,chrCount):
-			if (chrNums[x] != 0):
-				if chrName[x] == P_chr_name:
-					P_chr = x+1
+		P_chr = chr_dict.get(P_chr_name, 0)
+
 		################################################################################
 		# All hapmap dataset coordinates are heterozygous in the parent by definition. #
 		################################################################################
@@ -372,7 +382,7 @@ for line in data:
 				C_chr           = 0
 				for x in range(0,chrCount):
 					if (chrNums[x] != 0):
-						if chrName[x] == C_chr_name:
+						if chrNames[x] == C_chr_name:
 							C_chr = x+1
 
 				#print("1|P:C "+str(P_chr)+":"+str(C_chr)+" "+str(P_position)+":"+str(C_position)+"|")
@@ -385,7 +395,7 @@ for line in data:
 						C_position      = int(childLine_parts[1])
 						for x in range(0,chrCount):
 							if (chrNums[x] != 0):
-								if chrName[x] == C_chr_name:
+								if chrNames[x] == C_chr_name:
 									C_chr = x+1
 					else:
 						C_chr = P_chr
@@ -400,7 +410,7 @@ for line in data:
 						C_position      = int(childLine_parts[1])
 						for x in range(0,chrCount):
 							if (chrNums[x] != 0):
-								if chrName[x] == C_chr_name:
+								if chrNames[x] == C_chr_name:
 									C_chr = x+1
 					else:
 						C_position = P_position
@@ -458,7 +468,7 @@ for line in data:
 				C_chr = 0;
 				for x in range(0,chrCount):
 					if (chrNums[x] != 0):
-						if chrName[x] == P_chr_name:
+						if chrNames[x] == P_chr_name:
 							C_chr = x+1;
 
 				#===============================================================================================================

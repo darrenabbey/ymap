@@ -7,7 +7,7 @@
 
 def process_ChildLine(entry_line):
 	global chrNums;
-	global chrName;
+	global chrNames;
 	global chrCount;
 	global chr_dict
 	# Process 'SNP_CNV_v1.txt' file line.
@@ -40,7 +40,7 @@ def process_ChildLine(entry_line):
 
 def process_HapmapLine(entry_line):
 	global chrNums;
-	global chrName;
+	global chrNames;
 	global chrCount;
 	global chr_dict;
 	# Process 'SNPdata_parent.txt' file line.
@@ -141,7 +141,7 @@ for line in figureDefinitionData:
 				chrName_maxcount = chr_num
 
 # Pre-allocate chrName_array
-chrName = [None] * chrName_maxcount
+chrNames = [None] * chrName_maxcount
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tGathering name strings for chromosomes.\n")
@@ -149,7 +149,6 @@ with open(logName, "a") as myfile:
 # Gather name strings for chromosomes, in order.
 chrCounter = 0;
 chrNums    = [];
-chrNames   = [];
 chrLabels  = [];
 chrShorts  = [];
 
@@ -176,14 +175,14 @@ with open(logName, "a") as log_file:
 				chrLabels.append(chr_label)
 
 				chr_name = line_parts[3]
-				chrName[chr_num - 1] = chr_name  # Fills pre-allocated array slot
+				chrNames[chr_num - 1] = chr_name  # Fills pre-allocated array slot
 
 				chr_nameShort = chr_label
 				chrShorts.append(chr_nameShort)
 
 				log_file.write(f"\t\t|\t\t{chr_num} : {chr_name} = {chr_nameShort}\n")
 
-chr_dict = {name: idx + 1 for idx, name in enumerate(chrName) if name is not None}
+chr_dict = {name: idx + 1 for idx, name in enumerate(chrNames) if name is not None}
 chrCount = chrName_maxcount
 
 # Put the chromosome count into a smaller name for later use.
@@ -201,7 +200,7 @@ log_count        = 0
 log_offset       = 0
 
 print('### Chromosomes of interest : ')
-for idx, name in enumerate(chrName):
+for idx, name in enumerate(chrNames):
 	if name is not None:
 		print('### \t' + str(idx+1) + ' : ' + str(name))
 

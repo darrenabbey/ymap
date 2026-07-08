@@ -332,7 +332,7 @@ if [[ "$hapmapInUse" = 0 ]]; then
 	echo -e "finished all processing, moving to Cleaning up intermediate WGseq files" >> $condensedLog;
 else
 	##==============================================================================
-	## Perform SNP/LOH analysis on dataset.
+	## Perform SNP/hapmap analysis on dataset.
 	##------------------------------------------------------------------------------
 	echo -e "#===========================================#" >> $logName;
 	echo -e "# SNP/LOH analysis of dataset, with hapmap. #" >> $logName;
