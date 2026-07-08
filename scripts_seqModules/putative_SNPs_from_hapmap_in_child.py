@@ -36,7 +36,7 @@ def process_ChildLine(entry_line):
 	else:
 		C_chrName = C_chr_name
 
-	return C_chr,C_chrName,C_position,C_countA,C_countT,C_countG,C_countC;
+	return C_chr,C_chrName,C_position,C_refBase,C_countA,C_countT,C_countG,C_countC;
 
 def process_HapmapLine(entry_line):
 	global chrNums;
@@ -251,7 +251,7 @@ with open(inputFile_C, "r") as data_C, open(logName, "a") as log_file:
 		if not line_C or line_C.startswith("#"):
 			continue
 
-		C_chrID,C_chrName,C_position,C_countA,C_countT,C_countG,C_countC = process_ChildLine(line_C)
+		C_chrID,C_chrName,C_position,C_refBase,C_countA,C_countT,C_countG,C_countC = process_ChildLine(line_C)
 
 		if C_chrID != old_C_chrID:
 			if old_C_chrID != 0:
@@ -269,7 +269,7 @@ with open(inputFile_C, "r") as data_C, open(logName, "a") as log_file:
 		if C_chrID > 0 and read_depth >= 2:
 			if (C_chrName, C_position) in hapmap_loci:
 				# Save directly using the coordinates tuple as the dictionary key
-				child_SNPs[(C_chrName, C_position)] = (C_chrName, C_position, C_countA, C_countT, C_countG, C_countC)
+				child_SNPs[(C_chrName, C_position)] = (C_chrName, C_position, C_refbAse, C_countA, C_countT, C_countG, C_countC)
 				dot_counter += 1
 
 				# Print a progress dot every 10 matched lines
@@ -291,7 +291,7 @@ for locus in hapmap_loci:
 	if locus in child_SNPs:
 		SNP_data = child_SNPs[locus]
 		# Fast Python f-string tab joins replace slow manual '+' concatenations
-		print(f"{SNP_data[0]}\t{SNP_data[1]}\t{SNP_data[2]}\t{SNP_data[3]}\t{SNP_data[4]}\t{SNP_data[5]}")
+		print(f"{SNP_data[0]}\t{SNP_data[1]}\t{SNP_data[2]}\t{SNP_data[3]}\t{SNP_data[4]}\t{SNP_data[5]}\t{SNP_data[6]}")
 
 
 #------------------------------------------------------------------------------------------------------------
