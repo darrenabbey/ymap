@@ -243,7 +243,7 @@
 		if ($groupKey == 0) {
 			$group_new = "";
 		} else {
-			$group_new = $projectFolders_subdir[$groupKey-1]."/";
+			$group_new = $projectFolders_subdir[$groupKey-1];
 		}
 
 		// Determine old project name (without any group names).
