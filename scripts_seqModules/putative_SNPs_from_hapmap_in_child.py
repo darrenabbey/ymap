@@ -209,7 +209,7 @@ for idx, name in enumerate(chrName):
 # Process hapmap file, as well as "SNP_CNV_v1.txt" for the data from the child.
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tLoading SNP coordinates from hapmap.\n");
-print('### Data lines for each locus in hapmap : [chromosome_name, bp_coordinate, countA, countT, countG, countC]');
+print('### Data lines for each locus in hapmap : [chromosome_name, bp_coordinate, refBase, countA, countT, countG, countC]');
 
 old_H_chrID   = 0;
 old_H_chrName = "None"
