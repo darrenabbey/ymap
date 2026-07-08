@@ -183,7 +183,7 @@ with open(logName, "a") as log_file:
 
 				log_file.write(f"\t\t|\t\t{chr_num} : {chr_name} = {chr_nameShort}\n")
 
-global_chr_dict = {name: idx + 1 for idx, name in enumerate(chrName) if name is not None}
+chr_dict = {name: idx + 1 for idx, name in enumerate(chrName) if name is not None}
 chrCount = chrName_maxcount
 
 # Put the chromosome count into a smaller name for later use.
@@ -211,10 +211,10 @@ with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tLoading SNP coordinates from hapmap.\n");
 print('### Data lines for each locus in hapmap : [chromosome_name, bp_coordinate, countA, countT, countG, countC]');
 
-old_H_chrID          = 0;
+old_H_chrID   = 0;
 old_H_chrName = "None"
-hapmap_loci          = set();
-countPerChr          = 0;
+hapmap_loci   = set();
+countPerChr   = 0;
 
 with open(inputFile_H, "r") as data_H, open(logName, "a") as log_file:
 	for line_H in data_H:
@@ -223,16 +223,16 @@ with open(inputFile_H, "r") as data_H, open(logName, "a") as log_file:
 
 		H_chrID,H_chrName,H_position = process_HapmapLine(line_H);
 
-		if H_chrID != old_H_chrID:
-			if old_H_chrID != 0:
-				# Logs the finished chromosome before switching track variables
-				log_file.write(f"\t\t|\t\tchr = {old_H_chrName} ({countPerChr})\n")
-			# Reset counters for the upcoming chromosome
-			countPerChr = 0
-			old_H_chrID = H_chrID
-			old_H_chrName = H_chrName
-
 		if H_chrID > 0:
+			if H_chrID != old_H_chrID:
+				if old_H_chrID != 0:
+					# Logs the finished chromosome before switching track variables
+					log_file.write(f"\t\t|\t\tchr = {old_H_chrName} ({countPerChr})\n")
+				# Reset counters for the upcoming chromosome
+				countPerChr = 0
+				old_H_chrID = H_chrID
+				old_H_chrName = H_chrName
+
 			hapmap_loci.add((H_chrName, H_position))
 			countPerChr += 1
 
