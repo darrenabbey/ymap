@@ -338,21 +338,33 @@ mappedReads1=$fractionMapped2;
 build_readstats_file "readStats.txt2" "SNP_CNV_v1.txt2";
 mappedReads2=$fractionMapped2;
 
-if [[ "$mappedReads1" < 10 ]]; then
-	if [[ "$mappedReads2" > 10 ]]; then
-		## Poor mapping quality, switch to no quality filters.
-		mv "$projectDirectory/putative_SNPs_v4.txt2"    "$projectDirectory/putative_SNPs_v4.txt";
-		mv "$projectDirectory/SNP_CNV_v1.txt2"          "$projectDirectory/SNP_CNV_v1.txt";
-		echo -e "Low read-mapping quality." > "$projectDirectory/warning.txt";
-	else
-		## Reads from wrong species mapped?
-		if [[ "$mappedReads1" < 1 ]]; then
-			echo -e "0$mappedReads1% reads mapped." > "$projectDirectory/warning.txt";
-		else
-			echo -e "$mappedReads1% reads mapped." > "$projectDirectory/warning.txt";
-		fi
-	fi
-fi
+#if [[ "$mappedReads1" < 10 ]]; then
+#	if [[ "$mappedReads2" > 10 ]]; then
+#		## Poor mapping quality, switch to no quality filters.
+
+		## swap files around.
+		mv "$projectDirectory/putative_SNPs_v4.txt"	"$projectDirectory/putative_SNPs_v4.txt3";
+		mv "$projectDirectory/SNP_CNV_v1.txt"		"$projectDirectory/SNP_CNV_v1.txt3";
+
+		mv "$projectDirectory/putative_SNPs_v4.txt2"	"$projectDirectory/putative_SNPs_v4.txt";
+		mv "$projectDirectory/SNP_CNV_v1.txt2"		"$projectDirectory/SNP_CNV_v1.txt";
+
+		mv "$projectDirectory/putative_SNPs_v4.txt3"	"$projectDirectory/putative_SNPs_v4.txt2";
+		mv "$projectDirectory/SNP_CNV_v1.txt3"		"$projectDirectory/SNP_CNV_v1.txt2";
+
+#               echo -e "Low read-mapping quality." > "$projectDirectory/warning.txt";
+#		mv "$projectDirectory/putative_SNPs_v4.txt2"    "$projectDirectory/putative_SNPs_v4.txt";
+#		mv "$projectDirectory/SNP_CNV_v1.txt2"          "$projectDirectory/SNP_CNV_v1.txt";
+#		echo -e "Low read-mapping quality." > "$projectDirectory/warning.txt";
+#	else
+#		## Reads from wrong species mapped?
+#		if [[ "$mappedReads1" < 1 ]]; then
+#			echo -e "0$mappedReads1% reads mapped." > "$projectDirectory/warning.txt";
+#		else
+#			echo -e "$mappedReads1% reads mapped." > "$projectDirectory/warning.txt";
+#		fi
+#	fi
+#fi
 #---------------------------------
 # End of 'readStats.txt' section.
 #=================================
