@@ -380,7 +380,7 @@ for line in data:
 				# Simulated illumina reads have no SNPs at all.
 				# searchTarget  = 'SNP_CNV_v1.txt'
 				C_chr           = 0
-				for x in range(0,chrCount):
+				for x in range(0,len(chrNums)):
 					if (chrNums[x] != 0):
 						if chrNames[x] == C_chr_name:
 							C_chr = x+1
