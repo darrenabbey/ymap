@@ -117,15 +117,16 @@ body {font-family: arial;}
 	if (file_exists($dirFigureBase."complete.txt")) {
 		echo "\n<!-- complete file found.\n--!>";
 		// Hide iframe and adjust color of entry to indicate completion.
+		// Then refresh user interface panels.
 		if (file_exists($dirFigureBase."bulk.txt")) {
 			?>
 			<html>
 			<body onload = "parent.parent.update_project_label_color('<?php echo $key; ?>','#000000','#CCFFCC'); parent.parent.resize_project('<?php echo $key; ?>', 0); parent.parent.update_project_remove_iframe('<?php echo $key; ?>', '<?php echo htmlspecialchars(json_encode(scandir("users/$user/projects/$project"))); ?>');">
 			<script type="text/javascript">
-				if (parent.document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('pending_comment').style.visibility != 'visible') {
-					parent.document.getElementById('panel_manageDataset_iframe'   ).contentWindow.location.reload();
-					parent.document.getElementById('panel_visualizeDataset_iframe'   ).contentWindow.location.reload();
-					parent.document.getElementById('panel_admin2_iframe'   ).contentWindow.location.reload();
+				if (parent.parent.document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('pending_comment').style.visibility != 'visible') {
+					parent.parent.document.getElementById('panel_manageDataset_iframe'   ).contentWindow.location.reload();
+					parent.parent.document.getElementById('panel_visualizeDataset_iframe'   ).contentWindow.location.reload();
+					parent.parent.document.getElementById('panel_admin2_iframe'   ).contentWindow.location.reload();
 				}
 			</script>
 			</body>
@@ -136,10 +137,10 @@ body {font-family: arial;}
 			<html>
 			<body onload = "parent.parent.update_project_label_color('<?php echo $key; ?>','#00AA00','#FFFFFF'); parent.parent.resize_project('<?php echo $key; ?>', 0); parent.parent.update_project_remove_iframe('<?php echo $key; ?>', '<?php echo htmlspecialchars(json_encode(scandir("users/$user/projects/$project"))); ?>');">
 			<script type="text/javascript">
-				if (parent.document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('pending_comment').style.visibility != 'visible') {
-					parent.document.getElementById('panel_manageDataset_iframe'   ).contentWindow.location.reload();
-					parent.document.getElementById('panel_visualizeDataset_iframe'   ).contentWindow.location.reload();
-					parent.document.getElementById('panel_admin2_iframe'   ).contentWindow.location.reload();
+				if (parent.parent.document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('pending_comment').style.visibility != 'visible') {
+					parent.parent.document.getElementById('panel_manageDataset_iframe'   ).contentWindow.location.reload();
+					parent.parent.document.getElementById('panel_visualizeDataset_iframe'   ).contentWindow.location.reload();
+					parent.parent.document.getElementById('panel_admin2_iframe'   ).contentWindow.location.reload();
 				}
 			</script>
 			</body>
