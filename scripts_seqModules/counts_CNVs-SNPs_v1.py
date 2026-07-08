@@ -3,7 +3,7 @@
 # Generate pileup file using samtools:
 #	"samtools pileup -f genome.fasta my_file.bam | awk '{print $1 " " $2 " " $3 " " $4 " " $5}' > output_file.pileup"
 # Generate putative SNPs list using this script:
-# 	"python counts_SNPs_v3.py FH1.pileup > FH1_putative_SNPs_v#.txt"
+# 	"python counts_SNPs_v1.py FH1.pileup > putative_SNPs_v5.txt"
 #============================================================================================================
 
 import string, sys, re;
