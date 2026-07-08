@@ -269,7 +269,7 @@ with open(inputFile_C, "r") as data_C, open(logName, "a") as log_file:
 		if C_chrID > 0 and read_depth >= 2:
 			if (C_chrName, C_position) in hapmap_loci:
 				# Save directly using the coordinates tuple as the dictionary key
-				child_SNPs[(C_chrName, C_position)] = (C_chrName, C_position, C_refbAse, C_countA, C_countT, C_countG, C_countC)
+				child_SNPs[(C_chrName, C_position)] = (C_chrName, C_position, C_refBase, C_countA, C_countT, C_countG, C_countC)
 				dot_counter += 1
 
 				# Print a progress dot every 10 matched lines
