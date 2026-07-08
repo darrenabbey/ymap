@@ -252,7 +252,7 @@
 		<div id="loginControls"><p>
 		</p></div>
 		<div id="projectCreationInformation"><p>
-			<form action="project.update_server.php" onsubmit="parent.document.getElementById('Hidden_UpdateDataset').style.display = 'none';" method="post">
+			<form action="project.update_server.php" method="post">
 				<table><tr bgcolor="#CCCCFF"><td>
 					<label for="project">Dataset Name : </label><input type="text" name="project" id="project" value="<?php echo $project; ?>" readonly style="background-color:#CCFFCC">
 				</td><td>

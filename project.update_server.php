@@ -497,5 +497,21 @@
 			log_stuff($user,$project,"","","","project:UPDATE project moved to new group without other updates.");
 		}
 
+?>
+	<html>
+	<body>
+	<script type="text/javascript">
+
+	var el4 = parent.document.getElementById('Hidden_UpdateDataset');
+	el4.style.display = 'none';
+
+	window.location = "project.update_window.php";
+
+	// Refresh "projectsShown" string;
+	parent.update_projectsShown_after_new_project();
+	</script>
+	</body>
+	</html>
+<?php
 	}
 ?>
