@@ -194,6 +194,25 @@ else
 	echo -e "\t\tpre-processing complete." >> $logName;
 fi
 
+echo -e "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
+if [[ -f $projectDirectory/trimmed_SNPs_v5.txt ]]; then
+	echo -e "\t\tAlready done." >> $logName;
+else
+	echo -e "\t\t| Inputs to python script:" >> $logName;
+	echo -e "\t\t|\tgenome     = $genome"     >> $logName;
+	echo -e "\t\t|\tgenomeUser = $genomeUser" >> $logName;
+	echo -e "\t\t|\tproject    = $project"    >> $logName;
+	echo -e "\t\t|\tuser       = $user"       >> $logName;
+	echo -e "\t\t|\thapmap     = $hapmap"     >> $logName;
+	echo -e "\t\t|\thapmapUser = $hapmapUser" >> $logName;
+	echo -e "\t\t|\tmain_dir   = $main_dir"   >> $logName;
+	$python_exec "$main_dir/scripts_seqModules/putative_SNPs_from_hapmap_in_child.py" "$genome" "$genomeUser" "$project" "$user" "$hapmap" "$hapmapUser" "$main_dir" > "$projectDirectory/trimmed_SNPs_v5.txt" 2>> $logName;
+	echo -e "\t\tDone." >> $logName;
+
+	chmod 774 "$projectDirectory/trimmed_SNPs_v5.txt";
+fi
+
+
 echo -e "Mapping SNPs." >> $condensedLog;
 echo -e "\t\tGenerating OCTAVE script to perform SNP analysis of dataset." >> $logName;
 outputName="$projectDirectory/processing3.m";
