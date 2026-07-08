@@ -214,7 +214,7 @@ fprintf(['\nEuploid base = "' num2str(ploidyBase) '"\n']);
 % Define colors for figure generation.
 %-------------------------------------------------------------------------------------------
 fprintf('\t|\tDefine colors used in figure generation.\n');
-phased_and_unphased_color_definitions;
+source('../phased_and_unphased_color_definitions.m');
 
 
 % basic plot parameters not defined per genome.

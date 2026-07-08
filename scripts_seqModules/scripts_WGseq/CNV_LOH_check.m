@@ -231,7 +231,7 @@ fprintf(['\nEuploid base = "' num2str(ploidyBase) '"\n']);
 % Define colors for figure generation.
 %-------------------------------------------------------------------------------------------
 fprintf('\n### Load color definitions.\n');
-phased_and_unphased_color_definitions;
+source('../phased_and_unphased_color_definitions.m');
 
 
 %%================================================================================================

@@ -121,6 +121,13 @@ body {font-family: arial;}
 			?>
 			<html>
 			<body onload = "parent.parent.update_project_label_color('<?php echo $key; ?>','#000000','#CCFFCC'); parent.parent.resize_project('<?php echo $key; ?>', 0); parent.parent.update_project_remove_iframe('<?php echo $key; ?>', '<?php echo htmlspecialchars(json_encode(scandir("users/$user/projects/$project"))); ?>');">
+			<script type="text/javascript">
+				if (parent.document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('pending_comment').style.visibility != 'visible') {
+					parent.document.getElementById('panel_manageDataset_iframe'   ).contentWindow.location.reload();
+					parent.document.getElementById('panel_visualizeDataset_iframe'   ).contentWindow.location.reload();
+					parent.document.getElementById('panel_admin2_iframe'   ).contentWindow.location.reload();
+				}
+			</script>
 			</body>
 			</html>
 			<?php
@@ -128,18 +135,17 @@ body {font-family: arial;}
 			?>
 			<html>
 			<body onload = "parent.parent.update_project_label_color('<?php echo $key; ?>','#00AA00','#FFFFFF'); parent.parent.resize_project('<?php echo $key; ?>', 0); parent.parent.update_project_remove_iframe('<?php echo $key; ?>', '<?php echo htmlspecialchars(json_encode(scandir("users/$user/projects/$project"))); ?>');">
+			<script type="text/javascript">
+				if (parent.document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('pending_comment').style.visibility != 'visible') {
+					parent.document.getElementById('panel_manageDataset_iframe'   ).contentWindow.location.reload();
+					parent.document.getElementById('panel_visualizeDataset_iframe'   ).contentWindow.location.reload();
+					parent.document.getElementById('panel_admin2_iframe'   ).contentWindow.location.reload();
+				}
+			</script>
 			</body>
 			</html>
 			<?php
 		}
-
-		// Refresh panels.
-		if (parent.document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('pending_comment').style.visibility != 'visible') {
-			parent.document.getElementById('panel_manageDataset_iframe'   ).contentWindow.location.reload();
-			parent.document.getElementById('panel_visualizeDataset_iframe'   ).contentWindow.location.reload();
-			parent.document.getElementById('panel_admin2_iframe'   ).contentWindow.location.reload();
-		}
-
 	} else if (file_exists($dirFigureBase."error.txt")) {
 		echo "\n<!-- error file found.\n--!>";
 		// Load error.txt from project folder.
