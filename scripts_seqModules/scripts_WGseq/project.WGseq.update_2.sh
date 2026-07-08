@@ -159,6 +159,7 @@ fi
 	install /dev/null "$projectDirectory/preprocessed_SNPs.txt";
 	echo -e "Preprocessing SNPs." >> $condensedLog;
 	if [[ "$hapmapInUse" = 1 ]]; then
+		echo -e "\tGrabbing hapmap data from: $hapmapDirectory." >> $logName;
 		cp "$hapmapDirectory/SNPdata_parent" > "$projectDirectory/SNPdata_parent.txt";
 
 		# prefilter SNP data vs hapmap.
