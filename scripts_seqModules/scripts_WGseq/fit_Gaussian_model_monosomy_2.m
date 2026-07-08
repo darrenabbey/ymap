@@ -138,13 +138,18 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	time2_1 = 1:floor(p2_b);
 	time2_2 = ceil(p2_b):200;
 	if (time2_1(end) == time2_2(1));time2_2(1) = [];end;
-	c1_  = p1_c/2 + p1_c*skew_factor1/(100.5-abs(100.5-p1_b))/2;
+
+	locs = [p1_b, p2_b];
+	denoms = 100.5 - abs(100.5 - locs);
+	denoms(denoms == 0) = 0.001;
+
+	c1_  = p1_c/2 + p1_c*skew_factor1/denoms(1)/2;
 	p1_c = p1_c*p1_c/c1_;
-	c2_  = p2_c/2 + p2_c*skew_factor2/(100.5-abs(100.5-p2_b))/2;
+	c2_  = p2_c/2 + p2_c*skew_factor2/denoms(2)/2;
 	p2_c = p2_c*p2_c/c2_;
 	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
-	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor1/(100.5-abs(100.5-p1_b))) ).^2);
-	p2_fit_L = p2_a*exp(-0.5*((time2_1-p2_b)./p2_c/(skew_factor2/(100.5-abs(100.5-p2_b))) ).^2);
+	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor1/denoms(1)) ).^2);
+	p2_fit_L = p2_a*exp(-0.5*((time2_1-p2_b)./p2_c/(skew_factor2/denoms(2)) ).^2);
 	p2_fit_R = p2_a*exp(-0.5*((time2_2-p2_b)./p2_c).^2);
 	p1_fit = [p1_fit_L p1_fit_R];
 	p2_fit = [p2_fit_L p2_fit_R];
@@ -175,6 +180,8 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 			Error_Vector = (fitted) - (data);
 			sse  = sum(Error_Vector.^2);
 		case 'log'
+			fitted(fitted <= 0) = 0.0001;
+			data(data <= 0)     = 0.0001;
 			Error_Vector = log(fitted) - log(data);
 			sse  = sum(abs(Error_Vector));
 		case 'fcs'

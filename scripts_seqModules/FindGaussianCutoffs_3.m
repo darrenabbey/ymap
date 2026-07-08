@@ -28,7 +28,7 @@ nonasomy_peaks  = [0, 1/9, 2/9, 3/9, 4/9, 5/9, 6/9, 7/9, 8/9, 1]*199+1;
 % Fits Gaussians to real data per chromomsome, then determines equal probability cutoffs between them.
 sigma = 5;
 %% FindGaussianCutoffs Finds cutoffs as intersections of Gaussians, fit to the data at each peak location.
-ErrorType      = 'cubic';
+ErrorType      = 'log';
 % Define range of fit curves.
 range = 1:200;
 

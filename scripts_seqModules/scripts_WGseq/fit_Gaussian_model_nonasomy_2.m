@@ -262,45 +262,17 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 		params(2) = temp;
 	end;
 
-	p1_a          = abs(params(1));   % height.
-	p1_b          = locations(1);     % location.
-	p1_c          = abs(params(2));   % relative width.
-
-	p2_a          = abs(params(3));   % height.
-	p2_b          = locations(2);     % location.
-	p2_c          = abs(params(4));   % relative width.
-
-	p3_a          = abs(params(5));   % height.
-	p3_b          = locations(3);     % location.
-	p3_c          = abs(params(4));   % relative width.
-
-	p4_a          = abs(params(6));   % height.
-	p4_b          = locations(4);     % location.
-	p4_c          = abs(params(4));   % relative width.
-
-	p5_a          = abs(params(7));   % height.
-	p5_b          = locations(5);     % location.
-	p5_c          = abs(params(4));   % relative width.
-
-	p6_a          = abs(params(8));   % height.
-	p6_b          = locations(6);     % location.
-	p6_c          = abs(params(4));   % relative width.
-
-	p7_a          = abs(params(9));   % height.
-	p7_b          = locations(7);     % location.
-	p7_c          = abs(params(4));   % relative width.
-
-	p8_a          = abs(params(10));  % height.
-	p8_b          = locations(8);     % location.
-	p8_c          = abs(params(4));   % relative width.
-
-	p9_a          = abs(params(11));  % height.
-	p9_b          = locations(9);     % location.
-	p9_c          = abs(params(4));   % relative width.
-
-	p10_a         = abs(params(12));  % height.
-	p10_b         = locations(10);    % location.
-	p10_c         = abs(params(2));   % relative width.
+	% height, location, relative width.
+	p1_a          = abs(params(1));   p1_b          = locations(1);     p1_c          = abs(params(2));
+	p2_a          = abs(params(3));   p2_b          = locations(2);     p2_c          = abs(params(4));
+	p3_a          = abs(params(5));   p3_b          = locations(3);     p3_c          = abs(params(4));
+	p4_a          = abs(params(6));   p4_b          = locations(4);     p4_c          = abs(params(4));
+	p5_a          = abs(params(7));   p5_b          = locations(5);     p5_c          = abs(params(4));
+	p6_a          = abs(params(8));   p6_b          = locations(6);     p6_c          = abs(params(4));
+	p7_a          = abs(params(9));   p7_b          = locations(7);     p7_c          = abs(params(4));
+	p8_a          = abs(params(10));  p8_b          = locations(8);     p8_c          = abs(params(4));
+	p9_a          = abs(params(11));  p9_b          = locations(9);     p9_c          = abs(params(4));
+	p10_a         = abs(params(12));  p10_b         = locations(10);    p10_c         = abs(params(2));
 
 	skew_factor1  = 1;
 	skew_factor2  = 1;
@@ -313,16 +285,12 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	skew_factor9  = 1;
 	skew_factor10 = 1;
 
-	if (p1_c  == 0); p1_c  = 0.001; end;
-	if (p2_c  == 0); p2_c  = 0.001; end;
-	if (p3_c  == 0); p3_c  = 0.001; end;
-	if (p4_c  == 0); p4_c  = 0.001; end;
-	if (p5_c  == 0); p5_c  = 0.001; end;
-	if (p6_c  == 0); p6_c  = 0.001; end;
-	if (p7_c  == 0); p7_c  = 0.001; end;
-	if (p8_c  == 0); p8_c  = 0.001; end;
-	if (p9_c  == 0); p9_c  = 0.001; end;
-	if (p10_c == 0); p10_c = 0.001; end;
+	widths = [p1_c, p2_c, p3_c, p4_c, p5_c, p6_c, p7_c, p8_c, p9_c, p10_c];
+        widths(widths == 0) = 0.001;
+        widths(widths < 2) = 2;
+	p1_c=widths(1);  p2_c=widths(2);  p3_c=widths(3);  p4_c=widths(4);  p5_c=widths(5);
+	p6_c=widths(6);  p7_c=widths(7);  p8_c=widths(8);  p9_c=widths(9);  p10_c=widths(10);
+
 	if (skew_factor1  < 0); skew_factor1  = 0; end; if (skew_factor1  > 2); skew_factor1  = 2; end;
 	if (skew_factor2  < 0); skew_factor2  = 0; end; if (skew_factor2  > 2); skew_factor2  = 2; end;
 	if (skew_factor3  < 0); skew_factor3  = 0; end; if (skew_factor3  > 2); skew_factor3  = 2; end;
@@ -333,16 +301,7 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	if (skew_factor8  < 0); skew_factor8  = 0; end; if (skew_factor8  > 2); skew_factor8  = 2; end;
 	if (skew_factor9  < 0); skew_factor9  = 0; end; if (skew_factor9  > 2); skew_factor9  = 2; end;
 	if (skew_factor10 < 0); skew_factor10 = 0; end; if (skew_factor10 > 2); skew_factor10 = 2; end;
-	if (p1_c  < 2);   p1_c  = 2;   end;
-	if (p2_c  < 2);   p2_c  = 2;   end;
-	if (p3_c  < 2);   p3_c  = 2;   end;
-	if (p4_c  < 2);   p4_c  = 2;   end;
-	if (p5_c  < 2);   p5_c  = 2;   end;
-	if (p6_c  < 2);   p6_c  = 2;   end;
-	if (p7_c  < 2);   p7_c  = 2;   end;
-	if (p8_c  < 2);   p8_c  = 2;   end;
-	if (p9_c  < 2);   p9_c  = 2;   end;
-	if (p10_c < 2);   p10_c = 2;   end;
+
 	time1_1  = 1:floor(p1_b);
 	time1_2  = ceil(p1_b):200;
 	if (time1_1(end) == time1_2(1));    time1_1(end) = [];  end;
@@ -373,45 +332,41 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	time10_1 = 1:floor(p10_b);
         time10_2 = ceil(p10_b):200;
         if (time10_1(end) == time10_2(1));    time10_2(1) = [];    end;
-	c1_   = p1_c/2 + p1_c*skew_factor1/(100.5-abs(100.5-p1_b))/2;
-	p1_c  = p1_c*p1_c/c1_;
-	c2_   = p2_c/2 + p2_c*skew_factor2/(100.5-abs(100.5-p2_b))/2;
-	p2_c  = p2_c*p2_c/c2_;        
-	c3_   = p3_c/2 + p3_c*skew_factor3/(100.5-abs(100.5-p3_b))/2;
-	p3_c  = p3_c*p3_c/c3_;
-	c4_   = p4_c/2 + p4_c*skew_factor4/(100.5-abs(100.5-p4_b))/2;
-	p4_c  = p4_c*p4_c/c4_;
-	c5_   = p5_c/2 + p5_c*skew_factor5/(100.5-abs(100.5-p5_b))/2;
-	p5_c  = p5_c*p5_c/c5_;
-	c6_   = p6_c/2 + p6_c*skew_factor6/(100.5-abs(100.5-p6_b))/2;
-	p6_c  = p6_c*p6_c/c6_;
-	c7_   = p7_c/2 + p7_c*skew_factor7/(100.5-abs(100.5-p7_b))/2;
-	p7_c  = p7_c*p7_c/c7_;
-	c8_   = p8_c/2 + p8_c*skew_factor8/(100.5-abs(100.5-p8_b))/2;
-	p8_c  = p8_c*p8_c/c8_;
-	c9_   = p9_c/2 + p9_c*skew_factor9/(100.5-abs(100.5-p9_b))/2;
-	p9_c  = p9_c*p9_c/c9_;
-	c10_  = p10_c/2 + p10_c*skew_factor10/(100.5-abs(100.5-p10_b))/2;
-	p10_c = p10_c*p10_c/c10_;
+
+	locs = [p1_b, p2_b, p3_b, p4_b, p5_b, p6_b, p7_b, p8_b, p9_b, p10_b];
+	denoms = 100.5 - abs(100.5 - locs);
+	denoms(denoms == 0) = 0.001;
+
+	c1_   = p1_c/2 + p1_c*skew_factor1/denoms(1)/2;		p1_c  = p1_c*p1_c/c1_;
+	c2_   = p2_c/2 + p2_c*skew_factor2/denoms(2)/2;		p2_c  = p2_c*p2_c/c2_;
+	c3_   = p3_c/2 + p3_c*skew_factor3/denoms(3)/2;		p3_c  = p3_c*p3_c/c3_;
+	c4_   = p4_c/2 + p4_c*skew_factor4/denoms(4)/2;		p4_c  = p4_c*p4_c/c4_;
+	c5_   = p5_c/2 + p5_c*skew_factor5/denoms(5)/2;		p5_c  = p5_c*p5_c/c5_;
+	c6_   = p6_c/2 + p6_c*skew_factor6/denoms(6)/2;		p6_c  = p6_c*p6_c/c6_;
+	c7_   = p7_c/2 + p7_c*skew_factor7/denoms(7)/2;		p7_c  = p7_c*p7_c/c7_;
+	c8_   = p8_c/2 + p8_c*skew_factor8/denoms(8)/2;		p8_c  = p8_c*p8_c/c8_;
+	c9_   = p9_c/2 + p9_c*skew_factor9/denoms(9)/2;		p9_c  = p9_c*p9_c/c9_;
+	c10_  = p10_c/2 + p10_c*skew_factor10/denoms(10)/2;	p10_c = p10_c*p10_c/c10_;
+
 	p1_fit_L  = p1_a*exp( -0.5*((time1_1 -p1_b )./p1_c ).^2);
-	p1_fit_R  = p1_a*exp( -0.5*((time1_2 -p1_b )./p1_c /(skew_factor1 /(100.5-abs(100.5-p1_b ))) ).^2);
+	p1_fit_R  = p1_a*exp( -0.5*((time1_2 -p1_b )./p1_c /(skew_factor1 /denoms(1)) ).^2);
 	p2_fit_L  = p2_a*exp( -0.5*((time2_1 -p2_b )./p2_c ).^2);
-	p2_fit_R  = p2_a*exp( -0.5*((time2_2 -p2_b )./p2_c /(skew_factor2 /(100.5-abs(100.5-p2_b ))) ).^2);
+	p2_fit_R  = p2_a*exp( -0.5*((time2_2 -p2_b )./p2_c /(skew_factor2 /denoms(2)) ).^2);
 	p3_fit_L  = p3_a*exp( -0.5*((time3_1 -p3_b )./p3_c ).^2);
-	p3_fit_R  = p3_a*exp( -0.5*((time3_2 -p3_b )./p3_c /(skew_factor3 /(100.5-abs(100.5-p3_b ))) ).^2);
+	p3_fit_R  = p3_a*exp( -0.5*((time3_2 -p3_b )./p3_c /(skew_factor3 /denoms(3)) ).^2);
 	p4_fit_L  = p4_a*exp( -0.5*((time4_1 -p4_b )./p4_c ).^2);
-	p4_fit_R  = p4_a*exp( -0.5*((time4_2 -p4_b )./p4_c /(skew_factor4 /(100.5-abs(100.5-p4_b ))) ).^2);
+	p4_fit_R  = p4_a*exp( -0.5*((time4_2 -p4_b )./p4_c /(skew_factor4 /denoms(4)) ).^2);
 	p5_fit_L  = p5_a*exp( -0.5*((time5_1 -p5_b )./p5_c ).^2);
-        p5_fit_R  = p5_a*exp( -0.5*((time5_2 -p5_b )./p5_c /(skew_factor5 /(100.5-abs(100.5-p5_b ))) ).^2);
-	p6_fit_L  = p6_a*exp( -0.5*((time6_1 -p6_b )./p6_c /(skew_factor6 /(100.5-abs(100.5-p6_b ))) ).^2);
+        p5_fit_R  = p5_a*exp( -0.5*((time5_2 -p5_b )./p5_c /(skew_factor5 /denoms(5)) ).^2);
+	p6_fit_L  = p6_a*exp( -0.5*((time6_1 -p6_b )./p6_c /(skew_factor6 /denoms(6)) ).^2);
         p6_fit_R  = p6_a*exp( -0.5*((time6_2 -p6_b )./p6_c ).^2);
-	p7_fit_L  = p7_a*exp( -0.5*((time7_1 -p7_b )./p7_c /(skew_factor7 /(100.5-abs(100.5-p7_b ))) ).^2);
+	p7_fit_L  = p7_a*exp( -0.5*((time7_1 -p7_b )./p7_c /(skew_factor7 /denoms(7)) ).^2);
 	p7_fit_R  = p7_a*exp( -0.5*((time7_2 -p7_b )./p7_c ).^2);
-	p8_fit_L  = p8_a*exp( -0.5*((time8_1 -p8_b )./p8_c /(skew_factor8 /(100.5-abs(100.5-p8_b ))) ).^2);
+	p8_fit_L  = p8_a*exp( -0.5*((time8_1 -p8_b )./p8_c /(skew_factor8 /denoms(8)) ).^2);
 	p8_fit_R  = p8_a*exp( -0.5*((time8_2 -p8_b )./p8_c ).^2);
-	p9_fit_L  = p9_a*exp( -0.5*((time9_1 -p9_b )./p9_c /(skew_factor9 /(100.5-abs(100.5-p9_b ))) ).^2);
+	p9_fit_L  = p9_a*exp( -0.5*((time9_1 -p9_b )./p9_c /(skew_factor9 /denoms(9)) ).^2);
 	p9_fit_R  = p9_a*exp( -0.5*((time9_2 -p9_b )./p9_c ).^2);
-	p10_fit_L = p10_a*exp(-0.5*((time10_1-p10_b)./p10_c/(skew_factor10/(100.5-abs(100.5-p10_b))) ).^2);
+	p10_fit_L = p10_a*exp(-0.5*((time10_1-p10_b)./p10_c/(skew_factor10/denoms(10)) ).^2);
 	p10_fit_R = p10_a*exp(-0.5*((time10_2-p10_b)./p10_c).^2);
 	p1_fit  = [p1_fit_L  p1_fit_R ];
 	p2_fit  = [p2_fit_L  p2_fit_R ];
@@ -458,6 +413,8 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 			Error_Vector = (fitted) - (data);
 			sse          = sum(Error_Vector.^2);
 		case 'log'
+			fitted(fitted <= 0) = 0.0001;
+			data(data <= 0)     = 0.0001;
 			Error_Vector = log(fitted) - log(data);
 			sse          = sum(abs(Error_Vector));
 		case 'fcs'
