@@ -509,6 +509,10 @@
 
 	// Refresh "projectsShown" string;
 	parent.update_projectsShown_after_new_project();
+
+	// Refresh 'Visualize Datasets" panel.
+	if (parent.document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('pending_comment').style.visibility != 'visible') {   window.top.location.update_interface();   }
+
 	</script>
 	</body>
 	</html>

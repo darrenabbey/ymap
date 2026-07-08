@@ -46,7 +46,7 @@
 				</td></tr></table><br>
 				<?php
 				if (!$exceededSpace) {
-					echo "<input type='submit' value='Create New Dataset Group'>";
+					echo "<input type='submit' value='Create New Dataset Group' onclick='if (parent.document.getElementById("panel_manageDataset_iframe").contentDocument.getElementById('pending_comment").style.visibility != "visible") {   window.top.location.update_interface();   }'>";
 				}
 				?>
 			</form>

@@ -323,6 +323,7 @@
 	<html>
 	<body>
 	<script type="text/javascript">
+	// Add comments to user interface, instructing user to repload page once any pending uploads are done.
 	var el1 = parent.document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('newly_installed_list');
 	el1.innerHTML += "<?php echo $_SESSION['pending_install_project_count']; ?>. <?php echo $project; ?><br>";
 
@@ -332,13 +333,14 @@
 	var el3 = parent.document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('name_error_comment');
         el3.style.visibility = 'hidden';
 
+	// Hide create new project window and reset contents.
 	var el4 = parent.document.getElementById('Hidden_InstallNewDataset');
 	el4.style.display = 'none';
-
 	window.location = "project.create_window.php";
 
 	// Refresh "projectsShown" string;
 	parent.update_projectsShown_after_new_project();
+
 	</script>
 	</body>
 	</html>
