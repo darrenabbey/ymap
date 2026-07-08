@@ -9,6 +9,7 @@ def process_ChildLine(entry_line):
 	global chrNums;
 	global chrName;
 	global chrCount;
+	global chr_dict
 	# Process 'SNP_CNV_v1.txt' file line.
 	# example lines:
 	#       chromosome               coord   total   ref   A    T    G    C
@@ -16,8 +17,8 @@ def process_ChildLine(entry_line):
 	#       ChrA_C_glabrata_CBS138   46      37      T     0    37   0    0
 	#       ChrA_C_glabrata_CBS138   47      38      A     38   0    0    0
 	#       ChrA_C_glabrata_CBS138   48      39      A     39   0    0    0
-	child_line = entry_line.strip();
-	child_line = child_line.split('\t');
+	child_line = entry_line.strip().split('\t');
+
 	C_chr_name = child_line[0];   # chr name of bp.          : Ca21chrR_C_albicans_SC5314
 	C_position = child_line[1];   # chr position of bp.      : 2286371
 	C_countTot = child_line[2];   # total count at bp.       : 101
@@ -26,37 +27,42 @@ def process_ChildLine(entry_line):
 	C_countT   = child_line[5];   # count of T.              : 0
 	C_countG   = child_line[6];   # count of G.              : 0
 	C_countC   = child_line[7];   # count of C.              : 1
+
 	# Determine chrID associated with chromosome name.
-	C_chr = 0;
-	for x in range(0,chrCount):
-		if (chrNums[x] != 0):
-			if chrName[x] == C_chr_name:
-				C_chr = x+1;
-	C_chrName = chrName[C_chr-1];
+	C_chr = chr_dict.get(C_chr_name, 0)
+
+	if C_chr == 0:
+		C_chrName = "Unknown"
+	else:
+		C_chrName = C_chr_name
+
 	return C_chr,C_chrName,C_position,C_countA,C_countT,C_countG,C_countC;
 
 def process_HapmapLine(entry_line):
 	global chrNums;
 	global chrName;
 	global chrCount;
+	global chr_dict;
 	# Process 'SNPdata_parent.txt' file line.
 	# example lines:
 	#       chromosome                   coord   HomA   HomB   Status1   (Status2 ...)
 	#       Ca21chr1_C_albicans_SC5314   812     C      T      0         (1       ...)
 	#       Ca21chr1_C_albicans_SC5314   816     T      C      0         (1       ...)
 	#       Ca21chr1_C_albicans_SC5314   879     G      A      0         (0       ...)
-	hapmap_line   = entry_line.strip();
-	hapmap_line   = hapmap_line.split('\t');
+	hapmap_line   = entry_line.strip().split('\t');
+
 	H_chr_name    = hapmap_line[0];   # chromosome   : Ca21chrR_C_albicans_SC5314
 	H_position    = hapmap_line[1];   # coordinate   : 2286371
+
 	# Determine chrID associated with chromosome name.
-	H_chr = 0;
-	for x in range(0,chrCount):
-		if (chrNums[x] != 0):
-			if chrName[x] == H_chr_name:
-				H_chr = x+1;
-	H_chrName = chrName[H_chr-1];
-	return H_chr,H_chrName,H_position;
+	H_chr = chr_dict.get(H_chr_name, 0)
+
+	if H_chr == 0:
+		H_chrName = "Unknown"
+	else:
+		H_chrName = H_chr_name
+
+	return H_chr, H_chrName, H_position
 
 import string, sys, time, random;
 random.seed();
@@ -106,81 +112,84 @@ with open(logName, "a") as myfile:
 # Look up chromosome name strings for genome in use.
 #     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/figure_definitions.txt"
 figureDefinition_file  = genomeDirectory + 'figure_definitions.txt'
-figureDefinitionFile   = open(figureDefinition_file,'r')
-figureDefinitionData   = figureDefinitionFile.readlines()
+with open(figureDefinition_file, 'r') as figureDefinitionFile:
+	figureDefinitionData = figureDefinitionFile.readlines()
+	# Example lines in figureDefinition_file:
+	#     Chr  Use   Label   Name                         posX   posY   width   height
+	#     1    1     Chr1    Ca21chr1_C_albicans_SC5314   0.15   0.8    0.8     0.0625
+	#     2    1     Chr2    Ca21chr2_C_albicans_SC5314   0.15   0.7    *       0.0625
+	#     0    0     Mito    Ca19-mtDNA                   0.0    0.0    0.0     0.0
 
-# Example lines in figureDefinition_file:
-#     Chr  Use   Label   Name                         posX   posY   width   height
-#     1    1     Chr1    Ca21chr1_C_albicans_SC5314   0.15   0.8    0.8     0.0625
-#     2    1     Chr2    Ca21chr2_C_albicans_SC5314   0.15   0.7    *       0.0625
-#     0    0     Mito    Ca19-mtDNA                   0.0    0.0    0.0     0.0
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tDetermining number of chromosomes of interest in genome.\n")
 
 # Determine the number of chromosomes of interest in genome.
 chrName_maxcount = 0
 for line in figureDefinitionData:
-	if (len(line) > 0):
-		if (line[0] != "#"):
-			line_parts = line.strip().split()
-			if (len(line_parts) > 0):
-				chr_num = line_parts[0]
-				if chr_num.isdigit():
-					chr_num    = int(float(line_parts[0]))
-					chr_use    = int(float(line_parts[1]))
-					chr_label  = line_parts[2]
-					chr_name   = line_parts[3]
-					if chr_num > chrName_maxcount:
-						chrName_maxcount = chr_num
-figureDefinitionFile.close()
+	line = line.strip()
+	if not line or line.startswith("#"):
+		continue
+
+	line_parts = line.split()
+	if (len(line_parts) >= 4):
+		chr_num_str = line_parts[0]
+		if chr_num_str.isdigit():
+			chr_num    = int(chr_num_str)
+			chr_use    = int(float(line_parts[1]))
+
+			if (chr_num > chrName_maxcount) and (chr_use == 1):
+				chrName_maxcount = chr_num
 
 # Pre-allocate chrName_array
-chrName = []
-for x in range(0, chrName_maxcount):
-	chrName.append([])
+chrName = [None] * chrName_maxcount
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tGathering name strings for chromosomes.\n")
 
 # Gather name strings for chromosomes, in order.
-figureDefinitionFile  = open(figureDefinition_file,'r')
 chrCounter = 0;
 chrNums    = [];
 chrNames   = [];
 chrLabels  = [];
 chrShorts  = [];
-for line in figureDefinitionData:
-	if (len(line) > 0):
-		if (line[0] != "#"):
-			line_parts = line.strip().split()
-			if (len(line_parts) > 0):
-				chr_num = line_parts[0]
-				if chr_num.isdigit():
-					chr_num                        = int(float(line_parts[0]))
-					chrNums.append(chr_num);
-					chrCounter += chrCounter;
-					chr_use                        = int(float(line_parts[1]))
-					chr_label                      = line_parts[2]
-					chrLabels.append(chr_label);
-					chr_name                       = line_parts[3]
-					chrNames.append(chr_name);
-					chr_nameShort                  = chr_label
-					chrShorts.append(chr_nameShort);
-					if chr_num != 0:
-						chrName[int(float(chr_num))-1] = chr_name
-						with open(logName, "a") as myfile:
-							myfile.write("\t\t|\t\t" + str(chr_num) + " : " + chr_name + " = " + chr_nameShort + "\n")
-figureDefinitionFile.close()
+
+with open(logName, "a") as log_file:
+	for line in figureDefinitionData:
+		line = line.strip()
+		if not line or line.startswith("#"):
+			continue
+
+		line_parts = line.split()
+		if not line_parts:
+			continue
+
+		chr_num_str = line_parts[0]
+		if chr_num_str.isdigit():
+			chr_num = int(chr_num_str)
+			chr_use = int(float(line_parts[1]))
+
+			if chr_use == 1 and chr_num <= chrName_maxcount:
+				chrNums.append(chr_num)
+				chrCounter += 1
+
+				chr_label = line_parts[2]
+				chrLabels.append(chr_label)
+
+				chr_name = line_parts[3]
+				chrName[chr_num - 1] = chr_name  # Fills pre-allocated array slot
+
+				chr_nameShort = chr_label
+				chrShorts.append(chr_nameShort)
+
+				log_file.write(f"\t\t|\t\t{chr_num} : {chr_name} = {chr_nameShort}\n")
+
+global_chr_dict = {name: idx + 1 for idx, name in enumerate(chrName) if name is not None}
+chrCount = chrName_maxcount
 
 # Put the chromosome count into a smaller name for later use.
 chrCount = chrName_maxcount
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\t\tMax chr string : "+str(chrCount)+"\n")
-#............................................................................................................
-
-with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tOpen parent 'putative_SNPs_v4.txt' file.\n")
-
 #............................................................................................................
 
 count            = 0
@@ -192,8 +201,8 @@ log_count        = 0
 log_offset       = 0
 
 print('### Chromosomes of interest : ')
-for x in range(0,chrCount):
-	if (chrNums[x] != 0):
+for idx, name in enumerate(chrName):
+	if name is not None:
 		print('### \t' + str(x+1) + ' : ' + str(chrName[x]))
 
 
@@ -201,63 +210,89 @@ for x in range(0,chrCount):
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tLoading SNP coordinates from hapmap.\n");
 print('### Data lines for each locus in hapmap : [chromosome_name, bp_coordinate, countA, countT, countG, countC]');
-data_H               = open(inputFile_H,"r");
+
 old_H_chrID          = 0;
+old_H_chrName = "None"
 hapmap_loci          = set();
-for line_H in data_H:
-	if (len(line_H) > 0):
-		if (line_H[0] != "#"):
-			H_chrID,H_chrName,H_position = process_HapmapLine(line_H);
-			if H_chrID != old_H_chrID:
-				with open(logName, "a") as myfile:
-					myfile.write("\t\t|\t\tchr = "+str(H_chrName)+"\n");
-			if H_chrID > 0:
-				hapmap_loci.add( (H_chrName,H_position) );
-			old_H_chrID = H_chrID;
-data_H.close();
+countPerChr          = 0;
+
+with open(inputFile_H, "r") as data_H, open(logName, "a") as log_file:
+	for line_H in data_H:
+		if not line_H or line_H.startswith("#"):
+			continue
+
+		H_chrID,H_chrName,H_position = process_HapmapLine(line_H);
+
+		if H_chrID != old_H_chrID:
+			if old_H_chrID != 0:
+				# Logs the finished chromosome before switching track variables
+				log_file.write(f"\t\t|\t\tchr = {old_H_chrName} ({countPerChr})\n")
+			# Reset counters for the upcoming chromosome
+			countPerChr = 0
+			old_H_chrID = H_chrID
+			old_H_chrName = H_chrName
+
+		if H_chrID > 0:
+			hapmap_loci.add((H_chrName, H_position))
+			countPerChr += 1
+
+	if old_H_chrID != 0:
+		log_file.write(f"\t\t|\t\tchr = {old_H_chrName} ({countPerChr})\n")
 
 # Process child dataset for matches to hapmap.
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tScreening through child dataset for coordinates matching hapmap loci.");
-data_C                    = open(inputFile_C,"r");
 old_C_chrID               = 0;
-child_SNPs                = [];
+child_SNPs                = {};
 child_SNPs_small          = [];
-counter                   = 0;
-for line_C in data_C:
-	if len(line_C) == 0 or line_C[0] == "#" :
-		continue
+dot_counter               = 0;
+with open(inputFile_C, "r") as data_C, open(logName, "a") as log_file:
+	for line_C in data_C:
+		if not line_C or line_C.startswith("#"):
+			continue
 
-	C_chrID,C_chrName,C_position,C_countA,C_countT,C_countG,C_countC = process_ChildLine(line_C)
-	if C_chrID != old_C_chrID:
-		with open(logName, "a") as myfile:
-			myfile.write("\n\t\t|\t\tchr = "+str(C_chrName)+"\n");
-		counter = 0;
-	if (C_chrID > 0) and (int(C_countA)+int(C_countT)+int(C_countG)+int(C_countC) >= 20):   # chromosome is identified and in use; read depth >= 20.
-		if (C_chrName, C_position) in hapmap_loci:
-			child_SNPs.append( (C_chrName, C_position, C_countA, C_countT, C_countG, C_countC) );
-			child_SNPs_small.append( (C_chrName, C_position) );
-			if counter == 0:
-				with open(logName, "a") as myfile:
-					myfile.write("\t\t|\t\t");
-			if counter%10 == 0:
-				with open(logName, "a") as myfile:
-					myfile.write(".");
-			if counter == 800:
-				with open(logName, "a") as myfile:
-					myfile.write("\n\t\t|\t\t");
-				counter = 0;
-			counter += 1;
-	old_C_chrID = C_chrID;
-data_C.close();
+		C_chrID,C_chrName,C_position,C_countA,C_countT,C_countG,C_countC = process_ChildLine(line_C)
+
+		if C_chrID != old_C_chrID:
+			if old_C_chrID != 0:
+				if dot_counter != 0:
+					# Close out the line for the finished chromosome
+					log_file.write("\n")
+			# Log the new chromosome transition cleanly
+			log_file.write(f"\t\t|\t\tchr = {C_chrName}\n\t\t|\t\t")
+			dot_counter = 0
+			old_C_chrID = C_chrID
+
+		read_depth = int(C_countA) + int(C_countT) + int(C_countG) + int(C_countC)
+
+		# chromosome is identified and in use; read depth >= 2.
+		if C_chrID > 0 and read_depth >= 2:
+			if (C_chrName, C_position) in hapmap_loci:
+				# Save directly using the coordinates tuple as the dictionary key
+				child_SNPs[(C_chrName, C_position)] = (C_chrName, C_position, C_countA, C_countT, C_countG, C_countC)
+				dot_counter += 1
+
+				# Print a progress dot every 10 matched lines
+				if dot_counter % 10 == 0:
+					log_file.write(".")
+
+				# Wrap the line after 80 dots to keep logs readable (80 dots * 10 matches = 800)
+				if dot_counter == 800:
+					log_file.write("\n\t\t|\t\t")
+					dot_counter = 0
+	if dot_counter != 0:
+		log_file.write("\n")
 
 # Output child lines from hapmap positions.
 with open(logName, "a") as myfile:
 	myfile.write("\n\t\t|\tOutputting lines from child dataset that match coordinates of hapmap loci.\n");
-for SNP in hapmap_loci:
-	if SNP in child_SNPs_small:
-		SNP_data = child_SNPs[child_SNPs_small.index(SNP)];
-		print(SNP_data[0]+"\t"+SNP_data[1]+"\t"+SNP_data[2]+"\t"+SNP_data[3]+"\t"+SNP_data[4]+"\t"+SNP_data[5]);
+
+for locus in hapmap_loci:
+	if locus in child_SNPs:
+		SNP_data = child_SNPs[locus]
+		# Fast Python f-string tab joins replace slow manual '+' concatenations
+		print(f"{SNP_data[0]}\t{SNP_data[1]}\t{SNP_data[2]}\t{SNP_data[3]}\t{SNP_data[4]}\t{SNP_data[5]}")
+
 
 #------------------------------------------------------------------------------------------------------------
 # End of main code block.
