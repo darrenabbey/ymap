@@ -188,9 +188,9 @@ then
 	echo -e "\t\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 else
 	echo -e "\tGrabbing hapmap data from: $hapmapDirectory/" >> $logName;
-	cp "$hapmapDirectory/SNPdata_parent.txt" > "$projectDirectory/SNPdata_parent.txt";
+	cp "$hapmapDirectory/SNPdata_parent.txt" "$projectDirectory/SNPdata_parent.txt";
 
-	# prefilter SNP data vs hapmap.
+	# prefilter SNP data vs hapmap. (output not yet used.)
 	echo -e "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
 	$python_exec "$main_dir/scripts_seqModules/putative_SNPs_from_hapmap_in_child.py" "$genome" "$genomeUser" "$project" "$user" "$hapmap" "$hapmapUser" "$main_dir" > "$projectDirectory/SNPdata_child.temp.txt" 2>> $logName;
 	sort -k1,1 -k2,2n "$projectDirectory/SNPdata_child.temp.txt" > "$projectDirectory/SNPdata_child.txt";
