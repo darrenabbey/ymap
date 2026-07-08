@@ -153,9 +153,9 @@ else
 	$python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_CNV_analysis.WGseq.py" "$user" "$project" "$genome" "$genomeUser" "$main_dir" "$logName" > "$projectDirectory/preprocessed_CNVs.txt" 2>> $logName;
 	echo -e "\tpre-processing complete." >> $logName;
 fi
-if [[ -f "$projectDirectory/preprocessed_SNPs.txt" ]]; then
-        echo -e "\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
-else
+#if [[ -f "$projectDirectory/preprocessed_SNPs.txt" ]]; then
+#        echo -e "\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
+#else
 	install /dev/null "$projectDirectory/preprocessed_SNPs.txt";
 	echo -e "Preprocessing SNPs." >> $condensedLog;
 	if [[ "$hapmapInUse" = 1 ]]; then
@@ -191,7 +191,7 @@ else
 	        $python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" "$genome" "$genomeUser" "$project" "$user" "$project" "$user" "$main_dir" "$logName" LOH > "$projectDirectory/preprocessed_SNPs.txt" 2>> $logName;
 	fi;
         echo -e "\tpre-processing complete." >> $logName;
-fi
+#fi
 
 
 ##==============================================================================
