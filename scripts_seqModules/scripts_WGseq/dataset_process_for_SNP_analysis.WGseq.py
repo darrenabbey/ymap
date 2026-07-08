@@ -183,6 +183,7 @@ with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tDetermining number of chromosomes of interest in genome.\n")
 
 chrName_maxcount = 0
+for line in figureDefinitionData:
 	for line in figureDefinitionData:
 		if (len(line) > 0):
 		if (line[0] != "#"):
