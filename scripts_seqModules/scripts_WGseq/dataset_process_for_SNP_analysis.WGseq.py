@@ -184,8 +184,7 @@ with open(logName, "a") as myfile:
 
 chrName_maxcount = 0
 for line in figureDefinitionData:
-	for line in figureDefinitionData:
-		if (len(line) > 0):
+	if (len(line) > 0):
 		if (line[0] != "#"):
 			line_parts = line.strip().split();
 			if (len(line_parts) > 0):
