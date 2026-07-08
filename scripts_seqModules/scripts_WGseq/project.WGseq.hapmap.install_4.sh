@@ -207,6 +207,8 @@ else
 	echo -e "\t\t|\thapmapUser = $hapmapUser" >> $logName;
 	echo -e "\t\t|\tmain_dir   = $main_dir"   >> $logName;
 	$python_exec "$main_dir/scripts_seqModules/putative_SNPs_from_hapmap_in_child.py" "$genome" "$genomeUser" "$project" "$user" "$hapmap" "$hapmapUser" "$main_dir" > "$projectDirectory/trimmed_SNPs_v5.txt" 2>> $logName;
+	sort -k1,1 -k2,2n "$projectDirectory/trimmed_SNPs_v5.txt" > "$projectDirectory/trimmed_SNPs_v6.txt";
+	mv "$projectDirectory/trimmed_SNPs_v6.txt" "$projectDirectory/trimmed_SNPs_v5.txt";
 	echo -e "\t\tDone." >> $logName;
 
 	chmod 774 "$projectDirectory/trimmed_SNPs_v5.txt";
