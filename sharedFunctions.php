@@ -285,7 +285,7 @@ function queue_reinit($user,$project,$genome,$hapmap,$message) {
 		$myfile = fopen($update_file, "w");
 		fwrite($myfile, date('Y-m-d'));
 		fclose($myfile);
-		chmod($myFile, 0774);
+		chmod($myfile, 0774);
 	}
 
 	// check if queue log file exists, create if not.
