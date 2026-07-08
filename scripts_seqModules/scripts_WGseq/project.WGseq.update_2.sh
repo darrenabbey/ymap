@@ -159,8 +159,8 @@ fi
 	install /dev/null "$projectDirectory/preprocessed_SNPs.txt";
 	echo -e "Preprocessing SNPs." >> $condensedLog;
 	if [[ "$hapmapInUse" = 1 ]]; then
-		echo -e "\tGrabbing hapmap data from: $hapmapDirectory." >> $logName;
-		cp "$hapmapDirectory/SNPdata_parent" > "$projectDirectory/SNPdata_parent.txt";
+		echo -e "\tGrabbing hapmap data from: $hapmapDirectory/" >> $logName;
+		cp "$hapmapDirectory/SNPdata_parent.txt" > "$projectDirectory/SNPdata_parent.txt";
 
 		# prefilter SNP data vs hapmap.
 		echo -e "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;

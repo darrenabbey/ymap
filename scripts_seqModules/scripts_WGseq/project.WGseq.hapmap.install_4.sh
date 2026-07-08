@@ -187,7 +187,8 @@ if [[ -f "$projectDirectory/preprocessed_SNPs.txt" ]]
 then
 	echo -e "\t\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 else
-	cp "$hapmapDirectory/SNPdata_parent" > "$projectDirectory/SNPdata_parent.txt";
+	echo -e "\tGrabbing hapmap data from: $hapmapDirectory/" >> $logName;
+	cp "$hapmapDirectory/SNPdata_parent.txt" > "$projectDirectory/SNPdata_parent.txt";
 
 	# prefilter SNP data vs hapmap.
 	echo -e "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
