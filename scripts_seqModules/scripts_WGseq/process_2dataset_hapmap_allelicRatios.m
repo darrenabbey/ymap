@@ -5,7 +5,7 @@ function [] = process_2dataset_hapmap_allelicRatios(project1dir, project2dir, ha
 % Define files for processing.
 %-------------------------------------------------------------------------------------------------------------
 %	% Child data at loci where parent has allelic ratio on range [0.25-0.75].
-%	C_datafile = [project1dir 'trimmed_SNPs_v4.txt'       ];
+%	C_datafile = [project1dir 'trimmed_SNPs_v5.txt'       ];
 
 
 % Child data at loci from hapmap.
@@ -96,7 +96,6 @@ while not (feof(C_data))
 				end;
 				C_chr_baseCall{          C_chr_num}{C_chr_lines_analyzed(C_chr_num)} = C_chr_read_id;
 				old_chr = C_chr_num;
-				
 			else
 				old_chr = 0;
 			end;

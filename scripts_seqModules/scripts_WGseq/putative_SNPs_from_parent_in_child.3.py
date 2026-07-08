@@ -101,7 +101,7 @@ FastaName      = FastaName.replace(".fasta", "")
 # Process 'preprocessed_SNPs.ddRADseq.txt' file for project to determine initial SNP loci.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tProcessing 'putative_SNPs_v4' file -> het loci.\n")
+	myfile.write("\t\t|\tProcessing 'putative_SNPs_v5' file -> het loci.\n")
 
 # Look up chromosome name strings for genome in use.
 #     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/figure_definitions.txt"
@@ -179,7 +179,7 @@ with open(logName, "a") as myfile:
 #............................................................................................................
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tOpen 'trimmed_SNPs_v4.parent.txt' file.\n")
+	myfile.write("\t\t|\tOpen 'trimmed_SNPs_v5.parent.txt' file.\n")
 
 #............................................................................................................
 
@@ -197,7 +197,7 @@ for x in range(0,chrCount):
 		print('### \t' + str(x+1) + ' : ' + str(chrName[x]))
 
 
-# Process "trimmed_SNPs_v4.parent.txt" file containing SNP position data from the parent, as well as "SNP_CNV_v1.txt" for the data from the child.
+# Process "trimmed_SNPs_v5.parent.txt" file containing SNP position data from the parent, as well as "SNP_CNV_v1.txt" for the data from the child.
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tLoading SNP coordinates from parent dataset.\n");
 print('### Data lines for each het locus in parent : [chromosome_name, bp_coordinate, countA, countT, countG, countC]');
