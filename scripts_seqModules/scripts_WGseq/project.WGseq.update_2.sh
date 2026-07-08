@@ -158,53 +158,40 @@ if [[ -f "$projectDirectory/preprocessed_SNPs.txt" ]]; then
 else
 	install /dev/null "$projectDirectory/preprocessed_SNPs.txt";
 	echo -e "Preprocessing SNPs." >> $condensedLog;
-        echo -e "\tPreprocessing SNP data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
-	if [[ -e "$projectParentDirectory/putative_SNPs_v4.txt" ]]; then
-		echo -e "\tParent SNP data already decompressed." >> $logName;
-		cp "$projectParentDirectory/putative_SNPs_v4.txt" "$projectDirectory/SNPdata_parent.txt";
-	else
-		echo -e "\tDecompressing parent SNP data." >> $logName;
-		echo -e "\t\tpigz -dc '$projectParentDirectory/putative_SNPs_v4.zip' > '$projectDirectory/SNPdata_parent.txt';" >> $logName;
-		pigz -dc "$projectParentDirectory/putative_SNPs_v4.zip" > "$projectDirectory/SNPdata_parent.txt";
-	fi
-
 	if [[ "$hapmapInUse" = 1 ]]; then
-		# preprocess SNP data vs hapmap.
+		cp "$hapmapDirectory/SNPdata_parent" > "$projectDirectory/SNPdata_parent.txt";
+
+		# prefilter SNP data vs hapmap.
+		echo -e "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
+		$python_exec "$main_dir/scripts_seqModules/putative_SNPs_from_hapmap_in_child.py" "$genome" "$genomeUser" "$project" "$user" "$hapmap" "$hapmapUser" "$main_dir" > "$projectDirectory/SNPdata_child.temp.txt" 2>> $logName;
+		sort -k1,1 -k2,2n "$projectDirectory/SNPdata_child.temp.txt" > "$projectDirectory/SNPdata_child.txt";
+		rm "$projectDirectory/SNPdata_child.temp.txt";
+		chmod 774 "$projectDirectory/SNPdata_child.txt"; # formerly 'trimmed_SNPs_v5.txt'
+
+		# preprocess SNP data.
+		echo -e "\tPreprocessing SNP data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 		$python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" "$genome" "$genomeUser" "$hapmap" "$hapmapUser" "$project" "$user" "$main_dir" "$logName" hapmap > "$projectDirectory/preprocessed_SNPs.txt" 2>> $logName;
 	else
+		if [[ -e "$projectParentDirectory/putative_SNPs_v4.txt" ]]; then
+			echo -e "\tParent SNP data already decompressed." >> $logName;
+			cp "$projectParentDirectory/putative_SNPs_v4.txt" "$projectDirectory/SNPdata_parent.txt";
+		else
+			echo -e "\tDecompressing parent SNP data." >> $logName;
+			echo -e "\t\tpigz -dc '$projectParentDirectory/putative_SNPs_v4.zip' > '$projectDirectory/SNPdata_parent.txt';" >> $logName;
+			pigz -dc "$projectParentDirectory/putative_SNPs_v4.zip" > "$projectDirectory/SNPdata_parent.txt";
+		fi
+
 		# preprocess parent (or self if no parent) for comparison.
 		install /dev/null "$projectDirectory/SNPdata_parent.temp.txt";
 		$python_exec "$main_dir/scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" "$genome" "$genomeUser" "$project" "$user" "$projectParent" "$projectParentUser" "$main_dir" LOH > "$projectDirectory/SNPdata_parent.temp.txt" 2>> $logName;
 		mv "$projectDirectory/SNPdata_parent.temp.txt" "$projectDirectory/SNPdata_parent.txt";
 
 		# Preprocess SNP data vs self.
+		echo -e "\tPreprocessing SNP data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 	        $python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" "$genome" "$genomeUser" "$project" "$user" "$project" "$user" "$main_dir" "$logName" LOH > "$projectDirectory/preprocessed_SNPs.txt" 2>> $logName;
 	fi;
         echo -e "\tpre-processing complete." >> $logName;
 fi
-
-if [[ "$hapmapInUse" = 1 ]]; then
-	echo -e "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
-	if [[ -f $projectDirectory/trimmed_SNPs_v5.txt ]]; then
-		echo -e "\t\tAlready done." >> $logName;
-	else
-		echo -e "\t\t| Inputs to python script:" >> $logName;
-		echo -e "\t\t|\tgenome     = $genome"     >> $logName;
-		echo -e "\t\t|\tgenomeUser = $genomeUser" >> $logName;
-		echo -e "\t\t|\tproject    = $project"    >> $logName;
-		echo -e "\t\t|\tuser       = $user"       >> $logName;
-		echo -e "\t\t|\thapmap     = $hapmap"     >> $logName;
-		echo -e "\t\t|\thapmapUser = $hapmapUser" >> $logName;
-		echo -e "\t\t|\tmain_dir   = $main_dir"   >> $logName;
-		$python_exec "$main_dir/scripts_seqModules/putative_SNPs_from_hapmap_in_child.py" "$genome" "$genomeUser" "$project" "$user" "$hapmap" "$hapmapUser" "$main_dir" > "$projectDirectory/trimmed_SNPs_v5.txt" 2>> $logName;
-		sort -k1,1 -k2,2n "$projectDirectory/trimmed_SNPs_v5.txt" > "$projectDirectory/trimmed_SNPs_v6.txt";
-		mv "$projectDirectory/trimmed_SNPs_v6.txt" "$projectDirectory/trimmed_SNPs_v5.txt";
-		echo -e "\t\tDone." >> $logName;
-
-		chmod 774 "$projectDirectory/trimmed_SNPs_v5.txt";
-	fi
-fi
-
 
 
 ##==============================================================================
