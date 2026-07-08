@@ -203,7 +203,7 @@ log_offset       = 0
 print('### Chromosomes of interest : ')
 for idx, name in enumerate(chrName):
 	if name is not None:
-		print('### \t' + str(x+1) + ' : ' + str(chrName[x]))
+		print('### \t' + str(idx+1) + ' : ' + str(name))
 
 
 # Process hapmap file, as well as "SNP_CNV_v1.txt" for the data from the child.
