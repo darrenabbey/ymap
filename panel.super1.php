@@ -353,7 +353,7 @@
 			echo "<font size='1' style='color:".$greyColor.";'> - Completed: ".$figDate."</font>";
 
 			echo "<br><form action=''>";
-			echo "<input type='button' value='Copy to admin.' onclick=\"key = '$key_real'; user = '$user'; $.ajax({url:'admin.copyProjectToAdmin_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}});location.replace('panel.super1.php');parent.document.getElementById(\"panel_manageDataset_iframe\").contentWindow.location.reload(); parent.document.getElementById(\"panel_visualizeDataset_iframe\").contentWindow.location.reload(); parent.document.getElementById(\"panel_admin2_iframe\").contentWindow.location.reload();\">";
+			echo "<input type='button' value='Copy to admin.' onclick=\"key = '$key_real'; user = '$user'; $.ajax({url:'admin.copyProjectToAdmin_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}});location.replace('panel.super1.php');\">";
 			echo "</form>";
 		} elseif ($frameContainerIx == "2") {
 			$errorFile     = "users/".$user."/projects/".$project."/error.txt";
