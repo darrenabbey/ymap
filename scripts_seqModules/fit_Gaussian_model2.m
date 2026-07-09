@@ -42,15 +42,22 @@ function [G1_a, G1_b, G1_c, Rsquared] = fit_Gaussian_model2(workingDir, data, lo
 	initial = [G1_ai, G1_bi, G1_ci];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',10000);
 
-	[Estimates,~,exitflag] = fminsearch(@fiterror, ...    % function to be fitted.
-	                                    initial, ...      % initial x-value.
-	                                    options, ...      % options for fitting algorithm.
-	                                    time, ...         % problem-specific parameter 1.
-	                                    data, ...         % problem-specific parameter 2.
-	                                    func_type, ...    % problem-specific parameter 3.
-	                                    show_fitting, ... % problem-specific parameter 4.
-	                                    ploidy1x ...      % problem-specific parameter 5.
-	                            );
+%	[Estimates,~,exitflag] = fminsearch(	@fiterror, ...    % function to be fitted.
+%						initial, ...      % initial x-value.
+%						options, ...      % options for fitting algorithm.
+%						time, ...         % problem-specific parameter 1.
+%						location, ...     % problem-specific parameter 2.
+%						data, ...         % problem-specific parameter 3.
+%						func_type, ...    % problem-specific parameter 4.
+%						show_fitting, ... % problem-specific parameter 5.
+%						ploidy1x ...      % problem-specific parameter 6.
+%	                            );
+
+	[Estimates,~,exitflag] = fminsearch(	@(p) fiterror(p, time, location, data, func_type, show_fitting, ploidy1x), ...
+						initial, ...  % initial x-value guesses (height, width, etc.)
+						options ...   % options for fitting algorithm
+				);
+
 	if (exitflag > 0)
 		% > 0 : converged to a solution.
 		G1_a = abs(Estimates(1));
@@ -93,8 +100,12 @@ function [G1_a, G1_b, G1_c, Rsquared] = fit_Gaussian_model2(workingDir, data, lo
 	%----------------------------------------------------------------------
 end
 
-function sse = fiterror(params,time,data,func_type, show_fitting,ploidy1x)
-	global location;
+function sse = fiterror(params,time,location,data,func_type,show_fitting,ploidy1x)
+
+	if isempty(data) || isempty(time) || numel(data) == 0
+		sse = 1e10; % Return a massive penalty to fminsearch
+		return;
+	end
 
 	if length(params) < 3
 		sse = Inf;
@@ -110,11 +121,13 @@ function sse = fiterror(params,time,data,func_type, show_fitting,ploidy1x)
 		G1_c = 1e-6;
 	end
 
+	time = time(:);
 	G1_fit = G1_a*exp(-0.5*((time-G1_b)./G1_c).^2);
 	fitted = G1_fit;
 
+	data = data(:);
 	if numel(fitted) ~= numel(data)
-		sse = Inf;
+		sse = 1e10;
 		return;
 	end
 
