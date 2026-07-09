@@ -149,8 +149,8 @@ end
 
 function sse = fiterror(params,time,data,func_type,locations,show)
 	% params(1):homozygous should always be narrower than params(3):heterozygous.
-	if (abs(params(3)) < 2*abs(params(1)))
-		params(3) = 2*abs(params(1));
+	if (abs(params(3)) < abs(params(1)))
+		params(3) = abs(params(1));
 	end;
 
 	% height, location, relative width.
