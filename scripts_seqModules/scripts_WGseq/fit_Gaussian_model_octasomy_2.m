@@ -218,12 +218,8 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 		plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
 		text(100,0.5,['R^2 = ', num2str(Rsquared)],"interpreter", "latex");
 		hold off;
-		figVers = 1;
-		saveName = [workingDir 'SNP_GaussFit_octasomy.' num2str(figVers,'%03.f') '.png'];
-		while (exist(saveName,'file'))
-			figVers += 1;
-			saveName = [workingDir 'SNP_GaussFit_octasomy.' num2str(figVers,'%03.f') '.png'];
-		endwhile;
+
+		saveName = [workingDir 'SNP_GaussFit.' descriptionString '.octasomy.png'];
 		saveas(fig, saveName, 'png');
 		delete(fig);
 	end;

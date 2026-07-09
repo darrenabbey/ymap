@@ -115,8 +115,7 @@ end;
 	plot(p3_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
 	plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
 	hold off;
-	% saveas(fig, [workingDir 'initGaussianFit_final.' figVer 'eps'], 'epsc');
-	saveas(fig, [workingDir 'initGaussianFit_final.' figVer 'png'], 'png');
+	saveas(fig, [workingDir 'initGaussianFit_final.png'], 'png');
 	delete(fig);
 	%----------------------------------------------------------------------
 

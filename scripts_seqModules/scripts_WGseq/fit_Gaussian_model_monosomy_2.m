@@ -102,12 +102,8 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, Rsquared] = fit_Gaussian_model_monosom
 		plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
 		text(100,0.5,['R^2 = ', num2str(Rsquared)],"interpreter", "latex");
 		hold off;
-		figVers = 1;
-		saveName = [workingDir 'SNP_GaussFit_monosomy.' num2str(figVers,'%03.f') '.png'];
-		while (exist(saveName,'file'))
-			figVers += 1;
-			saveName = [workingDir 'SNP_GaussFit_monosomy.' num2str(figVers,'%03.f') '.png'];
-		endwhile;
+
+		saveName = [workingDir 'SNP_GaussFit.' descriptionString '.monosomy.png'];
 		saveas(fig, saveName, 'png');
 		delete(fig);
 	end;
