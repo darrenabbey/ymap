@@ -96,7 +96,7 @@ function minimizeProject($dir) {
 	rmdir($temp_dir);
 
 	// Ensure 'error.txt' permissions are set correctly.
-	if file_exists($dir."error.txt") {
+	if (file_exists($dir."error.txt")) {
 		chmod($dir."error.txt", 0777);
 	}
 }
