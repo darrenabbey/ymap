@@ -96,18 +96,27 @@ end
 function sse = fiterror(params,time,data,func_type, show_fitting,ploidy1x)
 	global location;
 
-	G1_a = abs(params(1));       % G1_height.
-	G1_b = location; %params(2);            % G1_location.
-	G1_c = abs(params(3));       % G1_width.
-	if (G1_c == 0)
-		G1_c = 0.001;
-	end;
-	% a = height.
-	% b = location.
-	% c = width.
+	if length(params) < 3
+		sse = Inf;
+		return;
+	end
+
+	% a=height, b=location, c=relative width.
+	G1_a = abs(params(1));
+	G1_b = location; %params(2);
+	G1_c = abs(params(3));
+
+	if (G1_c < 1e-6)
+		G1_c = 1e-6;
+	end
 
 	G1_fit = G1_a*exp(-0.5*((time-G1_b)./G1_c).^2);
 	fitted = G1_fit;
+
+	if numel(fitted) ~= numel(data)
+		sse = Inf;
+		return;
+	end
 
 	if (show_fitting == 1)
 		%------------------------------------------------------------------
@@ -142,7 +151,10 @@ function sse = fiterror(params,time,data,func_type, show_fitting,ploidy1x)
 			Error_Vector = (fitted) - (data);
 			sse          = sum(Error_Vector.^2);
 		case 'log'
-			Error_Vector = log(fitted) - log(data);
+			safe_fitted = max(abs(fitted), 1e-10);
+			safe_data   = max(abs(data), 1e-10);
+			Error_Vector = log(safe_fitted) - log(safe_data);
+			%Error_Vector = log(fitted) - log(data);
 			sse          = sum(abs(Error_Vector));
 		case 'fcs'
 			Error_Vector = (fitted) - (data);
@@ -153,4 +165,8 @@ function sse = fiterror(params,time,data,func_type, show_fitting,ploidy1x)
 			error('Error: choice for fitting not implemented yet!');
 			sse = 1;
 	end;
+
+	if isnan(sse) || isinf(sse)
+		sse = 1e10; % Return a huge penalty value instead of crashing
+	end
 end
