@@ -160,7 +160,7 @@ for chr = 1:num_chrs
 
 			% Define cutoffs between Gaussian fits.
 			descriptionString          = ['chr=' num2str(chr) '; seg=' num2str(segment)];
-			makeFitFigures             = false;
+			makeFitFigures             = true;
 			[peaks,actual_cutoffs,mostLikelyGaussians, Rsquared] = FindGaussianCutoffs_3(workingDir,descriptionString, chr,segment, segment_copyNum,segment_smoothedHistogram, makeFitFigures);
 
 			fprintf(['^^^ copyNum             = ' num2str(segment_copyNum          ) '\n']);
