@@ -38,7 +38,7 @@ function [p1_a, p1_b, p1_c, p2_a, p2_b, p2_c, p3_a, p3_b, p3_c, Rsquared] = fit_
 	p3_ai = data(round(locations(3)));   p3_bi = locations(3);   p3_ci = init_width;
 
 	initial = [p1_ai,p1_ci,p2_ai,p2_ci,p3_ai];
-	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',200000);
+	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',400000);
 	time    = 1:length(data);
 
 	[Estimates,~,exitflag] = fminsearch(@fiterror, ...   % function to be fitted.
