@@ -38,7 +38,7 @@ function [p1_a, p1_b, p1_c, p2_a, p2_b, p2_c, p3_a, p3_b, p3_c, Rsquared] = fit_
 	p3_ai = data(round(locations(3)));   p3_bi = locations(3);   p3_ci = init_width;
 
 	initial = [p1_ai,p1_ci,p2_ai,p2_ci,p3_ai];
-	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',400000);
+	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',200000);
 	time    = 1:length(data);
 
 	[Estimates,~,exitflag] = fminsearch(@fiterror, ...   % function to be fitted.
@@ -149,17 +149,17 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 		params(2) = temp;
 	end;
 
-	p1_a         = abs(params(1));   % height.
-	p1_b         = locations(1);     % location.
-	p1_c         = abs(params(2));   % relative width.
+	% height, location, relative width.
+	% Force left and right curves to have same width.
+	%p1_a = abs(params(1));		p1_b = locations(1);	p1_c = abs(params(2));
+	%p2_a = abs(params(3));		p2_b = locations(2);	p2_c = abs(params(4));
+	%p3_a = abs(params(5));		p3_b = locations(3);	p3_c = abs(params(2));
 
-	p2_a         = abs(params(3));   % height.
-	p2_b         = locations(2);     % location.
-	p2_c         = abs(params(4));   % relative width.
-
-	p3_a         = abs(params(5));   % height.
-	p3_b         = locations(3);     % location.
-	p3_c         = abs(params(2));   %abs(params(6));   % relative width.
+	% Force left and right curves to have same width.
+	% Force the heights to match the data at those coordinates.
+	p1_a = data(round(locations(1)));	p1_b = locations(1);	p1_c = abs(params(2));
+	p2_a = data(round(locations(2)));	p2_b = locations(2);	p2_c = abs(params(4));
+	p3_a = data(round(locations(3)));	p3_b = locations(3);	p3_c = abs(params(2));
 
 	skew_factor1 = 1;
 	skew_factor2 = 1;
