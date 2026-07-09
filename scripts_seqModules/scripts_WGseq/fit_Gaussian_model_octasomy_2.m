@@ -231,13 +231,13 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	%p8_a = abs(params(10));  p8_b = locations(8);     p8_c = abs(params(4));
 	%p9_a = abs(params(11));  p9_b = locations(9);     p9_c = abs(params(2));
 	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_b = locations(1);	p1_c = abs(params(1));
-	p2_a = abs(Estimates(2));								p2_b = locations(2);	p2_c = abs(params(3));
-	p3_a = abs(Estimates(4));								p3_b = locations(3);	p3_c = abs(params(3));
-	p4_a = abs(Estimates(5));								p4_b = locations(4);	p4_c = abs(params(3));
-	p5_a = abs(Estimates(6));								p5_b = locations(5);	p5_c = abs(params(3));
-	p6_a = abs(Estimates(7));								p6_b = locations(6);	p6_c = abs(params(3));
-	p7_a = abs(Estimates(8));								p7_b = locations(7);	p7_c = abs(params(3));
-	p8_a = abs(Estimates(9));								p8_b = locations(8);	p8_c = abs(params(3));
+	p2_a = abs(params(2));									p2_b = locations(2);	p2_c = abs(params(3));
+	p3_a = abs(params(4));									p3_b = locations(3);	p3_c = abs(params(3));
+	p4_a = abs(params(5));									p4_b = locations(4);	p4_c = abs(params(3));
+	p5_a = abs(params(6));									p5_b = locations(5);	p5_c = abs(params(3));
+	p6_a = abs(params(7));									p6_b = locations(6);	p6_c = abs(params(3));
+	p7_a = abs(params(8));									p7_b = locations(7);	p7_c = abs(params(3));
+	p8_a = abs(params(9));									p8_b = locations(8);	p8_c = abs(params(3));
 	p9_a = max([data(round(locations(9))) data(round(locations(9))-1)])/max(data);		p9_b = locations(9);	p9_c = abs(params(1));
 
 	skew_factor1 = 1;
