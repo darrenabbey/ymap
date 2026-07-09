@@ -159,7 +159,7 @@ for chr = 1:num_chrs
 			segment_smoothedHistogram  = smoothed;                         % whole chromosome allelic ratio histogram smoothed.
 
 			% Define cutoffs between Gaussian fits.
-			descriptionString          = ['chr=' num2str(chr) '; seg=' num2str(segment)];
+			descriptionString          = ['chr' num2str(chr) '.' num2str(segment)];
 			makeFitFigures             = true;
 			[peaks,actual_cutoffs,mostLikelyGaussians, Rsquared] = FindGaussianCutoffs_3(workingDir,descriptionString, chr,segment, segment_copyNum,segment_smoothedHistogram, makeFitFigures);
 

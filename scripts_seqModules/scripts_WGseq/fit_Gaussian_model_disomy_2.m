@@ -128,12 +128,8 @@ function [p1_a, p1_b, p1_c, p2_a, p2_b, p2_c, p3_a, p3_b, p3_c, Rsquared] = fit_
 		plot(fitted,'-','color',[0 0.00 0.00],'lineWidth',2);
 		text(100,0.5,['R^2 = ', num2str(Rsquared)],"interpreter", "latex");
 		hold off;
-		figVers = 1;
-		saveName = [workingDir 'SNP_GaussFit_disomy.' num2str(figVers,'%03.f') '.png'];
-		while (exist(saveName,'file'))
-			figVers += 1;
-			saveName = [workingDir 'SNP_GaussFit_disomy.' num2str(figVers,'%03.f') '.png'];
-		endwhile;
+
+		saveName = [workingDir 'SNP_GaussFit_disomy.' descriptionString '.png'];
 		saveas(fig, saveName, 'png');
 		delete(fig);
 	end;
