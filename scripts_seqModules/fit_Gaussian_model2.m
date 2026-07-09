@@ -42,21 +42,21 @@ function [G1_a, G1_b, G1_c, Rsquared] = fit_Gaussian_model2(workingDir, data, lo
 	initial = [G1_ai, G1_bi, G1_ci];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',10000);
 
-%	[Estimates,~,exitflag] = fminsearch(	@fiterror, ...    % function to be fitted.
-%						initial, ...      % initial x-value.
-%						options, ...      % options for fitting algorithm.
-%						time, ...         % problem-specific parameter 1.
-%						location, ...     % problem-specific parameter 2.
-%						data, ...         % problem-specific parameter 3.
-%						func_type, ...    % problem-specific parameter 4.
-%						show_fitting, ... % problem-specific parameter 5.
-%						ploidy1x ...      % problem-specific parameter 6.
-%	                            );
+	[Estimates,~,exitflag] = fminsearch(	@fiterror, ...    % function to be fitted.
+						initial, ...      % initial x-value.
+						options, ...      % options for fitting algorithm.
+						time, ...         % problem-specific parameter 1.
+						location, ...     % problem-specific parameter 2.
+						data, ...         % problem-specific parameter 3.
+						func_type, ...    % problem-specific parameter 4.
+						show_fitting, ... % problem-specific parameter 5.
+						ploidy1x ...      % problem-specific parameter 6.
+	                            );
 
-	[Estimates,~,exitflag] = fminsearch(	@(p) fiterror(p, time, location, data, func_type, show_fitting, ploidy1x), ...
-						initial, ...  % initial x-value guesses (height, width, etc.)
-						options ...   % options for fitting algorithm
-				);
+%	[Estimates,~,exitflag] = fminsearch(	@(p) fiterror(p, time, location, data, func_type, show_fitting, ploidy1x), ...
+%						initial, ...  % initial x-value guesses (height, width, etc.)
+%						options ...   % options for fitting algorithm
+%				);
 
 	if (exitflag > 0)
 		% > 0 : converged to a solution.

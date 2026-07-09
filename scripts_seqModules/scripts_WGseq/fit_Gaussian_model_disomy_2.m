@@ -66,17 +66,10 @@ function [p1_a, p1_b, p1_c, p2_a, p2_b, p2_c, p3_a, p3_b, p3_c, Rsquared] = fit_
 		Estimates(2) = temp;
 	end
 
-	p1_a         = abs(Estimates(1));
-	p1_b         = locations(1);
-	p1_c         = abs(Estimates(2));
-
-	p2_a         = abs(Estimates(3));
-	p2_b         = locations(2);
-	p2_c         = abs(Estimates(4));
-
-	p3_a         = abs(Estimates(5));
-	p3_b         = locations(3);
-	p3_c         = abs(Estimates(2));
+	% height, location, width.
+	p1_a = abs(Estimates(1));	p1_b = locations(1);	p1_c = abs(Estimates(2));
+	p2_a = abs(Estimates(3));	p2_b = locations(2);	p2_c = abs(Estimates(4));
+	p3_a = abs(Estimates(5));	p3_b = locations(3);	p3_c = abs(Estimates(2));
 
 	skew_factor1 = 1;
 	skew_factor2 = 1;
@@ -153,9 +146,9 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 
 	% Force left and right curves to have same width.
 	% Force the heights to match the data at those coordinates.
-	p1_a = data(round(locations(1)));	p1_b = locations(1);	p1_c = abs(params(2));
-	p2_a = data(round(locations(2)));	p2_b = locations(2);	p2_c = abs(params(4));
-	p3_a = data(round(locations(3)));	p3_b = locations(3);	p3_c = abs(params(2));
+	p1_a = data(round(locations(1)))/max(data);	p1_b = locations(1);	p1_c = abs(params(2));
+	p2_a = data(round(locations(2)))/max(data);	p2_b = locations(2);	p2_c = abs(params(4));
+	p3_a = data(round(locations(3)))/max(data);	p3_b = locations(3);	p3_c = abs(params(2));
 
 	skew_factor1 = 1;
 	skew_factor2 = 1;

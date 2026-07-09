@@ -63,6 +63,7 @@ for usedChr = 1:num_chrs
 				segment_CGHdata(segment_CGHdata==0) = [];
 				segment_CGHdata(length(segment_CGHdata)+1) = 0;   % endpoints added to ensure histogram bounds.
 				segment_CGHdata(length(segment_CGHdata)+1) = maxY;
+
 				% clearing
 				segment_CGHdata(segment_CGHdata<0) = [];
 				segment_CGHdata(segment_CGHdata>maxY) = [];
@@ -258,7 +259,7 @@ for usedChr = 1:num_chrs
 				show_fitting = 0;
 
 				%%% Perform Gaussian curve fitting to CNV data, to generate chromosome segment copy number estimates, after merging adjacent segments when needed. (Fit figures are made.)
-				descriptionString   = ['chr=' num2str(usedChr) '; seg=' num2str(segment)];
+				descriptionString   = ['chr' num2str(usedChr) '.' num2str(segment)];
 				[CGHsegment_height, CGHsegment_location, CGHsegment_width, Rsquared] = fit_Gaussian_model2(workingDir, smoothed, peakLocation, 'cubic',show_fitting,20, makeFitFigures, descriptionString);
 				fprintf(['\n### fit_Gaussian_model2 description string = ' descriptionString '\n']);
 				fprintf(['!!! [raw] chrCopyNum{' num2str(usedChr) '}(' num2str(segment) ') = ' num2str(round(CGHsegment_location/(histogram_width/maxY)*10)/10) '\n']);
