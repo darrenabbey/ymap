@@ -227,8 +227,8 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p4_a = abs(params(5));									p4_b = locations(4);	p4_c = abs(params(3));
 	p5_a = abs(params(6));									p5_b = locations(5);	p5_c = abs(params(3));
 	p6_a = abs(params(7));									p6_b = locations(6);	p6_c = abs(params(3));
-	p6_a = abs(params(8));									p7_b = locations(7);	p7_c = abs(params(3));
-	p7_a = max([data(round(locations(8))) data(round(locations(8))-1)])/max(data);		p8_b = locations(8);	p8_c = abs(params(1));
+	p7_a = abs(params(8));									p7_b = locations(7);	p7_c = abs(params(3));
+	p8_a = max([data(round(locations(8))) data(round(locations(8))-1)])/max(data);		p8_b = locations(8);	p8_c = abs(params(1));
 
 	skew_factor1 = 1;
 	skew_factor2 = 1;
