@@ -50,7 +50,7 @@ smoothed = smoothed - smoothed2;
 smoothed = smoothed/max(smoothed);
 
 %%% Perform Gaussian curve fitting to CNV data, to generate chromosome segment copy number estimates, after merging adjacent segments when needed. (Fit figures are made.)
-descriptionString   = ['testCNV=' num2str(copyNum) '.chr' num2str(usedChr) '.' num2str(segment)];
+descriptionString   = ['testCopyNum_' num2str(copyNum) '.chr' num2str(usedChr) '.' num2str(segment)];
 [CNVsegment_height, CNVsegment_location, CNVsegment_width, Rsquared] = fit_Gaussian_model2(workingDir, smoothed, peakLocation, 'cubic',show_fitting,20, makeFitFigures, descriptionString);
 
 end
