@@ -94,6 +94,9 @@ function minimizeProject($dir) {
 
 	// Delete temp directory.
 	rmdir($temp_dir);
+
+	// Ensure 'error.txt' permissions are set correctly.
+	chmod($dir."error.txt", 0777);
 }
 
 
