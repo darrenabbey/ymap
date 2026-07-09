@@ -33,9 +33,9 @@ function [p1_a, p1_b, p1_c, p2_a, p2_b, p2_c, p3_a, p3_b, p3_c, Rsquared] = fit_
 	end;
 
 	% a = height; b = location; c = width.
-	p1_ai = data(round(locations(1)));   p1_bi = locations(1);   p1_ci = init_width;
+	p1_ai = data(round(locations(1)));   p1_bi = locations(1);   p1_ci = init_width/4;
 	p2_ai = data(round(locations(2)));   p2_bi = locations(2);   p2_ci = init_width;
-	p3_ai = data(round(locations(3)));   p3_bi = locations(3);   p3_ci = init_width;
+	p3_ai = data(round(locations(3)));   p3_bi = locations(3);   p3_ci = init_width/4;
 
 	initial = [p1_ai,p1_ci,p2_ai,p2_ci,p3_ai];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',200000);
@@ -125,7 +125,7 @@ function [p1_a, p1_b, p1_c, p2_a, p2_b, p2_c, p3_a, p3_b, p3_c, Rsquared] = fit_
 		plot(p1_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
 		plot(p2_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
 		plot(p3_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-		plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
+		plot(fitted,'-','color',[0 0.00 0.00],'lineWidth',2);
 		text(100,0.5,['R^2 = ', num2str(Rsquared)],"interpreter", "latex");
 		hold off;
 		figVers = 1;
