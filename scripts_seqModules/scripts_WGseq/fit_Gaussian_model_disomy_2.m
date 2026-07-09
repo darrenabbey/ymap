@@ -67,9 +67,12 @@ function [p1_a, p1_b, p1_c, p2_a, p2_b, p2_c, p3_a, p3_b, p3_c, Rsquared] = fit_
 	end
 
 	% height, location, width.
-	p1_a = abs(Estimates(1));	p1_b = locations(1);	p1_c = abs(Estimates(2));
-	p2_a = abs(Estimates(3));	p2_b = locations(2);	p2_c = abs(Estimates(4));
-	p3_a = abs(Estimates(5));	p3_b = locations(3);	p3_c = abs(Estimates(2));
+	%p1_a = abs(Estimates(1));	p1_b = locations(1);	p1_c = abs(Estimates(2));
+	%p2_a = abs(Estimates(3));	p2_b = locations(2);	p2_c = abs(Estimates(4));
+	%p3_a = abs(Estimates(5));	p3_b = locations(3);	p3_c = abs(Estimates(2));
+	p1_a = data(round(locations(1)))/max(data);     p1_b = locations(1);    p1_c = abs(Estimates(2));
+        p2_a = data(round(locations(2)))/max(data);     p2_b = locations(2);    p2_c = abs(Estimates(4));
+        p3_a = data(round(locations(3)))/max(data);     p3_b = locations(3);    p3_c = abs(Estimates(2));
 
 	skew_factor1 = 1;
 	skew_factor2 = 1;
@@ -78,9 +81,12 @@ function [p1_a, p1_b, p1_c, p2_a, p2_b, p2_c, p3_a, p3_b, p3_c, Rsquared] = fit_
 	if (skew_factor2 < 0); skew_factor2 = 0; end; if (skew_factor2 > 2); skew_factor2 = 2; end;
 	if (skew_factor3 < 0); skew_factor3 = 0; end; if (skew_factor3 > 2); skew_factor3 = 2; end;
 
-	c1_ = p1_c/2 + p1_c*skew_factor1/(100.5-abs(100.5-p1_b))/2;
+	denom1 = 100.5 - abs(100.5 - p1_b); if denom1 == 0; denom1 = 0.001; end;
+	denom3 = 100.5 - abs(100.5 - p3_b); if denom3 == 0; denom3 = 0.001; end;
+
+	c1_ = p1_c/2 + p1_c*skew_factor1/denom1/2;
 	p1_c = p1_c*p1_c/c1_;
-	c3_ = p3_c/2 + p3_c*skew_factor3/(100.5-abs(100.5-p3_b))/2;
+	c3_ = p3_c/2 + p3_c*skew_factor3/denom3/2;
 	p3_c = p3_c*p3_c/c3_;
 
 
@@ -95,9 +101,9 @@ function [p1_a, p1_b, p1_c, p2_a, p2_b, p2_c, p3_a, p3_b, p3_c, Rsquared] = fit_
 	if (time3_1(end) == time3_2(1));    time3_2(1) = [];    end;
 	%------------------------------------
 	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
-	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor1/(100.5-abs(100.5-p1_b))) ).^2);
+	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor1/denom1) ).^2);
 	p2_fit   = p2_a*exp(-0.5*((time2  -p2_b)./p2_c).^2);
-	p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c/(skew_factor3/(100.5-abs(100.5-p3_b))) ).^2);
+	p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c/(skew_factor3/denom3) ).^2);
 	p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c).^2);
 	p1_fit = [p1_fit_L p1_fit_R];
 	p3_fit = [p3_fit_L p3_fit_R];
