@@ -25,7 +25,9 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, Rsquared] = fit_Gaussian_model_monosom
 	p1_ai = data(round(locations(1)));   p1_bi = locations(1);   p1_ci = init_width/4;
 	p2_ai = data(round(locations(2)));   p2_bi = locations(2);   p2_ci = init_width/4;
 
-	initial = [p1_ai,p1_ci,p2_ai,p2_ci];
+	%initial = [p1_ai,p1_ci,p2_ai,p2_ci];
+	initial = [p1_ci];
+
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',200000);
 	time= 1:length(data);
 
@@ -49,8 +51,8 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, Rsquared] = fit_Gaussian_model_monosom
 	% height, location, width.
 	%p1_a = abs(Estimates(1));	p1_b = locations(1);	p1_c = abs(Estimates(2));
 	%p2_a = abs(Estimates(3));	p2_b = locations(2);	p2_c = abs(Estimates(2));
-	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_b = locations(1);	p1_c = abs(Estimates(2));
-	p2_a = max([data(round(locations(3))) data(round(locations(3))-1)])/max(data);		p2_b = locations(2);	p2_c = abs(Estimates(2));
+	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_b = locations(1);	p1_c = abs(Estimates(1));
+	p2_a = max([data(round(locations(2))) data(round(locations(2))-1)])/max(data);		p2_b = locations(2);	p2_c = abs(Estimates(1));
 
 	skew_factor1 = 1;
 	skew_factor2 = 1;
@@ -113,8 +115,8 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	% height, location, width.
 	%p1_a = abs(params(1));		p1_b = locations(1);	p1_c = abs(params(2));
 	%p2_a = abs(params(3));		p2_b = locations(2);	p2_c = abs(params(2));
-	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_b = locations(1);	p1_c = abs(params(2));
-        p2_a = max([data(round(locations(3))) data(round(locations(3))-1)])/max(data);		p2_b = locations(2);	p2_c = abs(params(2));
+	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_b = locations(1);	p1_c = abs(params(1));
+        p2_a = max([data(round(locations(2))) data(round(locations(2))-1)])/max(data);		p2_b = locations(2);	p2_c = abs(params(1));
 
 	skew_factor1 = 1;
 	skew_factor2 = 1;
