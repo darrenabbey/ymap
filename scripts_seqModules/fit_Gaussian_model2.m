@@ -85,12 +85,8 @@ function [G1_a, G1_b, G1_c, Rsquared] = fit_Gaussian_model2(workingDir, data, lo
 		plot(fitted,'-','color',[0.00 0.50 0.50],'lineWidth',2);
 		text(100,0.5,['R² = ', num2str(Rsquared)],"interpreter", "latex");
 		hold off;
-		figVers = 1;
-		saveName = [workingDir 'CNV_GaussFit.' num2str(figVers,'%03.f') '.png'];
-		while (exist(saveName,'file'))
-			figVers += 1;
-			saveName = [workingDir 'CNV_GaussFit.' num2str(figVers,'%03.f') '.png'];
-		end;
+
+		saveName = [workingDir 'CNV_GaussFit.' descriptionString '.png'];
 		saveas(fig, saveName, 'png');
 		delete(fig);
 	end;
@@ -98,8 +94,10 @@ function [G1_a, G1_b, G1_c, Rsquared] = fit_Gaussian_model2(workingDir, data, lo
 end
 
 function sse = fiterror(params,time,data,func_type, show_fitting,ploidy1x)
+	global location;
+
 	G1_a = abs(params(1));       % G1_height.
-	G1_b = params(2);            % G1_location.
+	G1_b = location; %params(2);            % G1_location.
 	G1_c = abs(params(3));       % G1_width.
 	if (G1_c == 0)
 		G1_c = 0.001;

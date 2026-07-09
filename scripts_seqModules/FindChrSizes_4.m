@@ -84,7 +84,7 @@ for usedChr = 1:num_chrs
 				show_fitting = 0;
 
 				%%% Perform Gaussian curve fitting to CNV data, to generate chromosome segment copy number estimates. (No fit figures made.)
-				descriptionString   = ['chr=' num2str(usedChr) '; seg=' num2str(segment)];
+				descriptionString   = ['chr' num2str(usedChr) '.' num2str(segment)];
 				[CGHsegment_height, CGHsegment_location, CGHsegment_width, Rsquared] = fit_Gaussian_model2(workingDir, smoothed, peakLocation, 'cubic',show_fitting,20, false, descriptionString);
 				fprintf(['\n### fit_Gaussian_model2 description string = ' descriptionString '\n']);
 				fprintf(['!!! [raw] chrCopyNum{' num2str(usedChr) '}(' num2str(segment) ') = ' num2str(round(CGHsegment_location/(histogram_width/maxY)*10)/10) '\n']);
