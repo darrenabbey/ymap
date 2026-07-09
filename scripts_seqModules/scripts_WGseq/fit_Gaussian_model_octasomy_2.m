@@ -60,12 +60,12 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 		% return last best estimate anyhow.
 	end;
 
-	% Estimates(2):homozygous should always be narrower than Estimates(4):heterozygous.
-	if (abs(Estimates(4)) < abs(Estimates(2)))
+	% Estimates(1):homozygous should always be narrower than Estimates(3):heterozygous.
+	if (abs(Estimates(3)) < abs(Estimates(1)))
 		% swap them
-		temp         = Estimates(4);
-		Estimates(4) = Estimates(2);
-		Estimates(2) = temp;
+		temp         = Estimates(3);
+		Estimates(3) = Estimates(1);
+		Estimates(1) = temp;
 	end;
 
 	% height, location, width.
