@@ -60,17 +60,15 @@ function [G1_a, G1_b, G1_c, Rsquared] = fit_Gaussian_model2(workingDir, data, lo
 
 	if (exitflag > 0)
 		% > 0 : converged to a solution.
-		G1_a = abs(Estimates(1));
-		G1_b = Estimates(2);
-		G1_c = abs(Estimates(3));
 	else
 		% = 0 : exceeded maximum iterations allowed.
 		% < 0 : did not converge to a solution.
 		% return last best estimate anyhow.
-		G1_a = abs(Estimates(1));
-		G1_b = Estimates(2);
-		G1_c = abs(Estimates(3));
 	end;
+
+	G1_a = 1; %abs(Estimates(1));
+	G1_b = Estimates(2);
+	G1_c = abs(Estimates(3));
 
 	%%% Calculate R² for fit line.
 	%------------------------------------
@@ -101,12 +99,10 @@ function [G1_a, G1_b, G1_c, Rsquared] = fit_Gaussian_model2(workingDir, data, lo
 end
 
 function sse = fiterror(params,time,location,data,func_type,show_fitting,ploidy1x)
-
 	if isempty(data) || isempty(time) || numel(data) == 0
 		sse = 1e10; % Return a massive penalty to fminsearch
 		return;
 	end
-
 	if length(params) < 3
 		sse = Inf;
 		return;
