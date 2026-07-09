@@ -111,14 +111,3 @@
 		closedir($directory);
 	}
 ?>
-<html>
-<body>
-<script type="text/javascript">
-	if (parent.parent.document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('pending_comment').style.visibility != 'visible') {
-		parent.parent.document.getElementById('panel_manageDataset_iframe'   ).contentWindow.location.reload();
-		parent.parent.document.getElementById('panel_visualizeDataset_iframe'   ).contentWindow.location.reload();
-		parent.parent.document.getElementById('panel_admin2_iframe'   ).contentWindow.location.reload();
-	}
-</script>
-</body>
-</html>
