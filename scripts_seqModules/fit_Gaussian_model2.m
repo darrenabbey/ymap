@@ -113,8 +113,8 @@ function sse = fiterror(params,time,location,data,func_type,show_fitting,ploidy1
 	end
 
 	% a=height, b=location, c=relative width.
-	G1_a = abs(params(1));
-	G1_b = location; %params(2);
+	G1_a = 1; %abs(params(1));
+	G1_b = params(2);
 	G1_c = abs(params(3));
 
 	if (G1_c < 1e-6)
