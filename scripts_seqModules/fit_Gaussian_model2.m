@@ -37,7 +37,7 @@ function [G1_a, G1_b, G1_c, Rsquared] = fit_Gaussian_model2(workingDir, data, lo
 	dd = data;
 	dd(data < max(data)/2) = 0;
 	c1 = find(dd,1,'first');
-	G1_ci = (G1_bi-c1)/sqrt(2*log(2));
+	G1_ci = (2*(G1_bi-c1))/sqrt(2*log(2));
 
 	initial = [G1_ai, G1_bi, G1_ci];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',10000);
@@ -151,30 +151,30 @@ function sse = fiterror(params,time,location,data,func_type,show_fitting,ploidy1
 		%------------------------------------------------------------------
 	end;
 
-	% Define mask to limit error calculation to around peak location.
-	width = G1_c*2;
-	lower_bound = G1_b - width;
-	upper_bound = G1_b + width;
-	local_mask = (time >= lower_bound) & (time <= upper_bound);
+%	% Define mask to limit error calculation to around peak location.
+%	width = G1_c*2;
+%	lower_bound = G1_b - width;
+%	upper_bound = G1_b + width;
+%	local_mask = (time >= lower_bound) & (time <= upper_bound);
 
 	switch(func_type)
 		case 'cubic'
 			Error_Vector = (fitted).^2 - (data).^2;
-			Error_Vector = Error_Vector .* local_mask;
+			%Error_Vector = Error_Vector .* local_mask;
 			sse          = sum(abs(Error_Vector));
 		case 'linear'
 			Error_Vector = (fitted) - (data);
-			Error_Vector = Error_Vector .* local_mask;
+			%Error_Vector = Error_Vector .* local_mask;
 			sse          = sum(Error_Vector.^2);
 		case 'log'
 			safe_fitted = max(abs(fitted), 1e-10);
 			safe_data   = max(abs(data), 1e-10);
 			Error_Vector = log(safe_fitted) - log(safe_data);
-			Error_Vector = Error_Vector .* local_mask;
+			%Error_Vector = Error_Vector .* local_mask;
 			sse          = sum(abs(Error_Vector));
 		case 'fcs'
 			Error_Vector = (fitted) - (data);
-			Error_Vector = Error_Vector .* local_mask;
+			%Error_Vector = Error_Vector .* local_mask;
 			sse          = sum(Error_Vector.^2);
 		otherwise
 			error('Error: choice for fitting not implemented yet!');
