@@ -29,7 +29,7 @@ end;
 
 % configuration of chromosome cartoon curves.
 res    = 64;
-Xscale = 7;   % Arbitrary value that results in smooth curved cartoons. Linear view needs a different number.
+Xscale = 7 * 2/ploidyBase;	% Arbitrary value that results in smooth curved cartoons. Linear view needs a different number.
 dy     = cen_tel_Yindent;
 dx     = dy*Xscale;
 xcen   = (x1+x2)/2;

@@ -9,7 +9,7 @@ set(gca,'visible','off');
 
 %% Configuration of chromosome cartoon curves.
 res    = 64;
-Xscale = 40;  % Arbitrary value that leads to good looking curves on linear view. Stacked view may need a different number.
+Xscale = 40 * 2/ploidyBase;	% Arbitrary value that leads to good looking curves on linear view. Stacked view may need a different number.
 dy     = cen_tel_Yindent;
 dx     = dy*Xscale;
 xcen   = (x1+x2)/2;
