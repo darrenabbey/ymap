@@ -59,10 +59,10 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, Rsquar
 	end;
 
 	% height, location, relative width.
-	%p1_a = abs(Estimates(1));	p1_b = locations(1);	p1_c = abs(Estimates(2));
-	%p2_a = abs(Estimates(3));	p2_b = locations(2);	p2_c = abs(Estimates(4));
-	%p3_a = abs(Estimates(5));	p3_b = locations(3);	p3_c = abs(Estimates(4));
-	%p4_a = abs(Estimates(6));	p4_b = locations(4);	p4_c = abs(Estimates(2));
+	%p1_a = abs(Estimates(1));	%p1_b = locations(1);	%p1_c = abs(Estimates(2));
+	%p2_a = abs(Estimates(3));	%p2_b = locations(2);	%p2_c = abs(Estimates(4));
+	%p3_a = abs(Estimates(5));	%p3_b = locations(3);	%p3_c = abs(Estimates(4));
+	%p4_a = abs(Estimates(6));	%p4_b = locations(4);	%p4_c = abs(Estimates(2));
 	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);	p1_b = locations(1);	p1_c = abs(Estimates(1));
 	p2_a = data(round(locations(2)))/max(data);					p2_b = locations(2);	p2_c = abs(Estimates(3));
 	p3_a = data(round(locations(3)))/max(data);					p3_b = locations(3);	p3_c = abs(Estimates(3));
@@ -169,10 +169,10 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	end;
 
 	% height, location, relative width.
-	$p1_a         = abs(params(1)); 	p1_b         = locations(1);   p1_c         = abs(params(2));
-	%p2_a         = abs(params(3)); 	p2_b         = locations(2);   p2_c         = abs(params(4));
-	%p3_a         = abs(params(5)); 	p3_b         = locations(3);   p3_c         = abs(params(4));
-	%p4_a         = abs(params(6)); 	p4_b         = locations(4);   p4_c         = abs(params(2));
+	$p1_a = abs(params(1)); 	%p1_b = locations(1);   %p1_c = abs(params(2));
+	%p2_a = abs(params(3)); 	%p2_b = locations(2);   %p2_c = abs(params(4));
+	%p3_a = abs(params(5)); 	%p3_b = locations(3);   %p3_c = abs(params(4));
+	%p4_a = abs(params(6)); 	%p4_b = locations(4);   %p4_c = abs(params(2));
 	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_b = locations(1);	p1_c = abs(params(1));
 	p2_a = data(round(locations(2)))/max(data);						p2_b = locations(2);	p2_c = abs(params(3));
 	p3_a = data(round(locations(3)))/max(data);						p3_b = locations(3);	p3_c = abs(params(3));
