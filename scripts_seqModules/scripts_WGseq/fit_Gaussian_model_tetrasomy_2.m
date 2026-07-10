@@ -194,7 +194,7 @@ function sse = fiterror(params,time,data,func_type,locations,show)
         p1_c=widths(1); p2_c=widths(2); p3_c=widths(3); p4_c=widths(4); p5_c=widths(5);
 
 	if (skew_factor1 < 0); skew_factor1 = 0; end; if (skew_factor1 > 2); skew_factor1 = 2; end;
-	if (skew_factor2 < 0); skew_factor2 = 0; end; if (skew_factor3 > 2); skew_factor2 = 2; end;
+	if (skew_factor2 < 0); skew_factor2 = 0; end; if (skew_factor2 > 2); skew_factor2 = 2; end;
 	if (skew_factor4 < 0); skew_factor4 = 0; end; if (skew_factor4 > 2); skew_factor4 = 2; end;
 	if (skew_factor5 < 0); skew_factor5 = 0; end; if (skew_factor5 > 2); skew_factor5 = 2; end;
 
@@ -218,8 +218,8 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 
 	c1_  = p1_c/2 + p1_c*skew_factor1/denoms(1)/2;	p1_c = p1_c*p1_c/c1_;
 	c2_  = p2_c/2 + p2_c*skew_factor2/denoms(2)/2;	p2_c = p2_c*p2_c/c2_;
-	c4_  = p4_c/2 + p4_c*skew_factor4/denoms(3)/2;	p4_c = p4_c*p4_c/c4_;
-	c5_  = p5_c/2 + p5_c*skew_factor5/denoms(4)/2;	p5_c = p5_c*p5_c/c5_;
+	c4_  = p4_c/2 + p4_c*skew_factor4/denoms(4)/2;	p4_c = p4_c*p4_c/c4_;
+	c5_  = p5_c/2 + p5_c*skew_factor5/denoms(5)/2;	p5_c = p5_c*p5_c/c5_;
 
 	%p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
 	%p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor1/denoms(1)) ).^2);
