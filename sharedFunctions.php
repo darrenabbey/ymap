@@ -61,7 +61,7 @@ function minimizeProject($dir) {
 		}
 		$file_ext  = substr(strrchr($file, '.'), 1);
 		if (($file_ext == "png") or ($file_ext == "gff3") or ($file_ext == "log")) {
-			if (!str_contains($file,'ChARM_test') and !str_contains($file,'Rsquared')) {
+			if (!str_contains($file,'ChARM_test') and !str_contains($file,'Rsquared') and !str_contains($file,'CNV_GaussFit') and !str_contains($file,'SNP_GaussFit')) {
 				rename($dir.$file, $temp_dir.$file);
 			}
 		}
