@@ -35,14 +35,14 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',200000);
 	time = 1:length(data);
 
-	[Estimates,~,exitflag] = fminsearch(@fiterror, ...   % function to be fitted.
-	                                    initial, ... % initial values.
-	                                    options, ...     % options for fitting algorithm.
-	                                    time, ...        % problem-specific parameter 1.
-	                                    data, ...        % problem-specific parameter 2.
-	                                    func_type, ...   % problem-specific parameter 3.
-	                                    locations, ...   % problem-specific parameter 4.
-	                                    show ...         % problem-specific parameter 5.
+	[Estimates,~,exitflag] = fminsearch(	@fiterror, ...   % function to be fitted.
+						initial, ...     % initial values.
+						options, ...     % options for fitting algorithm.
+						time, ...        % problem-specific parameter 1.
+						data, ...        % problem-specific parameter 2.
+						func_type, ...   % problem-specific parameter 3.
+						locations, ...   % problem-specific parameter 4.
+						show ...         % problem-specific parameter 5.
 	                            );
 	if (exitflag > 0)
 		% > 0 : converged to a solution.
@@ -156,6 +156,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 		text(100,0.5,['R^2 = ', num2str(Rsquared)],"interpreter", "latex");
 		hold off;
 
+		delete(glob([workingDir 'SNP_GaussFit.' descriptionString '.*.png']));
 		saveName = [workingDir 'SNP_GaussFit.' descriptionString '.tetrasomy.png'];
 		saveas(fig, saveName, 'png');
 		delete(fig);

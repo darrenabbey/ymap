@@ -20,9 +20,11 @@ chrCopyRsquared_vector = [];
 %%%================================================================================================
 %%% Precalculation of chromosome segment copy numbers.
 %%%------------------------------------------------------------------------------------------------
+chrCounter = 0;
 for usedChr = 1:num_chrs
 	if (usedChr <= length(chr_in_use))
 		if (chr_in_use(usedChr) == 1)
+			chrCounter += 1;
 			% determine where the endpoints of ploidy segments are.
 			chr_breaks{usedChr}(1) = 0.0;
 			break_count = 1;
@@ -39,7 +41,7 @@ for usedChr = 1:num_chrs
 			end;
 			chr_breaks{usedChr}(length(chr_breaks{usedChr})+1) = 1;
 
-			fprintf(['chr' num2str(usedChr) ' (' num2str(length(chr_breaks{usedChr})) ' breaks)\n']);
+			fprintf(['chr' num2str(chrCounter) ' (' num2str(length(chr_breaks{usedChr})) ' breaks)\n']);
 			for segment = 1:length(chr_breaks{usedChr})-1
 				smoothed = [];
 				smoothed2 = [];
@@ -86,7 +88,7 @@ for usedChr = 1:num_chrs
 				show_fitting = 0;
 
 				%%% Perform Gaussian curve fitting to CNV data, to generate chromosome segment copy number estimates. (No fit figures made.)
-				descriptionString   = ['T1_chr' num2str(usedChr) '.' num2str(segment)];
+				descriptionString   = ['T1_chr' num2str(chrCounter) '.' num2str(segment)];
 				[CGHsegment_height, CGHsegment_location, CGHsegment_width, Rsquared] = fit_Gaussian_model2(workingDir, smoothed, peakLocation, 'cubic',show_fitting,20, true, descriptionString);
 				fprintf(['\t### fit_Gaussian_model2 description string = ' descriptionString '\n']);
 				fprintf(['\t!!! [raw] chrCopyNum{' num2str(usedChr) '}(' num2str(segment) ') = ' num2str(round(CGHsegment_location/(histogram_width/maxY)*10)/10) '\n']);
@@ -117,11 +119,13 @@ end;
 %%%------------------------------------------------------------------------------------------------
 chrCopyNum_vector(chrCopyNum_vector == 0) = [];
 common_copyNum = mode(chrCopyNum_vector);
+chrCounter = 0;
 for chr = 1:length(chrCopyNum)
 	if (chr_in_use(chr) == 1)
+		chrCounter += 1;
 		fprintf(['\n']);
 		for segment = 1:length(chrCopyNum{chr})
-			fprintf(['chr' num2str(chr) '.' num2str(segment) '\n']);
+			fprintf(['chr' num2str(chrCounter) '.' num2str(segment) '\n']);
 			fprintf(['\t!!! chrCopyNum{' num2str(chr) '}(' num2str(segment) ')  = ' num2str(chrCopyNum{chr}(segment)) '\n']);
 			fprintf(['\t!!! common_copyNum    = ' num2str(common_copyNum) '\n']);
 
@@ -147,8 +151,10 @@ chrCopyNum   = chrCopyNum2;
 %%%	Segments with a <= zero copy number will be fused to an adjacent segment.
 %%%------------------------------------------------------------------------------------------------
 fprintf('Test adjacent chromosome segments for no change in copy number estimate.\n');
+chrCounter = 0;
 for chr = 1:length(chrCopyNum)
 	if (chr_in_use(chr) == 1)
+		chrCounter += 1;
 		if (length(chrCopyNum{chr}) > 1)  % more than one segment, so lets examine if adjacent segments have different copyNums.
 			%% Merge any adjacent segments with the same copy number.
 			% add break representing left end of chromosome.
@@ -181,7 +187,7 @@ for chr = 1:length(chrCopyNum)
 			chr_breaks_new{chr}(breakCount_new) = 1.0;
 
 			% output status to log file.
-			fprintf(['\t@@@2 chr = ' num2str(chr) '\n']);
+			fprintf(['\t@@@2 chr = ' num2str(chrCounter) '\n']);
 			fprintf(['\t@@@2    chr_breaks_old = ' num2str(chr_breaks{chr})     '\n']);
 			fprintf(['\t@@@2    chrCopyNum_old = ' num2str(chrCopyNum{chr})     '\n']);
 			fprintf(['\t@@@2    chr_breaks_new = ' num2str(chr_breaks_new{chr}) '\n']);
@@ -193,7 +199,7 @@ for chr = 1:length(chrCopyNum)
 			chrCopyNum{chr} = chrCopyNum_new{chr};
 		else
 			% output status to log file.
-			fprintf(['\t@@@2 chr = ' num2str(chr) '\n']);
+			fprintf(['\t@@@2 chr = ' num2str(chrCounter) '\n']);
 			fprintf(['\t@@@2    Only one CNV segment on this chromosome\n']);
 		end;
 	end;
@@ -210,9 +216,11 @@ chrCopyRsquared        = [];
 chrCopyNum_vector      = [];
 chrCopyRsquared_vector = [];
 
+chrCounter = 0;
 for usedChr = 1:num_chrs
 	if (usedChr <= length(chr_in_use))
 		if (chr_in_use(usedChr) == 1)
+			chrCounter += 1;
 			for segment = 1:length(chr_breaks{usedChr})-1
 				smoothed         = [];
 				smoothed2        = [];
@@ -261,10 +269,10 @@ for usedChr = 1:num_chrs
 				show_fitting = 0;
 
 				%%% Perform Gaussian curve fitting to CNV data, to generate chromosome segment copy number estimates, after merging adjacent segments when needed. (Fit figures are made.)
-				descriptionString   = ['chr' num2str(usedChr) '.' num2str(segment)];
+				descriptionString   = ['chr' num2str(chrCounter) '.' num2str(segment)];
 				[CGHsegment_height, CGHsegment_location, CGHsegment_width, Rsquared] = fit_Gaussian_model2(workingDir, smoothed, peakLocation, 'cubic',show_fitting,20, makeFitFigures, descriptionString);
-				fprintf(['\n### fit_Gaussian_model2 description string = ' descriptionString '\n']);
-				fprintf(['!!! [raw] chrCopyNum{' num2str(usedChr) '}(' num2str(segment) ') = ' num2str(round(CGHsegment_location/(histogram_width/maxY)*10)/10) '\n']);
+				fprintf(['\t### fit_Gaussian_model2 description string = ' descriptionString '\n']);
+				fprintf(['\t!!! [raw] chrCopyNum{' num2str(usedChr) '}(' num2str(segment) ') = ' num2str(round(CGHsegment_location/(histogram_width/maxY)*10)/10) '\n']);
 
 				if (isnan(round(CGHsegment_location/(histogram_width/maxY)*10)/10))
 					chrCopyNum{usedChr}(segment)      = 1;

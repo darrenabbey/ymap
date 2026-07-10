@@ -21,8 +21,10 @@ fputs (fid, "### Chromosome_name, Chromosome_segment, allelic-ratio_cutoffs\n");
 fclose (fid);
 
 %% process individual chromosome segments.
+chrCounter = 0;
 for chr = 1:num_chrs
 	if (chr_in_use(chr) == 1)
+		chrCounter += 1;
 		chr_length = chr_size(chr);
 		for segment = 1:length(chrCopyNum{chr})
 			histAll_a = [];
@@ -159,7 +161,7 @@ for chr = 1:num_chrs
 			segment_smoothedHistogram  = smoothed;                         % whole chromosome allelic ratio histogram smoothed.
 
 			% Define cutoffs between Gaussian fits.
-			descriptionString          = ['chr' num2str(chr) '.' num2str(segment)];
+			descriptionString          = ['chr' num2str(chrCounter) '.' num2str(segment)];
 			makeFitFigures             = true;
 			[peaks,actual_cutoffs,mostLikelyGaussians, Rsquared] = FindGaussianCutoffs_3(workingDir,descriptionString, chr,segment, segment_copyNum,segment_smoothedHistogram, makeFitFigures);
 
