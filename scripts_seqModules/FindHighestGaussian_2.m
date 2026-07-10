@@ -19,7 +19,15 @@ function [which] = FindHighestGaussian_2(G)
 				which(i) = 0;
 			else
 				fit(fit~=max(fit)) = 0;
-				which(i) = find(fit);
+				%which(i) = find(fit);
+
+				%% trying to handle error condition.
+				idx = find(fit, 1, 'first'); % Get only the first highest index
+				if isempty(idx)
+					which(i) = 0;        % Fallback to zero if empty
+				else
+					which(i) = idx;
+				end;
 			end;
 		end;
 	end;
@@ -31,7 +39,7 @@ function [which] = FindHighestGaussian_2(G)
 				last_valid = which(i);
 			end;
 		end;
-		which(i) = last_valid;
+		which(1) = last_valid;
 	end;
 	% if the last [which] is zero, finds the nearest available [which] of not zero.
 	if (which(200) == 0)
