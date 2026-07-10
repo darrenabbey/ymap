@@ -39,7 +39,7 @@ for usedChr = 1:num_chrs
 			end;
 			chr_breaks{usedChr}(length(chr_breaks{usedChr})+1) = 1;
 
-			fprintf(['chr' num2str(usedChr) ' : ' num2str(length(chr_breaks{usedChr})) '\n']);
+			fprintf(['chr' num2str(usedChr) ' (' num2str(length(chr_breaks{usedChr})) ' breaks)\n']);
 			for segment = 1:length(chr_breaks{usedChr})-1
 				smoothed = [];
 				smoothed2 = [];
@@ -88,8 +88,8 @@ for usedChr = 1:num_chrs
 				%%% Perform Gaussian curve fitting to CNV data, to generate chromosome segment copy number estimates. (No fit figures made.)
 				descriptionString   = ['T1_chr' num2str(usedChr) '.' num2str(segment)];
 				[CGHsegment_height, CGHsegment_location, CGHsegment_width, Rsquared] = fit_Gaussian_model2(workingDir, smoothed, peakLocation, 'cubic',show_fitting,20, true, descriptionString);
-				fprintf(['\n### fit_Gaussian_model2 description string = ' descriptionString '\n']);
-				fprintf(['!!! [raw] chrCopyNum{' num2str(usedChr) '}(' num2str(segment) ') = ' num2str(round(CGHsegment_location/(histogram_width/maxY)*10)/10) '\n']);
+				fprintf(['\t### fit_Gaussian_model2 description string = ' descriptionString '\n']);
+				fprintf(['\t!!! [raw] chrCopyNum{' num2str(usedChr) '}(' num2str(segment) ') = ' num2str(round(CGHsegment_location/(histogram_width/maxY)*10)/10) '\n']);
 
 				if (isnan(round(CGHsegment_location/(histogram_width/maxY)*10)/10))
 					chrCopyNum{usedChr}(segment)      = 1;
@@ -121,8 +121,9 @@ for chr = 1:length(chrCopyNum)
 	if (chr_in_use(chr) == 1)
 		fprintf(['\n']);
 		for segment = 1:length(chrCopyNum{chr})
-			fprintf(['!!! chrCopyNum{' num2str(chr) '}(' num2str(segment) ')  = ' num2str(chrCopyNum{chr}(segment)) '\n']);
-			fprintf(['!!! common_copyNum    = ' num2str(common_copyNum) '\n']);
+			fprintf(['chr' num2str(chr) '.' num2str(segment) '\n']);
+			fprintf(['\t!!! chrCopyNum{' num2str(chr) '}(' num2str(segment) ')  = ' num2str(chrCopyNum{chr}(segment)) '\n']);
+			fprintf(['\t!!! common_copyNum    = ' num2str(common_copyNum) '\n']);
 
 			% avoid dividing by Nan if common_copyNum is NaN (since the whole copy vector can be empty)
 			if (~isnan(common_copyNum))
@@ -131,7 +132,7 @@ for chr = 1:length(chrCopyNum)
 			else
 			chrCopyNum2{chr}(segment) = 0;
 			end;
-			fprintf(['!!! chrCopyNum2{' num2str(chr) '}(' num2str(segment) ') = ' num2str(chrCopyNum2{chr}(segment)) '\n\n']);
+			fprintf(['\t!!! chrCopyNum2{' num2str(chr) '}(' num2str(segment) ') = ' num2str(chrCopyNum2{chr}(segment)) '\n\n']);
 		end;
 	end;
 end;
@@ -145,7 +146,7 @@ chrCopyNum   = chrCopyNum2;
 %%%	Adjacent pairs of segments with the same copy number will be fused into a single segment.
 %%%	Segments with a <= zero copy number will be fused to an adjacent segment.
 %%%------------------------------------------------------------------------------------------------
-fprintf('\t|\tTest adjacent chromosome segments for no change in copy number estimate.\n');
+fprintf('Test adjacent chromosome segments for no change in copy number estimate.\n');
 for chr = 1:length(chrCopyNum)
 	if (chr_in_use(chr) == 1)
 		if (length(chrCopyNum{chr}) > 1)  % more than one segment, so lets examine if adjacent segments have different copyNums.
@@ -180,11 +181,11 @@ for chr = 1:length(chrCopyNum)
 			chr_breaks_new{chr}(breakCount_new) = 1.0;
 
 			% output status to log file.
-			fprintf(['@@@2 chr = ' num2str(chr) '\n']);
-			fprintf(['@@@2    chr_breaks_old = ' num2str(chr_breaks{chr})     '\n']);
-			fprintf(['@@@2    chrCopyNum_old = ' num2str(chrCopyNum{chr})     '\n']);
-			fprintf(['@@@2    chr_breaks_new = ' num2str(chr_breaks_new{chr}) '\n']);
-			fprintf(['@@@2    chrCopyNum_new = ' num2str(chrCopyNum_new{chr}) '\n']);
+			fprintf(['\t@@@2 chr = ' num2str(chr) '\n']);
+			fprintf(['\t@@@2    chr_breaks_old = ' num2str(chr_breaks{chr})     '\n']);
+			fprintf(['\t@@@2    chrCopyNum_old = ' num2str(chrCopyNum{chr})     '\n']);
+			fprintf(['\t@@@2    chr_breaks_new = ' num2str(chr_breaks_new{chr}) '\n']);
+			fprintf(['\t@@@2    chrCopyNum_new = ' num2str(chrCopyNum_new{chr}) '\n']);
 
 			% copy new lists to old.
 			chr_breaks{chr} = chr_breaks_new{chr};
@@ -192,8 +193,8 @@ for chr = 1:length(chrCopyNum)
 			chrCopyNum{chr} = chrCopyNum_new{chr};
 		else
 			% output status to log file.
-			fprintf(['@@@2 chr = ' num2str(chr) '\n']);
-			fprintf(['@@@2    Only one CNV segment on this chromosome\n']);
+			fprintf(['\t@@@2 chr = ' num2str(chr) '\n']);
+			fprintf(['\t@@@2    Only one CNV segment on this chromosome\n']);
 		end;
 	end;
 end;
