@@ -38,7 +38,6 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	p8_ai = data(round(locations(8)));   p8_bi = locations(8);   p8_ci = init_width;
 	p9_ai = data(round(locations(9)));   p9_bi = locations(9);   p9_ci = init_width/4;
 
-	%initial = [p1_ai,p1_ci,p2_ai,p2_ci,p3_ai,p4_ai,p5_ai,p6_ai,p7_ai,p8_ai,p9_ai];
 	initial = [p1_ci,p2_ai,p2_ci,p3_ai,p4_ai,p5_ai,p6_ai,p7_ai,p8_ai];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',200000);
 	time= 1:length(data);
@@ -69,15 +68,6 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	end;
 
 	% height, location, width.
-	%p1_a = abs(Estimates(1));	%p1_b = locations(1);	%p1_c = abs(Estimates(2));
-	%p2_a = abs(Estimates(3));	%p2_b = locations(2);	%p2_c = abs(Estimates(4));
-	%p3_a = abs(Estimates(5));	%p3_b = locations(3);	%p3_c = abs(Estimates(4));
-	%p4_a = abs(Estimates(6));	%p4_b = locations(4);	%p4_c = abs(Estimates(4));
-	%p5_a = abs(Estimates(7));	%p5_b = locations(5);	%p5_c = abs(Estimates(4));
-	%p6_a = abs(Estimates(8));	%p6_b = locations(6);	%p6_c = abs(Estimates(4));
-	%p7_a = abs(Estimates(9));	%p7_b = locations(7);	%p7_c = abs(Estimates(4));
-	%p8_a = abs(Estimates(10));	%p8_b = locations(8);	%p8_c = abs(Estimates(4));
-	%p9_a = abs(Estimates(11));	%p9_b = locations(9);	%p9_c = abs(Estimates(2));
 	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_b = locations(1);	p1_c = abs(Estimates(1));
 	p2_a = abs(Estimates(2));								p2_b = locations(2);	p2_c = abs(Estimates(3));
 	p3_a = abs(Estimates(4));								p3_b = locations(3);	p3_c = abs(Estimates(3));
@@ -87,42 +77,6 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	p7_a = abs(Estimates(8));								p7_b = locations(7);	p7_c = abs(Estimates(3));
 	p8_a = abs(Estimates(9));								p8_b = locations(8);	p8_c = abs(Estimates(3));
 	p9_a = max([data(round(locations(9))) data(round(locations(9))-1)])/max(data);		p9_b = locations(9);	p9_c = abs(Estimates(1));
-
-	skew_factor1 = 1;
-	skew_factor2 = 1;
-	skew_factor3 = 1;
-	skew_factor4 = 1;
-	skew_factor5 = 1;
-	skew_factor6 = 1;
-	skew_factor7 = 1;
-	skew_factor8 = 1;
-	skew_factor9 = 1;
-
-	if (skew_factor1 < 0); skew_factor1 = 0; end; if (skew_factor1 > 2); skew_factor1 = 2; end;
-	if (skew_factor2 < 0); skew_factor2 = 0; end; if (skew_factor2 > 2); skew_factor2 = 2; end;
-	if (skew_factor3 < 0); skew_factor3 = 0; end; if (skew_factor3 > 2); skew_factor3 = 2; end;
-	if (skew_factor4 < 0); skew_factor4 = 0; end; if (skew_factor4 > 2); skew_factor4 = 2; end;
-	if (skew_factor6 < 0); skew_factor6 = 0; end; if (skew_factor6 > 2); skew_factor6 = 2; end;
-	if (skew_factor7 < 0); skew_factor7 = 0; end; if (skew_factor7 > 2); skew_factor7 = 2; end;
-	if (skew_factor8 < 0); skew_factor8 = 0; end; if (skew_factor8 > 2); skew_factor8 = 2; end;
-	if (skew_factor9 < 0); skew_factor9 = 0; end; if (skew_factor9 > 2); skew_factor9 = 2; end;
-	c1_  = p1_c/2 + p1_c*skew_factor1/(100.5-abs(100.5-p1_b))/2;
-	p1_c = p1_c*p1_c/c1_;
-	c2_  = p2_c/2 + p2_c*skew_factor2/(100.5-abs(100.5-p2_b))/2;
-	p2_c = p2_c*p2_c/c2_;
-	c3_  = p3_c/2 + p3_c*skew_factor3/(100.5-abs(100.5-p3_b))/2;
-	p3_c = p3_c*p3_c/c3_;
-	c4_  = p4_c/2 + p4_c*skew_factor4/(100.5-abs(100.5-p4_b))/2;
-	p4_c = p4_c*p4_c/c4_;
-	c6_  = p6_c/2 + p6_c*skew_factor6/(100.5-abs(100.5-p6_b))/2;
-	p6_c = p6_c*p6_c/c6_;
-	c7_  = p7_c/2 + p7_c*skew_factor7/(100.5-abs(100.5-p7_b))/2;
-	p7_c = p7_c*p7_c/c7_;
-	c8_  = p8_c/2 + p8_c*skew_factor8/(100.5-abs(100.5-p8_b))/2;
-	p8_c = p8_c*p8_c/c8_;
-	c9_  = p9_c/2 + p9_c*skew_factor9/(100.5-abs(100.5-p9_b))/2;
-	p9_c = p9_c*p9_c/c9_;
-
 
 	%%% Calculate R^2 for fit line.
 	%------------------------------------
@@ -152,24 +106,6 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	time9_2 = ceil(p9_b):200;
 	if (time9_1(end) == time9_2(1));time9_2(1) = [];end;
 	%------------------------------------
-	%p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
-	%p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor1/(100.5-abs(100.5-p1_b))) ).^2);
-	%p2_fit_L = p2_a*exp(-0.5*((time2_1-p2_b)./p2_c).^2);
-	%p2_fit_R = p2_a*exp(-0.5*((time2_2-p2_b)./p2_c/(skew_factor2/(100.5-abs(100.5-p2_b))) ).^2);
-	%p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c).^2);
-	%p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c/(skew_factor3/(100.5-abs(100.5-p3_b))) ).^2);
-	%p4_fit_L = p4_a*exp(-0.5*((time4_1-p4_b)./p4_c).^2);
-	%p4_fit_R = p4_a*exp(-0.5*((time4_2-p4_b)./p4_c/(skew_factor4/(100.5-abs(100.5-p4_b))) ).^2);
-	%p5_fit   = p5_a*exp(-0.5*((time5  -p5_b)./p5_c).^2);
-	%p6_fit_L = p6_a*exp(-0.5*((time6_1-p6_b)./p6_c/(skew_factor6/(100.5-abs(100.5-p6_b))) ).^2);
-	%p6_fit_R = p6_a*exp(-0.5*((time6_2-p6_b)./p6_c).^2);
-	%p7_fit_L = p7_a*exp(-0.5*((time7_1-p7_b)./p7_c/(skew_factor7/(100.5-abs(100.5-p7_b))) ).^2);
-	%p7_fit_R = p7_a*exp(-0.5*((time7_2-p7_b)./p7_c).^2);
-	%p8_fit_L = p8_a*exp(-0.5*((time8_1-p8_b)./p8_c/(skew_factor8/(100.5-abs(100.5-p8_b))) ).^2);
-	%p8_fit_R = p8_a*exp(-0.5*((time8_2-p8_b)./p8_c).^2);
-	%p9_fit_L = p9_a*exp(-0.5*((time9_1-p9_b)./p9_c/(skew_factor9/(100.5-abs(100.5-p9_b))) ).^2);
-	%p9_fit_R = p9_a*exp(-0.5*((time9_2-p9_b)./p9_c).^2);
-
 	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
 	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c).^2);
 	p2_fit_L = p2_a*exp(-0.5*((time2_1-p2_b)./p2_c).^2);
@@ -243,15 +179,6 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	end;
 
 	% height, location, relative width.
-	%p1_a = abs(params(1));   %p1_b = locations(1);     %p1_c = abs(params(2));
-	%p2_a = abs(params(3));   %p2_b = locations(2);     %p2_c = abs(params(4));
-	%p3_a = abs(params(5));   %p3_b = locations(3);     %p3_c = abs(params(4));
-	%p4_a = abs(params(6));   %p4_b = locations(4);     %p4_c = abs(params(4));
-	%p5_a = abs(params(7));   %p5_b = locations(5);     %p5_c = abs(params(4));
-	%p6_a = abs(params(8));   %p6_b = locations(6);     %p6_c = abs(params(4));
-	%p7_a = abs(params(9));   %p7_b = locations(7);     %p7_c = abs(params(4));
-	%p8_a = abs(params(10));  %p8_b = locations(8);     %p8_c = abs(params(4));
-	%p9_a = abs(params(11));  %p9_b = locations(9);     %p9_c = abs(params(2));
 	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_b = locations(1);	p1_c = abs(params(1));
 	p2_a = abs(params(2));									p2_b = locations(2);	p2_c = abs(params(3));
 	p3_a = abs(params(4));									p3_b = locations(3);	p3_c = abs(params(3));
@@ -262,30 +189,10 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p8_a = abs(params(9));									p8_b = locations(8);	p8_c = abs(params(3));
 	p9_a = max([data(round(locations(9))) data(round(locations(9))-1)])/max(data);		p9_b = locations(9);	p9_c = abs(params(1));
 
-	skew_factor1 = 1;
-	skew_factor2 = 1;
-	skew_factor3 = 1;
-	skew_factor4 = 1;
-	skew_factor5 = 1;
-	skew_factor6 = 1;
-	skew_factor7 = 1;
-	skew_factor8 = 1;
-	skew_factor9 = 1;
-
 	widths = [p1_c, p2_c, p3_c, p4_c, p5_c, p6_c, p7_c, p8_c, p9_c];
-        widths(widths == 0) = 0.001;
         widths(widths < 2) = 2;
         p1_c=widths(1);  p2_c=widths(2);  p3_c=widths(3);  p4_c=widths(4);  p5_c=widths(5);
         p6_c=widths(6);  p7_c=widths(7);  p8_c=widths(8);  p9_c=widths(9);
-
-	if (skew_factor1 < 0); skew_factor1 = 0; end; if (skew_factor1 > 2); skew_factor1 = 2; end;
-	if (skew_factor2 < 0); skew_factor2 = 0; end; if (skew_factor2 > 2); skew_factor2 = 2; end;
-	if (skew_factor3 < 0); skew_factor3 = 0; end; if (skew_factor3 > 2); skew_factor3 = 2; end;
-	if (skew_factor4 < 0); skew_factor4 = 0; end; if (skew_factor4 > 2); skew_factor4 = 2; end;
-	if (skew_factor6 < 0); skew_factor6 = 0; end; if (skew_factor6 > 2); skew_factor6 = 2; end;
-	if (skew_factor7 < 0); skew_factor7 = 0; end; if (skew_factor7 > 2); skew_factor7 = 2; end;
-	if (skew_factor8 < 0); skew_factor8 = 0; end; if (skew_factor8 > 2); skew_factor8 = 2; end;
-	if (skew_factor9 < 0); skew_factor9 = 0; end; if (skew_factor9 > 2); skew_factor9 = 2; end;
 
 	time1_1 = 1:floor(p1_b);
 	time1_2 = ceil(p1_b):200;
@@ -312,37 +219,6 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	time9_1 = 1:floor(p9_b);
 	time9_2 = ceil(p9_b):200;
 	if (time9_1(end) == time9_2(1));time9_2(1) = [];end;
-
-	locs = [p1_b, p2_b, p3_b, p4_b, p6_b, p7_b, p8_b, p9_b];
-	denoms = 100.5 - abs(100.5 - locs);
-	denoms(denoms == 0) = 0.001;
-
-	c1_  = p1_c/2 + p1_c*skew_factor1/denoms(1)/2;	p1_c = p1_c*p1_c/c1_;
-	c2_  = p2_c/2 + p2_c*skew_factor2/denoms(2)/2;	p2_c = p2_c*p2_c/c2_;
-	c3_  = p3_c/2 + p3_c*skew_factor3/denoms(3)/2;	p3_c = p3_c*p3_c/c3_;
-	c4_  = p4_c/2 + p4_c*skew_factor4/denoms(4)/2;	p4_c = p4_c*p4_c/c4_;
-	c6_  = p6_c/2 + p6_c*skew_factor6/denoms(6)/2;	p6_c = p6_c*p6_c/c6_;
-	c7_  = p7_c/2 + p7_c*skew_factor7/denoms(7)/2;	p7_c = p7_c*p7_c/c7_;
-	c8_  = p8_c/2 + p8_c*skew_factor8/denoms(8)/2;	p8_c = p8_c*p8_c/c8_;
-	c9_  = p9_c/2 + p9_c*skew_factor9/denoms(9)/2;	p9_c = p9_c*p9_c/c9_;
-
-	%p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
-	%p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor1/denoms(1)) ).^2);
-	%p2_fit_L = p2_a*exp(-0.5*((time2_1-p2_b)./p2_c).^2);
-	%p2_fit_R = p2_a*exp(-0.5*((time2_2-p2_b)./p2_c/(skew_factor2/denoms(2)) ).^2);
-	%p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c).^2);
-	%p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c/(skew_factor3/denoms(3)) ).^2);
-	%p4_fit_L = p4_a*exp(-0.5*((time4_1-p4_b)./p4_c).^2);
-	%p4_fit_R = p4_a*exp(-0.5*((time4_2-p4_b)./p4_c/(skew_factor4/denoms(4)) ).^2);
-	%p5_fit   = p5_a*exp(-0.5*((time5  -p5_b)./p5_c).^2);
-	%p6_fit_L = p6_a*exp(-0.5*((time6_1-p6_b)./p6_c/(skew_factor6/denoms(6)) ).^2);
-	%p6_fit_R = p6_a*exp(-0.5*((time6_2-p6_b)./p6_c).^2);
-	%p7_fit_L = p7_a*exp(-0.5*((time7_1-p7_b)./p7_c/(skew_factor7/denoms(7)) ).^2);
-	%p7_fit_R = p7_a*exp(-0.5*((time7_2-p7_b)./p7_c).^2);
-	%p8_fit_L = p8_a*exp(-0.5*((time8_1-p8_b)./p8_c/(skew_factor8/denoms(8)) ).^2);
-	%p8_fit_R = p8_a*exp(-0.5*((time8_2-p8_b)./p8_c).^2);
-	%p9_fit_L = p9_a*exp(-0.5*((time9_1-p9_b)./p9_c/(skew_factor9/denoms(9)) ).^2);
-	%p9_fit_R = p9_a*exp(-0.5*((time9_2-p9_b)./p9_c).^2);
 
 	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
 	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c).^2);
@@ -416,5 +292,8 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 		otherwise
 			error('Error: choice for fitting not implemented yet!');
 			sse  = 1;
+	end;
+	if isnan(sse) || isinf(sse) || ~isreal(sse)
+		sse = 1e12;
 	end;
 end

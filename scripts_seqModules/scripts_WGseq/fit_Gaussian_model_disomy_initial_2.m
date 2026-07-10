@@ -209,4 +209,7 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 			error('Error: choice for fitting not implemented yet!');
 			sse          = 1;
 	end;
+	if isnan(sse) || isinf(sse) || ~isreal(sse)
+		sse = 1e12;
+	end;
 end

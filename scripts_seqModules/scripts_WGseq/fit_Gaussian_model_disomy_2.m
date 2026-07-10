@@ -67,28 +67,9 @@ function [p1_a, p1_b, p1_c, p2_a, p2_b, p2_c, p3_a, p3_b, p3_c, Rsquared] = fit_
 	end
 
 	% height, location, width.
-	%p1_a = abs(Estimates(1));	%p1_b = locations(1);	%p1_c = abs(Estimates(2));
-	%p2_a = abs(Estimates(3));	%p2_b = locations(2);	%p2_c = abs(Estimates(4));
-	%p3_a = abs(Estimates(5));	%p3_b = locations(3);	%p3_c = abs(Estimates(2));
 	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_b = locations(1);	p1_c = abs(Estimates(1));
 	p2_a = data(round(locations(2)))/max(data);						p2_b = locations(2);	p2_c = abs(Estimates(3));
 	p3_a = max([data(round(locations(3))) data(round(locations(3))-1)])/max(data);		p3_b = locations(3);	p3_c = abs(Estimates(1));
-
-	skew_factor1 = 1;
-	skew_factor2 = 1;
-	skew_factor3 = 1;
-	if (skew_factor1 < 0); skew_factor1 = 0; end; if (skew_factor1 > 2); skew_factor1 = 2; end;
-	if (skew_factor2 < 0); skew_factor2 = 0; end; if (skew_factor2 > 2); skew_factor2 = 2; end;
-	if (skew_factor3 < 0); skew_factor3 = 0; end; if (skew_factor3 > 2); skew_factor3 = 2; end;
-
-	denom1 = 100.5 - abs(100.5 - p1_b); if denom1 == 0; denom1 = 0.001; end;
-	denom3 = 100.5 - abs(100.5 - p3_b); if denom3 == 0; denom3 = 0.001; end;
-
-	c1_ = p1_c/2 + p1_c*skew_factor1/denom1/2;
-	p1_c = p1_c*p1_c/c1_;
-	c3_ = p3_c/2 + p3_c*skew_factor3/denom3/2;
-	p3_c = p3_c*p3_c/c3_;
-
 
 	%%% Calculate R^2 for fit line.
 	%------------------------------------
@@ -149,34 +130,15 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 
 	% height, location, relative width.
 	% Force left and right curves to have same width.
-	%p1_a = abs(params(1));		%p1_b = locations(1);	%p1_c = abs(params(2));
-	%p2_a = abs(params(3));		%p2_b = locations(2);	%p2_c = abs(params(4));
-	%p3_a = abs(params(5));		%p3_b = locations(3);	%p3_c = abs(params(2));
-
-	% Force left and right curves to have same width.
-	% Force the heights to match the data at those coordinates.
-	%p1_a = data(round(locations(1)))/max(data);	%p1_b = locations(1);	%p1_c = abs(params(2));
-	%p2_a = data(round(locations(2)))/max(data);	%p2_b = locations(2);	%p2_c = abs(params(4));
-	%p3_a = data(round(locations(3)))/max(data);	%p3_b = locations(3);	%p3_c = abs(params(2));
-
-	% Force left and right curves to have same width.
 	% Force the heights to match the data at those coordinates; or adjacent, to correct for 200 bin equal to zero for whatever reason.
 	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_b = locations(1);	p1_c = abs(params(1));
 	p2_a = data(round(locations(2)))/max(data);						p2_b = locations(2);	p2_c = abs(params(3));
 	p3_a = max([data(round(locations(3))) data(round(locations(3))-1)])/max(data);		p3_b = locations(3);	p3_c = abs(params(1));
 
-	skew_factor1 = 1;
-	skew_factor2 = 1;
-	skew_factor3 = 1;
-
-	if (p1_c == 0); p1_c = 0.001; end;
-	if (p2_c == 0); p2_c = 0.001; end;
-	if (p3_c == 0); p3_c = 0.001; end;
-	if (skew_factor1 < 0); skew_factor1 = 0; end; if (skew_factor1 > 2); skew_factor1 = 2; end;
-	if (skew_factor3 < 0); skew_factor3 = 0; end; if (skew_factor3 > 2); skew_factor3 = 2; end;
 	if (p1_c < 2);   p1_c = 2;   end;
 	if (p2_c < 2);   p2_c = 2;   end;
 	if (p3_c < 2);   p3_c = 2;   end;
+
 	time1_1 = 1:floor(p1_b);
 	time1_2 = ceil(p1_b):200;
 	if (time1_1(end) == time1_2(1));    time1_1(end) = [];  end;
@@ -184,17 +146,13 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	time3_1 = 1:floor(p3_b);
 	time3_2 = ceil(p3_b):200;
 	if (time3_1(end) == time3_2(1));    time3_2(1) = [];    end;
-	denom1 = 100.5 - abs(100.5 - p1_b); if denom1 == 0; denom1 = 0.001; end;
-        denom3 = 100.5 - abs(100.5 - p3_b); if denom3 == 0; denom3 = 0.001; end;
-	c1_  = p1_c/2 + p1_c*skew_factor1/denom1/2;
-	p1_c = p1_c*p1_c/c1_;
-	c3_  = p3_c/2 + p3_c*skew_factor3/denom3/2;
-	p3_c = p3_c*p3_c/c3_;
+
 	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
-	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor1/denom1) ).^2);
+	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c).^2);
 	p2_fit   = p2_a*exp(-0.5*((time2  -p2_b)./p2_c).^2);
-	p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c/(skew_factor3/denom3) ).^2);
+	p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c).^2);
 	p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c).^2);
+
 	p1_fit = [p1_fit_L p1_fit_R];
 	p3_fit = [p3_fit_L p3_fit_R];
 	fitted = p1_fit+p2_fit+p3_fit;
@@ -220,5 +178,8 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 		otherwise
 			error('Error: choice for fitting not implemented yet!');
 			sse          = 1;
+	end;
+	if isnan(sse) || isinf(sse) || ~isreal(sse)
+		sse = 1e12;
 	end;
 end
