@@ -15,7 +15,6 @@ function [p1_a, p1_b, p1_c, p2_a, p2_b, p2_c, p3_a, p3_b, p3_c, Rsquared] = fit_
 	p1_a = nan;   p1_b = nan;   p1_c = nan;
 	p2_a = nan;   p2_b = nan;   p2_c = nan;
 	p3_a = nan;   p3_b = nan;   p3_c = nan;
-	skew_factor = 1;
 
 	if isnan(data)
 		% fitting variables
@@ -82,9 +81,9 @@ function [p1_a, p1_b, p1_c, p2_a, p2_b, p2_c, p3_a, p3_b, p3_c, Rsquared] = fit_
 	if (time3_1(end) == time3_2(1));    time3_2(1) = [];    end;
 	%------------------------------------
 	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
-	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor1/denom1) ).^2);
+	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c).^2);
 	p2_fit   = p2_a*exp(-0.5*((time2  -p2_b)./p2_c).^2);
-	p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c/(skew_factor3/denom3) ).^2);
+	p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c).^2);
 	p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c).^2);
 	p1_fit = [p1_fit_L p1_fit_R];
 	p3_fit = [p3_fit_L p3_fit_R];

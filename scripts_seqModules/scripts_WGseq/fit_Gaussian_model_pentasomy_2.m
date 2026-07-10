@@ -7,7 +7,6 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	p4_a = nan;   p4_b = nan;   p4_c = nan;
 	p5_a = nan;   p5_b = nan;   p5_c = nan;
 	p6_a = nan;   p6_b = nan;   p6_c = nan;
-	skew_factor = 1;
 
 	if isnan(data)
 		% fitting variables
