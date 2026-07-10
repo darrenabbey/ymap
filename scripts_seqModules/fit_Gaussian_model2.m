@@ -97,8 +97,8 @@ function sse = fiterror(params,time,location,data,func_type,show_fitting,ploidy1
 		sse = 1e10; % Return a massive penalty to fminsearch
 		return;
 	end
-	if length(params) < 3
-		sse = Inf;
+	if length(params) < 2
+		sse = 1e10;
 		return;
 	end
 
