@@ -156,7 +156,10 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 		text(100,0.5,['R^2 = ', num2str(Rsquared)],"interpreter", "latex");
 		hold off;
 
-		delete(glob([workingDir 'SNP_GaussFit.' descriptionString '.*.png']));
+		filesToDelete = glob([workingDir 'SNP_GaussFit.' descriptionString '.*.png']);
+		if ~isempty(filesToDelete)
+			delete(filesToDelete);
+		end;
 		saveName = [workingDir 'SNP_GaussFit.' descriptionString '.tetrasomy.png'];
 		saveas(fig, saveName, 'png');
 		delete(fig);

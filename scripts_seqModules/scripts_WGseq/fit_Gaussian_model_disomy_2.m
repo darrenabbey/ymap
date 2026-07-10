@@ -131,7 +131,10 @@ function [p1_a, p1_b, p1_c, p2_a, p2_b, p2_c, p3_a, p3_b, p3_c, Rsquared] = fit_
 		text(100,0.5,['R^2 = ', num2str(Rsquared)],"interpreter", "latex");
 		hold off;
 
-		delete(glob([workingDir 'SNP_GaussFit.' descriptionString '.*.png']));
+		filesToDelete = glob([workingDir 'SNP_GaussFit.' descriptionString '.*.png']);
+		if ~isempty(filesToDelete)
+			delete(filesToDelete);
+		end;
 		saveName = [workingDir 'SNP_GaussFit.' descriptionString '.disomy.png'];
 		saveas(fig, saveName, 'png');
 		delete(fig);
