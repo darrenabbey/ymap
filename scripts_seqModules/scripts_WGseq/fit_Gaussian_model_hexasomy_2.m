@@ -271,9 +271,9 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	c1_  = p1_c/2 + p1_c*skew_factor1/denoms(1)/2;	p1_c = p1_c*p1_c/c1_;
 	c2_  = p2_c/2 + p2_c*skew_factor2/denoms(2)/2;	p2_c = p2_c*p2_c/c2_;
 	c3_  = p3_c/2 + p3_c*skew_factor3/denoms(3)/2;	p3_c = p3_c*p3_c/c3_;
-	c5_  = p5_c/2 + p5_c*skew_factor5/denoms(4)/2;	p5_c = p5_c*p5_c/c5_;
-	c6_  = p6_c/2 + p6_c*skew_factor6/denoms(5)/2;	p6_c = p6_c*p6_c/c6_;
-	c7_  = p7_c/2 + p7_c*skew_factor7/denoms(6)/2;	p7_c = p7_c*p7_c/c7_;
+	c5_  = p5_c/2 + p5_c*skew_factor5/denoms(5)/2;	p5_c = p5_c*p5_c/c5_;
+	c6_  = p6_c/2 + p6_c*skew_factor6/denoms(6)/2;	p6_c = p6_c*p6_c/c6_;
+	c7_  = p7_c/2 + p7_c*skew_factor7/denoms(7)/2;	p7_c = p7_c*p7_c/c7_;
 
 	%p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
 	%p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor1/denoms(1)) ).^2);

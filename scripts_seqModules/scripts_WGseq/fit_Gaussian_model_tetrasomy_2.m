@@ -226,9 +226,9 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	%p2_fit_L = p2_a*exp(-0.5*((time2_1-p2_b)./p2_c).^2);
 	%p2_fit_R = p2_a*exp(-0.5*((time2_2-p2_b)./p2_c/(skew_factor2/denoms(2)) ).^2);
 	%p3_fit   = p3_a*exp(-0.5*((time3-p3_b)./p3_c).^2);
-	%p4_fit_L = p4_a*exp(-0.5*((time4_1-p4_b)./p4_c/(skew_factor4/denoms(3)) ).^2);
+	%p4_fit_L = p4_a*exp(-0.5*((time4_1-p4_b)./p4_c/(skew_factor4/denoms(4)) ).^2);
 	%p4_fit_R = p4_a*exp(-0.5*((time4_2-p4_b)./p4_c).^2);
-	%p5_fit_L = p5_a*exp(-0.5*((time5_1-p5_b)./p5_c/(skew_factor5/denoms(4)) ).^2);
+	%p5_fit_L = p5_a*exp(-0.5*((time5_1-p5_b)./p5_c/(skew_factor5/denoms(5)) ).^2);
 	%p5_fit_R = p5_a*exp(-0.5*((time5_2-p5_b)./p5_c).^2);
 
 	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);

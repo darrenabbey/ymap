@@ -321,10 +321,10 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	c2_  = p2_c/2 + p2_c*skew_factor2/denoms(2)/2;	p2_c = p2_c*p2_c/c2_;
 	c3_  = p3_c/2 + p3_c*skew_factor3/denoms(3)/2;	p3_c = p3_c*p3_c/c3_;
 	c4_  = p4_c/2 + p4_c*skew_factor4/denoms(4)/2;	p4_c = p4_c*p4_c/c4_;
-	c6_  = p6_c/2 + p6_c*skew_factor6/denoms(5)/2;	p6_c = p6_c*p6_c/c6_;
-	c7_  = p7_c/2 + p7_c*skew_factor7/denoms(6)/2;	p7_c = p7_c*p7_c/c7_;
-	c8_  = p8_c/2 + p8_c*skew_factor8/denoms(7)/2;	p8_c = p8_c*p8_c/c8_;
-	c9_  = p9_c/2 + p9_c*skew_factor9/denoms(8)/2;	p9_c = p9_c*p9_c/c9_;
+	c6_  = p6_c/2 + p6_c*skew_factor6/denoms(6)/2;	p6_c = p6_c*p6_c/c6_;
+	c7_  = p7_c/2 + p7_c*skew_factor7/denoms(7)/2;	p7_c = p7_c*p7_c/c7_;
+	c8_  = p8_c/2 + p8_c*skew_factor8/denoms(8)/2;	p8_c = p8_c*p8_c/c8_;
+	c9_  = p9_c/2 + p9_c*skew_factor9/denoms(9)/2;	p9_c = p9_c*p9_c/c9_;
 
 	%p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
 	%p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c/(skew_factor1/denoms(1)) ).^2);
@@ -335,13 +335,13 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	%p4_fit_L = p4_a*exp(-0.5*((time4_1-p4_b)./p4_c).^2);
 	%p4_fit_R = p4_a*exp(-0.5*((time4_2-p4_b)./p4_c/(skew_factor4/denoms(4)) ).^2);
 	%p5_fit   = p5_a*exp(-0.5*((time5  -p5_b)./p5_c).^2);
-	%p6_fit_L = p6_a*exp(-0.5*((time6_1-p6_b)./p6_c/(skew_factor6/denoms(5)) ).^2);
+	%p6_fit_L = p6_a*exp(-0.5*((time6_1-p6_b)./p6_c/(skew_factor6/denoms(6)) ).^2);
 	%p6_fit_R = p6_a*exp(-0.5*((time6_2-p6_b)./p6_c).^2);
-	%p7_fit_L = p7_a*exp(-0.5*((time7_1-p7_b)./p7_c/(skew_factor7/denoms(6)) ).^2);
+	%p7_fit_L = p7_a*exp(-0.5*((time7_1-p7_b)./p7_c/(skew_factor7/denoms(7)) ).^2);
 	%p7_fit_R = p7_a*exp(-0.5*((time7_2-p7_b)./p7_c).^2);
-	%p8_fit_L = p8_a*exp(-0.5*((time8_1-p8_b)./p8_c/(skew_factor8/denoms(7)) ).^2);
+	%p8_fit_L = p8_a*exp(-0.5*((time8_1-p8_b)./p8_c/(skew_factor8/denoms(8)) ).^2);
 	%p8_fit_R = p8_a*exp(-0.5*((time8_2-p8_b)./p8_c).^2);
-	%p9_fit_L = p9_a*exp(-0.5*((time9_1-p9_b)./p9_c/(skew_factor9/denoms(8)) ).^2);
+	%p9_fit_L = p9_a*exp(-0.5*((time9_1-p9_b)./p9_c/(skew_factor9/denoms(9)) ).^2);
 	%p9_fit_R = p9_a*exp(-0.5*((time9_2-p9_b)./p9_c).^2);
 
 	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
