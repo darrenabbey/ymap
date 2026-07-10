@@ -96,6 +96,9 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, Rsquar
 	dataMean = data*0+mean(data);
 	SStot    = sum((data-dataMean).^2);
 	Rsquared = 1 - SSres/SStot;
+	if isnan(Rsquared) || isinf(Rsquared)
+		Rsquared = 0;
+	end;
 
 	%----------------------------------------------------------------------
 	% show fitting result.
@@ -104,12 +107,14 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, Rsquar
 		plot(data,'o' , 'color',[0.50 0.50 1.00]);
 		hold on;
 		title(['SNP Gaussian model trisomy; ' descriptionString]);
-		plot(p1_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-		plot(p2_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-		plot(p3_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-		plot(p4_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-		plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
-		text(100,0.5,['R^2 = ', num2str(Rsquared)],"interpreter", "latex");
+		if (Rsquared != 0)
+			plot(p1_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+			plot(p2_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+			plot(p3_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+			plot(p4_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
+			plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
+			text(100,0.5,['R^2 = ', num2str(Rsquared)],"interpreter", "latex");
+		end;
 		hold off;
 
 		filesToDelete = glob([workingDir 'SNP_GaussFit.' descriptionString '.*.png']);
