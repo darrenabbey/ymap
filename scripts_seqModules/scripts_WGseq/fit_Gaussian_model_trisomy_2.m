@@ -153,7 +153,9 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, Rsquar
 
 		filesToDelete = glob([workingDir 'SNP_GaussFit.' descriptionString '.*.png']);
 		if ~isempty(filesToDelete)
-			delete(filesToDelete);
+			for i = 1:numel(filesToDelete)
+				delete(filesToDelete{i});
+			end;
 		end;
 		saveName = [workingDir 'SNP_GaussFit.' descriptionString '.trisomy.png'];
 		saveas(fig, saveName, 'png');

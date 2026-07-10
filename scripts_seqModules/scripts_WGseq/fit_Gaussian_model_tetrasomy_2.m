@@ -158,7 +158,9 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 
 		filesToDelete = glob([workingDir 'SNP_GaussFit.' descriptionString '.*.png']);
 		if ~isempty(filesToDelete)
-			delete(filesToDelete);
+			for i = 1:numel(filesToDelete)
+				delete(filesToDelete{i});
+			end;
 		end;
 		saveName = [workingDir 'SNP_GaussFit.' descriptionString '.tetrasomy.png'];
 		saveas(fig, saveName, 'png');
@@ -174,11 +176,6 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	end;
 
 	% height, location, relative width.
-	%p1_a = abs(params(1));		%p1_b = locations(1);	%p1_c = abs(params(2));
-	%p2_a = abs(params(3));		%p2_b = locations(2);	%p2_c = abs(params(4));
-	%p3_a = abs(params(5));		%p3_b = locations(3);	%p3_c = abs(params(4));
-	%p4_a = abs(params(6));		%p4_b = locations(4);	%p4_c = abs(params(4));
-	%p5_a = abs(params(7));		%p5_b = locations(5);	%p5_c = abs(params(2));
 	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_b = locations(1);	p1_c = abs(params(1));
 	p2_a = abs(params(2));									p2_b = locations(2);	p2_c = abs(params(3));
 	p3_a = abs(params(4));									p3_b = locations(3);	p3_c = abs(params(3));
