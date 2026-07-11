@@ -398,13 +398,12 @@
 					<div id="hiddenFormSection6" style="display:none"></div>
 				</td></tr>
 				<tr bgcolor="#CCFFCC"><td>
-					<div id="hiddenFormSection7" <?php if ($hapmap != "") { echo "style='display:none'"; } else { echo "style='display:none'"; }?>>
+					<div id="hiddenFormSection7">
 						<label for="parent">Parental strain : </label><select id="parent" name="parent" style="background-color:#CCFFCC">
 						<?php
 						echo "\n\t\t\t\t\t<option value='".$parent."'>".$parent."</option>";
 						?>
 						</select>
-						<?php echo "[".$hapmap."]"; ?>
 					</div>
 				</td><td valign="top">
 					<div id="hiddenFormSection8a" style="display:inline"></div>
@@ -490,7 +489,8 @@
 					document.getElementById("hiddenFormSection4").style.display  = 'inline';
 					document.getElementById("hiddenFormSection5").style.display  = 'inline';
 					document.getElementById("hiddenFormSection6").style.display  = 'inline';
-					document.getElementById("hiddenFormSection7").style.display  = 'inline';
+					document.getElementById("hiddenFormSection7").style.display  = '<?php if ($hapmap != "") { echo "none"; } else { echo "none"; } ?>';
+
 					document.getElementById("hiddenFormSection10").style.display = 'none';
 					document.getElementById("hiddenFormSection11").style.display = 'none';
 					if (document.getElementById("dataFormat").value == 1) { // WGseq
