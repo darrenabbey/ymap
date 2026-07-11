@@ -72,21 +72,13 @@ function [p1_a, p1_b, p1_c, p2_a, p2_b, p2_c, p3_a, p3_b, p3_c, Rsquared] = fit_
 
 	%%% Calculate R^2 for fit line.
 	%------------------------------------
-	time1_1 = 1:floor(p1_b);
-	time1_2 = ceil(p1_b):200;
-	if (time1_1(end) == time1_2(1));    time1_1(end) = [];  end;
-	time2   = time;
-	time3_1 = 1:floor(p3_b);
-	time3_2 = ceil(p3_b):200;
-	if (time3_1(end) == time3_2(1));    time3_2(1) = [];    end;
+	time1 = 1:200;
+	time2 = 1:200;
+	time3 = 1:200;
 	%------------------------------------
-	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
-	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c).^2);
-	p2_fit   = p2_a*exp(-0.5*((time2  -p2_b)./p2_c).^2);
-	p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c).^2);
-	p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c).^2);
-	p1_fit = [p1_fit_L p1_fit_R];
-	p3_fit = [p3_fit_L p3_fit_R];
+	p1_fit = p1_a*exp(-0.5*((time1-p1_b)./p1_c).^2);
+	p2_fit = p2_a*exp(-0.5*((time2-p2_b)./p2_c).^2);
+	p3_fit = p3_a*exp(-0.5*((time3-p3_b)./p3_c).^2);
 	fitted = p1_fit+p2_fit+p3_fit;
 	%------------------------------------
 	SSres    = sum((data-fitted).^2);
@@ -143,22 +135,13 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	if (p2_c < 2);   p2_c = 2;   end;
 	if (p3_c < 2);   p3_c = 2;   end;
 
-	time1_1 = 1:floor(p1_b);
-	time1_2 = ceil(p1_b):200;
-	if (time1_1(end) == time1_2(1));    time1_1(end) = [];  end;
-	time2   = time;
-	time3_1 = 1:floor(p3_b);
-	time3_2 = ceil(p3_b):200;
-	if (time3_1(end) == time3_2(1));    time3_2(1) = [];    end;
+	time1 = 1:200;
+	time2 = 1:200;
+	time3 = 1:200;
 
-	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
-	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c).^2);
-	p2_fit   = p2_a*exp(-0.5*((time2  -p2_b)./p2_c).^2);
-	p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c).^2);
-	p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c).^2);
-
-	p1_fit = [p1_fit_L p1_fit_R];
-	p3_fit = [p3_fit_L p3_fit_R];
+	p1_fit = p1_a*exp(-0.5*((time1-p1_b)./p1_c).^2);
+	p2_fit = p2_a*exp(-0.5*((time2-p2_b)./p2_c).^2);
+	p3_fit = p3_a*exp(-0.5*((time3-p3_b)./p3_c).^2);
 	fitted = p1_fit+p2_fit+p3_fit;
 
 	width = 0.5;
