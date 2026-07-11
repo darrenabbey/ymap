@@ -395,15 +395,16 @@
 						</select>
 					</div>
 				</td><td valign="top">
-					<div id="hiddenFormSection6" <?php if ($hapmap == "") { echo "style='display:inline'"; } else { echo "style='display:none'"; }?>></div>
+					<div id="hiddenFormSection6" <?php if ($hapmapName != "") { echo "style='display:inline'"; } else { echo "style='display:none'"; }?>></div>
 				</td></tr>
 				<tr bgcolor="#CCFFCC"><td>
 					<div id="hiddenFormSection7" style="display:inline">
 						<label for="parent">Parental strain : </label><select id="parent" name="parent" style="background-color:#CCFFCC">
 						<?php
-						echo "\n\t\t\t\t\t<option value='".$parent."'>".$parent."</option>".$hapmap;
+						echo "\n\t\t\t\t\t<option value='".$parent."'>".$parent."</option>";
 						?>
 						</select>
+						<?php echo $hapmap."[]"; ?>
 					</div>
 				</td><td valign="top">
 					<div id="hiddenFormSection8a" style="display:inline"></div>
