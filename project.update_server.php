@@ -144,17 +144,33 @@
 
 		// Get existing hapmap.
 		$fileName       = $project_dir."/genome.txt";
-		$fileID         = fopen($fileName, 'r');
-		$genome_old     = trim(fgets($fileID));
-		if (feof($fileID) == false) {
-			$hapmap_old = trim(fgets($fileID));
-		} else {
+		fid = fopen(filename, 'r');
+		lines_found = {};
+		line_count = 0;
+		% Read up to 3 lines to check the file content threshold
+		while line_count < 3
+			current_line = fgetl(fid);
+			if ~ischar(current_line)
+				break; % End of file reached
+			end
+			line_count = line_count + 1;
+			lines_found{line_count} = current_line;
+		end
+		fclose(fid);
+		% Check how many lines were successfully discovered
+		if line_count == 0
+			$genome     = "";
 			$hapmap_old = "none";
-		}
-		if ($hapmap_old = "") {
+		elseif line_count == 1
+			$genome = lines_found{1};
 			$hapmap_old = "none";
-		}
-		fclose($fileID);
+		elseif line_count == 2
+			$genome = lines_found{1};
+			$hapmap_old = lines_found{2};
+		else
+			$genome = lines_found{1};
+			$hapmap_old = lines_found{2};
+		end
 
 		// get existing hapmap user.
 		// figure out which hapmaps have been defined, if any.
@@ -208,6 +224,7 @@
 		if (file_exists($project_dir."/figure_options.txt")) {
 			$fileName            = $project_dir."/figure_options.txt";
 			$fileID              = fopen($fileName, 'r');
+			$unused	             = trim(fgets($fileID));  // skips header line from 'figure_options.txt' file.
 			$fig_A1_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
 			$fig_A2_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
 			$fig_B1_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
@@ -314,7 +331,7 @@
 		if ($hapmap == $hapmap_old) {
 			fwrite($logOutput, "\t'genome.txt' file hapmap entry did not need to be updated.\n");
 		} else {
-			fwrite($logOutput, "\thapmap_old => hapmap = '".$hapmap_old."' => '".$hapmap."'\n");
+			fwrite($logOutput, "\thapmap_old:hapmap => '".$hapmap_old."':'".$hapmap."'\n");
 
 			$fileName = $project_dir."/genome.txt";
 			$file     = fopen($fileName, 'w');
@@ -358,9 +375,9 @@
 		if (($bias_GC === $bias_GC_old) && ($bias_end === $bias_end_old) && ($bias_length === $bias_length_old)) {
 			fwrite($logOutput, "\t'dataBiases.txt' file did not need to be updated.\n");
 		} else {
-			fwrite($logOutput, "\tbias_GC__old => bias_GC        = '".$bias_GC_old."' => '".$bias_GC."'\n");
-			fwrite($logOutput, "\tbias_end_old => bias_end       = '".$bias_end_old."' => '".$bias_end."'\n");
-			fwrite($logOutput, "\tbias_length_old => bias_length = '".$bias_length_old."' => '".$bias_length."'\n");
+			fwrite($logOutput, "\tbias_GC__old:bias_GC        => '".$bias_GC_old."':'".$bias_GC."'\n");
+			fwrite($logOutput, "\tbias_end_old:bias_end       => '".$bias_end_old."':'".$bias_end."'\n");
+			fwrite($logOutput, "\tbias_length_old:bias_length => '".$bias_length_old."':'".$bias_length."'\n");
 
 			// Regenerate 'dataBiases.txt' file.
 			$fileName = "users/".$user."/projects/".$project."/dataBiases.txt";
@@ -393,18 +410,18 @@
 		if ($current_figs === $old_figs) {
 			fwrite($logOutput, "\t'figure_options.txt' file did not need to be updated.\n");
 		} else {
-			fwrite($logOutput, "\tfig_A1_old => fig_A1   = '".$fig_A1_old."' => '".$fig_A1."'\n");
-			fwrite($logOutput, "\tfig_A2_old => fig_A2   = '".$fig_A2_old."' => '".$fig_A2."'\n");
-			fwrite($logOutput, "\tfig_B1_old => fig_B1   = '".$fig_B1_old."' => '".$fig_B1."'\n");
-			fwrite($logOutput, "\tfig_B2_old => fig_B2   = '".$fig_B2_old."' => '".$fig_B2."'\n");
-			fwrite($logOutput, "\tfig_C_old => fig_C     = '".$fig_C_old."' => '".$fig_C."'\n");
-			fwrite($logOutput, "\tfig_D1_old => fig_D1   = '".$fig_D1_old."' => '".$fig_D1."'\n");
-			fwrite($logOutput, "\tfig_D2_old => fig_D2   = '".$fig_D2_old."' => '".$fig_D2."'\n");
-			fwrite($logOutput, "\tfig_E_old => fig_E     = '".$fig_E_old."' => '".$fig_E."'\n");
-			fwrite($logOutput, "\tfig_F1_old => fig_F1   = '".$fig_F1_old."' => '".$fig_F1."'\n");
-			fwrite($logOutput, "\tfig_F2_old => fig_F2   = '".$fig_F2_old."' => '".$fig_F2."'\n");
-			fwrite($logOutput, "\tfig_G1_old => fig_G1   = '".$fig_G1_old."' => '".$fig_G1."'\n");
-			fwrite($logOutput, "\tfig_G2_old => fig_G2   = '".$fig_G2_old."' => '".$fig_G2."'\n");
+			fwrite($logOutput, "\tfig_A1_old:fig_A1 => '".$fig_A1_old."':'".$fig_A1."'\n");
+			fwrite($logOutput, "\tfig_A2_old:fig_A2 => '".$fig_A2_old."':'".$fig_A2."'\n");
+			fwrite($logOutput, "\tfig_B1_old:fig_B1 => '".$fig_B1_old."':'".$fig_B1."'\n");
+			fwrite($logOutput, "\tfig_B2_old:fig_B2 => '".$fig_B2_old."':'".$fig_B2."'\n");
+			fwrite($logOutput, "\tfig_C_old:fig_C   => '".$fig_C_old."':'".$fig_C."'\n");
+			fwrite($logOutput, "\tfig_D1_old:fig_D1 => '".$fig_D1_old."':'".$fig_D1."'\n");
+			fwrite($logOutput, "\tfig_D2_old:fig_D2 => '".$fig_D2_old."':'".$fig_D2."'\n");
+			fwrite($logOutput, "\tfig_E_old:fig_E   => '".$fig_E_old."':'".$fig_E."'\n");
+			fwrite($logOutput, "\tfig_F1_old:fig_F1 => '".$fig_F1_old."':'".$fig_F1."'\n");
+			fwrite($logOutput, "\tfig_F2_old:fig_F2 => '".$fig_F2_old."':'".$fig_F2."'\n");
+			fwrite($logOutput, "\tfig_G1_old:fig_G1 => '".$fig_G1_old."':'".$fig_G1."'\n");
+			fwrite($logOutput, "\tfig_G2_old:fig_G2 => '".$fig_G2_old."':'".$fig_G2."'\n");
 
 			// Update figure selections file.
 			$fileName3 = "users/".$user."/projects/".$project."/figure_options.txt";
