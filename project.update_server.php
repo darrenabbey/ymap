@@ -143,34 +143,25 @@
 		}
 
 		// Get existing hapmap.
-		$fileName       = $project_dir."/genome.txt";
-		fid = fopen(filename, 'r');
-		lines_found = {};
-		line_count = 0;
-		% Read up to 3 lines to check the file content threshold
-		while line_count < 3
-			current_line = fgetl(fid);
-			if ~ischar(current_line)
-				break; % End of file reached
-			end
-			line_count = line_count + 1;
-			lines_found{line_count} = current_line;
-		end
-		fclose(fid);
-		% Check how many lines were successfully discovered
-		if line_count == 0
+		$fileName = $project_dir."/genome.txt";
+		// Read all lines into an array
+		$lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+		$count = count($lines);
+
+		// Check if one, two, or more lines were found
+		if ($count === 0) {
 			$genome     = "";
 			$hapmap_old = "none";
-		elseif line_count == 1
-			$genome = lines_found{1};
+		} elseif ($count === 1) {
+			$genome = $lines[0];
 			$hapmap_old = "none";
-		elseif line_count == 2
-			$genome = lines_found{1};
-			$hapmap_old = lines_found{2};
-		else
-			$genome = lines_found{1};
-			$hapmap_old = lines_found{2};
-		end
+		} elseif ($count === 2) {
+			$genome = $lines[0];
+			$hapmap_old = $lines[1];
+		} else {
+			$genome = $lines[0];
+			$hapmap_old = $lines[1];
+		}
 
 		// get existing hapmap user.
 		// figure out which hapmaps have been defined, if any.
