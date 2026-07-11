@@ -364,14 +364,25 @@
 			$bias_length = filter_input(INPUT_POST, "2_bias1", FILTER_VALIDATE_BOOLEAN);
 			$bias_GC     = filter_input(INPUT_POST, "2_bias2", FILTER_VALIDATE_BOOLEAN);
 			$bias_end    = filter_input(INPUT_POST, "2_bias4", FILTER_VALIDATE_BOOLEAN);
+		} else {
+			$bias_length = false;
+			$bias_GC     = false;
+			$bias_end    = false;
 		}
+
+		$bias_length_old = (bool)$bias_length_old;
+		$bias_GC_old     = (bool)$bias_GC_old;
+		$bias_unused     = (bool)$bias_unused;
+		$bias_end_old    = (bool)$bias_end_old;
+
 		$log_len_old = $bias_length_old ? 'True' : 'False';
 		$log_len_new = $bias_length     ? 'True' : 'False';
 		$log_gc_old  = $bias_GC_old     ? 'True' : 'False';
 		$log_gc_new  = $bias_GC         ? 'True' : 'False';
+		$log_unused  = $bias_unused     ? 'True' : 'False';
 		$log_end_old = $bias_end_old    ? 'True' : 'False';
 		$log_end_new = $bias_end        ? 'True' : 'False';
-		$log_unused  = $bias_unused     ? 'True' : 'False';
+
 		if (($bias_GC === $bias_GC_old) && ($bias_end === $bias_end_old) && ($bias_length === $bias_length_old)) {
 			fwrite($logOutput, "\t'dataBiases.txt' file did not need to be updated.\n");
 		} else {
@@ -379,6 +390,7 @@
 			$fileName = "users/".$user."/projects/".$project."/dataBiases.txt";
 			$file     = fopen($fileName, 'w');
 			fwrite($file, "$bias_length\n$bias_GC\n$bias_unused\n$bias_end");
+			fwrite($file, "$log_len_new\n$log_gc_new\n$log_unused\n$log_end_new");
 			fclose($file);
 			chmod($fileName,0774);
 			fwrite($logOutput, "\tUpdated 'dataBiases.txt' file.\n");
