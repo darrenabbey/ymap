@@ -145,7 +145,7 @@
 		// Get existing hapmap.
 		$fileName = $project_dir."/genome.txt";
 		// Read all lines into an array
-		$lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+		$lines = file($fileName, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 		$count = count($lines);
 
 		// Check if one, two, or more lines were found
