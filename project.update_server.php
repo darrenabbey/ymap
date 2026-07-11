@@ -45,14 +45,13 @@
 		// Initialize log files.
 		$logOutputName = $project_dir."/update_log.txt";
 		$logOutput     = fopen($logOutputName, 'a');
+		fwrite($logOutput, "#============================================================================== 1\n");
 		fwrite($logOutput, "Log file restarted.\n");
-		fwrite($logOutput, "#..............................................................................\n");
 		fwrite($logOutput, "Running 'project.update_server.php'.\n");
 		fwrite($logOutput, "Variables passed :\n");
 		fwrite($logOutput, "\tuser         = '".$user."'\n");
 		fwrite($logOutput, "\tproject      = '".$project."'\n");
-		fwrite($logOutput, "#============================================================================== 1\n");
-		fwrite($logOutput, "\tproject_dir  = '".$project_dir."'\n");
+		fwrite($logOutput, "Progress:\n");
 
 		$condensedLogOutputName = $project_dir."/condensed_log.txt";
 		$condensedLogOutput     = fopen($condensedLogOutputName, 'w');
