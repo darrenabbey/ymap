@@ -489,7 +489,7 @@
 					document.getElementById("hiddenFormSection4").style.display  = 'inline';
 					document.getElementById("hiddenFormSection5").style.display  = 'inline';
 					document.getElementById("hiddenFormSection6").style.display  = 'inline';
-					document.getElementById("hiddenFormSection7").style.display  = '<?php if ($hapmap != "") { echo "none"; } else { echo "none"; } ?>';
+					document.getElementById("hiddenFormSection7").style.display  = '<?php if ($hapmap != "") { echo "none"; } else { echo "inline"; } ?>';
 					document.getElementById("hiddenFormSection10").style.display = 'none';
 					document.getElementById("hiddenFormSection11").style.display = 'none';
 					if (document.getElementById("dataFormat").value == 1) { // WGseq
