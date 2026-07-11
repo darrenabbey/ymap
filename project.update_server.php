@@ -314,6 +314,8 @@
 		if ($hapmap == $hapmap_old) {
 			fwrite($logOutput, "\t'genome.txt' file hapmap entry did not need to be updated.\n");
 		} else {
+			fwrite($logOutput, "\thapmap_old => hapmap = '".$hapmap_old."' => '".$hapmap."'\n");
+
 			$fileName = $project_dir."/genome.txt";
 			$file     = fopen($fileName, 'w');
 			fwrite($file, $genome_old."\n");
@@ -356,6 +358,10 @@
 		if (($bias_GC === $bias_GC_old) && ($bias_end === $bias_end_old) && ($bias_length === $bias_length_old)) {
 			fwrite($logOutput, "\t'dataBiases.txt' file did not need to be updated.\n");
 		} else {
+			fwrite($logOutput, "\tbias_GC__old => bias_GC        = '".$bias_GC_old."' => '".$bias_GC."'\n");
+			fwrite($logOutput, "\tbias_end_old => bias_end       = '".$bias_end_old."' => '".$bias_end."'\n");
+			fwrite($logOutput, "\tbias_length_old => bias_length = '".$bias_length_old."' => '".$bias_length."'\n");
+
 			// Regenerate 'dataBiases.txt' file.
 			$fileName = "users/".$user."/projects/".$project."/dataBiases.txt";
 			$file     = fopen($fileName, 'w');
@@ -387,6 +393,19 @@
 		if ($current_figs === $old_figs) {
 			fwrite($logOutput, "\t'figure_options.txt' file did not need to be updated.\n");
 		} else {
+			fwrite($logOutput, "\tfig_A1_old => fig_A1   = '".$fig_A1_old."' => '".$fig_A1."'\n");
+			fwrite($logOutput, "\tfig_A2_old => fig_A2   = '".$fig_A2_old."' => '".$fig_A2."'\n");
+			fwrite($logOutput, "\tfig_B1_old => fig_B1   = '".$fig_B1_old."' => '".$fig_B1."'\n");
+			fwrite($logOutput, "\tfig_B2_old => fig_B2   = '".$fig_B2_old."' => '".$fig_B2."'\n");
+			fwrite($logOutput, "\tfig_C_old => fig_C     = '".$fig_C_old."' => '".$fig_C."'\n");
+			fwrite($logOutput, "\tfig_D1_old => fig_D1   = '".$fig_D1_old."' => '".$fig_D1."'\n");
+			fwrite($logOutput, "\tfig_D2_old => fig_D2   = '".$fig_D2_old."' => '".$fig_D2."'\n");
+			fwrite($logOutput, "\tfig_E_old => fig_E     = '".$fig_E_old."' => '".$fig_E."'\n");
+			fwrite($logOutput, "\tfig_F1_old => fig_F1   = '".$fig_F1_old."' => '".$fig_F1."'\n");
+			fwrite($logOutput, "\tfig_F2_old => fig_F2   = '".$fig_F2_old."' => '".$fig_F2."'\n");
+			fwrite($logOutput, "\tfig_G1_old => fig_G1   = '".$fig_G1_old."' => '".$fig_G1."'\n");
+			fwrite($logOutput, "\tfig_G2_old => fig_G2   = '".$fig_G2_old."' => '".$fig_G2."'\n");
+
 			// Update figure selections file.
 			$fileName3 = "users/".$user."/projects/".$project."/figure_options.txt";
 			$file3     = fopen($fileName3, 'w');
