@@ -151,10 +151,16 @@ fi
 zip -j -9 octave_logs.zip octave.*.log;
 
 # Compress 'putative_SNPs_v1.txt' and 'SNP_CNVs_v1.txt'.
+if [[ -f putative_SNPs_v4.zip ]]; then
+	rm putative_SNPs_v4.zip;
+fi
 if [[ -f putative_SNPs_v4.txt ]]; then
 	zip -j -9 putative_SNPs_v4.zip putative_SNPs_v4.txt;
 	rm putative_SNPs_v4.txt;
 	echo -e "\tputative_SNPs_v4.txt => putative_SNPs_v4.zip" >> $logName;
+fi
+if [[ -f SNP_CNV_v1.zip ]]; then
+        rm SNP_CNV_v1.zip;
 fi
 if [[ -f SNP_CNV_v1.txt ]]; then
 	zip -j -9 SNP_CNV_v1.zip SNP_CNV_v1.txt;
