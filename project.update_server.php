@@ -263,7 +263,8 @@
 			} else {
 				fwrite($logOutput, "\t.Project was not moved to another group.\n");
 			}
-			$project = $group_new."/".$projectTrimmed;
+			$project     = $group_new."/".$projectTrimmed;
+			$project_dir = "users/".$user."/projects/".$project;
 		}
 		$UpdateFigures = false;
 
