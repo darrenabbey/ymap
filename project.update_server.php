@@ -43,7 +43,7 @@
 		$project_dir  = "users/".$user."/projects/".$project;
 
 		// Initialize log files.
-		$logOutputName = $project_dir."/udate_log.txt";
+		$logOutputName = $project_dir."/update_log.txt";
 		$logOutput     = fopen($logOutputName, 'a');
 		fwrite($logOutput, "Log file restarted.\n");
 		fwrite($logOutput, "#..............................................................................\n");
