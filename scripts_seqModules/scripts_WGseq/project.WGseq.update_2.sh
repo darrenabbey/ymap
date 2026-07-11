@@ -98,7 +98,7 @@ echo -e "\tploidyBase = $ploidyBase" >> $logName;
 
 # Get parent name from "parent.txt" in project directory.
 projectParent=$(head -n 1 "$projectDirectory/parent.txt");
-echo -e "\tparentProject = $projectParent" >> $logName;
+echo -e "\tprojectParent = $projectParent" >> $logName;
 
 # Determine location of project being used.
 if [[ -d "$main_dir/users/$user/projects/$projectParent" ]]; then

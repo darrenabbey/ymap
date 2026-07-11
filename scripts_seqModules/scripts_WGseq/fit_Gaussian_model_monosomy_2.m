@@ -8,7 +8,6 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, Rsquared] = fit_Gaussian_model_monosom
 	if isempty(data) || any(isnan(data))
 		return
 	end;
-
 	data = data(:)';
 
 	% find max height in data.
