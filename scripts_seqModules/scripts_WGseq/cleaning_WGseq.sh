@@ -49,6 +49,13 @@ echo -e "# Cleaning up intermediate WGseq files. #" >> $logName;
 echo -e "#=======================================#" >> $logName;
 echo -e "Cleaning and archiving." >> $condensedLog;
 
+if [[ -f "$projectDirectory/update_log.txt" ]]; then
+	## Trim log file to a max of two update entries.
+	tac "$projectDirectory/update_log.txt" | awk '/#============================================================================== 1/{count++} count==2{exit} {print}' | tac > "$projectDirectory/update_log.txt.temp";
+	mv "$projectDirectory/update_log.txt.temp" "$projectDirectory/update_log.txt";
+	echo -e "\tupdate_log.txt" >> $logName;
+fi
+
 if [[ -f "$projectDirectory/zipTemp.txt" ]]; then
 	rm "$projectDirectory/zipTemp.txt";
 	echo -e "\tzipTemp.txt" >> $logName;
