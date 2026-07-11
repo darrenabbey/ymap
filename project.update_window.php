@@ -395,7 +395,7 @@
 						</select>
 					</div>
 				</td><td valign="top">
-					<div id="hiddenFormSection6" <?php if ($hapmapName != "") { echo "style='display:inline'"; } else { echo "style='display:none'"; }?>></div>
+					<div id="hiddenFormSection6" <?php if ($hapmap != "") { echo "style='display:none'"; } else { echo "style='display:inline'"; }?>></div>
 				</td></tr>
 				<tr bgcolor="#CCFFCC"><td>
 					<div id="hiddenFormSection7" style="display:inline">
@@ -404,7 +404,7 @@
 						echo "\n\t\t\t\t\t<option value='".$parent."'>".$parent."</option>";
 						?>
 						</select>
-						<?php echo $hapmap."[]"; ?>
+						<?php echo "[".$hapmap."]"; ?>
 					</div>
 				</td><td valign="top">
 					<div id="hiddenFormSection8a" style="display:inline"></div>
