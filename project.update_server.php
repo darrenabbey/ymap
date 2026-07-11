@@ -379,7 +379,7 @@
 		$log_unused  = $bias_unused     ? 'True' : 'False';
 		$log_end_old = $bias_end_old    ? 'True' : 'False';
 		$log_end_new = $bias_end        ? 'True' : 'False';
-		if (($bias_GC === $bias_GC_old) && ($bias_end === $bias_end_old) && ($bias_length === $bias_length_old)) {
+		if (($log_gc_new === $log_gc_old) && ($log_end_new === $log_end_old) && ($log_len_new === $log_len_old)) {
 			fwrite($logOutput, "\t'dataBiases.txt' file did not need to be updated.\n");
 		} else {
 			// Regenerate 'dataBiases.txt' file.
