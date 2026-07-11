@@ -1,29 +1,13 @@
 function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gaussian_model_disomy_initial_2(data,locations,init_width,skew_factor,func_type,show, workingDir)
-% attempt to fit a single-gaussian model to data.
-%[G1_a, G1_b, G1_c, G2_a, G2_b, G2_c, S_a, S_c] = GaussianModel_G1SG2(tet_control,parameter,'fcs1','');
-
-% hide figures during construction.
-set(0,'DefaultFigureVisible','off');
-
-
-%%=========================================================================
-% Load project figure version.
-%--------------------------------------------------------------------------
-versionFile = [workingDir 'figVer.txt'];
-if exist(versionFile, 'file') == 2
-	figVer = ['v' fileread(versionFile) '.'];
-else
-	figVer = '';
-end;
-
-
+	set(0,'DefaultFigureVisible','off');
 	p1_a = nan;   p1_b = nan;   p1_c = nan;
 	p2_a = nan;   p2_b = nan;   p2_c = nan;
 	p3_a = nan;   p3_b = nan;   p3_c = nan;
-	if isnan(data)
-		% fitting variables
+
+	if isempty(data) || any(isnan(data))
 		return
-	end
+	end;
+	data = data(:)';
 
 	% find max height in data.
 	datamax = max(data);
@@ -122,6 +106,8 @@ end;
 end
 
 function sse = fiterror(params,time,data,func_type,locations,show)
+	data = data(:)';
+
 	p1_a = abs(params(1));
 	p1_b = locations(1);
 	p1_c = abs(params(2));

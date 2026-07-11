@@ -12,10 +12,10 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	p9_a  = nan;   p9_b  = nan;   p9_c  = nan;
 	p10_a = nan;   p10_b = nan;   p10_c = nan;
 
-	if isnan(data)
-		% fitting variables
+	if isempty(data) || any(isnan(data))
 		return
-	end
+	end;
+	data = data(:)';
 
 	% find max height in data.
 	datamax = max(data);
@@ -150,6 +150,8 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 end
 
 function sse = fiterror(params,time,data,func_type,locations,show)
+	data = data(:)';
+
 	% params(1):homozygous should always be narrower than params(3):heterozygous.
 	if (abs(params(3)) < abs(params(1)))
 		params(3) = abs(params(1));

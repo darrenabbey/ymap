@@ -1,25 +1,14 @@
 function [p1_a, p1_b, p1_c, p2_a, p2_b, p2_c, p3_a, p3_b, p3_c, Rsquared] = fit_Gaussian_model_disomy_2(workingDir, descriptionString, data,locations,init_width,func_type, makeFitFigures)
 % attempt to fit a 3-gaussian model to data.
-
-%%=========================================================================
-% Load project figure version.
-%--------------------------------------------------------------------------
-	versionFile = [workingDir 'figVer.txt'];
-	if exist(versionFile, 'file') == 2
-		figVer = ['v' fileread(versionFile) '.'];
-	else
-		figVer = '';
-	end;
-
-	show = true;
+	show = false;
 	p1_a = nan;   p1_b = nan;   p1_c = nan;
 	p2_a = nan;   p2_b = nan;   p2_c = nan;
 	p3_a = nan;   p3_b = nan;   p3_c = nan;
 
-	if isnan(data)
-		% fitting variables
+	if isempty(data) || any(isnan(data))
 		return
-	end
+	end;
+	data = data(:)';
 
 	% find max height in data.
 	datamax = max(data);
@@ -119,6 +108,8 @@ function [p1_a, p1_b, p1_c, p2_a, p2_b, p2_c, p3_a, p3_b, p3_c, Rsquared] = fit_
 end
 
 function sse = fiterror(params,time,data,func_type,locations,show)
+	data = data(:)';
+
 	% params(1):homozygous should always be narrower than params(3):heterozygous.
 	if (abs(params(3)) < abs(params(1)))
 		params(3) = abs(params(1));

@@ -5,10 +5,11 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, Rsquared] = fit_Gaussian_model_monosom
 	p1_a = nan;   p1_b = nan;   p1_c = nan;
 	p2_a = nan;   p2_b = nan;   p2_c = nan;
 
-	if isnan(data)
-		% fitting variables
+	if isempty(data) || any(isnan(data))
 		return
-	end
+	end;
+
+	data = data(:)';
 
 	% find max height in data.
 	datamax = max(data);
@@ -98,6 +99,8 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, Rsquared] = fit_Gaussian_model_monosom
 end
 
 function sse = fiterror(params,time,data,func_type,locations,show)
+	data = data(:)';
+
 	% height, location, width.
 	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_b = locations(1);	p1_c = abs(params(1));
         p2_a = max([data(round(locations(2))) data(round(locations(2))-1)])/max(data);		p2_b = locations(2);	p2_c = abs(params(1));
