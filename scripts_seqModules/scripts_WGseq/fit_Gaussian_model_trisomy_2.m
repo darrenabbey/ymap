@@ -64,32 +64,15 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, Rsquar
 
 	%%% Calculate R^2 for fit line.
 	%------------------------------------
-	time1_1 = 1:floor(p1_b);
-	time1_2 = ceil(p1_b):200;
-	if (time1_1(end) == time1_2(1));time1_1(end) = [];  end;
-	time2_1 = 1:floor(p2_b);
-	time2_2 = ceil(p2_b):200;
-	if (time2_1(end) == time2_2(1));time2_1(end) = [];  end;
-	time3_1 = 1:floor(p3_b);
-	time3_2 = ceil(p3_b):200;
-	if (time3_1(end) == time3_2(1));time3_2(1) = [];end;
-	time4_1 = 1:floor(p4_b);
-	time4_2 = ceil(p4_b):200;
-	if (time4_1(end) == time4_2(1));time4_2(1) = [];end;
+	time1 = 1:200;
+	time2 = 1:200;
+	time3 = 1:200;
+	time4 = 1:200;
 	%%%------------------------------------ DRAGON
-	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
-	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c).^2);
-	p2_fit_L = p2_a*exp(-0.5*((time2_1-p2_b)./p2_c).^2);
-	p2_fit_R = p2_a*exp(-0.5*((time2_2-p2_b)./p2_c).^2);
-	p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c).^2);
-	p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c).^2);
-	p4_fit_L = p4_a*exp(-0.5*((time4_1-p4_b)./p4_c).^2);
-	p4_fit_R = p4_a*exp(-0.5*((time4_2-p4_b)./p4_c).^2);
-
-	p1_fit = [p1_fit_L p1_fit_R];
-	p2_fit = [p2_fit_L p2_fit_R];
-	p3_fit = [p3_fit_L p3_fit_R];
-	p4_fit = [p4_fit_L p4_fit_R];
+	p1_fit = p1_a*exp(-0.5*((time1-p1_b)./p1_c).^2);
+	p2_fit = p2_a*exp(-0.5*((time2-p2_b)./p2_c).^2);
+	p3_fit = p3_a*exp(-0.5*((time3-p3_b)./p3_c).^2);
+	p4_fit = p4_a*exp(-0.5*((time4-p4_b)./p4_c).^2);
 	fitted = p1_fit+p2_fit+p3_fit+p4_fit;
 	%------------------------------------
 	SSres    = sum((data-fitted).^2);
@@ -146,32 +129,15 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	widths(widths < 2) = 2;
 	p1_c=widths(1); p2_c=widths(2); p3_c=widths(3); p4_c=widths(4);
 
-	time1_1 = 1:floor(p1_b);
-	time1_2 = ceil(p1_b):200;
-	if (time1_1(end) == time1_2(1));time1_1(end) = [];  end;
-	time2_1 = 1:floor(p2_b);
-	time2_2 = ceil(p2_b):200;
-	if (time2_1(end) == time2_2(1));time2_1(end) = [];  end;
-	time3_1 = 1:floor(p3_b);
-	time3_2 = ceil(p3_b):200;
-	if (time3_1(end) == time3_2(1));time3_2(1) = [];end;
-	time4_1 = 1:floor(p4_b);
-	time4_2 = ceil(p4_b):200;
-	if (time4_1(end) == time4_2(1));time4_2(1) = [];end;
+	time1 = 1:200;
+	time2 = 1:200;
+	time3 = 1:200;
+	time4 = 1:200);
 
-	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
-	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c).^2);
-	p2_fit_L = p2_a*exp(-0.5*((time2_1-p2_b)./p2_c).^2);
-	p2_fit_R = p2_a*exp(-0.5*((time2_2-p2_b)./p2_c).^2);
-	p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c).^2);
-	p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c).^2);
-	p4_fit_L = p4_a*exp(-0.5*((time4_1-p4_b)./p4_c).^2);
-	p4_fit_R = p4_a*exp(-0.5*((time4_2-p4_b)./p4_c).^2);
-
-	p1_fit = [p1_fit_L p1_fit_R];
-	p2_fit = [p2_fit_L p2_fit_R];
-	p3_fit = [p3_fit_L p3_fit_R];
-	p4_fit = [p4_fit_L p4_fit_R];
+	p1_fit = p1_a*exp(-0.5*((time1-p1_b)./p1_c).^2);
+	p2_fit = p2_a*exp(-0.5*((time2-p2_b)./p2_c).^2);
+	p3_fit = p3_a*exp(-0.5*((time3-p3_b)./p3_c).^2);
+	p4_fit = p4_a*exp(-0.5*((time4-p4_b)./p4_c).^2);
 	fitted = p1_fit+p2_fit+p3_fit+p4_fit;
 
 	if (show ~= 0)

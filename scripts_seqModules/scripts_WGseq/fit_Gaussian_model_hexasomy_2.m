@@ -74,46 +74,21 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 
 	%%% Calculate R^2 for fit line.
 	%------------------------------------
-	time1_1 = 1:floor(p1_b);
-	time1_2 = ceil(p1_b):200;
-	if (time1_1(end) == time1_2(1));    time1_1(end) = [];  end;
-	time2_1 = 1:floor(p2_b);
-	time2_2 = ceil(p2_b):200;
-	if (time2_1(end) == time2_2(1));    time2_1(end) = [];  end;
-	time3_1 = 1:floor(p3_b);
-	time3_2 = ceil(p3_b):200;
-	if (time3_1(end) == time3_2(1));    time3_1(end) = [];  end;
-	time4   = time;
-	time5_1 = 1:floor(p5_b);
-	time5_2 = ceil(p5_b):200;
-	if (time5_1(end) == time5_2(1));    time5_2(1) = [];    end;
-	time6_1 = 1:floor(p6_b);
-	time6_2 = ceil(p6_b):200;
-	if (time6_1(end) == time6_2(1));    time6_2(1) = [];    end;
-	time7_1 = 1:floor(p7_b);
-	time7_2 = ceil(p7_b):200;
-	if (time7_1(end) == time7_2(1));    time7_2(1) = [];    end;
+	time1 = 1:200;
+	time2 = 1:200;
+	time3 = 1:200;
+	time4 = 1:200;
+	time5 = 1:200;
+	time6 = 1:200;
+	time7 = 1:200;
 	%------------------------------------
-	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
-	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c).^2);
-	p2_fit_L = p2_a*exp(-0.5*((time2_1-p2_b)./p2_c).^2);
-	p2_fit_R = p2_a*exp(-0.5*((time2_2-p2_b)./p2_c).^2);
-	p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c).^2);
-	p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c).^2);
-	p4_fit   = p4_a*exp(-0.5*((time4  -p4_b)./p4_c).^2);
-	p5_fit_L = p5_a*exp(-0.5*((time5_1-p5_b)./p5_c).^2);
-	p5_fit_R = p5_a*exp(-0.5*((time5_2-p5_b)./p5_c).^2);
-	p6_fit_L = p6_a*exp(-0.5*((time6_1-p6_b)./p6_c).^2);
-	p6_fit_R = p6_a*exp(-0.5*((time6_2-p6_b)./p6_c).^2);
-	p7_fit_L = p7_a*exp(-0.5*((time7_1-p7_b)./p7_c).^2);
-	p7_fit_R = p7_a*exp(-0.5*((time7_2-p7_b)./p7_c).^2);
-
-	p1_fit = [p1_fit_L p1_fit_R];
-	p2_fit = [p2_fit_L p2_fit_R];
-	p3_fit = [p3_fit_L p3_fit_R];
-	p5_fit = [p5_fit_L p5_fit_R];
-	p6_fit = [p6_fit_L p6_fit_R];
-	p7_fit = [p7_fit_L p7_fit_R];
+	p1_fit = p1_a*exp(-0.5*((time1-p1_b)./p1_c).^2);
+	p2_fit = p2_a*exp(-0.5*((time2-p2_b)./p2_c).^2);
+	p3_fit = p3_a*exp(-0.5*((time3-p3_b)./p3_c).^2);
+	p4_fit = p4_a*exp(-0.5*((time4-p4_b)./p4_c).^2);
+	p5_fit = p5_a*exp(-0.5*((time5-p5_b)./p5_c).^2);
+	p6_fit = p6_a*exp(-0.5*((time6-p6_b)./p6_c).^2);
+	p7_fit = p7_a*exp(-0.5*((time7-p7_b)./p7_c).^2);
 	fitted = p1_fit+p2_fit+p3_fit+p4_fit+p5_fit+p6_fit+p7_fit;
 	%------------------------------------
 	SSres    = sum((data-fitted).^2);
@@ -177,46 +152,21 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p1_c=widths(1); p2_c=widths(2); p3_c=widths(3); p4_c=widths(4);
 	p5_c=widths(5); p6_c=widths(6); p7_c=widths(7);
 
-	time1_1 = 1:floor(p1_b);
-	time1_2 = ceil(p1_b):200;
-	if (time1_1(end) == time1_2(1));    time1_1(end) = [];  end;
-	time2_1 = 1:floor(p2_b);
-	time2_2 = ceil(p2_b):200;
-	if (time2_1(end) == time2_2(1));    time2_1(end) = [];  end;
-	time3_1 = 1:floor(p3_b);
-	time3_2 = ceil(p3_b):200;
-	if (time3_1(end) == time3_2(1));    time3_1(end) = [];  end;
-	time4   = time;
-	time5_1 = 1:floor(p5_b);
-	time5_2 = ceil(p5_b):200;
-	if (time5_1(end) == time5_2(1));    time5_2(1) = [];    end;
-	time6_1 = 1:floor(p6_b);
-	time6_2 = ceil(p6_b):200;
-	if (time6_1(end) == time6_2(1));    time6_2(1) = [];    end;
-	time7_1 = 1:floor(p7_b);
-	time7_2 = ceil(p7_b):200;
-	if (time7_1(end) == time7_2(1));    time7_2(1) = [];    end;
+	time1 = 1:200;
+	time2 = 1:200;
+	time3 = 1:200;
+	time4 = 1:200;
+	time5 = 1:200;
+	time6 = 1:200;
+	time7 = 1:200;
 
-	p1_fit_L = p1_a*exp(-0.5*((time1_1-p1_b)./p1_c).^2);
-	p1_fit_R = p1_a*exp(-0.5*((time1_2-p1_b)./p1_c).^2);
-	p2_fit_L = p2_a*exp(-0.5*((time2_1-p2_b)./p2_c).^2);
-	p2_fit_R = p2_a*exp(-0.5*((time2_2-p2_b)./p2_c).^2);
-	p3_fit_L = p3_a*exp(-0.5*((time3_1-p3_b)./p3_c).^2);
-	p3_fit_R = p3_a*exp(-0.5*((time3_2-p3_b)./p3_c).^2);
-	p4_fit   = p4_a*exp(-0.5*((time4  -p4_b)./p4_c).^2);
-	p5_fit_L = p5_a*exp(-0.5*((time5_1-p5_b)./p5_c).^2);
-	p5_fit_R = p5_a*exp(-0.5*((time5_2-p5_b)./p5_c).^2);
-	p6_fit_L = p6_a*exp(-0.5*((time6_1-p6_b)./p6_c).^2);
-	p6_fit_R = p6_a*exp(-0.5*((time6_2-p6_b)./p6_c).^2);
-	p7_fit_L = p7_a*exp(-0.5*((time7_1-p7_b)./p7_c).^2);
-	p7_fit_R = p7_a*exp(-0.5*((time7_2-p7_b)./p7_c).^2);
-
-	p1_fit = [p1_fit_L p1_fit_R];
-	p2_fit = [p2_fit_L p2_fit_R];
-	p3_fit = [p3_fit_L p3_fit_R];
-	p5_fit = [p5_fit_L p5_fit_R];
-	p6_fit = [p6_fit_L p6_fit_R];
-	p7_fit = [p7_fit_L p7_fit_R];
+	p1_fit = p1_a*exp(-0.5*((time1-p1_b)./p1_c).^2);
+	p2_fit = p2_a*exp(-0.5*((time2-p2_b)./p2_c).^2);
+	p3_fit = p3_a*exp(-0.5*((time3-p3_b)./p3_c).^2);
+	p4_fit = p4_a*exp(-0.5*((time4-p4_b)./p4_c).^2);
+	p5_fit = p5_a*exp(-0.5*((time5-p5_b)./p5_c).^2);
+	p6_fit = p6_a*exp(-0.5*((time6-p6_b)./p6_c).^2);
+	p7_fit = p7_a*exp(-0.5*((time7-p7_b)./p7_c).^2);
 	fitted = p1_fit+p2_fit+p3_fit+p4_fit+p5_fit+p6_fit+p7_fit;
 
 	if (show ~= 0)
