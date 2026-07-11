@@ -390,10 +390,10 @@
 			fclose($file);
 			chmod($fileName,0774);
 			fwrite($logOutput, "\tUpdated 'dataBiases.txt' file.\n");
-			fwrite($logOutput, "\t\t1. bias_length_old:bias_length => '".$bias_length_old."':'".$bias_length."'\n");
-			fwrite($logOutput, "\t\t2. bias_GC__old:bias_GC        => '".$bias_GC_old."':'".$bias_GC."'\n");
-			fwrite($logOutput, "\t\t3. bias_unused                 => '".$bias_unused."'\n");
-			fwrite($logOutput, "\t\t4. bias_end_old:bias_end       => '".$bias_end_old."':'".$bias_end."'\n");
+			fwrite($logOutput, "\t\t1. bias_length_old:bias_length => '".$log_len_old."':'".$log_len_new."'\n");
+			fwrite($logOutput, "\t\t2. bias_GC__old:bias_GC        => '".$log_gc_old."':'".$log_gc_new."'\n");
+			fwrite($logOutput, "\t\t3. bias_unused                 => '".$log_unused."'\n");
+			fwrite($logOutput, "\t\t4. bias_end_old:bias_end       => '".$log_end_old."':'".$log_end_new."'\n");
 			$UpdateFigures = true;
 		}
 
