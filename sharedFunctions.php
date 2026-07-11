@@ -7,6 +7,7 @@ function SYSTEM_cleanup($userName,$projectName,$main_dir) {
 			log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP failure, project name error.");
 		} else {
 			$dir     = $main_dir."/users/".$userName."/projects/".$projectName;
+			$logFile = $main_dir."/users/".$userName."/projects/".$projectName."/process_log.txt";
 			if (is_dir($dir)) {
 				// DO STUFF HERE.
 				if (is_file($dir."/error.txt")) {
@@ -15,6 +16,45 @@ function SYSTEM_cleanup($userName,$projectName,$main_dir) {
 					if (is_file($dir."/data_sorted.bam")) {		unlink($dir."/data_sorted.bam");   }
 					if (is_file($dir."/data.bam")) {		unlink($dir."/data.bam");   }
 					if (is_file($dir."/data_sorted.bam.bai")) {	unlink($dir."/data_sorted.bam.bai");   }
+					if (is_file($dir."/putative_SNPs_v4.txt")) }
+						$txtFile = $dir."/putative_SNPs_v4.txt";
+						$zipFile = $dir."/putative_SNPs_v4.zip";
+						$zip = new ZipArchive();
+						if ($zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+							if (file_exists($txtFile)) {
+								// Add the file (source path, name inside the zip)
+								$zip->addFile($txtFile, basename($txtFile));
+								$zip->close();
+								unlink($txtFile);
+								file_put_contents($logFile, "Success: '".$txtFile."' compressed into $zipFile.", FILE_APPEND | LOCK_EX);
+							} else {
+								$zip->close();
+								file_put_contents($logFile, "Error: '".$txtFile."' not found.", FILE_APPEND | LOCK_EX);
+							}
+						} else {
+							file_put_contents($logFile, "Error: Could not create the ZIP archive.", FILE_APPEND | LOCK_EX);
+						}
+					}
+					if (is_file($dir."/SNP_CNV_v1.txt")) {
+						$txtFile = $dir."/SNP_CNV_v1.txt";
+						$zipFile = $dir."/SNP_CNV_v1.zip";
+						$zip = new ZipArchive();
+						if ($zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+							if (file_exists($txtFile)) {
+								// Add the file (source path, name inside the zip)
+								$zip->addFile($txtFile, basename($txtFile));
+								$zip->close();
+								unlink($txtFile);
+								file_put_contents($logFile, "Success: '".$txtFile."' compressed into $zipFile.", FILE_APPEND | LOCK_EX);
+							} else {
+								$zip->close();
+								file_put_contents($logFile, "Error: '".$txtFile."' not found.", FILE_APPEND | LOCK_EX);
+							}
+						} else {
+							file_put_contents($logFile, "Error: Could not create the ZIP archive.", FILE_APPEND | LOCK_EX);
+						}
+					}
+
 					log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP success");
 				} else {
 					log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP not needed, no error.txt file.");
