@@ -369,10 +369,10 @@
 			$bias_GC     = false;
 			$bias_end    = false;
 		}
-		$bias_length_old = (bool)$bias_length_old;
-		$bias_GC_old     = (bool)$bias_GC_old;
-		$bias_unused     = (bool)$bias_unused;
-		$bias_end_old    = (bool)$bias_end_old;
+		$bias_length_old = filter_var($bias_length_old, FILTER_VALIDATE_BOOLEAN);
+		$bias_GC_old     = filter_var($bias_GC_old,     FILTER_VALIDATE_BOOLEAN);
+		$bias_unused     = filter_var($bias_unused,     FILTER_VALIDATE_BOOLEAN);
+		$bias_end_old    = filter_var($bias_end_old,    FILTER_VALIDATE_BOOLEAN);
 		$log_len_old = $bias_length_old ? 'True' : 'False';
 		$log_len_new = $bias_length     ? 'True' : 'False';
 		$log_gc_old  = $bias_GC_old     ? 'True' : 'False';
