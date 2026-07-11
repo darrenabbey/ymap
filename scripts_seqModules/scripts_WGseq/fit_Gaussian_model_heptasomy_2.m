@@ -83,7 +83,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	time5 = 1:200;
 	time6 = 1:200;
 	time7 = 1:200;
-	time8 = 1:200);
+	time8 = 1:200;
 	%------------------------------------
 	p1_fit = p1_a*exp(-0.5*((time1-p1_b)./p1_c).^2);
 	p2_fit = p2_a*exp(-0.5*((time2-p2_b)./p2_c).^2);

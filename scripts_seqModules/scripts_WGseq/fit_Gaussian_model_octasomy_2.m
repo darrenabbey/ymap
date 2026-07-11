@@ -174,7 +174,7 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	time5 = 1:200;
 	time6 = 1:200;
 	time7 = 1:200;
-	time8 = 1:200);
+	time8 = 1:200;
 	time9 = 1:200;
 
 	p1_fit = p1_a*exp(-0.5*((time1-p1_b)./p1_c).^2);
