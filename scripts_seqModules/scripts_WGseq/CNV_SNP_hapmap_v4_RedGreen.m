@@ -6,6 +6,7 @@ workingDir      = [main_dir '/users/' user '/projects/' project '/'];
 % hide figures during construction.
 set(0,'DefaultFigureVisible','off');
 
+ploidyBase = round(str2num(ploidyBaseString));
 
 %%=========================================================================
 % Load project figure version.

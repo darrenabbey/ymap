@@ -36,6 +36,7 @@ fprintf('\t|\tGenerating FirePlot of SNP allelic ratio data across genome.\n');
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
 %    bases_per_bin              : Controls bin sizes for SNP/CNV fractions of plot.
 %    Chr_max_width              : max width of chrs as fraction of figure width.
+ploidyBase = round(str2num(ploidyBaseString));
 Centromere_format_default   = 3;
 Chr_max_width               = 0.8;
 colorBars                   = true;
