@@ -94,7 +94,7 @@ function minimizeProject($dir) {
 
 	// Move files we want to keep into temp folder.
 	foreach ($files as $file) {
-		if (($file == "bulk.txt") or ($file == "colors.txt") or ($file == "complete.txt") or ($file == "dataBiases.txt") or ($file == "dataFormat.txt") or ($file == "error.txt") or ($file == "figure_options.txt") or ($file == "figVer.txt") or ($file == "genome.txt") or ($file == "index.php") or ($file == "name.txt") or ($file == "output_figures.zip") or ($file == "parent.txt") or ($file == "ploidy.txt") or ($file == "process_log.txt") or ($file == "readStats.txt") or ($file == "readStats.txt2") or ($file == "salt.txt") or ($file == "showAnnotations.txt") or ($file == "update_log.txt") or ($file == "warning.txt") or ($file == "working.txt")) {
+		if (($file == "bulk.txt") or ($file == "colors.txt") or ($file == "complete.txt") or ($file == "dataBiases.txt") or ($file == "dataFormat.txt") or ($file == "error.txt") or ($file == "figure_options.txt") or ($file == "figVer.txt") or ($file == "genome.txt") or ($file == "index.php") or ($file == "name.txt") or ($file == "parent.txt") or ($file == "ploidy.txt") or ($file == "process_log.txt") or ($file == "readStats.txt") or ($file == "readStats.txt2") or ($file == "salt.txt") or ($file == "showAnnotations.txt") or ($file == "update_log.txt") or ($file == "warning.txt") or ($file == "working.txt")) {
 			rename($dir.$file, $temp_dir.$file);
 		}
 		$file_ext  = substr(strrchr($file, '.'), 1);
@@ -103,7 +103,7 @@ function minimizeProject($dir) {
 				rename($dir.$file, $temp_dir.$file);
 			}
 		}
-		if (($file == "SNP_CNV_v1.zip") or ($file == "putative_SNPs_v4.zip") or ($file == "octave_logs.zip") or ($file == "SNP_CNV_v1.txt") or ($file == "putative_SNPs_v4.txt")) {
+		if (($file == "SNP_CNV_v1.zip") or ($file == "putative_SNPs_v4.zip") or ($file == "output_figures.zip") or ($file == "fitting_figures.zip") or ($file == "octave_logs.zip") or ($file == "SNP_CNV_v1.txt") or ($file == "putative_SNPs_v4.txt")) {
 			rename($dir.$file, $temp_dir.$file);
 		}
 	}

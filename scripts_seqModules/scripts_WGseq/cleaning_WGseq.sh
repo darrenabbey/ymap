@@ -53,63 +53,63 @@ if [[ -f "$projectDirectory/update_log.txt" ]]; then
 	## Trim log file to a max of two update entries.
 	tac "$projectDirectory/update_log.txt" | awk '/#============================================================================== 1/{count++} count==2{exit} {print}' | tac > "$projectDirectory/update_log.txt.temp";
 	mv "$projectDirectory/update_log.txt.temp" "$projectDirectory/update_log.txt";
-	echo -e "\tupdate_log.txt" >> $logName;
+	echo -e "\t'update_log.txt' trimmed." >> $logName;
 fi
 
 if [[ -f "$projectDirectory/zipTemp.txt" ]]; then
 	rm "$projectDirectory/zipTemp.txt";
-	echo -e "\tzipTemp.txt" >> $logName;
+	echo -e "\t'zipTemp.txt' removed." >> $logName;
 fi
 
 if [[ -f "$projectDirectory/processing1.m" ]]; then
 	rm "$projectDirectory/processing1.m";
-	echo -e "\tprocessing1.m" >> $logName;
+	echo -e "\t'processing1.m' removed." >> $logName;
 fi
 
 if [[ -f "$projectDirectory/processing2.m" ]]; then
 	rm "$projectDirectory/processing2.m";
-	echo -e "\tprocessing2.m" >> $logName;
+	echo -e "\t'processing2.m' removed." >> $logName;
 fi
 
 if [[ -f "$projectDirectory/processing3.m" ]]; then
 	rm "$projectDirectory/processing3.m";
-	echo -e "\tprocessing3.m" >> $logName;
+	echo -e "\t'processing3.m' removed." >> $logName;
 fi
 
 if [[ -f "$projectDirectory/processing4.m" ]]; then
 	rm "$projectDirectory/processing4.m";
-	echo -e "\tprocessing4.m" >> $logName;
+	echo -e "\t'processing4.m' removed." >> $logName;
 fi
 
 if [[ -f "$projectDirectory/data_sorted.bam.bai" ]]; then
 	rm "$projectDirectory/data_sorted.bam.bai";
-	echo -e "\tdata_sorted.bam.bai" >> $logName;
+	echo -e "\t'data_sorted.bam.bai' removed." >> $logName;
 fi
 
 if [[ -f "$projectDirectory/data_sorted.bam" ]]; then
 	rm "$projectDirectory/data_sorted.bam";
-	echo -e "\tdata_sorted.bam" >> $logName;
+	echo -e "\t'data_sorted.bam' removed." >> $logName;
 fi
 if [[ -f "$projectDirectory/data.bam" ]]; then
 	rm "$projectDirectory/data.bam";
-	echo -e "\tdata.bam" >> $logName;
+	echo -e "\t'data.bam' removed." >> $logName;
 fi
 if [[ -f "$projectDirectory/data.pileup" ]]; then
 	rm "$projectDirectory/data.pileup";
-	echo -e "\tdata.pileup" >> $logName;
+	echo -e "\t'data.pileup' removed." >> $logName;
 fi
 if [[ -f "$projectDirectory/data_indelRealigned.bam" ]]; then
 	rm "$projectDirectory/data_indelRealigned.bam";
-	echo -e "\tdata_indelRealigned.bam" >> $logName;
+	echo -e "\t'data_indelRealigned.bam' removed." >> $logName;
 fi
 if [[ -f "$projectDirectory/data_indelRealigned.bai" ]]; then
 	rm "$projectDirectory/data_indelRealigned.bai";
-	echo -e "\tdata_indelRealigned.bai" >> $logName;
+	echo -e "\t'data_indelRealigned.bai' removed." >> $logName;
 fi
 
 if [[ -d "$projectDirectory/fastqc_temp/" ]]; then
 	rm -rf "$projectDirectory/fastqc_temp/";
-	echo -e "\tfastqc_temp/" >> $logName;
+	echo -e "\t'fastqc_temp/' removed." >> $logName;
 fi
 if [[ -f "$projectDirectory/datafiles.txt" ]]; then
 	# Get first data file name from "datafiles.txt";
@@ -126,23 +126,23 @@ if [[ -f "$projectDirectory/datafiles.txt" ]]; then
 			if [[ -f "$projectDirectory/$datafile1" ]]
 			then
 				rm "$projectDirectory/$datafile1";
-				echo -e "\t$datafile1" >> $logName;
+				echo -e "\t'$datafile1' removed." >> $logName;
 			fi
 		fi
 	else
 		if [[ -f "$projectDirectory/$datafile1" ]]
 		then
 			rm "$projectDirectory/$datafile1";
-			echo -e "\t$datafile1" >> $logName;
+			echo -e "\t'$datafile1' removed." >> $logName;
 		fi
 		if [[ -f "$projectDirectory/$datafile2" ]]
 		then
 			rm "$projectDirectory/$datafile2";
-			echo -e "\t$datafile2" >> $logName;
+			echo -e "\t'$datafile2' removed." >> $logName;
 		fi
 	fi
 	rm "$projectDirectory/datafiles.txt";
-	echo -e "\tdatafiles.txt" >> $logName;
+	echo -e "\t'datafiles.txt' removed." >> $logName;
 fi
 
 
@@ -180,6 +180,14 @@ if [[ -f output_figures.zip ]]; then
 	rm output_figures.zip;
 fi
 zip -j output_figures.zip fig.*.eps fig.*.png *.bed *.gff3 -x "fig.Rsquared*" "fig.Charm*" @;
+echo -e "\t[fig.*.eps; fig.*.png; *.bed; *.gff3] => output_figures.zip" >> $logName;
+
+# Compress fitting figures.
+if [[ -f fitting_figures.zip ]]; then
+	rm fitting_figures.zip;
+fi
+zip -j fitting_figures.zip CNV_Gauss*.png SNP_Gauss*.png @;
+echo -e "\t[CNV_Gauss*.png; SNP_Gauss*.png] => fitting_figures.zip" >> $logName;
 
 cd "$scriptDirectory";
 
@@ -189,10 +197,10 @@ timestamp=$(date +%T);
 completeFile="$projectDirectory/complete.txt";
 echo -e "complete" > $completeFile;
 echo -e "$timestamp" >> $completeFile;
-echo -e "\tGenerated 'complete.txt' file." >> $logName;
+echo -e "\t'complete.txt' generated." >> $logName;
 chmod 0774 "$completeFile";
 
 if [[ -f "$projectDirectory/working.txt" ]]; then
-	mv "$projectDirectory/working.txt" "$projectDirectory/working_done.txt";
-	echo -e "\tworking.txt" >> $logName;
+	rm "$projectDirectory/working.txt";
+	echo -e "\t'working.txt' removed." >> $logName;
 fi
