@@ -361,7 +361,7 @@
 				</td></tr>
 				<tr bgcolor="#CCCCFF"><td>
 					<div id="hiddenFormSection5" style="display:inline">
-						<label for="hapmap">Haplotype map : </label><select id="hapmap" name="hapmap">
+						<label for="hapmap">Haplotype map : </label><select id="hapmap" name="hapmap" onchange="UpdateParent();">
 						<option value="none">[None selected]</option>
 						<?php
 						// figure out which hapmaps have been defined, if any.
@@ -490,7 +490,6 @@
 					document.getElementById("hiddenFormSection5").style.display  = 'inline';
 					document.getElementById("hiddenFormSection6").style.display  = 'inline';
 					document.getElementById("hiddenFormSection7").style.display  = '<?php if ($hapmap != "") { echo "none"; } else { echo "none"; } ?>';
-
 					document.getElementById("hiddenFormSection10").style.display = 'none';
 					document.getElementById("hiddenFormSection11").style.display = 'none';
 					if (document.getElementById("dataFormat").value == 1) { // WGseq
@@ -503,6 +502,19 @@
 						document.getElementById("hiddenFormSection9c").style.display = 'inline';
 						document.getElementById("hiddenFormSection10").style.display = 'inline';
 						document.getElementById("hiddenFormSection11").style.display = 'inline';
+					}
+				}
+			}
+			UpdateParent=function() {
+				if (document.getElementById("dataFormat").value != 0) {
+					const hapmapEl = document.getElementById("hapmap");
+					const sectionEl = document.getElementById("hiddenFormSection7");
+					if (!hapmapEl || !sectionEl) return;
+
+					if (hapmapEl.value === "none") {
+						sectionEl.style.display = 'inline';
+					} else {
+						sectionEl.style.display = 'none';
 					}
 				}
 			}
