@@ -16,7 +16,7 @@ function SYSTEM_cleanup($userName,$projectName,$main_dir) {
 					if (is_file($dir."/data_sorted.bam")) {		unlink($dir."/data_sorted.bam");   }
 					if (is_file($dir."/data.bam")) {		unlink($dir."/data.bam");   }
 					if (is_file($dir."/data_sorted.bam.bai")) {	unlink($dir."/data_sorted.bam.bai");   }
-					if (is_file($dir."/putative_SNPs_v4.txt")) }
+					if (is_file($dir."/putative_SNPs_v4.txt")) {
 						$txtFile = $dir."/putative_SNPs_v4.txt";
 						$zipFile = $dir."/putative_SNPs_v4.zip";
 						$zip = new ZipArchive();
