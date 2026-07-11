@@ -195,10 +195,10 @@
 		if (file_exists($project_dir."/dataBiases.txt")) {
 			$fileName            = $project_dir."/dataBiases.txt";
 			$fileID              = fopen($fileName, 'r');
-			$bias_length_old     = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-			$bias_GC_old         = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-			$bias_unused         = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-			$bias_end_old        = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			$bias_length_old     = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN) ?? false;
+			$bias_GC_old         = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN) ?? true;
+			$bias_unused         = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN) ?? false;
+			$bias_end_old        = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN) ?? false;
 			fclose($fileID);
 			fwrite($logOutput, "\tGrabbed 'dataBiases.txt' file.\n");
 		} else {
@@ -365,23 +365,27 @@
 			$bias_GC     = filter_input(INPUT_POST, "2_bias2", FILTER_VALIDATE_BOOLEAN);
 			$bias_end    = filter_input(INPUT_POST, "2_bias4", FILTER_VALIDATE_BOOLEAN);
 		}
+		$log_len_old = $bias_length_old ? 'True' : 'False';
+		$log_len_new = $bias_length     ? 'True' : 'False';
+		$log_gc_old  = $bias_GC_old     ? 'True' : 'False';
+		$log_gc_new  = $bias_GC         ? 'True' : 'False';
+		$log_end_old = $bias_end_old    ? 'True' : 'False';
+		$log_end_new = $bias_end        ? 'True' : 'False';
+		$log_unused  = $bias_unused     ? 'True' : 'False';
 		if (($bias_GC === $bias_GC_old) && ($bias_end === $bias_end_old) && ($bias_length === $bias_length_old)) {
 			fwrite($logOutput, "\t'dataBiases.txt' file did not need to be updated.\n");
 		} else {
 			// Regenerate 'dataBiases.txt' file.
 			$fileName = "users/".$user."/projects/".$project."/dataBiases.txt";
 			$file     = fopen($fileName, 'w');
-			$bias_length_str = $bias_length ? 'True' : 'False';
-			$bias_GC_str     = $bias_GC ? 'True' : 'False';
-			$bias_end_str    = $bias_end ? 'True' : 'False';
-			fwrite($file, "$bias_length_str\n$bias_GC_str\nFalse\n$bias_end_str");
+			fwrite($file, "$bias_length\n$bias_GC\n$bias_unused\n$bias_end");
 			fclose($file);
 			chmod($fileName,0774);
 			fwrite($logOutput, "\tUpdated 'dataBiases.txt' file.\n");
-				fwrite($logOutput, "\t\t1. bias_length_old:bias_length => '".$bias_length_old."':'".$bias_length."'\n");
-				fwrite($logOutput, "\t\t2. bias_GC__old:bias_GC        => '".$bias_GC_old."':'".$bias_GC."'\n");
-				fwrite($logOutput, "\t\t3. bias_unused                 => '".$bias_unused."'\n");
-				fwrite($logOutput, "\t\t4. bias_end_old:bias_end       => '".$bias_end_old."':'".$bias_end."'\n");
+			fwrite($logOutput, "\t\t1. bias_length_old:bias_length => '".$bias_length_old."':'".$bias_length."'\n");
+			fwrite($logOutput, "\t\t2. bias_GC__old:bias_GC        => '".$bias_GC_old."':'".$bias_GC."'\n");
+			fwrite($logOutput, "\t\t3. bias_unused                 => '".$bias_unused."'\n");
+			fwrite($logOutput, "\t\t4. bias_end_old:bias_end       => '".$bias_end_old."':'".$bias_end."'\n");
 			$UpdateFigures = true;
 		}
 
