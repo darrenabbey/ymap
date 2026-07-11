@@ -308,6 +308,7 @@
 		}
 
 		// Update 'genome.txt' file.
+		if ($hapmap_old = "") {   $hapmap_old = "none";   }
 		if ($hapmap == $hapmap_old) {
 			fwrite($logOutput, "\t'genome.txt' file hapmap entry did not need to be updated.\n");
 		} else {
