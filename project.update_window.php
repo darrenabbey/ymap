@@ -395,10 +395,10 @@
 						</select>
 					</div>
 				</td><td valign="top">
-					<div id="hiddenFormSection6" <?php if ($hapmap == "Abbey_v3") { echo "style='display:none'"; } else { echo "style='display:inline'"; }?>></div>
+					<div id="hiddenFormSection6" style="display:none"></div>
 				</td></tr>
 				<tr bgcolor="#CCFFCC"><td>
-					<div id="hiddenFormSection7" style="display:inline">
+					<div id="hiddenFormSection7" <?php if ($hapmap == "Abbey_v3") { echo "style='display:none'"; } else { echo "style='display:inline'"; }?>>
 						<label for="parent">Parental strain : </label><select id="parent" name="parent" style="background-color:#CCFFCC">
 						<?php
 						echo "\n\t\t\t\t\t<option value='".$parent."'>".$parent."</option>";
