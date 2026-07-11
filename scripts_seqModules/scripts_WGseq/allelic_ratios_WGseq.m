@@ -264,10 +264,13 @@ if (Make_figure == true)
 					gap_string = '';
 				end;
 				count_vector     = [SNP_countA SNP_countT SNP_countG SNP_countC];
-				chr_lines_analyzed(chr_num) = chr_lines_analyzed(chr_num)+1;
-				chr_SNP_data_positions{chr_num}(chr_lines_analyzed(chr_num)) = SNP_coordinate;
-				chr_SNP_data_ratios   {chr_num}(chr_lines_analyzed(chr_num)) = double(max(count_vector))/double(sum(count_vector));
-				chr_count             {chr_num}(chr_lines_analyzed(chr_num)) = sum(count_vector);
+				count_sum        = sum(count_vector);
+				if (count_sum > 1)
+					chr_lines_analyzed(chr_num) = chr_lines_analyzed(chr_num)+1;
+					chr_SNP_data_positions{chr_num}(chr_lines_analyzed(chr_num)) = SNP_coordinate;
+					chr_SNP_data_ratios   {chr_num}(chr_lines_analyzed(chr_num)) = max(count_vector)/sum(count_vector);
+					chr_count             {chr_num}(chr_lines_analyzed(chr_num)) = sum(count_vector);
+				end;
 				old_chr          = chr_num;
 			end;
 		end;
