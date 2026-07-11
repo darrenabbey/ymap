@@ -401,7 +401,7 @@
 					<div id="hiddenFormSection7" style="display:inline">
 						<label for="parent">Parental strain : </label><select id="parent" name="parent" style="background-color:#CCFFCC">
 						<?php
-						echo "\n\t\t\t\t\t<option value='".$parent."'>".$parent."</option>";
+						echo "\n\t\t\t\t\t<option value='".$parent."'>".$parent."</option>".$hapmap;
 						?>
 						</select>
 					</div>
