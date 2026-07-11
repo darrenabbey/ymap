@@ -395,7 +395,7 @@
 						</select>
 					</div>
 				</td><td valign="top">
-					<div id="hiddenFormSection6" <?php if ($hapmap != "") { echo "style='display:none'"; } else { echo "style='display:inline'"; }?>></div>
+					<div id="hiddenFormSection6" <?php if ($hapmap == "") { echo "style='display:none'"; } else { echo "style='display:inline'"; }?>></div>
 				</td></tr>
 				<tr bgcolor="#CCFFCC"><td>
 					<div id="hiddenFormSection7" style="display:inline">
