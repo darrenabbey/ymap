@@ -14,8 +14,6 @@ function SYSTEM_cleanup($userName,$projectName,$main_dir) {
 					if (is_file($dir."/data.pileup")) {		unlink($dir."/data.pileup");   }
 					if (is_file($dir."/data_sorted.bam")) {		unlink($dir."/data_sorted.bam");   }
 					if (is_file($dir."/data.bam")) {		unlink($dir."/data.bam");   }
-					if (is_file($dir."/putative_SNPs_v4.txt")) {	unlink($dir."/putative_SNPs_v4.txt");   }
-					if (is_file($dir."/SNP_CNV_v1.txt")) {		unlink($dir."/SNP_CNV_v1.txt");   }
 					if (is_file($dir."/data_sorted.bam.bai")) {	unlink($dir."/data_sorted.bam.bai");   }
 					log_stuff($userName,$projectName,"","","","SYSTEM_CLEANER: project:ERROR_CLEANUP success");
 				} else {
