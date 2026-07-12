@@ -1,8 +1,5 @@
 function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gaussian_model_disomy_initial_2(data,locations,init_width,skew_factor,func_type,show, workingDir)
 	set(0,'DefaultFigureVisible','off');
-	p1_a = nan;   p1_b = nan;   p1_c = nan;
-	p2_a = nan;   p2_b = nan;   p2_c = nan;
-	p3_a = nan;   p3_b = nan;   p3_c = nan;
 
 	if isempty(data) || any(isnan(data))
 		return

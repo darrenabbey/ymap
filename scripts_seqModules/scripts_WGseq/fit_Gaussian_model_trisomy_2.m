@@ -1,9 +1,5 @@
 function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, Rsquared] = fit_Gaussian_model_trisomy_2(workingDir, descriptionString, data,locations,init_width,func_type, makeFitFigures)
 	% attempt to fit a 4-gaussian model to data.
-	p1_a = nan; p1_b = nan; p1_c = nan;
-	p2_a = nan; p2_b = nan; p2_c = nan;
-	p3_a = nan; p3_b = nan; p3_c = nan;
-	p4_a = nan; p4_b = nan; p4_c = nan;
 
 	if isempty(data) || any(isnan(data))
 		return
