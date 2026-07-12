@@ -379,7 +379,7 @@
 			} else {
 				echo "<input type='button' value='Lock.'   onclick=\"user = '$user'; key = '$key_real'; $.ajax({url:'admin.lockUserProject_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); setTimeout(()=>{location.replace('panel.admin2.php');},100);\">";
 			}
-			echo "<input type='button' value='Copy to admin.'  onclick=\"key = '$key_real'; user = '$user'; $.ajax({url:'admin.copyProjectToAdmin_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); location.replace('panel.admin2.php');\">";
+			echo "<input type='button' value='Copy to admin.'  onclick=\"key = '$key_real'; user = '$user'; $.ajax({url:'admin.copyProjectToAdmin_server.php',type:'post',data:{key:key,user:user},success:function(answer){console.log(answer);}}); parent.update_interface(); location.replace('panel.super1.php');\">";
 
 			echo "</form>";
 		} elseif ($frameContainerIx == "4") {
