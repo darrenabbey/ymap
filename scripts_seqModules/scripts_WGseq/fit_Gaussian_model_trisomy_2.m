@@ -110,7 +110,7 @@ function sse = fiterror(params,time,data,func_type,locations)
 	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_b = locations(1);	p1_c = abs(params(1));
 	p2_a = data(round(locations(2)))/max(data);						p2_b = locations(2);	p2_c = abs(params(3));	alpha_2 = params(5);
 	p3_a = data(round(locations(3)))/max(data);						p3_b = locations(3);	p3_c = abs(params(3));	alpha_3 = -params(5);
-	p4_a = max([data(round(locations(4))) data(round(locations(4))-1]))/max(data);		p4_b = locations(4);	p4_c = abs(params(1));
+	p4_a = max([data(round(locations(4))) data(round(locations(4))-1)])/max(data);		p4_b = locations(4);	p4_c = abs(params(1));
 
 	% Minimum variance safety threshold floor bounds.
 	widths = [p1_c, p2_c, p3_c, p4_c];
