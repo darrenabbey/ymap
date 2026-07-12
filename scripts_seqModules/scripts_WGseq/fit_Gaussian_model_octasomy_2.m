@@ -17,35 +17,24 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	end;
 
 	% a = height; b = location; c = width.
-	p1_ai = data(round(locations(1)));   p1_bi = locations(1);   p1_ci = init_width/4;
-	p2_ai = data(round(locations(2)));   p2_bi = locations(2);   p2_ci = init_width;
-	p3_ai = data(round(locations(3)));   p3_bi = locations(3);   p3_ci = init_width;
-	p4_ai = data(round(locations(4)));   p4_bi = locations(4);   p4_ci = init_width;
-	p5_ai = data(round(locations(5)));   p5_bi = locations(5);   p5_ci = init_width;
-	p6_ai = data(round(locations(6)));   p6_bi = locations(6);   p6_ci = init_width;
-	p7_ai = data(round(locations(7)));   p7_bi = locations(7);   p7_ci = init_width;
-	p8_ai = data(round(locations(8)));   p8_bi = locations(8);   p8_ci = init_width;
-	p9_ai = data(round(locations(9)));   p9_bi = locations(9);   p9_ci = init_width/4;
+	p1_ai = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_bi = locations(1);   p1_ci = init_width/4;
+	p2_ai = data(round(locations(2)))/max(data);						p2_bi = locations(2);   p2_ci = init_width;
+	p3_ai = data(round(locations(3)))/max(data);						p3_bi = locations(3);   p3_ci = init_width;
+	p4_ai = data(round(locations(4)))/max(data);						p4_bi = locations(4);   p4_ci = init_width;
+	p5_ai = data(round(locations(5)))/max(data);						p5_bi = locations(5);   p5_ci = init_width;
+	p6_ai = data(round(locations(6)))/max(data);						p6_bi = locations(6);   p6_ci = init_width;
+	p7_ai = data(round(locations(7)))/max(data);						p7_bi = locations(7);   p7_ci = init_width;
+	p8_ai = data(round(locations(8)))/max(data);						p8_bi = locations(8);   p8_ci = init_width;
+	p9_ai = max([data(round(locations(9))) data(round(locations(9))-1)])/max(data);		p9_bi = locations(9);   p9_ci = init_width/4;
+	skew1 = 0;
+	skew2 = 0;
+	skew3 = 0;
 
-	initial = [p1_ci,p2_ai,p2_ci,p3_ai,p4_ai,p5_ai,p6_ai,p7_ai,p8_ai];
+	initial = [p1_ci,p2_ai,p2_ci,p3_ai,p4_ai,p5_ai,p6_ai,p7_ai,p8_ai,skew1,skew2,skew3];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',200000);
 	time= 1:200;
 
-	[Estimates,~,exitflag] = fminsearch(@fiterror, ...   % function to be fitted.
-	                                    initial, ...     % initial values.
-	                                    options, ...     % options for fitting algorithm.
-	                                    time, ...        % problem-specific parameter 1.
-	                                    data, ...        % problem-specific parameter 2.
-	                                    func_type, ...   % problem-specific parameter 3.
-	                                    locations, ...   % problem-specific parameter 4.
-	                            );
-	if (exitflag > 0)
-		% > 0 : converged to a solution.
-	else
-		% = 0 : exceeded maximum iterations allowed.
-		% < 0 : did not converge to a solution.
-		% return last best estimate anyhow.
-	end;
+	[Estimates,~,exitflag] = fminsearch(@(x) fiterror(x, time, data, func_type, locations), initial, options);
 
 	% Estimates(1):homozygous should always be narrower than Estimates(3):heterozygous.
 	if (abs(Estimates(3)) < abs(Estimates(1)))
@@ -56,37 +45,32 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	end;
 
 	% height, location, width.
-	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_b = locations(1);	p1_c = abs(Estimates(1));
-	p2_a = abs(Estimates(2));								p2_b = locations(2);	p2_c = abs(Estimates(3));
-	p3_a = abs(Estimates(4));								p3_b = locations(3);	p3_c = abs(Estimates(3));
-	p4_a = abs(Estimates(5));								p4_b = locations(4);	p4_c = abs(Estimates(3));
-	p5_a = abs(Estimates(6));								p5_b = locations(5);	p5_c = abs(Estimates(3));
-	p6_a = abs(Estimates(7));								p6_b = locations(6);	p6_c = abs(Estimates(3));
-	p7_a = abs(Estimates(8));								p7_b = locations(7);	p7_c = abs(Estimates(3));
-	p8_a = abs(Estimates(9));								p8_b = locations(8);	p8_c = abs(Estimates(3));
-	p9_a = max([data(round(locations(9))) data(round(locations(9))-1)])/max(data);		p9_b = locations(9);	p9_c = abs(Estimates(1));
+	p1_a = p1_ai;			p1_b = p1_bi;	p1_c = abs(Estimates(1));
+	p2_a = abs(Estimates(2));	p2_b = p2_bi;	p2_c = abs(Estimates(3));	alpha_2 = Estimates(10);
+	p3_a = abs(Estimates(4));	p3_b = p3_bi;	p3_c = abs(Estimates(3));	alpha_3 = Estimates(11);
+	p4_a = abs(Estimates(5));	p4_b = p4_bi;	p4_c = abs(Estimates(3));	alpha_4 = Estimates(12);
+	p5_a = abs(Estimates(6));	p5_b = p5_bi;	p5_c = abs(Estimates(3));
+	p6_a = abs(Estimates(7));	p6_b = p6_bi;	p6_c = abs(Estimates(3));	alpha_6 = -Estimates(12);
+	p7_a = abs(Estimates(8));	p7_b = p7_bi;	p7_c = abs(Estimates(3));	alpha_7 = -Estimates(11);
+	p8_a = abs(Estimates(9));	p8_b = p8_bi;	p8_c = abs(Estimates(3));	alpha_8 = -Estimates(10);
+	p9_a = p9_ai;			p9_b = p9_bi;	p9_c = abs(Estimates(1));
 
-	%%% Calculate R^2 for fit line.
+	% Minimum variance safety threshold floor bounds
+	widths = [p1_c, p2_c, p3_c, p4_c, p5_c, p6_c, p7_c, p8_c, p9_c];
+	widths(widths < 2) = 2;
+	p1_c=widths(1); p2_c=widths(2); p3_c=widths(3); p4_c=widths(4); p5_c=widths(5); p6_c=widths(6); p7_c=widths(7); p8_c=widths(8); p9_c=widths(9);
+
+	%%% Generate mixed curve evaluations.
 	%------------------------------------
-	time1 = 1:200;
-	time2 = 1:200;
-	time3 = 1:200;
-	time4 = 1:200;
-	time5 = 1:200;
-	time6 = 1:200;
-	time7 = 1:200;
-	time8 = 1:200;
-	time9 = 1:200;
-	%------------------------------------
-	p1_fit = p1_a*exp(-0.5*((time1-p1_b)./p1_c).^2);
-	p2_fit = p2_a*exp(-0.5*((time2-p2_b)./p2_c).^2);
-	p3_fit = p3_a*exp(-0.5*((time3-p3_b)./p3_c).^2);
-	p4_fit = p4_a*exp(-0.5*((time4-p4_b)./p4_c).^2);
-	p5_fit = p5_a*exp(-0.5*((time5-p5_b)./p5_c).^2);
-	p6_fit = p6_a*exp(-0.5*((time6-p6_b)./p6_c).^2);
-	p7_fit = p7_a*exp(-0.5*((time7-p7_b)./p7_c).^2);
-	p8_fit = p8_a*exp(-0.5*((time8-p8_b)./p8_c).^2);
-	p9_fit = p9_a*exp(-0.5*((time9-p9_b)./p9_c).^2);
+	p1_fit = gaussian(time, p1_a, p1_b, p1_c);
+	p2_fit = skew_gaussian(time, p2_a, p2_b, p2_c, alpha_2);
+	p3_fit = skew_gaussian(time, p3_a, p3_b, p3_c, alpha_3);
+	p4_fit = skew_gaussian(time, p4_a, p4_b, p4_c, alpha_4);
+	p5_fit = gaussian(time, p5_a, p5_b, p5_c);
+	p6_fit = skew_gaussian(time, p6_a, p6_b, p6_c, alpha_6);
+	p7_fit = skew_gaussian(time, p7_a, p7_b, p7_c, alpha_7);
+	p8_fit = skew_gaussian(time, p8_a, p8_b, p8_c, alpha_8);
+	p9_fit = gaussian(time, p9_a, p9_b, p9_c);
 	fitted = p1_fit+p2_fit+p3_fit+p4_fit+p5_fit+p6_fit+p7_fit+p8_fit+p9_fit;
 	%------------------------------------
 	SSres    = sum((data-fitted).^2);
@@ -142,13 +126,13 @@ function sse = fiterror(params,time,data,func_type,locations)
 
 	% height, location, relative width.
 	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_b = locations(1);	p1_c = abs(params(1));
-	p2_a = abs(params(2));									p2_b = locations(2);	p2_c = abs(params(3));
-	p3_a = abs(params(4));									p3_b = locations(3);	p3_c = abs(params(3));
-	p4_a = abs(params(5));									p4_b = locations(4);	p4_c = abs(params(3));
+	p2_a = abs(params(2));									p2_b = locations(2);	p2_c = abs(params(3));	alpha_2 = params(10);
+	p3_a = abs(params(4));									p3_b = locations(3);	p3_c = abs(params(3));	alpha_3 = params(11);
+	p4_a = abs(params(5));									p4_b = locations(4);	p4_c = abs(params(3));	alpha_4 = params(12);
 	p5_a = abs(params(6));									p5_b = locations(5);	p5_c = abs(params(3));
-	p6_a = abs(params(7));									p6_b = locations(6);	p6_c = abs(params(3));
-	p7_a = abs(params(8));									p7_b = locations(7);	p7_c = abs(params(3));
-	p8_a = abs(params(9));									p8_b = locations(8);	p8_c = abs(params(3));
+	p6_a = abs(params(7));									p6_b = locations(6);	p6_c = abs(params(3));	alpha_6 = -params(12);
+	p7_a = abs(params(8));									p7_b = locations(7);	p7_c = abs(params(3));	alpha_7 = -params(11);
+	p8_a = abs(params(9));									p8_b = locations(8);	p8_c = abs(params(3));	alpha_8 = -params(10);
 	p9_a = max([data(round(locations(9))) data(round(locations(9))-1)])/max(data);		p9_b = locations(9);	p9_c = abs(params(1));
 
 	widths = [p1_c, p2_c, p3_c, p4_c, p5_c, p6_c, p7_c, p8_c, p9_c];
@@ -156,25 +140,15 @@ function sse = fiterror(params,time,data,func_type,locations)
         p1_c=widths(1);  p2_c=widths(2);  p3_c=widths(3);  p4_c=widths(4);  p5_c=widths(5);
         p6_c=widths(6);  p7_c=widths(7);  p8_c=widths(8);  p9_c=widths(9);
 
-	time1 = 1:200;
-	time2 = 1:200;
-	time3 = 1:200;
-	time4 = 1:200;
-	time5 = 1:200;
-	time6 = 1:200;
-	time7 = 1:200;
-	time8 = 1:200;
-	time9 = 1:200;
-
-	p1_fit = p1_a*exp(-0.5*((time1-p1_b)./p1_c).^2);
-	p2_fit = p2_a*exp(-0.5*((time2-p2_b)./p2_c).^2);
-	p3_fit = p3_a*exp(-0.5*((time3-p3_b)./p3_c).^2);
-	p4_fit = p4_a*exp(-0.5*((time4-p4_b)./p4_c).^2);
-	p5_fit = p5_a*exp(-0.5*((time5-p5_b)./p5_c).^2);
-	p6_fit = p6_a*exp(-0.5*((time6-p6_b)./p6_c).^2);
-	p7_fit = p7_a*exp(-0.5*((time7-p7_b)./p7_c).^2);
-	p8_fit = p8_a*exp(-0.5*((time8-p8_b)./p8_c).^2);
-	p9_fit = p9_a*exp(-0.5*((time9-p9_b)./p9_c).^2);
+	p1_fit = gaussian(time, p1_a, p1_b, p1_c);
+	p2_fit = skew_gaussian(time, p2_a, p2_b, p2_c, alpha_2);
+	p3_fit = skew_gaussian(time, p3_a, p3_b, p3_c, alpha_3);
+	p4_fit = skew_gaussian(time, p4_a, p4_b, p4_c, alpha_4);
+	p5_fit = gaussian(time, p5_a, p5_b, p5_c);
+	p6_fit = skew_gaussian(time, p6_a, p6_b, p6_c, alpha_6);
+	p7_fit = skew_gaussian(time, p7_a, p7_b, p7_c, alpha_7);
+	p8_fit = skew_gaussian(time, p8_a, p8_b, p8_c, alpha_8);
+	p9_fit = gaussian(time, p9_a, p9_b, p9_c);
 	fitted = p1_fit+p2_fit+p3_fit+p4_fit+p5_fit+p6_fit+p7_fit+p8_fit+p9_fit;
 
 	switch(func_type)

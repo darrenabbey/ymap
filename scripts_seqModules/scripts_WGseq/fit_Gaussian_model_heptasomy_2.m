@@ -29,7 +29,6 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	skew2 = 0;
 	skew3 = 0;
 
-
 	initial = [p1_ci,p2_ai,p2_ci,p3_ai,p4_ai,p5_ai,p6_ai,p7_ai,skew1,skew2,skew3];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',200000);
 	time    = 1:200;
