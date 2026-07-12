@@ -42,10 +42,10 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, Rsquar
 	end;
 
 	% Final Parameter Extraction (Outer peaks alpha = 0)
-	p1_a = p1_ai;	p1_b = p1_bi;	p1_c = abs(Estimates(1));
-	p2_a = p2_ai;	p2_b = p2_bi;	p2_c = abs(Estimates(3));	alpha_2 = Estimates(5);
-	p3_a = p3_ai;	p3_b = p3_bi;	p3_c = abs(Estimates(3));	alpha_3 = -Estimates(5);
-	p4_a = p4_ai;	p4_b = p4_bi;	p4_c = abs(Estimates(1));
+	p1_a = p1_ai;			p1_b = p1_bi;	p1_c = abs(Estimates(1));
+	p2_a = abs(Estimates(2));	p2_b = p2_bi;	p2_c = abs(Estimates(3));	alpha_2 = Estimates(5);
+	p3_a = abs(Estimates(4));	p3_b = p3_bi;	p3_c = abs(Estimates(3));	alpha_3 = -Estimates(5);
+	p4_a = p4_ai;			p4_b = p4_bi;	p4_c = abs(Estimates(1));
 
 	% Minimum variance safety threshold floor bounds
 	widths = [p1_c, p2_c, p3_c, p4_c];
@@ -108,8 +108,8 @@ function sse = fiterror(params,time,data,func_type,locations)
 
 	% Base location & optimized width settings; mode-stabilized Skew Profile Amplitudes Lookups. (height, location, relative width)
 	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_b = locations(1);	p1_c = abs(params(1));
-	p2_a = data(round(locations(2)))/max(data);						p2_b = locations(2);	p2_c = abs(params(3));	alpha_2 = params(5);
-	p3_a = data(round(locations(3)))/max(data);						p3_b = locations(3);	p3_c = abs(params(3));	alpha_3 = -params(5);
+	p2_a = abs(params(2));									p2_b = locations(2);	p2_c = abs(params(3));	alpha_2 = params(5);
+	p3_a = abs(params(4));									p3_b = locations(3);	p3_c = abs(params(3));	alpha_3 = -params(5);
 	p4_a = max([data(round(locations(4))) data(round(locations(4))-1)])/max(data);		p4_b = locations(4);	p4_c = abs(params(1));
 
 	% Minimum variance safety threshold floor bounds.
