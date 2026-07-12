@@ -90,8 +90,10 @@
 			if (!str_contains($project,"/")) {
 				$key_real = array_search($project,$projectFolders);
 				addBulkProjectsBeingWorkedOnToUserInterface($key_real,$user,$project,$prefix,$key_display);
-				$displayed_entries[] = $project;
-				$key_display += 1;
+				if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+					$displayed_entries[] = $project;
+					$key_display += 1;
+				}
 			}
 		}
 
@@ -112,8 +114,10 @@
 			if (!str_contains($project,"/")) {
 				$key_real = array_search($project,$projectFolders);
 				addOtherProjectsBeingWorkedOnToUserInterface($key_real,$user,$project,$prefix,$key_display);
-				$displayed_entries[] = $project;
-				$key_display += 1;
+				if (!file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+					$displayed_entries[] = $project;
+					$key_display += 1;
+				}
 			}
 		}
 
