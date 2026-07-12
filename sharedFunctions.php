@@ -85,6 +85,47 @@ function SYSTEM_force_minimize($userName,$projectName,$main_dir) {
 }
 function minimizeProject($dir) {
 	$dir = $dir."/";
+
+	// Compress files.
+	if (is_file($dir."/putative_SNPs_v4.txt")) {
+		$txtFile = $dir."/putative_SNPs_v4.txt";
+		$zipFile = $dir."/putative_SNPs_v4.zip";
+		$zip = new ZipArchive();
+		if ($zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+			if (file_exists($txtFile)) {
+				// Add the file (source path, name inside the zip)
+				$zip->addFile($txtFile, basename($txtFile));
+				$zip->close();
+				unlink($txtFile);
+				file_put_contents($logFile, "Success: '".$txtFile."' compressed into $zipFile.", FILE_APPEND | LOCK_EX);
+			} else {
+				$zip->close();
+				file_put_contents($logFile, "Error: '".$txtFile."' not found.", FILE_APPEND | LOCK_EX);
+			}
+		} else {
+			file_put_contents($logFile, "Error: Could not create the ZIP archive.", FILE_APPEND | LOCK_EX);
+		}
+	}
+	if (is_file($dir."/SNP_CNV_v1.txt")) {
+		$txtFile = $dir."/SNP_CNV_v1.txt";
+		$zipFile = $dir."/SNP_CNV_v1.zip";
+		$zip = new ZipArchive();
+		if ($zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+			if (file_exists($txtFile)) {
+				// Add the file (source path, name inside the zip)
+				$zip->addFile($txtFile, basename($txtFile));
+				$zip->close();
+				unlink($txtFile);
+				file_put_contents($logFile, "Success: '".$txtFile."' compressed into $zipFile.", FILE_APPEND | LOCK_EX);
+			} else {
+				$zip->close();
+				file_put_contents($logFile, "Error: '".$txtFile."' not found.", FILE_APPEND | LOCK_EX);
+			}
+		} else {
+			file_put_contents($logFile, "Error: Could not create the ZIP archive.", FILE_APPEND | LOCK_EX);
+		}
+	}
+
 	// Make a temp directory.
 	$temp_dir = $dir."temp/";
 	mkdir($temp_dir);
@@ -103,7 +144,7 @@ function minimizeProject($dir) {
 				rename($dir.$file, $temp_dir.$file);
 			}
 		}
-		if (($file == "SNP_CNV_v1.zip") or ($file == "putative_SNPs_v4.zip") or ($file == "output_figures.zip") or ($file == "fitting_figures.zip") or ($file == "octave_logs.zip") or ($file == "SNP_CNV_v1.txt") or ($file == "putative_SNPs_v4.txt")) {
+		if (($file == "SNP_CNV_v1.zip") or ($file == "putative_SNPs_v4.zip") or ($file == "output_figures.zip") or ($file == "fitting_figures.zip") or ($file == "octave_logs.zip")) {
 			rename($dir.$file, $temp_dir.$file);
 		}
 	}
