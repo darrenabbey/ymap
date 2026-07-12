@@ -216,7 +216,15 @@ echo -e "\tpkg load statistics;" >> $outputName;
 echo -e "\tpkg load matgeom;" >> $outputName;
 echo -e "\tdiary('$projectDirectory/octave.CNV_and_GCbias.log');" >> $outputName;
 echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
-echo -e "\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+echo -e "\ttry" >> $outputName;
+echo -e "\t\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+echo -e "\tcatch err" >> $outputName;
+echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
+echo -e "\t\tif fileID ~= -1" >> $outputName;
+echo -e "\t\tfprintf(fileID, '%s\n', err.stack(1).name);" >> $outputName;
+echo -e "\t\tfclose(fileID);" >> $outputName;
+echo -e "\t\tend;" >> $outputName;
+echo -e "\tend;" >> $outputName;
 echo -e "endfunction" >> $outputName;
 
 echo -e "\t|\tfunction [] = processing1()" >> $logName;
@@ -259,7 +267,15 @@ if [[ "$hapmapInUse" = 0 ]]; then
 	echo -e "\tpkg load matgeom;" >> $outputName;
 	echo -e "\tdiary('$projectDirectory/octave.SNP_analysis.log');" >> $outputName;
 	echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
-	echo -e "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+	echo -e "\ttry" >> $outputName;
+	echo -e "\t\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+	echo -e "\tcatch err" >> $outputName;
+	echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
+	echo -e "\t\tif fileID ~= -1" >> $outputName;
+	echo -e "\t\tfprintf(fileID, '%s\n', err.stack(1).name);" >> $outputName;
+	echo -e "\t\tfclose(fileID);" >> $outputName;
+	echo -e "\t\tend;" >> $outputName;
+	echo -e "\tend;" >> $outputName;
 	echo -e "end" >> $outputName;
 
 	echo -e "\t|\tfunction [] = processing3()" >> $logName;
@@ -298,7 +314,15 @@ if [[ "$hapmapInUse" = 0 ]]; then
 	echo -e "\tpkg load matgeom;" >> $outputName;
 	echo -e "\tdiary('$projectDirectory/octave.final_figs.log');" >> $outputName;
 	echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
-	echo -e "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+	echo -e "\ttry" >> $outputName;
+	echo -e "\t\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+	echo -e "\tcatch err" >> $outputName;
+	echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
+	echo -e "\t\tif fileID ~= -1" >> $outputName;
+	echo -e "\t\tfprintf(fileID, '%s\n', err.stack(1).name);" >> $outputName;
+	echo -e "\t\tfclose(fileID);" >> $outputName;
+	echo -e "\t\tend;" >> $outputName;
+	echo -e "\tend;" >> $outputName;
 	echo -e "end" >> $outputName;
 
 	echo -e "\t|\tfunction [] = processing4()" >> $logName;
@@ -337,7 +361,15 @@ else
 	echo -e "\tpkg load matgeom;" >> $outputName;
 	echo -e "\tdiary('$projectDirectory/octave.SNP_analysis.log');" >> $outputName;
 	echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
-	echo -e "\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+	echo -r "\ttry" >> $outputName;
+	echo -e "\t\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+	echo -e "\tcatch err" >> $outputName;
+	echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
+	echo -e "\t\tif fileID ~= -1" >> $outputName;
+	echo -e "\t\tfprintf(fileID, '%s\n', err.stack(1).name);" >> $outputName;
+	echo -e "\t\tfclose(fileID);" >> $outputName;
+	echo -e "\t\tend;" >> $outputName;
+	echo -e "\tend;" >> $outputName;
 	echo -e "end" >> $outputName;
 
 	echo -e "\t|\tfunction [] = processing3()" >> $logName;
@@ -376,7 +408,15 @@ else
 	echo -e "\tpkg load matgeom;" >> $outputName;
 	echo -e "\tdiary('$projectDirectory/octave.final_figs.log');" >> $outputName;
 	echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
-	echo -e "\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+	echo -e "\ttry" >> $outputName;
+	echo -e "\t\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
+	echo -e "\tcatch err" >> $outputName;
+	echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
+	echo -e "\t\tif fileID ~= -1" >> $outputName;
+	echo -e "\t\tfprintf(fileID, '%s\n', err.stack(1).name);" >> $outputName;
+	echo -e "\t\tfclose(fileID);" >> $outputName;
+	echo -e "\t\tend;" >> $outputName;
+	echo -e "\tend;" >> $outputName;
 	echo -e "end" >> $outputName;
 
 	echo -e "\t|\tfunction [] = processing4()" >> $logName;
