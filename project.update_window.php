@@ -248,6 +248,11 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
 		<title>[Needs Title]</title>
 	</HEAD>
+	<script type="text/javascript">
+	document.getElementById("groupKey").addEventListener("change", UpdateParent);
+	document.getElementById("hapmap").addEventListener("change", UpdateParent);
+	document.getElementById("dataFormat").addEventListener("change", UpdateParent);
+	</script>
 	<BODY onload="UpdateForm(); UpdateBiasWG();">
 		<div id="loginControls"><p>
 		</p></div>
@@ -266,7 +271,7 @@
 
 				<tr bgcolor="#CCFFCC"><td>
                                         <div id="hiddenFormSection3" style="display:inline">
-                                        <label for="groupKey">Dataset group : </label><select name="groupKey" id="groupKey">
+                                        <label for="groupKey">Dataset group : </label><select name="groupKey" id="groupKey" onchange="UpdateParent()">
                                         <?php
                                         // Output selection box options.
 					if ($groupKey == 0) {
@@ -507,7 +512,7 @@
 			}
 			UpdateParent=function() {
 				if (document.getElementById("dataFormat").value != 0) {
-					const hapmapEl = document.getElementById("hapmap");
+					const hapmapEl  = document.getElementById("hapmap");
 					const sectionEl = document.getElementById("hiddenFormSection7");
 					if (!hapmapEl || !sectionEl) return;
 
@@ -517,6 +522,97 @@
 						sectionEl.style.display = 'none';
 					}
 				}
+				const groupKeyEL = document.getElementById("groupKey");
+				const parentEL   = document.getElementById("parent");
+				if (!groupKeyEL || !parentEL) return;
+
+				const singleOption = parentEL.options[0];
+				if (!singleOption) return;
+
+				// 1. Compile the lookup table from PHP
+				const groupLookup = <?php
+					$lookup = [];
+					foreach ($projectFolders_subdir as $key => $groupName) {
+						$lookup[$key + 1] = $groupName;
+					}
+					echo json_encode($lookup);
+				?>;
+
+				// 2. Extract the ORIGINAL project prefix on the server side at load time
+				const originalProjectPrefix = "<?php
+					$origProject = trim($project);
+					$origPrefix = "";
+					if (str_contains($origProject, '/')) {
+						$parts = explode('/', $origProject);
+						$origPrefix = $parts[0];
+					}
+					echo $origPrefix;
+				?>";
+
+				// 3. Extract the pristine, un-prefixed parent strain name on the server side
+				const staticStrainName = "<?php
+					$baseParentText = trim($parent);
+					if (str_contains($baseParentText, '/')) {
+						$parts = explode('/', $baseParentText);
+						// Extracts everything AFTER the first slash to preserve the whole strain name
+						$baseParentText = implode('/', array_slice($parts, 1));
+					}
+					echo addslashes($baseParentText);
+				?>";
+
+				// 4. Extract the INITIAL parent prefix exactly as it arrived from the server
+				const initialParentPrefix = "<?php
+					$baseParentText = trim($parent);
+					$initParentPrefix = "";
+					if (str_contains($baseParentText, '/')) {
+						$parts = explode('/', $baseParentText);
+						$initParentPrefix = $parts[0];
+					}
+					echo addslashes($initParentPrefix);
+				?>";
+
+
+				// 5. Extract the CURRENT prefix assigned to the parent element right now
+				let currentParentPrefix = "";
+				if (singleOption.textContent.includes('/')) {
+					const parentParts = singleOption.textContent.split('/');
+					currentParentPrefix = parentParts[0];
+				}
+
+				// 6. Determine what the target prefix string SHOULD be based on current dropdown selection
+				let expectedPrefix = "";
+				if (groupKeyEL.value !== "0" && groupKeyEL.value !== "") {
+					expectedPrefix = groupLookup[groupKeyEL.value] || groupKeyEL.value;
+				}
+
+				// FIXED CRITICAL GUARD:
+				// Only enforce the lockdown if the parent element is STILL using its original loaded state.
+				// If the current parent prefix matches its original server value, we verify it matches the project baseline.
+				// If the user already changed it, we allow infinite updates across your lookup array.
+				if (currentParentPrefix === initialParentPrefix && initialParentPrefix !== originalProjectPrefix) {
+					// If initialParentPrefix !== originalProjectPrefix, the original parent was a different dataset than self.
+					return; // Aborts immediately if the original loaded states were disjointed
+				}
+
+
+				// 7. Rebuild cleanly using the immutable server-compiled staticStrainName
+				let parent_new;
+				let display_text;
+				if ((groupKeyEL.value === "0") || (groupKeyEL.value === "")){
+					parent_new   = staticStrainName;
+					display_text = staticStrainName;
+				} else {
+					const mappedGroup = groupLookup[groupKeyEL.value] || groupKeyEL.value;
+
+					parent_new   = mappedGroup + "/" + staticStrainName;
+					display_text = mappedGroup + "/" + staticStrainName;
+				}
+
+				singleOption.value       = parent_new;
+				singleOption.textContent = display_text;
+
+				parentEL.value = parent_new;
+				parentEL.dispatchEvent(new Event('change'));
 			}
 			UpdateBiasWG=function() {
 				if (document.getElementById("1_bias4").checked) {

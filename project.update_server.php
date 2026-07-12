@@ -39,6 +39,17 @@
 		$showAnnotations = sanitizeIntChar_POST("showAnnotations");
 		$hapmap          = sanitize_POST("hapmap");
 
+		$parent_string   = sanitize_POST("parent");
+		if (str_contains($parent_string,'/')) {
+			$pos         = strpos($parent_string, '/');
+			$parentGroup = substr($parent_string, 0, $pos);
+			$parent      = substr($parent_string, $pos+1);
+		} else {
+			$parentGroup = "";
+			$parent      = $parent_string;
+		}
+
+
 		// Define some directories for later use.
 		$project_dir  = "users/".$user."/projects/".$project;
 
@@ -187,8 +198,17 @@
 		// Get existing parent.
 		$fileName       = $project_dir."/parent.txt";
 		$fileID         = fopen($fileName, 'r');
-		$parent_old     = trim(fgets($fileID));
+		$parent_string  = trim(fgets($fileID));
 		fclose($fileID);
+		if (str_contains($parent_string,'/')) {
+			$pos             = strpos($parent_string, '/');
+			$parentGroup_old = substr($parent_string, 0, $pos);
+			$parent_old      = substr($parent_string, $pos + 1);
+		} else {
+			$parentGroup_old = "";
+			$parent_old      = $parent_string;
+		}
+
 
 		// Get existing data bias correction selections.
 		if (file_exists($project_dir."/dataBiases.txt")) {
@@ -249,9 +269,9 @@
 
 		// Get group directory name, if selected.
 		if ($groupKey == 0) {
-			$group_new = "";
+			$group = "";
 		} else {
-			$group_new = $projectFolders_subdir[$groupKey-1];
+			$group = $projectFolders_subdir[$groupKey-1];
 		}
 
 		// Determine old project name (without any group names).
@@ -261,17 +281,17 @@
 			$projectTrimmed = str_replace($group_old."/", "", $project);
 		}
 
-		// If group_new is different than group_old, move project folder.
-		if ($group_old != $group_new) {
+		// If group is different than group_old, move project folder.
+		if ($group_old != $group) {
 			$source = "users/".$user."/projects/".$project;
-			$destination = "users/".$user."/projects/".$group_new."/".$projectTrimmed;
+			$destination = "users/".$user."/projects/".$group."/".$projectTrimmed;
 
 			if (rename($source, $destination)) {
 				fwrite($logOutput, "\tProject moved to another group.\n");
 			} else {
 				fwrite($logOutput, "\t.Project was not moved to another group.\n");
 			}
-			$project     = $group_new."/".$projectTrimmed;
+			$project     = $group."/".$projectTrimmed;
 			$project_dir = "users/".$user."/projects/".$project;
 		}
 		$UpdateFigures = false;
@@ -288,6 +308,25 @@
 			fwrite($logOutput, "\tUpdated 'name.txt' file.\n");
 			fwrite($logOutput, "\t\tname_old:name => '".$name_old."':'".$name."'\n");
 		}
+
+		// Update 'parent.txt' file.
+		if (($parent == $parent_old) && ($parentGroup == $parentGroup_old)) {
+			fwrite($logOutput, "\t'parent.txt' file did not need to be updated.\n");
+		} else {
+			$fileName = $project_dir."/parent.txt";
+                        $file     = fopen($fileName, 'w');
+			if ($parentGroup == "") {
+	                        fwrite($file, $parent);
+			} else {
+				fwrite($file, $parentGroup."/".$parent);
+			}
+                        fclose($file);
+			fwrite($logOutput, "\tUpdated 'parent.txt' file.\n");
+			fwrite($logOutput, "\t\t1. parentGroup_old:parentGroup => '".$parentGroup_old."':'".$parentGroup."'\n");
+			fwrite($logOutput, "\t\t2. parent_old:parent => '".$parent_old."':'".$parent."'\n");
+		}
+		// Check and update 'parent.txt' for every other project if it refers to this project!
+
 
 		// Update 'ploidy.txt' file.
 		if (($ploidy == $ploidy_old) && ($ploidyBase == $ploidyBase_old)) {
@@ -444,7 +483,7 @@
 			fwrite($logOutput, "\t\tfig_F1_old:fig_F1 => '".$fig_F1_old."':'".$fig_F1."'\n");
 			fwrite($logOutput, "\t\tfig_F2_old:fig_F2 => '".$fig_F2_old."':'".$fig_F2."'\n");
 			fwrite($logOutput, "\t\tfig_G1_old:fig_G1 => '".$fig_G1_old."':'".$fig_G1."'\n");
-			fwrite($logOutput, "\tfig_G2_old:fig_G2 => '".$fig_G2_old."':'".$fig_G2."'\n");
+			fwrite($logOutput, "\t\tfig_G2_old:fig_G2 => '".$fig_G2_old."':'".$fig_G2."'\n");
 			$UpdateFigures = true;
 		}
 
