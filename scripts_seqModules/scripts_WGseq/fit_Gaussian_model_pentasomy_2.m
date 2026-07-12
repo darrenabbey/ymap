@@ -46,7 +46,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	p3_a = abs(Estimates(4));	p3_b = p3_bi;	p3_c = abs(Estimates(3));	alpha_3 = Estimates(8);
 	p4_a = abs(Estimates(5));	p4_b = p4_bi;	p4_c = abs(Estimates(3));	alpha_4 = -Estimates(8);
 	p5_a = abs(Estimates(6));	p5_b = p5_bi;	p5_c = abs(Estimates(3));	alpha_5 = -Estimates(7);
-	p6_a = p6_ai;			p6_b = p6_bi);	p6_c = abs(Estimates(1));
+	p6_a = p6_ai;			p6_b = p6_bi;	p6_c = abs(Estimates(1));
 
 	% Minimum variance safety threshold floor bounds
 	widths = [p1_c, p2_c, p3_c, p4_c, p5_c, p6_c];
