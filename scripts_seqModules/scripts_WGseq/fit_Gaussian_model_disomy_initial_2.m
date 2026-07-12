@@ -97,7 +97,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, skew_factor] = fit_Gau
 	plot(p1_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
 	plot(p2_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
 	plot(p3_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-	plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
+	plot(fitted,'-','color',[0 0.00 0.00],'lineWidth',2);
 	hold off;
 	saveas(fig, [workingDir 'initGaussianFit_final.png'], 'png');
 	delete(fig);
@@ -173,7 +173,6 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p3_fit = [p3_fit_L p3_fit_R];
 	fitted = p1_fit+p2_fit+p3_fit;
 
-	width = 0.5;
 	switch(func_type)
 		case 'cubic'
 			Error_Vector = (fitted).^2 - (data).^2;
@@ -188,8 +187,6 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 			sse          = sum(abs(Error_Vector));
 		case 'fcs'
 			Error_Vector = (fitted) - (data);
-			%Error_Vector(1:round(G1_b*(1-width))) = 0;
-			%Error_Vector(round(G1_b*(1+width)):end) = 0;
 			sse          = sum(Error_Vector.^2);
 		otherwise
 			error('Error: choice for fitting not implemented yet!');

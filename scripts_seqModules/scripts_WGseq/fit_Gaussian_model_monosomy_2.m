@@ -70,7 +70,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, Rsquared] = fit_Gaussian_model_monosom
 		if (Rsquared != 0)
 			plot(p1_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
 			plot(p2_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-			plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
+			plot(fitted,'-','color',[0 0.00 0.00],'lineWidth',2);
 			text(100,0.5,['R^2 = ', num2str(Rsquared)],"interpreter", "latex");
 		end;
 		hold off;
