@@ -1,7 +1,6 @@
 function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, Rsquared] = fit_Gaussian_model_monosomy_2(workingDir, descriptionString, data,locations,init_width,func_type, makeFitFigures)
 	% attempt to fit a 2-gaussian model to data.
 	% peaks should be narrow, since only sequencing error noise is being examined.
-	show = false;
 	p1_a = nan;   p1_b = nan;   p1_c = nan;
 	p2_a = nan;   p2_b = nan;   p2_c = nan;
 
@@ -21,23 +20,15 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, Rsquared] = fit_Gaussian_model_monosom
 	end;
 
 	% a = height; b = location; c = width.
-	p1_ai = data(round(locations(1)));   p1_bi = locations(1);   p1_ci = init_width/4;
-	p2_ai = data(round(locations(2)));   p2_bi = locations(2);   p2_ci = init_width/4;
+	p1_ai = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_bi = locations(1);	p1_ci = init_width/4;
+	p2_ai = max([data(round(locations(2))) data(round(locations(2))+1)])/max(data);		p2_bi = locations(2);	p2_ci = init_width/4;
 
 	initial = [p1_ci];
-
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',200000);
-	time= 1:length(data);
+	time= 1:200;
 
-	[Estimates,~,exitflag] = fminsearch(@fiterror, ...   % function to be fitted.
-	                                    initial, ...     % initial values.
-	                                    options, ...     % options for fitting algorithm.
-	                                    time, ...        % problem-specific parameter 1.
-	                                    data, ...        % problem-specific parameter 2.
-	                                    func_type, ...   % problem-specific parameter 3.
-	                                    locations, ...   % problem-specific parameter 4.
-	                                    show ...         % problem-specific parameter 5.
-	                            );
+	[Estimates,~,exitflag] = fminsearch(@(x) fiterror(x, time, data, func_type, locations), initial, options);
+
 	if (exitflag > 0)
 		% > 0 : converged to a solution.
 	else
@@ -46,19 +37,19 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, Rsquared] = fit_Gaussian_model_monosom
 		% return last best estimate anyhow.
 	end;
 
-	% height, location, width.
-	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_b = locations(1);	p1_c = abs(Estimates(1));
-	p2_a = max([data(round(locations(2))) data(round(locations(2))-1)])/max(data);		p2_b = locations(2);	p2_c = abs(Estimates(1));
-	if (p1_c < 2);   p1_c = 2;   end;
-	if (p2_c < 2);   p2_c = 2;   end;
+	% Final Parameter Extraction (Outer peaks alpha = 0)
+	p1_a = p1_ai;	p1_b = p1_bi;	p1_c = abs(Estimates(1));
+	p2_a = p4_ai;	p2_b = p2_bi;	p4_c = abs(Estimates(1));
+
+	% Minimum variance safety threshold floor bounds.
+	widths = [p1_c, p2_c];
+	widths(widths < 2) = 2;
+	p1_c=widths(1); p2_c=widths(2);
 
 	%%% Calculate R^2 for fit line.
 	%------------------------------------
-	time1 = 1:200;
-	time2 = 1:200;
-	%------------------------------------
-	p1_fit = p1_a*exp(-0.5*((time1-p1_b)./p1_c).^2);
-	p2_fit = p2_a*exp(-0.5*((time2-p2_b)./p2_c).^2);
+	p1_fit = gaussian(time, p1_a, p1_b, p1_c);
+	p2_fit = gaussian(time, p2_a, p2_b, p2_c);
 	fitted = p1_fit+p2_fit;
 	%------------------------------------
 	SSres    = sum((data-fitted).^2);
@@ -97,37 +88,23 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, Rsquared] = fit_Gaussian_model_monosom
 	%----------------------------------------------------------------------
 end
 
-function sse = fiterror(params,time,data,func_type,locations,show)
+function sse = fiterror(params,time,data,func_type,locations)
 	data = data(:)';
 
-	% height, location, width.
+	% Base location & optimized width settings; mode-stabilized Skew Profile Amplitudes Lookups. (height, location, relative width)
 	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_b = locations(1);	p1_c = abs(params(1));
         p2_a = max([data(round(locations(2))) data(round(locations(2))-1)])/max(data);		p2_b = locations(2);	p2_c = abs(params(1));
-	if (p1_c < 2);   p1_c = 2;   end;
-	if (p2_c < 2);   p2_c = 2;   end;
-	time1 = 1:200;
-	time2 = 1:200;
-	p1_fit = p1_a*exp(-0.5*((time1-p1_b)./p1_c).^2);
-	p2_fit = p2_a*exp(-0.5*((time2-p2_b)./p2_c).^2);
+
+	% Minimum variance safety threshold floor bounds.
+	widths = [p1_c, p2_c];
+	widths(widths < 2) = 2;
+	p1_c=widths(1); p2_c=widths(2);
+
+	% Generate components.
+	p1_fit = gaussian(time, p1_a, p1_b, p1_c);
+	p2_fit = gaussian(time, p2_a, p2_b, p2_c);
 	fitted = p1_fit+p2_fit;
 
-	if (show ~= 0)
-	%----------------------------------------------------------------------
-	% show fitting in process.
-	figure(show);
-	% show data being fit.
-	plot(data,'x-','color',[0.75 0.75 1]);
-	hold on;
-	title('monosomy');
-	% show fit lines.
-	plot(p1_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-	plot(p2_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-	plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
-	hold off;
-	%----------------------------------------------------------------------
-	end;
-
-	width = 0.5;
 	switch(func_type)
 		case 'cubic'
 			Error_Vector = (fitted).^2 - (data).^2;
@@ -142,8 +119,6 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 			sse  = sum(abs(Error_Vector));
 		case 'fcs'
 			Error_Vector = (fitted) - (data);
-			%Error_Vector(1:round(G1_b*(1-width))) = 0;
-			%Error_Vector(round(G1_b*(1+width)):end) = 0;
 			sse  = sum(Error_Vector.^2);
 		otherwise
 			error('Error: choice for fitting not implemented yet!');
@@ -152,4 +127,13 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	if isnan(sse) || isinf(sse) || ~isreal(sse)
 		sse = 1e12;
 	end;
+end
+
+function y = gaussian(x, a, b, c)
+	% x: Time/Bin Vector coordinate axis array (e.g. 1:200).
+	% a: Desired maximum amplitude peak height.
+	% b: Desired fixed target coordinate index peak location (center).
+	% c: Distribution scale parameter (width).
+
+	y = a * exp(-0.5 * ((x - b) ./ c).^2);
 end

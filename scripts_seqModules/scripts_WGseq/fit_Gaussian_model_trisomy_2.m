@@ -1,10 +1,9 @@
 function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, Rsquared] = fit_Gaussian_model_trisomy_2(workingDir, descriptionString, data,locations,init_width,func_type, makeFitFigures)
 	% attempt to fit a 4-gaussian model to data.
-	show = false;
-	p1_a = nan;   p1_b = nan;   p1_c = nan;
-	p2_a = nan;   p2_b = nan;   p2_c = nan;
-	p3_a = nan;   p3_b = nan;   p3_c = nan;
-	p4_a = nan;   p4_b = nan;   p4_c = nan;
+	p1_a = nan; p1_b = nan; p1_c = nan;
+	p2_a = nan; p2_b = nan; p2_c = nan;
+	p3_a = nan; p3_b = nan; p3_c = nan;
+	p4_a = nan; p4_b = nan; p4_c = nan;
 
 	if isempty(data) || any(isnan(data))
 		return
@@ -21,32 +20,18 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, Rsquar
 		datamax(data ~= max(datamax)) = [];
 	end;
 
-	% a = height; b = location; c = width.
-	p1_ai = data(round(locations(1)));   p1_bi = locations(1);   p1_ci = init_width/4;
-	p2_ai = data(round(locations(2)));   p2_bi = locations(2);   p2_ci = init_width;
-	p3_ai = data(round(locations(3)));   p3_bi = locations(3);   p3_ci = init_width;
-	p4_ai = data(round(locations(4)));   p4_bi = locations(4);   p4_ci = init_width/4;
+	% Pre-calculate initial gaussian fit terms. a = height; b = location; c = width.
+	p1_ai = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_bi = locations(1);	p1_ci = init_width/4;
+	p2_ai = data(round(locations(2)))/max(data);						p2_bi = locations(2);	p2_ci = init_width;
+	p3_ai = data(round(locations(3)))/max(data);						p3_bi = locations(3);	p3_ci = init_width;
+	p4_ai = max([data(round(locations(4))) data(round(locations(4))-1)])/max(data);		p4_bi = locations(4);	p4_ci = init_width/4;
+	skew = 0;
 
-	initial = [p1_ci,p2_ai,p2_ci,p3_ai];
+	initial = [p1_ci,p2_ai,p2_ci,p3_ai, skew];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',200000);
-	time= 1:length(data);
+	time= 1:200;
 
-	[Estimates,~,exitflag] = fminsearch(@fiterror, ...   % function to be fitted.
-	                                    initial, ...     % initial values.
-	                                    options, ...     % options for fitting algorithm.
-	                                    time, ...        % problem-specific parameter 1.
-	                                    data, ...        % problem-specific parameter 2.
-	                                    func_type, ...   % problem-specific parameter 3.
-	                                    locations, ...   % problem-specific parameter 4.
-	                                    show ...         % problem-specific parameter 5.
-	                            );
-	if (exitflag > 0)
-		% > 0 : converged to a solution.
-	else
-		% = 0 : exceeded maximum iterations allowed.
-		% < 0 : did not converge to a solution.
-		% return last best estimate anyhow.
-	end;
+        [Estimates,~,exitflag] = fminsearch(@(x) fiterror(x, time, data, func_type, locations), initial, options);
 
 	% Estimates(1):homozygous should always be narrower than Estimates(3):heterozygous.
 	if (abs(Estimates(3)) < abs(Estimates(1)))
@@ -56,24 +41,24 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, Rsquar
 		Estimates(1) = temp;
 	end;
 
-	% height, location, relative width.
-	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);	p1_b = locations(1);	p1_c = abs(Estimates(1));
-	p2_a = data(round(locations(2)))/max(data);					p2_b = locations(2);	p2_c = abs(Estimates(3));
-	p3_a = data(round(locations(3)))/max(data);					p3_b = locations(3);	p3_c = abs(Estimates(3));
-	p4_a = max([data(round(locations(4))) data(round(locations(4))-1)])/max(data);	p4_b = locations(4);	p4_c = abs(Estimates(1));
+	% Final Parameter Extraction (Outer peaks alpha = 0)
+	p1_a = p1_ai;	p1_b = p1_bi;	p1_c = abs(Estimates(1));
+	p2_a = p2_ai;	p2_b = p2_bi;	p2_c = abs(Estimates(3));	alpha_2 = Estimates(5);
+	p3_a = p3_ai;	p3_b = p3_bi;	p3_c = abs(Estimates(3));	alpha_3 = -Estimates(5);
+	p4_a = p4_ai;	p4_b = p4_bi;	p4_c = abs(Estimates(1));
 
-	%%% Calculate R^2 for fit line.
+	% Minimum variance safety threshold floor bounds
+	widths = [p1_c, p2_c, p3_c, p4_c];
+	widths(widths < 2) = 2;
+	p1_c=widths(1); p2_c=widths(2); p3_c=widths(3); p4_c=widths(4);
+
+	%%% Generate mixed curve evaluations.
 	%------------------------------------
-	time1 = 1:200;
-	time2 = 1:200;
-	time3 = 1:200;
-	time4 = 1:200;
-	%%%------------------------------------ DRAGON
-	p1_fit = p1_a*exp(-0.5*((time1-p1_b)./p1_c).^2);
-	p2_fit = p2_a*exp(-0.5*((time2-p2_b)./p2_c).^2);
-	p3_fit = p3_a*exp(-0.5*((time3-p3_b)./p3_c).^2);
-	p4_fit = p4_a*exp(-0.5*((time4-p4_b)./p4_c).^2);
-	fitted = p1_fit+p2_fit+p3_fit+p4_fit;
+	p1_fit = gaussian(time, p1_a, p1_b, p1_c);
+	p2_fit = skew_gaussian(time, p2_a, p2_b, p2_c, alpha_2);
+	p3_fit = skew_gaussian(time, p3_a, p3_b, p3_c, alpha_3);
+	p4_fit = gaussian(time, p4_a, p4_b, p4_c);
+	fitted = p1_fit + p2_fit + p3_fit + p4_fit;
 	%------------------------------------
 	SSres    = sum((data-fitted).^2);
 	dataMean = data*0+mean(data);
@@ -113,7 +98,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, Rsquar
 	%----------------------------------------------------------------------
 end
 
-function sse = fiterror(params,time,data,func_type,locations,show)
+function sse = fiterror(params,time,data,func_type,locations)
 	data = data(:)';
 
 	% params(1):homozygous should always be narrower than params(3):heterozygous.
@@ -121,46 +106,24 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 		params(3) = abs(params(1));
 	end;
 
-	% height, location, relative width.
+	% Base location & optimized width settings; mode-stabilized Skew Profile Amplitudes Lookups. (height, location, relative width)
 	p1_a = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_b = locations(1);	p1_c = abs(params(1));
-	p2_a = data(round(locations(2)))/max(data);						p2_b = locations(2);	p2_c = abs(params(3));
-	p3_a = data(round(locations(3)))/max(data);						p3_b = locations(3);	p3_c = abs(params(3));
-	p4_a = max([data(round(locations(4))) data(round(locations(4))-1)])/max(data);		p4_b = locations(4);	p4_c = abs(params(1));
+	p2_a = data(round(locations(2)))/max(data);						p2_b = locations(2);	p2_c = abs(params(3));	alpha_2 = params(5);
+	p3_a = data(round(locations(3)))/max(data);						p3_b = locations(3);	p3_c = abs(params(3));	alpha_3 = -params(5);
+	p4_a = max([data(round(locations(4))) data(round(locations(4))-1]))/max(data);		p4_b = locations(4);	p4_c = abs(params(1));
 
+	% Minimum variance safety threshold floor bounds.
 	widths = [p1_c, p2_c, p3_c, p4_c];
 	widths(widths < 2) = 2;
 	p1_c=widths(1); p2_c=widths(2); p3_c=widths(3); p4_c=widths(4);
 
-	time1 = 1:200;
-	time2 = 1:200;
-	time3 = 1:200;
-	time4 = 1:200;
+	% Generate components (Outer symmetric, Inner mode-stabilized skew)
+	p1_fit = gaussian(time, p1_a, p1_b, p1_c);
+	p2_fit = skew_gaussian(time, p2_a, p2_b, p2_c, alpha_2);
+	p3_fit = skew_gaussian(time, p3_a, p3_b, p3_c, alpha_3);
+	p4_fit = gaussian(time, p4_a, p4_b, p4_c);
+	fitted = p1_fit + p2_fit + p3_fit + p4_fit;
 
-	p1_fit = p1_a*exp(-0.5*((time1-p1_b)./p1_c).^2);
-	p2_fit = p2_a*exp(-0.5*((time2-p2_b)./p2_c).^2);
-	p3_fit = p3_a*exp(-0.5*((time3-p3_b)./p3_c).^2);
-	p4_fit = p4_a*exp(-0.5*((time4-p4_b)./p4_c).^2);
-	fitted = p1_fit+p2_fit+p3_fit+p4_fit;
-
-	if (show ~= 0)
-	%----------------------------------------------------------------------
-	% show fitting in process.
-	figure(show);
-	% show data being fit.
-	plot(data,'x-','color',[0.75 0.75 1]);
-	hold on;
-	title('trisomy');
-	% show fit lines.
-	plot(p1_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-	plot(p2_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-	plot(p3_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-	plot(p4_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-	plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
-	hold off;
-	%----------------------------------------------------------------------
-	end;
-
-	width = 0.5;
 	switch(func_type)
 		case 'cubic'
 			Error_Vector = (fitted).^2 - (data).^2;
@@ -175,8 +138,6 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 			sse  = sum(abs(Error_Vector));
 		case 'fcs'
 			Error_Vector = (fitted) - (data);
-			%Error_Vector(1:round(G1_b*(1-width))) = 0;
-			%Error_Vector(round(G1_b*(1+width)):end) = 0;
 			sse  = sum(Error_Vector.^2);
 		otherwise
 			error('Error: choice for fitting not implemented yet!');
@@ -184,5 +145,43 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	end;
 	if isnan(sse) || isinf(sse) || ~isreal(sse)
 		sse = 1e12;
+	end;
+end
+
+function y = gaussian(x, a, b, c)
+	% x: Time/Bin Vector coordinate axis array (e.g. 1:200).
+	% a: Desired maximum amplitude peak height.
+	% b: Desired fixed target coordinate index peak location (center).
+	% c: Distribution scale parameter (width).
+
+	y = a * exp(-0.5 * ((x - b) ./ c).^2);
+end
+
+function y = skew_gaussian(x, a, b, c, alpha)
+	% x: Time/Bin Vector coordinate axis array (e.g. 1:200).
+	% a: Desired maximum amplitude peak height.
+	% b: Desired fixed target coordinate index peak location (center).
+	% c: Distribution scale parameter (width).
+	% alpha: Skew term.
+
+	if alpha == 0
+		y = a * exp(-0.5 * ((x - b) ./ c).^2);
+	else
+		% Analytical calculation to counteract peak shifting from alpha changes
+		delta = alpha / sqrt(1 + alpha^2);
+		mode_offset = delta * sqrt(2 / pi) - (delta^3 * (4 - pi) / (2 * pi * sqrt(2 * pi)));
+
+		shifted_center = b - (c * mode_offset);
+
+		z = (x - shifted_center) ./ c;
+		pdf_part = exp(-0.5 * z.^2);
+		cdf_part = 0.5 * (1 + erf((alpha * z) / sqrt(2)));
+		raw_skew = pdf_part .* cdf_part;
+
+		% Force scaling normalization at the true target center location b
+		z_peak = (b - shifted_center) ./ c;
+		raw_peak = exp(-0.5 * z_peak^2) * 0.5 * (1 + erf((alpha * z_peak) / sqrt(2)));
+
+		y = a * (raw_skew ./ raw_peak);
 	end;
 end

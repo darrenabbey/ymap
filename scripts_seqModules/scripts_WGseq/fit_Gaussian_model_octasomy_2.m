@@ -1,15 +1,5 @@
 function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p5_b,p5_c, p6_a,p6_b,p6_c, p7_a,p7_b,p7_c, p8_a,p8_b,p8_c, p9_a,p9_b,p9_c, Rsquared] = fit_Gaussian_model_octasomy_2(workingDir, descriptionString, data,locations,init_width,func_type, makeFitFigures)
 	% attempt to fit a 9-gaussian model to data.
-	show = false;
-	p1_a = nan;   p1_b = nan;   p1_c = nan;
-	p2_a = nan;   p2_b = nan;   p2_c = nan;
-	p3_a = nan;   p3_b = nan;   p3_c = nan;
-	p4_a = nan;   p4_b = nan;   p4_c = nan;
-	p5_a = nan;   p5_b = nan;   p5_c = nan;
-	p6_a = nan;   p6_b = nan;   p6_c = nan;
-	p7_a = nan;   p7_b = nan;   p7_c = nan;
-	p8_a = nan;   p8_b = nan;   p8_c = nan;
-	p9_a = nan;   p9_b = nan;   p9_c = nan;
 
 	if isempty(data) || any(isnan(data))
 		return
@@ -39,7 +29,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 
 	initial = [p1_ci,p2_ai,p2_ci,p3_ai,p4_ai,p5_ai,p6_ai,p7_ai,p8_ai];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',200000);
-	time= 1:length(data);
+	time= 1:200;
 
 	[Estimates,~,exitflag] = fminsearch(@fiterror, ...   % function to be fitted.
 	                                    initial, ...     % initial values.
@@ -48,7 +38,6 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	                                    data, ...        % problem-specific parameter 2.
 	                                    func_type, ...   % problem-specific parameter 3.
 	                                    locations, ...   % problem-specific parameter 4.
-	                                    show ...     % problem-specific parameter 5.
 	                            );
 	if (exitflag > 0)
 		% > 0 : converged to a solution.
@@ -143,7 +132,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, p3_a,p3_b,p3_c, p4_a,p4_b,p4_c, p5_a,p
 	%----------------------------------------------------------------------
 end
 
-function sse = fiterror(params,time,data,func_type,locations,show)
+function sse = fiterror(params,time,data,func_type,locations)
 	data = data(:)';
 
 	% params(1):homozygous should always be narrower than params(3):heterozygous.
@@ -188,30 +177,6 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	p9_fit = p9_a*exp(-0.5*((time9-p9_b)./p9_c).^2);
 	fitted = p1_fit+p2_fit+p3_fit+p4_fit+p5_fit+p6_fit+p7_fit+p8_fit+p9_fit;
 
-	if (show ~= 0)
-	%----------------------------------------------------------------------
-	% show fitting in process.
-	figure(show);
-	% show data being fit.
-	plot(data,'x-','color',[0.75 0.75 1]);
-	hold on;
-	title('hexasomy');
-	% show fit lines.
-	plot(p1_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-	plot(p2_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-	plot(p3_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-	plot(p4_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-	plot(p5_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-	plot(p6_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-	plot(p7_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-	plot(p8_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-	plot(p9_fit,'-','color',[0 0.75 0.75],'lineWidth',2);
-	plot(fitted,'-','color',[0 0.50 0.50],'lineWidth',2);
-	hold off;
-	%----------------------------------------------------------------------
-	end;
-
-	width = 0.5;
 	switch(func_type)
 		case 'cubic'
 			Error_Vector = (fitted).^2 - (data).^2;
@@ -226,8 +191,6 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 			sse  = sum(abs(Error_Vector));
 		case 'fcs'
 			Error_Vector = (fitted) - (data);
-			%Error_Vector(1:round(G1_b*(1-width))) = 0;
-			%Error_Vector(round(G1_b*(1+width)):end) = 0;
 			sse  = sum(Error_Vector.^2);
 		otherwise
 			error('Error: choice for fitting not implemented yet!');
@@ -235,5 +198,43 @@ function sse = fiterror(params,time,data,func_type,locations,show)
 	end;
 	if isnan(sse) || isinf(sse) || ~isreal(sse)
 		sse = 1e12;
+	end;
+end
+
+function y = gaussian(x, a, b, c)
+	% x: Time/Bin Vector coordinate axis array (e.g. 1:200).
+	% a: Desired maximum amplitude peak height.
+	% b: Desired fixed target coordinate index peak location (center).
+	% c: Distribution scale parameter (width).
+
+	y = a * exp(-0.5 * ((x - b) ./ c).^2);
+end
+
+function y = skew_gaussian(x, a, b, c, alpha)
+	% x: Time/Bin Vector coordinate axis array (e.g. 1:200).
+	% a: Desired maximum amplitude peak height.
+	% b: Desired fixed target coordinate index peak location (center).
+	% c: Distribution scale parameter (width).
+	% alpha: Skew term.
+
+	if alpha == 0
+		y = a * exp(-0.5 * ((x - b) ./ c).^2);
+	else
+		% Analytical calculation to counteract peak shifting from alpha changes
+		delta = alpha / sqrt(1 + alpha^2);
+		mode_offset = delta * sqrt(2 / pi) - (delta^3 * (4 - pi) / (2 * pi * sqrt(2 * pi)));
+
+		shifted_center = b - (c * mode_offset);
+
+		z = (x - shifted_center) ./ c;
+		pdf_part = exp(-0.5 * z.^2);
+		cdf_part = 0.5 * (1 + erf((alpha * z) / sqrt(2)));
+		raw_skew = pdf_part .* cdf_part;
+
+		% Force scaling normalization at the true target center location b
+		z_peak = (b - shifted_center) ./ c;
+		raw_peak = exp(-0.5 * z_peak^2) * 0.5 * (1 + erf((alpha * z_peak) / sqrt(2)));
+
+		y = a * (raw_skew ./ raw_peak);
 	end;
 end
