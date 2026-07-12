@@ -904,7 +904,7 @@ function blank_and_content_tab() {
 <DIV id="Hidden_UpdateDataset" style="display: none; position: absolute; border: solid black 1px; padding: 5px; text-align: justify;">
 	<table width="100%"><tr>
 	<td width="95%" align="left">Update Dataset</td>
-	<td width="5%" align="right"><div onmousedown="document.getElementById('Hidden_UpdateDataset').style.display = 'none';if (parent.parent.document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('pending_comment').style.visibility != 'visible'){parent.parent.document.getElementById('panel_manageDataset_iframe').contentWindow.location.reload();}" style="display:inline-block;"><b>[X]</b></div></td>
+	<td width="5%" align="right"><div onmousedown="if (document.getElementById('panel_manageDataset_iframe').contentDocument.getElementById('pending_comment').style.visibility != 'visible'){document.getElementById('panel_manageDataset_iframe').contentWindow.location.reload();} document.getElementById('Hidden_UpdateDataset').style.display = 'none';" style="display:inline-block;"><b>[X]</b></div></td>
 	</tr></table>
 	<br>
 	<iframe id="Hidden_UpdateDataset_Frame" src="project.update_window.php"></iframe>
