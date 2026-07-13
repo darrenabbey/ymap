@@ -385,7 +385,7 @@ else
 	echo -e "\tpkg load matgeom;" >> $outputName;
 	echo -e "\tdiary('$projectDirectory/octave.SNP_analysis.log');" >> $outputName;
 	echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
-	echo -r "\ttry" >> $outputName;
+	echo -e "\ttry" >> $outputName;
 	echo -e "\t\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 	echo -e "\tcatch err" >> $outputName;
 	echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;

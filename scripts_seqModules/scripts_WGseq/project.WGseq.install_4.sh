@@ -310,7 +310,7 @@ echo -e "function processing4" > $outputName;
 echo -e "\tpkg load matgeom;" >> $outputName;
 echo -e "\tdiary('$projectDirectory/octave.final_figs.log');" >> $outputName;
 echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
-echo -r "\ttry" >> $outputName;
+echo -e "\ttry" >> $outputName;
 echo -e "\t\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
 echo -e "\tcatch err" >> $outputName;
 echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
