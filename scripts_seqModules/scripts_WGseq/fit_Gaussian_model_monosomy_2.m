@@ -18,7 +18,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, Rsquared] = fit_Gaussian_model_monosom
 
 	% a = height; b = location; c = width.
 	p1_ai = max([data(round(locations(1))) data(round(locations(1))+1)])/max(data);		p1_bi = locations(1);	p1_ci = init_width/4;
-	p2_ai = max([data(round(locations(2))) data(round(locations(2))+1)])/max(data);		p2_bi = locations(2);	p2_ci = init_width/4;
+	p2_ai = max([data(round(locations(2))) data(round(locations(2))-1)])/max(data);		p2_bi = locations(2);	p2_ci = init_width/4;
 
 	initial = [p1_ci];
 	options = optimset('Display','off','FunValCheck','on','MaxFunEvals',200000);
