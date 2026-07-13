@@ -459,6 +459,14 @@
 				Select which figure types you would like generated for your dataset.
 				</td></tr>
 
+				<tr bgcolor="#CCFFFF"><td>
+				<div id="hiddenFormSection10" style="display:<?php $admin_user_flag_file = "users/".$user."/admin.txt"; if (file_exists($admin_user_flag_file)) { echo "inline"; } else { echo "none"; ) ?>">
+					<input type="checkbox" id="force" name="force" value="True">Force update.
+				</div>
+				</td><td>
+                                Force reprocessing after error resolution, without changing settings.
+                                </td></tr>
+
 				</table><br>
 				<?php
 				if (!$exceededSpace) {
