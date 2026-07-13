@@ -137,10 +137,14 @@ echo -e "\tCalling OCTAVE." >> $logName;
 cd "$projectDirectory";
 $octave_exec "$outputName" 2>> $logName;
 cd "$main_dir";
-#echo -e "\tOCTAVE log from CNV analysis." >> $logName;
-#sed 's/^/\t|/;' $projectDirectory"/octave.CNV_and_GCbias.log" >> $logName;
-#cat "$projectDirectory/octave.CNV_and_GCbias.log" >> $logName;
-
+if [ -f "$projectDirectory/error.txt" ]; then
+	error_info=$(cat "$projectDirectory/error.txt");
+	clean_info="${error_info#*Something went wrong: }";             # Strip away the leading descriptive string "Something went wrong: "
+	failed_script="${clean_info%%:*}";                              # Extract structural components split by the colon marker.
+	failed_line="${clean_info##*:}";
+	echo -e "\n[ERROR] Pipeline halted! Octave crashed in script: $failed_script at line: $failed_line" >> $logName;
+	exit 1
+fi
 
 ##==============================================================================
 ## Perform ChARM analysis of dataset.
@@ -199,8 +203,14 @@ else
 	cd "$projectDirectory";
 	$octave_exec "$outputName" 2>> $logName;
 	cd "$main_dir";
-	#echo -e "\tOCTAVE log from ChARM analysis." >> $logName;
-	#sed 's/^/\t|/;' "$projectDirectory/octave.ChARM.log" >> $logName;
+	if [ -f "$projectDirectory/error.txt" ]; then
+		error_info=$(cat "$projectDirectory/error.txt");
+		clean_info="${error_info#*Something went wrong: }";             # Strip away the leading descriptive string "Something went wrong: "
+		failed_script="${clean_info%%:*}";                              # Extract structural components split by the colon marker.
+		failed_line="${clean_info##*:}";
+		echo -e "\n[ERROR] Pipeline halted! Octave crashed in script: $failed_script at line: $failed_line" >> $logName;
+		exit 1
+	fi
 fi
 
 ##==============================================================================
@@ -288,8 +298,14 @@ echo -e "=======================================================================
 cd "$projectDirectory";
 $octave_exec "$outputName" 2>> $logName;
 cd "$main_dir";
-#echo -e "\tOCTAVE log from SNP analysis." >> $logName;
-#sed 's/^/\t|/;' "$projectDirectory/octave.SNP_analysis.log" >> $logName;
+if [ -f "$projectDirectory/error.txt" ]; then
+	error_info=$(cat "$projectDirectory/error.txt");
+	clean_info="${error_info#*Something went wrong: }";             # Strip away the leading descriptive string "Something went wrong: "
+	failed_script="${clean_info%%:*}";                              # Extract structural components split by the colon marker.
+	failed_line="${clean_info##*:}";
+	echo -e "\n[ERROR] Pipeline halted! Octave crashed in script: $failed_script at line: $failed_line" >> $logName;
+	exit 1
+fi
 
 
 ##==============================================================================
@@ -343,6 +359,15 @@ echo -e "=======================================================================
 cd "$projectDirectory";
 $octave_exec "$outputName" 2>> $logName;
 cd "$main_dir";
+if [ -f "$projectDirectory/error.txt" ]; then
+	error_info=$(cat "$projectDirectory/error.txt");
+	clean_info="${error_info#*Something went wrong: }";             # Strip away the leading descriptive string "Something went wrong: "
+	failed_script="${clean_info%%:*}";                              # Extract structural components split by the colon marker.
+	failed_line="${clean_info##*:}";
+	echo -e "\n[ERROR] Pipeline halted! Octave crashed in script: $failed_script at line: $failed_line" >> $logName;
+	exit 1
+fi
+
 echo -e "finished all processing, moving to Cleaning up intermediate WGseq files" >> $condensedLog;
 
 

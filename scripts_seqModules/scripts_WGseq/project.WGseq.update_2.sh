@@ -248,10 +248,12 @@ echo -e "\tCalling OCTAVE." >> $logName;
 cd "$projectDirectory";
 $octave_exec "$outputName" 2>> $logName;
 cd "$script_dir";
-
 if [ -f "$projectDirectory/error.txt" ]; then
-	failed_script=$(cat "$projectDirectory/error.txt")
-	echo -e "\n[ERROR] Pipeline halted! Octave crashed in function: $failed_script" >> $logName
+	error_info=$(cat "$projectDirectory/error.txt");
+	clean_info="${error_info#*Something went wrong: }";		# Strip away the leading descriptive string "Something went wrong: "
+	failed_script="${clean_info%%:*}";				# Extract structural components split by the colon marker.
+	failed_line="${clean_info##*:}";
+	echo -e "\n[ERROR] Pipeline halted! Octave crashed in script: $failed_script at line: $failed_line" >> $logName;
 	exit 1
 fi
 
@@ -314,8 +316,14 @@ if [[ "$hapmapInUse" = 0 ]]; then
 	cd "$projectDirectory";
 	$octave_exec "$outputName" 2>> $logName;
 	cd "$script_dir";
-	#echo -e "\tOCTAVE log from SNP analysis." >> $logName;
-	#sed 's/^/\t|/;' "$projectDirectory/octave.SNP_analysis.log" >> $logName;
+	if [ -f "$projectDirectory/error.txt" ]; then
+		error_info=$(cat "$projectDirectory/error.txt");
+		clean_info="${error_info#*Something went wrong: }";             # Strip away the leading descriptive string "Something went wrong: "
+		failed_script="${clean_info%%:*}";                              # Extract structural components split by the colon marker.
+		failed_line="${clean_info##*:}";
+		echo -e "\n[ERROR] Pipeline halted! Octave crashed in script: $failed_script at line: $failed_line" >> $logName;
+		exit 1
+	fi
 
 
 	##==============================================================================
@@ -369,8 +377,15 @@ if [[ "$hapmapInUse" = 0 ]]; then
 	cd "$projectDirectory";
 	$octave_exec "$outputName" 2>> $logName;
 	cd "$script_dir";
-	#echo -e "\tOCTAVE log from final figure generation." >> $logName;
-	#sed 's/^/\t|/;' "$projectDirectory/octave.final_figs.log" >> $logName;
+	if [ -f "$projectDirectory/error.txt" ]; then
+		error_info=$(cat "$projectDirectory/error.txt");
+		clean_info="${error_info#*Something went wrong: }";             # Strip away the leading descriptive string "Something went wrong: "
+		failed_script="${clean_info%%:*}";                              # Extract structural components split by the colon marker.
+		failed_line="${clean_info##*:}";
+		echo -e "\n[ERROR] Pipeline halted! Octave crashed in script: $failed_script at line: $failed_line" >> $logName;
+		exit 1
+	fi
+
 	echo -e "finished all processing, moving to Cleaning up intermediate WGseq files" >> $condensedLog;
 else
 	##==============================================================================
@@ -424,8 +439,14 @@ else
 	cd "$projectDirectory";
 	$octave_exec "$outputName" 2>> $logName;
 	cd "$script_dir";
-	#echo -e "\t\tOCTAVE log from SNP analysis." >> $logName;
-	#sed 's/^/\t\t\t|/;' "$projectDirectory/octave.SNP_analysis.log" >> $logName;
+	if [ -f "$projectDirectory/error.txt" ]; then
+		error_info=$(cat "$projectDirectory/error.txt");
+		clean_info="${error_info#*Something went wrong: }";             # Strip away the leading descriptive string "Something went wrong: "
+		failed_script="${clean_info%%:*}";                              # Extract structural components split by the colon marker.
+		failed_line="${clean_info##*:}";
+		echo -e "\n[ERROR] Pipeline halted! Octave crashed in script: $failed_script at line: $failed_line" >> $logName;
+		exit 1
+	fi
 
 
 	##==============================================================================
@@ -479,7 +500,14 @@ else
 	cd "$projectDirectory";
 	$octave_exec "$outputName" 2>> $logName;
 	cd "$script_dir";
-	#echo -e "\t\tOCTAVE log from final figure generation." >> $logName;
+	if [ -f "$projectDirectory/error.txt" ]; then
+		error_info=$(cat "$projectDirectory/error.txt");
+		clean_info="${error_info#*Something went wrong: }";             # Strip away the leading descriptive string "Something went wrong: "
+		failed_script="${clean_info%%:*}";                              # Extract structural components split by the colon marker.
+		failed_line="${clean_info##*:}";
+		echo -e "\n[ERROR] Pipeline halted! Octave crashed in script: $failed_script at line: $failed_line" >> $logName;
+		exit 1
+	fi
 fi
 
 
