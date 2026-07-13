@@ -460,7 +460,7 @@
 				</td></tr>
 
 				<tr bgcolor="#CCFFFF"><td>
-				<div id="hiddenFormSection10" style="display:<?php $admin_user_flag_file = "users/".$user."/admin.txt"; if (file_exists($admin_user_flag_file)) { echo "inline"; } else { echo "none"; ) ?>">
+				<div id="hiddenFormSection10" style="display:<?php $admin_user_flag_file = 'users/'.$user.'/admin.txt'; if (file_exists($admin_user_flag_file)) { echo 'inline'; } else { echo 'none'; ) ?>">
 					<input type="checkbox" id="force" name="force" value="True">Force update.
 				</div>
 				</td><td>
