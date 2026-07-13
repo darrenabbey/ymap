@@ -44,6 +44,11 @@ check_octave_crash() {
 		echo -e "[ERROR] Reason: $failed_message" >> "$logName"
 		echo -e "[ERROR] Terminating Bash script execution immediately.\n"
 
+		cd $main_dir"/scripts_seqModules/scripts_WGseq/";
+		bash cleaning_WGseq.sh "$user" "$project" "$main_dir" 2>> $logName;
+		bash queue_end.sh "$user" "$project" "$main_dir" "$logName" "project.WGseq.install_4.sh completed.";
+		cd $main_dur;
+
 		exit 1
 	fi
 }
