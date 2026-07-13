@@ -221,7 +221,7 @@ echo -e "\t\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genom
 echo -e "\tcatch err" >> $outputName;
 echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
 echo -e "\t\tif fileID ~= -1" >> $outputName;
-echo -e "\t\t\tfprintf(fileID, '%s\\\\n', err.stack(1).name);" >> $outputName;
+echo -e "\t\t\tfprintf(fileID, 'Something went wrong. %s:%d\\\\n', err.stack(1).name, err.stack(1).line);"  >> $outputName;
 echo -e "\t\t\tfclose(fileID);" >> $outputName;
 echo -e "\t\tend;" >> $outputName;
 echo -e "\tend;" >> $outputName;
@@ -238,7 +238,7 @@ echo -e "\t|\t        analyze_CNVs_1('$main_dir','$user','$genomeUser','$project
 echo -e "\t|\t    catch err" >> $logName;
 echo -e "\t|\t        fileID = fopen('$projectDirectory/error.txt', 'w');" >> $logName;
 echo -e "\t|\t        if fileID ~= -1" >> $logName;
-echo -e "\t|\t            fprintf(fileID, '%s\\\\n', err.stack(1).name);" >> $logName; # Match the double escape string literal
+echo -e "\t|\t            fprintf(fileID, 'Something went wrong. %s:%d\\\\n', err.stack(1).name, err.stack(1).line);" >> $logName;
 echo -e "\t|\t            fclose(fileID);" >> $logName;
 echo -e "\t|\t        end;" >> $logName;
 echo -e "\t|\t    end;" >> $logName;
@@ -248,6 +248,12 @@ echo -e "\tCalling OCTAVE." >> $logName;
 cd "$projectDirectory";
 $octave_exec "$outputName" 2>> $logName;
 cd "$script_dir";
+
+if [ -f "$projectDirectory/error.txt" ]; then
+	failed_script=$(cat "$projectDirectory/error.txt")
+	echo -e "\n[ERROR] Pipeline halted! Octave crashed in function: $failed_script" >> $logName
+	exit 1
+fi
 
 
 if [[ "$hapmapInUse" = 0 ]]; then
@@ -280,7 +286,7 @@ if [[ "$hapmapInUse" = 0 ]]; then
 	echo -e "\tcatch err" >> $outputName;
 	echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
 	echo -e "\t\tif fileID ~= -1" >> $outputName;
-	echo -e "\t\t\tfprintf(fileID, '%s\\\\n', err.stack(1).name);" >> $outputName;
+	echo -e "\t\t\tfprintf(fileID, 'Something went wrong. %s:%d\\\\n', err.stack(1).name, err.stack(1).line);"  >> $outputName;
 	echo -e "\t\t\tfclose(fileID);" >> $outputName;
 	echo -e "\t\tend;" >> $outputName;
 	echo -e "\tend;" >> $outputName;
@@ -295,7 +301,7 @@ if [[ "$hapmapInUse" = 0 ]]; then
 	echo -e "\t|\t    catch err" >> $logName;
 	echo -e "\t|\t        fileID = fopen('$projectDirectory/error.txt', 'w');" >> $logName;
 	echo -e "\t|\t        if fileID ~= -1" >> $logName;
-	echo -e "\t|\t            fprintf(fileID, '%s\\\\n', err.stack(1).name);" >> $logName; # Match the double escape string literal
+	echo -e "\t|\t            fprintf(fileID, 'Something went wrong. %s:%d\\\\n', err.stack(1).name, err.stack(1).line);" >> $logName;
 	echo -e "\t|\t            fclose(fileID);" >> $logName;
 	echo -e "\t|\t        end;" >> $logName;
 	echo -e "\t|\t    end;" >> $logName;
@@ -335,7 +341,7 @@ if [[ "$hapmapInUse" = 0 ]]; then
 	echo -e "\tcatch err" >> $outputName;
 	echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
 	echo -e "\t\tif fileID ~= -1" >> $outputName;
-	echo -e "\t\t\tfprintf(fileID, '%s\\\\n', err.stack(1).name);" >> $outputName;
+	echo -e "\t\t\tfprintf(fileID, 'Something went wrong. %s:%d\\\\n', err.stack(1).name, err.stack(1).line);"  >> $outputName;
 	echo -e "\t\t\tfclose(fileID);" >> $outputName;
 	echo -e "\t\tend;" >> $outputName;
 	echo -e "\tend;" >> $outputName;
@@ -350,7 +356,7 @@ if [[ "$hapmapInUse" = 0 ]]; then
 	echo -e "\t|\t    catch err" >> $logName;
 	echo -e "\t|\t        fileID = fopen('$projectDirectory/error.txt', 'w');" >> $logName;
 	echo -e "\t|\t        if fileID ~= -1" >> $logName;
-	echo -e "\t|\t            fprintf(fileID, '%s\\\\n', err.stack(1).name);" >> $logName; # Match the double escape string literal
+	echo -e "\t|\t            fprintf(fileID, 'Something went wrong. %s:%d\\\\n', err.stack(1).name, err.stack(1).line);" >> $logName;
 	echo -e "\t|\t            fclose(fileID);" >> $logName;
 	echo -e "\t|\t        end;" >> $logName;
 	echo -e "\t|\t    end;" >> $logName;
@@ -390,7 +396,7 @@ else
 	echo -e "\tcatch err" >> $outputName;
 	echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
 	echo -e "\t\tif fileID ~= -1" >> $outputName;
-	echo -e "\t\t\tfprintf(fileID, '%s\\\\n', err.stack(1).name);" >> $outputName;
+	echo -e "\t\t\tfprintf(fileID, 'Something went wrong. %s:%d\\\\n', err.stack(1).name, err.stack(1).line);"  >> $outputName;
 	echo -e "\t\t\tfclose(fileID);" >> $outputName;
 	echo -e "\t\tend;" >> $outputName;
 	echo -e "\tend;" >> $outputName;
@@ -405,7 +411,7 @@ else
 	echo -e "\t|\t    catch err" >> $logName;
 	echo -e "\t|\t        fileID = fopen('$projectDirectory/error.txt', 'w');" >> $logName;
 	echo -e "\t|\t        if fileID ~= -1" >> $logName;
-	echo -e "\t|\t            fprintf(fileID, '%s\\\\n', err.stack(1).name);" >> $logName; # Match the double escape string literal
+	echo -e "\t|\t            fprintf(fileID, 'Something went wrong. %s:%d\\\\n', err.stack(1).name, err.stack(1).line);" >> $logName;
 	echo -e "\t|\t            fclose(fileID);" >> $logName;
 	echo -e "\t|\t        end;" >> $logName;
 	echo -e "\t|\t    end;" >> $logName;
@@ -445,7 +451,7 @@ else
 	echo -e "\tcatch err" >> $outputName;
 	echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
 	echo -e "\t\tif fileID ~= -1" >> $outputName;
-	echo -e "\t\t\tfprintf(fileID, '%s\\\\n', err.stack(1).name);" >> $outputName;
+	echo -e "\t\t\tfprintf(fileID, 'Something went wrong. %s:%d\\\\n', err.stack(1).name, err.stack(1).line);"  >> $outputName;
 	echo -e "\t\t\tfclose(fileID);" >> $outputName;
 	echo -e "\t\tend;" >> $outputName;
 	echo -e "\tend;" >> $outputName;
@@ -460,7 +466,7 @@ else
 	echo -e "\t|\t    catch err" >> $logName;
 	echo -e "\t|\t        fileID = fopen('$projectDirectory/error.txt', 'w');" >> $logName;
 	echo -e "\t|\t        if fileID ~= -1" >> $logName;
-	echo -e "\t|\t            fprintf(fileID, '%s\\\\n', err.stack(1).name);" >> $logName; # Match the double escape string literal
+	echo -e "\t|\t            fprintf(fileID, 'Something went wrong. %s:%d\\\\n', err.stack(1).name, err.stack(1).line);" >> $logName;
 	echo -e "\t|\t            fclose(fileID);" >> $logName;
 	echo -e "\t|\t        end;" >> $logName;
 	echo -e "\t|\t    end;" >> $logName;
