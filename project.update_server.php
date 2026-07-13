@@ -487,6 +487,11 @@
 			$UpdateFigures = true;
 		}
 
+		$force = sanitizeBoolean_POST("force");
+		if ($force) {
+			$UpdateFigures = true;
+		}
+
 //
 // ================================================================================================================
 //
