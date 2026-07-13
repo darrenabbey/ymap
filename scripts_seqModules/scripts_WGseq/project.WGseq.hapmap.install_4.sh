@@ -30,6 +30,28 @@ echo -e "\thapmap   = $hapmap";
 echo -e "\tmain_dir = $main_dir";
 echo -e "";
 
+check_octave_crash() {
+	local error_file="$projectDirectory/error.txt"
+	if [ -f "$error_file" ]; then
+		local error_info clean_info failed_message failed_script failed_line
+
+		error_info=$(cat "$error_file")
+		clean_info="${error_info#*Something went wrong. }"
+
+		failed_message="${clean_info#*|}"
+		failed_script="${clean_info%%:*}"
+
+		failed_line="${clean_info%%|*}"
+		failed_line="${failed_line#*:}"
+
+		echo -e "\n[ERROR] Pipeline halted! Octave crashed in script: $failed_script at line: $failed_line" >> "$logName"
+		echo -e "[ERROR] Reason: $failed_message" >> "$logName"
+		echo -e "[ERROR] Terminating Bash script execution immediately.\n"
+
+		exit 1
+	fi
+}
+
 
 ##==============================================================================
 ## Define locations and names to be used later.
@@ -116,7 +138,7 @@ echo -e "\t\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genom
 echo -e "\tcatch err" >> $outputName;
 echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
 echo -e "\t\tif fileID ~= -1" >> $outputName;
-echo -e "\t\t\tfprintf(fileID, 'Something went wrong. %s.m:%d\\\\n', err.stack(1).name, err.stack(1).line);"  >> $outputName;
+echo -e "\t\t\tfprintf(fileID, 'Something went wrong. %s.m:%d|%s\\\\n', err.stack(1).name, err.stack(1).line, err.message);" >> $outputName;
 echo -e "\t\t\tfclose(fileID);" >> $outputName;
 echo -e "\t\tend;" >> $outputName;
 echo -e "\tend;" >> $outputName;
@@ -133,7 +155,7 @@ echo -e "\t|\t        analyze_CNVs_1('$main_dir','$user','$genomeUser','$project
 echo -e "\t|\t    catch err" >> $logName;
 echo -e "\t|\t        fileID = fopen('$projectDirectory/error.txt', 'w');" >> $logName;
 echo -e "\t|\t        if fileID ~= -1" >> $logName;
-echo -e "\t|\t            fprintf(fileID, 'Something went wrong. %s.m:%d\\\\n', err.stack(1).name, err.stack(1).line);" >> $logName;
+echo -e "\t|\t            fprintf(fileID, 'Something went wrong. %%s.m:%%d|%%s\\\\n', err.stack(1).name, err.stack(1).line, err.message);" >> $logName;
 echo -e "\t|\t            fclose(fileID);" >> $logName;
 echo -e "\t|\t        end;" >> $logName;
 echo -e "\t|\t    end;" >> $logName;
@@ -143,14 +165,7 @@ echo -e "\t\tCalling OCTAVE." >> $logName;
 cd "$projectDirectory";
 $octave_exec "$outputName";
 cd "$script_dir";
-if [ -f "$projectDirectory/error.txt" ]; then
-	error_info=$(cat "$projectDirectory/error.txt");
-	clean_info="${error_info#*Something went wrong: }";             # Strip away the leading descriptive string "Something went wrong: "
-	failed_script="${clean_info%%:*}";                              # Extract structural components split by the colon marker.
-	failed_line="${clean_info##*:}";
-	echo -e "\n[ERROR] Pipeline halted! Octave crashed in script: $failed_script at line: $failed_line" >> $logName;
-	exit 1
-fi
+check_octave_crash;
 
 
 ##==============================================================================
@@ -180,7 +195,7 @@ else
 	echo -e "\tcatch err" >> $outputName;
 	echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
 	echo -e "\t\tif fileID ~= -1" >> $outputName;
-	echo -e "\t\t\tfprintf(fileID, 'Something went wrong. %s.m:%d\\\\n', err.stack(1).name, err.stack(1).line);"  >> $outputName;
+	echo -e "\t\t\tfprintf(fileID, 'Something went wrong. %s.m:%d|%s\\\\n', err.stack(1).name, err.stack(1).line, err.message);" >> $outputName;
 	echo -e "\t\t\tfclose(fileID);" >> $outputName;
 	echo -e "\t\tend;" >> $outputName;
 	echo -e "\tend;" >> $outputName;
@@ -195,7 +210,7 @@ else
 	echo -e "\t|\t    catch err" >> $logName;
 	echo -e "\t|\t        fileID = fopen('$projectDirectory/error.txt', 'w');" >> $logName;
 	echo -e "\t|\t        if fileID ~= -1" >> $logName;
-	echo -e "\t|\t            fprintf(fileID, 'Something went wrong. %s.m:%d\\\\n', err.stack(1).name, err.stack(1).line);" >> $logName;
+	echo -e "\t|\t            fprintf(fileID, 'Something went wrong. %%s.m:%%d|%%s\\\\n', err.stack(1).name, err.stack(1).line, err.message);" >> $logName;
 	echo -e "\t|\t            fclose(fileID);" >> $logName;
 	echo -e "\t|\t        end;" >> $logName;
 	echo -e "\t|\t    end;" >> $logName;
@@ -208,14 +223,7 @@ else
 	cd "$projectDirectory";
 	$octave_exec "$outputName";
 	cd "$script_dir";
-	if [ -f "$projectDirectory/error.txt" ]; then
-		error_info=$(cat "$projectDirectory/error.txt");
-		clean_info="${error_info#*Something went wrong: }";             # Strip away the leading descriptive string "Something went wrong: "
-		failed_script="${clean_info%%:*}";                              # Extract structural components split by the colon marker.
-		failed_line="${clean_info##*:}";
-		echo -e "\n[ERROR] Pipeline halted! Octave crashed in script: $failed_script at line: $failed_line" >> $logName;
-		exit 1
-	fi
+	check_octave_crash;
 fi
 
 
@@ -263,7 +271,7 @@ echo -e "\t\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$
 echo -e "\tcatch err" >> $outputName;
 echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
 echo -e "\t\tif fileID ~= -1" >> $outputName;
-echo -e "\t\t\tfprintf(fileID, 'Something went wrong. %s.m:%d\\\\n', err.stack(1).name, err.stack(1).line);"  >> $outputName;
+echo -e "\t\t\tfprintf(fileID, 'Something went wrong. %s.m:%d|%s\\\\n', err.stack(1).name, err.stack(1).line, err.message);" >> $outputName;
 echo -e "\t\t\tfclose(fileID);" >> $outputName;
 echo -e "\t\tend;" >> $outputName;
 echo -e "\tend;" >> $outputName;
@@ -278,7 +286,7 @@ echo -e "\t|\t        analyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$pr
 echo -e "\t|\t    catch err" >> $logName;
 echo -e "\t|\t        fileID = fopen('$projectDirectory/error.txt', 'w');" >> $logName;
 echo -e "\t|\t        if fileID ~= -1" >> $logName;
-echo -e "\t|\t            fprintf(fileID, 'Something went wrong. %s.m:%d\\\\n', err.stack(1).name, err.stack(1).line);" >> $logName;
+echo -e "\t|\t            fprintf(fileID, 'Something went wrong. %%s.m:%%d|%%s\\\\n', err.stack(1).name, err.stack(1).line, err.message);" >> $logName;
 echo -e "\t|\t            fclose(fileID);" >> $logName;
 echo -e "\t|\t        end;" >> $logName;
 echo -e "\t|\t    end;" >> $logName;
@@ -291,14 +299,7 @@ echo -e "=======================================================================
 cd "$projectDirectory";
 $octave_exec "$outputName";
 cd "$script_dir";
-if [ -f "$projectDirectory/error.txt" ]; then
-	error_info=$(cat "$projectDirectory/error.txt");
-	clean_info="${error_info#*Something went wrong: }";             # Strip away the leading descriptive string "Something went wrong: "
-	failed_script="${clean_info%%:*}";                              # Extract structural components split by the colon marker.
-	failed_line="${clean_info##*:}";
-	echo -e "\n[ERROR] Pipeline halted! Octave crashed in script: $failed_script at line: $failed_line" >> $logName;
-	exit 1
-fi
+check_octave_crash;
 
 
 ##==============================================================================
@@ -324,7 +325,7 @@ echo -e "\t\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project
 echo -e "\tcatch err" >> $outputName;
 echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
 echo -e "\t\tif fileID ~= -1" >> $outputName;
-echo -e "\t\t\tfprintf(fileID, 'Something went wrong. %s.m:%d\\\\n', err.stack(1).name, err.stack(1).line);"  >> $outputName;
+echo -e "\t\t\tfprintf(fileID, 'Something went wrong. %s.m:%d|%s\\\\n', err.stack(1).name, err.stack(1).line, err.message);" >> $outputName;
 echo -e "\t\t\tfclose(fileID);" >> $outputName;
 echo -e "\t\tend;" >> $outputName;
 echo -e "\tend;" >> $outputName;
@@ -339,7 +340,7 @@ echo -e "\t|\t        analyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser',
 echo -e "\t|\t    catch err" >> $logName;
 echo -e "\t|\t        fileID = fopen('$projectDirectory/error.txt', 'w');" >> $logName;
 echo -e "\t|\t        if fileID ~= -1" >> $logName;
-echo -e "\t|\t            fprintf(fileID, 'Something went wrong. %s.m:%d\\\\n', err.stack(1).name, err.stack(1).line);" >> $logName;
+echo -e "\t|\t            fprintf(fileID, 'Something went wrong. %%s.m:%%d|%%s\\\\n', err.stack(1).name, err.stack(1).line, err.message);" >> $logName;
 echo -e "\t|\t            fclose(fileID);" >> $logName;
 echo -e "\t|\t        end;" >> $logName;
 echo -e "\t|\t    end;" >> $logName;
@@ -352,14 +353,7 @@ echo -e "=======================================================================
 cd "$projectDirectory";
 $octave_exec "$outputName";
 cd "$script_dir";
-if [ -f "$projectDirectory/error.txt" ]; then
-	error_info=$(cat "$projectDirectory/error.txt");
-	clean_info="${error_info#*Something went wrong: }";             # Strip away the leading descriptive string "Something went wrong: "
-	failed_script="${clean_info%%:*}";                              # Extract structural components split by the colon marker.
-	failed_line="${clean_info##*:}";
-	echo -e "\n[ERROR] Pipeline halted! Octave crashed in script: $failed_script at line: $failed_line" >> $logName;
-	exit 1
-fi
+check_octave_crash;
 
 echo -e "finished all processing, moving to Cleaning up intermediate WGseq files" >> $condensedLog;
 
