@@ -221,7 +221,7 @@ echo -e "\t\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genom
 echo -e "\tcatch err" >> $outputName;
 echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
 echo -e "\t\tif fileID ~= -1" >> $outputName;
-echo -e "\t\t\tfprintf(fileID, '%s\\n', err.stack(1).name);" >> $outputName;
+echo -e "\t\t\tfprintf(fileID, '%s\\\\n', err.stack(1).name);" >> $outputName;
 echo -e "\t\t\tfclose(fileID);" >> $outputName;
 echo -e "\t\tend;" >> $outputName;
 echo -e "\tend;" >> $outputName;
@@ -280,7 +280,7 @@ if [[ "$hapmapInUse" = 0 ]]; then
 	echo -e "\tcatch err" >> $outputName;
 	echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
 	echo -e "\t\tif fileID ~= -1" >> $outputName;
-	echo -e "\t\t\tfprintf(fileID, '%s\\n', err.stack(1).name);" >> $outputName;
+	echo -e "\t\t\tfprintf(fileID, '%s\\\\n', err.stack(1).name);" >> $outputName;
 	echo -e "\t\t\tfclose(fileID);" >> $outputName;
 	echo -e "\t\tend;" >> $outputName;
 	echo -e "\tend;" >> $outputName;
@@ -335,7 +335,7 @@ if [[ "$hapmapInUse" = 0 ]]; then
 	echo -e "\tcatch err" >> $outputName;
 	echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
 	echo -e "\t\tif fileID ~= -1" >> $outputName;
-	echo -e "\t\t\tfprintf(fileID, '%s\\n', err.stack(1).name);" >> $outputName;
+	echo -e "\t\t\tfprintf(fileID, '%s\\\\n', err.stack(1).name);" >> $outputName;
 	echo -e "\t\t\tfclose(fileID);" >> $outputName;
 	echo -e "\t\tend;" >> $outputName;
 	echo -e "\tend;" >> $outputName;
@@ -390,7 +390,7 @@ else
 	echo -e "\tcatch err" >> $outputName;
 	echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
 	echo -e "\t\tif fileID ~= -1" >> $outputName;
-	echo -e "\t\t\tfprintf(fileID, '%s\\n', err.stack(1).name);" >> $outputName;
+	echo -e "\t\t\tfprintf(fileID, '%s\\\\n', err.stack(1).name);" >> $outputName;
 	echo -e "\t\t\tfclose(fileID);" >> $outputName;
 	echo -e "\t\tend;" >> $outputName;
 	echo -e "\tend;" >> $outputName;
@@ -445,7 +445,7 @@ else
 	echo -e "\tcatch err" >> $outputName;
 	echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
 	echo -e "\t\tif fileID ~= -1" >> $outputName;
-	echo -e "\t\t\tfprintf(fileID, '%s\\n', err.stack(1).name);" >> $outputName;
+	echo -e "\t\t\tfprintf(fileID, '%s\\\\n', err.stack(1).name);" >> $outputName;
 	echo -e "\t\t\tfclose(fileID);" >> $outputName;
 	echo -e "\t\tend;" >> $outputName;
 	echo -e "\tend;" >> $outputName;
