@@ -958,6 +958,29 @@ save(dataFile, 'segmental_aneuploidy');
 %% change permissions of figures.
 system(['chmod 774 ' dataFile]);
 
+%
+% Save 'segmental_aneuploidy.txt' file.
+%
+filename = 'segmental_aneuploidy.txt';
+file_id = fopen(filename, "w");
+if file_id == -1
+	fprintf('\nCould not save to: %s\n', filename);
+else
+	% Optional : Write a header line for readability
+	fprintf(file_id, "Chromosome\tBreak_Percentage\n");
+
+	% Loop through the accumulated struct array and save each entry
+	for idx = 1:length(segmental_aneuploidy)
+		fprintf(file_id, "%d\t%.6f\n", ...
+		segmental_aneuploidy(idx).chr, ...
+		segmental_aneuploidy(idx).break);
+	end
+
+	fclose(file_id);
+end;
+
+
+
 fprintf('\n\n#===========================#\n');
 fprintf(    '|END OF "ChARM_v4.m" script.|\n');
 fprintf(    '#===========================#\n');
