@@ -36,7 +36,7 @@ function [p1_a,p1_b,p1_c, p2_a,p2_b,p2_c, Rsquared] = fit_Gaussian_model_monosom
 
 	% Final Parameter Extraction (Outer peaks alpha = 0)
 	p1_a = p1_ai;	p1_b = p1_bi;	p1_c = abs(Estimates(1));
-	p2_a = p2_ai;	p2_b = p2_bi;	p4_c = abs(Estimates(1));
+	p2_a = p2_ai;	p2_b = p2_bi;	p2_c = abs(Estimates(1));
 
 	% Minimum variance safety threshold floor bounds.
 	widths = [p1_c, p2_c];
