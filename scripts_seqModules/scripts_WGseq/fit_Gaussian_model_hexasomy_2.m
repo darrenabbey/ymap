@@ -173,22 +173,41 @@ function y = gaussian(x, a, b, c)
 	y = a * exp(-0.5 * ((x - b) ./ c).^2);
 end
 
-function y = skew_gaussian(x, a, b, c, alpha)
+function y = skew_gaussian(x, a, b, c, alpha, align_type)
 	% x: Time/Bin Vector coordinate axis array (e.g. 1:200).
 	% a: Desired maximum amplitude peak height.
 	% b: Desired fixed target coordinate index peak location (center).
 	% c: Distribution scale parameter (width).
 	% alpha: Skew term.
+	% align_type: Optional string choice: "mode", "median", or "mean" (defaults to "mode").
+
+	% Set default alignment type if not provided
+	if nargin < 6
+		align_type = "mode";
+	end
 
 	if alpha == 0
 		y = a * exp(-0.5 * ((x - b) ./ c).^2);
 	else
-		% Analytical calculation to counteract peak shifting from alpha changes
+		% Calculate delta parameter from alpha skewness.
 		delta = alpha / sqrt(1 + alpha^2);
-		mode_offset = delta * sqrt(2 / pi) - (delta^3 * (4 - pi) / (2 * pi * sqrt(2 * pi)));
 
-		shifted_center = b - (c * mode_offset);
+		% Determine the appropriate offset based on user selection
+		switch lower(align_type)
+		    case "mode"
+			offset = delta * sqrt(2 / pi) - (delta^3 * (4 - pi) / (2 * pi * sqrt(2 * pi)));
+		    case "median"
+			offset = (0.786922 * delta) + (0.045610 * delta^3) - (0.148078 * delta^5);
+		    case "mean"
+			offset = delta * sqrt(2 / pi);
+		    otherwise
+			error('Invalid align_type. Use "mode", "median", or "mean".');
+		end
 
+		% Shift the center position by the selected offset
+		shifted_center = b - (c * offset);
+
+		% Compute standard skew-normal probability distribution parts.
 		z = (x - shifted_center) ./ c;
 		pdf_part = exp(-0.5 * z.^2);
 		cdf_part = 0.5 * (1 + erf((alpha * z) / sqrt(2)));
