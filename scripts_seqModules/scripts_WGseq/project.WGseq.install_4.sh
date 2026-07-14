@@ -48,6 +48,7 @@ check_octave_crash() {
 		bash cleaning_WGseq.sh "$user" "$project" "$main_dir" 2>> $logName;
 		bash queue_end.sh "$user" "$project" "$main_dir" "$logName" "project.WGseq.install_4.sh completed.";
 		cd $main_dur;
+		touch $projectDirectory/working.txt;
 
 		exit 1
 	fi
