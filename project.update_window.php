@@ -505,11 +505,11 @@
 					document.getElementById("hiddenFormSection7").style.display  = '<?php echo ($hapmap == "" || $hapmap == "none") ? "inline" : "none"; ?>';
 					document.getElementById("hiddenFormSection10").style.display = 'none';
 					document.getElementById("hiddenFormSection11").style.display = 'none';
-					if (document.getElementById("dataFormat").value == 1) { // WGseq
+					if ((document.getElementById("dataFormat").value == 1) or (document.getElementById("dataFormat").value == 2)) { // WGseq
 						document.getElementById("hiddenFormSection9a").style.display = 'none';
 						document.getElementById("hiddenFormSection9b").style.display = 'inline';
 						document.getElementById("hiddenFormSection9c").style.display = 'none';
-					} else if (document.getElementById("dataFormat").value == 2) { // ddRADseq
+					} else if (document.getElementById("dataFormat").value == 3) { // ddRADseq
 						document.getElementById("hiddenFormSection9a").style.display = 'none';
 						document.getElementById("hiddenFormSection9b").style.display = 'none';
 						document.getElementById("hiddenFormSection9c").style.display = 'inline';
