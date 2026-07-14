@@ -163,7 +163,7 @@ function y = skew_gaussian(x, a, b, c, alpha, align_type)
 
 	% Set default alignment type if not provided
 	if nargin < 6
-		align_type = "mean";
+		align_type = "mode";
 	end
 
 	if alpha == 0
