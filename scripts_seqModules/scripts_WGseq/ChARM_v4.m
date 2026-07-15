@@ -1013,6 +1013,7 @@ system(['chmod 774 ' dataFile]);
 
 %===================================================================================
 % Save 'segmental_aneuploidy.txt' file.
+%	Overwrites previous version, cleaning up any manual edit errors.
 %-----------------------------------------------------------------------------------
 fprintf(['Saving output of ChARM algorithm as "segmental_aneuploidy.txt" file for project "' project '"\n']);
 filename = [projectDir 'segmental_aneuploidy.txt'];
