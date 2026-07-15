@@ -130,7 +130,7 @@ end;
 fprintf('\n### Load details of genome in use.\n');
 [centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 [segmental_aneuploidy]                                                = Load_dataset_information(projectDir);
-num_chrs = length(chr_sizes);
+num_chrs = length(chr_sizes); % includes chrs not displayed.
 for chr = 1:num_chrs
 	chr_size(chr)                   = 0;
 	cen_start(chr)                  = 0;
@@ -178,21 +178,21 @@ end;
 
 
 %% This block is normally calculated in FindChrSizes during CNV analysis.
-for usedChr = 1:length(chr_in_use)
-	if (chr_in_use(usedChr) == 1)
+for chr = 1:length(chr_in_use)
+	if (chr_in_use(chr) == 1)
 		% determine where the endpoints of ploidy segments are.
-		chr_breaks{usedChr}(1) = 0.0;
+		chr_breaks{chr}(1) = 0.0;
 		break_count = 1;
 		if (length(segmental_aneuploidy) > 0)	% Percentages across chromosome where CNV/ChARM breakpoint exists.
 			for i = 1:length(segmental_aneuploidy)
-				if (segmental_aneuploidy(i).chr == usedChr)
+				if (segmental_aneuploidy(i).chr == chr)
 					break_count = break_count+1;
 					chr_broken = true;
-					chr_breaks{usedChr}(break_count) = segmental_aneuploidy(i).break;
+					chr_breaks{chr}(break_count) = segmental_aneuploidy(i).position/chr_sizes(chr).size;
 				end;
 			end;
 		end;
-		chr_breaks{usedChr}(length(chr_breaks{usedChr})+1) = 1;
+		chr_breaks{chr}(length(chr_breaks{chr})+1) = 1;
 	end;
 end;
 
@@ -270,6 +270,7 @@ fprintf('\n### Loading "Common_CNV" data file, to be used in copy number estimat
 load([projectDir 'Common_CNV.mat']);   % 'CNVplot2', 'genome_CNV'
 [chr_breaks, chrCopyNum, ploidyAdjust, chrCopyRsquared] = FindChrSizes_4(workingDir, segmental_aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use, false);
 CNVfit_Rsquared = chrCopyRsquared;
+
 
 fprintf('\n\n### Check for inconsistent CNV segment breakpoints using CNV and SNP-ratio data.\n');
 %% Keep iterating to look for bad segments until there have been no changes.
@@ -788,8 +789,9 @@ while (chrCopyNum_changed == true)
 					% nothing is added to file for start and end coordinates; these edges are later assumed.
 				else
 					i = i+1;
-					segmental_aneuploidy(i).chr     = chr;                   % chromosome being examined.
-					segmental_aneuploidy(i).break   = chr_breaks{chr}(edge); % percent along chromosome of edge.
+					segmental_aneuploidy(i).chr      = chr;							% chromosome being examined.
+					segmental_aneuploidy(i).position = round( chr_breaks{chr}(edge)*chr_sizes(chr).size );	% chr bin at start of CNV change.
+					segmental_aneuploidy(i).break    = chr_breaks{chr}(edge);				% percent along chromosome of edge.
 				end;
 			end;
 		end;
