@@ -128,7 +128,7 @@ fprintf(['parent  = "' parent  '"\n']);
 [Aneuploidy] = Load_dataset_information(projectDir);
 
 num_chrs = length(chr_sizes);
-for i = 1:num_chr
+for i = 1:num_chrs
 	chr_size(i)  = 0;
 	cen_start(i) = 0;
 	cen_end(i)   = 0;
