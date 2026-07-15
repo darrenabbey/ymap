@@ -133,10 +133,9 @@ else
 			chr_figReversed(figure_details(i).chr) = str2num(figure_details(i).figReversed);
 		end;
 	end;
-	num_chrs = length(chr_size);
 
 	%% This block is normally calculated in FindChrSizes during CNV analysis.
-	for usedChr = 1:num_chrs
+	for usedChr = 1:length(chr_in_use)
 		if (chr_in_use(usedChr) == 1)
 			% determine where the endpoints of ploidy segments are.
 			chr_breaks{usedChr}(1) = 0.0;
@@ -209,7 +208,7 @@ else
 	% Adjacent pairs of segments with the same copy number will be fused into a single segment.
 	% Segments with a <= zero copy number will be fused to an adjacetn segment.
 	%-------------------------------------------------------------------------------------------
-	for chr = 1:num_chrs
+	for chr = 1:length(chr_in_use)
 		if (chr_in_use(chr) == 1)
 			if (length(chrCopyNum{chr}) > 1)  % more than one segment, so lets examine if adjacent segments have different copyNums.
 				%% Merge any adjacent segments with the same copy number.

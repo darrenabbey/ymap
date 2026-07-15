@@ -115,9 +115,8 @@ if ((useHapmap) || (useParent))
 		%% =========================================================================================
 		% Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
 		%-------------------------------------------------------------------------------------------
-		for chr = 1:num_chrs
-			% avoid running over chromosomes with empty copy number
-			if (chr_in_use(chr) == 1 && ~isempty(chrCopyNum{chr}))
+		for chr = 1:length(chr_in_use)
+			if (chr_in_use(chr) == 1)
 				for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin);
 					%
 					% Determining colors for each SNP coordinate from calculated cutoffs.
@@ -348,7 +347,7 @@ if ((useHapmap) || (useParent))
 
 	if ((Standard_display == true) || (Linear_display == true))
 		data_mode = 1;
-		for chr = 1:num_chrs
+		for chr = 1:length(chr_in_use)
 			if (chr_in_use(chr) == 1)
 				if (data_mode == 1)
 					for chr_bin = 1:ceil(chr_size(chr)/bases_per_bin)
@@ -414,7 +413,7 @@ if ((useHapmap) || (useParent))
 	%-------------------------------------------------------------------------------------------
 	if ((Standard_display == true) || (Linear_display == true))
 		first_chr = true;
-		for chr = 1:num_chrs
+		for chr = 1:length(chr_in_use)
 			if (chr_in_use(chr) == 1)
 				c_prev = colorInit;
 				c_post = colorInit;

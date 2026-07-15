@@ -205,7 +205,7 @@ if (Make_figure == true)
 	%-------------------------------------------------------------------------------------------
 	% Gather CNV data for LOWESS fitting.
 	CNVdata_all = [];
-	for chr = 1:num_chrs
+	for chr = 1:length(chr_in_use)
 		if (chr_in_use(chr) == 1)
 			CNVdata_all = [CNVdata_all   CNVplot2{chr}];
 		end;
@@ -213,7 +213,7 @@ if (Make_figure == true)
 	medianCNV = median(CNVdata_all)
 	% avoid divding by zero
 	if (medianCNV > 0)
-		for chr = 1:num_chrs
+		for chr = 1:length(chr_in_use)
 			if (chr_in_use(chr) == 1)
 				CNVplot2{chr} = CNVplot2{chr}/medianCNV;
 			end;

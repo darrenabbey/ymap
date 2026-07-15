@@ -175,25 +175,24 @@ for i = 1:length(figure_details)
                 chr_figReversed(figure_details(i).chr) = str2num(figure_details(i).figReversed);
         end;
 end;
-num_chrs = length(chr_size);
 
 
 %% This block is normally calculated in FindChrSizes during CNV analysis.
-for usedChr = 1:num_chrs
-	if (chr_in_use(usedChr) == 1)
+for chr = 1:length(chr_in_use)
+	if (chr_in_use(chr) == 1)
 		% determine where the endpoints of ploidy segments are.
-		chr_breaks{usedChr}(1) = 0.0;
+		chr_breaks{chr}(1) = 0.0;
 		break_count = 1;
 		if (length(Aneuploidy) > 0)
 			for i = 1:length(Aneuploidy)
-				if (Aneuploidy(i).chr == usedChr)
+				if (Aneuploidy(i).chr == chr)
 					break_count = break_count+1;
 					chr_broken = true;
-					chr_breaks{usedChr}(break_count) = Aneuploidy(i).break;
+					chr_breaks{chr}(break_count) = Aneuploidy(i).break;
 				end;
 			end;
 		end;
-		chr_breaks{usedChr}(length(chr_breaks{usedChr})+1) = 1;
+		chr_breaks{chr}(length(chr_breaks{chr})+1) = 1;
 	end;
 end;
 
@@ -507,9 +506,8 @@ chr_SNPdata = temp_holding;
 % Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
 %-------------------------------------------------------------------------------------------
 fprintf('\t|\tDetermine display color for each SNP.\n');
-for chr = 1:num_chrs
-	% avoid running over chromosomes with empty copy number
-	if ( (chr_in_use(chr) == 1) && (~isempty(chrCopyNum{chr})) )
+for chr = 1:length(chr_in_use)
+	if (chr_in_use(chr) == 1)
 		for chr_bin_SNP = 1:ceil(chr_size(chr)/bases_per_bin_SNP)
 			%
 			% Determining colors for each SNP coordinate from calculated cutoffs.
@@ -852,7 +850,7 @@ else
 	full_data_threshold = str2num(fileread([genomeDir 'threshold.SNPs.txt']));
 end;
 
-for chr = 1:num_chrs
+for chr = 1:length(chr_in_use)
 	if (chr_in_use(chr) == 1)
 		for chr_bin_SNP = 1:ceil(chr_size(chr)/bases_per_bin_SNP)
 			% the number of heterozygous data points in this bin.
@@ -881,7 +879,7 @@ fprintf('\n');
 fprintf('Make histogram of SNP count per bin across genome.\n');
 SNP_count_all = [];
 count = 1;
-for chr = 1:num_chrs
+for chr = 1:length(chr_in_use)
 	if (chr_in_use(chr) == 1)
 		for chr_bin_SNP = 1:ceil(chr_size(chr)/bases_per_bin_SNP)
 			SNP_count_all(count) = SNPs_count{chr}(chr_bin_SNP);

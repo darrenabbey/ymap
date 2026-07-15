@@ -128,7 +128,7 @@ fprintf(['parent  = "' parent  '"\n']);
 [Aneuploidy] = Load_dataset_information(projectDir);
 
 num_chrs = length(chr_sizes);
-for i = 1:length(chr_sizes)
+for i = 1:num_chr
 	chr_size(i)  = 0;
 	cen_start(i) = 0;
 	cen_end(i)   = 0;
@@ -172,25 +172,23 @@ for i = 1:length(figure_details)
                 chr_figReversed(figure_details(i).chr) = str2num(figure_details(i).figReversed);
         end;
 end;
-num_chrs = length(chr_size);
-
 
 %% This block is normally calculated in FindChrSizes during CNV analysis.
-for usedChr = 1:num_chrs
-	if (chr_in_use(usedChr) == 1)
+for chr = 1:length(chr_in_use)
+	if (chr_in_use(chr) == 1)
 		% determine where the endpoints of ploidy segments are.
-		chr_breaks{usedChr}(1) = 0.0;
+		chr_breaks{chr}(1) = 0.0;
 		break_count = 1;
 		if (length(Aneuploidy) > 0)
 			for i = 1:length(Aneuploidy)
-				if (Aneuploidy(i).chr == usedChr)
+				if (Aneuploidy(i).chr == chr)
 					break_count = break_count+1;
 					chr_broken = true;
-					chr_breaks{usedChr}(break_count) = Aneuploidy(i).break;
+					chr_breaks{chr}(break_count) = Aneuploidy(i).break;
 				end;
 			end;
 		end;
-		chr_breaks{usedChr}(length(chr_breaks{usedChr})+1) = 1;
+		chr_breaks{chr}(length(chr_breaks{chr})+1) = 1;
 	end;
 end;
 
@@ -372,7 +370,7 @@ end;
 
 fig = figure(1);
 
-for chr = 1:num_chrs
+for chr = 1:length(chr_in_use)
 	if (chr_in_use(chr) == 1)
 		for chr_bin_SNP = 1:length(chr_SNPdata{chr,1})
 			% the number of heterozygous data points in this bin.

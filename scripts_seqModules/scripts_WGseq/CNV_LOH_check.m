@@ -178,7 +178,7 @@ end;
 
 
 %% This block is normally calculated in FindChrSizes during CNV analysis.
-for usedChr = 1:num_chrs
+for usedChr = 1:length(chr_in_use)
 	if (chr_in_use(usedChr) == 1)
 		% determine where the endpoints of ploidy segments are.
 		chr_breaks{usedChr}(1) = 0.0;
@@ -290,7 +290,7 @@ while (chrCopyNum_changed == true)
 %		CNVfit_Rsquared = chrCopyRsquared;
 %	endif;
 
-	for chr = 1:num_chrs
+	for chr = 1:length(chr_in_use)
 		if (chr_in_use(chr) == 1)
 			%% Clean up chr_breaks vectors by filtering out non-unique values.
 			%chr_breaks_     = chr_breaks{chr}
@@ -305,7 +305,7 @@ while (chrCopyNum_changed == true)
 	end;
 	fprintf(['\n']);
 
-	for chr = 1:num_chrs
+	for chr = 1:length(chr_in_use)
 		if (chr_in_use(chr) == 1)
 			fprintf(['\t chrCopyNum{' num2str(chr) '} = ']);
 			for i = 1:length(chrCopyNum{chr})
@@ -493,7 +493,7 @@ while (chrCopyNum_changed == true)
 	%%%	SNPfit_Rsquared
 	CNVfit_Rsquared_vector = [];
 	SNPfit_Rsquared_vector = [];
-	for chr = 1:num_chrs
+	for chr = 1:length(chr_in_use)
 		if (chr_in_use(chr) == 1)
 			for segment = 1:(length(chrCopyNum{chr}))
 				CNVfit_Rsquared_vector = [CNVfit_Rsquared_vector; CNVfit_Rsquared{chr}(segment)];
@@ -534,7 +534,7 @@ while (chrCopyNum_changed == true)
 	chr_breaks_new     = chr_breaks;
 	chrCopyNum_new     = chrCopyNum;
 	fprintf(['\n### Looking at chr segment Rsquared values to assess quality of CNV estimates.\n']);
-	for chr = 1:num_chrs
+	for chr = 1:length(chr_in_use)
 		if (chr_in_use(chr) == 1)
 			for segment = 1:(length(chrCopyNum{chr}))
 				%%%
@@ -647,7 +647,7 @@ while (chrCopyNum_changed == true)
 
 	%%% Re-review to deal with poor best-fits (likely due to limited data on a segment).
 	fprintf(['\n### Dealing with bad best-fit segments.\n']);
-	for chr = 1:num_chrs
+	for chr = 1:length(chr_in_use)
 		if (chr_in_use(chr) == 1)
 			for segment = (length(chrCopyNum{chr})):1
 				%%%
@@ -735,7 +735,7 @@ while (chrCopyNum_changed == true)
 
 	%%% Merge any adjacent segments that now have the same best estimate of copy number.
 	fprintf(['\n### Merging adjacent segments.\n']);
-	for chr = 1:num_chrs
+	for chr = 1:length(chr_in_use)
 		if (chr_in_use(chr) == 1)
 			if (length(chrCopyNum{chr}) > 1)  % more than one segment, so lets examine if adjacent segments have different copyNums.
 				% Add break representing left end of chromosome.
@@ -776,7 +776,7 @@ while (chrCopyNum_changed == true)
 	fprintf(['\n### Updating saved common_ChARM file for "' project '" : ' dataFile '$$$$\n']);
 	i = 0;
 	segmental_aneuploidy = [];
-	for chr = 1:num_chrs
+	for chr = 1:length(chr_in_use)
 		if (chr_in_use(chr) == 1)
 			fprintf(['\t chr_breaks{' num2str(chr) '} = ']);
 			for i = 1:length(chr_breaks{chr})
@@ -811,7 +811,7 @@ CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBase
 
 
 fprintf('\n');
-for chr = 1:num_chrs
+for chr = 1:length(chr_in_use)
 	if (chr_in_use(chr) == 1)
 		fprintf(['\t chrCopyNum{' num2str(chr) '} = ']);
 		for i = 1:length(chrCopyNum{chr})

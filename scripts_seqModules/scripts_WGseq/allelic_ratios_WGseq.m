@@ -152,7 +152,7 @@ if (Make_figure == true)
 	end;
 
 	%% This block is normally calculated in FindChrSizes_2 in CNV analysis.
-	for usedChr = 1:num_chrs
+	for usedChr = 1:length(chr_in_use)
 		if (chr_in_use(usedChr) == 1)
 			% determine where the endpoints of ploidy segments are.
 			chr_breaks{usedChr}(1) = 0.0;
@@ -403,8 +403,8 @@ if (Make_figure == true)
 		end;
 	end;
 	max_mean = max(chr_mean);
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1 && chr_mean(chr) ~= 0)
+	for chr = 1:length(chr_in_use)
+		if ((chr_in_use(chr) == 1) && (chr_mean(chr) != 0))
 			chr_mean_scaler(chr) = max_mean/chr_mean(chr);
 		else
 			chr_mean_scaler(chr) = 0;

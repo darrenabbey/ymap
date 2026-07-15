@@ -2,7 +2,7 @@
 %% Calculate allelic fraction cutoffs.
 %%-------------------------------------------------------------------------------------------
 %% Initialize vectors.
-for chr = num_chrs
+for chr = length(chr_in_use)
 	if (chr_in_use(chr) == 1)
 		for segment = 1:length(chrCopyNum{chr})
 			chrSegment_peaks{              chr}{segment} = [];
@@ -22,7 +22,7 @@ fclose (fid);
 
 %% process individual chromosome segments.
 chrCounter = 0;
-for chr = 1:num_chrs
+for chr = 1:length(chr_in_use)
 	if (chr_in_use(chr) == 1)
 		chrCounter += 1;
 		chr_length = chr_size(chr);
