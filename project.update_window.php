@@ -30,16 +30,16 @@
 		//----------------------
 		$projectsDir      = "users/".$user."/projects/";
 		$projectFolders = [];
-                $objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($projectsDir), RecursiveIteratorIterator::SELF_FIRST);
-                foreach($objects as $entry => $object){
-                        if (is_dir($entry)) {
-                                $name_ = str_replace($projectsDir,"",$entry);
-                                if (str_contains($name_,"..") or str_contains($name_,".")) {
-                                } else {
-                                        $projectFolders[] = $name_;
-                                }
-                        }
-                }
+		$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($projectsDir), RecursiveIteratorIterator::SELF_FIRST);
+		foreach($objects as $entry => $object){
+			if (is_dir($entry)) {
+				$name_ = str_replace($projectsDir,"",$entry);
+				if (str_contains($name_,"..") || str_contains($name_,".")) {
+				} else {
+					$projectFolders[] = $name_;
+				}
+			}
+		}
 		sort($projectFolders);
 
 		// Trim path from each folder string.
@@ -115,7 +115,7 @@
 			foreach($objects as $entry => $object){
 				if (is_dir($entry)) {
 					$name_ = str_replace($projectsDir,"",$entry);
-					if (str_contains($name_,"..") or str_contains($name_,".")) {
+					if (str_contains($name_,"..") || str_contains($name_,".")) {
 					} else {
 						$projectFolders[] = $name_;
 					}
@@ -505,7 +505,7 @@
 					document.getElementById("hiddenFormSection7").style.display  = '<?php echo ($hapmap == "" || $hapmap == "none") ? "inline" : "none"; ?>';
 					document.getElementById("hiddenFormSection10").style.display = 'none';
 					document.getElementById("hiddenFormSection11").style.display = 'none';
-					if ((document.getElementById("dataFormat").value == 1) or (document.getElementById("dataFormat").value == 2)) { // WGseq
+					if ((document.getElementById("dataFormat").value == 1) || (document.getElementById("dataFormat").value == 2)) { // WGseq
 						document.getElementById("hiddenFormSection9a").style.display = 'none';
 						document.getElementById("hiddenFormSection9b").style.display = 'inline';
 						document.getElementById("hiddenFormSection9c").style.display = 'none';
@@ -641,6 +641,8 @@
 					document.getElementById("label_bias_1").style.color="grey";
 				}
 				if (document.getElementById("1_bias4").checked) {
+					document.getElementById("1_bias4").checked = true;
+
 					document.getElementById("fig_bias_2").disabled = false;
 					document.getElementById("fig_bias_2").checked  = false;
 					document.getElementById("label_bias_2").style.color="black";
