@@ -24,7 +24,7 @@ else
 end;
 
 
-fprintf(['\nGenerating ChARM figure from project "' project '" data.\n']);
+fprintf(['Starting ChARM analysis for project "' project '" data.\n']);
 
 % Centromere_format : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
 Centromere_format = 0;
@@ -42,7 +42,7 @@ genomeDir  = [main_dir '/users/' genomeUser '/genomes/' genome '/'];
 % Load common_CNV file for project : 'CNVplot2', 'genome_CNV'.
 %--------------------------------------------------------------------------
 dataFile = [projectDir 'Common_CNV.mat'];
-fprintf(['\nLoading common_CNV file for "' project '" : ' dataFile '\n']);
+fprintf(['\tLoading common_CNV file for "' project '" : ' dataFile '\n']);
 load(dataFile);
 
 
@@ -50,8 +50,11 @@ load(dataFile);
 % Check for a 'segmental_aneuploidy.txt' file from previous ChARM analysis.
 %--------------------------------------------------------------------------
 txt_filename = [projectDir 'segmental_aneuploidy.txt'];
+mat_filename = [projectDir 'Common_ChARM.mat'];
 data_loaded = false;
 if (exist(txt_filename, 'file') == 2)
+	fprintf(['\tLoading prior output of ChARM algorithm from "segmental_aneuploidy.txt" file for project "' project '"\n']);
+
 	% Import the tab-delimited file, skipping exactly 1 header row.
 	imported_raw = importdata(txt_filename, '\t', 1);
 
@@ -80,7 +83,7 @@ if (exist(txt_filename, 'file') == 2)
 		end;
 
 		if isempty(missing_chrs_list)
-			fprintf('Successfully imported %d segments from "segmental_aneuploidy.txt" file.\n', num_rows);
+			fprintf('\t\tSuccessfully imported %d segments from "segmental_aneuploidy.txt" file.\n', num_rows);
 			data_loaded = true;
 		else
 			% Convert the array of missing chromosomes to a readable string
@@ -89,23 +92,31 @@ if (exist(txt_filename, 'file') == 2)
 			if length(missing_str) > 2
 				missing_str = missing_str(1:end-2);
 			end;
-                        fprintf('Warning: "segmental_aneuploidy.txt" is missing entries for used chromosomes: [%s]. \nWarning:Recalculating ChARM algorithm.\n', missing_str);
+                        fprintf('\t\tWarning: "segmental_aneuploidy.txt" is missing entries for used chromosomes: [%s]. \n\t\tWarning:Recalculating ChARM algorithm.\n', missing_str);
 		end;
 	else
-		fprintf('Warning: "segmental_aneuploidy.txt" file exists but contains no numeric data records. \nWarning: Recalculating ChARM algorithm.\n');
+		fprintf('\t\tWarning: "segmental_aneuploidy.txt" file exists but contains no numeric data records. \n\t\tWarning: Recalculating ChARM algorithm.\n');
 	end;
 
-
-	%===========================================================================================
-	% Save 'Common_ChARM.mat' file; used by later analyses.
-	%       Produced from data loaded from pre-existing 'segmental_aneuploidy.txt' file.
-	%-------------------------------------------------------------------------------------------
-	fprintf(['Saving output of ChARM algorithm as "Common_ChARM.mat" file for project "' project '"\n']);
-	dataFile = [projectDir 'Common_ChARM.mat'];
-	save(dataFile, 'segmental_aneuploidy');
-	system(['chmod 774 ' dataFile]);
+	if (data_loaded)
+		%===========================================================================================
+		% Save 'Common_ChARM.mat' file; used by later analyses.
+		%	Produced from data loaded from pre-existing 'segmental_aneuploidy.txt' file.
+		%-------------------------------------------------------------------------------------------
+		fprintf(['\tSaving output of ChARM algorithm as "Common_ChARM.mat" file for project "' project '"\n']);
+		dataFile = [projectDir 'Common_ChARM.mat'];
+		save(dataFile, 'segmental_aneuploidy');
+		system(['chmod 774 ' dataFile]);
+	end;
+elseif (exist(mat_filename, 'file') == 2)
+	fprintf(['\tLoading prior output of ChARM algorithm from "Common_ChARM.mat" file for project "' project '"\n']);
+	load(mat_filename);
+	data_loaded = true;
 end;
+
+
 if (~data_loaded)
+	fprintf(['===========================================================================\n']);
 	%%=========================================================================
 	% Control variables.
 	%--------------------------------------------------------------------------
@@ -993,7 +1004,7 @@ if (~data_loaded)
 		system(['chmod 774 ' projectDir 'fig.ChARM_test.5.' figVer 'eps']);
 		system(['chmod 774 ' projectDir 'fig.ChARM_test.5.' figVer 'png']);
 	end;
-
+	fprintf(['---------------------------------------------------------------------------\n']);
 
 	%===========================================================================================
 	% Save 'Common_ChARM.mat' file; used by later analyses.
@@ -1036,7 +1047,7 @@ fprintf(['Saving output of ChARM algorithm as "segmental_aneuploidy.txt" file fo
 filename = [projectDir 'segmental_aneuploidy.txt'];
 file_id = fopen(filename, "w");
 if file_id == -1
-	fprintf('\nCould not save to: %s\n', filename);
+	fprintf('\tWARNING: Could not save to: %s\n', filename);
 else
 	% Optional : Write a header line for readability
 	fprintf(file_id, "Chromosome\tBreak_Position\tBreak_Percentage\n");
