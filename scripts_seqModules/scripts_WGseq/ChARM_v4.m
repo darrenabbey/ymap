@@ -37,41 +37,59 @@ show_annotations  = true;
 projectDir = [main_dir '/users/' user '/projects/' project '/'];
 genomeDir  = [main_dir '/users/' genomeUser '/genomes/' genome '/'];
 
+
+%%=========================================================================
+% Load common_CNV file for project : 'CNVplot2', 'genome_CNV'.
+%--------------------------------------------------------------------------
+dataFile = [projectDir 'Common_CNV.mat'];
+fprintf(['\nLoading common_CNV file for "' project '" : ' dataFile '\n']);
+load(dataFile);
+
+
 %%=========================================================================
 % Check for a 'segmental_aneuploidy.txt' file from previous ChARM analysis.
 %--------------------------------------------------------------------------
 txt_filename = [projectDir 'segmental_aneuploidy.txt'];
+data_loaded = false;
 if (exist(txt_filename, 'file') == 2)
 	% Import the tab-delimited file, skipping exactly 1 header row.
 	imported_raw = importdata(txt_filename, '\t', 1);
 
-	% Initialize a clean structural array target.
-	segmental_aneuploidy = struct();
-
 	% Check if the file contains any data rows.
 	if isfield(imported_raw, 'data') && ~isempty(imported_raw.data)
+		segmental_aneuploidy = struct();
 		num_rows = size(imported_raw.data, 1);
-
-		% Linearly map the column indices back to named properties.
 		for i = 1:num_rows
 			segmental_aneuploidy(i).chr      = imported_raw.data(i, 1);
 			segmental_aneuploidy(i).position = imported_raw.data(i, 2);
-			segmental_aneuploidy(i).break    = imported_raw.data(i, 3);
+			data                             = CNVplot2{segmental_aneuploidy(i).chr};
+			chr_size                         = length(data);
+			segmental_aneuploidy(i).break    = segmental_aneuploidy(i).position/chr_size;
 		end
-		fprintf('Successfully imported %d segments from text file.\n', num_rows);
+
+		% Verify each chromosome used has an entry in the 'segmental_aneuploidy.txt' file.
+		loaded_chrs = [segmental_aneuploidy.chr];
+		missing_chr_found = false;
+		for chr = 1:length(chr_in_use)
+			if (chr_in_use(chr) == 1)
+				if (~any(loaded_chrs == chr))
+					missing_chr_found = true;
+					break;
+				end;
+			end;
+		end;
+
+		if (~missing_chr_found)
+			fprintf('Successfully imported %d segments from "segmental_aneuploidy.txt" file.\n', num_rows);
+			data_loaded = true;
+		else
+			fprintf('Warning: "segmental_aneuploidy.txt" is missing entries for one or more active chromosomes; recalculating ChARM algorithm.\n');
+		end;
 	else
-		fprintf('Warning: File "%s" exists but contains no numeric data records.\n', txt_filename);
-	end
-else
-	%%=========================================================================
-	% Load common_CNV file for project : 'CNVplot2', 'genome_CNV'.
-	%--------------------------------------------------------------------------
-	dataFile = [projectDir 'Common_CNV.mat'];
-	fprintf(['\nLoading common_CNV file for "' project '" : ' dataFile '\n']);
-	load(dataFile);
-	vars = who('-file',dataFile)
-
-
+		fprintf('Warning: "segmental_aneuploidy.txt" file exists but contains no numeric data records; recalculating ChARM algorithm.\n');
+	end;
+end;
+if (~data_loaded)
 	%%=========================================================================
 	% Control variables.
 	%--------------------------------------------------------------------------
