@@ -961,7 +961,7 @@ system(['chmod 774 ' dataFile]);
 %
 % Save 'segmental_aneuploidy.txt' file.
 %
-filename = 'segmental_aneuploidy.txt';
+filename = [projectDir 'segmental_aneuploidy.txt'];
 file_id = fopen(filename, "w");
 if file_id == -1
 	fprintf('\nCould not save to: %s\n', filename);
