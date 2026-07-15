@@ -272,7 +272,7 @@
 		foreach($projectFolders_subdir as $key1_=>$subdir) {
 			printProjectFolderInfo($subdir,$projectFolders);
 			foreach($projectFolders_initiated as $key_=>$project) {
-				if (str_contains($project,$subdir)) {
+				if (str_starts_with($project, $subdir . "/")) {
 					// add initiated bulk/other projects to user interface.
 					$key_real = array_search($project,$projectFolders);
 					if (!$exceededSpace) {
@@ -284,7 +284,7 @@
 				}
 			}
 			foreach($projectFolders_bulk_working as $key_=>$project) {
-				if (str_contains($project,$subdir)) {
+				if (str_starts_with($project, $subdir . "/")) {
 					// add working bulk projects to user interface.
 					$key_real = array_search($project,$projectFolders);
 					printProjectInfo("5", $key_real, "000000", "CCCCCC", $user, $project,$key_offset,$prefix);
@@ -292,7 +292,7 @@
 				}
 			}
 			foreach($projectFolders_bulk as $key_=>$project) {
-				if (str_contains($project,$subdir)) {
+				if (str_starts_with($project, $subdir . "/")) {
 					// add working bulk projects to user interface.
 					$key_real = array_search($project,$projectFolders);
 					printProjectInfo("5", $key_real, "000000", "CCCCCC", $user, $project,$key_offset,$prefix);
@@ -300,7 +300,7 @@
 				}
 			}
 			foreach($projectFolders_working as $key_=>$project) {
-				if (str_contains($project,$subdir)) {
+				if (str_starts_with($project, $subdir . "/")) {
 					// add other working projects to user interface.
 					$key_real = array_search($project,$projectFolders);
 					printProjectInfo("2", $key_real, "BB9900", "FFFFFF", $user, $project,$key_offset,$prefix);
@@ -308,7 +308,7 @@
 				}
 			}
 			foreach($projectFolders_complete as $key_=>$project) {
-				if (str_contains($project,$subdir)) {
+				if (str_starts_with($project, $subdir . "/")) {
 					// add complete bulk/other projects to user interface.
 					$key_real = array_search($project,$projectFolders);
 					if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {

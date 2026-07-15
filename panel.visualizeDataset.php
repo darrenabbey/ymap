@@ -139,7 +139,7 @@
 			//==========================================
 			// Add bulk projects being worked on to user interface.
 			foreach($projectFolders_working as $key_=>$project) {
-				if (str_contains($project,$subdir)) {
+				if (str_starts_with($project, $subdir . "/")) {
 					$key_real = array_search($project,$projectFolders);
 					addBulkProjectsBeingWorkedOnToUserInterface($key_real,$user,$project,$prefix,$key_display);
 					if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
@@ -151,7 +151,7 @@
 			//==========================================
 			// Add projects not yet started to user interface.
 			foreach($projectFolders_starting as $key_=>$project) {
-				if (str_contains($project,$subdir)) {
+				if (str_starts_with($project, $subdir . "/")) {
 					$key_real = array_search($project,$projectFolders);
 					addProjectsNotYetStartedToUserInterface($key_real,$user,$project,$prefix,$key_display);
 					$key_display += 1;
@@ -161,7 +161,7 @@
 			//==========================================
 			// Add other projects being worked on to user interface.
 			foreach($projectFolders_working as $key_=>$project) {
-				if (str_contains($project,$subdir)) {
+				if (str_starts_with($project, $subdir . "/")) {
 					$key_real = array_search($project,$projectFolders);
 					addOtherProjectsBeingWorkedOnToUserInterface($key_real,$user,$project,$prefix,$key_display);
 					if (!file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
@@ -173,7 +173,7 @@
 			//==========================================
 			// Add completed projects to user interface.
 			foreach($projectFolders_complete as $key_=>$project) {
-				if (str_contains($project,$subdir)) {
+				if (str_starts_with($project, $subdir . "/")) {
 					$key_real = array_search($project,$projectFolders);
 					addCompletedProjectsToUserInterface($key_real,$user,$project,$prefix,$key_display);
 					$key_display += 1;
@@ -224,7 +224,7 @@
 		foreach($projectFolders_subDir as $key_=>$subdir) {
 			echo "function open_".$subdir."_UserProjects() {\n";
 			foreach($projectFolders_complete as $key_=>$project) {
-				if (str_contains($project,$subdir)) {
+				if (str_starts_with($project, $subdir . "/")) {
 					$warning_file    = "users/".$user."/projects/".$project."/warning.txt";
 					if (file_exists($warning_file)) {
 						$warning_string = trim(file_get_contents($warning_file));
