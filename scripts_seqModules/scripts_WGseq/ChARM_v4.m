@@ -930,7 +930,7 @@ end;
 fprintf('\n\nSaving output of ChARM algorithm.\n');
 fprintf(    '---------------------------------\n');
 dataFile = [projectDir 'Common_ChARM.mat'];
-fprintf(['\nSaving common_ChARM file for "' project '" : ' dataFile '$$$$\n']);
+fprintf(['\nSaving common_ChARM file for "' project '"\n']);
 
 i = 0;
 segmental_aneuploidy = [];
@@ -962,6 +962,7 @@ system(['chmod 774 ' dataFile]);
 % Save 'segmental_aneuploidy.txt' file.
 %
 filename = [projectDir 'segmental_aneuploidy.txt'];
+fprintf(['\nSaving segmental_aneuploidy.txt file for "' project '"\n']);
 file_id = fopen(filename, "w");
 if file_id == -1
 	fprintf('\nCould not save to: %s\n', filename);
@@ -980,9 +981,8 @@ else
 end;
 
 
-
-fprintf('\n\n#===========================#\n');
-fprintf(    '|END OF "ChARM_v4.m" script.|\n');
-fprintf(    '#===========================#\n');
+fprintf('\n#===========================#\n');
+fprintf(  '|END OF "ChARM_v4.m" script.|\n');
+fprintf(  '#===========================#\n');
 
 end
