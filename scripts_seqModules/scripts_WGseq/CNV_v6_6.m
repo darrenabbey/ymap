@@ -864,7 +864,7 @@ for chr = 1:num_chrs
 	end;
 end;
 genome_CNV = genome;
-save([projectDir 'Common_CNV.mat'], 'CNVplot2','genome_CNV');
+save([projectDir 'Common_CNV.mat'], 'CNVplot2','genome_CNV','chr_in_use');
 
 %% change permissions of file.
 system(['chmod 774 ' projectDir 'Common_CNV.mat']);
