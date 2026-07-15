@@ -34,9 +34,9 @@ check_octave_crash() {
 		failed_line="${clean_info%%|*}"
 		failed_line="${failed_line#*:}"
 
-		echo -e "\n[ERROR] Pipeline halted! Octave crashed in script: $failed_script at line: $failed_line" >> "$logName"
-		echo -e "[ERROR] Reason: $failed_message" >> "$logName"
-		echo -e "[ERROR] Terminating Bash script execution immediately.\n"
+		echo -e "\n[ERROR] Pipeline halted! Octave crashed in script: $failed_script at line: $failed_line" >> $logName;
+		echo -e "[ERROR] Reason: $failed_message" >> $logName;
+		echo -e "[ERROR] Terminating Bash script execution immediately.\n" >> $logName;
 
 		cd $main_dir"/scripts_seqModules/scripts_WGseq/";
 		bash cleaning_WGseq.sh "$user" "$project" "$main_dir" 2>> $logName;
