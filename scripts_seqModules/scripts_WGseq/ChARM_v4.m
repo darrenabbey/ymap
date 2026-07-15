@@ -993,30 +993,28 @@ save(dataFile, 'segmental_aneuploidy');
 system(['chmod 774 ' dataFile]);
 
 
+%===================================================================================
+% Save 'segmental_aneuploidy.txt' file.
+%-----------------------------------------------------------------------------------
+fprintf(['Saving output of ChARM algorithm as "segmental_aneuploidy.txt" file for project "' project '"\n']);
 filename = [projectDir 'segmental_aneuploidy.txt'];
-if (exist(filename, 'file') ~= 2)
-	%===================================================================================
-	% Save 'segmental_aneuploidy.txt' file.
-	%-----------------------------------------------------------------------------------
-	fprintf(['Saving output of ChARM algorithm as "segmental_aneuploidy.txt" file for project "' project '"\n']);
-	file_id = fopen(filename, "w");
-	if file_id == -1
-		fprintf('\nCould not save to: %s\n', filename);
-	else
-		% Optional : Write a header line for readability
-		fprintf(file_id, "Chromosome\tBreak_Position\tBreak_Percentage\n");
+file_id = fopen(filename, "w");
+if file_id == -1
+	fprintf('\nCould not save to: %s\n', filename);
+else
+	% Optional : Write a header line for readability
+	fprintf(file_id, "Chromosome\tBreak_Position\tBreak_Percentage\n");
 
-		% Loop through the accumulated struct array and save each entry
-		for idx = 1:length(segmental_aneuploidy)
-			fprintf(file_id, "%d\t%d\t%.6f\n", ...
-			segmental_aneuploidy(idx).chr, ...
-			segmental_aneuploidy(idx).break, ...
-			segmental_aneuploidy(idx).position);
-		end
+	% Loop through the accumulated struct array and save each entry
+	for idx = 1:length(segmental_aneuploidy)
+		fprintf(file_id, "%d\t%d\t%.6f\n", ...
+		segmental_aneuploidy(idx).chr, ...
+		segmental_aneuploidy(idx).position, ...
+		segmental_aneuploidy(idx).break);
+	end
 
-		fclose(file_id);
-		system(['chmod 774 ' filename]);
-	end;
+	fclose(file_id);
+	system(['chmod 774 ' filename]);
 end;
 
 
