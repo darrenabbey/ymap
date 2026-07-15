@@ -15,9 +15,8 @@ if (alleleRatiosFid == -1)
 	printf('[***] openAlleleRatiosTrack.m: Not a valid filename, skipping.');
 else
 	fprintf(alleleRatiosFid, ['track name=' project_ 'AlleleRatios description="' project_ ' allele ratios" useScore=0 itemRGB=On\n']);
-	for chr = 1:num_chrs
-		% avoid running over chromosomes with empty copy number
-		if ( (chr_in_use(chr) == 1) && (~isempty(chrCopyNum{chr})) )
+	for chr = 1:length(chr_in_use)
+		if (chr_in_use(chr) == 1)
 			chrName = chr_name{chr};
 			for chr_bin_SNP = 1:ceil(chr_size(chr)/bases_per_bin_SNP)
 				%
