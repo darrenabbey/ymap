@@ -997,7 +997,7 @@ idx = 0;
 segmental_aneuploidy = [];
 for chr = 1:length(chr_in_use)
 	% avoid entering when there is no data at all
-	if (chr_in_use(chr) == 1 && chr < length(locs))
+	if (chr_in_use(chr) == 1)
 		position  = locs{chr};
 		position(diff(position) == 0) = []; % remove duplicate positions
 		num_edges = length(position);
