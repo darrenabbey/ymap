@@ -150,8 +150,6 @@ if (~data_loaded)
 		end;
 	end;
 
-	num_chrs = length(chr_size);
-
 	%% Load CNV and SNP figure resolutions.
 	if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
 		bases_per_bin           = max(chr_size)/700;
@@ -205,9 +203,9 @@ if (~data_loaded)
 	window_halfwidth = (window_width-1)/2;
 
 	fprintf('\nMedian Filter');
-	for chr = 1:num_chrs
+	for chr = 1:length(chr_in_use)
 		if (chr_in_use(chr) == 1)
-		    	fprintf(['\n\t' num2str(chr) ':' num2str(num_chrs) ':' num2str(length(CNVplot2{chr})) ]);
+		    	fprintf(['\n\t' num2str(chr) ':' num2str(length(chr_in_use)) ':' num2str(length(CNVplot2{chr})) ]);
 			if (length(CNVplot2{chr}) > 2)
 			    	for data = 1:length(CNVplot2{chr})
 					window_start   = max(data-window_halfwidth, 1);
@@ -245,9 +243,9 @@ if (~data_loaded)
 	fprintf('\nSmoothing Filter after median');
 	window_width = smooth_window_width;
 	window_halfwidth = (window_width-1)/2;
-	for chr = 1:num_chrs
+	for chr = 1:length(chr_in_use)
 		if (chr_in_use(chr) == 1)
-			fprintf(['\n\t' num2str(chr) ':' num2str(num_chrs) ':' num2str(length(CNV_median{chr})) ]);
+			fprintf(['\n\t' num2str(chr) ':' num2str(length(chr_in_use)) ':' num2str(length(CNV_median{chr})) ]);
 			CNV_median_smoothed{chr} = smooth_gaussian(CNV_median{chr},smooth_gaussian_sigma,smooth_gaussian_sigma*16);
 		end;
 	end;
@@ -257,9 +255,9 @@ if (~data_loaded)
 	% differentiation filter
 	%-----------------------------------------------------------------------------------------------------
 	fprintf('\nDifferentiation Filter');
-	for chr = 1:num_chrs
+	for chr = 1:length(chr_in_use)
 		if (chr_in_use(chr) == 1)
-			fprintf(['\n\t' num2str(chr) ':' num2str(num_chrs) ':' num2str(length(CNV_median_smoothed{chr})) ]);
+			fprintf(['\n\t' num2str(chr) ':' num2str(length(chr_in_use)) ':' num2str(length(CNV_median_smoothed{chr})) ]);
 			if (length(CNV_median_smoothed{chr}) > 2)
 				for data = 1:length(CNV_median_smoothed{chr})
 					window_start   = max(data-1, 1);
@@ -294,9 +292,9 @@ if (~data_loaded)
 	fprintf('\nSmoothing Filter 2');
 	window_width = smooth_window_width;
 	window_halfwidth = (window_width-1)/2;
-	for chr = 1:num_chrs
+	for chr = 1:length(chr_in_use)
 		if (chr_in_use(chr) == 1)
-			fprintf(['\n\t' num2str(chr) ':' num2str(num_chrs) ':' num2str(length(CNV_differentiated{chr})) ]);
+			fprintf(['\n\t' num2str(chr) ':' num2str(length(chr_in_use)) ':' num2str(length(CNV_differentiated{chr})) ]);
 			%CNV_differentiated_smoothed{chr} = smooth_gaussian(CNV_differentiated{chr},smooth_gaussian_sigma,smooth_gaussian_sigma*16);
 			CNV_differentiated_smoothed{chr} = CNV_differentiated{chr};
 		end;
@@ -307,7 +305,7 @@ if (~data_loaded)
 	% Find local maxima/minima.
 	%-----------------------------------------------------------------------------------------------------
 	fprintf('\nFinding local maxima & minima\n');
-	for chr = 1:num_chrs
+	for chr = 1:length(chr_in_use)
 		if (chr_in_use(chr) == 1)
 			[pks1{chr},locs1{chr}] = findpeaks( CNV_differentiated_smoothed{chr});
 			[pks2{chr},locs2{chr}] = findpeaks(-CNV_differentiated_smoothed{chr});
@@ -336,7 +334,7 @@ if (~data_loaded)
 	if (temp_figures == true)
 		%% Assigning raw and filtered data to convenient names for later use.
 		data1 = CNVplot2;
-		for chr = 1:num_chrs
+		for chr = 1:length(chr_in_use)
 			if (chr_in_use(chr) == 1)
 				data2{chr} = CNV_median{chr};
 				data3{chr} = CNV_median_smoothed{chr};
@@ -348,7 +346,7 @@ if (~data_loaded)
 		fprintf('\nFigure test.1\n');
 		fig = figure(1);    dataShow = data1;
 		set(gcf, 'Position', [0 70 1024 600]);
-		for chr = 1:num_chrs
+		for chr = 1:length(chr_in_use)
 			if (chr_in_use(chr) == 1)
 				left   = chr_posX(chr);    bottom = chr_posY(chr);
 				width  = chr_width(chr);   height = chr_height(chr);
@@ -382,7 +380,7 @@ if (~data_loaded)
 		fprintf('\nFigure test.2\n');
 		fig = figure(2);    dataShow = data2;
 		set(gcf, 'Position', [0 70 1024 600]);
-		for chr = 1:num_chrs
+		for chr = 1:length(chr_in_use)
 			if (chr_in_use(chr) == 1)
 				left   = chr_posX(chr);
 				bottom = chr_posY(chr);
@@ -422,11 +420,15 @@ if (~data_loaded)
 		system(['chmod 774 ' projectDir 'fig.ChARM_test.2.' figVer 'eps']);
 		system(['chmod 774 ' projectDir 'fig.ChARM_test.2.' figVer 'png']);
 
+		%%
+		%% data3 is losing data at the right end of each chromosome for some reason.
+		%%
+
 		delete(fig);
 		fprintf('\nFigure test.3\n');
 		fig = figure(3);    dataShow = data3;
 		set(gcf, 'Position', [0 70 1024 600]);
-		for chr = 1:num_chrs
+		for chr = 1:length(chr_in_use)
 			if (chr_in_use(chr) == 1)
 				left   = chr_posX(chr);
 				bottom = chr_posY(chr);
@@ -471,7 +473,7 @@ if (~data_loaded)
 		fig = figure(4);
 		dataShow = data4;
 		set(gcf, 'Position', [0 70 1024 600]);
-		for chr = 1:num_chrs
+		for chr = 1:length(chr_in_use)
 			if (chr_in_use(chr) == 1)
 				left   = chr_posX(chr);
 				bottom = chr_posY(chr);
@@ -522,7 +524,7 @@ if (~data_loaded)
 	fprintf(  '-------------------------------------------------\n');
 	%% Initialize initial (t=0) posterior probabilities that a data point is in the left vs. right distributions adjacent to each edge.
 	%  Posterior probabilities are likelihood of membership in left vs. right distributions for each edge.
-	for chr = 1:num_chrs
+	for chr = 1:length(chr_in_use)
 		if (chr_in_use(chr) == 1)
 			position  = locs{chr};       % locations of edges for this chromosome.
 			num_edges = length(position);
@@ -567,7 +569,7 @@ if (~data_loaded)
 		%% Calculate Conditional probabilities that a data point is in the left vs. right distributions adjacent to each edge.
 		fprintf('\nUpdate Membership (E-step)\n');
 		fprintf(  '--------------------------\n');
-		for chr = 1:num_chrs
+		for chr = 1:length(chr_in_use)
 			if (chr_in_use(chr) == 1)
 				position  = locs{chr};       % locations of edges for this chromosome.
 				num_edges = length(position);
@@ -632,7 +634,7 @@ if (~data_loaded)
 		end;
 
 		%% Calculate P(theta_(j,k)^(t-1)) terms used in calculating posterior probabilities.
-		for chr = 1:num_chrs
+		for chr = 1:length(chr_in_use)
 			if (chr_in_use(chr) == 1)
 				position         = locs{chr};       % locations of edges for this chromosome.
 				num_edges        = length(position);
@@ -658,7 +660,7 @@ if (~data_loaded)
 
 		%% Calculate posterior probabilities that a data point is in the left vs. right distributions adjacent to each edge.
 		%  Posterior probabilities are likelihood of membership in left vs. right distributions for each edge.
-		for chr = 1:num_chrs
+		for chr = 1:length(chr_in_use)
 			if (chr_in_use(chr) == 1)
 				position     = locs{chr};       % locations of edges for this chromosome.
 				num_edges    = length(position);
@@ -688,7 +690,7 @@ if (~data_loaded)
 		%-----------------------------------------------------------------------------------------------------
 		fprintf('\nMean and Variance computation (M-step 1)\n');
 		fprintf(  '----------------------------------------\n');
-		for chr = 1:num_chrs
+		for chr = 1:length(chr_in_use)
 			if (chr_in_use(chr) == 1)
 				position     = locs{chr};       % locations of edges for this chromosome.
 				num_edges    = length(position);
@@ -724,7 +726,7 @@ if (~data_loaded)
 		fprintf(  '--------------------------\n');
 		pos_change   = [];
 		fprintf(['\nIteration : ' num2str(t) ]);
-		for chr = 1:num_chrs
+		for chr = 1:length(chr_in_use)
 			if (chr_in_use(chr) == 1)
 				position     = locs{chr};       % locations of edges for this chromosome.
 				num_edges    = length(position);
@@ -809,7 +811,7 @@ if (~data_loaded)
 	%-----------------------------------------------------------------------------------------------------
 	fprintf('\n\nWindow Similarity test\n');
 	fprintf(    '----------------------\n');
-	for chr = 1:num_chrs
+	for chr = 1:length(chr_in_use)
 		if (chr_in_use(chr) == 1)
 			% running over chromosomes and performing similarity test, also
 			% avoiding etering if all of the data is empty
@@ -946,7 +948,7 @@ if (~data_loaded)
 		fprintf('\nFigure test.5\n');
 		fig = figure(1);    dataShow = data1;
 		set(gcf, 'Position', [0 70 1024 600]*2);
-		for chr = 1:num_chrs
+		for chr = 1:length(chr_in_use)
 			if (chr_in_use(chr) == 1)
 				left   = chr_posX(chr);    bottom = chr_posY(chr);
 				width  = chr_width(chr);   height = chr_height(chr);
