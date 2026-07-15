@@ -572,6 +572,7 @@
 			}
 
 			log_stuff($user,$project,"","","","project:UPDATE initiated.");
+			fwrite($logOutput, "Update task added to the processing queue.\n");
 			// Move to user directory
 			chdir("users/".$user);
 
