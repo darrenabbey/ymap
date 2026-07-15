@@ -155,21 +155,9 @@
 		// Get existing hapmap.
 		$fileName = $project_dir."/genome.txt";
 		// Read all lines into an array
-		$lines = file($fileName, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-		$count = count($lines);
-		if ($count === 0) {
-			$genome     = "";
-			$hapmap_old = "none";
-		} elseif ($count === 1) {
-			$genome = $lines[0];
-			$hapmap_old = "none";
-		} elseif ($count === 2) {
-			$genome = $lines[0];
-			$hapmap_old = $lines[1];
-		} else {
-			$genome = $lines[0];
-			$hapmap_old = $lines[1];
-		}
+		$lines = is_readable($f = $project_dir."/genome.txt") ? file($f, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) : [];
+		$genome = trim($lines[0] ?? "");
+		$hapmap_old = trim($lines[1] ?? "none");
 
 		// get existing hapmap user.
 		// figure out which hapmaps have been defined, if any.
