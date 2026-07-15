@@ -683,9 +683,9 @@ for chr_to_draw  = 1:length(chr_order)
 				for segment = 1:length(chrCopyNum{chr})
 					subplot('Position',[(left+chr_width(chr)+0.005)+width*(segment-1) bottom-0.007 width height+0.007]);
 
-					start_idx = round(1 + length(CNVplot2{targetChr}) * chr_breaks{targetChr}(segment));
-					end_idx   = round(length(CNVplot2{targetChr}) * chr_breaks{targetChr}(segment+1));
-					segment_data = CNVplot2{targetChr}(start_idx:end_idx);
+					start_idx = round(1 + length(CNVplot2{chr}) * chr_breaks{chr}(segment));
+					end_idx   = round(length(CNVplot2{chr}) * chr_breaks{chr}(segment+1));
+					segment_data = CNVplot2{chr}(start_idx:end_idx);
 					if (Low_quality_ploidy_estimate)
 						histAll{segment} = segment_data * ploidy * ploidyAdjust;
 					else
