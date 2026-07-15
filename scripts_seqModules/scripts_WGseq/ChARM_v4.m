@@ -94,6 +94,16 @@ if (exist(txt_filename, 'file') == 2)
 	else
 		fprintf('Warning: "segmental_aneuploidy.txt" file exists but contains no numeric data records. \nWarning: Recalculating ChARM algorithm.\n');
 	end;
+
+
+	%===========================================================================================
+	% Save 'Common_ChARM.mat' file; used by later analyses.
+	%       Produced from data loaded from pre-existing 'segmental_aneuploidy.txt' file.
+	%-------------------------------------------------------------------------------------------
+	fprintf(['Saving output of ChARM algorithm as "Common_ChARM.mat" file for project "' project '"\n']);
+	dataFile = [projectDir 'Common_ChARM.mat'];
+	save(dataFile, 'segmental_aneuploidy');
+	system(['chmod 774 ' dataFile]);
 end;
 if (~data_loaded)
 	%%=========================================================================
@@ -983,40 +993,39 @@ if (~data_loaded)
 		system(['chmod 774 ' projectDir 'fig.ChARM_test.5.' figVer 'eps']);
 		system(['chmod 774 ' projectDir 'fig.ChARM_test.5.' figVer 'png']);
 	end;
-end;
 
 
-%===========================================================================================
-% Save 'Common_ChARM.mat' file; used by later analyses.
-%	Either produced from data loaded from pre-existing 'segmental_aneuploidy.txt' file.
-%	Or produced by ChARM algorithm block above.
-%-------------------------------------------------------------------------------------------
-fprintf(['Saving output of ChARM algorithm as "Common_ChARM.mat" file for project "' project '"\n']);
-dataFile = [projectDir 'Common_ChARM.mat'];
-idx = 0;
-segmental_aneuploidy = [];
-for chr = 1:length(chr_in_use)
-	% avoid entering when there is no data at all
-	if (chr_in_use(chr) == 1)
-		position  = locs{chr};
-		position(diff(position) == 0) = []; % remove duplicate positions
-		num_edges = length(position);
-		data      = CNVplot2{chr};
-		chr_size  = length(data);
-		for edge = 1:num_edges
-			if (position(edge) == 1) || (position(edge) == chr_size)
-				% nothing is added to file, as these edges are later assumed.
-			else
-				idx = idx+1;
-				segmental_aneuploidy(idx).chr      = chr;			% chromosome being examined.
-				segmental_aneuploidy(idx).position = position(edge);		% position in bins along the chromosome of edge.
-				segmental_aneuploidy(idx).break    = position(edge)/chr_size;	% percent along chromosome of edge.
+	%===========================================================================================
+	% Save 'Common_ChARM.mat' file; used by later analyses.
+	%	Produced by ChARM algorithm block above.
+	%-------------------------------------------------------------------------------------------
+	fprintf(['Saving output of ChARM algorithm as "Common_ChARM.mat" file for project "' project '"\n']);
+	dataFile = [projectDir 'Common_ChARM.mat'];
+	idx = 0;
+	segmental_aneuploidy = [];
+	for chr = 1:length(chr_in_use)
+		% avoid entering when there is no data at all
+		if (chr_in_use(chr) == 1)
+			position  = locs{chr};
+			position(diff(position) == 0) = []; % remove duplicate positions
+			num_edges = length(position);
+			data      = CNVplot2{chr};
+			chr_size  = length(data);
+			for edge = 1:num_edges
+				if (position(edge) == 1) || (position(edge) == chr_size)
+					% nothing is added to file, as these edges are later assumed.
+				else
+					idx = idx+1;
+					segmental_aneuploidy(idx).chr      = chr;			% chromosome being examined.
+					segmental_aneuploidy(idx).position = position(edge);		% position in bins along the chromosome of edge.
+					segmental_aneuploidy(idx).break    = position(edge)/chr_size;	% percent along chromosome of edge.
+				end;
 			end;
 		end;
 	end;
+	save(dataFile, 'segmental_aneuploidy');
+	system(['chmod 774 ' dataFile]);
 end;
-save(dataFile, 'segmental_aneuploidy');
-system(['chmod 774 ' dataFile]);
 
 
 %===================================================================================
