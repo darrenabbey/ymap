@@ -137,7 +137,7 @@ elif [[ -d "$main_dir/users/default/projects/$projectParent" ]]; then
 	projectParentDirectory="$main_dir/users/default/projects/$projectParent";
 	projectParentUser="default";
 fi
-echo =e "\tmain_dir               = $main_dir" >> $logName;
+echo -e "\tmain_dir               = $main_dir" >> $logName;
 echo -e "\tprojectParentDirectory = $projectParentDirectory" >> $logName;
 echo -e "\tprojectParentUser      = $projectParentUser" >> $logName;
 
