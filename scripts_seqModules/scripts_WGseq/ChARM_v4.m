@@ -42,7 +42,7 @@ genomeDir  = [main_dir '/users/' genomeUser '/genomes/' genome '/'];
 % Load common_CNV file for project : 'CNVplot2', 'genome_CNV'.
 %--------------------------------------------------------------------------
 dataFile = [projectDir 'Common_CNV.mat'];
-fprintf(['\tLoading common_CNV file for "' project '" : ' dataFile '\n']);
+fprintf(['Loading "common_CNV.mat" file.\n']);
 load(dataFile);
 
 
@@ -53,7 +53,7 @@ txt_filename = [projectDir 'segmental_aneuploidy.txt'];
 mat_filename = [projectDir 'Common_ChARM.mat'];
 data_loaded = false;
 if (exist(txt_filename, 'file') == 2)
-	fprintf(['\tLoading prior output of ChARM algorithm from "segmental_aneuploidy.txt" file for project "' project '"\n']);
+	fprintf(['Loading prior output of ChARM algorithm from "segmental_aneuploidy.txt" file.\n']);
 
 	% Import the tab-delimited file, skipping exactly 1 header row.
 	imported_raw = importdata(txt_filename, '\t', 1);
@@ -83,7 +83,7 @@ if (exist(txt_filename, 'file') == 2)
 		end;
 
 		if isempty(missing_chrs_list)
-			fprintf('\t\tSuccessfully imported %d segments from "segmental_aneuploidy.txt" file.\n', num_rows);
+			fprintf('\tSuccessfully imported %d segments from "segmental_aneuploidy.txt" file.\n', num_rows);
 			data_loaded = true;
 		else
 			% Convert the array of missing chromosomes to a readable string
@@ -92,10 +92,10 @@ if (exist(txt_filename, 'file') == 2)
 			if length(missing_str) > 2
 				missing_str = missing_str(1:end-2);
 			end;
-                        fprintf('\t\tWarning: "segmental_aneuploidy.txt" is missing entries for used chromosomes: [%s]. \n\t\tWarning:Recalculating ChARM algorithm.\n', missing_str);
+                        fprintf('\tWarning: "segmental_aneuploidy.txt" is missing entries for used chromosomes: [%s]. \n\tWarning:Recalculating ChARM algorithm.\n', missing_str);
 		end;
 	else
-		fprintf('\t\tWarning: "segmental_aneuploidy.txt" file exists but contains no numeric data records. \n\t\tWarning: Recalculating ChARM algorithm.\n');
+		fprintf('\tWarning: "segmental_aneuploidy.txt" file exists but contains no numeric data records. \n\tWarning: Recalculating ChARM algorithm.\n');
 	end;
 
 	if (data_loaded)
@@ -103,13 +103,13 @@ if (exist(txt_filename, 'file') == 2)
 		% Save 'Common_ChARM.mat' file; used by later analyses.
 		%	Produced from data loaded from pre-existing 'segmental_aneuploidy.txt' file.
 		%-------------------------------------------------------------------------------------------
-		fprintf(['\tSaving output of ChARM algorithm as "Common_ChARM.mat" file for project "' project '"\n']);
+		fprintf(['Saving output of ChARM algorithm as "Common_ChARM.mat" file.\n']);
 		dataFile = [projectDir 'Common_ChARM.mat'];
 		save(dataFile, 'segmental_aneuploidy');
 		system(['chmod 774 ' dataFile]);
 	end;
 elseif (exist(mat_filename, 'file') == 2)
-	fprintf(['\tLoading prior output of ChARM algorithm from "Common_ChARM.mat" file for project "' project '"\n']);
+	fprintf(['\tLoading prior output of ChARM algorithm from "Common_ChARM.mat" file.\n']);
 	load(mat_filename);
 	data_loaded = true;
 end;
@@ -1010,7 +1010,7 @@ if (~data_loaded)
 	% Save 'Common_ChARM.mat' file; used by later analyses.
 	%	Produced by ChARM algorithm block above.
 	%-------------------------------------------------------------------------------------------
-	fprintf(['Saving output of ChARM algorithm as "Common_ChARM.mat" file for project "' project '"\n']);
+	fprintf(['Saving output of ChARM algorithm as "Common_ChARM.mat" file.\n']);
 	dataFile = [projectDir 'Common_ChARM.mat'];
 	idx = 0;
 	segmental_aneuploidy = [];
@@ -1043,7 +1043,7 @@ end;
 % Save 'segmental_aneuploidy.txt' file.
 %	Overwrites previous version, cleaning up any manual edit errors.
 %-----------------------------------------------------------------------------------
-fprintf(['Saving output of ChARM algorithm as "segmental_aneuploidy.txt" file for project "' project '"\n']);
+fprintf(['Saving output of ChARM algorithm as "segmental_aneuploidy.txt" file.\n']);
 filename = [projectDir 'segmental_aneuploidy.txt'];
 file_id = fopen(filename, "w");
 if file_id == -1

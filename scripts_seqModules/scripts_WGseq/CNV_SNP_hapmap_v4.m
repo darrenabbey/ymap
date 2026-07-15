@@ -683,32 +683,28 @@ for chr_to_draw  = 1:length(chr_order)
 				for segment = 1:length(chrCopyNum{chr})
 					subplot('Position',[(left+chr_width(chr)+0.005)+width*(segment-1) bottom-0.007 width height+0.007]);
 
-					% The CNV-histogram values were normalized to a median value of 1.
-					for i = round(1+length(CNVplot2{chr})*chr_breaks{chr}(segment)):round(length(CNVplot2{chr})*chr_breaks{chr}(segment+1))
-						if (Low_quality_ploidy_estimate)
-							histAll{segment}(i) = CNVplot2{chr}(i)*ploidy*ploidyAdjust;
-						else
-							histAll{segment}(i) = CNVplot2{chr}(i)*ploidy;
-						end;
+					start_idx = round(1 + length(CNVplot2{targetChr}) * chr_breaks{targetChr}(segment));
+					end_idx   = round(length(CNVplot2{targetChr}) * chr_breaks{targetChr}(segment+1));
+					segment_data = CNVplot2{targetChr}(start_idx:end_idx);
+					if (Low_quality_ploidy_estimate)
+						histAll{segment} = segment_data * ploidy * ploidyAdjust;
+					else
+						histAll{segment} = segment_data * ploidy;
 					end;
 
 					% make a histogram of CNV data, then smooth it for display.
-					histogram_end                                    = 15;             % end point in copy numbers for the histogram, this should be way outside the expected range.
-					histAll{segment}(histAll{segment}<=0)            = [];
-					histAll{segment}(length(histAll{segment})+1)     = 0;              % endpoints added to ensure histogram bounds.
-					histAll{segment}(length(histAll{segment})+1)     = histogram_end;
-					histAll{segment}(histAll{segment}<0)             = [];             % crop off any copy data outside the range.
-					histAll{segment}(histAll{segment}>histogram_end) = [];
-					smoothed{segment}                                = smooth_gaussian(hist(histAll{segment},histogram_end*20),2,10);
+					histogram_end      = 15;             % end point in copy numbers for the histogram, this should be way outside the expected range.
+					valid_data = histAll{segment}(histAll{segment} > 0 & histAll{segment} <= histogram_end);
+					histAll{segment}   = [valid_data, 0, histogram_end];
+					smoothed{segment}  = smooth_gaussian(hist(histAll{segment},histogram_end*20),2,10);
 
 					% make a smoothed version of just the endpoints used to ensure histogram bounds.
-					histAll2{segment}(1)                             = 0;
-					histAll2{segment}(2)                             = histogram_end;
-					smoothed2{segment}                               = smooth_gaussian(hist(histAll2{segment},histogram_end*20),2,10);
+					histAll2_data      = [0, histogram_end];
+					smoothed2{segment} = smooth_gaussian(hist(histAll2_data, histogram_end*20), 2, 10);
 
 					% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
-					smoothed{segment}                                = (smoothed{segment}-smoothed2{segment});
-					smoothed{segment}                                = smoothed{segment}/max(smoothed{segment});
+					smoothed{segment}  = smoothed{segment}-smoothed2{segment};
+					smoothed{segment}  = smoothed{segment}/max(smoothed{segment});
 
 					% draw lines to mark whole copy number changes.
 					plot([0;300], [0;       0      ],'color',[0.00 0.00 0.00]);
