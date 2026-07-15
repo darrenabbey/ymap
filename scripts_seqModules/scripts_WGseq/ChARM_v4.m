@@ -69,24 +69,30 @@ if (exist(txt_filename, 'file') == 2)
 
 		% Verify each chromosome used has an entry in the 'segmental_aneuploidy.txt' file.
 		loaded_chrs = [segmental_aneuploidy.chr];
-		missing_chr_found = false;
+		missing_chrs_list = [];
 		for chr = 1:length(chr_in_use)
 			if (chr_in_use(chr) == 1)
 				if (~any(loaded_chrs == chr))
-					missing_chr_found = true;
+					missing_chrs_list = [missing_chrs_list, chr];
 					break;
 				end;
 			end;
 		end;
 
-		if (~missing_chr_found)
+		if isempty(missing_chrs_list)
 			fprintf('Successfully imported %d segments from "segmental_aneuploidy.txt" file.\n', num_rows);
 			data_loaded = true;
 		else
-			fprintf('Warning: "segmental_aneuploidy.txt" is missing entries for one or more active chromosomes; recalculating ChARM algorithm.\n');
+			% Convert the array of missing chromosomes to a readable string
+			missing_str = num2str(missing_chrs_list, '%d, ');
+			% Strip the trailing comma and space
+			if length(missing_str) > 2
+				missing_str = missing_str(1:end-2);
+			end;
+                        fprintf('Warning: "segmental_aneuploidy.txt" is missing entries for used chromosomes: [%s]. \nWarning:Recalculating ChARM algorithm.\n', missing_str);
 		end;
 	else
-		fprintf('Warning: "segmental_aneuploidy.txt" file exists but contains no numeric data records; recalculating ChARM algorithm.\n');
+		fprintf('Warning: "segmental_aneuploidy.txt" file exists but contains no numeric data records. \nWarning: Recalculating ChARM algorithm.\n');
 	end;
 end;
 if (~data_loaded)
