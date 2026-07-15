@@ -284,7 +284,7 @@ with open(inputFile_C, "r") as data_C, open(logName, "a") as log_file:
 
 # Output child lines from hapmap positions.
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t|\tOutputting lines from child dataset that match coordinates of hapmap loci.\n");
+	myfile.write("\t\t|\tOutputting lines from child dataset that match coordinates of hapmap loci.\n");
 
 for locus in hapmap_loci:
 	if locus in child_SNPs:
