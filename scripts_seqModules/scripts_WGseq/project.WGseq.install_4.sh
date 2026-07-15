@@ -161,7 +161,7 @@ echo -e "\t|\t        end;" >> $logName;
 echo -e "\t|\t    end;" >> $logName;
 echo -e "\t|\tend" >> $logName;
 
-echo -e "\tCalling OCTAVE." >> $logName;
+echo -e "\tCalling OCTAVE for CNV analysis." >> $logName;
 cd "$projectDirectory";
 $octave_exec "$outputName" 2>> $logName;
 cd "$main_dir";
@@ -186,8 +186,7 @@ else
 	install /dev/null "$projectDirectory/octave.ChARM.log";
 	echo -e "\toutputName = $outputName" >> $logName;
 
-	##echo -e "function [] = processing2()" > $outputName;
-	echo -e "function processing2" > $outputName;
+	echo -e "function [] = processing2()" > $outputName;
 	echo -e "\tpkg load matgeom;" >> $outputName;
 	echo -e "\tdiary('$projectDirectory/octave.ChARM.log');" >> $outputName;
 	echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
@@ -202,8 +201,7 @@ else
 	echo -e "\tend;" >> $outputName;
 	echo -e "end" >> $outputName;
 
-	##echo -e "\t|\tfunction [] = processing2()" >> $logName;
-	echo -e "\t|\tfunction processing2" >> $logName;
+	echo -e "\t|\tfunction [] = processing2()" >> $logName;
 	echo -e "\t|\t    pkg load matgeom;" >> $logName;
 	echo -e "\t|\t    diary('$projectDirectory/octave.ChARM.log');" >> $logName;
 	echo -e "\t|\t    cd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $logName;
@@ -218,21 +216,18 @@ else
 	echo -e "\t|\t    end;" >> $logName;
 	echo -e "\t|\tend" >> $logName;
 
-	echo -e "\tCalling OCTAVE." >> $logName;
-	echo -e "================================================================================================";
-	echo -e "== ChARM analysis ==============================================================================";
-	echo -e "================================================================================================";
+	echo -e "\tCalling OCTAVE for ChARM analysis." >> $logName;
 	cd "$projectDirectory";
 	$octave_exec "$outputName" 2>> $logName;
 	cd "$main_dir";
 	check_octave_crash;
 fi
 
+
 ##==============================================================================
 ## Perform SNP/LOH analysis on dataset.
 ##------------------------------------------------------------------------------
-if [[ "$project" = "$projectParent" ]]
-then
+if [[ "$project" = "$projectParent" ]]; then
 	echo -e "#==========================#" >> $logName;
 	echo -e "# SNP analysis of dataset. #" >> $logName;
 	echo -e "#==========================#" >> $logName;
@@ -276,7 +271,7 @@ install /dev/null "$outputName";
 install /dev/null "$projectDirectory/octave.SNP_analysis.log";
 echo -e "\toutputName = $outputName" >> $logName;
 
-echo -e "function processing3" > $outputName;
+echo -e "function [] = processing3()" > $outputName;
 echo -e "\tpkg load matgeom;" >> $outputName;
 echo -e "\tdiary('$projectDirectory/octave.SNP_analysis.log');" >> $outputName;
 echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
@@ -291,7 +286,7 @@ echo -e "\t\tend;" >> $outputName;
 echo -e "\tend;" >> $outputName;
 echo -e "end" >> $outputName;
 
-echo -e "\t|\tfunction processing3" >> $logName;
+echo -e "\t|\tfunction [] = processing3()" >> $logName;
 echo -e "\t|\t    pkg load matgeom;" >> $logName;
 echo -e "\t|\t    diary('$projectDirectory/octave.SNP_analysis.log');" >> $logName;
 echo -e "\t|\t    cd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $logName;
@@ -306,10 +301,11 @@ echo -e "\t|\t        end;" >> $logName;
 echo -e "\t|\t    end;" >> $logName;
 echo -e "\t|\tend" >> $logName;
 
-echo -e "\tCalling OCTAVE." >> $logName;
-echo -e "================================================================================================";
-echo -e "== SNP analysis ================================================================================";
-echo -e "================================================================================================";
+if [[ "$project" = "$projectParent" ]]; then
+	echo -e "\tCalling OCTAVE for SNP analysis." >> $logName;
+else
+	echo -e "\tCalling OCTAVE for LOH analysis." >> $logName;
+fi
 cd "$projectDirectory";
 $octave_exec "$outputName" 2>> $logName;
 cd "$main_dir";
@@ -330,7 +326,7 @@ install /dev/null "$outputName";
 install /dev/null "$projectDirectory/octave.final_figs.log";
 echo -e "\toutputName = $outputName" >> $logName;
 
-echo -e "function processing4" > $outputName;
+echo -e "function [] = processing4()" > $outputName;
 echo -e "\tpkg load matgeom;" >> $outputName;
 echo -e "\tdiary('$projectDirectory/octave.final_figs.log');" >> $outputName;
 echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
@@ -345,7 +341,7 @@ echo -e "\t\tend;" >> $outputName;
 echo -e "\tend;" >> $outputName;
 echo -e "end" >> $outputName;
 
-echo -e "\t|\tfunction processing4" >> $logName;
+echo -e "\t|\tfunction [] = processing4()" >> $logName;
 echo -e "\t|\t    pkg load matgeom;" >> $logName;
 echo -e "\t|\t    diary('$projectDirectory/octave.final_figs.log');" >> $logName;
 echo -e "\t|\t    cd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $logName;
@@ -360,10 +356,11 @@ echo -e "\t|\t        end;" >> $logName;
 echo -e "\t|\t    end;" >> $logName;
 echo -e "\t|\tend" >> $logName;
 
-echo -e "\tCalling OCTAVE.   (Log will be appended here after completion.)" >> $logName;
-echo -e "================================================================================================";
-echo -e "== Final figures ===============================================================================";
-echo -e "================================================================================================";
+if [[ "$project" = "$projectParent" ]]; then
+	echo -e "\tCalling OCTAVE for CNV/SNP analysis." >> $logName;
+else
+	echo -e "\tCalling OCTAVE for CNV/LOH analysis." >> $logName;
+fi
 cd "$projectDirectory";
 $octave_exec "$outputName" 2>> $logName;
 cd "$main_dir";

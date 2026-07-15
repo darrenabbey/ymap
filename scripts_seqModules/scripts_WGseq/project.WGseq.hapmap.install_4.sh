@@ -167,7 +167,7 @@ echo -e "\t|\t        end;" >> $logName;
 echo -e "\t|\t    end;" >> $logName;
 echo -e "\t|\tend" >> $logName;
 
-echo -e "\t\tCalling OCTAVE." >> $logName;
+echo -e "\t\tCalling OCTAVE for CNV analysis." >> $logName;
 cd "$projectDirectory";
 $octave_exec "$outputName";
 cd "$script_dir";
@@ -222,10 +222,7 @@ else
 	echo -e "\t|\t    end;" >> $logName;
 	echo -e "\t|\tend" >> $logName;
 
-	echo -e "\t\tCalling OCTAVE." >> $logName;
-	echo -e "================================================================================================";
-	echo -e "== ChARM analysis ==============================================================================";
-	echo -e "================================================================================================";
+	echo -e "\t\tCalling OCTAVE for ChARM analysis." >> $logName;
 	cd "$projectDirectory";
 	$octave_exec "$outputName";
 	cd "$script_dir";
@@ -241,8 +238,7 @@ echo -e "# SNP/LOH analysis of dataset, with hapmap. #" >> $logName;
 echo -e "#===========================================#" >> $logName;
 echo -e "Preprocessing SNP data, with hapmap." >> $condensedLog;
 
-if [[ -f "$projectDirectory/preprocessed_SNPs.txt" ]]
-then
+if [[ -f "$projectDirectory/preprocessed_SNPs.txt" ]]; then
 	echo -e "\t\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 else
 	echo -e "\tGrabbing hapmap data from: $hapmapDirectory/" >> $logName;
@@ -298,10 +294,7 @@ echo -e "\t|\t        end;" >> $logName;
 echo -e "\t|\t    end;" >> $logName;
 echo -e "\t|\tend" >> $logName;
 
-echo -e "\t\tCalling OCTAVE." >> $logName;
-echo -e "================================================================================================";
-echo -e "== SNP analysis ================================================================================";
-echo -e "================================================================================================";
+echo -e "\t\tCalling OCTAVE for SNP/hapmap analysis." >> $logName;
 cd "$projectDirectory";
 $octave_exec "$outputName";
 cd "$script_dir";
@@ -352,10 +345,7 @@ echo -e "\t|\t        end;" >> $logName;
 echo -e "\t|\t    end;" >> $logName;
 echo -e "\t|\tend" >> $logName;
 
-echo -e "\t\tCalling OCTAVE.   (Log will be appended here after completion.)" >> $logName;
-echo -e "================================================================================================";
-echo -e "== CNV/SNP/LOH figure generation ===============================================================";
-echo -e "================================================================================================";
+echo -e "\t\tCalling OCTAVE for CNV/SNP/hapmap analysis." >> $logName;
 cd "$projectDirectory";
 $octave_exec "$outputName";
 cd "$script_dir";

@@ -275,11 +275,68 @@ echo -e "\t|\t        end;" >> $logName;
 echo -e "\t|\t    end;" >> $logName;
 echo -e "\t|\tend" >> $logName;
 
-echo -e "\tCalling OCTAVE." >> $logName;
+echo -e "\tCalling OCTAVE for CNV analysis." >> $logName;
 cd "$projectDirectory";
 $octave_exec "$outputName" 2>> $logName;
 cd "$script_dir";
 check_octave_crash;
+
+
+##==============================================================================
+## Perform ChARM analysis of dataset.
+##------------------------------------------------------------------------------
+echo -e "#============================#" >> $logName;
+echo -e "# ChARM analysis of dataset. #" >> $logName;
+echo -e "#============================#" >> $logName;
+echo -e "Analyzing CNV edges." >> $condensedLog;
+
+if [[ -e "$projectDirectory/Common_ChARM.mat" ]]
+then
+	echo -e "\tChARM analysis already completed." >> $logName;
+else
+	echo -e "\tGenerating OCTAVE script to perform ChARM analysis of dataset." >> $logName;
+	outputName="$projectDirectory/processing2.m";
+	install /dev/null "$outputName";
+	install /dev/null "$projectDirectory/octave.ChARM.log";
+	echo -e "\toutputName = $outputName" >> $logName;
+
+	##echo -e "function [] = processing2()" > $outputName;
+	echo -e "function processing2" > $outputName;
+	echo -e "\tpkg load matgeom;" >> $outputName;
+	echo -e "\tdiary('$projectDirectory/octave.ChARM.log');" >> $outputName;
+	echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
+	echo -e "\ttry" >> $outputName
+	echo -e "\t\tChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $outputName;
+	echo -e "\tcatch err" >> $outputName;
+	echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
+	echo -e "\t\tif fileID ~= -1" >> $outputName;
+	echo -e "\t\t\tfprintf(fileID, 'Something went wrong. %s.m:%d|%s\\\\n', err.stack(1).name, err.stack(1).line, err.message);" >> $outputName;
+	echo -e "\t\t\tfclose(fileID);" >> $outputName;
+	echo -e "\t\tend;" >> $outputName;
+	echo -e "\tend;" >> $outputName;
+	echo -e "end" >> $outputName;
+
+	echo -e "\t|\tfunction [] = processing2()" >> $logName;
+	echo -e "\t|\t    pkg load matgeom;" >> $logName;
+	echo -e "\t|\t    diary('$projectDirectory/octave.ChARM.log');" >> $logName;
+	echo -e "\t|\t    cd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $logName;
+	echo -e "\t|\t    try" >> $logName;
+	echo -e "\t|\t        ChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $logName;
+	echo -e "\t|\t    catch err" >> $logName;
+	echo -e "\t|\t        fileID = fopen('$projectDirectory/error.txt', 'w');" >> $logName;
+	echo -e "\t|\t        if fileID ~= -1" >> $logName;
+	echo -e "\t|\t            fprintf(fileID, 'Something went wrong. %%s.m:%%d|%%s\\\\n', err.stack(1).name, err.stack(1).line, err.message);" >> $logName;
+	echo -e "\t|\t            fclose(fileID);" >> $logName;
+	echo -e "\t|\t        end;" >> $logName;
+	echo -e "\t|\t    end;" >> $logName;
+	echo -e "\t|\tend" >> $logName;
+
+	echo -e "\tCalling OCTAVE for ChARM analysis." >> $logName;
+	cd "$projectDirectory";
+	$octave_exec "$outputName" 2>> $logName;
+	cd "$main_dir";
+	check_octave_crash;
+fi
 
 
 if [[ "$hapmapInUse" = 0 ]]; then
@@ -333,10 +390,11 @@ if [[ "$hapmapInUse" = 0 ]]; then
 	echo -e "\t|\t    end;" >> $logName;
 	echo -e "\t|\tend" >> $logName;
 
-	echo -e "\tCalling OCTAVE." >> $logName;
-	echo -e "================================================================================================";
-	echo -e "== SNP analysis ================================================================================";
-	echo -e "================================================================================================";
+	if [[ "$project" = "$projectParent" ]]; then
+		echo -e "\tCalling OCTAVE for SNP analysis." >> $logName;
+	else
+		echo -e "\tCalling OCTAVE for LOH analysis." >> $logName;
+	fi
 	cd "$projectDirectory";
 	$octave_exec "$outputName" 2>> $logName;
 	cd "$script_dir";
@@ -387,10 +445,11 @@ if [[ "$hapmapInUse" = 0 ]]; then
 	echo -e "\t|\t    end;" >> $logName;
 	echo -e "\t|\tend" >> $logName;
 
-	echo -e "\tCalling OCTAVE.   (Log will be appended here after completion.)" >> $logName;
-	echo -e "================================================================================================";
-	echo -e "== Final figures ===============================================================================";
-	echo -e "================================================================================================";
+	if [[ "$project" = "$projectParent" ]]; then
+		echo -e "\tCalling OCTAVE for CNV/SNP analysis." >> $logName;
+	else
+		echo -e "\tCalling OCTAVE for CNV/LOH analysis." >> $logName;
+	fi
 	cd "$projectDirectory";
 	$octave_exec "$outputName" 2>> $logName;
 	cd "$script_dir";
@@ -401,9 +460,9 @@ else
 	##==============================================================================
 	## Perform SNP/hapmap analysis on dataset.
 	##------------------------------------------------------------------------------
-	echo -e "#===========================================#" >> $logName;
-	echo -e "# SNP/LOH analysis of dataset, with hapmap. #" >> $logName;
-	echo -e "#===========================================#" >> $logName;
+	echo -e "#=======================================#" >> $logName;
+	echo -e "# SNP analysis of dataset, with hapmap. #" >> $logName;
+	echo -e "#=======================================#" >> $logName;
 
 	echo -e "Mapping SNPs." >> $condensedLog;
 	echo -e "\t\tGenerating OCTAVE script to perform SNP analysis of dataset." >> $logName;
@@ -442,10 +501,7 @@ else
 	echo -e "\t|\t    end;" >> $logName;
 	echo -e "\t|\tend" >> $logName;
 
-	echo -e "\t\tCalling OCTAVE." >> $logName;
-	echo -e "================================================================================================";
-	echo -e "== SNP analysis ================================================================================";
-	echo -e "================================================================================================";
+	echo -e "\t\tCalling OCTAVE for SNP/hapmap analysis." >> $logName;
 	cd "$projectDirectory";
 	$octave_exec "$outputName" 2>> $logName;
 	cd "$script_dir";
@@ -496,10 +552,7 @@ else
 	echo -e "\t|\t    end;" >> $logName;
 	echo -e "\t|\tend" >> $logName;
 
-	echo -e "\t\tCalling OCTAVE.   (Log will be appended here after completion.)" >> $logName;
-	echo -e "================================================================================================";
-	echo -e "== CNV/SNP/LOH figure generation ===============================================================";
-	echo -e "================================================================================================";
+	echo -e "\t\tCalling OCTAVE for CNV/SNP/hapmap analysis." >> $logName;
 	cd "$projectDirectory";
 	$octave_exec "$outputName" 2>> $logName;
 	cd "$script_dir";
