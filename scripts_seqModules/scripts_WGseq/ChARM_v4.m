@@ -998,7 +998,7 @@ if (exist(filename, 'file') ~= 2)
 	%===================================================================================
 	% Save 'segmental_aneuploidy.txt' file.
 	%-----------------------------------------------------------------------------------
-	fprintf(['Saving output of ChARM algorithm as \'segmental_aneuploidy.txt\' file for project \'' project '\'\n']);
+	fprintf(['Saving output of ChARM algorithm as "segmental_aneuploidy.txt" file for project "' project '"\n']);
 	file_id = fopen(filename, "w");
 	if file_id == -1
 		fprintf('\nCould not save to: %s\n', filename);
