@@ -965,7 +965,7 @@ end;
 %	Either produced from data loaded from pre-existing 'segmental_aneuploidy.txt' file.
 %	Or produced by ChARM algorithm block above.
 %-------------------------------------------------------------------------------------------
-fprintf(['Saving output of ChARM algorithm as \'Common_ChARM.mat\' file for project \'' project '\'\n']);
+fprintf(['Saving output of ChARM algorithm as "Common_ChARM.mat" file for project "' project '"\n']);
 dataFile = [projectDir 'Common_ChARM.mat'];
 idx = 0;
 segmental_aneuploidy = [];
