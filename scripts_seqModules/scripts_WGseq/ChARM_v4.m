@@ -993,7 +993,7 @@ fprintf(['Saving output of ChARM algorithm as "Common_ChARM.mat" file for projec
 dataFile = [projectDir 'Common_ChARM.mat'];
 idx = 0;
 segmental_aneuploidy = [];
-for chr = 1:num_chrs
+for chr = 1:length(chr_in_use)
 	% avoid entering when there is no data at all
 	if (chr_in_use(chr) == 1 && chr < length(locs))
 		position  = locs{chr};
