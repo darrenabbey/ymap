@@ -92,6 +92,10 @@ if (isset($_SESSION['logged_on'])) {
 ?>
 </td><td width="70%" style="border:1px solid black; border-radius:10px; padding:10px;" valign="top">
 <b>YMAP news!</b><br><br>
+2026-07-16<ul>
+	<li>CNV/SNP/LOH "high top" linear figure format added.</li>
+	<li>"high top" linar figures scale adjusted to match other linear figures better.</li>
+
 
 2026-07-06<ul>
 	<li><b>Lodderomyces elongisporus NRLL YB-4239 (GCA_030384665.1) reference genome installed.</b></li>

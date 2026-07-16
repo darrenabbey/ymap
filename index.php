@@ -433,16 +433,13 @@ function blank_and_content_tab() {
 				mainFigure1 = fig_linear_GCskew;
 			}
 
-			if ((file_list.indexOf(fig_linear_cartoon+"png") != -1) || (file_list.indexOf(fig_linear_cartoon+"eps") != -1) || (file_list.indexOf(fig_standard_cartoon+"png") != -1) || (file_list.indexOf(fig_standard_cartoon+"png") != -1)) {
+			if ((file_list.indexOf(fig_linear_cartoon+"png") != -1) || (file_list.indexOf(fig_standard_cartoon+"png") != -1)) {
 				string1 += "<b>Chr Cartoons</b> (";
-				if ((file_list.indexOf(fig_linear_cartoon+"png") != -1) || (file_list.indexOf(fig_linear_cartoon+"eps") != -1)) {
+				if (file_list.indexOf(fig_linear_cartoon+"png") != -1) {
 					string1 += "linear ";
 				}
 				if (file_list.indexOf(fig_linear_cartoon+"png") != -1) {
 					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_cartoon+"png\",\"100\")'> ";
-				}
-				if (file_list.indexOf(fig_linear_cartoon+"eps") != -1) {
-					string1 += "<a href='"+fig_linear_cartoon+"eps' download='"+genome+".cartoon_linear.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
 				}
 				if ((file_list.indexOf(fig_standard_cartoon+"png") != -1) || (file_list.indexOf(fig_standard_cartoon+"png") != -1)) {
 					string1 += " or standard ";
@@ -450,12 +447,9 @@ function blank_and_content_tab() {
 				if (file_list.indexOf(fig_standard_cartoon+"png") != -1) {
 					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_cartoon+"png\",\"50\")'> ";
 				}
-				if (file_list.indexOf(fig_standard_cartoon+"eps") != -1) {
-					string1 += "<a href='"+fig_standard_cartoon+"eps' download='"+genome+".cartoon_stacked.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
-				}
 				string1 += ")";
 			}
-			if ((file_list.indexOf(fig_linear_repetitiveness+"png") != -1) || (file_list.indexOf(fig_linear_repetitiveness+"png") != -1) || (file_list.indexOf(fig_standard_repetitiveness+"png") != -1) || (file_list.indexOf(fig_standard_repetitiveness+"eps") != -1)) {
+			if ((file_list.indexOf(fig_linear_repetitiveness+"png") != -1) || (file_list.indexOf(fig_linear_repetitiveness+"png") != -1) || (file_list.indexOf(fig_standard_repetitiveness+"png") != -1)) {
 				string1 += "; Repetitiveness (";
 				if ((file_list.indexOf(fig_linear_repetitiveness+"png") != -1) || (file_list.indexOf(fig_linear_repetitiveness+"png") != -1)) {
 					string1 += "lin. ";
@@ -463,39 +457,27 @@ function blank_and_content_tab() {
 				if (file_list.indexOf(fig_linear_repetitiveness+"png") != -1) {
 					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_repetitiveness+"png\",\"100\")'> ";
 				}
-				if (file_list.indexOf(fig_linear_repetitiveness+"eps") != -1) {
-					string1 += "<a href='"+fig_linear_repetitiveness+"eps' download='"+genome+".repetitiveness_linear.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
-				}
-				if ((file_list.indexOf(fig_standard_repetitiveness+"png") != -1) || (file_list.indexOf(fig_standard_repetitiveness+"eps") != -1)) {
+				if (file_list.indexOf(fig_standard_repetitiveness+"png") != -1) {
 					string1 += " or std. ";
 				}
 				if (file_list.indexOf(fig_standard_repetitiveness+"png") != -1) {
 					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_repetitiveness+"png\",\"50\")'> ";
 				}
-				if (file_list.indexOf(fig_standard_repetitiveness+"eps") != -1) {
-					string1 += "<a href='"+fig_standard_repetitiveness+"eps' download='"+genome+".repetitiveness_stacked.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
-				}
 				string1 += ")";
 			}
-			if ((file_list.indexOf(fig_linear_GCskew+"png") != -1) || (file_list.indexOf(fig_linear_GCskew+"eps") != -1) || (file_list.indexOf(fig_standard_GCskew+"png") != -1) || (file_list.indexOf(fig_standard_GCskew+"eps") != -1)) {
+			if ((file_list.indexOf(fig_linear_GCskew+"png") != -1) || (file_list.indexOf(fig_standard_GCskew+"png") != -1)) {
 				string1 += "<br><b>GC/AT-skew</b> (";
-				if ((file_list.indexOf(fig_linear_GCskew+"png") != -1) || (file_list.indexOf(fig_linear_GCskew+"eps") != -1)) {
+				if (file_list.indexOf(fig_linear_GCskew+"png") != -1) {
 					string1 += "lin. ";
 				}
 				if (file_list.indexOf(fig_linear_GCskew+"png") != -1) {
 					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_GCskew+"png\",\"100\")'> ";
 				}
-				if (file_list.indexOf(fig_linear_GCskew+"eps") != -1) {
-					string1 += "<a href='"+fig_linear_GCskew+"eps' download='"+genome+".GCskew_linear.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
-				}
-				if ((file_list.indexOf(fig_standard_GCskew+"png") != -1) || (file_list.indexOf(fig_standard_GCskew+"eps") != -1)) {
+				if (file_list.indexOf(fig_standard_GCskew+"png") != -1) {
 					string1 += " or std. ";
 				}
 				if (file_list.indexOf(fig_standard_GCskew+"png") != -1) {
 					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_GCskew+"png\",\"50\")'> ";
-				}
-				if (file_list.indexOf(fig_standard_GCskew+"eps") != -1) {
-					string1 += "<a href='"+fig_standard_GCskew+"eps' download='"+genome+".GCskew_stacked.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
 				}
 				string1 += ")";
 			}
@@ -615,87 +597,62 @@ function blank_and_content_tab() {
 				mainFigure1 = fig_linear_SNP;
 			}
 
-			if ((file_list.indexOf(fig_linear_CNV_SNP+"png") != -1) || (file_list.indexOf(fig_linear_CNV_SNP+"eps") != -1) || (file_list.indexOf(fig_standard_CNV_SNP+"png") != -1) || (file_list.indexOf(fig_standard_CNV_SNP+"eps") != -1)) {
-				string1 += "<b>CNV and SNP/LOH</b> (";
-				if ((file_list.indexOf(fig_linear_CNV_SNP+"png") != -1) || (file_list.indexOf(fig_linear_CNV_SNP+"eps") != -1)) {
-					string1 += "linear ";
-				}
+// ============================ CNV/SNP plots ========================
+			if ((file_list.indexOf(fig_linear_CNV_SNP+"png") != -1) || (file_list.indexOf(fig_linear_CNV_SNP_highTop+"png") != -1) || (file_list.indexOf(fig_standard_CNV_SNP+"png") != -1)) {
+				string1 += "<b>CNV/SNP/LOH</b> (";
 				if (file_list.indexOf(fig_linear_CNV_SNP+"png") != -1) {
-					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_SNP+"png\",\"100\")'> ";
+					string1 += "linear <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_SNP+"png\",\"100\")'> ";
 				}
-				if (file_list.indexOf(fig_linear_CNV_SNP+"eps") != -1) {
-					string1 += "<a href='"+fig_linear_CNV_SNP+"eps' download='"+project+".linear.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
-				}
-				if ((file_list.indexOf(fig_standard_CNV_SNP+"png") != -1) || (file_list.indexOf(fig_standard_CNV_SNP+"eps") != -1)) {
-					string1 += " or standard ";
+				if (file_list.indexOf(fig_linear_CNV_SNP_highTop+"png") != -1) {
+					if (file_list.indexOf(fig_linear_CNV_SNP+"png") != -1) {
+						string1 += ", ";
+					}
+					string1 +=  "high-top <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_SNP_highTop+"png\",\"100\")'> ";
 				}
 				if (file_list.indexOf(fig_standard_CNV_SNP+"png") != -1) {
-					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_CNV_SNP+"png\",\"50\")'> ";
+					if ((file_list.indexOf(fig_linear_CNV_SNP_highTop+"png") != -1) || (file_list.indexOf(fig_linear_CNV_SNP+"png") != -1)) {
+						string1 += ", ";
+					}
+					string1 += "stacked <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_CNV_SNP+"png\",\"50\")'> ";
 				}
-				if (file_list.indexOf(fig_standard_CNV_SNP+"eps") != -1) {
-					string1 += "<a href='"+fig_standard_CNV_SNP+"eps' download='"+project+".full.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
-				}
-				if ((file_list.indexOf(fig_linear_manual+"png") != -1) || (file_list.indexOf(fig_linear_manual+"eps") != -1)) {
+				if (file_list.indexOf(fig_linear_manual+"png") != -1) {
 					string1 += " or Linear-Manual ";
 					if (file_list.indexOf(fig_linear_manual+"png") != -1) {
 						string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_manual+"png\",\"100\")'> ";
 					}
-					if (file_list.indexOf(fig_linear_manual+"eps") != -1) {
-						string1 += "<a href='"+fig_linear_manual+"eps' download='"+project+".linear-manual.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
-					}
 				}
 				string1 += ")";
 			}
-			if ((file_list.indexOf(fig_linear_CNV_SNP_RedGreen+"png") != -1) || (file_list.indexOf(fig_linear_CNV_SNP_RedGreen+"eps") != -1) || (file_list.indexOf(fig_standard_CNV_SNP_RedGreen+"png") != -1) || (file_list.indexOf(fig_standard_CNV_SNP_RedGreen+"eps") != -1)) {
+			if ((file_list.indexOf(fig_linear_CNV_SNP_RedGreen+"png") != -1) || (file_list.indexOf(fig_standard_CNV_SNP_RedGreen+"png") != -1)) {
 				string1 += "; alternate colors (";
-				if ((file_list.indexOf(fig_linear_CNV_SNP_RedGreen+"png") != -1) || (file_list.indexOf(fig_linear_CNV_SNP_RedGreen+"eps") != -1)) {
-					string1 += "lin. ";
-				}
 				if (file_list.indexOf(fig_linear_CNV_SNP_RedGreen+"png") != -1) {
-					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_SNP_RedGreen+"png\",\"100\")'> ";
-				}
-				if (file_list.indexOf(fig_linear_CNV_SNP_RedGreen+"eps") != -1) {
-					string1 += "<a href='"+fig_linear_CNV_SNP_RedGreen+"eps' download='"+project+".linear-alt.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
-				}
-				if ((file_list.indexOf(fig_standard_CNV_SNP_RedGreen+"png") != -1) || (file_list.indexOf(fig_standard_CNV_SNP_RedGreen+"eps") != -1)) {
-					string1 += " or std. ";
+					string1 += "linear <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_SNP_RedGreen+"png\",\"100\")'> ";
 				}
 				if (file_list.indexOf(fig_standard_CNV_SNP_RedGreen+"png") != -1) {
-					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_CNV_SNP_RedGreen+"png\",\"50\")'> ";
-				}
-				if (file_list.indexOf(fig_standard_CNV_SNP_RedGreen+"eps") != -1) {
-					string1 += "<a href='"+fig_standard_CNV_SNP_RedGreen+"eps' download='"+project+".full-alt.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
+					string1 += ", stacked <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_CNV_SNP_RedGreen+"png\",\"50\")'> ";
 				}
 				string1 += ")";
 			}
-			if (file_list.indexOf(fig_linear_CNV_SNP_highTop+"png") != -1) {
-				string1 += "; ";
-				string1 +=  "<button onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_SNP_highTop+"png\",\"100\")'>high top</button>";
-			}
-
-			if ((file_list.indexOf(fig_linear_CNV+"png") != -1) || (file_list.indexOf(fig_linear_CNV+"eps") != -1) || (file_list.indexOf(fig_standard_CNV+"png") != -1) || (file_list.indexOf(fig_standard_CNV+"eps") != -1)) {
+// ============================ CNV plots ============================
+			if ((file_list.indexOf(fig_linear_CNV+"png") != -1) || (file_list.indexOf(fig_linear_CNV_highTop+"png") != -1) || (file_list.indexOf(fig_standard_CNV+"png") != -1)) {
 				string1 += "<br><b>CNV only</b> (";
-				if ((file_list.indexOf(fig_linear_CNV+"png") != -1) || (file_list.indexOf(fig_linear_CNV+"eps") != -1)) {
-					string1 += "lin. ";
-				}
 				if (file_list.indexOf(fig_linear_CNV+"png") != -1) {
-					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV+"png\",\"100\")'> ";
+					string1 += "linear <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV+"png\",\"100\")'> ";
 				}
-				if (file_list.indexOf(fig_linear_CNV+"eps") != -1) {
-					string1 += "<a href='"+fig_linear_CNV+"eps' download='"+project+".linar-CNV.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
-				}
-				if ((file_list.indexOf(fig_standard_CNV+"png") != -1) || (file_list.indexOf(fig_standard_CNV+"eps") != -1)) {
-					string1 += " or std. ";
+				if (file_list.indexOf(fig_linear_CNV_highTop+"png") != -1) {
+					if (file_list.indexOf(fig_linear_CNV+"png") != -1) {
+						string1 += ", ";
+					}
+					string1 +=  "high-top <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_highTop+"png\",\"100\")'> ";
 				}
 				if (file_list.indexOf(fig_standard_CNV+"png") != -1) {
-					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_CNV+"png\",\"50\")'> ";
-				}
-				if (file_list.indexOf(fig_standard_CNV+"eps") != -1) {
-					string1 += "<a href='"+fig_standard_CNV+"eps' download='"+project+".full-CNV.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
+					if ((file_list.indexOf(fig_linear_CNV_highTop+"png") != -1) || (file_list.indexOf(fig_linear_CNV+"png") != -1)) {
+						string1 += ", ";
+					}
+					string1 += "stacked <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_CNV+"png\",\"50\")'> ";
 				}
 				string1 += ")";
 			}
-
 			// Show CNV bias figure for SnpCghArray, WGseq, and ddRADseq.
 			if ((file_list.indexOf(CNV_bias_SnpCghArray_GCcontent+"png") != -1) || (file_list.indexOf(CNV_bias_SnpCghArray_end+"png") != -1)) {
 				string1 += "; CNV biases ";
@@ -715,10 +672,6 @@ function blank_and_content_tab() {
 					string1 += "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_WGseq_GCcontent+"png\",\"50\")'>%GC</button>";
 				}
 			}
-			if (file_list.indexOf(fig_linear_CNV_highTop+"png") != -1) {
-				string1 += "; CNV ";
-				string1 +=  "<button onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_highTop+"png\",\"100\")'>high top</button>";
-			}
 			if ((file_list.indexOf(CNV_bias_ddRADseq_1+"png") != -1) || (file_list.indexOf(CNV_bias_ddRADseq_2+"png") != -1) || (file_list.indexOf(CNV_bias_ddRADseq_3+"png") != -1)) {
 				string1 += "; CNV biases ";
 				if (file_list.indexOf(CNV_bias_ddRADseq_1) != -1) {
@@ -731,32 +684,20 @@ function blank_and_content_tab() {
 					string1 += "<button onclick='loadImage(\""+key+"\",\""+CNV_bias_ddRADseq_3+"png\",\"100\")'>chr end</button>";
 				}
 			}
-			if (file_list.indexOf(CGD_CNV_track+"gff3") != -1) {
-				string1 += "; <a href=\"" + CGD_CNV_track + "gff3\" target=\"_blank\">GFF3 format CNV track</a>";
-			}
-			if ((file_list.indexOf(fig_linear_SNP+"png") != -1) || (file_list.indexOf(fig_linear_SNP+"eps") != -1) || (file_list.indexOf(fig_standard_SNP+"png") != -1) || (file_list.indexOf(fig_standard_SNP+"eps") != -1)) {
+// ============================ SNP plots ============================
+			if ((file_list.indexOf(fig_linear_SNP+"png") != -1) || (file_list.indexOf(fig_standard_SNP+"png") != -1)) {
 				string1 += "<br><b>SNP/LOH only</b> (";
-				if ((file_list.indexOf(fig_linear_SNP+"png") != -1) || (file_list.indexOf(fig_linear_SNP+"eps") != -1)) {
-					string1 += "lin. ";
-				}
 				if (file_list.indexOf(fig_linear_SNP+"png") != -1) {
-					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_SNP+"png\",\"100\")'> ";
-				}
-				if (file_list.indexOf(fig_linear_SNP+"eps") != -1) {
-					string1 += "<a href='"+fig_linear_SNP+"eps' download='"+project+".linear-SNP.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
-				}
-				if ((file_list.indexOf(fig_standard_SNP+"png") != -1) || (file_list.indexOf(fig_standard_SNP+"eps") != -1)) {
-					string1 += " or std. ";
+					string1 += "linear <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_linear_SNP+"png\",\"100\")'> ";
 				}
 				if (file_list.indexOf(fig_standard_SNP+"png") != -1) {
-					string1 += "<img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_SNP+"png\",\"50\")'> ";
-				}
-				if (file_list.indexOf(fig_standard_SNP+"eps") != -1) {
-					string1 += "<a href='"+fig_standard_SNP+"eps' download='"+project+".full-SNP.eps'><img src='images/icon_eps_15b.png' alt-text='[EPS] button' align='center''></a>";
+					if (file_list.indexOf(fig_linear_SNP+"png") != -1) {
+						string1 += ", ";
+					}
+					string1 += "stacked <img src='images/icon_png_15b.png' alt-text='[PNG] button' align='center' onclick='loadImage(\""+key+"\",\""+fig_standard_SNP+"png\",\"50\")'> ";
 				}
 				string1 += ")";
 			}
-
 			// Show allelic ratio plot version for ddRADseq and WGseq.
 			if ((file_list.indexOf(fig_linear_SNPratio_histogram+"png") != -1) || (file_list.indexOf(fig_linear_SNPratio_fireplot+"png") != -1)) {
 				string1 += "; SNP ratios ";
@@ -767,15 +708,11 @@ function blank_and_content_tab() {
 					string1 += "<button onclick='loadImage(\""+key+"\",\""+fig_linear_SNPratio_fireplot+"png\",\"100\")'>fire plot</button>";
 				}
 			}
-
-			if (file_list.indexOf(CGD_SNP_track+"bed") != -1) {
-				string1 += "; <a href=\"" + CGD_SNP_track + "bed\" target=\"_blank\">BED format allele ratio track</a>";
-			}
-
+// ============================ ZIP archive ==========================
 			if (file_list.indexOf(output_figures_archive) != -1) {
 				string1 += "; <a href='"+output_figures_archive+"' download='figures."+project+".zip'><img src='images/icon_zip_15b.png' alt-text='[ZIP] button' align='center''></a> archive of PNG/EPS/BED/GFF3 files.";
 			}
-
+// ===================================================================
 			string1 += "</font>";
 
 			var string2 = "</td><td width='5%' align='right'><div onclick=\'closeProject(\""+user+"\",\""+project+"\",\""+key+"\",\""+projectName+"\",\""+color1+"\",\""+color2+"\",\""+parent+"\",\""+figVer+"\");' style='display:inline-block;'><b>[X]</b></div></td></tr>";

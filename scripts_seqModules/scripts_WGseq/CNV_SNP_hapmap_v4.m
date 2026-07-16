@@ -483,25 +483,27 @@ for chrom_to_draw  = 1:length(chrom_order)
 			hold on;
 
 			%% standard : draw colorbars.
-			for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
-				x_ = [chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin];
-				y_ = [0 maxY maxY 0];
-				c_post(1) = colors(chrom_bin_SNP,1);
-				c_post(2) = colors(chrom_bin_SNP,2);
-				c_post(3) = colors(chrom_bin_SNP,3);
-				% makes a colorBar for each bin, using local smoothing
-				if (c_(1) > 1); c_(1) = 1; end;
-				if (c_(2) > 1); c_(2) = 1; end;
-				if (c_(3) > 1); c_(3) = 1; end;
-				if (blendColorBars == false)
-					f = fill(x_,y_,c_);
-				else
-					f = fill(x_,y_,c_/2+c_prev/4+c_post/4);
-				end;
-				c_prev = c_;
-				c_     = c_post;
-				set(f,'linestyle','none');
-			end;
+			draw_colorbars_plot;
+
+		%	for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
+		%		x_ = [chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin];
+		%		y_ = [0 maxY maxY 0];
+		%		c_post(1) = colors(chrom_bin_SNP,1);
+		%		c_post(2) = colors(chrom_bin_SNP,2);
+		%		c_post(3) = colors(chrom_bin_SNP,3);
+		%		% makes a colorBar for each bin, using local smoothing
+		%		if (c_(1) > 1); c_(1) = 1; end;
+		%		if (c_(2) > 1); c_(2) = 1; end;
+		%		if (c_(3) > 1); c_(3) = 1; end;
+		%		if (blendColorBars == false)
+		%			f = fill(x_,y_,c_);
+		%		else
+		%			f = fill(x_,y_,c_/2+c_prev/4+c_post/4);
+		%		end;
+		%		c_prev = c_;
+		%		c_     = c_post;
+		%		set(f,'linestyle','none');
+		%	end;
 			%% standard : end draw colorbars.
 
 			%% standard : show centromere outlines/outline.
@@ -522,34 +524,35 @@ for chrom_to_draw  = 1:length(chrom_order)
 			%% standard : end show centromere/outline.
 
 			%% standard : CNV plot section.
-			c_ = [0 0 0];
-			fprintf(['\nmain-plot : chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
-			fprintf(['ploidy     = ' num2str(ploidy)     '\n']);
-			fprintf(['ploidyBase = ' num2str(ploidyBase) '\n']);
-			for chrom_bin = 1:length(CNVplot2{chrom});   % ceil(chrom_size(chrom)/bases_per_bin)
-				x_ = [chrom_bin chrom_bin chrom_bin-1 chrom_bin-1];
-				CNVhistValue = CNVplot2{chrom}(chrom_bin);
+			draw_CNV_plot;
 
-				% The CNV-histogram values were normalized to a median value of 1.
-				% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
-				startY = maxY/2;
-				if (Low_quality_ploidy_estimate)
-					endY = min(maxY,CNVhistValue*ploidy*ploidyAdjust);
-					if isna(CNVhistValue)
-						endY = ploidy*ploidyAdjust;
-					end;
-				else
-					endY = min(maxY,CNVhistValue*ploidy);
-					if isna(CNVhistValue)
-						endY = ploidy;
-					end;
-				end;
-				y_ = [startY endY endY startY];
-
-				% makes a blackbar for each bin.
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-			end;
+		%	c_ = [0 0 0];
+		%	fprintf(['\nmain-plot : chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
+		%	fprintf(['ploidy     = ' num2str(ploidy)     '\n']);
+		%	fprintf(['ploidyBase = ' num2str(ploidyBase) '\n']);
+		%	for chrom_bin = 1:length(CNVplot2{chrom});   % ceil(chrom_size(chrom)/bases_per_bin)
+		%		x_ = [chrom_bin chrom_bin chrom_bin-1 chrom_bin-1];
+		%		CNVhistValue = CNVplot2{chrom}(chrom_bin);
+		%
+		%		% The CNV-histogram values were normalized to a median value of 1.
+		%		% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
+		%		startY = maxY/2;
+		%		if (Low_quality_ploidy_estimate)
+		%			endY = min(maxY,CNVhistValue*ploidy*ploidyAdjust);
+		%			if isna(CNVhistValue)
+		%				endY = ploidy*ploidyAdjust;
+		%			end;
+		%		else
+		%			endY = min(maxY,CNVhistValue*ploidy);
+		%			if isna(CNVhistValue)
+		%				endY = ploidy;
+		%			end;
+		%		end;
+		%		y_ = [startY endY endY startY];
+		%		% makes a blackbar for each bin.
+		%		f = fill(x_,y_,c_);
+		%		set(f,'linestyle','none');
+		%	end;
 
 			% standard : draw lines across plots for easier interpretation of CNV regions.
 			x2 = chrom_size(chrom)/bases_per_bin;
@@ -718,25 +721,27 @@ for chrom_to_draw  = 1:length(chrom_order)
 			hold on;
 
 			%% linear : draw colorbars.
-			for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
-				x_ = [chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin];
-				y_ = [0 maxY maxY 0];
-				c_post(1) = colors(chrom_bin_SNP,1);
-				c_post(2) = colors(chrom_bin_SNP,2);
-				c_post(3) = colors(chrom_bin_SNP,3);
-				% makes a colorBar for each bin, using local smoothing
-				if (c_(1) > 1); c_(1) = 1; end;
-				if (c_(2) > 1); c_(2) = 1; end;
-				if (c_(3) > 1); c_(3) = 1; end;
-				if (blendColorBars == false)
-					f = fill(x_,y_,c_);
-				else
-					f = fill(x_,y_,c_/2+c_prev/4+c_post/4);
-				end;
-				c_prev = c_;
-				c_     = c_post;
-				set(f,'linestyle','none');
-			end;
+			draw_colorbars_plot;
+
+		%	for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
+		%		x_ = [chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin];
+		%		y_ = [0 maxY maxY 0];
+		%		c_post(1) = colors(chrom_bin_SNP,1);
+		%		c_post(2) = colors(chrom_bin_SNP,2);
+		%		c_post(3) = colors(chrom_bin_SNP,3);
+		%		% makes a colorBar for each bin, using local smoothing
+		%		if (c_(1) > 1); c_(1) = 1; end;
+		%		if (c_(2) > 1); c_(2) = 1; end;
+		%		if (c_(3) > 1); c_(3) = 1; end;
+		%		if (blendColorBars == false)
+		%			f = fill(x_,y_,c_);
+		%		else
+		%			f = fill(x_,y_,c_/2+c_prev/4+c_post/4);
+		%		end;
+		%		c_prev = c_;
+		%		c_     = c_post;
+		%		set(f,'linestyle','none');
+		%	end;
 			% linear : end draw colorbars.
 
 			%% linear : show centromere/outline.
@@ -757,30 +762,32 @@ for chrom_to_draw  = 1:length(chrom_order)
 			% linear : end show centromere/outline.
 
 			%% linear : CNV plot section.
-			c_ = [0 0 0];
-			fprintf(['linear-plot : chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
-			for chrom_bin = 1:ceil(chrom_size(chrom)/bases_per_bin)
-				x_ = [chrom_bin chrom_bin (chrom_bin-1) (chrom_bin-1)];
-				CNVhistValue = CNVplot2{chrom}(chrom_bin);
-				% The CNV-histogram values were normalized to a median value of 1.
-				% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
-				startY = maxY/2;
-				if (Low_quality_ploidy_estimate)
-					endY = min(maxY,CNVhistValue*ploidy*ploidyAdjust);
-					if isna(CNVhistValue)
-						endY = ploidy*ploidyAdjust;
-					end;
-				else
-					endY = min(maxY,CNVhistValue*ploidy);
-					if isna(CNVhistValue)
-						endY = ploidy;
-					end;
-				end;
-				y_ = [startY endY endY startY];
-				% makes a blackbar for each bin.
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-			end;
+			draw_CNV_plot
+
+		%	c_ = [0 0 0];
+		%	fprintf(['linear-plot : chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
+		%	for chrom_bin = 1:ceil(chrom_size(chrom)/bases_per_bin)
+		%		x_ = [chrom_bin chrom_bin (chrom_bin-1) (chrom_bin-1)];
+		%		CNVhistValue = CNVplot2{chrom}(chrom_bin);
+		%		% The CNV-histogram values were normalized to a median value of 1.
+		%		% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
+		%		startY = maxY/2;
+		%		if (Low_quality_ploidy_estimate)
+		%			endY = min(maxY,CNVhistValue*ploidy*ploidyAdjust);
+		%			if isna(CNVhistValue)
+		%				endY = ploidy*ploidyAdjust;
+		%			end;
+		%		else
+		%			endY = min(maxY,CNVhistValue*ploidy);
+		%			if isna(CNVhistValue)
+		%				endY = ploidy;
+		%			end;
+		%		end;
+		%		y_ = [startY endY endY startY];
+		%		% makes a blackbar for each bin.
+		%		f = fill(x_,y_,c_);
+		%		set(f,'linestyle','none');
+		%	end;
 			% linear : end CNV plot section.
 
 			%% linear : draw lines across plots for easier interpretation of CNV regions.

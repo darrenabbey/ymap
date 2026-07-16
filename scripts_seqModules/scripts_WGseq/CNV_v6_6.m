@@ -996,33 +996,34 @@ for chrom_to_draw  = 1:length(chrom_order)
 			%% standard : end show centromere.
 
 			%% CNV plot section.
-			c_ = [0 0 0];
-			fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
-			for chrom_bin = 1:length(CNVplot2{chrom});   % ceil(chrom_size(chrom)/bases_per_bin)
-				x_ = [chrom_bin chrom_bin chrom_bin-1 chrom_bin-1];
-				CNVhistValue = CNVplot2{chrom}(chrom_bin);
+			draw_CNV_plot;
 
-				% The CNV-histogram values were normalized to a median value of 1.
-				% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the
-				% median line.
-				startY = maxY/2;
-				if (Low_quality_ploidy_estimate)
-					endY = min(maxY,CNVhistValue*ploidy*ploidyAdjust);
-					if isna(CNVhistValue)
-						endY = ploidy*ploidyAdjust;
-					end;
-				else
-					endY = min(maxY,CNVhistValue*ploidy);
-					if isna(CNVhistValue)
-						endY = ploidy;
-					end;
-				end;
-				y_ = [startY endY endY startY];
-
-				% makes a blackbar for each bin.
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-			end;
+		%	c_ = [0 0 0];
+		%	fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
+		%	for chrom_bin = 1:length(CNVplot2{chrom});   % ceil(chrom_size(chrom)/bases_per_bin)
+		%		x_ = [chrom_bin chrom_bin chrom_bin-1 chrom_bin-1];
+		%		CNVhistValue = CNVplot2{chrom}(chrom_bin);
+		%
+		%		% The CNV-histogram values were normalized to a median value of 1.
+		%		% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the
+		%		% median line.
+		%		startY = maxY/2;
+		%		if (Low_quality_ploidy_estimate)
+		%			endY = min(maxY,CNVhistValue*ploidy*ploidyAdjust);
+		%			if isna(CNVhistValue)
+		%				endY = ploidy*ploidyAdjust;
+		%			end;
+		%		else
+		%			endY = min(maxY,CNVhistValue*ploidy);
+		%			if isna(CNVhistValue)
+		%				endY = ploidy;
+		%			end;
+		%		end;
+		%		y_ = [startY endY endY startY];
+		%		% makes a blackbar for each bin.
+		%		f = fill(x_,y_,c_);
+		%		set(f,'linestyle','none');
+		%	end;
 
 			%% draw lines across plots for easier interpretation of CNV regions.
 			x2 = chrom_size(chrom)/bases_per_bin;
@@ -1266,32 +1267,33 @@ for chrom_to_draw  = 1:length(chrom_order)
 			%% linear : end show centromere/outline.
 
 			%% CNV plot section.
-			c_ = [0 0 0];
-			fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
-			for i = 1:length(CNVplot2{chrom});
-				x_ = [i i i-1 i-1];
-				CNVhistValue = CNVplot2{chrom}(i);
+			draw_CNV_plot;
 
-				% The CNV-histogram values were normalized to a median value of 1.
-				% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
-				startY = maxY/2;
-				if (Low_quality_ploidy_estimate)
-					endY = CNVhistValue*ploidy*ploidyAdjust;
-					if isna(CNVhistValue)
-						endY = ploidy*ploidyAdjust;
-					end;
-				else
-					endY = CNVhistValue*ploidy;
-					if isna(CNVhistValue)
-						endY = ploidy;
-					end;
-				end;
-				y_ = [startY endY endY startY];
-
-				% makes a blackbar for each bin.
-				f = fill(x_,y_,c_);
-				set(f,'linestyle','none');
-			end;
+		%	c_ = [0 0 0];
+		%	fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
+		%	for i = 1:length(CNVplot2{chrom});
+		%		x_ = [i i i-1 i-1];
+		%		CNVhistValue = CNVplot2{chrom}(i);
+		%
+		%		% The CNV-histogram values were normalized to a median value of 1.
+		%		% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
+		%		startY = maxY/2;
+		%		if (Low_quality_ploidy_estimate)
+		%			endY = CNVhistValue*ploidy*ploidyAdjust;
+		%			if isna(CNVhistValue)
+		%				endY = ploidy*ploidyAdjust;
+		%			end;
+		%		else
+		%			endY = CNVhistValue*ploidy;
+		%			if isna(CNVhistValue)
+		%				endY = ploidy;
+		%			end;
+		%		end;
+		%		y_ = [startY endY endY startY];
+		%		% makes a blackbar for each bin.
+		%		f = fill(x_,y_,c_);
+		%		set(f,'linestyle','none');
+		%	end;
 
 			x2 = chrom_size(chrom)/bases_per_bin;
 

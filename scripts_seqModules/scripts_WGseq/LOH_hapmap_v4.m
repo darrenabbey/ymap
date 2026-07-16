@@ -994,25 +994,27 @@ for chrom_to_draw  = 1:length(chrom_order)
 
 		if (Standard_display == true)
 			%% standard : draw colorbars.
-			for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
-				x_ = [chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin];
-				y_ = [0 maxY maxY 0];
-				c_post(1) = colors(chrom_bin_SNP,1);
-				c_post(2) = colors(chrom_bin_SNP,2);
-				c_post(3) = colors(chrom_bin_SNP,3);
-				% makes a colorBar for each bin, using local smoothing
-				if (c_(1) > 1); c_(1) = 1; end;
-				if (c_(2) > 1); c_(2) = 1; end;
-				if (c_(3) > 1); c_(3) = 1; end;
-				if (blendColorBars == false)
-					f = fill(x_,y_,c_);
-				else
-					f = fill(x_,y_,c_/2+c_prev/4+c_post/4);
-				end;
-				c_prev = c_;
-				c_     = c_post;
-				set(f,'linestyle','none');
-			end;
+			draw_colorbars_plot;
+
+		%	for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
+		%		x_ = [chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin];
+		%		y_ = [0 maxY maxY 0];
+		%		c_post(1) = colors(chrom_bin_SNP,1);
+		%		c_post(2) = colors(chrom_bin_SNP,2);
+		%		c_post(3) = colors(chrom_bin_SNP,3);
+		%		% makes a colorBar for each bin, using local smoothing
+		%		if (c_(1) > 1); c_(1) = 1; end;
+		%		if (c_(2) > 1); c_(2) = 1; end;
+		%		if (c_(3) > 1); c_(3) = 1; end;
+		%		if (blendColorBars == false)
+		%			f = fill(x_,y_,c_);
+		%		else
+		%			f = fill(x_,y_,c_/2+c_prev/4+c_post/4);
+		%		end;
+		%		c_prev = c_;
+		%		c_     = c_post;
+		%		set(f,'linestyle','none');
+		%	end;
 
 			% standard : axes labels etc.
 			hold off;
@@ -1119,25 +1121,27 @@ for chrom_to_draw  = 1:length(chrom_order)
 			hold on;
 
 			%% linear : draw colorbars.
-			for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
-				x_ = [chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin];
-				y_ = [0 maxY maxY 0];
-				c_post(1) = colors(chrom_bin_SNP,1);
-				c_post(2) = colors(chrom_bin_SNP,2);
-				c_post(3) = colors(chrom_bin_SNP,3);
-				% makes a colorBar for each bin, using local smoothing
-				if (c_(1) > 1); c_(1) = 1; end;
-				if (c_(2) > 1); c_(2) = 1; end;
-				if (c_(3) > 1); c_(3) = 1; end;
-				if (blendColorBars == false)
-					f = fill(x_,y_,c_);
-				else
-					f = fill(x_,y_,c_/2+c_prev/4+c_post/4);
-				end;
-				c_prev = c_;
-				c_     = c_post;
-				set(f,'linestyle','none');
-			end;
+			draw_colorbars_plot;
+
+		%	for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
+		%		x_ = [chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin];
+		%		y_ = [0 maxY maxY 0];
+		%		c_post(1) = colors(chrom_bin_SNP,1);
+		%		c_post(2) = colors(chrom_bin_SNP,2);
+		%		c_post(3) = colors(chrom_bin_SNP,3);
+		%		% makes a colorBar for each bin, using local smoothing
+		%		if (c_(1) > 1); c_(1) = 1; end;
+		%		if (c_(2) > 1); c_(2) = 1; end;
+		%		if (c_(3) > 1); c_(3) = 1; end;
+		%		if (blendColorBars == false)
+		%			f = fill(x_,y_,c_);
+		%		else
+		%			f = fill(x_,y_,c_/2+c_prev/4+c_post/4);
+		%		end;
+		%		c_prev = c_;
+		%		c_     = c_post;
+		%		set(f,'linestyle','none');
+		%	end;
 			% linear : end draw colorbars.
 
 			%% linear : show segmental anueploidy breakpoints.
