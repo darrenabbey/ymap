@@ -27,22 +27,22 @@ echo -e "" >> $logName;
 . $main_dir/local_installed_programs.sh;
 
 check_octave_crash() {
-	local error_file="$projectDirectory/error.txt"
+	local error_file="$projectDirectory/error.txt";
 	if [ -f "$error_file" ]; then
-		local error_info clean_info failed_message failed_script failed_line
+		local error_info clean_info failed_message failed_script failed_line;
 
-		error_info=$(cat "$error_file")
-		clean_info="${error_info#*Something went wrong. }"
+		error_info=$(cat "$error_file");
+		clean_info="${error_info#*Something went wrong. }";
 
-		failed_message="${clean_info#*|}"
-		failed_script="${clean_info%%:*}"
+		failed_message="${clean_info#*|}";
+		failed_script="${clean_info%%:*}";
 
-		failed_line="${clean_info%%|*}"
-		failed_line="${failed_line#*:}"
+		failed_line="${clean_info%%|*}";
+		failed_line="${failed_line#*:}";
 
-		echo -e "\n[ERROR] Pipeline halted! Octave crashed in script: $failed_script at line: $failed_line" >> "$logName"
-		echo -e "[ERROR] Reason: $failed_message" >> "$logName"
-		echo -e "[ERROR] Terminating Bash script execution immediately.\n"
+		echo -e "\n[ERROR] Pipeline halted! Octave crashed in script: $failed_script at line: $failed_line" >> "$logName";
+		echo -e "[ERROR] Reason: $failed_message" >> "$logName";
+		echo -e "[ERROR] Terminating Bash script execution immediately.\n";
 
 		cd $main_dir"/scripts_seqModules/scripts_WGseq/";
 		bash cleaning_WGseq.sh "$user" "$project" "$main_dir" 2>> $logName;
@@ -51,7 +51,21 @@ check_octave_crash() {
 		touch $projectDirectory/working.txt;
 
 		exit 1
-	fi
+	fi;
+}
+
+log_compiled_script() {
+	local source_script="$1";
+	local destination_log="$2";
+
+	if [[ -f "$source_script" ]]; then
+		# Process the entire file in one go using sed:
+		# 's/\\/\\\\/g' -> Doubles up backslashes
+		# 's/^/\t|\t/'  -> Prepends your custom log alignment prefix to every line
+		sed -e 's/\\/\\\\/g' -e 's/^/\t|\t/' "$source_script" >> "$destination_log";
+	else
+		echo "Error: Source script $source_script not found to log." >&2;
+	fi;
 }
 
 
@@ -127,39 +141,26 @@ outputName="$projectDirectory/processing1.m";
 install /dev/null "$outputName";
 install /dev/null "$projectDirectory/octave.CNV_and_GCbias.log";
 echo -e "\toutputName = $outputName" >> $logName;
-echo -e "function [] = processing1()" > $outputName;
-echo -e "\tpkg load io;" >> $outputName;
-echo -e "\tpkg load statistics;" >> $outputName;
-echo -e "\tpkg load matgeom;" >> $outputName;
-echo -e "\tdiary('$projectDirectory/octave.CNV_and_GCbias.log');" >> $outputName;
-echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
-echo -e "\ttry" >> $outputName;
-echo -e "\t\tanalyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
-echo -e "\tcatch err" >> $outputName;
-echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
-echo -e "\t\tif fileID ~= -1" >> $outputName;
-echo -e "\t\t\tfprintf(fileID, 'Something went wrong. %s.m:%d|%s\\\\n', err.stack(1).name, err.stack(1).line, err.message);" >> $outputName;
-echo -e "\t\t\tfclose(fileID);" >> $outputName;
-echo -e "\t\tend;" >> $outputName;
-echo -e "\tend;" >> $outputName;
-echo -e "end" >> $outputName;
 
-echo -e "\t|\tfunction [] = processing1()" >> $logName;
-echo -e "\t|\t    pkg load io;" >> $logName;
-echo -e "\t|\t    pkg load statistics;" >> $logName;
-echo -e "\t|\t    pkg load matgeom;" >> $logName;
-echo -e "\t|\t    diary('$projectDirectory/octave.CNV_and_GCbias.log');" >> $logName;
-echo -e "\t|\t    cd \"$main_dir/scripts_seqModules/scripts_WGseq;\"" >> $logName;
-echo -e "\t|\t    try" >> $logName;
-echo -e "\t|\t        analyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
-echo -e "\t|\t    catch err" >> $logName;
-echo -e "\t|\t        fileID = fopen('$projectDirectory/error.txt', 'w');" >> $logName;
-echo -e "\t|\t        if fileID ~= -1" >> $logName;
-echo -e "\t|\t            fprintf(fileID, 'Something went wrong. %%s.m:%%d|%%s\\\\n', err.stack(1).name, err.stack(1).line, err.message);" >> $logName;
-echo -e "\t|\t            fclose(fileID);" >> $logName;
-echo -e "\t|\t        end;" >> $logName;
-echo -e "\t|\t    end;" >> $logName;
-echo -e "\t|\tend" >> $logName;
+cat << EOF > "$outputName"
+function [] = processing1()
+	pkg load io;
+	pkg load statistics;
+	pkg load matgeom;
+	diary('$projectDirectory/octave.CNV_and_GCbias.log');
+	cd "$main_dir/scripts_seqModules/scripts_WGseq";
+	try
+		analyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');
+	catch err
+		fileID = fopen('$projectDirectory/error.txt', 'w');
+		if fileID ~= -1
+			fprintf(fileID, 'Something went wrong. %s.m:%d|%s\\n', err.stack(1).name, err.stack(1).line, err.message);
+			fclose(fileID);
+		end;
+	end;
+end
+EOF
+log_compiled_script "$outputName" "$logName";
 
 echo -e "\tCalling OCTAVE for CNV analysis." >> $logName;
 cd "$projectDirectory";
@@ -182,35 +183,23 @@ install /dev/null "$outputName";
 install /dev/null "$projectDirectory/octave.ChARM.log";
 echo -e "\toutputName = $outputName" >> $logName;
 
-echo -e "function [] = processing2()" > $outputName;
-echo -e "\tpkg load matgeom;" >> $outputName;
-echo -e "\tdiary('$projectDirectory/octave.ChARM.log');" >> $outputName;
-echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
-echo -e "\ttry" >> $outputName
-echo -e "\t\tChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $outputName;
-echo -e "\tcatch err" >> $outputName;
-echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
-echo -e "\t\tif fileID ~= -1" >> $outputName;
-echo -e "\t\t\tfprintf(fileID, 'Something went wrong. %s.m:%d|%s\\\\n', err.stack(1).name, err.stack(1).line, err.message);" >> $outputName;
-echo -e "\t\t\tfclose(fileID);" >> $outputName;
-echo -e "\t\tend;" >> $outputName;
-echo -e "\tend;" >> $outputName;
-echo -e "end" >> $outputName;
-
-echo -e "\t|\tfunction [] = processing2()" >> $logName;
-echo -e "\t|\t    pkg load matgeom;" >> $logName;
-echo -e "\t|\t    diary('$projectDirectory/octave.ChARM.log');" >> $logName;
-echo -e "\t|\t    cd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $logName;
-echo -e "\t|\t    try" >> $logName;
-echo -e "\t|\t        ChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');" >> $logName;
-echo -e "\t|\t    catch err" >> $logName;
-echo -e "\t|\t        fileID = fopen('$projectDirectory/error.txt', 'w');" >> $logName;
-echo -e "\t|\t        if fileID ~= -1" >> $logName;
-echo -e "\t|\t            fprintf(fileID, 'Something went wrong. %%s.m:%%d|%%s\\\\n', err.stack(1).name, err.stack(1).line, err.message);" >> $logName;
-echo -e "\t|\t            fclose(fileID);" >> $logName;
-echo -e "\t|\t        end;" >> $logName;
-echo -e "\t|\t    end;" >> $logName;
-echo -e "\t|\tend" >> $logName;
+cat << EOF > "$outputName"
+function [] = processing2()
+	pkg load matgeom;
+	diary('$projectDirectory/octave.ChARM.log');
+	cd "$main_dir/scripts_seqModules/scripts_WGseq";
+	try
+		ChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');
+	catch err
+		fileID = fopen('$projectDirectory/error.txt', 'w');
+		if fileID ~= -1
+			fprintf(fileID, 'Something went wrong. %s.m:%d|%s\\n', err.stack(1).name, err.stack(1).line, err.message);
+			fclose(fileID);
+		end;
+	end;
+end
+EOF
+log_compiled_script "$outputName" "$logName";
 
 echo -e "\tCalling OCTAVE for ChARM analysis." >> $logName;
 cd "$projectDirectory";
@@ -266,35 +255,23 @@ install /dev/null "$outputName";
 install /dev/null "$projectDirectory/octave.SNP_analysis.log";
 echo -e "\toutputName = $outputName" >> $logName;
 
-echo -e "function [] = processing3()" > $outputName;
-echo -e "\tpkg load matgeom;" >> $outputName;
-echo -e "\tdiary('$projectDirectory/octave.SNP_analysis.log');" >> $outputName;
-echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
-echo -e "\ttry" >> $outputName;
-echo -e "\t\tanalyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
-echo -e "\tcatch err" >> $outputName;
-echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
-echo -e "\t\tif fileID ~= -1" >> $outputName;
-echo -e "\t\t\tfprintf(fileID, 'Something went wrong. %s.m:%d|%s\\\\n', err.stack(1).name, err.stack(1).line, err.message);" >> $outputName;
-echo -e "\t\t\tfclose(fileID);" >> $outputName;
-echo -e "\t\tend;" >> $outputName;
-echo -e "\tend;" >> $outputName;
-echo -e "end" >> $outputName;
-
-echo -e "\t|\tfunction [] = processing3()" >> $logName;
-echo -e "\t|\t    pkg load matgeom;" >> $logName;
-echo -e "\t|\t    diary('$projectDirectory/octave.SNP_analysis.log');" >> $logName;
-echo -e "\t|\t    cd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $logName;
-echo -e "\t|\t    try" >> $logName;
-echo -e "\t|\t        analyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
-echo -e "\t|\t    catch err" >> $logName;
-echo -e "\t|\t        fileID = fopen('$projectDirectory/error.txt', 'w');" >> $logName;
-echo -e "\t|\t        if fileID ~= -1" >> $logName;
-echo -e "\t|\t            fprintf(fileID, 'Something went wrong. %%s.m:%%d|%%s\\\\n', err.stack(1).name, err.stack(1).line, err.message);" >> $logName;
-echo -e "\t|\t            fclose(fileID);" >> $logName;
-echo -e "\t|\t        end;" >> $logName;
-echo -e "\t|\t    end;" >> $logName;
-echo -e "\t|\tend" >> $logName;
+cat << EOF > "$outputName"
+function [] = processing3()
+	pkg load matgeom;
+	diary('$projectDirectory/octave.SNP_analysis.log');
+	cd "$main_dir/scripts_seqModules/scripts_WGseq";
+	try
+		analyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');
+	catch err
+		fileID = fopen('$projectDirectory/error.txt', 'w');
+		if fileID ~= -1
+			fprintf(fileID, 'Something went wrong. %s.m:%d|%s\\n', err.stack(1).name, err.stack(1).line, err.message);
+			fclose(fileID);
+		end;
+	end;
+end
+EOF
+log_compiled_script "$outputName" "$logName";
 
 if [[ "$project" = "$projectParent" ]]; then
 	echo -e "\tCalling OCTAVE for SNP analysis." >> $logName;
@@ -321,35 +298,23 @@ install /dev/null "$outputName";
 install /dev/null "$projectDirectory/octave.final_figs.log";
 echo -e "\toutputName = $outputName" >> $logName;
 
-echo -e "function [] = processing4()" > $outputName;
-echo -e "\tpkg load matgeom;" >> $outputName;
-echo -e "\tdiary('$projectDirectory/octave.final_figs.log');" >> $outputName;
-echo -e "\tcd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $outputName;
-echo -e "\ttry" >> $outputName;
-echo -e "\t\tanalyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $outputName;
-echo -e "\tcatch err" >> $outputName;
-echo -e "\t\tfileID = fopen('$projectDirectory/error.txt', 'w');" >> $outputName;
-echo -e "\t\tif fileID ~= -1" >> $outputName;
-echo -e "\t\t\tfprintf(fileID, 'Something went wrong. %s.m:%d|%s\\\\n', err.stack(1).name, err.stack(1).line, err.message);" >> $outputName;
-echo -e "\t\t\tfclose(fileID);" >> $outputName;
-echo -e "\t\tend;" >> $outputName;
-echo -e "\tend;" >> $outputName;
-echo -e "end" >> $outputName;
-
-echo -e "\t|\tfunction [] = processing4()" >> $logName;
-echo -e "\t|\t    pkg load matgeom;" >> $logName;
-echo -e "\t|\t    diary('$projectDirectory/octave.final_figs.log');" >> $logName;
-echo -e "\t|\t    cd \"$main_dir/scripts_seqModules/scripts_WGseq\";" >> $logName;
-echo -e "\t|\t    try" >> $logName;
-echo -e "\t|\t        analyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');" >> $logName;
-echo -e "\t|\t    catch err" >> $logName;
-echo -e "\t|\t        fileID = fopen('$projectDirectory/error.txt', 'w');" >> $logName;
-echo -e "\t|\t        if fileID ~= -1" >> $logName;
-echo -e "\t|\t            fprintf(fileID, 'Something went wrong. %%s.m:%%d|%%s\\\\n', err.stack(1).name, err.stack(1).line, err.message);" >> $logName;
-echo -e "\t|\t            fclose(fileID);" >> $logName;
-echo -e "\t|\t        end;" >> $logName;
-echo -e "\t|\t    end;" >> $logName;
-echo -e "\t|\tend" >> $logName;
+cat << EOF > "$outputName"
+function [] = processing4()
+	pkg load matgeom;
+	diary('$projectDirectory/octave.final_figs.log');
+	cd "$main_dir/scripts_seqModules/scripts_WGseq";
+	try
+		analyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');
+	catch err
+		fileID = fopen('$projectDirectory/error.txt', 'w');
+		if fileID ~= -1
+			fprintf(fileID, 'Something went wrong. %s.m:%d|%s\\n', err.stack(1).name, err.stack(1).line, err.message);
+			fclose(fileID);
+		end;
+	end;
+end
+EOF
+log_compiled_script "$outputName" "$logName";
 
 if [[ "$project" = "$projectParent" ]]; then
 	echo -e "\tCalling OCTAVE for CNV/SNP analysis." >> $logName;
