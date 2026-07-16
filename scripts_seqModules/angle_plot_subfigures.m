@@ -10,9 +10,9 @@ if (AnglePlot == true)
 		fprintf(['^^^     segment#    = ' num2str(segment) ':' num2str(length(chromCopyNum{chrom})) '\n']);
 
 		if (segment == 1) % generate sublot for each segment.
-			subplot('Position',[0.03 bottom width (height/length(chromCopyNum{chrom}))]);
+			axes('Position',[0.03 bottom width (height/length(chromCopyNum{chrom}))]);
 		else
-			subplot('Position',[0.03 (bottom+height/length(chromCopyNum{chrom})*(segment-1)) width (height/length(chromCopyNum{chrom}))]);
+			axes('Position',[0.03 (bottom+height/length(chromCopyNum{chrom})*(segment-1)) width (height/length(chromCopyNum{chrom}))]);
 		end;
 
 		peaks                     = chromSegment_peaks{              chrom}{segment};
@@ -20,7 +20,7 @@ if (AnglePlot == true)
 		actual_cutoffs            = chromSegment_actual_cutoffs{     chrom}{segment};
 		segment_smoothedHistogram = chromSegment_smoothed{           chrom}{segment};
 		segment_copyNum           = round(chromCopyNum{              chrom}(segment));
-		segment_chromBreaks         = chrom_breaks{                    chrom}(segment);
+		segment_chromBreaks       = chrom_breaks{                    chrom}(segment);
 
 		fprintf(['^^^     copyNum             = ' num2str(segment_copyNum)     '\n']);
 		fprintf(['^^^     peaks               = ' num2str(peaks)               '\n']);
