@@ -20,11 +20,6 @@ fprintf('\t|\tNot drawing CNV plots during CNV_LOH_check.m analysis.\n');
 if (drawFigures == true)
 	fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 	if exist([main_dir '/users/' user '/projects/' project '/figure_options.txt'], 'file')
-		%%
-		%% readtable is not implemented in Octave.
-		%%
-		%figure_options = readtable([main_dir '/users/' user '/projects/' project '/figure_options.txt']);
-
 		figure_options = importdata([main_dir '/users/' user '/projects/' project '/figure_options.txt'],'\t',1);
 
 		option         = figure_options{2,1};

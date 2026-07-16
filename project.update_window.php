@@ -355,14 +355,14 @@
 					<div id="hiddenFormSection4" style="display:inline"></div>
 				</td></tr>
 				<tr bgcolor="#CCCCFF"><td>
-					<div id="hiddenFormSection10" style="display:none">
+					<div id="hiddenFormSection12" style="display:none">
 						Restriction enzymes :
 						<select id="selectRestrictionEnzymes" name="selectRestrictionEnzymes" style="background-color:#CCCCFF">
 						<option value="MfeI_MboI">MfeI & MboI</option>
 						</select>
 					</div>
 				</td><td valign="top">
-					<div id="hiddenFormSection11" style="display:none"></div>
+					<div id="hiddenFormSection13" style="display:none"></div>
 				</td></tr>
 				<tr bgcolor="#CCCCFF"><td>
 					<div id="hiddenFormSection5" style="display:inline">
@@ -437,34 +437,42 @@
 				Use chromosome-end correction with care. <font size='2'>(Chr end bias in data can potentially reveal structural changes which alter the distance between<br>
 				a locus and a chromosome end vs in the reference genome. Correcting this bias can lead to confounding copy number artifacts in cases like this.)</font>
 				</td></tr>
+
+
 				<tr bgcolor="#FFFFCC"><td>
-				<div id="hiddenFormSection9" style="display:inline">
+				<div id="hiddenFormSection10a" style="display:block">
 					<input type="checkbox" id="fig_bias_1"      name="fig_A1" value="True" <?php echo $fig_A1; ?>><span id="label_bias_1" style="color:black">GC-content bias figure.</span><br>
 					<input type="checkbox" id="fig_bias_2"      name="fig_A2" value="True" <?php echo $fig_A2; ?>><span id="label_bias_2" style="color:<?php if ($fig_A2 == "disabled") { echo "grey"; } else { echo "black"; } ?>">Chromosome-end bias figure.</span><br><br>
 
 					<input type="checkbox" id="fig_Cnv_1"       name="fig_B1" value="True" <?php echo $fig_B1; ?>>Linear CNV map figure.<br>
 					<input type="checkbox" id="fig_Cnv_2"       name="fig_B2" value="True" <?php echo $fig_B2; ?>>Full CNV map figure.<br>
-					<input type="checkbox" id="fig_CnvHigh"     name="fig_C"  value="True" <?php echo $fig_C; ?>>Linear high-top CNV map figure.<br><br>
+					<input type="checkbox" id="fig_CnvHigh"     name="fig_C"  value="True" <?php echo $fig_C;  ?>>Linear high-top CNV map figure.<br><br>
 
 					<input type="checkbox" id="fig_Snp_1"       name="fig_D1" value="True" <?php echo $fig_D1; ?>>Linear SNP/LOH map figure.<br>
 					<input type="checkbox" id="fig_Snp_2"       name="fig_D2" value="True" <?php echo $fig_D2; ?>>Full SNP/LOH map figure.<br>
-					<input type="checkbox" id="fig_fireplot_2"  name="fig_E"  value="True" <?php echo $fig_E; ?>>Linear alleleic ratio (fire-plot) map figure.<br><br>
+					<input type="checkbox" id="fig_fireplot_2"  name="fig_E"  value="True" <?php echo $fig_E;  ?>>Linear alleleic ratio (fire-plot) map figure.<br><br>
 
 					<input type="checkbox" id="fig_CnvSnp_1"    name="fig_F1" value="True" <?php echo $fig_F1; ?>>Linear CNV/SNP/LOH map figure.<br>
 					<input type="checkbox" id="fig_CnvSnp_2"    name="fig_F2" value="True" <?php echo $fig_F2; ?>>Full CNV/SNP/LOH map figure.<br>
-					<input type="checkbox" id="fig_CnvSnpAlt_1" name="fig_G1" value="True" <?php echo $fig_G1; ?>>Linear CNV/SNP/LOH map figure with alternate color scheme.<br>
-					<input type="checkbox" id="fig_CnvSnpAlt_2" name="fig_G2" value="True" <?php echo $fig_G2; ?>>Full CNV/SNP/LOH map figure with alternate color scheme.
+					<input type="checkbox" id="fig_CnvSnpHigh"  name="fig_G"  value="True" <?php echo $fig_G;  ?>>Linear high-top CNV/SNP/LOH map figure.<br>
+				</div>
+				<div id="hiddenFormSection10b" style="display:none">
+					<br><input type="checkbox" id="fig_CnvSnpAlt_1" name="fig_H1" value="True" <?php echo $fig_H1; ?>>Linear CNV/SNP/LOH map figure with alternate color scheme.<br>
+					<input type="checkbox" id="fig_CnvSnpAlt_2" name="fig_H2" value="True" <?php echo $fig_H2; ?>>Full CNV/SNP/LOH map figure with alternate color scheme.
 				</div>
 				</td><td>
 				Select which figure types you would like generated for your dataset.
 				</td></tr>
 
+
 				<tr bgcolor="#FFCCCC"><td>
-				<div id="hiddenFormSection10" style="display:<?php $admin_user_flag_file = 'users/'.$user.'/admin.txt'; if (file_exists($admin_user_flag_file)) { echo 'inline'; } else { echo 'none'; } ?>">
+				<div id="hiddenFormSection11a" style="display:<?php $admin_user_flag_file = 'users/'.$user.'/admin.txt'; if (file_exists($admin_user_flag_file)) { echo 'inline'; } else { echo 'none'; } ?>">
 					<input type="checkbox" id="force" name="force" value="True">Force update.
 				</div>
 				</td><td>
-                                Force reprocessing after error resolution, without changing settings.
+				<div id="hiddenFormSection11b" style="display:<?php $admin_user_flag_file = 'users/'.$user.'/admin.txt'; if (file_exists($admin_user_flag_file)) { echo 'inline'; } else { echo 'none'; } ?>">
+	                                Force reprocessing after error resolution, without changing settings.
+				</div>
                                 </td></tr>
 
 				</table><br>
@@ -481,8 +489,6 @@
 				if (document.getElementById("dataFormat").value == 0) { // SnpCgh Microarray.
 					document.getElementById("hiddenFormSection1").style.display  = 'none';
 					document.getElementById("hiddenFormSection2").style.display  = 'none';
-					//document.getElementById("hiddenFormSection2a").style.display = 'none';
-				//	document.getElementById("hiddenFormSection2b").style.display = 'none';
 					document.getElementById("hiddenFormSection3").style.display  = 'none';
 					document.getElementById("hiddenFormSection4").style.display  = 'none';
 					document.getElementById("hiddenFormSection5").style.display  = 'none';
@@ -491,20 +497,16 @@
 					document.getElementById("hiddenFormSection9a").style.display = 'inline';
 					document.getElementById("hiddenFormSection9b").style.display = 'none';
 					document.getElementById("hiddenFormSection9c").style.display = 'none';
-					document.getElementById("hiddenFormSection10").style.display = 'none';
-					document.getElementById("hiddenFormSection11").style.display = 'none';
+					document.getElementById("hiddenFormSection10a").style.display = 'inline';
 				} else { // WGseq or ddRADseq.
 					document.getElementById("hiddenFormSection1").style.display  = 'inline';
 					document.getElementById("hiddenFormSection2").style.display  = 'inline';
-					//document.getElementById("hiddenFormSection2a").style.display = 'inline';
-					//document.getElementById("hiddenFormSection2b").style.display = 'inline';
 					document.getElementById("hiddenFormSection3").style.display  = 'inline';
 					document.getElementById("hiddenFormSection4").style.display  = 'inline';
 					document.getElementById("hiddenFormSection5").style.display  = 'inline';
 					document.getElementById("hiddenFormSection6").style.display  = 'inline';
 					document.getElementById("hiddenFormSection7").style.display  = '<?php echo ($hapmap == "" || $hapmap == "none") ? "inline" : "none"; ?>';
-					document.getElementById("hiddenFormSection10").style.display = 'none';
-					document.getElementById("hiddenFormSection11").style.display = 'none';
+					document.getElementById("hiddenFormSection10a").style.display = 'inline';
 					if ((document.getElementById("dataFormat").value == 1) || (document.getElementById("dataFormat").value == 2)) { // WGseq
 						document.getElementById("hiddenFormSection9a").style.display = 'none';
 						document.getElementById("hiddenFormSection9b").style.display = 'inline';
@@ -513,8 +515,8 @@
 						document.getElementById("hiddenFormSection9a").style.display = 'none';
 						document.getElementById("hiddenFormSection9b").style.display = 'none';
 						document.getElementById("hiddenFormSection9c").style.display = 'inline';
-						document.getElementById("hiddenFormSection10").style.display = 'inline';
-						document.getElementById("hiddenFormSection11").style.display = 'inline';
+						document.getElementById("hiddenFormSection12").style.display = 'inline';
+						document.getElementById("hiddenFormSection13").style.display = 'inline';
 					}
 				}
 			}

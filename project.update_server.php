@@ -231,8 +231,9 @@
 			$fig_E_old           = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
 			$fig_F1_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
 			$fig_F2_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-			$fig_G1_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
-			$fig_G2_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			$fig_G_old           = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			$fig_H1_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
+			$fig_H2_old          = filter_var(trim(fgets($fileID)), FILTER_VALIDATE_BOOLEAN);
 			fclose($fileID);
 			fwrite($logOutput, "\tGrabbed 'figure_options.txt' file.\n");
 		} else {
@@ -246,8 +247,9 @@
 			$fig_E_old           = false;
 			$fig_F1_old          = false;
 			$fig_F2_old          = false;
-			$fig_G1_old          = false;
-			$fig_G2_old          = false;
+			$fig_G_old           = false;
+			$fig_H1_old          = false;
+			$fig_H2_old          = false;
 			fwrite($logOutput, "\t'figure_options.txt' file not found, using defaults.\n");
 		}
 
@@ -434,10 +436,11 @@
 		$fig_E           = sanitizeBoolean_POST("fig_E");
 		$fig_F1          = sanitizeBoolean_POST("fig_F1");
 		$fig_F2          = sanitizeBoolean_POST("fig_F2");
-		$fig_G1          = sanitizeBoolean_POST("fig_G1");
-		$fig_G2          = sanitizeBoolean_POST("fig_G2");
-		$current_figs = [$fig_A1,	$fig_A2,	$fig_B1,	$fig_B2,	$fig_C,		$fig_D1,	$fig_D2,	$fig_E,		$fig_F1,	$fig_F2,	$fig_G1,	$fig_G2		];
-		$old_figs     = [$fig_A1_old,	$fig_A2_old,	$fig_B1_old,	$fig_B2_old,	$fig_C_old,	$fig_D1_old,	$fig_D2_old,	$fig_E_old,	$fig_F1_old,	$fig_F2_old,	$fig_G1_old,	$fig_G2_old	];
+		$fig_G           = sanitizeBoolean_POST("fig_G");
+		$fig_H1          = sanitizeBoolean_POST("fig_H1");
+		$fig_H2          = sanitizeBoolean_POST("fig_H2");
+		$current_figs = [$fig_A1,	$fig_A2,	$fig_B1,	$fig_B2,	$fig_C,		$fig_D1,	$fig_D2,	$fig_E,		$fig_F1,	$fig_F2,	$fig_G,		$fig_H1,	$fig_H2		];
+		$old_figs     = [$fig_A1_old,	$fig_A2_old,	$fig_B1_old,	$fig_B2_old,	$fig_C_old,	$fig_D1_old,	$fig_D2_old,	$fig_E_old,	$fig_F1_old,	$fig_F2_old,	$fig_G_old,	$fig_H1_old,	$fig_H2_old	];
 		if ($current_figs === $old_figs) {
 			fwrite($logOutput, "\t'figure_options.txt' file did not need to be updated.\n");
 		} else {
@@ -455,8 +458,9 @@
 			if ($fig_E  != 1) { fwrite($file3,"False\n"); } else { fwrite($file3,"True\n"); }
 			if ($fig_F1 != 1) { fwrite($file3,"False\n"); } else { fwrite($file3,"True\n"); }
 			if ($fig_F2 != 1) { fwrite($file3,"False\n"); } else { fwrite($file3,"True\n"); }
-			if ($fig_G1 != 1) { fwrite($file3,"False\n"); } else { fwrite($file3,"True\n"); }
-			if ($fig_G2 != 1) { fwrite($file3,"False");   } else { fwrite($file3,"True"); }
+			if ($fig_G  != 1) { fwrite($file3,"False\n"); } else { fwrite($file3,"True\n"); }
+			if ($fig_H1 != 1) { fwrite($file3,"False\n"); } else { fwrite($file3,"True\n"); }
+			if ($fig_H2 != 1) { fwrite($file3,"False");   } else { fwrite($file3,"True"); }
 			fclose($file3);
 			chmod($fileName3,0774);
 			fwrite($logOutput, "\tUpdated 'figure_options.txt' file.\n");
@@ -470,8 +474,9 @@
 			fwrite($logOutput, "\t\tfig_E_old:fig_E   => '".$fig_E_old."':'".$fig_E."'\n");
 			fwrite($logOutput, "\t\tfig_F1_old:fig_F1 => '".$fig_F1_old."':'".$fig_F1."'\n");
 			fwrite($logOutput, "\t\tfig_F2_old:fig_F2 => '".$fig_F2_old."':'".$fig_F2."'\n");
-			fwrite($logOutput, "\t\tfig_G1_old:fig_G1 => '".$fig_G1_old."':'".$fig_G1."'\n");
-			fwrite($logOutput, "\t\tfig_G2_old:fig_G2 => '".$fig_G2_old."':'".$fig_G2."'\n");
+			fwrite($logOutput, "\t\tfig_G_old:fig_G1  => '".$fig_G_old."':'".$fig_G."'\n");
+			fwrite($logOutput, "\t\tfig_H1_old:fig_G1 => '".$fig_H1_old."':'".$fig_H1."'\n");
+			fwrite($logOutput, "\t\tfig_H2_old:fig_G2 => '".$fig_H2_old."':'".$fig_H2."'\n");
 			$UpdateFigures = true;
 		}
 

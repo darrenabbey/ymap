@@ -52,7 +52,6 @@ genomeDir  = [main_dir '/users/' genomeUser '/genomes/' genome '/'];
 
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir '/users/' user '/projects/' project '/figure_options.txt'], 'file')
-	%%figure_options = readtable([main_dir '/users/' user '/projects/' project '/figure_options.txt']);
 	figure_options = importdata([main_dir '/users/' user '/projects/' project '/figure_options.txt'],'\t',1);
 
 	option         = figure_options{9,1};

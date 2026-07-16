@@ -1,4 +1,4 @@
-function [] = CNV_SNP_hapmap_v4(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+function [] = CNV_SNP_hapmap_v4_highTop(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString, SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 addpath('../');
 
 workingDir      = [main_dir '/users/' user '/projects/' project '/'];
@@ -14,7 +14,7 @@ fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir '/users/' user '/projects/' project '/figure_options.txt'], 'file')
 	figure_options = importdata([main_dir '/users/' user '/projects/' project '/figure_options.txt'],'\t',1);
 
-	option         = figure_options{6,1};
+	option         = figure_options{12,1};
 	if strcmp(option,'False')
 		Make_figure = false;
 	else
