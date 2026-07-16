@@ -154,7 +154,7 @@ switch lower(colormap_)
 		colormap(spring(nc));
 	case 'summer'
 		colormap(summer(nc));
-	case 'autumn'   
+	case 'autumn'
 		colormap(autumn(nc));
 	case 'winter'
 		colormap(winter(nc));

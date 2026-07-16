@@ -9,7 +9,7 @@ set(0,'DefaultFigureVisible','off');
 
 Centromere_format_default   = 3;
 Yscale_nearest_even_ploidy  = true;
-ChrNum                      = true;
+chromNum                      = true;
 show_annotations            = true;
 analyze_rDNA                = true;
 Standard_display            = true;
@@ -40,35 +40,35 @@ else
 	Make_figure_skew = true;
 end;
 
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
+[centromeres, chrom_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 Aneuploidy = [];  % later loaded from Load_dataset_information(projectDir) after ChARM algorithm is used.
-num_chrs   = length(chr_sizes);
+num_chroms   = length(chrom_sizes);
 
-for i = 1:num_chrs
-	chr_size(i)  = 0;
+for i = 1:num_chroms
+	chrom_size(i)  = 0;
 	cen_start(i) = 0;
 	cen_end(i)   = 0;
 end;
-for i = 1:num_chrs
-	chr_size(chr_sizes(i).chr)    = chr_sizes(i).size;
-	cen_start(centromeres(i).chr) = centromeres(i).start;
-	cen_end(centromeres(i).chr)   = centromeres(i).end;
+for i = 1:num_chroms
+	chrom_size(chrom_sizes(i).chrom)    = chrom_sizes(i).size;
+	cen_start(centromeres(i).chrom) = centromeres(i).start;
+	cen_end(centromeres(i).chrom)   = centromeres(i).end;
 end;
 if (length(annotations) > 0)
 	fprintf(['\nAnnotations for ' genome '.\n']);
 	for i = 1:length(annotations)
-		annotation_chr(i)       = annotations(i).chr;
+		annotation_chrom(i)       = annotations(i).chrom;
 		annotation_type{i}      = annotations(i).type;
 		annotation_start(i)     = annotations(i).start;
 		annotation_end(i)       = annotations(i).end;
 		annotation_fillcolor{i} = annotations(i).fillcolor;
 		annotation_edgecolor{i} = annotations(i).edgecolor;
 		annotation_size(i)      = annotations(i).size;
-		fprintf(['\t[' num2str(annotations(i).chr) ':' annotations(i).type ':' num2str(annotations(i).start) ':' num2str(annotations(i).end) ':' annotations(i).fillcolor ':' annotations(i).edgecolor ':' num2str(annotations(i).size) ']\n']);
+		fprintf(['\t[' num2str(annotations(i).chrom) ':' annotations(i).type ':' num2str(annotations(i).start) ':' num2str(annotations(i).end) ':' annotations(i).fillcolor ':' annotations(i).edgecolor ':' num2str(annotations(i).size) ']\n']);
 	end;
 end;
 for i = 1:length(figure_details)
-	if (figure_details(i).chr == 0)
+	if (figure_details(i).chrom == 0)
 		if (strcmp(figure_details(i).label,'Key') == 1)
 			key_posX   = figure_details(i).posX;
 			key_posY   = figure_details(i).posY;
@@ -76,16 +76,16 @@ for i = 1:length(figure_details)
 			key_height = figure_details(i).height;
 		end;
 	else
-		chr_id         (figure_details(i).chr) = figure_details(i).chr;
-		chr_label      {figure_details(i).chr} = figure_details(i).label;
-		chr_name       {figure_details(i).chr} = figure_details(i).name;
-		chr_posX       (figure_details(i).chr) = figure_details(i).posX;
-		chr_posY       (figure_details(i).chr) = figure_details(i).posY;
-		chr_width      (figure_details(i).chr) = figure_details(i).width;
-		chr_height     (figure_details(i).chr) = figure_details(i).height;
-		chr_in_use     (figure_details(i).chr) = str2num(figure_details(i).useChr);
-		chr_figOrder   (figure_details(i).chr) = str2num(figure_details(i).figOrder);
-		chr_figReversed(figure_details(i).chr) = str2num(figure_details(i).figReversed);
+		chrom_id         (figure_details(i).chrom) = figure_details(i).chrom;
+		chrom_label      {figure_details(i).chrom} = figure_details(i).label;
+		chrom_name       {figure_details(i).chrom} = figure_details(i).name;
+		chrom_posX       (figure_details(i).chrom) = figure_details(i).posX;
+		chrom_posY       (figure_details(i).chrom) = figure_details(i).posY;
+		chrom_width      (figure_details(i).chrom) = figure_details(i).width;
+		chrom_height     (figure_details(i).chrom) = figure_details(i).height;
+		chrom_in_use     (figure_details(i).chrom) = str2num(figure_details(i).usechrom);
+		chrom_figOrder   (figure_details(i).chrom) = str2num(figure_details(i).figOrder);
+		chrom_figReversed(figure_details(i).chrom) = str2num(figure_details(i).figReversed);
 	end;
 end;
 
@@ -107,29 +107,29 @@ if (Make_figure_skew)
 	kmerLength = str2num(kmerLength);
 
 	%%% Disable any chromosomes which are shorter than the kmer length being used.
-	for i = 1:num_chrs
-		if (chr_sizes(i).size <= kmerLength)
-			chr_in_use(i) == 0;
+	for i = 1:num_chroms
+		if (chrom_sizes(i).size <= kmerLength)
+			chrom_in_use(i) == 0;
 		end;
 	end;
 
 	%%% Initialize data vectors.
-	for i = 1:num_chrs
-		%%% chr_size(chr_sizes(i).chr) = chr_sizes(i).size;
-		GCskew_chr_xPos{i}               = zeros(1,chr_size(i));
-		GCskew_chr_data{i}               = zeros(1,chr_size(i));
-		GCskew_chr_data_cumulative{i}    = zeros(1,chr_size(i));
+	for i = 1:num_chroms
+		%%% chrom_size(chrom_sizes(i).chrom) = chrom_sizes(i).size;
+		GCskew_chrom_xPos{i}               = zeros(1,chrom_size(i));
+		GCskew_chrom_data{i}               = zeros(1,chrom_size(i));
+		GCskew_chrom_data_cumulative{i}    = zeros(1,chrom_size(i));
 		GCcounters(i)                    = 0;
-		ATskew_chr_xPos{i}               = zeros(1,chr_size(i));
-		ATskew_chr_data{i}               = zeros(1,chr_size(i));
-		ATskew_chr_data_cumulative{i}    = zeros(1,chr_size(i));
+		ATskew_chrom_xPos{i}               = zeros(1,chrom_size(i));
+		ATskew_chrom_data{i}               = zeros(1,chrom_size(i));
+		ATskew_chrom_data_cumulative{i}    = zeros(1,chrom_size(i));
 		ATcounters(i)                    = 0;
 	end;
 
-	% Makes sure chr_name{chr} elements aren't null, which causes next section to have problems.
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 0)
-			chr_name{chr} = "";
+	% Makes sure chrom_name{chrom} elements aren't null, which causes next section to have problems.
+	for chrom = 1:num_chroms
+		if (chrom_in_use(chrom) == 0)
+			chrom_name{chrom} = "";
 		end;
 	end;
 
@@ -144,17 +144,17 @@ if (Make_figure_skew)
 
 			% Get contig name string.
 			GCskew_line_parts = strsplit(GCskew_line);
-			GCskew_line_chr   = GCskew_line_parts{1};
-			GCskew_chr_name   = GCskew_line_chr(2:end);
-			fprintf(['\nProcessing GC-skew file chromosome ''' GCskew_chr_name '''.\n']);
+			GCskew_line_chrom   = GCskew_line_parts{1};
+			GCskew_chrom_name   = GCskew_line_chrom(2:end);
+			fprintf(['\nProcessing GC-skew file chromosome ''' GCskew_chrom_name '''.\n']);
 
 			% figure out which chromosome the name string corresponds to.
-			chr_ID         = find(ismember(chr_name, GCskew_chr_name));
-			fprintf(['\tchromosome identified as chr# ' num2str(chr_ID) '.\n']);
+			chrom_ID         = find(ismember(chrom_name, GCskew_chrom_name));
+			fprintf(['\tchromosome identified as chrom# ' num2str(chrom_ID) '.\n']);
 
 			GCcumulativeSkew = 0;
 		else
-			if (chr_in_use(chr_ID))
+			if (chrom_in_use(chrom_ID))
 				%%% Contig data line.
 				% T,0.2,1,-0.07692307692307693,0.43478260869565216,0.043478260869565216
 				%	base (ATGC)
@@ -164,17 +164,17 @@ if (Make_figure_skew)
 				%	GC-percs = (G+C)/kmer_length
 				%	PP-skew  = ((A+G) - (T+C))/((A+G) + (T+C))	(purine-pyrimidine skew)
 
-				GCcounters(chr_ID) += 1;
+				GCcounters(chrom_ID) += 1;
 
 				%%% For GCskew data file containing all GCskews.
 				GCskew_row = strsplit(GCskew_line, ",");
-				GCskew_chr_xPos{chr_ID}(GCcounters(chr_ID)) = str2double(GCskew_row{1});
+				GCskew_chrom_xPos{chrom_ID}(GCcounters(chrom_ID)) = str2double(GCskew_row{1});
 				dataValue                                   = str2double(GCskew_row{2});
-				GCskew_chr_data{chr_ID}(GCcounters(chr_ID)) = dataValue;
+				GCskew_chrom_data{chrom_ID}(GCcounters(chrom_ID)) = dataValue;
 
 				%%% accumulate cumulative GC-skew data.
 				GCcumulativeSkew += dataValue;
-				GCskew_chr_data_cumulative{chr_ID}(GCcounters(chr_ID)) = GCcumulativeSkew;
+				GCskew_chrom_data_cumulative{chrom_ID}(GCcounters(chrom_ID)) = GCcumulativeSkew;
 			end;
 		end;
 		GCskew_line       = fgetl(GCskewData);
@@ -191,17 +191,17 @@ if (Make_figure_skew)
 
 			% Get contig name string.
 			ATskew_line_parts = strsplit(ATskew_line);
-			ATskew_line_chr   = ATskew_line_parts{1};
-			ATskew_chr_name   = ATskew_line_chr(2:end);
-			fprintf(['\nProcessing AT-skew file chromosome ''' ATskew_chr_name '''.\n']);
+			ATskew_line_chrom   = ATskew_line_parts{1};
+			ATskew_chrom_name   = ATskew_line_chrom(2:end);
+			fprintf(['\nProcessing AT-skew file chromosome ''' ATskew_chrom_name '''.\n']);
 
 			% figure out which chromosome the name string corresponds to.
-			chr_ID         = find(ismember(chr_name, ATskew_chr_name));
-			fprintf(['\tchromosome identified as chr# ' num2str(chr_ID) '.\n']);
+			chrom_ID         = find(ismember(chrom_name, ATskew_chrom_name));
+			fprintf(['\tchromosome identified as chrom# ' num2str(chrom_ID) '.\n']);
 
 			ATcumulativeSkew = 0;
 		else
-			if (chr_in_use(chr_ID))
+			if (chrom_in_use(chrom_ID))
 				%%% Contig data line.
 				% T,0.2,1,-0.07692307692307693,0.43478260869565216,0.043478260869565216
 				%       base (ATGC)
@@ -211,77 +211,77 @@ if (Make_figure_skew)
 				%       GC-percs = (G+C)/kmer_length
 				%       PP-skew  = ((A+G) - (T+C))/((A+G) + (T+C))      (purine-pyrimidine skew)
 
-				ATcounters(chr_ID) += 1;
+				ATcounters(chrom_ID) += 1;
 
 				%%% For ATskew data file containing all ATskews.
 				ATskew_row = strsplit(ATskew_line, ",");
-				ATskew_chr_xPos{chr_ID}(ATcounters(chr_ID)) = str2double(ATskew_row{1});
+				ATskew_chrom_xPos{chrom_ID}(ATcounters(chrom_ID)) = str2double(ATskew_row{1});
 				dataValue                                   = str2double(ATskew_row{2});
-				ATskew_chr_data{chr_ID}(ATcounters(chr_ID)) = dataValue;
+				ATskew_chrom_data{chrom_ID}(ATcounters(chrom_ID)) = dataValue;
 
 				%%% accumulate cumulative AT-skew data.
 				ATcumulativeSkew += dataValue;
-				ATskew_chr_data_cumulative{chr_ID}(ATcounters(chr_ID)) = ATcumulativeSkew;
+				ATskew_chrom_data_cumulative{chrom_ID}(ATcounters(chrom_ID)) = ATcumulativeSkew;
 			end;
 		end;
 		ATskew_line       = fgetl(ATskewData);
 	end;
 
 	%%% Truncate ends off data vectors.
-	for i = 1:num_chrs
-		if (chr_in_use(i) == 1)
-			GCskew_chr_xPos{i}            = GCskew_chr_xPos{i}(1:GCcounters(i));
-			GCskew_chr_data{i}            = GCskew_chr_data{i}(1:GCcounters(i));
-			GCskew_chr_data_cumulative{i} = GCskew_chr_data_cumulative{i}(1:GCcounters(i));
-			ATskew_chr_xPos{i}            = ATskew_chr_xPos{i}(1:ATcounters(i));
-			ATskew_chr_data{i}            = ATskew_chr_data{i}(1:ATcounters(i));
-			ATskew_chr_data_cumulative{i} = ATskew_chr_data_cumulative{i}(1:ATcounters(i));
+	for i = 1:num_chroms
+		if (chrom_in_use(i) == 1)
+			GCskew_chrom_xPos{i}            = GCskew_chrom_xPos{i}(1:GCcounters(i));
+			GCskew_chrom_data{i}            = GCskew_chrom_data{i}(1:GCcounters(i));
+			GCskew_chrom_data_cumulative{i} = GCskew_chrom_data_cumulative{i}(1:GCcounters(i));
+			ATskew_chrom_xPos{i}            = ATskew_chrom_xPos{i}(1:ATcounters(i));
+			ATskew_chrom_data{i}            = ATskew_chrom_data{i}(1:ATcounters(i));
+			ATskew_chrom_data_cumulative{i} = ATskew_chrom_data_cumulative{i}(1:ATcounters(i));
 		else
-			GCskew_chr_xPos{i}            = 0;
-			GCskew_chr_data{i}            = 0;
-			GCskew_chr_data_cumulative{i} = 0;
-			ATskew_chr_xPos{i}            = 0;
-			ATskew_chr_data{i}            = 0;
-			ATskew_chr_data_cumulative{i} = 0;
+			GCskew_chrom_xPos{i}            = 0;
+			GCskew_chrom_data{i}            = 0;
+			GCskew_chrom_data_cumulative{i} = 0;
+			ATskew_chrom_xPos{i}            = 0;
+			ATskew_chrom_data{i}            = 0;
+			ATskew_chrom_data_cumulative{i} = 0;
 		end;
 	end;
 
 	%%% find highest/mediaun/lowest GC-skew across genome.
-	for i = 1:num_chrs
-		if (chr_in_use(i) == 1)
-			if (length(GCskew_chr_data_cumulative{i}) > 0)
-				maxSkewCumulative_chr(i) = max(GCskew_chr_data_cumulative{i});
+	for i = 1:num_chroms
+		if (chrom_in_use(i) == 1)
+			if (length(GCskew_chrom_data_cumulative{i}) > 0)
+				maxSkewCumulative_chrom(i) = max(GCskew_chrom_data_cumulative{i});
 			else
-				maxSkewCumulative_chr(i) = 0;
+				maxSkewCumulative_chrom(i) = 0;
 			end;
-			if (length(GCskew_chr_data_cumulative{i}) > 0)
-				minSkewCumulative_chr(i) = min(GCskew_chr_data_cumulative{i});
+			if (length(GCskew_chrom_data_cumulative{i}) > 0)
+				minSkewCumulative_chrom(i) = min(GCskew_chrom_data_cumulative{i});
 			else
-				minSkewCumulative_chr(i) = 0;
+				minSkewCumulative_chrom(i) = 0;
 			end;
-			if (length(GCskew_chr_data{i}) > 0)
-				maxSkew_chr(i) = max(GCskew_chr_data{i});
+			if (length(GCskew_chrom_data{i}) > 0)
+				maxSkew_chrom(i) = max(GCskew_chrom_data{i});
 			else
-				maxSkew_chr(i) = 0;
+				maxSkew_chrom(i) = 0;
 			end;
-			if (length(GCskew_chr_data{i}) > 0)
-				minSkew_chr(i) = min(GCskew_chr_data{i});
+			if (length(GCskew_chrom_data{i}) > 0)
+				minSkew_chrom(i) = min(GCskew_chrom_data{i});
 			else
-				minSkew_chr(i) = 0;
+				minSkew_chrom(i) = 0;
 			end;
 		else
-			maxSkewCumulative_chr(i) = 0;
-			minSkewCumulative_chr(i) = 0;
-			maxSkew_chr(i)           = 0;
-			minSkew_chr(i)           = 0;
+			maxSkewCumulative_chrom(i) = 0;
+			minSkewCumulative_chrom(i) = 0;
+			maxSkew_chrom(i)           = 0;
+			minSkew_chrom(i)           = 0;
 		end;
 	end;
 
 	% lines end without semicolon so that values are output to log file.
-	maxSkew_genome           = max(maxSkew_chr);
-	minSkew_genome           = min(minSkew_chr);
-	maxSkewCumulative_genome = max(maxSkewCumulative_chr);
-	minSkewCumulative_genome = min(minSkewCumulative_chr);
+	maxSkew_genome           = max(maxSkew_chrom);
+	minSkew_genome           = min(minSkew_chrom);
+	maxSkewCumulative_genome = max(maxSkewCumulative_chrom);
+	minSkewCumulative_genome = min(minSkewCumulative_chrom);
 
 	% normalize skew variance so max/min is on range [-1..1] without shifting the zero point.
 	if (maxSkew_genome > -minSkew_genome)
@@ -296,12 +296,12 @@ if (Make_figure_skew)
 	end;
 
 	%%% normalize the data to a range of [-1..0..1].
-	for i = 1:num_chrs
-		GCskew_chr_data{i}            = GCskew_chr_data{i}/maxAbsVal;
-		GCskew_chr_data_cumulative{i} = GCskew_chr_data_cumulative{i}/maxAbsValCumulative;
+	for i = 1:num_chroms
+		GCskew_chrom_data{i}            = GCskew_chrom_data{i}/maxAbsVal;
+		GCskew_chrom_data_cumulative{i} = GCskew_chrom_data_cumulative{i}/maxAbsValCumulative;
 
-		ATskew_chr_data{i}            = ATskew_chr_data{i}/maxAbsVal;
-		ATskew_chr_data_cumulative{i} = ATskew_chr_data_cumulative{i}/maxAbsValCumulative;
+		ATskew_chrom_data{i}            = ATskew_chrom_data{i}/maxAbsVal;
+		ATskew_chrom_data_cumulative{i} = ATskew_chrom_data_cumulative{i}/maxAbsValCumulative;
 	end;
 
 	%--------------------------------------------------------------------------
@@ -314,9 +314,9 @@ if (Make_figure_skew)
 	%%
 
 	% Draw chromosomes in order defined in figure_definitions.txt file.
-	for chr_to_draw  = 1:length(chr_order)
-		chr = chr_order(chr_to_draw);
-		if (chr_in_use(chr) == 1)
+	for chrom_to_draw  = 1:length(chrom_order)
+		chrom = chrom_order(chrom_to_draw);
+		if (chrom_in_use(chrom) == 1)
 			if (Standard_display)
 
 	%%
@@ -325,12 +325,12 @@ if (Make_figure_skew)
 
 				%%==================================================================================
 				%% stacked plot section.
-				yData1 = (GCskew_chr_data{chr}           +1)/2*maxY;
-				yData2 = (ATskew_chr_data{chr}           +1)/2*maxY;
-				yData3 = (GCskew_chr_data_cumulative{chr}+1)/2*maxY;
-				yData4 = (ATskew_chr_data_cumulative{chr}+1)/2*maxY;
-				xData  = GCskew_chr_xPos{chr}/bases_per_bin;
-				if (chr_figReversed(chr) == 1)
+				yData1 = (GCskew_chrom_data{chrom}           +1)/2*maxY;
+				yData2 = (ATskew_chrom_data{chrom}           +1)/2*maxY;
+				yData3 = (GCskew_chrom_data_cumulative{chrom}+1)/2*maxY;
+				yData4 = (ATskew_chrom_data_cumulative{chrom}+1)/2*maxY;
+				xData  = GCskew_chrom_xPos{chrom}/bases_per_bin;
+				if (chrom_figReversed(chrom) == 1)
 					xData = fliplr(xData);
 				end;
 				plot(xData,yData1,'color',[0.75 0    0   ]);
@@ -358,12 +358,12 @@ if (Make_figure_skew)
 
 				%%==================================================================================
 				%% linear plot section.
-				yData1 = (GCskew_chr_data{chr}           +1)/2*maxY;
-				yData2 = (ATskew_chr_data{chr}           +1)/2*maxY;
-				yData3 = (GCskew_chr_data_cumulative{chr}+1)/2*maxY;
-				yData4 = (ATskew_chr_data_cumulative{chr}+1)/2*maxY;
-				xData  = GCskew_chr_xPos{chr}/bases_per_bin;
-				if (chr_figReversed(chr) == 1)
+				yData1 = (GCskew_chrom_data{chrom}           +1)/2*maxY;
+				yData2 = (ATskew_chrom_data{chrom}           +1)/2*maxY;
+				yData3 = (GCskew_chrom_data_cumulative{chrom}+1)/2*maxY;
+				yData4 = (ATskew_chrom_data_cumulative{chrom}+1)/2*maxY;
+				xData  = GCskew_chrom_xPos{chrom}/bases_per_bin;
+				if (chrom_figReversed(chrom) == 1)
 					xData = fliplr(xData);
 				end;
 				plot(xData,yData1,'color',[0.75 0    0   ]);
@@ -386,12 +386,12 @@ if (Make_figure_skew)
 				hold on;
 
 				set(gca,'FontSize',gca_stacked_font_size);
-				if (chr == find(chr_posY == max(chr_posY)))
+				if (chrom == find(chrom_posY == max(chrom_posY)))
 					title([ genome ' GC-skew map'],'Interpreter','none','FontSize',stacked_title_size);
 				end;
 			end;
 
-			first_chr = false;
+			first_chrom = false;
 		end;
 	end;
 

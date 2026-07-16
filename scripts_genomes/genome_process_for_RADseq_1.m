@@ -8,20 +8,20 @@ fprintf(['Genome : [[[' genome '[[[\n']);
 workingDir             = ['../users/' user '/genomes/' genome '/'];
 nmer_length            = 10;
 
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(workingDir,genome);
+[centromeres, chrom_sizes, figure_details, annotations, ploidy_default] = Load_genome_information_1(workingDir,genome);
 
 %% Determine number of chromosomes from figure_details.
-num_chrs   = 0;
-chr_labels = [];
+num_chroms   = 0;
+chrom_labels = [];
 inUse      = zeros(1,length(figure_details));
 allNames   = {};
 for i = 1:length(figure_details)
 	allNames{i}  = figure_details(i).name;
-    if (figure_details(i).chr ~= 0)
+    if (figure_details(i).chrom ~= 0)
 		inUse(i) = 1;
-        num_chrs = num_chrs+1;
-        chr_names{figure_details(i).chr}  = figure_details(i).name;
-        length_nts(figure_details(i).chr) = chr_sizes(figure_details(i).chr).size;
+        num_chroms = num_chroms+1;
+        chrom_names{figure_details(i).chrom}  = figure_details(i).name;
+        length_nts(figure_details(i).chrom) = chrom_sizes(figure_details(i).chrom).size;
     end;
 end;
 testVar = inUse
@@ -49,8 +49,8 @@ if (exist([workingDir FastaName '.MfeI_MboI.fasta'],'file') == 0)
 
 		fprintf(['\n\tLoading FASTA file: \"' refFASTA '\"\n\n']);
 		for i = 1:length(SequenceData)
-			for j = 1:length(chr_names)
-				if (strcmp(chr_names{j},SequenceData(i).Header) == 1)
+			for j = 1:length(chrom_names)
+				if (strcmp(chrom_names{j},SequenceData(i).Header) == 1)
 					length_nts(j)        = length(SequenceData(i).Sequence);
 					sequences{j}         = SequenceData(i).Sequence;
 					rev_com_sequences{j} = rev_com(sequences{j});
@@ -74,43 +74,43 @@ if (exist([workingDir FastaName '.MfeI_MboI.fasta'],'file') == 0)
     NewSequenceData = [];
     fragment = 1;
     fprintf('\nFragmenting genome by MfeI & MboI');
-    for chr = 1:length(figure_details)
-		if (inUse(chr) == 1)
+    for chrom = 1:length(figure_details)
+		if (inUse(chrom) == 1)
 			start_coordinate = 1;
-			fprintf(['\n\tFragmenting : ' allNames{chr} ]);
-			for bp = start_coordinate:length(sequences{chr})
-				if (bp < length(sequences{chr})-5)
+			fprintf(['\n\tFragmenting : ' allNames{chrom} ]);
+			for bp = start_coordinate:length(sequences{chrom})
+				if (bp < length(sequences{chrom})-5)
 					% fragment chromosome by MfeI [C:AATTG].
-					test_sequence = sequences{chr}(bp:(bp+5));
+					test_sequence = sequences{chrom}(bp:(bp+5));
 					if (strcmp(upper(test_sequence),'CAATTG') == 1)
-						header_string                      = ['>' genome '.chr' num2str(chr) ' (' num2str(start_coordinate) '..' num2str(bp) ')'];
-						sequence_string                    = sequences{chr}(start_coordinate:bp);
+						header_string                      = ['>' genome '.chrom' num2str(chrom) ' (' num2str(start_coordinate) '..' num2str(bp) ')'];
+						sequence_string                    = sequences{chrom}(start_coordinate:bp);
 						NewSequenceData(fragment).Header   = header_string;
 						NewSequenceData(fragment).Sequence = sequence_string;
 						start_coordinate                   = bp+1;
 						fragment                           = fragment+1;
 					end;
 					% fragment chromosome by MboI [:GATC].
-					test_sequence = sequences{chr}(bp:(bp+3));
+					test_sequence = sequences{chrom}(bp:(bp+3));
 					if (strcmp(upper(test_sequence),'GATC') == 1)
-						header_string                      = ['>' genome '.chr' num2str(chr) ' (' num2str(start_coordinate) '..' num2str(bp-1) ')'];
-						sequence_string                    = sequences{chr}(start_coordinate:(bp-1));
+						header_string                      = ['>' genome '.chrom' num2str(chrom) ' (' num2str(start_coordinate) '..' num2str(bp-1) ')'];
+						sequence_string                    = sequences{chrom}(start_coordinate:(bp-1));
 						NewSequenceData(fragment).Header   = header_string;
 						NewSequenceData(fragment).Sequence = sequence_string;
 						start_coordinate                   = bp;
 						fragment                           = fragment+1;
 					end;
 				end;
-				if (bp == length(sequences{chr}))
-					header_string                      = ['>' genome '.chr' num2str(chr) ' (' num2str(start_coordinate) '..' num2str(length(sequences{chr})) ')'];
-					sequence_string                    = sequences{chr}(start_coordinate:end);
+				if (bp == length(sequences{chrom}))
+					header_string                      = ['>' genome '.chrom' num2str(chrom) ' (' num2str(start_coordinate) '..' num2str(length(sequences{chrom})) ')'];
+					sequence_string                    = sequences{chrom}(start_coordinate:end);
 					NewSequenceData(fragment).Header   = header_string;
 					NewSequenceData(fragment).Sequence = sequence_string;
 					fragment                           = fragment+1;
 				end;
 			end;
 		else
-			fprintf(['\n\tSkipping : ' allNames{chr}]);
+			fprintf(['\n\tSkipping : ' allNames{chrom}]);
 		end;
 	end;
 

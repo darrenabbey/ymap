@@ -13,7 +13,7 @@ SNP_verString          = 'v4';
 rDNA_verString         = 'v1';
 LOH_verString          = 'v2';
 displayBREAKS          = true;
-referenceCHR           = 1;
+referenceChrom         = 1;
 
 %% Grab the first column of the first line of the putative_SNP pileup file.
 datafile       = [workingDir 'putative_SNPs_' SNP_verString '.txt'];
@@ -21,7 +21,7 @@ data           = fopen(datafile);
 fprintf(['datafile : ' datafile]);
 line           = fgetl(data);           % grab the first line of the putative_CNV datafile.
 fprintf(['\n' datafile '::' num2str(data) '::' line '\n']);
-exampleChrName = sscanf(line, '%s',1);  % grab the first column, ex : 'ChrA_C_glabrata_CBS138';
+examplechromName = sscanf(line, '%s',1);  % grab the first column, ex : 'chromA_C_glabrata_CBS138';
 fclose(data);
 
 

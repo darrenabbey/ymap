@@ -16,7 +16,7 @@ SNP_verString          = 'v4';
 rDNA_verString         = 'v1';
 LOH_verString          = 'v2';
 displayBREAKS          = true;
-referenceCHR           = 1;
+referenceChrom         = 1;
 
 % Generate fittings Rsquared scatter plot figure.
 CNV_LOH_check(main_dir,user,genomeUser,project,parent_or_hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);

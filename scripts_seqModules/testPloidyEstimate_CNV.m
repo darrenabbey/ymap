@@ -1,4 +1,4 @@
-function [Rsquared] = testPloidyEstimate_CNV(workingDir, CNVplot, chr_breaks, ploidy, usedChr, segment, copyNum, makeFitFigures)
+function [Rsquared] = testPloidyEstimate_CNV(workingDir, CNVplot, chrom_breaks, ploidy, usedchrom, segment, copyNum, makeFitFigures)
 %%%================================================================================================
 %%%
 %%% Find R^2 value for CNV data gaussian fit to specific copy number.
@@ -22,10 +22,10 @@ segment_CNVdata  = [];
 segment_CNVdata2 = [];
 
 %%% Grab CNV data for this segment of this chromosome.
-for i = 1:length(CNVplot{usedChr})
-	if (i <= length(CNVplot{usedChr})*chr_breaks{usedChr}(segment+1)) && ...
-	   (i >= length(CNVplot{usedChr})*chr_breaks{usedChr}(segment))
-		segment_CNVdata = [segment_CNVdata CNVplot{usedChr}(i)];
+for i = 1:length(CNVplot{usedchrom})
+	if (i <= length(CNVplot{usedchrom})*chrom_breaks{usedchrom}(segment+1)) && ...
+	   (i >= length(CNVplot{usedchrom})*chrom_breaks{usedchrom}(segment))
+		segment_CNVdata = [segment_CNVdata CNVplot{usedchrom}(i)];
 	end;
 end;
 segment_CNVdata = segment_CNVdata*ploidy;
@@ -50,7 +50,7 @@ smoothed = smoothed - smoothed2;
 smoothed = smoothed/max(smoothed);
 
 %%% Perform Gaussian curve fitting to CNV data, to generate chromosome segment copy number estimates, after merging adjacent segments when needed. (Fit figures are made.)
-descriptionString   = ['testCopyNum_' num2str(copyNum) '.chr' num2str(usedChr) '.' num2str(segment)];
+descriptionString   = ['testCopyNum_' num2str(copyNum) '.chrom' num2str(usedchrom) '.' num2str(segment)];
 [CNVsegment_height, CNVsegment_location, CNVsegment_width, Rsquared] = fit_Gaussian_model2(workingDir, smoothed, peakLocation, 'cubic',show_fitting,20, makeFitFigures, descriptionString);
 
 end

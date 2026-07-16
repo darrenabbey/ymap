@@ -1,5 +1,5 @@
 colorNoData = [1.0     1.0     1.0    ]; % used when no data is available for the bin.
-colorInit   = [0.5     0.5     0.5    ]; % external; used in blending at ends of chr.
+colorInit   = [0.5     0.5     0.5    ]; % external; used in blending at ends of chrom.
 colorHET    = [0.66667 0.66667 0.66667]; % near 1:1 ratio SNPs
 colorHOM    = [1.0     0.0     0.0    ]; % Hom SNPs;
 

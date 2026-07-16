@@ -40,22 +40,22 @@ else
 			maxPloidyToDisplay);
 
 	roundedbases_per_bin = round(bases_per_bin);
-	for chr = 1:length(CNVplot2)
-		fprintf(cnvTrackFid,'# chromosome %d:\n', chr);
-		for chrBin = 1:length(CNVplot2{chr})
-			localCopyEstimate = CNVplot2{chr}(chrBin) * ploidyMultiplier;
-			binStart = (chrBin - 1) * roundedbases_per_bin + 1;
+	for chrom = 1:length(CNVplot2)
+		fprintf(cnvTrackFid,'# chromosome %d:\n', chrom);
+		for chromBin = 1:length(CNVplot2{chrom})
+			localCopyEstimate = CNVplot2{chrom}(chromBin) * ploidyMultiplier;
+			binStart = (chromBin - 1) * roundedbases_per_bin + 1;
 			binEnd = binStart + roundedbases_per_bin - 1;
 
 			if (round(localCopyEstimate) == ploidyBase)
 				fprintf(cnvTrackFid, '%s\tYmap\tCNV\t%d\t%d\t.\t.\t.\t.\n', ...
-					chr_name{chr}, binStart, binEnd);
+					chrom_name{chrom}, binStart, binEnd);
 			elseif isna(localCopyEstimate)
 				fprintf(cnvTrackFid, '%s\tYmap\tCNV\t%d\t%d\t.\t.\t.\t.\n', ...
-					chr_name{chr}, binStart, binEnd);
+					chrom_name{chrom}, binStart, binEnd);
 			else
 				fprintf(cnvTrackFid, '%s\tYmap\tCNV\t%d\t%d\t%.1f\t.\t.\tNote=%s:%d-%d:%.1f\n', ...
-					chr_name{chr}, binStart, binEnd, localCopyEstimate, chr_label{chr}, binStart, binEnd, localCopyEstimate);
+					chrom_name{chrom}, binStart, binEnd, localCopyEstimate, chrom_label{chrom}, binStart, binEnd, localCopyEstimate);
 			end;
 		end
 		fprintf(cnvTrackFid,'\n');

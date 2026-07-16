@@ -10,7 +10,7 @@ set(0,'DefaultFigureVisible','off');
 
 Centromere_format_default   = 3;
 Yscale_nearest_even_ploidy  = true;
-ChrNum                      = true;
+chromNum                      = true;
 show_annotations            = true;
 analyze_rDNA                = true;
 Standard_display            = true;
@@ -41,35 +41,35 @@ else
 	Make_cartoon = true;
 end;
 
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
+[centromeres, chrom_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 Aneuploidy = [];  % later loaded from Load_dataset_information(projectDir) after ChARM algorithm is used.
-num_chrs   = length(chr_sizes);
+num_chroms   = length(chrom_sizes);
 
-for i = 1:num_chrs
-	chr_size(i)  = 0;
+for i = 1:num_chroms
+	chrom_size(i)  = 0;
 	cen_start(i) = 0;
 	cen_end(i)   = 0;
 end;
-for i = 1:num_chrs
-	chr_size(chr_sizes(i).chr)    = chr_sizes(i).size;
-	cen_start(centromeres(i).chr) = centromeres(i).start;
-	cen_end(centromeres(i).chr)   = centromeres(i).end;
+for i = 1:num_chroms
+	chrom_size(chrom_sizes(i).chrom)    = chrom_sizes(i).size;
+	cen_start(centromeres(i).chrom) = centromeres(i).start;
+	cen_end(centromeres(i).chrom)   = centromeres(i).end;
 end;
 if (length(annotations) > 0)
 	fprintf(['\nAnnotations for ' genome '.\n']);
 	for i = 1:length(annotations)
-		annotation_chr(i)       = annotations(i).chr;
+		annotation_chrom(i)       = annotations(i).chrom;
 		annotation_type{i}      = annotations(i).type;
 		annotation_start(i)     = annotations(i).start;
 		annotation_end(i)       = annotations(i).end;
 		annotation_fillcolor{i} = annotations(i).fillcolor;
 		annotation_edgecolor{i} = annotations(i).edgecolor;
 		annotation_size(i)      = annotations(i).size;
-		fprintf(['\t[' num2str(annotations(i).chr) ':' annotations(i).type ':' num2str(annotations(i).start) ':' num2str(annotations(i).end) ':' annotations(i).fillcolor ':' annotations(i).edgecolor ':' num2str(annotations(i).size) ']\n']);
+		fprintf(['\t[' num2str(annotations(i).chrom) ':' annotations(i).type ':' num2str(annotations(i).start) ':' num2str(annotations(i).end) ':' annotations(i).fillcolor ':' annotations(i).edgecolor ':' num2str(annotations(i).size) ']\n']);
 	end;
 end;
 for i = 1:length(figure_details)
-	if (figure_details(i).chr == 0)
+	if (figure_details(i).chrom == 0)
 		if (strcmp(figure_details(i).label,'Key') == 1)
 			key_posX   = figure_details(i).posX;
 			key_posY   = figure_details(i).posY;
@@ -77,16 +77,16 @@ for i = 1:length(figure_details)
 			key_height = figure_details(i).height;
 		end;
 	else
-		chr_id         (figure_details(i).chr) = figure_details(i).chr;
-		chr_label      {figure_details(i).chr} = figure_details(i).label;
-		chr_name       {figure_details(i).chr} = figure_details(i).name;
-		chr_posX       (figure_details(i).chr) = figure_details(i).posX;
-		chr_posY       (figure_details(i).chr) = figure_details(i).posY;
-		chr_width      (figure_details(i).chr) = figure_details(i).width;
-		chr_height     (figure_details(i).chr) = figure_details(i).height;
-		chr_in_use     (figure_details(i).chr) = str2num(figure_details(i).useChr);
-		chr_figOrder   (figure_details(i).chr) = str2num(figure_details(i).figOrder);
-		chr_figReversed(figure_details(i).chr) = str2num(figure_details(i).figReversed);
+		chrom_id         (figure_details(i).chrom) = figure_details(i).chrom;
+		chrom_label      {figure_details(i).chrom} = figure_details(i).label;
+		chrom_name       {figure_details(i).chrom} = figure_details(i).name;
+		chrom_posX       (figure_details(i).chrom) = figure_details(i).posX;
+		chrom_posY       (figure_details(i).chrom) = figure_details(i).posY;
+		chrom_width      (figure_details(i).chrom) = figure_details(i).width;
+		chrom_height     (figure_details(i).chrom) = figure_details(i).height;
+		chrom_in_use     (figure_details(i).chrom) = str2num(figure_details(i).usechrom);
+		chrom_figOrder   (figure_details(i).chrom) = str2num(figure_details(i).figOrder);
+		chrom_figReversed(figure_details(i).chrom) = str2num(figure_details(i).figReversed);
 	end;
 end;
 
@@ -117,9 +117,9 @@ if (Make_cartoon)
 	%%
 
 	% Draw chromosomes in order defined in figure_definitions.txt file.
-	for chr_to_draw  = 1:length(chr_order)
-		chr = chr_order(chr_to_draw);
-		if (chr_in_use(chr) == 1)
+	for chrom_to_draw  = 1:length(chrom_order)
+		chrom = chrom_order(chrom_to_draw);
+		if (chrom_in_use(chrom) == 1)
 			if (Standard_display)
 
 	%%
@@ -163,12 +163,12 @@ if (Make_cartoon)
 				hold on;
 
 				set(gca,'FontSize',gca_stacked_font_size);
-				if (chr == find(chr_posY == max(chr_posY)))
-					title([ genome ' Chromosome Cartoons'],'Interpreter','none','FontSize',stacked_title_size);
+				if (chrom == find(chrom_posY == max(chrom_posY)))
+					title([ genome ' chromosome Cartoons'],'Interpreter','none','FontSize',stacked_title_size);
 				end;
 			end;
 
-			first_chr = false;
+			first_chrom = false;
 		end;
 	end;
 

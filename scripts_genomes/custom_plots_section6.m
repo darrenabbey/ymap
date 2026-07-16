@@ -4,7 +4,7 @@
 					plot([leftEnd rightEnd], [-maxY/10*0.75 -maxY/10*0.75],'color',[0 0 0]);
 					annotation_location = (annotation_start+annotation_end)./2;
 					for i = 1:length(annotation_location)
-						if (annotation_chr(i) == chr)
+						if (annotation_chrom(i) == chrom)
 							annotationCenter = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 							annotationStart  = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 							annotationEnd    = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
@@ -49,7 +49,7 @@
 				%%// End show annotation locations (linear)
 
 				%%// Final formatting stuff.
-				xlim([0,chr_size(chr)/bases_per_bin]);
+				xlim([0,chrom_size(chrom)/bases_per_bin]);
 
 				%// Modify y axis limits to show annotation locations if any are provided.
 				if (length(annotations) > 0)
@@ -68,16 +68,16 @@
 
 				%// Adding chromosome titles above the middle of the chromosome cartoons.
 				%// note: adding title is done in the end since if placed earlier in the code somehow the plot function changes the title position.
-				if (rotate == 0 && chr_size(chr) ~= 0 )
-					if (chr_figReversed(chr) == 0)
-						title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+				if (rotate == 0 && chrom_size(chrom) ~= 0 )
+					if (chrom_figReversed(chrom) == 0)
+						title(chrom_label{chrom},'Interpreter','none','FontSize',linear_chrom_font_size,'Rotation',rotate);
 					else
-						title([chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
+						title([chrom_label{chrom} '\fontsize{' int2str(round(linear_chrom_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chrom_font_size,'Rotation',rotate);
 					end;
 				else
-					if (chr_figReversed(chr) == 0)
-						text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+					if (chrom_figReversed(chrom) == 0)
+						text((chrom_size(chrom)/bases_per_bin)/2,maxY+0.25,chrom_label{chrom},'Interpreter','none','FontSize',linear_chrom_font_size,'Rotation',rotate);
 					else
-						text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
+						text((chrom_size(chrom)/bases_per_bin)/2,maxY+0.25,[chrom_label{chrom} '\fontsize{' int2str(round(linear_chrom_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chrom_font_size,'Rotation',rotate);
 					end;
 				end;

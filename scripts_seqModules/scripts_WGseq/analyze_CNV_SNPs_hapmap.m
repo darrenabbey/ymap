@@ -10,7 +10,7 @@ SNP_verString   = 'v4';
 LOH_verString   = 'v2';
 CNV_verString   = 'v1';
 displayBREAKS   = true;
-referenceCHR    = 1;
+referenceChrom  = 1;
 
 parent = parent_or_hapmap;
 hapmap = parent_or_hapmap;

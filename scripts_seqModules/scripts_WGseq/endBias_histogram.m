@@ -35,7 +35,7 @@ function endBias_histogram(data,maxY);
 	% draw histogram.
 	area(smoothed,1:300,'FaceColor',[0 0 0]);
 
-	% ensure subplot axes are consistent with main chr plots.
+	% ensure subplot axes are consistent with main chrom plots.
 	hold off;
 	axis off;
 	set(gca,'YTick',[]);

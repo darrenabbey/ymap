@@ -1,4 +1,4 @@
-function [] = process_2dataset_hapmap_allelicRatios(project1dir, project2dir, hapmapDir, chr_size, chr_name, chr_in_use, SNP_verString);
+function [] = process_2dataset_hapmap_allelicRatios(project1dir, project2dir, hapmapDir, chrom_size, chrom_name, chrom_in_use, SNP_verString);
 
 
 %%============================================================================================================
@@ -20,37 +20,37 @@ H_datafile = [hapmapDir   'SNPdata_parent.txt'        ];
 %-------------------------------------------------------------------------------------------------------------
 fprintf(['process_2dataset_hapmap_allelicRatios.m: Preallocate data vectors.\n']);
 fprintf('Preallocate data vectors for each chromosome.\n');
-C_chr_SNP_data_positions = cell(length(chr_size),1);   % coordinate of SNP.
-C_chr_SNP_data_ratios    = cell(length(chr_size),1);   % allelic ratio of SNP.
-C_chr_baseCall           = cell(length(chr_size),1);   % majority basecall of SNP.
-C_chr_count              = cell(length(chr_size),1);   % number of reads at SNP coordinate.
-C_chr_SNP_homologA       = cell(length(chr_size),1);   % hapmap homolog a basecall.
-C_chr_SNP_homologB       = cell(length(chr_size),1);   % hapmap homolog b basecall.
-C_chr_SNP_flipHomologs   = cell(length(chr_size),1);   % does hapmap entry need flipped?
-C_chr_SNP_keep           = cell(length(chr_size),1);   % is SNP coordinate found in hapmap?
+C_chrom_SNP_data_positions = cell(length(chrom_size),1);   % coordinate of SNP.
+C_chrom_SNP_data_ratios    = cell(length(chrom_size),1);   % allelic ratio of SNP.
+C_chrom_baseCall           = cell(length(chrom_size),1);   % majority basecall of SNP.
+C_chrom_count              = cell(length(chrom_size),1);   % number of reads at SNP coordinate.
+C_chrom_SNP_homologA       = cell(length(chrom_size),1);   % hapmap homolog a basecall.
+C_chrom_SNP_homologB       = cell(length(chrom_size),1);   % hapmap homolog b basecall.
+C_chrom_SNP_flipHomologs   = cell(length(chrom_size),1);   % does hapmap entry need flipped?
+C_chrom_SNP_keep           = cell(length(chrom_size),1);   % is SNP coordinate found in hapmap?
 
-H_chr_SNP_data_positions = cell(length(chr_size),1);
-H_chr_SNP_alleleA        = cell(length(chr_size),1);
-H_chr_SNP_alleleB        = cell(length(chr_size),1);
-H_chr_SNP_hapmapEntry    = cell(length(chr_size),1);
+H_chrom_SNP_data_positions = cell(length(chrom_size),1);
+H_chrom_SNP_alleleA        = cell(length(chrom_size),1);
+H_chrom_SNP_alleleB        = cell(length(chrom_size),1);
+H_chrom_SNP_hapmapEntry    = cell(length(chrom_size),1);
 
-for chrID = 1:length(chr_size)
-	if (chr_in_use(chrID) == 1)
-		C_chr_SNP_data_positions{chrID} = zeros(chr_size(chrID),1);
-		C_chr_SNP_data_ratios{   chrID} = zeros(chr_size(chrID),1);
-		C_chr_count{             chrID} = zeros(chr_size(chrID),1);
-		C_chr_baseCall{          chrID} = cell( chr_size(chrID),1);
-		C_chr_SNP_homologA{      chrID} = cell( chr_size(chrID),1);
-		C_chr_SNP_homologB{      chrID} = cell( chr_size(chrID),1);
-		C_chr_SNP_flipHomologs{  chrID} = zeros(chr_size(chrID),1);
-		C_chr_SNP_keep{          chrID} = ones( chr_size(chrID),1);
-		C_chr_lines_analyzed(    chrID) = 0;
+for chromID = 1:length(chrom_size)
+	if (chrom_in_use(chromID) == 1)
+		C_chrom_SNP_data_positions{chromID} = zeros(chrom_size(chromID),1);
+		C_chrom_SNP_data_ratios{   chromID} = zeros(chrom_size(chromID),1);
+		C_chrom_count{             chromID} = zeros(chrom_size(chromID),1);
+		C_chrom_baseCall{          chromID} = cell( chrom_size(chromID),1);
+		C_chrom_SNP_homologA{      chromID} = cell( chrom_size(chromID),1);
+		C_chrom_SNP_homologB{      chromID} = cell( chrom_size(chromID),1);
+		C_chrom_SNP_flipHomologs{  chromID} = zeros(chrom_size(chromID),1);
+		C_chrom_SNP_keep{          chromID} = ones( chrom_size(chromID),1);
+		C_chrom_lines_analyzed(    chromID) = 0;
 
-		H_chr_SNP_data_positions{chrID} = zeros(chr_size(chrID),1);
-		H_chr_SNP_alleleA{       chrID} = cell( chr_size(chrID),1);
-		H_chr_SNP_alleleB{       chrID} = cell( chr_size(chrID),1);
-		H_chr_SNP_hapmapEntry{   chrID} = zeros(chr_size(chrID),1);
-		H_chr_lines_analyzed(    chrID) = 0;
+		H_chrom_SNP_data_positions{chromID} = zeros(chrom_size(chromID),1);
+		H_chrom_SNP_alleleA{       chromID} = cell( chrom_size(chromID),1);
+		H_chrom_SNP_alleleB{       chromID} = cell( chrom_size(chromID),1);
+		H_chrom_SNP_hapmapEntry{   chromID} = zeros(chrom_size(chromID),1);
+		H_chrom_lines_analyzed(    chromID) = 0;
 	end;
 end;
 
@@ -61,43 +61,43 @@ end;
 fprintf(['process_2dataset_hapmap_allelicRatios.m: Process child project dataset (trimmed_SNPs_v5.txt).\n']);
 C_data      = fopen(C_datafile, 'r');
 allele_list = ['A' 'T' 'G' 'C'];
-old_chr     = 0;
+old_chrom     = 0;
 while not (feof(C_data))
 	C_dataLine = fgetl(C_data);
 	if (C_dataLine(1) ~= '#')
 		if (length(C_dataLine) > 0)
 			% process the loaded line into data channels.
 			values           = strsplit(strtrim(C_dataLine),'	');
-			C_SNP_chr_name   = values{1};
+			C_SNP_chrom_name   = values{1};
 			C_SNP_coordinate = values{2};
 			C_SNP_countA     = values{3};
 			C_SNP_countT     = values{4};
 			C_SNP_countG     = values{5};
 			C_SNP_countC     = values{6};
-			C_chr_num        = find(strcmp(C_SNP_chr_name, chr_name));
-			if (length(C_chr_num) > 0)
-				if (C_chr_num ~= old_chr);   fprintf(['\tchr = ' num2str(C_chr_num) '\n']);   end;
+			C_chrom_num        = find(strcmp(C_SNP_chrom_name, chrom_name));
+			if (length(C_chrom_num) > 0)
+				if (C_chrom_num ~= old_chrom);   fprintf(['\tchrom = ' num2str(C_chrom_num) '\n']);   end;
 				C_SNP_countA                                                         = str2num(C_SNP_countA);
 				C_SNP_countT                                                         = str2num(C_SNP_countT);
 				C_SNP_countG                                                         = str2num(C_SNP_countG);
 				C_SNP_countC                                                         = str2num(C_SNP_countC);
 				C_count_vector1                                                      = [C_SNP_countA C_SNP_countT C_SNP_countG C_SNP_countC];
-				C_chr_read_max1                                                      = max(C_count_vector1);
+				C_chrom_read_max1                                                      = max(C_count_vector1);
 				C_SNP_coordinate                                                     = str2num(C_SNP_coordinate);
-				C_chr_lines_analyzed(C_chr_num)                                      = C_chr_lines_analyzed(C_chr_num)+1;
-				C_chr_SNP_data_positions{C_chr_num}(C_chr_lines_analyzed(C_chr_num)) = C_SNP_coordinate;
-				C_chr_SNP_data_ratios{   C_chr_num}(C_chr_lines_analyzed(C_chr_num)) = C_chr_read_max1/sum(C_count_vector1);
-				C_chr_count{             C_chr_num}(C_chr_lines_analyzed(C_chr_num)) = sum(C_count_vector1);
+				C_chrom_lines_analyzed(C_chrom_num)                                      = C_chrom_lines_analyzed(C_chrom_num)+1;
+				C_chrom_SNP_data_positions{C_chrom_num}(C_chrom_lines_analyzed(C_chrom_num)) = C_SNP_coordinate;
+				C_chrom_SNP_data_ratios{   C_chrom_num}(C_chrom_lines_analyzed(C_chrom_num)) = C_chrom_read_max1/sum(C_count_vector1);
+				C_chrom_count{             C_chrom_num}(C_chrom_lines_analyzed(C_chrom_num)) = sum(C_count_vector1);
 				allele_call_id                                                       = find(C_count_vector1==max(C_count_vector1));
 				if (length(allele_call_id) > 1)
-					C_chr_read_id                                                = 'N';
+					C_chrom_read_id                                                = 'N';
 				else
-					C_chr_read_id                                                = allele_list(allele_call_id);
+					C_chrom_read_id                                                = allele_list(allele_call_id);
 				end;
-				C_chr_baseCall{          C_chr_num}{C_chr_lines_analyzed(C_chr_num)} = C_chr_read_id;
-				old_chr = C_chr_num;
+				C_chrom_baseCall{          C_chrom_num}{C_chrom_lines_analyzed(C_chrom_num)} = C_chrom_read_id;
+				old_chrom = C_chrom_num;
 			else
-				old_chr = 0;
+				old_chrom = 0;
 			end;
 		end;
 	end;
@@ -110,18 +110,18 @@ fclose(C_data);
 %-------------------------------------------------------------------------------------------------------------
 fprintf(['process_2dataset_hapmap_allelicRatios.m: Process hapmap dataset ([Hapmap_dir]/SNPdata_parent.txt).\n']);
 H_data      = fopen(H_datafile, 'r');
-old_chr     = 0;
+old_chrom     = 0;
 while not (feof(H_data))
 	H_dataLine = fgetl(H_data);
 	if (H_dataLine(1) ~= '#')
 		if (length(H_dataLine) > 0)
 			% process the loaded line into data channels.
 			values                   = strsplit(strtrim(H_dataLine),'	');
-			H_SNP_chr_name           = values{1};
+			H_SNP_chrom_name           = values{1};
 			H_SNP_coordinate         = str2num(values{2});
 			H_SNP_alleleA            = values{3};
 			H_SNP_alleleB            = values{4};
-			H_chr_num                = find(strcmp(H_SNP_chr_name, chr_name));
+			H_chrom_num                = find(strcmp(H_SNP_chrom_name, chrom_name));
 			% darren: Make hapmapEntry consensus determination.
 			H_SNP_hapmapEntry_values = [];
 			for i = 5:length(values)
@@ -138,18 +138,18 @@ while not (feof(H_data))
 			elseif (count_0 == 0)        H_SNP_hapmapEntry_consensus = 10;              % No phasing information. All error codes will be treated the same.
 			else                         H_SNP_hapmapEntry_consensus = round(rand());   % Equal non-zero evidence for correct and incorrect phasing, so choose 0 or 1 at random.
 			end;
-			if (length(H_chr_num) > 0)
-				if (H_chr_num ~= old_chr)
-					fprintf(['\tchr = ' num2str(H_chr_num) '\n']);
+			if (length(H_chrom_num) > 0)
+				if (H_chrom_num ~= old_chrom)
+					fprintf(['\tchrom = ' num2str(H_chrom_num) '\n']);
 				end;
-				H_chr_lines_analyzed(    H_chr_num)                                  = H_chr_lines_analyzed(H_chr_num)+1;
-				H_chr_SNP_data_positions{H_chr_num}(H_chr_lines_analyzed(H_chr_num)) = H_SNP_coordinate;
-				H_chr_SNP_alleleA{       H_chr_num}{H_chr_lines_analyzed(H_chr_num)} = H_SNP_alleleA;
-				H_chr_SNP_alleleB{       H_chr_num}{H_chr_lines_analyzed(H_chr_num)} = H_SNP_alleleB;
-				H_chr_SNP_hapmapEntry{   H_chr_num}(H_chr_lines_analyzed(H_chr_num)) = H_SNP_hapmapEntry_consensus;
-				old_chr = H_chr_num;
+				H_chrom_lines_analyzed(    H_chrom_num)                                  = H_chrom_lines_analyzed(H_chrom_num)+1;
+				H_chrom_SNP_data_positions{H_chrom_num}(H_chrom_lines_analyzed(H_chrom_num)) = H_SNP_coordinate;
+				H_chrom_SNP_alleleA{       H_chrom_num}{H_chrom_lines_analyzed(H_chrom_num)} = H_SNP_alleleA;
+				H_chrom_SNP_alleleB{       H_chrom_num}{H_chrom_lines_analyzed(H_chrom_num)} = H_SNP_alleleB;
+				H_chrom_SNP_hapmapEntry{   H_chrom_num}(H_chrom_lines_analyzed(H_chrom_num)) = H_SNP_hapmapEntry_consensus;
+				old_chrom = H_chrom_num;
 			else
-				old_chr = 0;
+				old_chrom = 0;
 			end;
 		end;
 	end;
@@ -161,21 +161,21 @@ fclose(H_data);
 % Clean up data vectors.
 %-------------------------------------------------------------------------------------------------------------
 fprintf(['process_2dataset_hapmap_allelicRatios.m: clean up data.\n']);
-for chrID = 1:length(chr_size)
-	if (chr_in_use(chrID) == 1)
-		C_chr_SNP_data_ratios{   chrID}(C_chr_SNP_data_positions{chrID} == 0)  = [];
-		C_chr_count{             chrID}(C_chr_SNP_data_positions{chrID} == 0)  = [];
-		C_chr_baseCall{          chrID}(C_chr_SNP_data_positions{chrID} == 0)  = [];
-		C_chr_SNP_homologA{      chrID}(C_chr_SNP_data_positions{chrID} == 0)  = [];
-		C_chr_SNP_homologB{      chrID}(C_chr_SNP_data_positions{chrID} == 0)  = [];
-		C_chr_SNP_flipHomologs{  chrID}(C_chr_SNP_data_positions{chrID} == 0)  = [];
-		C_chr_SNP_keep{          chrID}(C_chr_SNP_data_positions{chrID} == 0)  = [];
-		C_chr_SNP_data_positions{chrID}(C_chr_SNP_data_positions{chrID} == 0)  = [];
+for chromID = 1:length(chrom_size)
+	if (chrom_in_use(chromID) == 1)
+		C_chrom_SNP_data_ratios{   chromID}(C_chrom_SNP_data_positions{chromID} == 0)  = [];
+		C_chrom_count{             chromID}(C_chrom_SNP_data_positions{chromID} == 0)  = [];
+		C_chrom_baseCall{          chromID}(C_chrom_SNP_data_positions{chromID} == 0)  = [];
+		C_chrom_SNP_homologA{      chromID}(C_chrom_SNP_data_positions{chromID} == 0)  = [];
+		C_chrom_SNP_homologB{      chromID}(C_chrom_SNP_data_positions{chromID} == 0)  = [];
+		C_chrom_SNP_flipHomologs{  chromID}(C_chrom_SNP_data_positions{chromID} == 0)  = [];
+		C_chrom_SNP_keep{          chromID}(C_chrom_SNP_data_positions{chromID} == 0)  = [];
+		C_chrom_SNP_data_positions{chromID}(C_chrom_SNP_data_positions{chromID} == 0)  = [];
 
-		H_chr_SNP_alleleA{       chrID}(H_chr_SNP_data_positions{chrID} == 0)  = [];
-		H_chr_SNP_alleleB{       chrID}(H_chr_SNP_data_positions{chrID} == 0)  = [];
-		H_chr_SNP_hapmapEntry{   chrID}(H_chr_SNP_data_positions{chrID} == 0)  = [];
-		H_chr_SNP_data_positions{chrID}(H_chr_SNP_data_positions{chrID} == 0)  = [];
+		H_chrom_SNP_alleleA{       chromID}(H_chrom_SNP_data_positions{chromID} == 0)  = [];
+		H_chrom_SNP_alleleB{       chromID}(H_chrom_SNP_data_positions{chromID} == 0)  = [];
+		H_chrom_SNP_hapmapEntry{   chromID}(H_chrom_SNP_data_positions{chromID} == 0)  = [];
+		H_chrom_SNP_data_positions{chromID}(H_chrom_SNP_data_positions{chromID} == 0)  = [];
 	end;
 end;
 
@@ -185,40 +185,40 @@ end;
 %-------------------------------------------------------------------------------------------------------------
 fprintf(['process_2dataset_hapmap_allelicRatios.m: Determine child values at hapmap loci.\n']);
 start = 1;
-for chrID = 1:length(chr_size)
-	if (chr_in_use(chrID) == 1)
-		fprintf(['\tchr = ' num2str(chrID) '\n']);
-		for projectDatumID = 1:length(C_chr_SNP_data_positions{chrID})
-			pos   = C_chr_SNP_data_positions{chrID}(projectDatumID);
+for chromID = 1:length(chrom_size)
+	if (chrom_in_use(chromID) == 1)
+		fprintf(['\tchrom = ' num2str(chromID) '\n']);
+		for projectDatumID = 1:length(C_chrom_SNP_data_positions{chromID})
+			pos   = C_chrom_SNP_data_positions{chromID}(projectDatumID);
 			found = false;
-			for hapmapDatumID = start:length(H_chr_SNP_data_positions{chrID})
-				hapmap_pos = H_chr_SNP_data_positions{chrID}(hapmapDatumID);
+			for hapmapDatumID = start:length(H_chrom_SNP_data_positions{chromID})
+				hapmap_pos = H_chrom_SNP_data_positions{chromID}(hapmapDatumID);
 				if (pos == hapmap_pos)
 					found = true;
 					break;
 				end;
 			end;
 			if (found == true)
-				C_chr_SNP_homologA{    chrID}{projectDatumID} = H_chr_SNP_alleleA{       chrID}{hapmapDatumID};;
-				C_chr_SNP_homologB{    chrID}{projectDatumID} = H_chr_SNP_alleleB{       chrID}{hapmapDatumID};;
-				C_chr_SNP_flipHomologs{chrID}(projectDatumID) = H_chr_SNP_hapmapEntry{   chrID}(hapmapDatumID);;
-				C_chr_SNP_keep{        chrID}(projectDatumID) = 1;
+				C_chrom_SNP_homologA{    chromID}{projectDatumID} = H_chrom_SNP_alleleA{       chromID}{hapmapDatumID};;
+				C_chrom_SNP_homologB{    chromID}{projectDatumID} = H_chrom_SNP_alleleB{       chromID}{hapmapDatumID};;
+				C_chrom_SNP_flipHomologs{chromID}(projectDatumID) = H_chrom_SNP_hapmapEntry{   chromID}(hapmapDatumID);;
+				C_chrom_SNP_keep{        chromID}(projectDatumID) = 1;
 				start = projectDatumID;
 			else
-				C_chr_SNP_keep{        chrID}(projectDatumID) = 0;
+				C_chrom_SNP_keep{        chromID}(projectDatumID) = 0;
 				start = 1;
 			end;
 		end;
 
 		% Clean up data for chromosome.
-		C_chr_SNP_data_ratios{   chrID}(C_chr_SNP_keep{chrID} == 0) = [];
-		C_chr_SNP_data_positions{chrID}(C_chr_SNP_keep{chrID} == 0) = [];
-		C_chr_baseCall{          chrID}(C_chr_SNP_keep{chrID} == 0) = [];
-		C_chr_SNP_homologA{      chrID}(C_chr_SNP_keep{chrID} == 0) = [];
-		C_chr_SNP_homologB{      chrID}(C_chr_SNP_keep{chrID} == 0) = [];
-		C_chr_SNP_flipHomologs{  chrID}(C_chr_SNP_keep{chrID} == 0) = [];
-		C_chr_count{             chrID}(C_chr_SNP_keep{chrID} == 0) = [];
-		C_chr_SNP_keep{          chrID}(C_chr_SNP_keep{chrID} == 0) = [];
+		C_chrom_SNP_data_ratios{   chromID}(C_chrom_SNP_keep{chromID} == 0) = [];
+		C_chrom_SNP_data_positions{chromID}(C_chrom_SNP_keep{chromID} == 0) = [];
+		C_chrom_baseCall{          chromID}(C_chrom_SNP_keep{chromID} == 0) = [];
+		C_chrom_SNP_homologA{      chromID}(C_chrom_SNP_keep{chromID} == 0) = [];
+		C_chrom_SNP_homologB{      chromID}(C_chrom_SNP_keep{chromID} == 0) = [];
+		C_chrom_SNP_flipHomologs{  chromID}(C_chrom_SNP_keep{chromID} == 0) = [];
+		C_chrom_count{             chromID}(C_chrom_SNP_keep{chromID} == 0) = [];
+		C_chrom_SNP_keep{          chromID}(C_chrom_SNP_keep{chromID} == 0) = [];
 	end;
 end;
 
@@ -227,7 +227,7 @@ end;
 % Save processed data file.
 %-------------------------------------------------------------------------------------------------------------
 fprintf(['process_2dataset_hapmap_allelicRatios.m: Save processed data.\n']);
-save([project1dir 'SNP_' SNP_verString '.all3.mat'],'C_chr_SNP_data_positions','C_chr_SNP_data_ratios','C_chr_count','C_chr_baseCall','C_chr_SNP_homologA','C_chr_SNP_homologB','C_chr_SNP_flipHomologs');
+save([project1dir 'SNP_' SNP_verString '.all3.mat'],'C_chrom_SNP_data_positions','C_chrom_SNP_data_ratios','C_chrom_count','C_chrom_baseCall','C_chrom_SNP_homologA','C_chrom_SNP_homologB','C_chrom_SNP_flipHomologs');
 
 %% change permissions of file.
 system(['chmod 774 ' projectDir 'SNP_' SNP_verString '.all3.mat']);

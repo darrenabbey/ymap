@@ -26,34 +26,34 @@ if ((useHapmap) || (useParent))
 	%%================================================================================================
 	% Process SNP/hapmap data to determine colors for presentation.
 	%-------------------------------------------------------------------------------------------------
-	%%%% chr_SNPdata{chr,1}{pos} = phased SNP ratio data.
-	%%%% chr_SNPdata{chr,2}{pos} = unphased SNP ratio data.
-	%%%% chr_SNPdata{chr,3}{pos} = phased SNP position data.
-	%%%% chr_SNPdata{chr,4}{pos} = unphased SNP position data.
-	%%%% chr_SNPdata{chr,5}{pos} = flipper value for phased SNP.
-	%%%% chr_SNPdata{chr,6}{pos} = flipper value for unphased SNP.
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			if (length(C_chr_count{chr}) > 1)
+	%%%% chrom_SNPdata{chrom,1}{pos} = phased SNP ratio data.
+	%%%% chrom_SNPdata{chrom,2}{pos} = unphased SNP ratio data.
+	%%%% chrom_SNPdata{chrom,3}{pos} = phased SNP position data.
+	%%%% chrom_SNPdata{chrom,4}{pos} = unphased SNP position data.
+	%%%% chrom_SNPdata{chrom,5}{pos} = flipper value for phased SNP.
+	%%%% chrom_SNPdata{chrom,6}{pos} = flipper value for unphased SNP.
+	for chrom = 1:num_chroms
+		if (chrom_in_use(chrom) == 1)
+			if (length(C_chrom_count{chrom}) > 1)
 				%
 				% Determining colors for each SNP coordinate.
 				%
-				for SNP = 1:length(C_chr_count{chr})
-					coordinate                      = C_chr_SNP_data_positions{chr}(SNP);
+				for SNP = 1:length(C_chrom_count{chrom})
+					coordinate                      = C_chrom_SNP_data_positions{chrom}(SNP);
 					pos                             = ceil(coordinate/new_bases_per_bin);
-					localCopyEstimate               = round(CNVplot2{chr}(pos)*ploidy*ploidyAdjust);
-					baseCall                        = C_chr_baseCall{        chr}{SNP};
-					homologA                        = C_chr_SNP_homologA{    chr}{SNP};
-					homologB                        = C_chr_SNP_homologB{    chr}{SNP};
-					flipper                         = C_chr_SNP_flipHomologs{chr}(SNP);
-					allelic_ratio                   = C_chr_SNP_data_ratios{ chr}(SNP);
+					localCopyEstimate               = round(CNVplot2{chrom}(pos)*ploidy*ploidyAdjust);
+					baseCall                        = C_chrom_baseCall{        chrom}{SNP};
+					homologA                        = C_chrom_SNP_homologA{    chrom}{SNP};
+					homologB                        = C_chrom_SNP_homologB{    chrom}{SNP};
+					flipper                         = C_chrom_SNP_flipHomologs{chrom}(SNP);
+					allelic_ratio                   = C_chrom_SNP_data_ratios{ chrom}(SNP);
 					% Allelic ratio here is the ratio of the majority read call to all reads.
 					% The consequence of this is that it will always be on the range [0.5 .. 1.0].
 					if (flipper == 10)                         % Variable 'flipper' value of '10' indicates no phasing information is available in the hapmap.
 						baseCall                = 'Z';     % Variable 'baseCall' value of 'Z' will prevent either hapmap allele from matching and so unphased ratio colors will be used in the following section.
-						chr_SNPdata{chr,2}{pos} = [chr_SNPdata{chr,2}{pos} allelic_ratio 1-allelic_ratio];
-						chr_SNPdata{chr,4}{pos} = [chr_SNPdata{chr,4}{pos} coordinate    coordinate     ];
-						chr_SNPdata{chr,6}{pos} = [chr_SNPdata{chr,6}{pos} flipper       flipper        ];
+						chrom_SNPdata{chrom,2}{pos} = [chrom_SNPdata{chrom,2}{pos} allelic_ratio 1-allelic_ratio];
+						chrom_SNPdata{chrom,4}{pos} = [chrom_SNPdata{chrom,4}{pos} coordinate    coordinate     ];
+						chrom_SNPdata{chrom,6}{pos} = [chrom_SNPdata{chrom,6}{pos} flipper       flipper        ];
 					elseif (flipper == 1)
 						temp                    = homologA;
 						homologA                = homologB;
@@ -61,32 +61,32 @@ if ((useHapmap) || (useParent))
 						if (baseCall == homologA)
 							allelic_ratio = 1-allelic_ratio;
 						end;
-						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} allelic_ratio];
-						chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate   ];
-						chr_SNPdata{chr,5}{pos} = [chr_SNPdata{chr,5}{pos} flipper      ];
+						chrom_SNPdata{chrom,1}{pos} = [chrom_SNPdata{chrom,1}{pos} allelic_ratio];
+						chrom_SNPdata{chrom,3}{pos} = [chrom_SNPdata{chrom,3}{pos} coordinate   ];
+						chrom_SNPdata{chrom,5}{pos} = [chrom_SNPdata{chrom,5}{pos} flipper      ];
 					else % (flipper == 0)
 						if (baseCall == homologA)
 							allelic_ratio = 1-allelic_ratio;
 						end;
-						chr_SNPdata{chr,1}{pos} = [chr_SNPdata{chr,1}{pos} allelic_ratio];
-						chr_SNPdata{chr,3}{pos} = [chr_SNPdata{chr,3}{pos} coordinate   ];
-						chr_SNPdata{chr,5}{pos} = [chr_SNPdata{chr,5}{pos} flipper      ];
+						chrom_SNPdata{chrom,1}{pos} = [chrom_SNPdata{chrom,1}{pos} allelic_ratio];
+						chrom_SNPdata{chrom,3}{pos} = [chrom_SNPdata{chrom,3}{pos} coordinate   ];
+						chrom_SNPdata{chrom,5}{pos} = [chrom_SNPdata{chrom,5}{pos} flipper      ];
 					end;
 
 					% identify the segment containing the SNP.
 					segmentID                       = 0;
-					for segment = 1:(length(chrCopyNum{chr}))
-						segment_start           = chr_breaks{chr}(segment  )*chr_size(chr);
-						segment_end             = chr_breaks{chr}(segment+1)*chr_size(chr);
+					for segment = 1:(length(chromCopyNum{chrom}))
+						segment_start           = chrom_breaks{chrom}(segment  )*chrom_size(chrom);
+						segment_end             = chrom_breaks{chrom}(segment+1)*chrom_size(chrom);
 						if (coordinate > segment_start) && (coordinate <= segment_end)
 							segmentID       = segment;
 						end;
 					end;
 
 					% Load cutoffs between Gaussian fits performed earlier.
-					segment_copyNum                 = round(chrCopyNum{              chr}(segmentID));
-					actual_cutoffs                  = chrSegment_actual_cutoffs{     chr}{segmentID};
-					mostLikelyGaussians             = chrSegment_mostLikelyGaussians{chr}{segmentID};
+					segment_copyNum                 = round(chromCopyNum{              chrom}(segmentID));
+					actual_cutoffs                  = chromSegment_actual_cutoffs{     chrom}{segmentID};
+					mostLikelyGaussians             = chromSegment_mostLikelyGaussians{chrom}{segmentID};
 					SNPratio_int                    = (allelic_ratio)*199+1;
 
 					% Identify the allelic ratio region containing the SNP.
@@ -106,7 +106,7 @@ if ((useHapmap) || (useParent))
 						end;
 					end;
 
-					allelicFraction                = C_chr_SNP_data_ratios{chr}(SNP);
+					allelicFraction                = C_chrom_SNP_data_ratios{chrom}(SNP);
 					if (segment_copyNum <= 0);              colorList = colorNoData;
 					elseif (segment_copyNum == 1)
 															colorList = alternate_color_1of1;
@@ -180,24 +180,24 @@ if ((useHapmap) || (useParent))
 						end;
 					end;
 
-					chr_SNPdata_colorsC{chr,1}(pos) = chr_SNPdata_colorsC{chr,1}(pos) + colorList(1);
-					chr_SNPdata_colorsC{chr,2}(pos) = chr_SNPdata_colorsC{chr,2}(pos) + colorList(2);
-					chr_SNPdata_colorsC{chr,3}(pos) = chr_SNPdata_colorsC{chr,3}(pos) + colorList(3);
-					chr_SNPdata_countC{ chr  }(pos) = chr_SNPdata_countC{ chr  }(pos) + 1;
+					chrom_SNPdata_colorsC{chrom,1}(pos) = chrom_SNPdata_colorsC{chrom,1}(pos) + colorList(1);
+					chrom_SNPdata_colorsC{chrom,2}(pos) = chrom_SNPdata_colorsC{chrom,2}(pos) + colorList(2);
+					chrom_SNPdata_colorsC{chrom,3}(pos) = chrom_SNPdata_colorsC{chrom,3}(pos) + colorList(3);
+					chrom_SNPdata_countC{ chrom  }(pos) = chrom_SNPdata_countC{ chrom  }(pos) + 1;
 				end;
 
 				%
 				% Average color per bin.
 				%
-				for pos = 1:length(chr_SNPdata_countC{chr})
-					if (chr_SNPdata_countC{chr}(pos) > 0)
-						chr_SNPdata_colorsC{chr,1}(pos) = chr_SNPdata_colorsC{chr,1}(pos)/chr_SNPdata_countC{chr}(pos);
-						chr_SNPdata_colorsC{chr,2}(pos) = chr_SNPdata_colorsC{chr,2}(pos)/chr_SNPdata_countC{chr}(pos);
-						chr_SNPdata_colorsC{chr,3}(pos) = chr_SNPdata_colorsC{chr,3}(pos)/chr_SNPdata_countC{chr}(pos);
+				for pos = 1:length(chrom_SNPdata_countC{chrom})
+					if (chrom_SNPdata_countC{chrom}(pos) > 0)
+						chrom_SNPdata_colorsC{chrom,1}(pos) = chrom_SNPdata_colorsC{chrom,1}(pos)/chrom_SNPdata_countC{chrom}(pos);
+						chrom_SNPdata_colorsC{chrom,2}(pos) = chrom_SNPdata_colorsC{chrom,2}(pos)/chrom_SNPdata_countC{chrom}(pos);
+						chrom_SNPdata_colorsC{chrom,3}(pos) = chrom_SNPdata_colorsC{chrom,3}(pos)/chrom_SNPdata_countC{chrom}(pos);
 					else
-						chr_SNPdata_colorsC{chr,1}(pos) = 1.0;
-						chr_SNPdata_colorsC{chr,2}(pos) = 1.0;
-						chr_SNPdata_colorsC{chr,3}(pos) = 1.0;
+						chrom_SNPdata_colorsC{chrom,1}(pos) = 1.0;
+						chrom_SNPdata_colorsC{chrom,2}(pos) = 1.0;
+						chrom_SNPdata_colorsC{chrom,3}(pos) = 1.0;
 					end;
 				end;
 			end;
@@ -205,21 +205,21 @@ if ((useHapmap) || (useParent))
 	end;
 
 
-	save([projectDir 'SNP_' SNP_verString '.reduced_RedGreen.mat'],'chr_SNPdata','new_bases_per_bin','chr_SNPdata_colorsC','chr_SNPdata_colorsP');
+	save([projectDir 'SNP_' SNP_verString '.reduced_RedGreen.mat'],'chrom_SNPdata','new_bases_per_bin','chrom_SNPdata_colorsC','chrom_SNPdata_colorsP');
 
 
 	%% ===============================================================================================
 	% Setup for main figure generation.
 	%-------------------------------------------------------------------------------------------------
 	% load size definitions
-    [linear_fig_height,linear_fig_width,Linear_left_start,Linear_chr_gap,Linear_Chr_max_width,Linear_height...
-        ,Linear_base,rotate,linear_chr_font_size,linear_axis_font_size,linear_gca_font_size,stacked_fig_height,...
-        stacked_fig_width,stacked_chr_font_size,stacked_title_size,stacked_axis_font_size,...
-        gca_stacked_font_size,stacked_copy_font_size,max_chrom_label_size] = Load_size_info(chr_in_use,num_chrs,chr_label,chr_size);
+    [linear_fig_height,linear_fig_width,Linear_left_start,Linear_chrom_gap,Linear_chrom_max_width,Linear_height...
+        ,Linear_base,rotate,linear_chrom_font_size,linear_axis_font_size,linear_gca_font_size,stacked_fig_height,...
+        stacked_fig_width,stacked_chrom_font_size,stacked_title_size,stacked_axis_font_size,...
+        gca_stacked_font_size,stacked_copy_font_size,max_chrom_label_size] = Load_size_info(chrom_in_use,num_chroms,chrom_label,chrom_size);
 
     Main_fig = figure();
-	largestChr = find(chr_width == max(chr_width));
-	largestChr = largestChr(1);
+	largestchrom = find(chrom_width == max(chrom_width));
+	largestchrom = largestchrom(1);
 
 
 	%% ===============================================================================================
@@ -227,8 +227,8 @@ if ((useHapmap) || (useParent))
 	%-------------------------------------------------------------------------------------------------
 	if (Linear_display == true)
 		Linear_fig = figure();
-		Linear_genome_size   = sum(chr_size);
-		Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
+		Linear_genome_size   = sum(chrom_size);
+		Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chrom figure.
 		maxY                 = 1; % ploidyBase*2;
 		Linear_left          = Linear_left_start;
 		axisLabelPosition_horiz = 0.01125;
@@ -239,22 +239,22 @@ if ((useHapmap) || (useParent))
 	%%================================================================================================
 	% Make figures
 	%-------------------------------------------------------------------------------------------------
-	first_chr = true;
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
+	first_chrom = true;
+	for chrom = 1:num_chroms
+		if (chrom_in_use(chrom) == 1)
 			figure(Main_fig);
 
-			% make standard chr cartoons.
-			left   = chr_posX(chr);
-			bottom = chr_posY(chr);
-			width  = chr_width(chr);
-			height = chr_height(chr);
+			% make standard chrom cartoons.
+			left   = chrom_posX(chrom);
+			bottom = chrom_posY(chrom);
+			width  = chrom_width(chrom);
+			height = chrom_height(chrom);
 			subplot('Position',[left bottom width height]);
 			hold on;
 			fprintf(['\tfigposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
 
 			% standard : axes labels etc.
-			xlim([0,chr_size(chr)/bases_per_bin]);
+			xlim([0,chrom_size(chrom)/bases_per_bin]);
     
 			%% standard : modify y axis limits to show annotation locations if any are provided.
 			if (length(annotations) > 0)
@@ -264,24 +264,24 @@ if ((useHapmap) || (useParent))
 			end;
 			set(gca,'YTick',[]);
 			set(gca,'YTickLabel',[]);
-			set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
-			text(-50000/5000/2*3, maxY/2,     chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+			set(gca,'TickLength',[(TickSize*chrom_size(largestchrom)/chrom_size(chrom)) 0]); %ensures same tick size on all subfigs.
+			text(-50000/5000/2*3, maxY/2,     chrom_label{chrom}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chrom_font_size);
 			set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 			set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
 
 			% standard : This section sets the Y-axis labelling.
 			axisLabelPosition = -50000/bases_per_bin;
 			set(gca,'FontSize',gca_stacked_font_size);
-			if (chr == find(chr_posY == max(chr_posY)))
+			if (chrom == find(chrom_posY == max(chrom_posY)))
 				title([ project ' allelic fraction map'],'Interpreter','none','FontSize',stacked_title_size);
 			end;
 			% standard : end axes labels etc.
 
 			% standard : draw colorbars.
-			for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
-				colorR   = chr_SNPdata_colorsC{chr,1}(i);
-				colorG   = chr_SNPdata_colorsC{chr,2}(i);
-				colorB   = chr_SNPdata_colorsC{chr,3}(i);
+			for i = 1:ceil(chrom_size(chrom)/new_bases_per_bin)
+				colorR   = chrom_SNPdata_colorsC{chrom,1}(i);
+				colorG   = chrom_SNPdata_colorsC{chrom,2}(i);
+				colorB   = chrom_SNPdata_colorsC{chrom,3}(i);
 				if (colorR < 1) || (colorG < 1) || (colorB < 1)
 					plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
 				end;
@@ -289,18 +289,18 @@ if ((useHapmap) || (useParent))
 			% standard : end draw colorbars
 
 			if (displayBREAKS == true) && (show_annotations == true)
-				chr_length = ceil(chr_size(chr)/bases_per_bin);
-				for segment = 2:length(chr_breaks{chr})-1
-					bP = chr_breaks{chr}(segment)*chr_length;
+				chrom_length = ceil(chrom_size(chrom)/bases_per_bin);
+				for segment = 2:length(chrom_breaks{chrom})-1
+					bP = chrom_breaks{chrom}(segment)*chrom_length;
 					plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
 				end;
 			end;
 
 			% standard : show centromere outlines and horizontal marks.
-			x1 = cen_start(chr)/bases_per_bin;
-			x2 = cen_end(chr)/bases_per_bin;
+			x1 = cen_start(chrom)/bases_per_bin;
+			x2 = cen_end(chrom)/bases_per_bin;
 			leftEnd  = 0.5*5000/bases_per_bin;
-			rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
+			rightEnd = (chrom_size(chrom) - 0.5*5000)/bases_per_bin;
 
 			if (Centromere_format == 0)
 				% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
@@ -350,7 +350,7 @@ if ((useHapmap) || (useParent))
 				plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 				annotation_location = (annotation_start+annotation_end)./2;
 				for i = 1:length(annotation_location)
-					if (annotation_chr(i) == chr)
+					if (annotation_chrom(i) == chrom)
 						annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 						annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 						annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
@@ -372,16 +372,16 @@ if ((useHapmap) || (useParent))
 			%% Linear figure draw section
 			if (Linear_display == true)
 				figure(Linear_fig);
-				Linear_width = Linear_Chr_max_width*chr_size(chr)/Linear_genome_size;
+				Linear_width = Linear_chrom_max_width*chrom_size(chrom)/Linear_genome_size;
 				subplot('Position',[Linear_left Linear_base Linear_width Linear_height]);
 				hold on;
-				Linear_left = Linear_left + Linear_width + Linear_chr_gap;
+				Linear_left = Linear_left + Linear_width + Linear_chrom_gap;
 
 				% linear : draw colorbars
-				for i = 1:ceil(chr_size(chr)/new_bases_per_bin)
-					colorR   = chr_SNPdata_colorsC{chr,1}(i);
-					colorG   = chr_SNPdata_colorsC{chr,2}(i);
-					colorB   = chr_SNPdata_colorsC{chr,3}(i);
+				for i = 1:ceil(chrom_size(chrom)/new_bases_per_bin)
+					colorR   = chrom_SNPdata_colorsC{chrom,1}(i);
+					colorG   = chrom_SNPdata_colorsC{chrom,2}(i);
+					colorB   = chrom_SNPdata_colorsC{chrom,3}(i);
 					if (colorR < 1) || (colorG < 1) || (colorB < 1)
 						plot([i i], [0 maxY],'Color',[colorR colorG colorB]);
 					end;
@@ -389,18 +389,18 @@ if ((useHapmap) || (useParent))
 				% linear : end draw colorbars
 
 				if (Linear_displayBREAKS == true) && (show_annotations == true)
-					chr_length = ceil(chr_size(chr)/bases_per_bin);
-	                                for segment = 2:length(chr_breaks{chr})-1
-	                                        bP = chr_breaks{chr}(segment)*chr_length;
+					chrom_length = ceil(chrom_size(chrom)/bases_per_bin);
+	                                for segment = 2:length(chrom_breaks{chrom})-1
+	                                        bP = chrom_breaks{chrom}(segment)*chrom_length;
 	                                        plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
 	                                end;
 	                        end;
 
 				% linear : show centromere.
-				x1 = cen_start(chr)/bases_per_bin;
-				x2 = cen_end(chr)/bases_per_bin;
+				x1 = cen_start(chrom)/bases_per_bin;
+				x2 = cen_end(chrom)/bases_per_bin;
 				leftEnd  = 0.5*5000/bases_per_bin;
-				rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
+				rightEnd = (chrom_size(chrom) - 0.5*5000)/bases_per_bin;
 
 				if (Centromere_format == 0)
 					% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
@@ -432,7 +432,7 @@ if ((useHapmap) || (useParent))
 					plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 					annotation_location = (annotation_start+annotation_end)./2;
 					for i = 1:length(annotation_location)
-						if (annotation_chr(i) == chr)
+						if (annotation_chrom(i) == chrom)
 							annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 							annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 							annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
@@ -451,7 +451,7 @@ if ((useHapmap) || (useParent))
 				% linear : end show annotation locations.
 
 				% linear : Final formatting stuff.
-				xlim([0,chr_size(chr)/bases_per_bin]);
+				xlim([0,chrom_size(chrom)/bases_per_bin]);
 				% modify y axis limits to show annotation locations if any are provided.
 				if (length(annotations) > 0)
 					ylim([-maxY/10*1.5,maxY]);
@@ -460,7 +460,7 @@ if ((useHapmap) || (useParent))
 				end;
 				set(gca,'YTick',[]);
 				set(gca,'YTickLabel',[]);
-				set(gca,'TickLength',[(Linear_TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
+				set(gca,'TickLength',[(Linear_TickSize*chrom_size(largestchrom)/chrom_size(chrom)) 0]); %ensures same tick size on all subfigs.
 				set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 				set(gca,'XTickLabel',[]);
 				set(gca,'FontSize',linear_gca_font_size);
@@ -469,17 +469,17 @@ if ((useHapmap) || (useParent))
 				% adding title in the middle of the cartoon
 				% note: adding title is done in the end since if placed upper
 				% in the code somehow the plot function changes the title position
-				if (rotate == 0 && chr_size(chr) ~= 0 )
-				    title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+				if (rotate == 0 && chrom_size(chrom) ~= 0 )
+				    title(chrom_label{chrom},'Interpreter','none','FontSize',linear_chrom_font_size,'Rotation',rotate);
 				else
-				    text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+				    text((chrom_size(chrom)/bases_per_bin)/2,maxY+0.25,chrom_label{chrom},'Interpreter','none','FontSize',linear_chrom_font_size,'Rotation',rotate);
 				end;
 
 				hold off;
 
 				% shift back to main figure generation.
 				figure(Main_fig);
-				first_chr = false;
+				first_chrom = false;
 			end;
 		end;
 	end;

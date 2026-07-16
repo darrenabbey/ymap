@@ -22,7 +22,7 @@ end;
 %    bases_per_bin              : Controls bin sizes for SNP/CNV fractions of plot.
 %    scale_type                 : 'Ratio' or 'Log2Ratio' y-axis scaling of copy number.
 %                                 'Log2Ratio' does not properly scale CNV data by ploidy.
-%    Chr_max_width              : max width of chrs as fraction of figure width.
+%    chrom_max_width              : max width of chroms as fraction of figure width.
 Linear_displayBREAKS   = false;
 
 manualLOH_file = [main_dir '/users/' user '/projects/' project '/manualLOH.txt'];
@@ -33,7 +33,7 @@ else
 	fprintf(['\nA MANUAL LOH BOX FILE WAS FOUND, DRAWING FIGURE.\n']);
 
 	Centromere_format           = 0;
-	Chr_max_width               = 0.8;
+	chrom_max_width               = 0.8;
 	colorBars                   = true;
 	blendColorBars              = false;
 	show_annotations            = true;
@@ -42,7 +42,7 @@ else
 	FillColors                  = true;   % Fill histogram using colors.
 	show_uncalibrated           = false;  % Fill with single color instead of ratio call colors.
 	HistPlot                    = true;   % Show histogram of CNV at the right end of standard figure chromosomes.
-	ChrNum                      = true;   % Show numerical etimates of copy number to the right of standard figure chromosomes.
+	chromNum                      = true;   % Show numerical etimates of copy number to the right of standard figure chromosomes.
 	Linear_display              = true;   % Figure version with chromosomes laid out horizontally.
 	Low_quality_ploidy_estimate = true    % Estimate error in overall ploidy estimate, assuming most common value is actually euploid.
 	Output_CGD_annotations      = true;   % Generate CGD annotation files for analyzed datasets.
@@ -84,36 +84,36 @@ else
 	genomeDir  = [main_dir '/users/' genomeUser '/genomes/' genome '/'];
 
 
-	[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
+	[centromeres, chrom_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 	[Aneuploidy]                                                          = Load_dataset_information(projectDir);
 
-	num_chrs = length(chr_sizes);
+	num_chroms = length(chrom_sizes);
 
-	for i = 1:length(chr_sizes)
-		chr_size(i)  = 0;
+	for i = 1:length(chrom_sizes)
+		chrom_size(i)  = 0;
 		cen_start(i) = 0;
 		cen_end(i)   = 0;
 	end;
-	for i = 1:length(chr_sizes)
-		chr_size(chr_sizes(i).chr)    = chr_sizes(i).size;
-		cen_start(centromeres(i).chr) = centromeres(i).start;
-		cen_end(centromeres(i).chr)   = centromeres(i).end;
+	for i = 1:length(chrom_sizes)
+		chrom_size(chrom_sizes(i).chrom)    = chrom_sizes(i).size;
+		cen_start(centromeres(i).chrom) = centromeres(i).start;
+		cen_end(centromeres(i).chrom)   = centromeres(i).end;
 	end;
 	if (length(annotations) > 0)
 		fprintf(['\nAnnotations for ' genome '.\n']);
 		for i = 1:length(annotations)
-			annotation_chr(i)       = annotations(i).chr;
+			annotation_chrom(i)       = annotations(i).chrom;
 			annotation_type{i}      = annotations(i).type;
 			annotation_start(i)     = annotations(i).start;
 			annotation_end(i)       = annotations(i).end;
 			annotation_fillcolor{i} = annotations(i).fillcolor;
 			annotation_edgecolor{i} = annotations(i).edgecolor;
 			annotation_size(i)      = annotations(i).size;
-			fprintf(['\t[' num2str(annotations(i).chr) ':' annotations(i).type ':' num2str(annotations(i).start) ':' num2str(annotations(i).end) ':' annotations(i).fillcolor ':' annotations(i).edgecolor ':' num2str(annotations(i).size) ']\n']);
+			fprintf(['\t[' num2str(annotations(i).chrom) ':' annotations(i).type ':' num2str(annotations(i).start) ':' num2str(annotations(i).end) ':' annotations(i).fillcolor ':' annotations(i).edgecolor ':' num2str(annotations(i).size) ']\n']);
 		end;
 	end;
 	for i = 1:length(figure_details)
-		if (figure_details(i).chr == 0)
+		if (figure_details(i).chrom == 0)
 			if (strcmp(figure_details(i).label,'Key') == 1)
 				key_posX   = figure_details(i).posX;
 				key_posY   = figure_details(i).posY;
@@ -121,35 +121,35 @@ else
 				key_height = figure_details(i).height;
 			end;
 		else
-			chr_id         (figure_details(i).chr) = figure_details(i).chr;
-			chr_label      {figure_details(i).chr} = figure_details(i).label;
-			chr_name       {figure_details(i).chr} = figure_details(i).name;
-			chr_posX       (figure_details(i).chr) = figure_details(i).posX;
-			chr_posY       (figure_details(i).chr) = figure_details(i).posY;
-			chr_width      (figure_details(i).chr) = figure_details(i).width;
-			chr_height     (figure_details(i).chr) = figure_details(i).height;
-			chr_in_use     (figure_details(i).chr) = str2num(figure_details(i).useChr);
-			chr_figOrder   (figure_details(i).chr) = str2num(figure_details(i).figOrder);
-			chr_figReversed(figure_details(i).chr) = str2num(figure_details(i).figReversed);
+			chrom_id         (figure_details(i).chrom) = figure_details(i).chrom;
+			chrom_label      {figure_details(i).chrom} = figure_details(i).label;
+			chrom_name       {figure_details(i).chrom} = figure_details(i).name;
+			chrom_posX       (figure_details(i).chrom) = figure_details(i).posX;
+			chrom_posY       (figure_details(i).chrom) = figure_details(i).posY;
+			chrom_width      (figure_details(i).chrom) = figure_details(i).width;
+			chrom_height     (figure_details(i).chrom) = figure_details(i).height;
+			chrom_in_use     (figure_details(i).chrom) = str2num(figure_details(i).usechrom);
+			chrom_figOrder   (figure_details(i).chrom) = str2num(figure_details(i).figOrder);
+			chrom_figReversed(figure_details(i).chrom) = str2num(figure_details(i).figReversed);
 		end;
 	end;
 
-	%% This block is normally calculated in FindChrSizes during CNV analysis.
-	for usedChr = 1:length(chr_in_use)
-		if (chr_in_use(usedChr) == 1)
+	%% This block is normally calculated in FindChromSizes during CNV analysis.
+	for usedchrom = 1:length(chrom_in_use)
+		if (chrom_in_use(usedchrom) == 1)
 			% determine where the endpoints of ploidy segments are.
-			chr_breaks{usedChr}(1) = 0.0;
+			chrom_breaks{usedchrom}(1) = 0.0;
 			break_count = 1;
 			if (length(Aneuploidy) > 0)
 				for i = 1:length(Aneuploidy)
-					if (Aneuploidy(i).chr == usedChr)
+					if (Aneuploidy(i).chrom == usedchrom)
 						break_count = break_count+1;
-						chr_broken = true;
-						chr_breaks{usedChr}(break_count) = Aneuploidy(i).break;
+						chrom_broken = true;
+						chrom_breaks{usedchrom}(break_count) = Aneuploidy(i).break;
 					end;
 				end;
 			end;
-			chr_breaks{usedChr}(length(chr_breaks{usedChr})+1) = 1;
+			chrom_breaks{usedchrom}(length(chrom_breaks{usedchrom})+1) = 1;
 		end;
 	end;
 
@@ -173,21 +173,21 @@ else
 	fprintf(['\nEuploid base = "' num2str(ploidyBase) '"\n']);
 
 	% basic plot parameters not defined per genome.
-	TickSize         = -0.005;  %negative for outside, percentage of longest chr figure.
+	TickSize         = -0.005;  %negative for outside, percentage of longest chrom figure.
 	maxY             = ploidyBase*2;
 	cen_tel_Xindent  = 5;
 	cen_tel_Yindent  = maxY/5;
 
 	%% Load CNV and SNP figure resolutions.
 	if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
-		bases_per_bin           = max(chr_size)/700;
+		bases_per_bin           = max(chrom_size)/700;
 	else
-		bases_per_bin           = max(chr_size)/str2num(fileread([genomeDir 'resolution.CNV.txt']));
+		bases_per_bin           = max(chrom_size)/str2num(fileread([genomeDir 'resolution.CNV.txt']));
 	end;
 	if (exist([genomeDir 'resolution.SNPs.txt'],'file') == 0)
-		bases_per_bin_SNP       = max(chr_size)/700;
+		bases_per_bin_SNP       = max(chrom_size)/700;
 	else
-		bases_per_bin_SNP       = max(chr_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt']));
+		bases_per_bin_SNP       = max(chrom_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt']));
 	end;
 
 	fprintf(['\nGenerating LOH-map figure from ''' project ''' vs. (hapmap)''' hapmap ''' data.\n']);
@@ -197,9 +197,9 @@ else
 	% Load GC-bias corrected CNV data.
 	%-------------------------------------------------------------------------------------------
 	load([projectDir 'Common_CNV.mat']);       % 'CNVplot2','genome_CNV'
-	[chr_breaks, chrCopyNum, ploidyAdjust, chrCopyRsquared] = FindChrSizes_4(workingDir, Aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use, false)
-	largestChr = find(chr_width == max(chr_width));
-	largestChr = largestChr(1);
+	[chrom_breaks, chromCopyNum, ploidyAdjust, chromCopyRsquared] = FindChromSizes_4(workingDir, Aneuploidy,CNVplot2,ploidy,num_chroms,chrom_in_use, false)
+	largestchrom = find(chrom_width == max(chrom_width));
+	largestchrom = largestchrom(1);
 
 
 	%% =========================================================================================
@@ -208,38 +208,38 @@ else
 	% Adjacent pairs of segments with the same copy number will be fused into a single segment.
 	% Segments with a <= zero copy number will be fused to an adjacetn segment.
 	%-------------------------------------------------------------------------------------------
-	for chr = 1:length(chr_in_use)
-		if (chr_in_use(chr) == 1)
-			if (length(chrCopyNum{chr}) > 1)  % more than one segment, so lets examine if adjacent segments have different copyNums.
+	for chrom = 1:length(chrom_in_use)
+		if (chrom_in_use(chrom) == 1)
+			if (length(chromCopyNum{chrom}) > 1)  % more than one segment, so lets examine if adjacent segments have different copyNums.
 				%% Merge any adjacent segments with the same copy number.
 				% add break representing left end of chromosome.
 				breakCount_new         = 1;
-				chr_breaks_new{chr}    = [];
-				chrCopyNum_new{chr}    = [];
-				chr_breaks_new{chr}(1) = 0.0;
-				chrCopyNum_new{chr}(1) = chrCopyNum{chr}(1);
-				for segment = 1:(length(chrCopyNum{chr})-1)
-					if (round(chrCopyNum{chr}(segment)) == round(chrCopyNum{chr}(segment+1)))
+				chrom_breaks_new{chrom}    = [];
+				chromCopyNum_new{chrom}    = [];
+				chrom_breaks_new{chrom}(1) = 0.0;
+				chromCopyNum_new{chrom}(1) = chromCopyNum{chrom}(1);
+				for segment = 1:(length(chromCopyNum{chrom})-1)
+					if (round(chromCopyNum{chrom}(segment)) == round(chromCopyNum{chrom}(segment+1)))
 						% two adjacent segments have identical copyNum and should be fused into one; don't add boundry to new list.
 					else
 						% two adjacent segments have different copyNum; add boundry to new list.
 						breakCount_new                      = breakCount_new + 1;
-						chr_breaks_new{chr}(breakCount_new) = chr_breaks{chr}(segment+1);
-						chrCopyNum_new{chr}(breakCount_new) = chrCopyNum{chr}(segment+1);
+						chrom_breaks_new{chrom}(breakCount_new) = chrom_breaks{chrom}(segment+1);
+						chromCopyNum_new{chrom}(breakCount_new) = chromCopyNum{chrom}(segment+1);
 					end;
 				end;
 				% add break representing right end of chromosome.
 				breakCount_new = breakCount_new+1;
-				chr_breaks_new{chr}(breakCount_new) = 1.0;
-				fprintf(['@@@ chr = ' num2str(chr) '\n']);
-				fprintf(['@@@    chr_breaks_old = ' num2str(chr_breaks{chr})     '\n']);
-				fprintf(['@@@    chrCopyNum_old = ' num2str(chrCopyNum{chr})     '\n']);
-				fprintf(['@@@    chr_breaks_new = ' num2str(chr_breaks_new{chr}) '\n']);
-				fprintf(['@@@    chrCopyNum_new = ' num2str(chrCopyNum_new{chr}) '\n']);
+				chrom_breaks_new{chrom}(breakCount_new) = 1.0;
+				fprintf(['@@@ chrom = ' num2str(chrom) '\n']);
+				fprintf(['@@@    chrom_breaks_old = ' num2str(chrom_breaks{chrom})     '\n']);
+				fprintf(['@@@    chromCopyNum_old = ' num2str(chromCopyNum{chrom})     '\n']);
+				fprintf(['@@@    chrom_breaks_new = ' num2str(chrom_breaks_new{chrom}) '\n']);
+				fprintf(['@@@    chromCopyNum_new = ' num2str(chromCopyNum_new{chrom}) '\n']);
 				% copy new lists to old.
-				chr_breaks{chr} = chr_breaks_new{chr};
-				chrCopyNum{chr} = [];
-				chrCopyNum{chr} = chrCopyNum_new{chr};
+				chrom_breaks{chrom} = chrom_breaks_new{chrom};
+				chromCopyNum{chrom} = [];
+				chromCopyNum{chrom} = chromCopyNum_new{chrom};
 			end;
 		end;
 	end;
@@ -249,10 +249,10 @@ else
 	% Setup for figure generation.
 	%-------------------------------------------------------------------------------------------
 	% load size definitions
-	[linear_fig_height,linear_fig_width,Linear_left_start,Linear_chr_gap,Linear_Chr_max_width,Linear_height,...
-	    Linear_base,rotate,linear_chr_font_size,linear_axis_font_size,linear_gca_font_size,stacked_fig_height,...
-	    stacked_fig_width,stacked_chr_font_size,stacked_title_size,stacked_axis_font_size,...
-	    gca_stacked_font_size,stacked_copy_font_size,max_chrom_label_size] = Load_size_info(chr_in_use,num_chrs,chr_label,chr_size);
+	[linear_fig_height,linear_fig_width,Linear_left_start,Linear_chrom_gap,Linear_chrom_max_width,Linear_height,...
+	    Linear_base,rotate,linear_chrom_font_size,linear_axis_font_size,linear_gca_font_size,stacked_fig_height,...
+	    stacked_fig_width,stacked_chrom_font_size,stacked_title_size,stacked_axis_font_size,...
+	    gca_stacked_font_size,stacked_copy_font_size,max_chromom_label_size] = Load_size_info(chrom_in_use,num_chroms,chrom_label,chrom_size);
 	fig = figure(1);
 
 
@@ -261,8 +261,8 @@ else
 	%-------------------------------------------------------------------------------------------
 	if (Linear_display == true)
 		Linear_fig = figure(2);
-		Linear_genome_size   = sum(chr_size);
-		Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
+		Linear_genome_size   = sum(chrom_size);
+		Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chrom figure.
 		maxY                 = ploidyBase*2;
 		Linear_left          = Linear_left_start;
 		axisLabelPosition_horiz = 0.01125;
@@ -275,7 +275,7 @@ else
 	%...........................................................................................
 	% Example :	4   891320  1798508 153 204 204
 	% Columns
-	%	chrID
+	%	chromID
 	%	startbp
 	%	endbp
 	%	R
@@ -291,7 +291,7 @@ else
 	while not (feof(manualLOH_fid))
 		lineData          = fgetl(manualLOH_fid);
 		lines_analyzed    = lines_analyzed+1;
-		manualLOH_chrID   = sscanf(lineData, '%s',1);
+		manualLOH_chromID   = sscanf(lineData, '%s',1);
 		manualLOH_startbp = sscanf(lineData, '%s',2);
 		for i = 1:size(sscanf(lineData,'%s',1),2);
 			manualLOH_startbp(1) = [];
@@ -313,14 +313,14 @@ else
 			manualLOH_B(1) = [];
 		end;
 
-		manualLOH_chrID   = str2double(manualLOH_chrID);
+		manualLOH_chromID   = str2double(manualLOH_chromID);
 		manualLOH_startbp = str2double(manualLOH_startbp);
 		manualLOH_endbp   = str2double(manualLOH_endbp);
 		manualLOH_R       = str2double(manualLOH_R);
 		manualLOH_G       = str2double(manualLOH_G);
 		manualLOH_B       = str2double(manualLOH_B);
 
-		manualLOH(lines_analyzed).chrID   = manualLOH_chrID;
+		manualLOH(lines_analyzed).chromID   = manualLOH_chromID;
 		manualLOH(lines_analyzed).startbp = manualLOH_startbp;
 		manualLOH(lines_analyzed).endbp   = manualLOH_endbp;
 		manualLOH(lines_analyzed).R       = manualLOH_R;
@@ -343,49 +343,49 @@ else
 	%% =========================================================================================
 	% Make figures
 	%-------------------------------------------------------------------------------------------
-	first_chr = true;
+	first_chrom = true;
 
 	% Determine order to draw chromosome cartoons in.
-	chr_order = [];
-	for test_chr = 1:num_chrs
-		chr_pos = find(chr_figOrder==test_chr);
-		chr_order = [chr_order chr_pos];
+	chrom_order = [];
+	for test_chrom = 1:num_chroms
+		chrom_pos = find(chrom_figOrder==test_chrom);
+		chrom_order = [chrom_order chrom_pos];
 	end;
 
 	% Draw chromosomes in order defined in figure_definitions.txt file.
-	for chr_to_draw  = 1:length(chr_order)
-		chr = chr_order(chr_to_draw);
-		if (chr_in_use(chr) == 1)
+	for chrom_to_draw  = 1:length(chrom_order)
+		chrom = chrom_order(chrom_to_draw);
+		if (chrom_in_use(chrom) == 1)
 			figure(fig);
-			% make standard chr cartoons.
-			left          = chr_posX(chr);
-			bottom        = chr_posY(chr);
-			width         = chr_width(chr);
-			height        = chr_height(chr);
+			% make standard chrom cartoons.
+			left          = chrom_posX(chrom);
+			bottom        = chrom_posY(chrom);
+			width         = chrom_width(chrom);
+			height        = chrom_height(chrom);
 			subPlotHandle = subplot('Position',[left bottom width height]);
 			fprintf(['\tfigposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
 			hold on;
 
 			% reverse order of color bins if chromosome is indicated as reversed in figure_definitions.txt file.
-			if (chr_figReversed(chr) == 1)
+			if (chrom_figReversed(chrom) == 1)
 				% flip manual LOH data.
 				if (length(manualLOH) > 0)
 					for box = 1:length(manualLOH)
-						if (manualLOH(box).chrID == chr)
-							manualLOH(box).startbp = chr_size(chr) - manualLOH(box).startbp + 1;
-							manualLOH(box).endbp   = chr_size(chr) - manualLOH(box).endbp + 1;
+						if (manualLOH(box).chromID == chrom)
+							manualLOH(box).startbp = chrom_size(chrom) - manualLOH(box).startbp + 1;
+							manualLOH(box).endbp   = chrom_size(chrom) - manualLOH(box).endbp + 1;
 						end;
 					end;
 				end;
 
 				% flip CNV data
-				CNVplot2{chr} = fliplr(CNVplot2{chr});
+				CNVplot2{chrom} = fliplr(CNVplot2{chrom});
 			end;
 
 			% standard : draw manualLOH color boxes.
 			if (length(manualLOH) > 0)
 				for box = 1:length(manualLOH)
-					if (manualLOH(box).chrID == chr)
+					if (manualLOH(box).chromID == chrom)
 						bin_start = ceil(manualLOH(box).startbp/bases_per_bin);
 						bin_end   = ceil(manualLOH(box).endbp/bases_per_bin);
 						x_        = [bin_end bin_end bin_start-1 bin_start-1];
@@ -401,12 +401,12 @@ else
 
 			%% standard : CNV plot section.
 			c_ = [0 0 0];
-			fprintf(['\nmain-plot : chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
+			fprintf(['\nmain-plot : chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
 			fprintf(['ploidy     = ' num2str(ploidy)     '\n']);
 			fprintf(['ploidyBase = ' num2str(ploidyBase) '\n']);
-			for chr_bin = 1:length(CNVplot2{chr});
-				x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
-				CNVhistValue = CNVplot2{chr}(chr_bin);
+			for chrom_bin = 1:length(CNVplot2{chrom});
+				x_ = [chrom_bin chrom_bin chrom_bin-1 chrom_bin-1];
+				CNVhistValue = CNVplot2{chrom}(chrom_bin);
 				% The CNV-histogram values were normalized to a median value of 1.
 				% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
 				startY = maxY/2;
@@ -423,7 +423,7 @@ else
 			end;
 
 			% standard : draw lines across plots for easier interpretation of CNV regions.
-			x2 = chr_size(chr)/bases_per_bin;
+			x2 = chrom_size(chrom)/bases_per_bin;
 			for lineNum = 1:(ploidyBase*2-1)
 				line([0 x2], [maxY/(ploidyBase*2)*lineNum  maxY/(ploidyBase*2)*lineNum ],'Color',[0.85 0.85 0.85]);
 			end;
@@ -432,7 +432,7 @@ else
 
 			% standard : axes labels etc.
 			hold off;
-			xlim([0,chr_size(chr)/bases_per_bin]);
+			xlim([0,chrom_size(chrom)/bases_per_bin]);
 
 			% standard : modify y axis limits to show annotation locations if any are provided.
 			if (length(annotations) > 0)
@@ -442,11 +442,11 @@ else
 			end;
 			set(gca,'YTick',[]);
 			set(gca,'YTickLabel',[]);
-			set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
-			if (chr_figReversed(chr) == 0)
-				text(-50000/bases_per_bin/2*3, maxY/2,chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+			set(gca,'TickLength',[(TickSize*chrom_size(largestchrom)/chrom_size(chrom)) 0]); %ensures same tick size on all subfigs.
+			if (chrom_figReversed(chrom) == 0)
+				text(-50000/bases_per_bin/2*3, maxY/2,chrom_label{chrom}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chrom_font_size);
 			else
-				text(-50000/bases_per_bin/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+				text(-50000/bases_per_bin/2*3, maxY/2,[chrom_label{chrom} '\fontsize{' int2str(round(stacked_chrom_font_size/2)) '}' char(10) '(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chrom_font_size);
 			end;
 			set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 			set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
@@ -486,25 +486,25 @@ else
 					text(axisLabelPosition_vert, maxY,      '16','HorizontalAlignment','right','Fontsize',stacked_axis_font_size);
 			end;
 			set(gca,'FontSize',stacked_axis_font_size);
-			if (chr == find(chr_posY == max(chr_posY)))
+			if (chrom == find(chrom_posY == max(chrom_posY)))
 				title([ project ' vs. (hapmap)' hapmap ' SNP/LOH map'],'Interpreter','none','FontSize',stacked_title_size);
 			end;
 			hold on;
 			% standard : end axes labels etc.
 
 			if (displayBREAKS == true) && (show_annotations == true)
-				chr_length = ceil(chr_size(chr)/bases_per_bin);
-                                for segment = 2:length(chr_breaks{chr})-1
-                                        bP = chr_breaks{chr}(segment)*chr_length;
+				chrom_length = ceil(chrom_size(chrom)/bases_per_bin);
+                                for segment = 2:length(chrom_breaks{chrom})-1
+                                        bP = chrom_breaks{chrom}(segment)*chrom_length;
                                         plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
                                 end;
                         end;
 
 			% standard : show centromere outlines and horizontal marks.
-			x1 = cen_start(chr)/bases_per_bin;
-			x2 = cen_end(chr)/bases_per_bin;
+			x1 = cen_start(chrom)/bases_per_bin;
+			x2 = cen_end(chrom)/bases_per_bin;
 			leftEnd  = 0.5*5000/bases_per_bin;
-			rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
+			rightEnd = (chrom_size(chrom) - 0.5*5000)/bases_per_bin;
 			if (Centromere_format == 0)
 				% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
 				dx = cen_tel_Xindent; %5*5000/bases_per_bin;
@@ -529,7 +529,7 @@ else
 		        hold on;
 		        annotation_location = (annotation_start+annotation_end)./2;
 		        for i = 1:length(annotation_location)
-		            if (annotation_chr(i) == chr)
+		            if (annotation_chrom(i) == chrom)
 		                annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 		                annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 		                annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
@@ -548,23 +548,23 @@ else
 		    end;
 			% standard : end show annotation locations.
 
-			% standard : make CNV histograms to the right of the main chr cartoons.
+			% standard : make CNV histograms to the right of the main chrom cartoons.
 			if (HistPlot == true)
 				width     = 0.020;
-				height    = chr_height(chr);
-				bottom    = chr_posY(chr);
+				height    = chrom_height(chrom);
+				bottom    = chrom_posY(chrom);
 				histAll   = [];
 				histAll2  = [];
 				smoothed  = [];
 				smoothed2 = [];
-				for segment = 1:length(chrCopyNum{chr})
-					subplot('Position',[(left+chr_width(chr)+0.005)+width*(segment-1) bottom width height]);
+				for segment = 1:length(chromCopyNum{chrom})
+					subplot('Position',[(left+chrom_width(chrom)+0.005)+width*(segment-1) bottom width height]);
 					% The CNV-histogram values were normalized to a median value of 1.
-					for i = round(1+length(CNVplot2{chr})*chr_breaks{chr}(segment)):round(length(CNVplot2{chr})*chr_breaks{chr}(segment+1))
+					for i = round(1+length(CNVplot2{chrom})*chrom_breaks{chrom}(segment)):round(length(CNVplot2{chrom})*chrom_breaks{chrom}(segment+1))
 						if (Low_quality_ploidy_estimate == true)
-							histAll{segment}(i) = CNVplot2{chr}(i)*ploidy*ploidyAdjust;
+							histAll{segment}(i) = CNVplot2{chrom}(i)*ploidy*ploidyAdjust;
 						else
-							histAll{segment}(i) = CNVplot2{chr}(i)*ploidy;
+							histAll{segment}(i) = CNVplot2{chrom}(i)*ploidy;
 						end;
 					end;
 
@@ -607,7 +607,7 @@ else
 					view(-90,90);
 					set(gca,'YDir','Reverse');
 
-					% ensure subplot axes are consistent with main chr plots.
+					% ensure subplot axes are consistent with main chrom plots.
 					hold off;
 					axis off;
 					set(gca,'YTick',[]);    set(gca,'XTick',[]);
@@ -621,31 +621,31 @@ else
 			end;
 			% standard : end of CNV histograms at right.
 
-			% standard : places chr copy number to the right of the main chr cartoons.
-			if (ChrNum == true)
-				% subplot to show chr copy number value.
+			% standard : places chrom copy number to the right of the main chrom cartoons.
+			if (chromNum == true)
+				% subplot to show chrom copy number value.
 				width  = 0.020;
-				height = chr_height(chr);
-				bottom = chr_posY(chr);
+				height = chrom_height(chrom);
+				bottom = chrom_posY(chrom);
 				if (HistPlot == true)
-					subplot('Position',[(left + chr_width(chr) + 0.005 + width*(length(chrCopyNum{chr})-1) + width+0.001) bottom width height]);
+					subplot('Position',[(left + chrom_width(chrom) + 0.005 + width*(length(chromCopyNum{chrom})-1) + width+0.001) bottom width height]);
 				else
-					subplot('Position',[(left + chr_width(chr) + 0.005) bottom width height]);
+					subplot('Position',[(left + chrom_width(chrom) + 0.005) bottom width height]);
 				end;
 				axis off square;
 				set(gca,'YTick',[]);
 				set(gca,'XTick',[]);
-				if (length(chrCopyNum{chr}) == 1)
-					chr_string = num2str(chrCopyNum{chr}(1));
+				if (length(chromCopyNum{chrom}) == 1)
+					chrom_string = num2str(chromCopyNum{chrom}(1));
 				else
-					chr_string = num2str(chrCopyNum{chr}(1));
-					for i = 2:length(chrCopyNum{chr})
-						chr_string = [chr_string ',' num2str(chrCopyNum{chr}(i))];
+					chrom_string = num2str(chromCopyNum{chrom}(1));
+					for i = 2:length(chromCopyNum{chrom})
+						chrom_string = [chrom_string ',' num2str(chromCopyNum{chrom}(i))];
 					end;
 				end;
-				text(0.1,0.5, chr_string,'HorizontalAlignment','left','VerticalAlignment','middle','FontSize',stacked_copy_font_size);
+				text(0.1,0.5, chrom_string,'HorizontalAlignment','left','VerticalAlignment','middle','FontSize',stacked_copy_font_size);
 			end;
-			% standard : end of chr copy number at right of the main chr cartons.
+			% standard : end of chrom copy number at right of the main chrom cartons.
 
 			%% END of standard figure draw section.
 
@@ -654,15 +654,15 @@ else
 		    %% Linear figure draw section
 		    if (Linear_display == true)
 		        figure(Linear_fig);
-		        Linear_width = Linear_Chr_max_width*chr_size(chr)/Linear_genome_size;
+		        Linear_width = Linear_chrom_max_width*chrom_size(chrom)/Linear_genome_size;
 		        subplot('Position',[Linear_left Linear_base Linear_width Linear_height]);
-		        Linear_left = Linear_left + Linear_width + Linear_chr_gap;
+		        Linear_left = Linear_left + Linear_width + Linear_chrom_gap;
 		        hold on;
 
 				% standard : draw manualLOH color boxes.
 				if (length(manualLOH) > 0)
 					for box = 1:length(manualLOH)
-						if (manualLOH(box).chrID == chr)
+						if (manualLOH(box).chromID == chrom)
 							bin_start = ceil(manualLOH(box).startbp/bases_per_bin);
 							bin_end   = ceil(manualLOH(box).endbp/bases_per_bin);
 							x_        = [bin_end bin_end bin_start-1 bin_start-1];
@@ -678,10 +678,10 @@ else
 
 				% linear : CNV plot section.
 				c_ = [0 0 0];
-				fprintf(['linear-plot : chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
-				for chr_bin = 1:length(CNVplot2{chr});
-					x_ = [chr_bin chr_bin chr_bin-1 chr_bin-1];
-					CNVhistValue = CNVplot2{chr}(chr_bin);
+				fprintf(['linear-plot : chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
+				for chrom_bin = 1:length(CNVplot2{chrom});
+					x_ = [chrom_bin chrom_bin chrom_bin-1 chrom_bin-1];
+					CNVhistValue = CNVplot2{chrom}(chrom_bin);
 					% The CNV-histogram values were normalized to a median value of 1.
 					% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
 					startY = maxY/2;
@@ -697,7 +697,7 @@ else
 				end;
 
 				% linear : draw lines across plots for easier interpretation of CNV regions.
-				x2 = chr_size(chr)/bases_per_bin;
+				x2 = chrom_size(chrom)/bases_per_bin;
 				for lineNum = 1:(ploidyBase*2-1)
 					line([0 x2], [maxY/(ploidyBase*2)*lineNum  maxY/(ploidyBase*2)*lineNum ],'Color',[0.85 0.85 0.85]);
 				end;
@@ -706,18 +706,18 @@ else
 
 				% linear : show segmental anueploidy breakpoints.
 				if (Linear_displayBREAKS == true) && (show_annotations == true)
-					chr_length = ceil(chr_size(chr)/bases_per_bin);
-        	                        for segment = 2:length(chr_breaks{chr})-1
-	                                        bP = chr_breaks{chr}(segment)*chr_length;
+					chrom_length = ceil(chrom_size(chrom)/bases_per_bin);
+        	                        for segment = 2:length(chrom_breaks{chrom})-1
+	                                        bP = chrom_breaks{chrom}(segment)*chrom_length;
                                 	        plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
         	                        end;
 	                        end;
 
 				% linear : show centromere.
-				x1 = cen_start(chr)/bases_per_bin;
-				x2 = cen_end(chr)/bases_per_bin;
+				x1 = cen_start(chrom)/bases_per_bin;
+				x2 = cen_end(chrom)/bases_per_bin;
 				leftEnd  = 0.5*5000/bases_per_bin;
-				rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
+				rightEnd = (chrom_size(chrom) - 0.5*5000)/bases_per_bin;
 				if (Centromere_format == 0)
 					% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
 					dx = cen_tel_Xindent; %5*5000/bases_per_bin;
@@ -742,7 +742,7 @@ else
 		            hold on;
 		            annotation_location = (annotation_start+annotation_end)./2;
 		            for i = 1:length(annotation_location)
-		                if (annotation_chr(i) == chr)
+		                if (annotation_chrom(i) == chrom)
 		                    annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 		                    annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 		                    annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
@@ -762,7 +762,7 @@ else
 		        % linear : end show annotation locations.
 
 				% linear : Final formatting stuff.
-				xlim([0,chr_size(chr)/bases_per_bin]);
+				xlim([0,chrom_size(chrom)/bases_per_bin]);
 				% modify y axis limits to show annotation locations if any are provided.
 				if (length(annotations) > 0)
 					ylim([-maxY/10*1.5,maxY]);
@@ -771,10 +771,10 @@ else
 				end;
 				set(gca,'YTick',[]);
 				set(gca,'YTickLabel',[]);
-				set(gca,'TickLength',[(Linear_TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
+				set(gca,'TickLength',[(Linear_TickSize*chrom_size(largestchrom)/chrom_size(chrom)) 0]); %ensures same tick size on all subfigs.
 				set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 				set(gca,'XTickLabel',[]);
-				if (first_chr)
+				if (first_chrom)
 					% This section sets the Y-axis labelling.
 					switch ploidyBase
 					case 1
@@ -816,17 +816,17 @@ else
 				% adding title in the middle of the cartoon
 				% note: adding title is done in the end since if placed upper
 				% in the code somehow the plot function changes the title position
-				if (rotate == 0 && chr_size(chr) ~= 0 )
-					if (chr_figReversed(chr) == 0)
-						title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+				if (rotate == 0 && chrom_size(chrom) ~= 0 )
+					if (chrom_figReversed(chrom) == 0)
+						title(chrom_label{chrom},'Interpreter','none','FontSize',linear_chrom_font_size,'Rotation',rotate);
 					else
-						title([chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
+						title([chrom_label{chrom} '\fontsize{' int2str(round(linear_chrom_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chrom_font_size,'Rotation',rotate);
 					end;
 				else
-					if (chr_figReversed(chr) == 0)
-						text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+					if (chrom_figReversed(chrom) == 0)
+						text((chrom_size(chrom)/bases_per_bin)/2,maxY+0.25,chrom_label{chrom},'Interpreter','none','FontSize',linear_chrom_font_size,'Rotation',rotate);
 					else
-						text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
+						text((chrom_size(chrom)/bases_per_bin)/2,maxY+0.25,[chrom_label{chrom} '\fontsize{' int2str(round(linear_chrom_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chrom_font_size,'Rotation',rotate);
 					end;
 				end;
 
@@ -834,7 +834,7 @@ else
 				figure(fig);
 				hold on;
 
-				first_chr = false;
+				first_chrom = false;
 			end;
 		end;
 	end;

@@ -1,4 +1,4 @@
-function [chr_breaks, chrCopyNum] = CNV_LOH_check(main_dir,user,genomeUser,project,parent_or_hapmap,genome,ploidyEstimateString,ploidyBaseString, SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+function [chrom_breaks, chromCopyNum] = CNV_LOH_check(main_dir,user,genomeUser,project,parent_or_hapmap,genome,ploidyEstimateString,ploidyBaseString, SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
 addpath('../');
 
 workingDir = [main_dir '/users/' user '/projects/' project '/'];
@@ -50,10 +50,10 @@ end;
 %    bases_per_bin                Controls bin sizes for CNV fraction of plot.
 %    scale_type                 : 'Ratio' or 'Log2Ratio' y-axis scaling of copy number.
 %                                 'Log2Ratio' does not properly scale CNV data by ploidy.
-%    Chr_max_width              : max width of chrs as fraction of figure width.
+%    chrom_max_width              : max width of chroms as fraction of figure width.
 fprintf('\n### Setup for processing.\n');
 Centromere_format_default      = 2;
-Chr_max_width                  = 0.8;
+chrom_max_width                  = 0.8;
 colorBars                      = true;
 blendColorBars                 = false;
 show_annotations               = true;
@@ -128,34 +128,34 @@ end;
 
 
 fprintf('\n### Load details of genome in use.\n');
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
+[centromeres, chrom_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 [segmental_aneuploidy]                                                = Load_dataset_information(projectDir);
-num_chrs = length(chr_sizes); % includes chrs not displayed.
-for chr = 1:num_chrs
-	chr_size(chr)                   = 0;
-	cen_start(chr)                  = 0;
-	cen_end(chr)                    = 0;
+num_chroms = length(chrom_sizes); % includes chroms not displayed.
+for chrom = 1:num_chroms
+	chrom_size(chrom)                   = 0;
+	cen_start(chrom)                  = 0;
+	cen_end(chrom)                    = 0;
 end;
-for chr = 1:num_chrs
-	chr_size(chr_sizes(chr).chr)    = chr_sizes(chr).size;
-	cen_start(centromeres(chr).chr) = centromeres(chr).start;
-	cen_end(centromeres(chr).chr)   = centromeres(chr).end;
+for chrom = 1:num_chroms
+	chrom_size(chrom_sizes(chrom).chrom)    = chrom_sizes(chrom).size;
+	cen_start(centromeres(chrom).chrom) = centromeres(chrom).start;
+	cen_end(centromeres(chrom).chrom)   = centromeres(chrom).end;
 end;
 if (length(annotations) > 0)
 	fprintf(['\nAnnotations for ' genome '.\n']);
 	for i = 1:length(annotations)
-		annotation_chr(i)       = annotations(i).chr;
+		annotation_chrom(i)       = annotations(i).chrom;
 		annotation_type{i}      = annotations(i).type;
 		annotation_start(i)     = annotations(i).start;
 		annotation_end(i)       = annotations(i).end;
 		annotation_fillcolor{i} = annotations(i).fillcolor;
 		annotation_edgecolor{i} = annotations(i).edgecolor;
 		annotation_size(i)      = annotations(i).size;
-		fprintf(['\t[' num2str(annotations(i).chr) ':' annotations(i).type ':' num2str(annotations(i).start) ':' num2str(annotations(i).end) ':' annotations(i).fillcolor ':' annotations(i).edgecolor ':' num2str(annotations(i).size) ']\n']);
+		fprintf(['\t[' num2str(annotations(i).chrom) ':' annotations(i).type ':' num2str(annotations(i).start) ':' num2str(annotations(i).end) ':' annotations(i).fillcolor ':' annotations(i).edgecolor ':' num2str(annotations(i).size) ']\n']);
 	end;
 end;
 for i = 1:length(figure_details)
-        if (figure_details(i).chr == 0)
+        if (figure_details(i).chrom == 0)
                 if (strcmp(figure_details(i).label,'Key') == 1)
                         key_posX   = figure_details(i).posX;
                         key_posY   = figure_details(i).posY;
@@ -163,49 +163,49 @@ for i = 1:length(figure_details)
                         key_height = figure_details(i).height;
                 end;
         else
-                chr_id         (figure_details(i).chr) = figure_details(i).chr;
-                chr_label      {figure_details(i).chr} = figure_details(i).label;
-                chr_name       {figure_details(i).chr} = figure_details(i).name;
-                chr_posX       (figure_details(i).chr) = figure_details(i).posX;
-                chr_posY       (figure_details(i).chr) = figure_details(i).posY;
-                chr_width      (figure_details(i).chr) = figure_details(i).width;
-                chr_height     (figure_details(i).chr) = figure_details(i).height;
-                chr_in_use     (figure_details(i).chr) = str2num(figure_details(i).useChr);
-                chr_figOrder   (figure_details(i).chr) = str2num(figure_details(i).figOrder);
-                chr_figReversed(figure_details(i).chr) = str2num(figure_details(i).figReversed);
+                chrom_id         (figure_details(i).chrom) = figure_details(i).chrom;
+                chrom_label      {figure_details(i).chrom} = figure_details(i).label;
+                chrom_name       {figure_details(i).chrom} = figure_details(i).name;
+                chrom_posX       (figure_details(i).chrom) = figure_details(i).posX;
+                chrom_posY       (figure_details(i).chrom) = figure_details(i).posY;
+                chrom_width      (figure_details(i).chrom) = figure_details(i).width;
+                chrom_height     (figure_details(i).chrom) = figure_details(i).height;
+                chrom_in_use     (figure_details(i).chrom) = str2num(figure_details(i).usechrom);
+                chrom_figOrder   (figure_details(i).chrom) = str2num(figure_details(i).figOrder);
+                chrom_figReversed(figure_details(i).chrom) = str2num(figure_details(i).figReversed);
         end;
 end;
 
 
-%% This block is normally calculated in FindChrSizes during CNV analysis.
-for chr = 1:length(chr_in_use)
-	if (chr_in_use(chr) == 1)
+%% This block is normally calculated in FindChromSizes during CNV analysis.
+for chrom = 1:length(chrom_in_use)
+	if (chrom_in_use(chrom) == 1)
 		% determine where the endpoints of ploidy segments are.
-		chr_breaks{chr}(1) = 0.0;
+		chrom_breaks{chrom}(1) = 0.0;
 		break_count = 1;
 		if (length(segmental_aneuploidy) > 0)	% Percentages across chromosome where CNV/ChARM breakpoint exists.
 			for i = 1:length(segmental_aneuploidy)
-				if (segmental_aneuploidy(i).chr == chr)
+				if (segmental_aneuploidy(i).chrom == chrom)
 					break_count = break_count+1;
-					chr_broken = true;
-					chr_breaks{chr}(break_count) = segmental_aneuploidy(i).position/chr_sizes(chr).size;
+					chrom_broken = true;
+					chrom_breaks{chrom}(break_count) = segmental_aneuploidy(i).position/chrom_sizes(chrom).size;
 				end;
 			end;
 		end;
-		chr_breaks{chr}(length(chr_breaks{chr})+1) = 1;
+		chrom_breaks{chrom}(length(chrom_breaks{chrom})+1) = 1;
 	end;
 end;
 
 %% Load CNV and SNP figure resolutions.
 if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
-	bases_per_bin		= max(chr_size)/700;
+	bases_per_bin		= max(chrom_size)/700;
 else
-	bases_per_bin		= max(chr_size)/str2num(fileread([genomeDir 'resolution.CNV.txt']));
+	bases_per_bin		= max(chrom_size)/str2num(fileread([genomeDir 'resolution.CNV.txt']));
 end;
 if (exist([genomeDir 'resolution.SNPs.txt'],'file') == 0)
-	bases_per_bin_SNP	= max(chr_size)/700;
+	bases_per_bin_SNP	= max(chrom_size)/700;
 else
-	bases_per_bin_SNP	= max(chr_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt']));
+	bases_per_bin_SNP	= max(chrom_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt']));
 end;
 
 
@@ -239,27 +239,27 @@ source('../phased_and_unphased_color_definitions.m');
 %-------------------------------------------------------------------------------------------------
 fprintf('\n### Initialize data vectors for tracking data presentation.\n');
 % Initializes vectors used to hold allelic ratios for each chromosome segment.
-for chr = 1:num_chrs
-	% Build data structure for SNP information:  chr_SNPdata{chr,j}{chr_bin_SNP} = [];
+for chrom = 1:num_chroms
+	% Build data structure for SNP information:  chrom_SNPdata{chrom,j}{chrom_bin_SNP} = [];
 	%       1 : phased SNP ratio data.
 	%       2 : unphased SNP ratio data.
 	%       3 : phased SNP position data.
 	%       4 : unphased SNP position data.
 	%       5 : phased SNP allele strings.   (baseCall:alleleA/alleleB)
 	%       6 : unphased SNP allele strings.
-	chr_length = ceil(chr_size(chr)/bases_per_bin_SNP);
+	chrom_length = ceil(chrom_size(chrom)/bases_per_bin_SNP);
 	for j = 1:6
-		chr_SNPdata{chr,j} = cell(1,chr_length);
+		chrom_SNPdata{chrom,j} = cell(1,chrom_length);
 	end;
 	% Setup to track RGB values used to present SNP/LOH data for each chromosome bin.
 	for j = 1:3
 		% Track the RGB value sum per standard bin, then divide by the count to reach the average color per standard genome bin.
-		chr_SNPdata_colorsC{chr,j}           = zeros(chr_length,1);
-		chr_SNPdata_colorsP{chr,j}           = zeros(chr_length,1);
+		chrom_SNPdata_colorsC{chrom,j}           = zeros(chrom_length,1);
+		chrom_SNPdata_colorsP{chrom,j}           = zeros(chrom_length,1);
 	end;
 	% Track the number of SNP colors per standard bin.
-	chr_SNPdata_countC{chr} = zeros(chr_length,1);
-	chr_SNPdata_countP{chr} = zeros(chr_length,1);
+	chrom_SNPdata_countC{chrom} = zeros(chrom_length,1);
+	chrom_SNPdata_countP{chrom} = zeros(chrom_length,1);
 end;
 
 
@@ -268,18 +268,18 @@ end;
 %-------------------------------------------------------------------------------------------------
 fprintf('\n### Loading "Common_CNV" data file, to be used in copy number estimation.\n');
 load([projectDir 'Common_CNV.mat']);   % 'CNVplot2', 'genome_CNV'
-[chr_breaks, chrCopyNum, ploidyAdjust, chrCopyRsquared] = FindChrSizes_4(workingDir, segmental_aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use, false);
-CNVfit_Rsquared = chrCopyRsquared;
+[chrom_breaks, chromCopyNum, ploidyAdjust, chromCopyRsquared] = FindChromSizes_4(workingDir, segmental_aneuploidy,CNVplot2,ploidy,num_chroms,chrom_in_use, false);
+CNVfit_Rsquared = chromCopyRsquared;
 
 
 fprintf('\n\n### Check for inconsistent CNV segment breakpoints using CNV and SNP-ratio data.\n');
 %% Keep iterating to look for bad segments until there have been no changes.
-chrCopyNum_changed = true;
-chrFitValues       = chrCopyNum; % use to hold best fit R^2 values for later processing.
+chromCopyNum_changed = true;
+chromFitValues       = chromCopyNum; % use to hold best fit R^2 values for later processing.
 countIters         = 0;
-while (chrCopyNum_changed == true)
+while (chromCopyNum_changed == true)
 	countIters += 1;
-	chrCopyNum_changed = false;
+	chromCopyNum_changed = false;
 
 %	if (countIters == 1)
 %		%%================================================================================================
@@ -287,30 +287,30 @@ while (chrCopyNum_changed == true)
 %		%-------------------------------------------------------------------------------------------------
 %		fprintf('\n### Loading "Common_CNV" data file, to be used in copy number estimation.\n');
 %		load([projectDir 'Common_CNV.mat']);   % 'CNVplot2', 'genome_CNV'
-%		[chr_breaks, chrCopyNum, ploidyAdjust, chrCopyRsquared] = FindChrSizes_4(workingDir, segmental_aneuploidy,CNVplot2,ploidy,num_chrs,chr_in_use, false);
-%		CNVfit_Rsquared = chrCopyRsquared;
+%		[chrom_breaks, chromCopyNum, ploidyAdjust, chromCopyRsquared] = FindChromSizes_4(workingDir, segmental_aneuploidy,CNVplot2,ploidy,num_chroms,chrom_in_use, false);
+%		CNVfit_Rsquared = chromCopyRsquared;
 %	endif;
 
-	for chr = 1:length(chr_in_use)
-		if (chr_in_use(chr) == 1)
-			%% Clean up chr_breaks vectors by filtering out non-unique values.
-			%chr_breaks_     = chr_breaks{chr}
-			%chr_breaks{chr} = unique(chr_breaks{chr});
+	for chrom = 1:length(chrom_in_use)
+		if (chrom_in_use(chrom) == 1)
+			%% Clean up chrom_breaks vectors by filtering out non-unique values.
+			%chrom_breaks_     = chrom_breaks{chrom}
+			%chrom_breaks{chrom} = unique(chrom_breaks{chrom});
 
-			fprintf(['\t chr_breaks{' num2str(chr) '} = ']);
-			for i = 1:length(chr_breaks{chr})
-				fprintf(['chr_breaks{' num2str(chr) '}(' num2str(i) ') = ' num2str(chr_breaks{chr}(i)) '\n']);
+			fprintf(['\t chrom_breaks{' num2str(chrom) '} = ']);
+			for i = 1:length(chrom_breaks{chrom})
+				fprintf(['chrom_breaks{' num2str(chrom) '}(' num2str(i) ') = ' num2str(chrom_breaks{chrom}(i)) '\n']);
 			end;
 			fprintf('\n');
 		end;
 	end;
 	fprintf(['\n']);
 
-	for chr = 1:length(chr_in_use)
-		if (chr_in_use(chr) == 1)
-			fprintf(['\t chrCopyNum{' num2str(chr) '} = ']);
-			for i = 1:length(chrCopyNum{chr})
-				fprintf(['chrCopyNum{' num2str(chr) '}(' num2str(i) ') = ' num2str(chrCopyNum{chr}(i)) '\n']);
+	for chrom = 1:length(chrom_in_use)
+		if (chrom_in_use(chrom) == 1)
+			fprintf(['\t chromCopyNum{' num2str(chrom) '} = ']);
+			for i = 1:length(chromCopyNum{chrom})
+				fprintf(['chromCopyNum{' num2str(chrom) '}(' num2str(i) ') = ' num2str(chromCopyNum{chrom}(i)) '\n']);
 			end;
 			fprintf('\n');
 		end;
@@ -326,7 +326,7 @@ while (chrCopyNum_changed == true)
 		datafile       = [projectDir 'preprocessed_SNPs.txt'];
 		data           = fopen(datafile, 'r');
 		count          = 0;
-		old_chr        = 0;
+		old_chrom        = 0;
 		gap_string     = '';
 		while not (feof(data))
 			dataLine = fgetl(data);
@@ -334,7 +334,7 @@ while (chrCopyNum_changed == true)
 				if (dataLine(1) ~= '#')
 					% process the loaded line into data channels.
 					lineVariables               = textscan(dataLine, '%f %f %f %s %s %s %s %s %s');
-					chr_num                     = lineVariables{1};
+					chrom_num                     = lineVariables{1};
 					fragment_start              = lineVariables{2};
 					fragment_end                = lineVariables{3};
 					phased_ratio_data_string    = lineVariables{4}{1};
@@ -344,15 +344,15 @@ while (chrCopyNum_changed == true)
 					phased_alleles_string       = lineVariables{8}{1};
 					unphased_alleles_string     = lineVariables{9}{1};
 
-					if (chr_in_use(chr_num) == 1)
+					if (chrom_in_use(chrom_num) == 1)
 						% format = simple, one number per column.
-						chr_length                  = ceil(chr_size(chr_num)/bases_per_bin_SNP);
-						chr_bin_SNP                 = ceil(fragment_start/bases_per_bin_SNP);
+						chrom_length                  = ceil(chrom_size(chrom_num)/bases_per_bin_SNP);
+						chrom_bin_SNP                 = ceil(fragment_start/bases_per_bin_SNP);
 
 						% Log file output to indicate progression of this section of code.
 						count = count+1;
-						if (old_chr ~= chr_num)
-							fprintf(['\n\t|\t\t' chr_name{chr_num} '\n\t|\t' gap_string]);
+						if (old_chrom ~= chrom_num)
+							fprintf(['\n\t|\t\t' chrom_name{chrom_num} '\n\t|\t' gap_string]);
 						end;
 						if (mod(count,10) == 0)
 							fprintf('.');
@@ -363,7 +363,7 @@ while (chrCopyNum_changed == true)
 							count = 0;
 							gap_string = '';
 						end;
-						old_chr = chr_num;
+						old_chrom = chrom_num;
 
 						% format = '(number1,number2,...,numberN)'
 						phased_ratio_data_string(1)              = [];
@@ -450,23 +450,23 @@ while (chrCopyNum_changed == true)
 						end;
 
 						% add phased and unphased data to storage arrays.
-						chr_SNPdata{chr_num,1}{chr_bin_SNP}          = phased_ratio_data;
-						chr_SNPdata{chr_num,2}{chr_bin_SNP}          = unphased_ratio_data;
+						chrom_SNPdata{chrom_num,1}{chrom_bin_SNP}          = phased_ratio_data;
+						chrom_SNPdata{chrom_num,2}{chrom_bin_SNP}          = unphased_ratio_data;
 
 						% add phased and unphased data coordinates to storage arrays.
-						chr_SNPdata{chr_num,3}{chr_bin_SNP}          = phased_coordinates;
-						chr_SNPdata{chr_num,4}{chr_bin_SNP}          = unphased_coordinates;
+						chrom_SNPdata{chrom_num,3}{chrom_bin_SNP}          = phased_coordinates;
+						chrom_SNPdata{chrom_num,4}{chrom_bin_SNP}          = unphased_coordinates;
 
 						% add phased and unphased data allele strings to storage arrays.
-						chr_SNPdata{chr_num,5}{chr_bin_SNP}          = phased_alleles;
-						chr_SNPdata{chr_num,6}{chr_bin_SNP}          = unphased_alleles;
+						chrom_SNPdata{chrom_num,5}{chrom_bin_SNP}          = phased_alleles;
+						chrom_SNPdata{chrom_num,6}{chrom_bin_SNP}          = unphased_alleles;
 					end;
 				end;
 			end;
 		endwhile;
 		fclose(data);
 
-		save([projectDir 'SNP_' SNP_verString '.mat'],'chr_SNPdata');
+		save([projectDir 'SNP_' SNP_verString '.mat'],'chrom_SNPdata');
 
 		%% change permissions of file.
 		system(['chmod 774 ' projectDir 'SNP_' SNP_verString '.mat']);
@@ -477,11 +477,11 @@ while (chrCopyNum_changed == true)
 
 	%%================================================================================================
 	fprintf('\n\n### Calculate allelic ratio cutoffs using Gaussian fitting.\n');
-	temp_holding    = chr_SNPdata;
+	temp_holding    = chrom_SNPdata;
 	makeFitFigures  = false;
 	calculate_allelic_ratio_cutoffs;
-	chr_SNPdata     = temp_holding;
-	SNPfit_Rsquared = chrSegment_Rsquared;
+	chrom_SNPdata     = temp_holding;
+	SNPfit_Rsquared = chromSegment_Rsquared;
 
 
 	%%================================================================================================
@@ -494,11 +494,11 @@ while (chrCopyNum_changed == true)
 	%%%	SNPfit_Rsquared
 	CNVfit_Rsquared_vector = [];
 	SNPfit_Rsquared_vector = [];
-	for chr = 1:length(chr_in_use)
-		if (chr_in_use(chr) == 1)
-			for segment = 1:(length(chrCopyNum{chr}))
-				CNVfit_Rsquared_vector = [CNVfit_Rsquared_vector; CNVfit_Rsquared{chr}(segment)];
-				SNPfit_Rsquared_vector = [SNPfit_Rsquared_vector; SNPfit_Rsquared{chr}(segment)];
+	for chrom = 1:length(chrom_in_use)
+		if (chrom_in_use(chrom) == 1)
+			for segment = 1:(length(chromCopyNum{chrom}))
+				CNVfit_Rsquared_vector = [CNVfit_Rsquared_vector; CNVfit_Rsquared{chrom}(segment)];
+				SNPfit_Rsquared_vector = [SNPfit_Rsquared_vector; SNPfit_Rsquared{chrom}(segment)];
 			end;
 		end;
 	end;
@@ -530,23 +530,23 @@ while (chrCopyNum_changed == true)
 	%% Check for better CNV/SNP-ratio fittings with different copy number estimates for bad initial fittings.
 	%%------------------------------------------------------------------------------------------------
 	%%	CNVplot / CNVplot2 contains the full CNV data across chromosome regions, at the resolution limit for YMAP.
-	%%	chr_breaks{chr}(segment) contains CNV start and end coordinates for each chromosome segment.
-	%%	chrCopyNum{chr}(segment) contains CNV estimates for each chromosome segment.
-	chr_breaks_new     = chr_breaks;
-	chrCopyNum_new     = chrCopyNum;
-	fprintf(['\n### Looking at chr segment Rsquared values to assess quality of CNV estimates.\n']);
-	for chr = 1:length(chr_in_use)
-		if (chr_in_use(chr) == 1)
-			for segment = 1:(length(chrCopyNum{chr}))
+	%%	chrom_breaks{chrom}(segment) contains CNV start and end coordinates for each chromosome segment.
+	%%	chromCopyNum{chrom}(segment) contains CNV estimates for each chromosome segment.
+	chrom_breaks_new     = chrom_breaks;
+	chromCopyNum_new     = chromCopyNum;
+	fprintf(['\n### Looking at chrom segment Rsquared values to assess quality of CNV estimates.\n']);
+	for chrom = 1:length(chrom_in_use)
+		if (chrom_in_use(chrom) == 1)
+			for segment = 1:(length(chromCopyNum{chrom}))
 				%%%
 				%%% Calculate initial Rsquared distance from ideal (1,1).
 				%%%
-				CNVfit_testRsquared = CNVfit_Rsquared{chr}(segment);
-				SNPfit_testRsquared = cell2mat(SNPfit_Rsquared{chr}(segment));
+				CNVfit_testRsquared = CNVfit_Rsquared{chrom}(segment);
+				SNPfit_testRsquared = cell2mat(SNPfit_Rsquared{chrom}(segment));
 				Rsquared_distance   = sqrt((1-CNVfit_testRsquared)^2 + (1-SNPfit_testRsquared)^2);
 
 				if (Rsquared_distance > 0.5)
-					fprintf(['\nchr ' num2str(chr) '.' num2str(segment) ' initial CNV/SNP fit failure.\n']);
+					fprintf(['\nchrom ' num2str(chrom) '.' num2str(segment) ' initial CNV/SNP fit failure.\n']);
 					%%%
 					%%% If initial Rsquared_distance from ideal (1,1) is bad, lets figure out what the CNV estimate should be for this segment.
 					%%%
@@ -554,13 +554,13 @@ while (chrCopyNum_changed == true)
 					Rsquared_SNPtest_vector = [];
 					for copyNum = 1:9
 						%fprintf(['    copyNum    = ' num2str(copyNum) '\n']);
-						%fprintf(['\tchr_breaks = ']);
+						%fprintf(['\tchrom_breaks = ']);
 						%fprintf(['\n']);
 						%fprintf(['\tploidy     = ' num2str(ploidy) '\n']);
-						%fprintf(['\tchr        = ' num2str(chr) '\n']);
+						%fprintf(['\tchrom        = ' num2str(chrom) '\n']);
 						%fprintf(['\tsegment    = ' num2str(segment) '\n']);
 
-						Rsquared_CNV            = testPloidyEstimate_CNV(workingDir, CNVplot2, chr_breaks, ploidy, chr, segment, copyNum, makeFitFigures);
+						Rsquared_CNV            = testPloidyEstimate_CNV(workingDir, CNVplot2, chrom_breaks, ploidy, chrom, segment, copyNum, makeFitFigures);
 						Rsquared_CNVtest_vector = [Rsquared_CNVtest_vector Rsquared_CNV];
 						testPloidyEstimate_SNP;
 						Rsquared_SNP            = Rsquared;
@@ -622,176 +622,176 @@ while (chrCopyNum_changed == true)
 					for i = length(Rsquared_SNPtest_vector):1
 							% Find best fit.
 						if (Rsquared_SNPtest_vector_min == Rsquared_SNPtest_vector(i))
-							chrFitValues{chr}(segment)   = Rsquared_distance_vector_min;
-							chrCopyNum_new{chr}(segment) = i;
+							chromFitValues{chrom}(segment)   = Rsquared_distance_vector_min;
+							chromCopyNum_new{chrom}(segment) = i;
 						endif;
 					endfor;
 				else
-					fprintf(['\nchr ' num2str(chr) '.' num2str(segment) ' initial CNV/SNP fit success.\n']);
-					chrFitValues{chr}(segment)   = Rsquared_distance;
+					fprintf(['\nchrom ' num2str(chrom) '.' num2str(segment) ' initial CNV/SNP fit success.\n']);
+					chromFitValues{chrom}(segment)   = Rsquared_distance;
 					fprintf(['\tRsquared_distance = ' num2str(Rsquared_distance) '\n']);
-					chrCopyNum_new{chr}(segment) = round(chrCopyNum_new{chr}(segment));
+					chromCopyNum_new{chrom}(segment) = round(chromCopyNum_new{chrom}(segment));
 				endif;
-				fprintf(['\tchr' num2str(chr) '.' num2str(segment) ': ' num2str(chrCopyNum_new{chr}(segment)) '\n']);
+				fprintf(['\tchrom' num2str(chrom) '.' num2str(segment) ': ' num2str(chromCopyNum_new{chrom}(segment)) '\n']);
 
 				%%% If CNV estimate changed, update boolean and log it.
-				if (chrCopyNum_new{chr}(segment) != chrCopyNum{chr}(segment))
-					chrCopyNum_changed = true;
-					fprintf('chrCopyNum_changed = true\n');
-					fprintf(['\tchrCopyNum_new{' num2str(chr) '}(' num2str(segment) ') = ' num2str(chrCopyNum_new{chr}(segment)) '\n']);
-					fprintf(['\tchrCopyNum{' num2str(chr) '}(' num2str(segment) ') = ' num2str(chrCopyNum{chr}(segment)) '\n']);
+				if (chromCopyNum_new{chrom}(segment) != chromCopyNum{chrom}(segment))
+					chromCopyNum_changed = true;
+					fprintf('chromCopyNum_changed = true\n');
+					fprintf(['\tchromCopyNum_new{' num2str(chrom) '}(' num2str(segment) ') = ' num2str(chromCopyNum_new{chrom}(segment)) '\n']);
+					fprintf(['\tchromCopyNum{' num2str(chrom) '}(' num2str(segment) ') = ' num2str(chromCopyNum{chrom}(segment)) '\n']);
 				end;
 			end;
 		end;
 	end;
-	chrCopyNum = chrCopyNum_new;
+	chromCopyNum = chromCopyNum_new;
 
 	%%% Re-review to deal with poor best-fits (likely due to limited data on a segment).
 	fprintf(['\n### Dealing with bad best-fit segments.\n']);
-	for chr = 1:length(chr_in_use)
-		if (chr_in_use(chr) == 1)
-			for segment = (length(chrCopyNum{chr})):1
+	for chrom = 1:length(chrom_in_use)
+		if (chrom_in_use(chrom) == 1)
+			for segment = (length(chromCopyNum{chrom})):1
 				%%%
 				%%% Calculate initial Rsquared distance from ideal (1,1).
 				%%%
-				CNVfit_testRsquared = CNVfit_Rsquared{chr}(segment);
-				SNPfit_testRsquared = cell2mat(SNPfit_Rsquared{chr}(segment));
+				CNVfit_testRsquared = CNVfit_Rsquared{chrom}(segment);
+				SNPfit_testRsquared = cell2mat(SNPfit_Rsquared{chrom}(segment));
 				Rsquared_distance   = sqrt((1-CNVfit_testRsquared)^2 + (1-SNPfit_testRsquared)^2);
 
 				if (Rsquared_distance > 0.5)
-					if (chrFitValues{chr}(segment) > 1)
+					if (chromFitValues{chrom}(segment) > 1)
 						% Bad fit, need to fix by using best neighboring fit.
 						if (segment == 1)
-							prevFitVal  = chrFitValues{chr}(segment);
-							prevCopyNum = chrCopyNum{chr}(segment);
+							prevFitVal  = chromFitValues{chrom}(segment);
+							prevCopyNum = chromCopyNum{chrom}(segment);
 						else
-							prevFitVal  = chrFitValues{chr}(segment-1);
-							prevCopyNum = chrCopyNum{chr}(segment-1);
+							prevFitVal  = chromFitValues{chrom}(segment-1);
+							prevCopyNum = chromCopyNum{chrom}(segment-1);
 						endif;
-						if (segment == length(chrCopyNum{chr}))
-							nextFitVal  = chrFitValues{chr}(segment);
-							nextCopyNum = chrCopyNum{chr}(segment);
+						if (segment == length(chromCopyNum{chrom}))
+							nextFitVal  = chromFitValues{chrom}(segment);
+							nextCopyNum = chromCopyNum{chrom}(segment);
 						else
-							nextFitVal  = chrFitValues{chr}(segment+1);
-							nextCopyNum = chrCopyNum{chr}(segment+1);
+							nextFitVal  = chromFitValues{chrom}(segment+1);
+							nextCopyNum = chromCopyNum{chrom}(segment+1);
 						endif;
 						if (prevFitVal < nextFitVal)
-							chrFitValues{chr}(segment)   = prevFitVal;
-							chrCopyNum_new{chr}(segment) = prevCopyNum;
+							chromFitValues{chrom}(segment)   = prevFitVal;
+							chromCopyNum_new{chrom}(segment) = prevCopyNum;
 						else
-							chrFitValues{chr}(segment)   = nextFitVal;
-							chrCopyNum_new{chr}(segment) = nextCopyNum;
+							chromFitValues{chrom}(segment)   = nextFitVal;
+							chromCopyNum_new{chrom}(segment) = nextCopyNum;
 						endif;
 					endif;
 				endif;
 			endfor;
-			chrCopyNum_new2{chr} = chrCopyNum_new{chr};
+			chromCopyNum_new2{chrom} = chromCopyNum_new{chrom};
 
 			%% Repeat in reverse order to ensure best fits are used for all segments.
-			for segment = 1:(length(chrCopyNum{chr}))
+			for segment = 1:(length(chromCopyNum{chrom}))
 				%%%
 				%%% Calculate initial Rsquared distance from ideal (1,1).
 				%%%
-				CNVfit_testRsquared = CNVfit_Rsquared{chr}(segment);
-				SNPfit_testRsquared = cell2mat(SNPfit_Rsquared{chr}(segment));
+				CNVfit_testRsquared = CNVfit_Rsquared{chrom}(segment);
+				SNPfit_testRsquared = cell2mat(SNPfit_Rsquared{chrom}(segment));
 				Rsquared_distance   = sqrt((1-CNVfit_testRsquared)^2 + (1-SNPfit_testRsquared)^2);
 
 				if (Rsquared_distance > 0.5)
-					if (chrFitValues{chr}(segment) > 1)
+					if (chromFitValues{chrom}(segment) > 1)
 						% Bad fit, need to fix by using best neighboring fit.
 						if (segment == 1)
-							prevFitVal  = chrFitValues{chr}(segment);
-							prevCopyNum = chrCopyNum_new{chr}(segment);
+							prevFitVal  = chromFitValues{chrom}(segment);
+							prevCopyNum = chromCopyNum_new{chrom}(segment);
 						else
-							prevFitVal  = chrFitValues{chr}(segment-1);
-							prevCopyNum = chrCopyNum_new{chr}(segment-1);
+							prevFitVal  = chromFitValues{chrom}(segment-1);
+							prevCopyNum = chromCopyNum_new{chrom}(segment-1);
 						end;
-						if (segment == length(chrCopyNum{chr}))
-							nextFitVal  = chrFitValues{chr}(segment);
-							nextCopyNum = chrCopyNum_new{chr}(segment);
+						if (segment == length(chromCopyNum{chrom}))
+							nextFitVal  = chromFitValues{chrom}(segment);
+							nextCopyNum = chromCopyNum_new{chrom}(segment);
 						else
-							nextFitVal  = chrFitValues{chr}(segment+1);
-							nextCopyNum = chrCopyNum_new{chr}(segment+1);
+							nextFitVal  = chromFitValues{chrom}(segment+1);
+							nextCopyNum = chromCopyNum_new{chrom}(segment+1);
 						end;
 						if (prevFitVal < nextFitVal)
-							chrFitValues{chr}(segment) = prevFitVal;
-							chrCopyNum{chr}(segment)   = prevCopyNum;
+							chromFitValues{chrom}(segment) = prevFitVal;
+							chromCopyNum{chrom}(segment)   = prevCopyNum;
 						else
-							chrFitValues{chr}(segment) = nextFitVal;
-							chrCopyNum_new2{chr}(segment)   = nextCopyNum;
+							chromFitValues{chrom}(segment) = nextFitVal;
+							chromCopyNum_new2{chrom}(segment)   = nextCopyNum;
 						end;
-						chrCopyNum_changed = true;
+						chromCopyNum_changed = true;
 					end;
 				end;
-				fprintf(['\tchr' num2str(chr) '.' num2str(segment) ': ' num2str(chrCopyNum{chr}(segment)) ' => ' num2str(chrCopyNum_new2{chr}(segment)) '\n']);
+				fprintf(['\tchrom' num2str(chrom) '.' num2str(segment) ': ' num2str(chromCopyNum{chrom}(segment)) ' => ' num2str(chromCopyNum_new2{chrom}(segment)) '\n']);
 
 				%%% If CNV estimate changed, update boolean.
-				if (chrCopyNum_new2{chr}(segment) != chrCopyNum{chr}(segment))
-					chrCopyNum_changed = true;
+				if (chromCopyNum_new2{chrom}(segment) != chromCopyNum{chrom}(segment))
+					chromCopyNum_changed = true;
 				end;
 			end;
 		end;
 	end;
-	chrCopyNum = chrCopyNum_new2;
+	chromCopyNum = chromCopyNum_new2;
 
 	%%% Merge any adjacent segments that now have the same best estimate of copy number.
 	fprintf(['\n### Merging adjacent segments.\n']);
-	for chr = 1:length(chr_in_use)
-		if (chr_in_use(chr) == 1)
-			if (length(chrCopyNum{chr}) > 1)  % more than one segment, so lets examine if adjacent segments have different copyNums.
+	for chrom = 1:length(chrom_in_use)
+		if (chrom_in_use(chrom) == 1)
+			if (length(chromCopyNum{chrom}) > 1)  % more than one segment, so lets examine if adjacent segments have different copyNums.
 				% Add break representing left end of chromosome.
 				breakCount_new         = 1;
-				chr_breaks_new{chr}    = [];
-				chrCopyNum_new{chr}    = [];
-				chr_breaks_new{chr}(1) = 0.0;
+				chrom_breaks_new{chrom}    = [];
+				chromCopyNum_new{chrom}    = [];
+				chrom_breaks_new{chrom}(1) = 0.0;
 
-				chrCopyNum_new{chr}(1) = chrCopyNum{chr}(1);
-				for segment = 1:(length(chrCopyNum{chr})-1)
-					if (round(chrCopyNum{chr}(segment)) == round(chrCopyNum{chr}(segment+1)))
+				chromCopyNum_new{chrom}(1) = chromCopyNum{chrom}(1);
+				for segment = 1:(length(chromCopyNum{chrom})-1)
+					if (round(chromCopyNum{chrom}(segment)) == round(chromCopyNum{chrom}(segment+1)))
 						% two adjacent segments have identical copyNum and should be fused into one; don't add boundry to new list.
 					else
 						% two adjacent segments have different copyNum; add boundry to new list.
 						breakCount_new                      = breakCount_new + 1;
-						chr_breaks_new{chr}(breakCount_new) = chr_breaks{chr}(segment+1);
-						chrCopyNum_new{chr}(breakCount_new) = chrCopyNum{chr}(segment+1);
+						chrom_breaks_new{chrom}(breakCount_new) = chrom_breaks{chrom}(segment+1);
+						chromCopyNum_new{chrom}(breakCount_new) = chromCopyNum{chrom}(segment+1);
 					end;
 				end;
 
 				% add break representing right end of chromosome.
 				breakCount_new = breakCount_new+1;
-				chr_breaks_new{chr}(breakCount_new) = 1.0;
+				chrom_breaks_new{chrom}(breakCount_new) = 1.0;
 
 				% copy new lists to old.
-				chr_breaks{chr} = chr_breaks_new{chr};
-				chrCopyNum{chr} = [];
-				chrCopyNum{chr} = chrCopyNum_new{chr};
+				chrom_breaks{chrom} = chrom_breaks_new{chrom};
+				chromCopyNum{chrom} = [];
+				chromCopyNum{chrom} = chromCopyNum_new{chrom};
 			end;
 		end;
 	end;
 
 
 	%%================================================================================================
-	%% Convert chr segment breakpoints to ChARM output file, replacing original for later use.
+	%% Convert chrom segment breakpoints to ChARM output file, replacing original for later use.
 	%%------------------------------------------------------------------------------------------------
 	dataFile = [projectDir 'Common_ChARM.mat'];
 	fprintf(['\n### Updating saved common_ChARM file for "' project '" : ' dataFile '$$$$\n']);
 	i = 0;
 	segmental_aneuploidy = [];
-	for chr = 1:length(chr_in_use)
-		if (chr_in_use(chr) == 1)
-			fprintf(['\t chr_breaks{' num2str(chr) '} = ']);
-			for i = 1:length(chr_breaks{chr})
-				fprintf([num2str(chr_breaks{chr}(i)) ' ']);
+	for chrom = 1:length(chrom_in_use)
+		if (chrom_in_use(chrom) == 1)
+			fprintf(['\t chrom_breaks{' num2str(chrom) '} = ']);
+			for i = 1:length(chrom_breaks{chrom})
+				fprintf([num2str(chrom_breaks{chrom}(i)) ' ']);
 			end;
 			fprintf('\n');
-			for edge = 1:length(chr_breaks{chr})
-				if (chr_breaks{chr}(edge) == 0) || (chr_breaks{chr}(edge) == 1)
+			for edge = 1:length(chrom_breaks{chrom})
+				if (chrom_breaks{chrom}(edge) == 0) || (chrom_breaks{chrom}(edge) == 1)
 					% nothing is added to file for start and end coordinates; these edges are later assumed.
 				else
 					i = i+1;
-					segmental_aneuploidy(i).chr      = chr;							% chromosome being examined.
-					segmental_aneuploidy(i).position = round( chr_breaks{chr}(edge)*chr_sizes(chr).size );	% chr bin at start of CNV change.
-					segmental_aneuploidy(i).break    = chr_breaks{chr}(edge);				% percent along chromosome of edge.
+					segmental_aneuploidy(i).chrom      = chrom;							% chromosome being examined.
+					segmental_aneuploidy(i).position = round( chrom_breaks{chrom}(edge)*chrom_sizes(chrom).size );	% chrom bin at start of CNV change.
+					segmental_aneuploidy(i).break    = chrom_breaks{chrom}(edge);				% percent along chromosome of edge.
 				end;
 			end;
 		end;
@@ -804,7 +804,7 @@ while (chrCopyNum_changed == true)
 	CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,'not-used',displayBREAKS,'not-used',false);
 
 	if (countIters == 10)
-		chrCopyNum_changed = false;
+		chromCopyNum_changed = false;
 	endif;
 endwhile;
 
@@ -813,11 +813,11 @@ CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBase
 
 
 fprintf('\n');
-for chr = 1:length(chr_in_use)
-	if (chr_in_use(chr) == 1)
-		fprintf(['\t chrCopyNum{' num2str(chr) '} = ']);
-		for i = 1:length(chrCopyNum{chr})
-			fprintf([num2str(chrCopyNum{chr}(i)) ' ']);
+for chrom = 1:length(chrom_in_use)
+	if (chrom_in_use(chrom) == 1)
+		fprintf(['\t chromCopyNum{' num2str(chrom) '} = ']);
+		for i = 1:length(chromCopyNum{chrom})
+			fprintf([num2str(chromCopyNum{chrom}(i)) ' ']);
 		end;
 		fprintf('\n');
 	end;

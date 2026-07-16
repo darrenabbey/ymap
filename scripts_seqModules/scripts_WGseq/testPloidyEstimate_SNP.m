@@ -2,11 +2,11 @@
 % Calculate allelic fraction cutoffs.
 %-------------------------------------------------------------------------------------------
 % Initialize
-chrSegment_peaks{              chr}{segment} = [];
-chrSegment_mostLikelyGaussians{chr}{segment} = [];
-chrSegment_Rsquared{           chr}{segment} = [];
-chrSegment_actual_cutoffs{     chr}{segment} = [];
-chrSegment_smoothed{           chr}{segment} = [];
+chromSegment_peaks{              chrom}{segment} = [];
+chromSegment_mostLikelyGaussians{chrom}{segment} = [];
+chromSegment_Rsquared{           chrom}{segment} = [];
+chromSegment_actual_cutoffs{     chrom}{segment} = [];
+chromSegment_smoothed{           chrom}{segment} = [];
 
 histAll_a = [];
 histAll_b = [];
@@ -15,15 +15,15 @@ histAll2  = [];
 %%% Construct and smooth a histogram of alleleic fraction data in the segment of interest.
 %%% phased data is stored into arrays 'histAll_a' and 'histAll_b', since proper phasing is known.
 %%% unphased data is stored inverted into the second array, since proper phasing is not known.
-for chr_bin_SNP = 1:length(chr_SNPdata{chr,1})
+for chrom_bin_SNP = 1:length(chrom_SNPdata{chrom,1})
 	%   1 : phased SNP ratio data.
 	%   2 : unphased SNP ratio data.
 	%   3 : phased SNP position data.
 	%   4 : unphased SNP position data.
-	ratioData_phased        = chr_SNPdata{chr,1}{chr_bin_SNP};
-	ratioData_unphased      = chr_SNPdata{chr,2}{chr_bin_SNP};
-	coordinateData_phased   = chr_SNPdata{chr,3}{chr_bin_SNP};
-	coordinateData_unphased = chr_SNPdata{chr,4}{chr_bin_SNP};
+	ratioData_phased        = chrom_SNPdata{chrom,1}{chrom_bin_SNP};
+	ratioData_unphased      = chrom_SNPdata{chrom,2}{chrom_bin_SNP};
+	coordinateData_phased   = chrom_SNPdata{chrom,3}{chrom_bin_SNP};
+	coordinateData_unphased = chrom_SNPdata{chrom,4}{chrom_bin_SNP};
 	if (useHapmap)
 		if (length(ratioData_phased) > 0)
 			for SNP_in_bin = 1:length(ratioData_phased)
@@ -33,7 +33,7 @@ for chr_bin_SNP = 1:length(chr_SNPdata{chr,1})
 					test1 = coordinateData_phased(SNP_in_bin);
 				end;
 
-				if ( (test1 > chr_breaks{chr}(segment)*chr_length) && (test1 <= chr_breaks{chr}(segment+1)*chr_length) )
+				if ( (test1 > chrom_breaks{chrom}(segment)*chrom_length) && (test1 <= chrom_breaks{chrom}(segment+1)*chrom_length) )
 					% Ratio data is phased, so it is added twice in its proper orientation (to match density of unphased data below).
 					if (isa(ratioData_phased(SNP_in_bin),'cell') == 1)
 						allelic_ratio                 = str2num(cell2mat(ratioData_phased(SNP_in_bin)));
@@ -54,7 +54,7 @@ for chr_bin_SNP = 1:length(chr_SNPdata{chr,1})
 				testVal1 = coordinateData_unphased(SNP_in_bin);
 			end;
 
-			if ( (testVal1 > chr_breaks{chr}(segment)*chr_length) && (testVal1 <= chr_breaks{chr}(segment+1)*chr_length) )
+			if ( (testVal1 > chrom_breaks{chrom}(segment)*chrom_length) && (testVal1 <= chrom_breaks{chrom}(segment+1)*chrom_length) )
 				% Ratio data is unphased, so it is added evenly in both orientations.
 				if (isa(ratioData_unphased(SNP_in_bin),'cell') == 1)
 					allelic_ratio = str2num(cell2mat(ratioData_unphased(SNP_in_bin)));
@@ -104,10 +104,10 @@ end;
 
 %% Calculate Gaussian fitting details for segment.
 segment_copyNum            = copyNum;
-segment_chrBreaks          = chr_breaks{chr}(segment);         % break points of this segment.
+segment_chromBreaks          = chrom_breaks{chrom}(segment);         % break points of this segment.
 segment_smoothedHistogram  = smoothed;                         % whole chromosome allelic ratio histogram smoothed.
 
 % Define cutoffs between Gaussian fits.
-descriptionString          = ['testSNP=' num2str(copyNum) '; chr=' num2str(chr) '; seg=' num2str(segment)];
+descriptionString          = ['testSNP=' num2str(copyNum) '; chrom=' num2str(chrom) '; seg=' num2str(segment)];
 makeFitFigures             = false;
-[peaks_,actual_cutoffs_,mostLikelyGaussians_, Rsquared] = FindGaussianCutoffs_3(workingDir,descriptionString, chr,segment, segment_copyNum,segment_smoothedHistogram, makeFitFigures);
+[peaks_,actual_cutoffs_,mostLikelyGaussians_, Rsquared] = FindGaussianCutoffs_3(workingDir,descriptionString, chrom,segment, segment_copyNum,segment_smoothedHistogram, makeFitFigures);

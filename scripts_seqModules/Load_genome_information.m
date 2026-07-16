@@ -1,4 +1,4 @@
-function [centromeres, chrSize, figure_details, annotations, figInfo_ploidy_default] = Load_genome_information(genomeDir)
+function [centromeres, chromSize, figure_details, annotations, figInfo_ploidy_default] = Load_genome_information(genomeDir)
 fprintf(['\nLoad_genome_information_1.m : Genome in use : [' genomeDir ']\n']);
 
 % Load centromere definition file.
@@ -13,7 +13,7 @@ fprintf(['\t' genomeDir 'centromere_locations.txt\n']);
 while not (feof(centromere_fid))
 	lineData       = fgetl(centromere_fid);
 	lines_analyzed = lines_analyzed+1;
-	cen_chr        = sscanf(lineData, '%s',1);
+	cen_chrom      = sscanf(lineData, '%s',1);
 	cen_start      = sscanf(lineData, '%s',2);
 	for i = 1:size(sscanf(lineData,'%s',1),2);
 		cen_start(1) = [];
@@ -22,14 +22,14 @@ while not (feof(centromere_fid))
 	for i = 1:size(sscanf(lineData,'%s',2),2);
 		cen_end(1) = [];
 	end;
-	chr = str2double(cen_chr);
-	centromeres(chr).chr   = chr;
-	centromeres(chr).start = str2double(cen_start);
-	centromeres(chr).end   = str2double(cen_end);
+	chrom = str2double(cen_chrom);
+	centromeres(chrom).chrom   = chrom;
+	centromeres(chrom).start = str2double(cen_start);
+	centromeres(chrom).end   = str2double(cen_end);
 	fprintf(['\t\t|' lineData '\n']);
 end;
 fclose(centromere_fid);
-clear cen_start cen_end line lines_analyzed i ans cen_chr centromere_fid chromosome;
+clear cen_start cen_end line lines_analyzed i ans cen_chrom centromere_fid chromosome;
 if (length(centromeres) == 0)
 	error('[analyze_CNVs]: Centromere definition file is missing.');
 end;
@@ -38,32 +38,32 @@ end;
 %    This is text file containing one header line and two columns.
 %    The two columns hold the start and end bp for the centromeres, with
 %       respect to each chromosome.
-chrSize        = [];
-chrSize_fid    = fopen([genomeDir 'chromosome_sizes.txt'],'r');
-discard        = fgetl(chrSize_fid);
+chromSize      = [];
+chromSize_fid  = fopen([genomeDir 'chromosome_sizes.txt'],'r');
+discard        = fgetl(chromSize_fid);
 lines_analyzed = 0;
 fprintf(['\t' genomeDir 'chromosome_sizes.txt\n']);
-while not (feof(chrSize_fid))
-	lineData          = fgetl(chrSize_fid);
-	lines_analyzed    = lines_analyzed+1;
-	size_chr          = sscanf(lineData, '%s',1);
-	size_size         = sscanf(lineData, '%s',2);
+while not (feof(chromSize_fid))
+	lineData               = fgetl(chromSize_fid);
+	lines_analyzed         = lines_analyzed+1;
+	size_chrom             = sscanf(lineData, '%s',1);
+	size_size              = sscanf(lineData, '%s',2);
 	for i = 1:size(sscanf(lineData,'%s',1),2);
-		size_size(1) = [];
+		size_size(1)   = [];
 	end;
-	size_name         = sscanf(lineData, '%s',3);
+	size_name              = sscanf(lineData, '%s',3);
 	for i = 1:size(sscanf(lineData,'%s',2),2);
-		size_name(1) = [];
+		size_name(1)   = [];
 	end;
-	chr               = str2double(size_chr);
-	chrSize(chr).chr  = chr;
-	chrSize(chr).size = str2double(size_size);
-	chrSize(chr).name = size_name;
+	chrom                  = str2double(size_chrom);
+	chromSize(chrom).chrom = chrom;
+	chromSize(chrom).size  = str2double(size_size);
+	chromSize(chrom).name  = size_name;
 	fprintf(['\t\t|' lineData '\n']);
 end;
-fclose(chrSize_fid);
-if (length(chrSize) == 0)
-	error('[analyze_CNVs]: Chromosome size definition file is missing.');
+fclose(chromSize_fid);
+if (length(chromSize) == 0)
+	error('[analyze_CNVs]: chromosome size definition file is missing.');
 end;
 
 % Load additional annotation location definition file.
@@ -80,7 +80,7 @@ while not (feof(annotations_fid))
 	lineData = fgetl(annotations_fid);
 	if (strcmp(lineData(1),'#') == 0)
 		lines_analyzed    = lines_analyzed+1;
-		annotations_chr   = sscanf(lineData, '%s',1);
+		annotations_chrom = sscanf(lineData, '%s',1);
 		annotations_type  = sscanf(lineData, '%s',2);
 		for i = 1:size(sscanf(lineData,'%s',1),2);
 			annotations_type(1) = [];
@@ -111,7 +111,7 @@ while not (feof(annotations_fid))
 		end;
 
 		annotations_count                        = annotations_count+1;
-		annotations(annotations_count).chr       = str2double(annotations_chr);
+		annotations(annotations_count).chrom     = str2double(annotations_chrom);
 		annotations(annotations_count).type      = annotations_type;
 		annotations(annotations_count).start     = str2double(annotations_start);
 		annotations(annotations_count).end       = str2double(annotations_end);
@@ -126,14 +126,14 @@ fclose(annotations_fid);
 
 % Load figure definition file.
 % This is text file containing one header line and seven columns.
-%    Chr #        : Numerical designations of chromosomes.   (0 is used for line defining figure key.)
-%    Chr label    : The label to use for identifying the chromosome in the figure.
-%    Chr name     : The full name of the chromosome.
-%    Chr posX     : The X-position in % from left to right.
-%    Chr posY     : The Y-position in % from bottom to top.
-%    Chr width    : The width in %.
-%    Chr height   : The height in %.
-%    Chr figOrder : The ordering of the chromosomes used during figure generation.
+%    chrom #        : Numerical designations of chromosomes.   (0 is used for line defining figure key.)
+%    chrom label    : The label to use for identifying the chromosome in the figure.
+%    chrom name     : The full name of the chromosome.
+%    chrom posX     : The X-position in % from left to right.
+%    chrom posY     : The Y-position in % from bottom to top.
+%    chrom width    : The width in %.
+%    chrom height   : The height in %.
+%    chrom figOrder : The ordering of the chromosomes used during figure generation.
 figInfo_ploidy_default = 2.0;
 figure_details         = [];
 figInfo_fid            = fopen([genomeDir 'figure_definitions.txt'], 'r');
@@ -144,19 +144,19 @@ while not (feof(figInfo_fid))
 	lineData       = fgetl(figInfo_fid);
 	if (~isempty(lineData))
 		if (lineData(1) ~= '#')
-			figInfo_chr    = sscanf(lineData, '%s',1);
-			figInfo_useChr = sscanf(lineData, '%s',2);
+			figInfo_chrom    = sscanf(lineData, '%s',1);
+			figInfo_usechrom = sscanf(lineData, '%s',2);
 			for i = 1:size(sscanf(lineData,'%s',1),2);
-				figInfo_useChr(1) = [];
+				figInfo_usechrom(1) = [];
 			end;
 			figInfo_label = sscanf(lineData, '%s',3);
 			for i = 1:size(sscanf(lineData,'%s',2),2);
 				figInfo_label(1) = [];
 			end;
-			if (str2num(figInfo_chr) > 0) || ...
-			   (str2num(figInfo_useChr) > 0) || ...
-			   ((str2num(figInfo_chr) == 0) && (strcmp(figInfo_label,'Key') == 1)) || ...
-			   ((str2num(figInfo_chr) == 0) && (strcmp(figInfo_label,'Mito') == 1))
+			if (str2num(figInfo_chrom) > 0) || ...
+			   (str2num(figInfo_usechrom) > 0) || ...
+			   ((str2num(figInfo_chrom) == 0) && (strcmp(figInfo_label,'Key') == 1)) || ...
+			   ((str2num(figInfo_chrom) == 0) && (strcmp(figInfo_label,'Mito') == 1))
 				lines_analyzed = lines_analyzed+1;
 				figInfo_name   = sscanf(lineData, '%s',4);
 				for i = 1:size(sscanf(lineData,'%s',3),2);
@@ -187,26 +187,26 @@ while not (feof(figInfo_fid))
 					figInfo_figReversed(1) = [];
 				end;
 
-				figure_details(lines_analyzed).chr            = str2double(figInfo_chr);
-				figure_details(lines_analyzed).used           = figInfo_useChr;
+				figure_details(lines_analyzed).chrom          = str2double(figInfo_chrom);
+				figure_details(lines_analyzed).used           = figInfo_usechrom;
 				figure_details(lines_analyzed).label          = figInfo_label;
 				figure_details(lines_analyzed).name           = figInfo_name;
-				figure_details(lines_analyzed).useChr         = figInfo_useChr;
+				figure_details(lines_analyzed).usechrom       = figInfo_usechrom;
 				figure_details(lines_analyzed).posX           = str2double(figInfo_posX);
 				figure_details(lines_analyzed).posY           = str2double(figInfo_posY);
 				figure_details(lines_analyzed).width          = figInfo_width;
 				figure_details(lines_analyzed).height         = str2double(figInfo_height);
 				figure_details(lines_analyzed).figOrder       = figInfo_figOrder;
 				figure_details(lines_analyzed).figReversed    = figInfo_figReversed;
-		    	elseif ((str2num(figInfo_chr) == 0) && (strcmp(figInfo_label,'Ploidy') == 1))
+		    	elseif ((str2num(figInfo_chrom) == 0) && (strcmp(figInfo_label,'Ploidy') == 1))
 				figInfo_ploidy_default = sscanf(lineData, '%s',4);
 				for i = 1:size(sscanf(lineData,'%s',3),2);
 					figInfo_ploidy_default(1) = [];
 				end;
 				figInfo_ploidy_default = str2num(figInfo_ploidy_default);
 			else
-				figure_details(lines_analyzed).chr            = str2double(figInfo_chr);
-				figure_details(lines_analyzed).used           = figInfo_useChr;
+				figure_details(lines_analyzed).chrom          = str2double(figInfo_chrom);
+				figure_details(lines_analyzed).used           = figInfo_usechrom;
 			end;
 			fprintf(['\t\t|' lineData '\n']);
 		end;
@@ -218,9 +218,9 @@ end;
 
 %% figure out widths for chromosomes in figure.
 maxFigSize = 0;
-maxChrSize = 0;
+maxchromSize = 0;
 for i = 1:length(figure_details)
-	fprintf(['Fig_chr : [' num2str(figure_details(i).chr) '|']);
+	fprintf(['Fig_chrom : [' num2str(figure_details(i).chrom) '|']);
 	fprintf([ figure_details(i).used '|']);
 	fprintf([figure_details(i).label '|']);
 	fprintf([figure_details(i).name '|']);
@@ -231,17 +231,17 @@ for i = 1:length(figure_details)
 
 	if (strcmp(figure_details(i).used,'0') == 0)
 		if (strcmp(figure_details(i).width(1),'*') == 0)
-			maxFigSize = str2num(figure_details(i).width);
-			maxChrSize = chrSize(figure_details(i).chr).size; % dragon
+			maxFigSize   = str2num(figure_details(i).width);
+			maxchromSize = chromSize(figure_details(i).chrom).size; % dragon
 		end;
 	end;
 end;
 for i = 1:length(figure_details)
 	if (strcmp(figure_details(i).used,'0') == 0)
-		currentChrSize          = chrSize(figure_details(i).chr).size;
-		figure_details(i).width = currentChrSize/maxChrSize*maxFigSize;
+		currentchromSize          = chromSize(figure_details(i).chrom).size;
+		figure_details(i).width = currentchromSize/maxchromSize*maxFigSize;
 	else
-		currentChrSize          = 0;
+		currentchromSize        = 0;
 		figure_details(i).width = 0;
 	end;
 end;

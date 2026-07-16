@@ -19,12 +19,12 @@ INDEL_verString        = 'v1';
 SNP_verString          = 'v4';
 rDNA_verString         = 'v1';
 displayBREAKS          = true;
-referenceCHR           = 1;
+referenceChrom         = 1;
 
 
-CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,rDNA_verString,displayBREAKS, referenceCHR, false);
+CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,rDNA_verString,displayBREAKS, referenceChrom, false);
 
-CNV_v6_6_highTop(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,rDNA_verString,displayBREAKS, referenceCHR);
+CNV_v6_6_highTop(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,rDNA_verString,displayBREAKS, referenceChrom);
 
 
 fprintf('*--- End of ''analyze_CNVs_1.m'' was reached ---*\n');

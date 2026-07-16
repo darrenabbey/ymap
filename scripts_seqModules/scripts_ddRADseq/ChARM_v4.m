@@ -25,8 +25,8 @@ fprintf(['\nGenerating ChARM figure from project "' project '" data.\n']);
 % Centromere_format : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
 Centromere_format = 0;
 HistPlot          = true;
-ChrNum            = true;
-Chr_max_width     = 0.8;
+chromNum            = true;
+chrom_max_width     = 0.8;
 show_annotations  = true;
    temp_figures   = false;
 
@@ -44,60 +44,60 @@ vars = who('-file',dataFile)
 %%=========================================================================
 % Control variables.
 %--------------------------------------------------------------------------
-% Defines chr sizes in bp. (diploid total=28,567,7888)
+% Defines chrom sizes in bp. (diploid total=28,567,7888)
 % Defines centromere locations in bp.
 % Defines annotation locations in bp.
 
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
+[centromeres, chrom_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 
-for i = 1:length(chr_sizes)
-    chr_size(i) = 0;
+for i = 1:length(chrom_sizes)
+    chrom_size(i) = 0;
 end;
-for i = 1:length(chr_sizes)
-    chr_size(chr_sizes(i).chr)    = chr_sizes(i).size;
+for i = 1:length(chrom_sizes)
+    chrom_size(chrom_sizes(i).chrom)    = chrom_sizes(i).size;
 end;
 for i = 1:length(centromeres)
-    cen_start(centromeres(i).chr) = centromeres(i).start;
-    cen_end(centromeres(i).chr)   = centromeres(i).end;
+    cen_start(centromeres(i).chrom) = centromeres(i).start;
+    cen_end(centromeres(i).chrom)   = centromeres(i).end;
 end;
 if (length(annotations) > 0)
     fprintf(['\nAnnotations for ' genome '.\n']);
     for i = 1:length(annotations)
-        annotation_chr(i)       = annotations(i).chr;
+        annotation_chrom(i)       = annotations(i).chrom;
         annotation_type{i}      = annotations(i).type;
         annotation_start(i)     = annotations(i).start;
         annotation_end(i)       = annotations(i).end;
         annotation_fillcolor{i} = annotations(i).fillcolor;
         annotation_edgecolor{i} = annotations(i).edgecolor;
         annotation_size(i)      = annotations(i).size;
-        fprintf(['\t[' num2str(annotations(i).chr) ':' annotations(i).type ':' num2str(annotations(i).start) ':' num2str(annotations(i).end) ':' annotations(i).fillcolor ':' annotations(i).edgecolor ':' num2str(annotations(i).size) ']\n']);
+        fprintf(['\t[' num2str(annotations(i).chrom) ':' annotations(i).type ':' num2str(annotations(i).start) ':' num2str(annotations(i).end) ':' annotations(i).fillcolor ':' annotations(i).edgecolor ':' num2str(annotations(i).size) ']\n']);
     end;
 end;
 for i = 1:length(figure_details)
-    if (figure_details(i).chr == 0)
+    if (figure_details(i).chrom == 0)
         key_posX   = figure_details(i).posX;
         key_posY   = figure_details(i).posY;
         key_width  = figure_details(i).width;
         key_height = figure_details(i).height;
     else
-        chr_id         (figure_details(i).chr) = figure_details(i).chr;
-        chr_label      {figure_details(i).chr} = figure_details(i).label;
-        chr_name       {figure_details(i).chr} = figure_details(i).name;
-        chr_posX       (figure_details(i).chr) = figure_details(i).posX;
-        chr_posY       (figure_details(i).chr) = figure_details(i).posY;
-        chr_width      (figure_details(i).chr) = figure_details(i).width;
-        chr_height     (figure_details(i).chr) = figure_details(i).height;
-        chr_in_use     (figure_details(i).chr) = str2num(figure_details(i).useChr);
-	chr_figOrder   (figure_details(i).chr) = str2num(figure_details(i).figOrder);
-	chr_figReversed(figure_details(i).chr) = str2num(figure_details(i).figReversed);
+        chrom_id         (figure_details(i).chrom) = figure_details(i).chrom;
+        chrom_label      {figure_details(i).chrom} = figure_details(i).label;
+        chrom_name       {figure_details(i).chrom} = figure_details(i).name;
+        chrom_posX       (figure_details(i).chrom) = figure_details(i).posX;
+        chrom_posY       (figure_details(i).chrom) = figure_details(i).posY;
+        chrom_width      (figure_details(i).chrom) = figure_details(i).width;
+        chrom_height     (figure_details(i).chrom) = figure_details(i).height;
+        chrom_in_use     (figure_details(i).chrom) = str2num(figure_details(i).usechrom);
+	chrom_figOrder   (figure_details(i).chrom) = str2num(figure_details(i).figOrder);
+	chrom_figReversed(figure_details(i).chrom) = str2num(figure_details(i).figReversed);
     end;
 end;
 
-num_chrs = length(chr_size);
+num_chroms = length(chrom_size);
 
 %bases_per_bin              = 5000;
-bases_per_bin               = max(chr_size)/700;
-chr_length_scale_multiplier	= 1/bases_per_bin;
+bases_per_bin               = max(chrom_size)/700;
+chrom_length_scale_multiplier	= 1/bases_per_bin;
 
 
 %% ###################################################################################################
@@ -139,27 +139,27 @@ window_width = median_window_width;
 window_halfwidth = (window_width-1)/2;
 
 fprintf('\nMedian Filter');
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-	    fprintf(['\n\t' num2str(chr) ':' num2str(num_chrs) ':' num2str(length(CNVplot2{chr})) ]);
-	    for data = 1:length(CNVplot2{chr})
+for chrom = 1:num_chroms
+	if (chrom_in_use(chrom) == 1)
+	    fprintf(['\n\t' num2str(chrom) ':' num2str(num_chroms) ':' num2str(length(CNVplot2{chrom})) ]);
+	    for data = 1:length(CNVplot2{chrom})
 		window_start   = max(data-window_halfwidth, 1);
-		window_end     = min(data+window_halfwidth, length(CNVplot2{chr}));
-		window         = CNVplot2{chr}(window_start:window_end);
+		window_end     = min(data+window_halfwidth, length(CNVplot2{chrom}));
+		window         = CNVplot2{chrom}(window_start:window_end);
 		if (window_start == 1)
 		    if (length(window) < window_width)
 				for jj = 1:(window_width - length(window))
-				    window = [CNVplot2{chr}(1) window];
+				    window = [CNVplot2{chrom}(1) window];
 				end;
 		    end;
-		elseif (window_end == length(CNVplot2{chr}))
+		elseif (window_end == length(CNVplot2{chrom}))
 		    if (length(window) < window_width)
 				for jj = 1:(window_width - length(window))
-				    window = [window CNVplot2{chr}(end)];
+				    window = [window CNVplot2{chrom}(end)];
 				end;
 		    end;
 		end;
-		CNV_median{chr}(data) = median(window);
+		CNV_median{chrom}(data) = median(window);
 	    end;
 	end;
 end;
@@ -172,10 +172,10 @@ end;
 fprintf('\nSmoothing Filter after median');
 window_width = smooth_window_width;
 window_halfwidth = (window_width-1)/2;
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-	    fprintf(['\n\t' num2str(chr) ':' num2str(num_chrs) ':' num2str(length(CNV_median{chr})) ]);
-	    CNV_median_smoothed{chr} = smooth_gaussian(CNV_median{chr},smooth_gaussian_sigma,smooth_gaussian_sigma*16);
+for chrom = 1:num_chroms
+	if (chrom_in_use(chrom) == 1)
+	    fprintf(['\n\t' num2str(chrom) ':' num2str(num_chroms) ':' num2str(length(CNV_median{chrom})) ]);
+	    CNV_median_smoothed{chrom} = smooth_gaussian(CNV_median{chrom},smooth_gaussian_sigma,smooth_gaussian_sigma*16);
 	end;
 end;
 
@@ -183,23 +183,23 @@ end;
 % differentiation filter
 %-----------------------------------------------------------------------------------------------------
 fprintf('\nDifferentiation Filter');
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-	    fprintf(['\n\t' num2str(chr) ':' num2str(num_chrs) ':' num2str(length(CNV_median_smoothed{chr})) ]);
-	    for data = 1:length(CNV_median_smoothed{chr})
+for chrom = 1:num_chroms
+	if (chrom_in_use(chrom) == 1)
+	    fprintf(['\n\t' num2str(chrom) ':' num2str(num_chroms) ':' num2str(length(CNV_median_smoothed{chrom})) ]);
+	    for data = 1:length(CNV_median_smoothed{chrom})
 		window_start   = max(data-1, 1);
-		window_end     = min(data+1, length(CNV_median_smoothed{chr}));
+		window_end     = min(data+1, length(CNV_median_smoothed{chrom}));
 		if (window_start == 1)
-		    window(1) = CNV_median_smoothed{chr}(data  );
-		    window(2) = CNV_median_smoothed{chr}(data+1);
-		elseif (window_end == length(CNV_median_smoothed{chr}))
-		    window(1) = CNV_median_smoothed{chr}(data-1);
-		    window(2) = CNV_median_smoothed{chr}(data  );
+		    window(1) = CNV_median_smoothed{chrom}(data  );
+		    window(2) = CNV_median_smoothed{chrom}(data+1);
+		elseif (window_end == length(CNV_median_smoothed{chrom}))
+		    window(1) = CNV_median_smoothed{chrom}(data-1);
+		    window(2) = CNV_median_smoothed{chrom}(data  );
 		else
-		    window(1) = CNV_median_smoothed{chr}(data-1);
-		    window(2) = CNV_median_smoothed{chr}(data+1);
+		    window(1) = CNV_median_smoothed{chrom}(data-1);
+		    window(2) = CNV_median_smoothed{chrom}(data+1);
 		end;
-		CNV_differentiated{chr}(data) = (window(2)-window(1))/2;
+		CNV_differentiated{chrom}(data) = (window(2)-window(1))/2;
 	    end;
 	end;
 end;
@@ -213,11 +213,11 @@ end;
 fprintf('\nSmoothing Filter 2');
 window_width = smooth_window_width;
 window_halfwidth = (window_width-1)/2;
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-	    fprintf(['\n\t' num2str(chr) ':' num2str(num_chrs) ':' num2str(length(CNV_differentiated{chr})) ]);
-	    %CNV_differentiated_smoothed{chr} = smooth_gaussian(CNV_differentiated{chr},smooth_gaussian_sigma,smooth_gaussian_sigma*16);
-	    CNV_differentiated_smoothed{chr} = CNV_differentiated{chr};
+for chrom = 1:num_chroms
+	if (chrom_in_use(chrom) == 1)
+	    fprintf(['\n\t' num2str(chrom) ':' num2str(num_chroms) ':' num2str(length(CNV_differentiated{chrom})) ]);
+	    %CNV_differentiated_smoothed{chrom} = smooth_gaussian(CNV_differentiated{chrom},smooth_gaussian_sigma,smooth_gaussian_sigma*16);
+	    CNV_differentiated_smoothed{chrom} = CNV_differentiated{chrom};
 	end;
 end;
 
@@ -225,20 +225,20 @@ end;
 % Find local maxima/minima.
 %-----------------------------------------------------------------------------------------------------
 fprintf('\nFinding local maxima & minima\n');
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-	    [pks1{chr},locs1{chr}] = findpeaks( CNV_differentiated_smoothed{chr});
-	    [pks2{chr},locs2{chr}] = findpeaks(-CNV_differentiated_smoothed{chr});
-	    locs{chr} = sort([locs1{chr} locs2{chr}]);
+for chrom = 1:num_chroms
+	if (chrom_in_use(chrom) == 1)
+	    [pks1{chrom},locs1{chrom}] = findpeaks( CNV_differentiated_smoothed{chrom});
+	    [pks2{chrom},locs2{chrom}] = findpeaks(-CNV_differentiated_smoothed{chrom});
+	    locs{chrom} = sort([locs1{chrom} locs2{chrom}]);
 
-	    fprintf(['Peak positions on chr : "' num2str(chr) '"\n']);
+	    fprintf(['Peak positions on chrom : "' num2str(chrom) '"\n']);
 	    fprintf('\t[');
-	    for edge = 1:(length(locs{chr})-1)
-		fprintf([num2str(locs{chr}(edge)) ', ']);
+	    for edge = 1:(length(locs{chrom})-1)
+		fprintf([num2str(locs{chrom}(edge)) ', ']);
 		if (mod(edge,30) == 0);   fprintf('\n\t');   end;
 	    end;
-	    right_edge = length(locs{chr});
-	%    fprintf([num2str(locs{chr}(right_edge)) '] (' num2str(length(locs{chr})) ')\n']);
+	    right_edge = length(locs{chrom});
+	%    fprintf([num2str(locs{chrom}(right_edge)) '] (' num2str(length(locs{chrom})) ')\n']);
 	end;
 end;
 
@@ -249,35 +249,35 @@ fprintf('\nGenerate figures for different stages of the ChARM algorithm.\n');
 if (temp_figures == true)
 	%% Assigning raw and filtered data to convenient names for later use.
 	data1 = CNVplot2;
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			data2{chr} = CNV_median{chr};
-			data3{chr} = CNV_median_smoothed{chr};
-			data4{chr} = CNV_differentiated_smoothed{chr};
+	for chrom = 1:num_chroms
+		if (chrom_in_use(chrom) == 1)
+			data2{chrom} = CNV_median{chrom};
+			data3{chrom} = CNV_median_smoothed{chrom};
+			data4{chrom} = CNV_differentiated_smoothed{chrom};
 		end;
 	end;
 	maxY = 2;
 
 	fig = figure(1);    dataShow = data1;
 	set(gcf, 'Position', [0 70 1024 600]);
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			left   = chr_posX(chr);    bottom = chr_posY(chr);
-			width  = chr_width(chr);   height = chr_height(chr);
+	for chrom = 1:num_chroms
+		if (chrom_in_use(chrom) == 1)
+			left   = chrom_posX(chrom);    bottom = chrom_posY(chrom);
+			width  = chrom_width(chrom);   height = chrom_height(chrom);
 			subplot('Position',[left bottom width height]);
 			hold on;
 			c_ = [0 0 0];
-			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
-			for i = 1:length(dataShow{chr});
+			fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
+			for i = 1:length(dataShow{chrom});
 				x_ = [i i i-1 i-1];
-				CNVhistValue = dataShow{chr}(i);
+				CNVhistValue = dataShow{chrom}(i);
 				startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
 				set(f,'linestyle','none');
 			end;
-			x2 = chr_size(chr)*chr_length_scale_multiplier;
+			x2 = chrom_size(chrom)*chrom_length_scale_multiplier;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
 			hold off;
-			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
+			xlim([0,chrom_size(chrom)*chrom_length_scale_multiplier]);
 			ylim([0,maxY]);
 			set(gca,'YTick',[0 maxY/2 maxY]);
 			set(gca,'YTickLabel',[]);
@@ -289,24 +289,24 @@ if (temp_figures == true)
 
 	fig = figure(2);    dataShow = data2;
 	set(gcf, 'Position', [0 70 1024 600]);
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			left   = chr_posX(chr);    bottom = chr_posY(chr);
-			width  = chr_width(chr);   height = chr_height(chr);
+	for chrom = 1:num_chroms
+		if (chrom_in_use(chrom) == 1)
+			left   = chrom_posX(chrom);    bottom = chrom_posY(chrom);
+			width  = chrom_width(chrom);   height = chrom_height(chrom);
 			subplot('Position',[left bottom width height]);
 			hold on;
 			c_ = [0 0 0];
-			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
-			for i = 1:length(dataShow{chr});
+			fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
+			for i = 1:length(dataShow{chrom});
 				x_ = [i i i-1 i-1];
-				if (dataShow{chr}(i) == 0);    CNVhistValue = 0;    else;    CNVhistValue = dataShow{chr}(i);    end;
+				if (dataShow{chrom}(i) == 0);    CNVhistValue = 0;    else;    CNVhistValue = dataShow{chrom}(i);    end;
 				startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
 				set(f,'linestyle','none');
 			end;
-			x2 = chr_size(chr)*chr_length_scale_multiplier;
+			x2 = chrom_size(chrom)*chrom_length_scale_multiplier;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
 			hold off;
-			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
+			xlim([0,chrom_size(chrom)*chrom_length_scale_multiplier]);
 			ylim([0,maxY]);
 			set(gca,'YTick',[0 maxY/2 maxY]);
 			set(gca,'YTickLabel',[]);
@@ -318,24 +318,24 @@ if (temp_figures == true)
 
 	fig = figure(3);    dataShow = data3;
 	set(gcf, 'Position', [0 70 1024 600]);
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			left   = chr_posX(chr);    bottom = chr_posY(chr);
-			width  = chr_width(chr);   height = chr_height(chr);
+	for chrom = 1:num_chroms
+		if (chrom_in_use(chrom) == 1)
+			left   = chrom_posX(chrom);    bottom = chrom_posY(chrom);
+			width  = chrom_width(chrom);   height = chrom_height(chrom);
 			subplot('Position',[left bottom width height]);
 			hold on;
 			c_ = [0 0 0];
-			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) '\n']);
-			for i = 1:length(dataShow{chr});
+			fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
+			for i = 1:length(dataShow{chrom});
 				x_ = [i i i-1 i-1];
-				if (dataShow{chr}(i) == 0);    CNVhistValue = 1;    else;    CNVhistValue = dataShow{chr}(i);    end;
+				if (dataShow{chrom}(i) == 0);    CNVhistValue = 1;    else;    CNVhistValue = dataShow{chrom}(i);    end;
 				startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
 				set(f,'linestyle','none');
 			end;
-			x2 = chr_size(chr)*chr_length_scale_multiplier;
+			x2 = chrom_size(chrom)*chrom_length_scale_multiplier;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
 			hold off;
-			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
+			xlim([0,chrom_size(chrom)*chrom_length_scale_multiplier]);
 			ylim([0,maxY]);
 			set(gca,'YTick',[0 maxY/2 maxY]);
 			set(gca,'YTickLabel',[]);
@@ -348,32 +348,32 @@ if (temp_figures == true)
 	fig = figure(4);
 	dataShow = data4;
 	set(gcf, 'Position', [0 70 1024 600]);
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			left   = chr_posX(chr);    bottom = chr_posY(chr);
-			width  = chr_width(chr);   height = chr_height(chr);
+	for chrom = 1:num_chroms
+		if (chrom_in_use(chrom) == 1)
+			left   = chrom_posX(chrom);    bottom = chrom_posY(chrom);
+			width  = chrom_width(chrom);   height = chrom_height(chrom);
 			subplot('Position',[left bottom width height]);
 			hold on;
 			c_ = [0 0 0];
-			for i = 1:length(dataShow{chr});
+			for i = 1:length(dataShow{chrom});
 				x_ = [i i i-1 i-1];
-				CNVhistValue = dataShow{chr}(i);
+				CNVhistValue = dataShow{chrom}(i);
 				startY = 0;
 				endY   = CNVhistValue*8;
 				y_ = [startY endY endY startY];
 				f = fill(x_,y_,c_);
 				set(f,'linestyle','none');
 			end;
-			x2 = chr_size(chr)*chr_length_scale_multiplier;
+			x2 = chrom_size(chrom)*chrom_length_scale_multiplier;
 			plot([0; x2], [0; 0],'color',[0 0 0]);  % 2n line.
-			for edge = 1:length(locs1{chr})
-			    plot([locs1{chr}(edge) locs1{chr}(edge)], [-1 1],'color',[0 0 1]);
+			for edge = 1:length(locs1{chrom})
+			    plot([locs1{chrom}(edge) locs1{chrom}(edge)], [-1 1],'color',[0 0 1]);
 			end;
-			for edge = 1:length(locs2{chr})
-			    plot([locs2{chr}(edge) locs2{chr}(edge)], [-1 1],'color',[1 0 0]);
+			for edge = 1:length(locs2{chrom})
+			    plot([locs2{chrom}(edge) locs2{chrom}(edge)], [-1 1],'color',[1 0 0]);
 			end;
 			hold off;
-			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
+			xlim([0,chrom_size(chrom)*chrom_length_scale_multiplier]);
 			ylim([-1 1]);
 			set(gca,'YTick',[-1 0 1]);
 			set(gca,'YTickLabel',[]);
@@ -393,11 +393,11 @@ fprintf('\nExpectation-Maximization Edge-Placement Algorithm\n');
 fprintf(  '-------------------------------------------------\n');
 %% Initialize initial (t=0) posterior probabilities that a data point is in the left vs. right distributions adjacent to each edge.
 %  Posterior probabilities are likelihood of membership in left vs. right distributions for each edge.
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		position  = locs{chr};       % locations of edges for this chromosome.
+for chrom = 1:num_chroms
+	if (chrom_in_use(chrom) == 1)
+		position  = locs{chrom};       % locations of edges for this chromosome.
 		num_edges = length(position);
-		data      = CNVplot2{chr};
+		data      = CNVplot2{chrom};
 		if (num_edges > 1)
 			for edge = 1
 				pos                = position(edge);
@@ -422,8 +422,8 @@ for chr = 1:num_chrs
 				pP_dist_is_R{edge} = zeros(1,length(data));
 				pP_dist_is_L{edge}((pos-L_windowSize(edge)):(pos)) = 1;
 			end;
-			old_Ppost_dist_is_L{chr} = pP_dist_is_L;
-			old_Ppost_dist_is_R{chr} = pP_dist_is_R;
+			old_Ppost_dist_is_L{chrom} = pP_dist_is_L;
+			old_Ppost_dist_is_R{chrom} = pP_dist_is_R;
 		end;
 	end;
 end;
@@ -437,11 +437,11 @@ for t = 1:1; % num_permutations
 	%% Calculate Conditional probabilities that a data point is in the left vs. right distributions adjacent to each edge.
 	fprintf('\nUpdate Membership (E-step)\n');
 	fprintf(  '--------------------------\n');
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			position  = locs{chr};       % locations of edges for this chromosome.
+	for chrom = 1:num_chroms
+		if (chrom_in_use(chrom) == 1)
+			position  = locs{chrom};       % locations of edges for this chromosome.
 			num_edges = length(position);
-			data      = CNVplot2{chr};   % data to be examined for this chromosome.
+			data      = CNVplot2{chrom};   % data to be examined for this chromosome.
 			if (num_edges > 1)
 				for edge = 1
 					% Left edge of chromosome.
@@ -479,52 +479,52 @@ for t = 1:1; % num_permutations
 					% Right edge of chromosome.
 					position(edge) = length(data);
 				end;
-				locs{chr} = position;
-				Pcond_dist_is_L{chr} = cP_dist_is_L;
-				Pcond_dist_is_R{chr} = cP_dist_is_R;
+				locs{chrom} = position;
+				Pcond_dist_is_L{chrom} = cP_dist_is_L;
+				Pcond_dist_is_R{chrom} = cP_dist_is_R;
 
-				locs{chr} = position;
+				locs{chrom} = position;
 			end;
 		end;
 	end;
 
 	%% Calculate P(theta_(j,k)^(t-1)) terms used in calculating posterior probabilities.
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			position         = locs{chr};       % locations of edges for this chromosome.
+	for chrom = 1:num_chroms
+		if (chrom_in_use(chrom) == 1)
+			position         = locs{chrom};       % locations of edges for this chromosome.
 			num_edges        = length(position);
-			data             = CNVplot2{chr};
-			chr_bins         = length(data);
+			data             = CNVplot2{chrom};
+			chrom_bins         = length(data);
 		if (num_edges > 1)
-			old_pP_dist_is_L = old_Ppost_dist_is_L{chr};
-			old_pP_dist_is_R = old_Ppost_dist_is_R{chr};
+			old_pP_dist_is_L = old_Ppost_dist_is_L{chrom};
+			old_pP_dist_is_R = old_Ppost_dist_is_R{chrom};
 			if (num_edges > 1)
 				for edge = 1:num_edges
-					L_term(edge) = sum(old_pP_dist_is_L{edge})/chr_bins;
-					R_term(edge) = sum(old_pP_dist_is_R{edge})/chr_bins;
+					L_term(edge) = sum(old_pP_dist_is_L{edge})/chrom_bins;
+					R_term(edge) = sum(old_pP_dist_is_R{edge})/chrom_bins;
 				end;
 			else
-				L_term = sum(old_pP_dist_is_L)/chr_bins;
-				R_term = sum(old_pP_dist_is_R)/chr_bins;
+				L_term = sum(old_pP_dist_is_L)/chrom_bins;
+				R_term = sum(old_pP_dist_is_R)/chrom_bins;
 			end;
-			L_terms{chr} = L_term;
-			R_terms{chr} = R_term;
+			L_terms{chrom} = L_term;
+			R_terms{chrom} = R_term;
 		end;
 		end;
 	end;
 
 	%% Calculate posterior probabilities that a data point is in the left vs. right distributions adjacent to each edge.
 	%  Posterior probabilities are likelihood of membership in left vs. right distributions for each edge.
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			position     = locs{chr};       % locations of edges for this chromosome.
+	for chrom = 1:num_chroms
+		if (chrom_in_use(chrom) == 1)
+			position     = locs{chrom};       % locations of edges for this chromosome.
 			num_edges    = length(position);
 			if (num_edges > 1)
-				L_term       = L_terms{chr};
-				R_term       = R_terms{chr};
-				cP_dist_is_L = Pcond_dist_is_L{chr};
-				cP_dist_is_R = Pcond_dist_is_R{chr};
-				data         = CNVplot2{chr};
+				L_term       = L_terms{chrom};
+				R_term       = R_terms{chrom};
+				cP_dist_is_L = Pcond_dist_is_L{chrom};
+				cP_dist_is_R = Pcond_dist_is_R{chrom};
+				data         = CNVplot2{chrom};
 				for edge = 2:(num_edges-1);
 					L_windowSize(edge)   = min(ceil(percent_window_size*(position(edge  )-position(edge-1))),max_ROI);
 					R_windowSize(edge)   = min(ceil(percent_window_size*(position(edge+1)-position(edge  ))),max_ROI);
@@ -532,8 +532,8 @@ for t = 1:1; % num_permutations
 					pP_dist_is_R{edge} = cP_dist_is_R{edge}.*R_term(edge)/(sum(cP_dist_is_L{edge})*L_term(edge) + sum(cP_dist_is_R{edge})*R_term(edge));
 				end;
 
-				Ppost_dist_is_L{chr} = pP_dist_is_L;
-				Ppost_dist_is_R{chr} = pP_dist_is_R;
+				Ppost_dist_is_L{chrom} = pP_dist_is_L;
+				Ppost_dist_is_R{chrom} = pP_dist_is_R;
 			end;
 		end;
 	end;
@@ -544,14 +544,14 @@ for t = 1:1; % num_permutations
 	%-----------------------------------------------------------------------------------------------------
 	fprintf('\nMean and Variance computation (M-step 1)\n');
 	fprintf(  '----------------------------------------\n');
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			position     = locs{chr};       % locations of edges for this chromosome.
+	for chrom = 1:num_chroms
+		if (chrom_in_use(chrom) == 1)
+			position     = locs{chrom};       % locations of edges for this chromosome.
 			num_edges    = length(position);
-			data         = CNVplot2{chr};   % data to be examined for this chromosome.
+			data         = CNVplot2{chrom};   % data to be examined for this chromosome.
 			if (num_edges > 1)
-				pP_dist_is_L = Ppost_dist_is_L{chr};
-				pP_dist_is_R = Ppost_dist_is_R{chr};
+				pP_dist_is_L = Ppost_dist_is_L{chrom};
+				pP_dist_is_R = Ppost_dist_is_R{chrom};
 				for edge = 2:(num_edges-1)
 					L_mean(edge)     = sum(pP_dist_is_L{edge}.*data)/sum(pP_dist_is_L{edge});
 					R_mean(edge)     = sum(pP_dist_is_R{edge}.*data)/sum(pP_dist_is_R{edge});
@@ -559,10 +559,10 @@ for t = 1:1; % num_permutations
 					R_sigma_sq(edge) = sum((data-R_mean(edge)).^2.*pP_dist_is_R{edge})/sum(pP_dist_is_R{edge});
 				end;
 
-				L_means{chr}     = L_mean;
-				R_means{chr}     = R_mean;
-				L_sigmas_sq{chr} = L_sigma_sq;
-				R_sigmas_sq{chr} = R_sigma_sq;
+				L_means{chrom}     = L_mean;
+				R_means{chrom}     = R_mean;
+				L_sigmas_sq{chrom} = L_sigma_sq;
+				R_sigmas_sq{chrom} = R_sigma_sq;
 			end;
 		end;
 	end;
@@ -575,19 +575,19 @@ for t = 1:1; % num_permutations
 	fprintf(  '--------------------------\n');
 	pos_change   = [];
 	fprintf(['\nIteration : ' num2str(t) ]);
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			position     = locs{chr};       % locations of edges for this chromosome.
+	for chrom = 1:num_chroms
+		if (chrom_in_use(chrom) == 1)
+			position     = locs{chrom};       % locations of edges for this chromosome.
 			num_edges    = length(position);
-			data         = CNVplot2{chr};   % data to be examined for this chromosome.
-			chr_bins     = length(data);
+			data         = CNVplot2{chrom};   % data to be examined for this chromosome.
+			chrom_bins     = length(data);
 			if (num_edges > 1)
-				pP_dist_is_L = Ppost_dist_is_L{chr};
-				pP_dist_is_R = Ppost_dist_is_R{chr};
-				L_mean       = L_means{chr};
-				R_mean       = R_means{chr};
-				L_sigma_sq   = L_sigmas_sq{chr};
-				R_sigma_sq   = R_sigmas_sq{chr};
+				pP_dist_is_L = Ppost_dist_is_L{chrom};
+				pP_dist_is_R = Ppost_dist_is_R{chrom};
+				L_mean       = L_means{chrom};
+				R_mean       = R_means{chrom};
+				L_sigma_sq   = L_sigmas_sq{chrom};
+				R_sigma_sq   = R_sigmas_sq{chrom};
 				new_position = [];
 				for edge = 2:(num_edges-1)
 					old_pos   = position(edge);
@@ -604,19 +604,19 @@ for t = 1:1; % num_permutations
 					new_position(edge) = new_pos;
 				end;
 				new_position(1)         = 1;
-				new_position(num_edges) = chr_bins;
-				pos_change{chr}         = new_position - position;
-				new_locs{chr}           = new_position;   
-				fprintf(['\n\tchr' num2str(chr) ' : ' num2str(pos_change{chr}) ]);
+				new_position(num_edges) = chrom_bins;
+				pos_change{chrom}         = new_position - position;
+				new_locs{chrom}           = new_position;   
+				fprintf(['\n\tchrom' num2str(chrom) ' : ' num2str(pos_change{chrom}) ]);
 			else
 				% setting new locs to be the same
-				new_locs{chr}           = locs{chr}; 
-				fprintf('\nchr %d has no edges\n', chr);
+				new_locs{chrom}           = locs{chrom}; 
+				fprintf('\nchrom %d has no edges\n', chrom);
 			end;
 		else
 			% setting new locs to be the same
-			new_locs{chr}           = locs{chr}; 
-			fprintf('\nchr %d is not used\n', chr);
+			new_locs{chrom}           = locs{chrom}; 
+			fprintf('\nchrom %d is not used\n', chrom);
 		end;
 	end;
 	%% Update positions of edges.
@@ -634,16 +634,16 @@ for t = 1:1; % num_permutations
 %-----------------------------------------------------------------------------------------------------
 fprintf('\n\nWindow Similarity test\n');
 fprintf(    '----------------------\n');
-for chr = 1:num_chrs
+for chrom = 1:num_chroms
 	% avoiding etering if all of the data is empty
-	if (chr_in_use(chr) == 1 && chr < length(locs))
-		fprintf(['[Window similarity test]:chr' num2str(chr) '\n']);
+	if (chrom_in_use(chrom) == 1 && chrom < length(locs))
+		fprintf(['[Window similarity test]:chrom' num2str(chrom) '\n']);
 		test_edge = 2;
-		num_starting_edges = length(locs{chr});
+		num_starting_edges = length(locs{chrom});
 		for t = 1:num_starting_edges
-			position     = locs{chr};
+			position     = locs{chrom};
 			num_edges    = length(position);
-			data         = CNVplot2{chr};  
+			data         = CNVplot2{chrom};  
 
 			%----------------------------------------------------------------------
 			% Converts edge pairs that are too close into single edges.
@@ -670,7 +670,7 @@ for chr = 1:num_chrs
 			%----------------------------------------------------------------------
 			SNR          = [];
 			med_delta    = [];
-			fprintf(['\t&&&& chr=' num2str(chr) '; t=' num2str(t) '; num_edges=' num2str(num_edges) '.\n']);
+			fprintf(['\t&&&& chrom=' num2str(chrom) '; t=' num2str(t) '; num_edges=' num2str(num_edges) '.\n']);
 			if (num_edges > 1)
 				for edge = 2:(num_edges-1)
 					pos_L        = position(edge-1);
@@ -735,13 +735,13 @@ for chr = 1:num_chrs
 					test_edge = test_edge + 1;
 				end;
 			else
-				% Chromosome only has two edges (lenft and right ends), so none need to be examined or removed.
+				% chromosome only has two edges (lenft and right ends), so none need to be examined or removed.
 			end;
 
 			%----------------------------------------------------------------------
 			% Resort and save edge positions.
 			%----------------------------------------------------------------------
-			locs{chr} = sort(position_sorted);
+			locs{chrom} = sort(position_sorted);
 		end;
 	end;
 end;
@@ -751,32 +751,32 @@ end;
 %-----------------------------------------------------------------------------------------------------
 fprintf('\n\nGenerate figure of final output of ChARM algorithm\n');
 fprintf(    '--------------------------------------------------\n');
-fprintf(['length(chr_size) = ' num2str(length(chr_size)) '\n']);
+fprintf(['length(chrom_size) = ' num2str(length(chrom_size)) '\n']);
 if (temp_figures == true)
 	fig = figure(1);    dataShow = data1;
 	set(gcf, 'Position', [0 70 1024 600]*2);
-	for chr = 1:num_chrs
-		if (chr_in_use(chr) == 1)
-			left   = chr_posX(chr);    bottom = chr_posY(chr);
-			width  = chr_width(chr);   height = chr_height(chr);
+	for chrom = 1:num_chroms
+		if (chrom_in_use(chrom) == 1)
+			left   = chrom_posX(chrom);    bottom = chrom_posY(chrom);
+			width  = chrom_width(chrom);   height = chrom_height(chrom);
 			subplot('Position',[left bottom width height]);
 			hold on;
 			c_ = [0 0 0];
-			fprintf(['chr' num2str(chr) ':' num2str(length(CNVplot2{chr})) ' :: ']);
-			for i = 1:length(dataShow{chr});
+			fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) ' :: ']);
+			for i = 1:length(dataShow{chrom});
 				x_ = [i i i-1 i-1];
-				CNVhistValue = dataShow{chr}(i);
+				CNVhistValue = dataShow{chrom}(i);
 				startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
 				set(f,'linestyle','none');
 			end;
-			fprintf([num2str(chr_size) '\n']);
-			x2 = chr_size(chr)*chr_length_scale_multiplier;
+			fprintf([num2str(chrom_size) '\n']);
+			x2 = chrom_size(chrom)*chrom_length_scale_multiplier;
 			plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-			for edge = 1:length(locs{chr})
-				plot([locs{chr}(edge) locs{chr}(edge)], [0 maxY],'color',[0 0 1]);
+			for edge = 1:length(locs{chrom})
+				plot([locs{chrom}(edge) locs{chrom}(edge)], [0 maxY],'color',[0 0 1]);
 			end;
 			hold off;
-			xlim([0,chr_size(chr)*chr_length_scale_multiplier]);
+			xlim([0,chrom_size(chrom)*chrom_length_scale_multiplier]);
 			ylim([0,maxY]);
 			set(gca,'YTick',[0 maxY/2 maxY]);
 			set(gca,'YTickLabel',[]);
@@ -797,21 +797,21 @@ fprintf(['\nSaving common_ChARM file for "' project '" : ' dataFile '$$$$\n']);
 
 i = 0;
 segmental_aneuploidy = [];
-for chr = 1:num_chrs
+for chrom = 1:num_chroms
 	% avoid entering when there is no data at all
-	if (chr_in_use(chr) == 1 && chr < length(locs))
-	    position  = locs{chr};
+	if (chrom_in_use(chrom) == 1 && chrom < length(locs))
+	    position  = locs{chrom};
 	    position(diff(position) == 0) = []; % remove duplicate positions
 	    num_edges = length(position);
-	    data      = CNVplot2{chr};
-	    chr_size  = length(data);
+	    data      = CNVplot2{chrom};
+	    chrom_size  = length(data);
 	    for edge = 1:num_edges
-			if (position(edge) == 1) || (position(edge) == chr_size)
+			if (position(edge) == 1) || (position(edge) == chrom_size)
 			    % nothing is added to file, as these edges are later assumed.
 			else
 			    i = i+1;
-			    segmental_aneuploidy(i).chr     = chr;			% chromosome being examined.
-			    segmental_aneuploidy(i).break   = position(edge)/chr_size;	% percent along chromosome of edge.
+			    segmental_aneuploidy(i).chrom     = chrom;			% chromosome being examined.
+			    segmental_aneuploidy(i).break   = position(edge)/chrom_size;	% percent along chromosome of edge.
 			end;
 	    end;
 	end;

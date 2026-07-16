@@ -2,7 +2,7 @@ box off;
 set(gca,'visible','off');
 
 %// Make my own x-axis tick labels
-XTickValues = 0:(40*(5000/bases_per_bin)):(chr_size(chr)/bases_per_bin);   %// limits tic values to size of chromosome in figure.
+XTickValues = 0:(40*(5000/bases_per_bin)):(chrom_size(chrom)/bases_per_bin);   %// limits tic values to size of chromosome in figure.
 XTickValLength = length(XTickValues)
 tickPercent = 0.75;
 if (length(annotations) > 0)

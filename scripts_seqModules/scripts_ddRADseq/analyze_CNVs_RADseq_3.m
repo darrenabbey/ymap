@@ -9,7 +9,7 @@ INDEL_verString = 'v1';
 SNP_verString   = 'v4';
 rDNA_verString  = 'v1';
 displayBREAKS   = true;
-referenceCHR    = 1;
+referenceChrom  = 1;
 
 
 CNV_v6_fragmentLengthCorrected_9(main_dir,user,genomeUser,project,parent,genome,ploidyEstimate,ploidyBase, CNV_verString,displayBREAKS);

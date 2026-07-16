@@ -19,9 +19,9 @@ end;
 %    bases_per_bin              : Controls bin sizes for SNP/CGH fractions of plot.
 %    scale_type                 : 'Ratio' or 'Log2Ratio' y-axis scaling of copy number.
 %                                 'Log2Ratio' does not properly scale CGH data by ploidy.
-%    Chr_max_width              : max width of chrs as fraction of figure width.
+%    chrom_max_width              : max width of chroms as fraction of figure width.
 Centromere_format           = 0;
-Chr_max_width               = 0.8;
+chrom_max_width               = 0.8;
 colorBars                   = true;
 blendColorBars              = false;
 show_annotations            = true;
@@ -59,36 +59,36 @@ end;
 genomeDir  = [main_dir 'users/' genomeUser '/genomes/' genome '/'];
 
 
-[centromeres, chr_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
+[centromeres, chrom_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 [Aneuploidy]                                                          = Load_dataset_information(projectDir);
 
-num_chrs = length(chr_sizes);
+num_chroms = length(chrom_sizes);
 
-for i = 1:length(chr_sizes)
-	chr_size(i)  = 0;
+for i = 1:length(chrom_sizes)
+	chrom_size(i)  = 0;
 	cen_start(i) = 0;
 	cen_end(i)   = 0;
 end;
-for i = 1:length(chr_sizes)
-	chr_size(chr_sizes(i).chr)    = chr_sizes(i).size;
-	cen_start(centromeres(i).chr) = centromeres(i).start;
-	cen_end(centromeres(i).chr)   = centromeres(i).end;
+for i = 1:length(chrom_sizes)
+	chrom_size(chrom_sizes(i).chrom)    = chrom_sizes(i).size;
+	cen_start(centromeres(i).chrom) = centromeres(i).start;
+	cen_end(centromeres(i).chrom)   = centromeres(i).end;
 end;
 if (length(annotations) > 0)
 	fprintf(['\nAnnotations for ' genome '.\n']);
 	for i = 1:length(annotations)
-		annotation_chr(i)       = annotations(i).chr;
+		annotation_chrom(i)       = annotations(i).chrom;
 		annotation_type{i}      = annotations(i).type;
 		annotation_start(i)     = annotations(i).start;
 		annotation_end(i)       = annotations(i).end;
 		annotation_fillcolor{i} = annotations(i).fillcolor;
 		annotation_edgecolor{i} = annotations(i).edgecolor;
 		annotation_size(i)      = annotations(i).size;
-		fprintf(['\t[' num2str(annotations(i).chr) ':' annotations(i).type ':' num2str(annotations(i).start) ':' num2str(annotations(i).end) ':' annotations(i).fillcolor ':' annotations(i).edgecolor ':' num2str(annotations(i).size) ']\n']);
+		fprintf(['\t[' num2str(annotations(i).chrom) ':' annotations(i).type ':' num2str(annotations(i).start) ':' num2str(annotations(i).end) ':' annotations(i).fillcolor ':' annotations(i).edgecolor ':' num2str(annotations(i).size) ']\n']);
 	end;
 end;
 for i = 1:length(figure_details)
-	if (figure_details(i).chr == 0)
+	if (figure_details(i).chrom == 0)
 		if (strcmp(figure_details(i).label,'Key') == 1)
 			key_posX   = figure_details(i).posX;
 			key_posY   = figure_details(i).posY;
@@ -96,36 +96,36 @@ for i = 1:length(figure_details)
 			key_height = figure_details(i).height;
 		end;
 	else
-		chr_id         (figure_details(i).chr) = figure_details(i).chr;
-		chr_label      {figure_details(i).chr} = figure_details(i).label;
-		chr_name       {figure_details(i).chr} = figure_details(i).name;
-		chr_posX       (figure_details(i).chr) = figure_details(i).posX;
-		chr_posY       (figure_details(i).chr) = figure_details(i).posY;
-		chr_width      (figure_details(i).chr) = figure_details(i).width;
-		chr_height     (figure_details(i).chr) = figure_details(i).height;
-		chr_in_use     (figure_details(i).chr) = str2num(figure_details(i).useChr);
-		chr_figOrder   (figure_details(i).chr) = str2num(figure_details(i).figOrder);
-		chr_figReversed(figure_details(i).chr) = str2num(figure_details(i).figReversed);
+		chrom_id         (figure_details(i).chrom) = figure_details(i).chrom;
+		chrom_label      {figure_details(i).chrom} = figure_details(i).label;
+		chrom_name       {figure_details(i).chrom} = figure_details(i).name;
+		chrom_posX       (figure_details(i).chrom) = figure_details(i).posX;
+		chrom_posY       (figure_details(i).chrom) = figure_details(i).posY;
+		chrom_width      (figure_details(i).chrom) = figure_details(i).width;
+		chrom_height     (figure_details(i).chrom) = figure_details(i).height;
+		chrom_in_use     (figure_details(i).chrom) = str2num(figure_details(i).usechrom);
+		chrom_figOrder   (figure_details(i).chrom) = str2num(figure_details(i).figOrder);
+		chrom_figReversed(figure_details(i).chrom) = str2num(figure_details(i).figReversed);
 	end;
 end;
-num_chrs = length(chr_size);
+num_chroms = length(chrom_size);
 
-%% This block is normally calculated in FindChrSizes_4 in CNV analysis.
-for usedChr = 1:num_chrs
-	if (chr_in_use(usedChr) == 1)
+%% This block is normally calculated in FindChromSizes_4 in CNV analysis.
+for usedchrom = 1:num_chroms
+	if (chrom_in_use(usedchrom) == 1)
 		% determine where the endpoints of ploidy segments are.
-		chr_breaks{usedChr}(1) = 0.0;
+		chrom_breaks{usedchrom}(1) = 0.0;
 		break_count = 1;
 		if (length(Aneuploidy) > 0)
 			for i = 1:length(Aneuploidy)
-				if (Aneuploidy(i).chr == usedChr)
+				if (Aneuploidy(i).chrom == usedchrom)
 					break_count = break_count+1;
-					chr_broken = true;
-					chr_breaks{usedChr}(break_count) = Aneuploidy(i).break;
+					chrom_broken = true;
+					chrom_breaks{usedchrom}(break_count) = Aneuploidy(i).break;
 				end;
 			end;
 		end;
-		chr_breaks{usedChr}(length(chr_breaks{usedChr})+1) = 1;
+		chrom_breaks{usedchrom}(length(chrom_breaks{usedchrom})+1) = 1;
 	end;
 end;
 
@@ -141,15 +141,15 @@ if (ploidyBase < 1);   ploidyBase = 1;   end;
 fprintf(['\nEuploid base = "' num2str(ploidyBase) '"\n']);
 
 % basic plot parameters not defined per genome.
-TickSize         = -0.005;  %negative for outside, percentage of longest chr figure.
-bases_per_bin    = max(chr_size)/700;
+TickSize         = -0.005;  %negative for outside, percentage of longest chrom figure.
+bases_per_bin    = max(chrom_size)/700;
 maxY             = ploidyBase*2;
 cen_tel_Xindent  = 5;
 cen_tel_Yindent  = maxY/5;
 
 %define colors for colorBars plot
 colorNoData = [1.0   1.0   1.0  ]; %used when no data is available for the bin.
-colorInit   = [0.5   0.5   0.5  ]; %external; used in blending at ends of chr.
+colorInit   = [0.5   0.5   0.5  ]; %external; used in blending at ends of chrom.
 colorHET    = [0.0   0.0   0.0  ]; % near 1:1 ratio SNPs
 colorOddHET = [0.0   1.0   0.0  ]; % Het, but not near 1:1 ratio SNPs.
 colorHOM    = [1.0   0.0   0.0  ]; % Hom SNPs;
@@ -161,26 +161,26 @@ colorB      = [0.0   1.0   1.0  ]; % homozygous b:cyan.
 fprintf(['\nGenerating LOH-map figure from ''' project ''' vs. (hapmap)''' hapmap ''' data.\n']);
 
 % Initializes vectors used to hold copy number data.
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
+for chrom = 1:num_chroms
+	if (chrom_in_use(chrom) == 1)
 		% 1 category tracked : average read counts per bin.
-		chr_CNVdata{chr} = zeros(1,ceil(chr_size(chr)/bases_per_bin));
-		% fprintf(['0|' num2str(chr) ':' num2str(length(chr_CNVdata{chr})) '\n']);
+		chrom_CNVdata{chrom} = zeros(1,ceil(chrom_size(chrom)/bases_per_bin));
+		% fprintf(['0|' num2str(chrom) ':' num2str(length(chrom_CNVdata{chrom})) '\n']);
 	end;
 end;
 
 % Initializes vectors used to hold number of SNPs in each interpretation catagory for each chromosome region.
-for chr = 1:length(chr_sizes)
+for chrom = 1:length(chrom_sizes)
 	% 4 SNP interpretation catagories tracked.
 	%	1 : phased ratio data.
 	%	2 : unphased ratio data.
 	%   3 : phased coordinate data.
 	%   4 : unphased coordinate data.
-	chr_length = ceil(chr_size(chr)/bases_per_bin);
+	chrom_length = ceil(chrom_size(chrom)/bases_per_bin);
 	for j = 1:4
-		chr_SNPdata{chr,j} = cell(1,chr_length);
+		chrom_SNPdata{chrom,j} = cell(1,chrom_length);
 	end;
-	% fprintf(['0|' num2str(chr) ':' num2str(length(chr_SNPdata{chr,1})) '\n']);
+	% fprintf(['0|' num2str(chrom) ':' num2str(length(chrom_SNPdata{chrom,1})) '\n']);
 end;
 
 
@@ -198,7 +198,7 @@ if (exist([projectDir 'SNP_' SNP_verString '.mat'],'file') == 0)
 			if (dataLine(1) ~= '#')
 				% process the loaded line into data channels.
 				lines_analyzed              = lines_analyzed+1;
-				chr_num                     = sscanf(dataLine, '%s',1);
+				chrom_num                     = sscanf(dataLine, '%s',1);
 				fragment_start              = sscanf(dataLine, '%s',2);   for i = 1:size(sscanf(dataLine,'%s',1),2);   fragment_start(1)              = [];   end;
 				fragment_end                = sscanf(dataLine, '%s',3);   for i = 1:size(sscanf(dataLine,'%s',2),2);   fragment_end(1)                = [];   end;
 				phased_data_string          = sscanf(dataLine, '%s',4);   for i = 1:size(sscanf(dataLine,'%s',3),2);   phased_data_string(1)          = [];   end;
@@ -207,12 +207,12 @@ if (exist([projectDir 'SNP_' SNP_verString '.mat'],'file') == 0)
 				unphased_coordinates_string = sscanf(dataLine, '%s',7);   for i = 1:size(sscanf(dataLine,'%s',6),2);   unphased_coordinates_string(1) = [];   end;
 
 				% format = simple, one number per column.
-				chr_num                     = str2num(chr_num);
+				chrom_num                     = str2num(chrom_num);
 				fragment_start              = str2num(fragment_start);
 				fragment_end                = str2num(fragment_end);
-				chr_length                  = ceil(chr_size(chr_num)/bases_per_bin);
-				chr_bin                     = ceil(fragment_start/bases_per_bin);
-				% fprintf(['chr_num' num2str(chr_num) '|chr_bin = ' num2str(chr_bin) '\n']);
+				chrom_length                  = ceil(chrom_size(chrom_num)/bases_per_bin);
+				chrom_bin                     = ceil(fragment_start/bases_per_bin);
+				% fprintf(['chrom_num' num2str(chrom_num) '|chrom_bin = ' num2str(chrom_bin) '\n']);
 
 				% format = '(number1,number2,...,numberN)'
 				phased_data_string(1)       = [];
@@ -271,20 +271,20 @@ if (exist([projectDir 'SNP_' SNP_verString '.mat'],'file') == 0)
 				end;
 
 				% add phased and unphased data to storage arrays.
-				chr_SNPdata{chr_num,1}{chr_bin} = phased_data;
-				chr_SNPdata{chr_num,2}{chr_bin} = unphased_data;
+				chrom_SNPdata{chrom_num,1}{chrom_bin} = phased_data;
+				chrom_SNPdata{chrom_num,2}{chrom_bin} = unphased_data;
 
 				% add phased and unphased data coordinates to storage arrays.
-				chr_SNPdata{chr_num,3}{chr_bin} = phased_coordinates;
-				chr_SNPdata{chr_num,4}{chr_bin} = unphased_coordinates;
+				chrom_SNPdata{chrom_num,3}{chrom_bin} = phased_coordinates;
+				chrom_SNPdata{chrom_num,4}{chrom_bin} = unphased_coordinates;
 
-				% fprintf(['chr' num2str(chr_num) '|chr_bin = ' num2str(chr_bin) '|' num2str(length(chr_SNPdata{chr_num,1})) '\n']);
+				% fprintf(['chrom' num2str(chrom_num) '|chrom_bin = ' num2str(chrom_bin) '|' num2str(length(chrom_SNPdata{chrom_num,1})) '\n']);
 			end;
 		end;
 	end;
 	fclose(data);
 
-	save([projectDir 'SNP_' SNP_verString '.mat'],'chr_SNPdata');
+	save([projectDir 'SNP_' SNP_verString '.mat'],'chrom_SNPdata');
 else
 	fprintf('\nMAT file found, loading.\n');
 	load([projectDir 'SNP_' SNP_verString '.mat']);
@@ -298,22 +298,22 @@ fig = figure(1);
 set(gcf, 'Position', [0 70 1024 600]);
 
 % calculate SNP bin values.
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		for chr_bin = 1:length(chr_SNPdata{chr,1})
-			SNPplot{chr,1}{chr_bin} = chr_SNPdata{chr,1}{chr_bin};
-			SNPplot{chr,2}{chr_bin} = chr_SNPdata{chr,2}{chr_bin};
+for chrom = 1:num_chroms
+	if (chrom_in_use(chrom) == 1)
+		for chrom_bin = 1:length(chrom_SNPdata{chrom,1})
+			SNPplot{chrom,1}{chrom_bin} = chrom_SNPdata{chrom,1}{chrom_bin};
+			SNPplot{chrom,2}{chrom_bin} = chrom_SNPdata{chrom,2}{chrom_bin};
 		end;
 	end;
 end;
 
 %% Gather total SNP data counts per bin : not used...?
 SNPdata_all = [];
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		for chr_bin = 1:length(SNPplot{chr,1})
-			TOTplot{chr}{chr_bin} = length(chr_SNPdata{chr,1}{chr_bin}) + length(chr_SNPdata{chr,2}{chr_bin});   % TOT = phased+nonphased;
-			SNPdata_all           = [SNPdata_all TOTplot{chr}{chr_bin}];
+for chrom = 1:num_chroms
+	if (chrom_in_use(chrom) == 1)
+		for chrom_bin = 1:length(SNPplot{chrom,1})
+			TOTplot{chrom}{chrom_bin} = length(chrom_SNPdata{chrom,1}{chrom_bin}) + length(chrom_SNPdata{chrom,2}{chrom_bin});   % TOT = phased+nonphased;
+			SNPdata_all           = [SNPdata_all TOTplot{chrom}{chrom_bin}];
 		end;
 	end;
 end;
@@ -321,11 +321,11 @@ medianRawY = median(SNPdata_all);
 
 %% Gather median-normalized SNP data for LOWESS fitting : not used...?
 SNPdata_all = [];
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		for chr_bin = 1:length(SNPplot{chr,1})
-			TOTplot{chr}{chr_bin} = length(chr_SNPdata{chr,1}{chr_bin}/medianRawY) + length(chr_SNPdata{chr,2}{chr_bin}/medianRawY);   % TOT = phased+nonphased;
-			SNPdata_all           = [SNPdata_all TOTplot{chr}{chr_bin}];
+for chrom = 1:num_chroms
+	if (chrom_in_use(chrom) == 1)
+		for chrom_bin = 1:length(SNPplot{chrom,1})
+			TOTplot{chrom}{chrom_bin} = length(chrom_SNPdata{chrom,1}{chrom_bin}/medianRawY) + length(chrom_SNPdata{chrom,2}{chrom_bin}/medianRawY);   % TOT = phased+nonphased;
+			SNPdata_all           = [SNPdata_all TOTplot{chrom}{chrom_bin}];
 		end;
 	end;
 end;
@@ -340,9 +340,9 @@ fprintf(['standard_bins_GC_ratios_file :\n\t' main_dir 'users/' genomeUser '/gen
 standard_bins_GC_ratios_fid = fopen([main_dir 'users/' genomeUser '/genomes/' genome '/' FastaName '.GC_ratios.standard_bins.txt'], 'r');
 fprintf(['\t' num2str(standard_bins_GC_ratios_fid) '\n']);
 lines_analyzed = 0;
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		chr_GCratioData{chr} = zeros(1,ceil(chr_size(chr)/bases_per_bin));
+for chrom = 1:num_chroms
+	if (chrom_in_use(chrom) == 1)
+		chrom_GCratioData{chrom} = zeros(1,ceil(chrom_size(chrom)/bases_per_bin));
 	end;
 end;
 while not (feof(standard_bins_GC_ratios_fid))
@@ -350,12 +350,12 @@ while not (feof(standard_bins_GC_ratios_fid))
 	if (length(dataLine) > 0)
 		if (dataLine(1) ~= '#')
 			lines_analyzed = lines_analyzed+1;
-			chr            = str2num(sscanf(dataLine, '%s',1));
+			chrom            = str2num(sscanf(dataLine, '%s',1));
 			fragment_start = sscanf(dataLine, '%s',2);  for i = 1:size(sscanf(dataLine,'%s',1),2);      fragment_start(1) = []; end;    fragment_start = str2num(fragment_start);
 			fragment_end   = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1) = [];   end;    fragment_end   = str2num(fragment_end);
 			GCratio        = sscanf(dataLine, '%s',4);  for i = 1:size(sscanf(dataLine,'%s',3),2);      GCratio(1) = [];        end;    GCratio        = str2num(GCratio);
 			position       = ceil(fragment_start/bases_per_bin);
-			chr_GCratioData{chr}(position) = GCratio;
+			chrom_GCratioData{chrom}(position) = GCratio;
 		end;
 	end;
 end;
@@ -364,9 +364,9 @@ fclose(standard_bins_GC_ratios_fid);
 
 % Gather SNP and GCratio data for LOWESS fitting.
 GCratioData_all = [];
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		GCratioData_all = [GCratioData_all chr_GCratioData{chr}];
+for chrom = 1:num_chroms
+	if (chrom_in_use(chrom) == 1)
+		GCratioData_all = [GCratioData_all chrom_GCratioData{chrom}];
 	end;
 end;
 medianRawY = median(SNPdata_all);
@@ -395,30 +395,30 @@ fprintf(['Lowess X:Y size : [' num2str(size(rawData_X1,1)) ',' num2str(size(rawD
 % Correct data using normalization to LOWESS fitting
 Y_target = 1;
 % Initialize data structures, to simplify debugging.   These nested loops can be deleted without problems arising.
-for chr = 1:num_chrs
+for chrom = 1:num_chroms
 	for j = 1:2
-		rawData_chr_Y{chr,j}        = [];
-		normalizedData_chr_Y{chr,j} = [];
-		rawData_chr_X{chr}          = [];
-		rawDataAll_chr_Y{chr}       = [];
-		fitDataAll_chr_Y{chr}       = [];
-		fitData_chr_Y{chr}          = [];
+		rawData_chrom_Y{chrom,j}        = [];
+		normalizedData_chrom_Y{chrom,j} = [];
+		rawData_chrom_X{chrom}          = [];
+		rawDataAll_chrom_Y{chrom}       = [];
+		fitDataAll_chrom_Y{chrom}       = [];
+		fitData_chrom_Y{chrom}          = [];
 	end;
 end;
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		rawData_chr_X{chr}           = chr_GCratioData{chr};
-		rawDataAll_chr_Y{chr}        = cell2mat(TOTplot{chr});
-		fitDataAll_chr_Y{chr}        = interp1(fitX1,fitY1,rawData_chr_X{chr},'spline');
-		normalizedDataAll_chr_Y{chr} = rawDataAll_chr_Y{chr}./fitDataAll_chr_Y{chr}*Y_target;
-		fitData_chr_Y{chr}           = interp1(fitX1,fitY1,rawData_chr_X{chr},'spline');
+for chrom = 1:num_chroms
+	if (chrom_in_use(chrom) == 1)
+		rawData_chrom_X{chrom}           = chrom_GCratioData{chrom};
+		rawDataAll_chrom_Y{chrom}        = cell2mat(TOTplot{chrom});
+		fitDataAll_chrom_Y{chrom}        = interp1(fitX1,fitY1,rawData_chrom_X{chrom},'spline');
+		normalizedDataAll_chrom_Y{chrom} = rawDataAll_chrom_Y{chrom}./fitDataAll_chrom_Y{chrom}*Y_target;
+		fitData_chrom_Y{chrom}           = interp1(fitX1,fitY1,rawData_chrom_X{chrom},'spline');
 
- 		for chr_bin = 1:length(SNPplot{chr,1})
-			rawData_chr_Y{chr,1}{chr_bin}        = length(chr_SNPdata{chr,1}{chr_bin});
-			rawData_chr_Y{chr,2}{chr_bin}        = length(chr_SNPdata{chr,2}{chr_bin});
+ 		for chrom_bin = 1:length(SNPplot{chrom,1})
+			rawData_chrom_Y{chrom,1}{chrom_bin}        = length(chrom_SNPdata{chrom,1}{chrom_bin});
+			rawData_chrom_Y{chrom,2}{chrom_bin}        = length(chrom_SNPdata{chrom,2}{chrom_bin});
 
-			normalizedData_chr_Y{chr,1}{chr_bin} = length(rawData_chr_Y{chr,1}{chr_bin})./fitData_chr_Y{chr}*Y_target;
-			normalizedData_chr_Y{chr,2}{chr_bin} = length(rawData_chr_Y{chr,2}{chr_bin})./fitData_chr_Y{chr}*Y_target;
+			normalizedData_chrom_Y{chrom,1}{chrom_bin} = length(rawData_chrom_Y{chrom,1}{chrom_bin})./fitData_chrom_Y{chrom}*Y_target;
+			normalizedData_chrom_Y{chrom,2}{chrom_bin} = length(rawData_chrom_Y{chrom,2}{chrom_bin})./fitData_chrom_Y{chrom}*Y_target;
 		end;
 	end;
 end;
@@ -433,21 +433,21 @@ cSNPdata_all_2 = [];
 GCdata_all     = [];
 GCdata_all_1   = [];
 GCdata_all_2   = [];
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
-		TOTplot{chr}        = rawDataAll_chr_Y{chr};
-		cTOTplot{chr}       = normalizedDataAll_chr_Y{chr};
-		SNPdata_all         = [SNPdata_all    TOTplot{chr}              ];
-		cSNPdata_all        = [cSNPdata_all   cTOTplot{chr}             ];
-		GCdata_all          = [GCdata_all     rawData_chr_X{chr}        ];
+for chrom = 1:num_chroms
+	if (chrom_in_use(chrom) == 1)
+		TOTplot{chrom}        = rawDataAll_chrom_Y{chrom};
+		cTOTplot{chrom}       = normalizedDataAll_chrom_Y{chrom};
+		SNPdata_all         = [SNPdata_all    TOTplot{chrom}              ];
+		cSNPdata_all        = [cSNPdata_all   cTOTplot{chrom}             ];
+		GCdata_all          = [GCdata_all     rawData_chrom_X{chrom}        ];
 
-		for chr_bin = 1:length(SNPplot{chr,1})
-			cchr_SNPdata{chr,1}{chr_bin} = normalizedData_chr_Y{chr,1}{chr_bin};
-			cchr_SNPdata{chr,2}{chr_bin} = normalizedData_chr_Y{chr,2}{chr_bin};
-			SNPdata_all_1                = [SNPdata_all_1  length(chr_SNPdata{chr,1}{chr_bin})  ];
-			SNPdata_all_2                = [SNPdata_all_2  length(chr_SNPdata{chr,2}{chr_bin})  ];
-			cSNPdata_all_1               = [cSNPdata_all_1 length(cchr_SNPdata{chr,1}{chr_bin}) ];
-			cSNPdata_all_2               = [cSNPdata_all_2 length(cchr_SNPdata{chr,2}{chr_bin}) ];
+		for chrom_bin = 1:length(SNPplot{chrom,1})
+			cchrom_SNPdata{chrom,1}{chrom_bin} = normalizedData_chrom_Y{chrom,1}{chrom_bin};
+			cchrom_SNPdata{chrom,2}{chrom_bin} = normalizedData_chrom_Y{chrom,2}{chrom_bin};
+			SNPdata_all_1                = [SNPdata_all_1  length(chrom_SNPdata{chrom,1}{chrom_bin})  ];
+			SNPdata_all_2                = [SNPdata_all_2  length(chrom_SNPdata{chrom,2}{chrom_bin})  ];
+			cSNPdata_all_1               = [cSNPdata_all_1 length(cchrom_SNPdata{chrom,1}{chrom_bin}) ];
+			cSNPdata_all_2               = [cSNPdata_all_2 length(cchrom_SNPdata{chrom,2}{chrom_bin}) ];
 		end;
 	end;
 end;
@@ -497,10 +497,10 @@ end;
 % Setup for main figure generation.
 %------------------------------------------------------------------------------------------
 % load size definitions
-[linear_fig_height,linear_fig_width,Linear_left_start,Linear_chr_gap,Linear_Chr_max_width,Linear_height...
-    ,Linear_base,rotate,linear_chr_font_size,linear_axis_font_size,linear_gca_font_size,stacked_fig_height,...
-    stacked_fig_width,stacked_chr_font_size,stacked_title_size,stacked_axis_font_size,...
-    gca_stacked_font_size,stacked_copy_font_size,max_chrom_label_size] = Load_size_info(chr_in_use,num_chrs,chr_label,chr_size);
+[linear_fig_height,linear_fig_width,Linear_left_start,Linear_chrom_gap,Linear_chrom_max_width,Linear_height...
+    ,Linear_base,rotate,linear_chrom_font_size,linear_axis_font_size,linear_gca_font_size,stacked_fig_height,...
+    stacked_fig_width,stacked_chrom_font_size,stacked_title_size,stacked_axis_font_size,...
+    gca_stacked_font_size,stacked_copy_font_size,max_chrom_label_size] = Load_size_info(chrom_in_use,num_chroms,chrom_label,chrom_size);
 
 % threshold for full color saturation in SNP/LOH figure.
 % synced to bases_per_bin as below, or defaulted to 50.
@@ -508,31 +508,31 @@ full_data_threshold = floor(bases_per_bin/100);
 
 fig = figure(1);
 data_mode = 1;
-for chr = 1:num_chrs
-	if (chr_in_use(chr) == 1)
+for chrom = 1:num_chroms
+	if (chrom_in_use(chrom) == 1)
 		if (data_mode == 1)
-			for chr_bin = 1:length(chr_SNPdata{chr,1})
-				% Regenerate chr plot data if the save file does not exist.
-				SNPs_count{chr}(chr_bin)                                     = length(chr_SNPdata{chr,1}{chr_bin}) + length(chr_SNPdata{chr,2}{chr_bin});   % the number of data points in this bin.
-				SNPs_to_fullData_ratio{chr}(chr_bin)                         = SNPs_count{chr}(chr_bin)/full_data_threshold;                                % divide by the threshold for full color saturation in SNP/LOH figure.
-				SNPs_to_fullData_ratio{chr}(SNPs_to_fullData_ratio{chr} > 1) = 1;                                                                           % any bins with more data than the threshold for full color saturation around limited to full saturation.
+			for chrom_bin = 1:length(chrom_SNPdata{chrom,1})
+				% Regenerate chrom plot data if the save file does not exist.
+				SNPs_count{chrom}(chrom_bin)                                     = length(chrom_SNPdata{chrom,1}{chrom_bin}) + length(chrom_SNPdata{chrom,2}{chrom_bin});   % the number of data points in this bin.
+				SNPs_to_fullData_ratio{chrom}(chrom_bin)                         = SNPs_count{chrom}(chrom_bin)/full_data_threshold;                                % divide by the threshold for full color saturation in SNP/LOH figure.
+				SNPs_to_fullData_ratio{chrom}(SNPs_to_fullData_ratio{chrom} > 1) = 1;                                                                           % any bins with more data than the threshold for full color saturation around limited to full saturation.
 
 				% Number of phased coordinates in bin with non-1.0 allelic fractions.    
-				HOMplot{chr}(chr_bin)                  = length(chr_SNPdata{chr,1}{chr_bin});         % phased data.
-				HOMplot2{chr}(chr_bin)                 = HOMplot{chr}(chr_bin)/full_data_threshold;   %
-				HOMplot2{chr}(HOMplot2{chr} > 1)       = 1;                                           %
+				HOMplot{chrom}(chrom_bin)                  = length(chrom_SNPdata{chrom,1}{chrom_bin});         % phased data.
+				HOMplot2{chrom}(chrom_bin)                 = HOMplot{chrom}(chrom_bin)/full_data_threshold;   %
+				HOMplot2{chrom}(HOMplot2{chrom} > 1)       = 1;                                           %
 
 				% Number of unphased coordinates in bin with non-1.0 allelic fractions.
-				HETplot{chr}(chr_bin)                  = length(chr_SNPdata{chr,2}{chr_bin});         % unphased data.
-				HETplot2{chr}(chr_bin)                 = HETplot{chr}(chr_bin)/full_data_threshold;   %
-				HETplot2{chr}(HETplot2{chr} > 1)       = 1;                                           %
+				HETplot{chrom}(chrom_bin)                  = length(chrom_SNPdata{chrom,2}{chrom_bin});         % unphased data.
+				HETplot2{chrom}(chrom_bin)                 = HETplot{chrom}(chrom_bin)/full_data_threshold;   %
+				HETplot2{chrom}(HETplot2{chrom} > 1)       = 1;                                           %
 			end;
 		end;
 	end;
 end;
 fprintf('\n');
-largestChr = find(chr_width == max(chr_width));
-largestChr = largestChr(1);
+largestchrom = find(chrom_width == max(chrom_width));
+largestchrom = largestchrom(1);
 
 
 %% -----------------------------------------------------------------------------------------
@@ -540,8 +540,8 @@ largestChr = largestChr(1);
 %-------------------------------------------------------------------------------------------
 if (Linear_display == true)
 	Linear_fig = figure(2);
-	Linear_genome_size   = sum(chr_size);
-	Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chr figure.
+	Linear_genome_size   = sum(chrom_size);
+	Linear_TickSize      = -0.01;  %negative for outside, percentage of longest chrom figure.
 	maxY                 = ploidyBase*2;
 	Linear_left          = Linear_left_start;
 	axisLabelPosition_horiz = 0.01125;
@@ -552,25 +552,25 @@ axisLabelPosition_vert = 0.01125;
 %% -----------------------------------------------------------------------------------------
 % Make figures
 %-------------------------------------------------------------------------------------------
-first_chr = true;
+first_chrom = true;
 
 % Determine order to draw chromosome cartoons in.
-chr_order = [];
-for test_chr = 1:num_chrs
-	chr_pos = find(chr_figOrder==test_chr);
-	chr_order = [chr_order chr_pos];
+chrom_order = [];
+for test_chrom = 1:num_chroms
+	chrom_pos = find(chrom_figOrder==test_chrom);
+	chrom_order = [chrom_order chrom_pos];
 end;
 
 % Draw chromosomes in order defined in figure_definitions.txt file.
-for chr_to_draw  = 1:length(chr_order)
-	chr = chr_order(chr_to_draw);
-	if (chr_in_use(chr) == 1)
+for chrom_to_draw  = 1:length(chrom_order)
+	chrom = chrom_order(chrom_to_draw);
+	if (chrom_in_use(chrom) == 1)
 		figure(fig);
-		% make standard chr cartoons.
-		left   = chr_posX(chr);
-		bottom = chr_posY(chr);
-		width  = chr_width(chr);
-		height = chr_height(chr);
+		% make standard chrom cartoons.
+		left   = chrom_posX(chrom);
+		bottom = chrom_posY(chrom);
+		width  = chrom_width(chrom);
+		height = chrom_height(chrom);
 		subplot('Position',[left bottom width height]);
 		fprintf(['\tfigposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
 		hold on;
@@ -578,21 +578,21 @@ for chr_to_draw  = 1:length(chr_order)
 		c_prev = colorInit;
 		c_post = colorInit;
 		c_     = c_prev;
-		infill = zeros(1,length(HETplot2{chr}));
+		infill = zeros(1,length(HETplot2{chrom}));
 		colors = [];
 
 		% determines the color of each bin.
-		for i = 1:length(SNPs_to_fullData_ratio{chr})+1;
-			if (i-1 < length(SNPs_to_fullData_ratio{chr}))
-				c_tot_post = SNPs_to_fullData_ratio{chr}(i)+SNPs_to_fullData_ratio{chr}(i);
+		for i = 1:length(SNPs_to_fullData_ratio{chrom})+1;
+			if (i-1 < length(SNPs_to_fullData_ratio{chrom}))
+				c_tot_post = SNPs_to_fullData_ratio{chrom}(i)+SNPs_to_fullData_ratio{chrom}(i);
 				if (c_tot_post == 0)
 					c_post = colorNoData;
 				else
 					% darren
-					colorMix = colorHET   *   HETplot2{chr}(i)/SNPs_to_fullData_ratio{chr}(i) + ...
-					           colorHOM   *   HOMplot2{chr}(i)/SNPs_to_fullData_ratio{chr}(i);
-					c_post =   colorMix   *   min(1,SNPs_to_fullData_ratio{chr}(i)) + ...
-					           colorNoData*(1-min(1,SNPs_to_fullData_ratio{chr}(i)));
+					colorMix = colorHET   *   HETplot2{chrom}(i)/SNPs_to_fullData_ratio{chrom}(i) + ...
+					           colorHOM   *   HOMplot2{chrom}(i)/SNPs_to_fullData_ratio{chrom}(i);
+					c_post =   colorMix   *   min(1,SNPs_to_fullData_ratio{chrom}(i)) + ...
+					           colorNoData*(1-min(1,SNPs_to_fullData_ratio{chrom}(i)));
 				end;
 			else
 				c_post = colorInit;
@@ -603,12 +603,12 @@ for chr_to_draw  = 1:length(chr_order)
 		end;
 
 		% reverse order of color bins if chromosome is indicated as reversed in figure_definitions.txt file.
-		if (chr_figReversed(chr) == 1)
+		if (chrom_figReversed(chrom) == 1)
 			colors        = flipud(colors);
 		end;
 
 		% standard : draw colorbars.
-		for i = 1:length(HETplot2{chr})+1;
+		for i = 1:length(HETplot2{chrom})+1;
 			x_ = [i i i-1 i-1];
 			y_ = [0 maxY maxY 0];
 			c_post(1) = colors(i,1);
@@ -630,7 +630,7 @@ for chr_to_draw  = 1:length(chr_order)
 
 		% axes labels etc.
 		hold off;
-		xlim([0,chr_size(chr)/bases_per_bin]);
+		xlim([0,chrom_size(chrom)/bases_per_bin]);
 
 		%% modify y axis limits to show annotation locations if any are provided.
 		if (length(annotations) > 0)
@@ -640,11 +640,11 @@ for chr_to_draw  = 1:length(chr_order)
 		end;
 		set(gca,'YTick',[]);
 		set(gca,'YTickLabel',[]);
-		set(gca,'TickLength',[(TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
-		if (chr_figReversed(chr) == 0)
-			text(-50000/5000/2*3, maxY/2,chr_label{chr}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+		set(gca,'TickLength',[(TickSize*chrom_size(largestchrom)/chrom_size(chrom)) 0]); %ensures same tick size on all subfigs.
+		if (chrom_figReversed(chrom) == 0)
+			text(-50000/5000/2*3, maxY/2,chrom_label{chrom}, 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chrom_font_size);
 		else
-			text(-50000/5000/2*3, maxY/2,[chr_label{chr} '\fontsize{' int2str(round(stacked_chr_font_size/2)) '}' char(10) '(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chr_font_size);
+			text(-50000/5000/2*3, maxY/2,[chrom_label{chrom} '\fontsize{' int2str(round(stacked_chrom_font_size/2)) '}' char(10) '(reversed)'], 'Rotation',90, 'HorizontalAlignment','center', 'VerticalAlign','bottom', 'Fontsize',stacked_chrom_font_size);
 		end;
 		set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 		set(gca,'XTickLabel',{'0.0','0.2','0.4','0.6','0.8','1.0','1.2','1.4','1.6','1.8','2.0','2.2','2.4','2.6','2.8','3.0','3.2'});
@@ -670,25 +670,25 @@ for chr_to_draw  = 1:length(chr_order)
 		end;
 
 		set(gca,'FontSize',gca_stacked_font_size);
-		if (chr == find(chr_posY == max(chr_posY)))
+		if (chrom == find(chrom_posY == max(chrom_posY)))
 			title([ project ' SNP map'],'Interpreter','none','FontSize',stacked_title_size);
 		end;
 		hold on;
 		% standard : end axes labels etc.
 
 			if (displayBREAKS == true) && (show_annotations == true)
-				chr_length = ceil(chr_size(chr)/bases_per_bin);
-                                for segment = 2:length(chr_breaks{chr})-1
-                                        bP = chr_breaks{chr}(segment)*chr_length;
+				chrom_length = ceil(chrom_size(chrom)/bases_per_bin);
+                                for segment = 2:length(chrom_breaks{chrom})-1
+                                        bP = chrom_breaks{chrom}(segment)*chrom_length;
                                         plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
                                 end;
                         end;
 
 		%show centromere outlines and horizontal marks.
-		x1 = cen_start(chr)/bases_per_bin;
-		x2 = cen_end(chr)/bases_per_bin;
+		x1 = cen_start(chrom)/bases_per_bin;
+		x2 = cen_end(chrom)/bases_per_bin;
 		leftEnd  = 0.5*5000/bases_per_bin;
-		rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
+		rightEnd = (chrom_size(chrom) - 0.5*5000)/bases_per_bin;
 		if (Centromere_format == 0)
 			% standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
 			dx = cen_tel_Xindent; %5*5000/bases_per_bin;
@@ -739,7 +739,7 @@ for chr_to_draw  = 1:length(chr_order)
 			hold on;
 			annotation_location = (annotation_start+annotation_end)./2;
 			for i = 1:length(annotation_location)
-				if (annotation_chr(i) == chr)
+				if (annotation_chrom(i) == chrom)
 					annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 					annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 					annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
@@ -761,13 +761,13 @@ for chr_to_draw  = 1:length(chr_order)
 	    %% Linear figure draw section
 	    if (Linear_display == true)
 	        figure(Linear_fig);
-	        Linear_width = Linear_Chr_max_width*chr_size(chr)/Linear_genome_size;
+	        Linear_width = Linear_chrom_max_width*chrom_size(chrom)/Linear_genome_size;
 	        subplot('Position',[Linear_left Linear_base Linear_width Linear_height]);
-	        Linear_left = Linear_left + Linear_width + Linear_chr_gap;
+	        Linear_left = Linear_left + Linear_width + Linear_chrom_gap;
 	        hold on;
 
 	        % linear : draw colorbars.
-	        for i = 1:length(HETplot2{chr})+1;
+	        for i = 1:length(HETplot2{chrom})+1;
 	            x_ = [i i i-1 i-1];
 	            y_ = [0 maxY maxY 0];
 	            c_post(1) = colors(i,1);
@@ -789,18 +789,18 @@ for chr_to_draw  = 1:length(chr_order)
 
 	        %show segmental anueploidy breakpoints.
 			if (Linear_displayBREAKS == true) && (show_annotations == true)
-				chr_length = ceil(chr_size(chr)/bases_per_bin);
-                                for segment = 2:length(chr_breaks{chr})-1
-                                        bP = chr_breaks{chr}(segment)*chr_length;
+				chrom_length = ceil(chrom_size(chrom)/bases_per_bin);
+                                for segment = 2:length(chrom_breaks{chrom})-1
+                                        bP = chrom_breaks{chrom}(segment)*chrom_length;
                                         plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
                                 end;
                         end;
 
 	        %show centromere.
-	        x1 = cen_start(chr)/bases_per_bin;
-	        x2 = cen_end(chr)/bases_per_bin;
+	        x1 = cen_start(chrom)/bases_per_bin;
+	        x2 = cen_end(chrom)/bases_per_bin;
 	        leftEnd  = 0.5*5000/bases_per_bin;
-	        rightEnd = (chr_size(chr) - 0.5*5000)/bases_per_bin;
+	        rightEnd = (chrom_size(chrom) - 0.5*5000)/bases_per_bin;
 
 	        if (Centromere_format == 0)
 	            % standard chromosome cartoons in a way which will not cause segfaults when running via commandline.
@@ -852,7 +852,7 @@ for chr_to_draw  = 1:length(chr_order)
 	            hold on;
 	            annotation_location = (annotation_start+annotation_end)./2;
 	            for i = 1:length(annotation_location)
-	                if (annotation_chr(i) == chr)
+	                if (annotation_chrom(i) == chrom)
 	                    annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 	                    annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 	                    annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
@@ -872,7 +872,7 @@ for chr_to_draw  = 1:length(chr_order)
 	        %end show annotation locations.
 
 	        %% Final formatting stuff.
-	        xlim([0,chr_size(chr)/bases_per_bin]);
+	        xlim([0,chrom_size(chrom)/bases_per_bin]);
 	        % modify y axis limits to show annotation locations if any are provided.
 	        if (length(annotations) > 0)
 	            ylim([-maxY/10*1.5,maxY]);
@@ -881,10 +881,10 @@ for chr_to_draw  = 1:length(chr_order)
 	        end;
 		set(gca,'YTick',[]);
 		set(gca,'YTickLabel',[]);
-	        set(gca,'TickLength',[(Linear_TickSize*chr_size(largestChr)/chr_size(chr)) 0]); %ensures same tick size on all subfigs.
+	        set(gca,'TickLength',[(Linear_TickSize*chrom_size(largestchrom)/chrom_size(chrom)) 0]); %ensures same tick size on all subfigs.
 	        set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 	        set(gca,'XTickLabel',[]);
-	        if (first_chr == true)
+	        if (first_chrom == true)
 				% This section sets the Y-axis labelling.
 				switch ploidyBase
 					case 1
@@ -911,24 +911,24 @@ for chr_to_draw  = 1:length(chr_order)
 
 			% note: adding title is done in the end since if placed upper
 			% in the code somehow the plot function changes the title position
-			if (rotate == 0 && chr_size(chr) ~= 0 )
-				if (chr_figReversed(chr) == 0)
-					title(chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+			if (rotate == 0 && chrom_size(chrom) ~= 0 )
+				if (chrom_figReversed(chrom) == 0)
+					title(chrom_label{chrom},'Interpreter','none','FontSize',linear_chrom_font_size,'Rotation',rotate);
 				else
-					title([chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
+					title([chrom_label{chrom} '\fontsize{' int2str(round(linear_chrom_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chrom_font_size,'Rotation',rotate);
 				end;
 			else
-				if (chr_figReversed(chr) == 0)
-					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,chr_label{chr},'Interpreter','none','FontSize',linear_chr_font_size,'Rotation',rotate);
+				if (chrom_figReversed(chrom) == 0)
+					text((chrom_size(chrom)/bases_per_bin)/2,maxY+0.25,chrom_label{chrom},'Interpreter','none','FontSize',linear_chrom_font_size,'Rotation',rotate);
 				else
-					text((chr_size(chr)/bases_per_bin)/2,maxY+0.25,[chr_label{chr} '\fontsize{' int2str(round(linear_chr_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chr_font_size,'Rotation',rotate);
+					text((chrom_size(chrom)/bases_per_bin)/2,maxY+0.25,[chrom_label{chrom} '\fontsize{' int2str(round(linear_chrom_font_size/2)) '}' char(10) '(reversed)'],'Interpreter','tex','FontSize',linear_chrom_font_size,'Rotation',rotate);
 				end;
 			end;
 
 	        % shift back to main figure generation.
 	        figure(fig);
 	        hold on;
-			first_chr = false;
+			first_chrom = false;
 	    end;
 	end;
 end;

@@ -3,31 +3,31 @@
 %-------------------------------------------------------------------------------------------
 if (AnglePlot == true)
 	width      = 0.075;
-	height     = chr_height(chr);
-	bottom     = chr_posY(chr);
-	chr_length = chr_size(chr);
-	for segment = 1:length(chrCopyNum{chr})
-		fprintf(['^^^     segment#    = ' num2str(segment) ':' num2str(length(chrCopyNum{chr})) '\n']);
+	height     = chrom_height(chrom);
+	bottom     = chrom_posY(chrom);
+	chrom_length = chrom_size(chrom);
+	for segment = 1:length(chromCopyNum{chrom})
+		fprintf(['^^^     segment#    = ' num2str(segment) ':' num2str(length(chromCopyNum{chrom})) '\n']);
 
 		if (segment == 1) % generate sublot for each segment.
-			subplot('Position',[0.03 bottom width (height/length(chrCopyNum{chr}))]);
+			subplot('Position',[0.03 bottom width (height/length(chromCopyNum{chrom}))]);
 		else
-			subplot('Position',[0.03 (bottom+height/length(chrCopyNum{chr})*(segment-1)) width (height/length(chrCopyNum{chr}))]);
+			subplot('Position',[0.03 (bottom+height/length(chromCopyNum{chrom})*(segment-1)) width (height/length(chromCopyNum{chrom}))]);
 		end;
 
-		peaks                     = chrSegment_peaks{              chr}{segment};
-		mostLikelyGaussians       = chrSegment_mostLikelyGaussians{chr}{segment};
-		actual_cutoffs            = chrSegment_actual_cutoffs{     chr}{segment};
-		segment_smoothedHistogram = chrSegment_smoothed{           chr}{segment};
-		segment_copyNum           = round(chrCopyNum{              chr}(segment));
-		segment_chrBreaks         = chr_breaks{                    chr}(segment);
+		peaks                     = chromSegment_peaks{              chrom}{segment};
+		mostLikelyGaussians       = chromSegment_mostLikelyGaussians{chrom}{segment};
+		actual_cutoffs            = chromSegment_actual_cutoffs{     chrom}{segment};
+		segment_smoothedHistogram = chromSegment_smoothed{           chrom}{segment};
+		segment_copyNum           = round(chromCopyNum{              chrom}(segment));
+		segment_chromBreaks         = chrom_breaks{                    chrom}(segment);
 
 		fprintf(['^^^     copyNum             = ' num2str(segment_copyNum)     '\n']);
 		fprintf(['^^^     peaks               = ' num2str(peaks)               '\n']);
 		fprintf(['^^^     mostLikelyGaussians = ' num2str(mostLikelyGaussians) '\n']);
 		fprintf(['^^^     actual_cutoffs      = ' num2str(actual_cutoffs)      '\n']);
 
-		copynum = round(chrCopyNum{chr}(segment));
+		copynum = round(chromCopyNum{chrom}(segment));
 		region_ = 0;
 		hold on;
 		for region = mostLikelyGaussians

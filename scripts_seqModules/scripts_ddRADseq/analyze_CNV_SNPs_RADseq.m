@@ -6,7 +6,7 @@ INDEL_verString = 'v1';
 SNP_verString   = 'v4';
 LOH_verString   = 'v2';
 displayBREAKS   = true;
-referenceCHR    = 1;
+referenceChrom  = 1;
 
 fprintf('\n');
 fprintf(['[analyze_CNV_SNPs_RADseq.m data inputs:\n']);
