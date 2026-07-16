@@ -6,7 +6,6 @@ set(0,'DefaultFigureVisible','off');
 
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir '/users/' user '/projects/' project '/figure_options.txt'], 'file')
-	%%figure_options = readtable([main_dir '/users/' user '/projects/' project '/figure_options.txt']);
 	figure_options = importdata([main_dir '/users/' user '/projects/' project '/figure_options.txt'],'\t',1);
 
         option         = figure_options{6,1};
@@ -35,10 +34,9 @@ if (Make_figure == true)
 	%% ========================================================================
 	Centromere_format_default	= 3;
 	Yscale_nearest_even_ploidy	= true;
-	HistPlot			= true;
-	chromNum				= true;
+	HistPlot			= false;
+	chromNum			= false;
 	show_annotations		= true;
-	analyze_rDNA			= true;
 	Standard_display                = false;
 	Linear_display			= true;
 	Linear_displayBREAKS		= false;
@@ -120,10 +118,11 @@ if (Make_figure == true)
 	%%= No further control variables below. ===================================
 	%%=========================================================================
 
+
 	% Sanitize user input of euploid state base for species.
 	ploidyBase = round(str2num(ploidyBaseString));
 	if (ploidyBase > 4);   ploidyBase = 4;   end;
-	if (ploidyBase < 1);   ploidyBase = 1;   end; 
+	if (ploidyBase < 1);   ploidyBase = 1;   end;
 	fprintf(['\nEuploid base = "' num2str(ploidyBase) '"\n']);
 
 	% basic plot parameters not defined per genome.
@@ -174,7 +173,7 @@ if (Make_figure == true)
 	% synced to bases_per_bin as below, or defaulted to 50.
 	full_data_threshold = floor(bases_per_bin/100);
 
-	Standard_fig = figure();
+	Standard_fig = figure(1);
 	set(gcf, 'Position', [0 70 1024 600]);
 	largestchrom = find(chrom_width == max(chrom_width));
 	largestchrom = largestchrom(1);
@@ -184,13 +183,13 @@ if (Make_figure == true)
 	% Setup for linear-view figure generation.
 	%-------------------------------------------------------------------------------------------
 	if (Linear_display == true)
-		Linear_fig		   = figure();
-		Linear_genome_size   = sum(chrom_size);
-		Linear_TickSize	  = -0.01;			  % negative for outside, percentage of longest chrom figure.
-		maxY				 = ploidyBase*2;	   % maximum y-axis of chromosome cartoons.
-		maxY_highTop		 = ploidyBase*2*3;	 % maximum y-axis of region above chromosome cartoons.
-		Linear_left		  = Linear_left_start;  % used to track left end of current chromosome.
-		axisLabelPosition_horiz = 0.01125;
+		Linear_fig		= figure(2);
+		Linear_genome_size	= sum(chrom_size);
+		Linear_TickSize		= -0.01;		% negative for outside, percentage of longest chrom figure.
+		maxY			= ploidyBase*2;		% maximum y-axis of chromosome cartoons.
+		maxY_highTop		= ploidyBase*2*3;	% maximum y-axis of region above chromosome cartoons.
+		Linear_left		= Linear_left_start;	% used to track left end of current chromosome.
+		axisLabelPosition_horiz	= 0.01125;
 	end;
 	axisLabelPosition_vert = 0.01125;
 
@@ -304,48 +303,21 @@ if (Make_figure == true)
 				end;
 				% standard : end of : CNV plot section.
 
+				% standard : draw ploidy lines across plots for easier interpretation of CNV regions.
+				% Inside chrom bounds grey lines.
 				x2 = chrom_size(chrom)/bases_per_bin;
-				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-
-				%% standard : draw lines across plots for easier interpretation of CNV regions.
-				switch ploidyBase
-				case 1
-					% above chrom bounds.
-					for lineNum = 3:6
-						line([0 x2], [maxY/2*lineNum  maxY/2*lineNum ],'Color',[0.85 0.85 0.85]);
-					end;
-				case 2
-					% inside chrom bounds.
-					line([0 x2], [maxY/4*1 maxY/4*1],'Color',[0.85 0.85 0.85]);
-					line([0 x2], [maxY/4*3 maxY/4*3],'Color',[0.85 0.85 0.85]);
-					% above chrom bounds.
-					for lineNum = 5:12
-						line([0 x2], [maxY/4*lineNum  maxY/4*lineNum ],'Color',[0.85 0.85 0.85]);
-					end;
-				case 3
-					% inside chrom bounds.
-					line([0 x2], [maxY/6*1 maxY/6*1],'Color',[0.85 0.85 0.85]);
-					line([0 x2], [maxY/6*2 maxY/6*2],'Color',[0.85 0.85 0.85]);
-					line([0 x2], [maxY/6*4 maxY/6*4],'Color',[0.85 0.85 0.85]);
-					line([0 x2], [maxY/6*5 maxY/6*5],'Color',[0.85 0.85 0.85]);
-					% above chrom bounds.
-					for lineNum = 7:18
-						line([0 x2], [maxY/6*lineNum  maxY/6*lineNum ],'Color',[0.85 0.85 0.85]);
-					end;
-				case 4
-					% inside chrom bounds.
-					line([0 x2], [maxY/8*1 maxY/8*1],'Color',[0.85 0.85 0.85]);
-					line([0 x2], [maxY/8*2 maxY/8*2],'Color',[0.85 0.85 0.85]);
-					line([0 x2], [maxY/8*3 maxY/8*3],'Color',[0.85 0.85 0.85]);
-					line([0 x2], [maxY/8*5 maxY/8*5],'Color',[0.85 0.85 0.85]);
-					line([0 x2], [maxY/8*6 maxY/8*6],'Color',[0.85 0.85 0.85]);
-					line([0 x2], [maxY/8*7 maxY/8*7],'Color',[0.85 0.85 0.85]);
-					% above chrom bounds.
-					for lineNum = 9:24
-						line([0 x2], [maxY/8*lineNum  maxY/8*lineNum ],'Color',[0.85 0.85 0.85]);
+				for lineNum = 1:(ploidyBase*2-1)
+					if lineNum ~= ploidyBase
+						line([0 x2], [maxY/(ploidyBase*2)*lineNum  maxY/(ploidyBase*2)*lineNum ],'Color',[0.85 0.85 0.85]);
 					end;
 				end;
-				%% standard : end CNV plot section.
+				% Above chrom bounds grey lines.
+				for lineNum = (ploidyBase*2+1):ploidyBase*6
+					line([0 x2], [maxY/(ploidyBase*2)*lineNum  maxY/(ploidyBase*2)*lineNum ],'Color',[0.85 0.85 0.85]);
+				end;
+				% Baseline ploidy black line.
+				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
+				% standard : end ploidy lines plot section.
 
 				% standard : axes labels etc.
 				hold off;
@@ -362,7 +334,6 @@ if (Make_figure == true)
 
 				%set(gca,'TickLength',[(TickSize*chrom_size(largestchrom)/chrom_size(chrom)) 0]); %ensures same tick size on all subfigs.
 				set(gca,'TickLength',[TickSize 0]);
-
 				set(gca,'YTick',[]);
 				set(gca,'YTickLabel',[]);
 				set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
@@ -374,55 +345,24 @@ if (Make_figure == true)
 					text(-50000/5000/2*3, maxY*3/2,[chrom_label{chrom} char(10) '(reversed)'], 'rotation',90, 'horizontalalignment', 'center', 'verticalalignment', 'bottom', 'fontsize', round(stacked_chrom_font_size/2));
 				end;
 
-				% standard : This section sets the Y-axis labelling.
-				switch ploidyBase
-					case 1
-						text(axisLabelPosition_vert, maxY*1/2,    '1' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*2/2,    '2' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*3/2,    '3' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*4/2,    '4' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*5/2,    '5' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*6/2,    '6' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-					case 2
-						text(axisLabelPosition_vert, maxY*1/4,    '1' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*2/4,    '2' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*3/4,    '3' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*4/4,    '4' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*5/4,    '5' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*6/4,    '6' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*7/4,    '7' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*8/4,    '8' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*9/4,    '9' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*10/4,   '10','HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*11/4,   '11','HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*12/4,   '12','HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-					case 3
-						text(axisLabelPosition_vert, maxY*3/6,    '3' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*6/6,    '6' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*9/6,    '9' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*12/6,   '12','HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*15/6,   '15','HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*18/6,   '18','HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-					case 4
-						text(axisLabelPosition_vert, maxY*2/8,    '2' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*4/8,    '4' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*6/8,    '6' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*8/8,    '8' ,'HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*10/8,   '10','HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*12/8,   '12','HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*14/8,   '14','HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*16/8,   '16','HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*18/8,   '18','HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*20/8,   '20','HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*22/8,   '22','HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
-						text(axisLabelPosition_vert, maxY*24/8,   '24','HorizontalAlignment','right','Fontsize',stacked_axis_font_size/2);
+				% standard : This section sets the Y-axis labelling, omitting crowded labels.
+				max_label = ploidyBase * 6;
+				if ploidyBase <= 2
+					label_step = 1; % Plenty of room: label every step (1, 2, 3...)
+				elseif mod(ploidyBase, 2) == 0
+					label_step = ploidyBase / 2; % Even larger ploidy (e.g., 4 steps by 2, 6 steps by 3...)
+				else
+					label_step = ploidyBase; % Odd larger ploidy (e.g., 3 steps by 3, 5 steps by 5...)
+				end;
+				for label_val = label_step : label_step : max_label
+					y_pos = maxY * (label_val / (ploidyBase * 2));
+					text(axisLabelPosition_vert, y_pos, num2str(label_val), 'HorizontalAlignment', 'right', 'Fontsize', stacked_axis_font_size / 2);
 				end;
 
 				set(gca,'FontSize',gca_stacked_font_size/2);
 				if (chrom == find(chrom_posY == max(chrom_posY)))
 					title([ project ' CNV only'],'Interpreter','none','FontSize',stacked_title_size);
 				end;
-
 				hold on;
 				% standard : end axes labels etc.
 
@@ -600,48 +540,23 @@ if (Make_figure == true)
 					f = fill(x_,y_,c_);
 					set(f,'linestyle','none');
 				end;
-				x2 = chrom_size(chrom)/bases_per_bin;
-				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
+				% linear : end CNV plot section.
 
-				%% linear : draw lines across plots for easier interpretation of CNV regions.
-				switch ploidyBase
-					case 1
-						% above chrom bounds.
-						for lineNum = 3:6
-							line([0 x2], [maxY/2*lineNum  maxY/2*lineNum ],'Color',[0.85 0.85 0.85]);
-						end;
-					case 2
-						% inside chrom bounds.
-						line([0 x2], [maxY/4*1  maxY/4*1 ],'Color',[0.85 0.85 0.85]);
-						line([0 x2], [maxY/4*3  maxY/4*3 ],'Color',[0.85 0.85 0.85]);
-						% above chrom bounds.
-						for lineNum = 5:12
-							line([0 x2], [maxY/4*lineNum  maxY/4*lineNum ],'Color',[0.85 0.85 0.85]);
-						end;
-					case 3
-						% inside chrom bounds.
-						line([0 x2], [maxY/6*1 maxY/6*1],'Color',[0.85 0.85 0.85]);
-						line([0 x2], [maxY/6*2 maxY/6*2],'Color',[0.85 0.85 0.85]);
-						line([0 x2], [maxY/6*4 maxY/6*4],'Color',[0.85 0.85 0.85]);
-						line([0 x2], [maxY/6*5 maxY/6*5],'Color',[0.85 0.85 0.85]);
-						% above chrom bounds.
-						for lineNum = 7:18
-							line([0 x2], [maxY/6*lineNum  maxY/6*lineNum ],'Color',[0.85 0.85 0.85]);
-						end;
-					case 4
-						% inside chrom bounds.
-						line([0 x2], [maxY/8*1 maxY/8*1],'Color',[0.85 0.85 0.85]);
-						line([0 x2], [maxY/8*2 maxY/8*2],'Color',[0.85 0.85 0.85]);
-						line([0 x2], [maxY/8*3 maxY/8*3],'Color',[0.85 0.85 0.85]);
-						line([0 x2], [maxY/8*5 maxY/8*5],'Color',[0.85 0.85 0.85]);
-						line([0 x2], [maxY/8*6 maxY/8*6],'Color',[0.85 0.85 0.85]);
-						line([0 x2], [maxY/8*7 maxY/8*7],'Color',[0.85 0.85 0.85]);
-						% above chrom bounds.
-						for lineNum = 9:24
-							line([0 x2], [maxY/8*lineNum  maxY/8*lineNum ],'Color',[0.85 0.85 0.85]);
-						end;
+				%% linear : draw ploidy lines across plots for easier interpretation of CNV regions.
+				% Inside chrom bounds grey lines.
+				x2 = chrom_size(chrom)/bases_per_bin;
+				for lineNum = 1:(ploidyBase*2-1)
+					if lineNum ~= ploidyBase
+						line([0 x2], [maxY/(ploidyBase*2)*lineNum  maxY/(ploidyBase*2)*lineNum ],'Color',[0.85 0.85 0.85]);
+					end;
 				end;
-				%% linear : end CNV plot section.
+				% Above chrom bounds grey lines.
+				for lineNum = (ploidyBase*2+1):ploidyBase*6
+					line([0 x2], [maxY/(ploidyBase*2)*lineNum  maxY/(ploidyBase*2)*lineNum ],'Color',[0.85 0.85 0.85]);
+				end;
+				% Baseline ploidy black line.
+				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);
+				%% linear : end CNV plot ploidy lines section.
 
 				%% linear : show segmental anueploidy breakpoints.
 				if (Linear_displayBREAKS == true) && (show_annotations == true)
@@ -689,54 +604,24 @@ if (Make_figure == true)
 				end;
 				%set(gca,'TickLength',[(Linear_TickSize*chrom_size(largestchrom)/chrom_size(chrom)) 0]); %ensures same tick size on all subfigs.
 				set(gca,'TickLength',[Linear_TickSize 0]);
-
 				set(gca,'YTick',[]);
 				set(gca,'YTickLabel',[]);
 				set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
 				set(gca,'XTickLabel',[]);
+
 				if (first_chrom)
-					% This section sets the Y-axis labelling.
-					switch ploidyBase
-					case 1
-						text(axisLabelPosition_horiz, maxY*1/2,    '1' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*2/2,    '2' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*3/2,    '3' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*4/2,    '4' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*5/2,    '5' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*6/2,    '6' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-					case 2
-						text(axisLabelPosition_horiz, maxY*1/4,    '1' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*2/4,    '2' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*3/4,    '3' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*4/4,    '4' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*5/4,    '5' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*6/4,    '6' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*7/4,    '7' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*8/4,    '8' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*9/4,    '9' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*10/4,   '10','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*11/4,   '11','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*12/4,   '12','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-					case 3
-						text(axisLabelPosition_horiz, maxY*3/6,    '3' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*6/6,    '6' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*9/6,    '9' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*12/6,   '12','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*15/6,   '15','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*18/6,   '18','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-					case 4
-						text(axisLabelPosition_horiz, maxY*2/8,    '2' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*4/8,    '4' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*6/8,    '6' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*8/8,    '8' ,'HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*10/8,   '10','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*12/8,   '12','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*14/8,   '14','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*16/8,   '16','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*18/8,   '18','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*20/8,   '20','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*22/8,   '22','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
-						text(axisLabelPosition_horiz, maxY*24/8,   '24','HorizontalAlignment','right','Fontsize',linear_axis_font_size);
+					% standard : This section sets the Y-axis labelling, omitting crowded labels.
+					max_label = ploidyBase * 6;
+					if ploidyBase <= 2
+						label_step = 1; % Plenty of room: label every step (1, 2, 3...)
+					elseif mod(ploidyBase, 2) == 0
+						label_step = ploidyBase / 2; % Even larger ploidy (e.g., 4 steps by 2, 6 steps by 3...)
+					else
+						label_step = ploidyBase; % Odd larger ploidy (e.g., 3 steps by 3, 5 steps by 5...)
+					end;
+					for label_val = label_step : label_step : max_label
+						y_pos = maxY * (label_val / (ploidyBase * 2));
+						text(axisLabelPosition_vert, y_pos, num2str(label_val), 'HorizontalAlignment', 'right', 'Fontsize', stacked_axis_font_size / 2);
 					end;
 				end;
 				set(gca,'FontSize',linear_gca_font_size);

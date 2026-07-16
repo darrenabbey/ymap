@@ -52,7 +52,7 @@ end;
 %                                 'Log2Ratio' does not properly scale CNV data by ploidy.
 %    chrom_max_width              : max width of chroms as fraction of figure width.
 Centromere_format_default   = 3;
-chrom_max_width               = 0.8;
+chrom_max_width             = 0.8;
 colorBars                   = true;
 blendColorBars              = false;
 show_annotations            = true;
@@ -61,7 +61,7 @@ AnglePlot                   = true;   % Show histogram of alleleic fraction at t
 FillColors                  = true;   %     Fill histogram using colors.
 show_uncalibrated           = false;  %     Fill with single color instead of ratio call colors.
 HistPlot                    = true;   % Show histogram of CNV at the right end of standard figure chromosomes.
-chromNum                      = true;   % Show numerical etimates of copy number to the right of standard figure chromosomes.
+chromNum                    = true;   % Show numerical etimates of copy number to the right of standard figure chromosomes.
 Standard_display            = Make_figure_standard;
 Linear_display              = Make_figure_linear;   % Figure version with chromosomes laid out horizontally.
 Linear_displayBREAKS        = false;
@@ -215,10 +215,10 @@ source('../phased_and_unphased_color_definitions.m');
 
 
 % basic plot parameters not defined per genome.
-TickSize          = -0.005;  %negative for outside, percentage of longest chrom figure.
-maxY              = ploidyBase*2;
-cen_tel_Xindent   = 5;
-cen_tel_Yindent   = maxY/4;
+TickSize		= -0.005;  %negative for outside, percentage of longest chrom figure.
+maxY			= ploidyBase*2;
+cen_tel_Xindent		= 5;
+cen_tel_Yindent		= maxY/4;
 
 %% Load CNV and SNP figure resolutions.
 if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
@@ -291,7 +291,7 @@ source('../createCnvTrack_reduced.m');
 
 
 %% =========================================================================================
-% Save workspace variables for use in "CNV_SNP_hapmap_v4_RedGreen.m"
+% Save workspace variables for use in 'CNV_SNP_hapmap_v4_RedGreen.m' and 'CNV_SNP_hapmap_v4_highTop.m' scripts.
 %-------------------------------------------------------------------------------------------
 fprintf('\t|\tSave workspace variables for later use in RedGreen alternate plot.\n');
 save([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
