@@ -555,6 +555,7 @@ function blank_and_content_tab() {
 			}
 
 			var fig_linear_CNV_SNP               = file_prefix + "fig.CNV-SNP-map.2." + figVer_;
+			var fig_linear_CNV_SNP_highTop       = file_prefix + "fig.CNV-SNP-map.highTop.2." + figVer_;
 			var fig_linear_CNV_SNP_RedGreen      = file_prefix + "fig.CNV-SNP-map.RedGreen.2." + figVer_;
 			var fig_standard_CNV_SNP             = file_prefix + "fig.CNV-SNP-map.1." + figVer_;
 			var fig_standard_CNV_SNP_RedGreen    = file_prefix + "fig.CNV-SNP-map.RedGreen.1." + figVer_;
@@ -578,14 +579,14 @@ function blank_and_content_tab() {
 			var CNV_bias_SnpCghArray_GCcontent   = file_prefix + "fig_GCratio_vs_CGH." + figVer_;
 			var CNV_bias_SnpCghArray_end         = file_prefix + "fig_EndDistance_vs_CGH." + figVer_;
 
-			var CNV_bias_WGseq_end               = file_prefix + "fig.bias_chr_end." + figVer_;
 			var CNV_bias_WGseq_GCcontent         = file_prefix + "fig.bias_GC_content." + figVer_;
+			var CNV_bias_WGseq_end               = file_prefix + "fig.bias_chr_end." + figVer_;
 
 			var CNV_bias_ddRADseq_1              = file_prefix + "fig.examine_bias.1." + figVer_;
 			var CNV_bias_ddRADseq_2              = file_prefix + "fig.examine_bias.2." + figVer_;
 			var CNV_bias_ddRADseq_3              = file_prefix + "fig.examine_bias.3." + figVer_;
 
-			var fig_linear_SNPratio_histogram    = file_prefix + "fig.allelic_fraction_histogram." + figVer_;
+			var fig_linear_SNPratio_histogram    = file_prefix + "fig.allelic_fraction_histogram." + figVer_;	// Figure type not yet implemented.
 			var fig_linear_SNPratio_fireplot     = file_prefix + "fig.allelic_ratio-map.b2." + figVer_;
 			var output_figures_archive           = file_prefix + "output_figures.zip";
 
@@ -667,6 +668,11 @@ function blank_and_content_tab() {
 				}
 				string1 += ")";
 			}
+			if (file_list.indexOf(fig_linear_CNV_SNP_highTop+"png") != -1) {
+				string1 += "; ";
+				string1 +=  "<button onclick='loadImage(\""+key+"\",\""+fig_linear_CNV_SNP_highTop+"png\",\"100\")'>high top</button>";
+			}
+
 			if ((file_list.indexOf(fig_linear_CNV+"png") != -1) || (file_list.indexOf(fig_linear_CNV+"eps") != -1) || (file_list.indexOf(fig_standard_CNV+"png") != -1) || (file_list.indexOf(fig_standard_CNV+"eps") != -1)) {
 				string1 += "<br><b>CNV only</b> (";
 				if ((file_list.indexOf(fig_linear_CNV+"png") != -1) || (file_list.indexOf(fig_linear_CNV+"eps") != -1)) {

@@ -218,7 +218,7 @@
 			if ($figureOptionSelections[13] == "True") {   $fig_H2 = "checked";   } else {   $fig_H2 = "";   }
 		} else {
 			// Default install of a dataset doesn't generate a 'figure_options.txt' file and runs all figures.
-			$fig_A1 = "checked";
+			if ($bias2 == "") {	$fig_A1 = "";		} else {	$fig_A1 = "checked";	}
 			if ($bias4 == "") {	$fig_A2 = "disabled";	} else {	$fig_A2 = "checked";	}
 			$fig_B1 = "checked";
 			$fig_B2 = "checked";
