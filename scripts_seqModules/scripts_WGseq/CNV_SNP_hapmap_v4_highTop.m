@@ -2,9 +2,9 @@ function [] = CNV_SNP_hapmap_v4_highTop(main_dir,user,genomeUser,project,hapmap,
 addpath('../');
 
 workingDir      = [main_dir '/users/' user '/projects/' project '/'];
-fprintf('\n\n\t*===============================================================*\n');
-fprintf(    '\t| Generate CNV/SNP/LOH plot in script "CNV_SNP_hapmap_v4.m".    |\n');
-fprintf(    '\t*---------------------------------------------------------------*\n');
+fprintf('\n\n\t*===============================================================================*\n');
+fprintf(    '\t| Generate CNV/SNP/LOH highTop plot in script "CNV_SNP_hapmap_v4_highTop.m".    |\n');
+fprintf(    '\t*-------------------------------------------------------------------------------*\n');
 tic;
 
 % hide figures during construction.
@@ -35,11 +35,24 @@ if (Make_figure == true)
 		figVer = '';
 	end;
 
+
 	%% =========================================================================================
 	% Load workspace variables saved in "CNV_SNP_hapmap_v4.m"
 	%-------------------------------------------------------------------------------------------
 	projectDir  = [main_dir '/users/' user '/projects/' project '/'];
 	load([projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
+
+
+	%% ========================================================================
+	Centromere_format_default	= 3;
+	Yscale_nearest_even_ploidy	= true;
+	HistPlot			= false;
+	chromNum			= false;
+	show_annotations		= true;
+	Standard_display		= false;
+	Linear_display			= true;
+	Linear_displayBREAKS		= false;
+	Low_quality_ploidy_estimate	= true;
 
 
 	%% =========================================================================================
@@ -247,11 +260,7 @@ if (Make_figure == true)
 				%% standard : end draw colorbars.
 
 				%% standard : show centromere outlines/outline.
-				if (chrom_size(chrom) < 100000)
-					Centromere_format = 0;
-				else
-					Centromere_format = Centromere_format_default;
-				end;
+				Centromere_format = Centromere_format_default;
 				x1       = cen_start(chrom)/bases_per_bin;
 				x2       = cen_end(chrom)/bases_per_bin;
 				leftEnd  = 0;                                   % 0.5*(5000/bases_per_bin);
@@ -473,11 +482,7 @@ if (Make_figure == true)
 				% linear : end draw colorbars.
 
 				%% linear : show centromere/outline.
-				if (chrom_size(chrom) < 100000)
-					Centromere_format = 0;
-				else
-					Centromere_format = Centromere_format_default;
-				end;
+				Centromere_format = Centromere_format_default;
 				x1       = cen_start(chrom)/bases_per_bin;
 				x2       = cen_end(chrom)/bases_per_bin;
 				leftEnd  = 0;                                   % 0.5*(5000/bases_per_bin);

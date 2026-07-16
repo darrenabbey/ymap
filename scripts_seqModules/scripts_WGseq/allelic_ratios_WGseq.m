@@ -515,12 +515,7 @@ if (Make_figure == true)
 				end;
 
 				% standard : show centromere outlines and horizontal marks.
-				if (chrom_size(chrom) < 100000)
-					Centromere_format = 0;
-				else
-					Centromere_format = Centromere_format_default;
-				end;
-
+				Centromere_format = Centromere_format_default;
 				fprintf('\t|\t\t\tDraw centromere and horizontal lines.\n');
 				x1 = cen_start(chrom)/bases_per_bin;
 				x2 = cen_end(chrom)/bases_per_bin;
@@ -615,12 +610,7 @@ if (Make_figure == true)
 				%% linear : end show allelic ratio data.
 
 				%% linear : show centromere.
-				if (chrom_size(chrom) < 100000)
-					Centromere_format = 0;
-				else
-					Centromere_format = Centromere_format_default;
-				end;
-
+				Centromere_format = Centromere_format_default;
 				fprintf('\t|\t\t\tDraw centromere in linear figure.\n');
 				x1 = cen_start(chrom)/bases_per_bin;
 				x2 = cen_end(chrom)/bases_per_bin;

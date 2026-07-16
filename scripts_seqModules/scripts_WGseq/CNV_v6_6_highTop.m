@@ -252,12 +252,9 @@ if (Make_figure == true)
 				fprintf(['chrom' num2str(chrom) ': figposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\t']);
 				hold on;
 
+
 				%% show centromere.
-				if (chrom_size(chrom) < 100000)
-					Centromere_format = 0;
-				else
-					Centromere_format = Centromere_format_default;
-				end;
+				Centromere_format = Centromere_format_default;
 				x1       = cen_start(chrom)/bases_per_bin;
 				x2       = cen_end(chrom)/bases_per_bin;
 				leftEnd  = 0;
@@ -302,6 +299,7 @@ if (Make_figure == true)
 					set(f,'linestyle','none');
 				end;
 				% standard : end of : CNV plot section.
+
 
 				% standard : draw ploidy lines across plots for easier interpretation of CNV regions.
 				% Inside chrom bounds grey lines.
@@ -484,6 +482,8 @@ if (Make_figure == true)
 				% standard : end of HistPlot.
 			end;
 
+%%%%%%%%%%%%%%%% Linear figure draw section
+
 			%% Linear figure draw section.
 			if (Linear_display == true)
 				figure(Linear_fig);
@@ -493,11 +493,7 @@ if (Make_figure == true)
 				hold on;
 
 				% linear : show centromere.
-				if (chrom_size(chrom) < 100000)
-					Centromere_format = 1;
-				else
-					Centromere_format = Centromere_format_default;
-				end;
+				Centromere_format = Centromere_format_default;
 				x1       = cen_start(chrom)/bases_per_bin;
 				x2       = cen_end(chrom)/bases_per_bin;
 				leftEnd  = 0;                                   % 0.5*(5000/bases_per_bin);

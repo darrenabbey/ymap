@@ -505,11 +505,7 @@ for chrom_to_draw  = 1:length(chrom_order)
 			%% standard : end draw colorbars.
 
 			%% standard : show centromere outlines/outline.
-			if (chrom_size(chrom) < 100000)
-				Centromere_format = 0;
-			else
-				Centromere_format = Centromere_format_default;
-			end;
+			Centromere_format = Centromere_format_default;
 			x1       = cen_start(chrom)/bases_per_bin;
 			x2       = cen_end(chrom)/bases_per_bin;
 			leftEnd  = 0;                                   % 0.5*(5000/bases_per_bin);
@@ -744,11 +740,7 @@ for chrom_to_draw  = 1:length(chrom_order)
 			% linear : end draw colorbars.
 
 			%% linear : show centromere/outline.
-			if (chrom_size(chrom) < 100000)
-				Centromere_format = 0;
-			else
-				Centromere_format = Centromere_format_default;
-			end;
+			Centromere_format = Centromere_format_default;
 			x1       = cen_start(chrom)/bases_per_bin;
 			x2       = cen_end(chrom)/bases_per_bin;
 			leftEnd  = 0;                                   % 0.5*(5000/bases_per_bin);
