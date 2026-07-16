@@ -510,12 +510,12 @@ if (Make_figure == true)
 					% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
 					startY = maxY/2;
 					if (Low_quality_ploidy_estimate)
-						endY = min(maxY,CNVhistValue*ploidy*ploidyAdjust);
+						endY = CNVhistValue*ploidy*ploidyAdjust;
 						if isna(CNVhistValue)
 							endY = ploidy*ploidyAdjust;
 						end;
 					else
-						endY = min(maxY,CNVhistValue*ploidy);
+						endY = maxY,CNVhistValue*ploidy;
 						if isna(CNVhistValue)
 							endY = ploidy;
 						end;
@@ -560,17 +560,17 @@ if (Make_figure == true)
 					annotation_location = (annotation_start+annotation_end)./2;
 					for i = 1:length(annotation_location)
 						if (annotation_chrom(i) == chrom)
-							annotationloc = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+							annotationloc   = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 							annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 							annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 							if (strcmp(annotation_type{i},'dot') == 1)
 								plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
-								     'MarkerFaceColor',annotation_fillcolor{i}, ...
-								     'MarkerSize',     annotation_size(i));
+									'MarkerFaceColor',annotation_fillcolor{i}, ...
+									'MarkerSize',     annotation_size(i));
 							elseif (strcmp(annotation_type{i},'block') == 1)
 								fill([annotationStart annotationStart annotationEnd annotationEnd], ...
-								     [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
-								     annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
+									[-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
+									annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
 							end;
 						end;
 					end;
@@ -586,7 +586,7 @@ if (Make_figure == true)
 					ylim([-maxY/10*1.5,maxY_highTop]);
 				else
 					ylim([0,maxY_highTop]);
-				end
+				end;
 				%set(gca,'TickLength',[(Linear_TickSize*chrom_size(largestchrom)/chrom_size(chrom)) 0]); %ensures same tick size on all subfigs.
 				set(gca,'TickLength',[Linear_TickSize 0]);
 				set(gca,'YTick',[]);
@@ -606,7 +606,7 @@ if (Make_figure == true)
 					end;
 					for label_val = label_step : label_step : max_label
 						y_pos = maxY * (label_val / (ploidyBase * 2));
-						text(axisLabelPosition_vert, y_pos, num2str(label_val), 'HorizontalAlignment', 'right', 'Fontsize', stacked_axis_font_size / 2);
+						text(axisLabelPosition_vert, y_pos, num2str(label_val), 'HorizontalAlignment', 'right', 'Fontsize', linear_axis_font_size);
 					end;
 				end;
 				set(gca,'FontSize',linear_gca_font_size);
@@ -648,7 +648,7 @@ if (Make_figure == true)
 		% Save primary genome figure. multiplying height to match height change here
                 % commented out since fig.CNV-map.highTop.1 is not displayed to the user,
                 % leaving code for debug options
-                % set(Standard_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height*3]);
+                % set(Standard_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height*2.71962616822]);
 		fprintf('\n###\n### Saving stacked highTop figure.\n###\n');
 		set(   Standard_fig, 'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
 		saveas(Standard_fig, [projectDir 'fig.CNV-SNP-map.highTop.1.' figVer 'eps'], 'epsc');
@@ -663,7 +663,7 @@ if (Make_figure == true)
 	if (Linear_display)
 		% Save horizontal aligned genome figure, multiplying height since this is a taller figure than default.
 		fprintf('\n###\n### Saving linear highTop figure.\n###\n');
-		set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height*3]);
+		set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height*2.71962616822]);
 		saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.highTop.2.' figVer 'eps'], 'epsc');
 		saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.highTop.2.' figVer 'png'], 'png' );
 		delete(Linear_fig);

@@ -497,12 +497,12 @@ if (Make_figure == true)
 							annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
 							if (strcmp(annotation_type{i},'dot') == 1)
 								plot(annotationLoc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
-																	  'MarkerFaceColor',annotation_fillcolor{i}, ...
-																	  'MarkerSize',	 annotation_size(i));
+									'MarkerFaceColor',annotation_fillcolor{i}, ...
+									'MarkerSize',     annotation_size(i));
 							elseif (strcmp(annotation_type{i},'block') == 1)
 								fill([annotationStart annotationStart annotationEnd annotationEnd], ...
-									 [-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
-									 annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
+									[-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
+									annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
 							end;
 						end;
 					end;
@@ -578,7 +578,7 @@ if (Make_figure == true)
 		% Save primary genome figure. multiplying height to match height change here
 		% commented out since fig.CNV-map.highTop.1 is not displayed to the user,
 		% leaving code for debug options
-		% set(Standard_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height*3]);
+		% set(Standard_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height*2.71962616822]);
 		fprintf('\n###\n### Saving stacked highTop figure.\n###\n');
 		set(Standard_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
 		saveas(Standard_fig, [projectDir 'fig.CNV-map.highTop.1.' figVer 'eps'], 'epsc');
@@ -593,7 +593,7 @@ if (Make_figure == true)
 	if (Linear_display == true)
 		% Save horizontal aligned genome figure, multiplying height since this is a taller figure than default.
 		fprintf('\n###\n### Saving linear highTop figure.\n###\n');
-		set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height*3]);
+		set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height*2.71962616822]);
 		saveas(Linear_fig, [projectDir 'fig.CNV-map.highTop.2.' figVer 'eps'], 'epsc');
 		saveas(Linear_fig, [projectDir 'fig.CNV-map.highTop.2.' figVer 'png'], 'png');
 		delete(Linear_fig);
