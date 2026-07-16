@@ -194,6 +194,8 @@
 		//	False		Linear alleleic ratio (fire-plot) map figure.
 		//	True		Linear CNV/SNP/LOH map figure.
 		//	True		Full CNV/SNP/LOH map figure.
+		//	True		Linear high-top CNV/SNP/LOH figure.
+		//
 		//	False		Linear CNV/SNP/LOH map figure with alternate color scheme.
 		//	False		Full CNV/SNP/LOH map figure with alternate color scheme.
 		if (file_exists("users/".$user."/projects/".$project."/figure_options.txt")) {
@@ -211,21 +213,24 @@
 			if ($figureOptionSelections[ 8] == "True") {   $fig_E  = "checked";   } else {   $fig_E  = "";   }
 			if ($figureOptionSelections[ 9] == "True") {   $fig_F1 = "checked";   } else {   $fig_F1 = "";   }
 			if ($figureOptionSelections[10] == "True") {   $fig_F2 = "checked";   } else {   $fig_F2 = "";   }
-			if ($figureOptionSelections[11] == "True") {   $fig_G1 = "checked";   } else {   $fig_G1 = "";   }
-			if ($figureOptionSelections[12] == "True") {   $fig_G2 = "checked";   } else {   $fig_G2 = "";   }
+			if ($figureOptionSelections[11] == "True") {   $fig_G  = "checked";   } else {   $fig_G  = "";   }
+			if ($figureOptionSelections[12] == "True") {   $fig_H1 = "checked";   } else {   $fig_H1 = "";   }
+			if ($figureOptionSelections[13] == "True") {   $fig_H2 = "checked";   } else {   $fig_H2 = "";   }
 		} else {
-			$fig_A1 = "";
-			if ($bias4 == "") {	$fig_A2 = "disabled";	} else {	$fig_A2 = "";	}
-			$fig_B1 = "";
-			$fig_B2 = "";
-			$fig_C  = "";
-			$fig_D1 = "";
-			$fig_D2 = "";
-			$fig_E  = "";
-			$fig_F1 = "";
-			$fig_F2 = "";
-			$fig_G1 = "";
-			$fig_G2 = "";
+			// Default install of a dataset doesn't generate a 'figure_options.txt' file and runs all figures.
+			$fig_A1 = "checked";
+			if ($bias4 == "") {	$fig_A2 = "disabled";	} else {	$fig_A2 = "checked";	}
+			$fig_B1 = "checked";
+			$fig_B2 = "checked";
+			$fig_C  = "checked";
+			$fig_D1 = "checked";
+			$fig_D2 = "checked";
+			$fig_E  = "checked";
+			$fig_F1 = "checked";
+			$fig_F2 = "checked";
+			$fig_G  = "checked";
+			$fig_H1 = "checked";
+			$fig_H2 = "checked";
 		}
 	} else {
 		$genome				= "";

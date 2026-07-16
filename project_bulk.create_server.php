@@ -75,8 +75,9 @@
 				$fig_E           = sanitizeBoolean_POST("fig_E");
 				$fig_F1          = sanitizeBoolean_POST("fig_F1");
 				$fig_F2          = sanitizeBoolean_POST("fig_F2");
-				$fig_G1          = sanitizeBoolean_POST("fig_G1");
-				$fig_G2          = sanitizeBoolean_POST("fig_G2");
+				$fig_G           = sanitizeBoolean_POST("fig_G");
+				$fig_H1          = sanitizeBoolean_POST("fig_H1");
+				$fig_H2          = sanitizeBoolean_POST("fig_H2");
 			} else {
 				// php project_bulk.create_server.php darren3 2.0 2.0 1 0 false Candida_parapsilosis_CDC317_s01-m03-r62_CGD/ none true false true true true true true true true true true true true true
 				//print_r($argv);
@@ -102,8 +103,9 @@
 				$fig_E           = sanitizeBoolean_ARGV($argv,18);
 				$fig_F1          = sanitizeBoolean_ARGV($argv,19);
 				$fig_F2          = sanitizeBoolean_ARGV($argv,20);
-				$fig_G1          = sanitizeBoolean_ARGV($argv,21);
-				$fig_G2          = sanitizeBoolean_ARGV($argv,22);
+				$fig_G           = sanitizeBoolean_ARGV($argv,21);
+				$fig_H1          = sanitizeBoolean_ARGV($argv,22);
+				$fig_H2          = sanitizeBoolean_ARGV($argv,23);
 			}
 
 
@@ -175,8 +177,9 @@
 				if ($fig_E  != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
 				if ($fig_F1 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
 				if ($fig_F2 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
-				if ($fig_G1 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
-				if ($fig_G2 != 1) { fwrite($file,"False");   } else { fwrite($file,"True"); }
+				if ($fig_G  != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
+				if ($fig_H1 != 1) { fwrite($file,"False\n"); } else { fwrite($file,"True\n"); }
+				if ($fig_H2 != 1) { fwrite($file,"False");   } else { fwrite($file,"True"); }
 			fclose($file);
 			chmod($fileName,0774);
 
