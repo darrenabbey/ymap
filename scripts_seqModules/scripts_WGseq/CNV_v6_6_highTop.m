@@ -187,13 +187,11 @@ if (Make_figure == true)
 		Linear_genome_size	= sum(chrom_size);
 		Linear_TickSize		= -0.01;		% negative for outside, percentage of longest chrom figure.
 		maxY			= ploidyBase*2;		% maximum y-axis of chromosome cartoons.
-		maxY_highTop		= ploidyBase*2*3;	% maximum y-axis of region above chromosome cartoons.
 		Linear_left		= Linear_left_start;	% used to track left end of current chromosome.
 		axisLabelPosition_horiz	= 0.01125;
 	end;
-	axisLabelPosition_vert = 0.01125;
-
-	maxY_highTop		   = ploidyBase*2*3;
+	axisLabelPosition_vert		= 0.01125;
+	maxY_highTop			= ploidyBase*2*3;
 
 	%% Initialize copy numbers string.
 	stringchromCNVs = '';
@@ -354,7 +352,7 @@ if (Make_figure == true)
 				end;
 				for label_val = label_step : label_step : max_label
 					y_pos = maxY * (label_val / (ploidyBase * 2));
-					text(axisLabelPosition_vert, y_pos, num2str(label_val), 'HorizontalAlignment', 'right', 'Fontsize', stacked_axis_font_size / 2);
+					text(axisLabelPosition_vert, y_pos, num2str(label_val), 'HorizontalAlignment', 'right', 'Fontsize', stacked_axis_font_size/2);
 				end;
 
 				set(gca,'FontSize',gca_stacked_font_size/2);
@@ -399,87 +397,10 @@ if (Make_figure == true)
 				end;
 				% standard : end show annotation locations.
 
-				% standard : make CNV histograms to the right of the main chrom cartoons.
-				if (HistPlot == true)
-					width	 = 0.020;
-					height	= chrom_height(chrom)*1.7;
-					bottom	= chrom_posY(chrom);
-					histAll   = [];
-					histAll2  = [];
-					smoothed  = [];
-					smoothed2 = [];
-					fprintf(['HistPlot for chrom' num2str(chrom) '\n']);
-					for segment = 1:length(chromCopyNum{chrom})
-						subplot('Position',[(left+chrom_width(chrom)+0.005)+width*(segment-1) bottom-0.007 width height+0.007]);
-
-						% The CNV-histogram values were normalized to a median value of 1.
-						for i = round(1+length(CNVplot2{chrom})*chrom_breaks{chrom}(segment)):round(length(CNVplot2{chrom})*chrom_breaks{chrom}(segment+1))
-							if (Low_quality_ploidy_estimate == true)
-								histAll{segment}(i) = CNVplot2{chrom}(i)*ploidy*ploidyAdjust;
-							else
-								histAll{segment}(i) = CNVplot2{chrom}(i)*ploidy;
-							end;
-						end;
-
-						% make a histogram of CNV data, log-scale it to emphasize small peaks, then smooth it for display.
-						histogram_end                                    = maxY_highTop+4;
-						histAll{segment}(histAll{segment}<=0)            = [];
-						histAll{segment}(length(histAll{segment})+1)     = 0;			  % endpoints added to ensure histogram bounds.
-						histAll{segment}(length(histAll{segment})+1)     = histogram_end;  % these values represent copy numbers, [histogram_end] is way outside expected range.
-						histAll{segment}(histAll{segment}<0)             = [];			 % crop off any copy data outside the range.
-						histAll{segment}(histAll{segment}>histogram_end) = [];
-						data_hist                                        = hist(histAll{segment},histogram_end*20);
-
-						% log-scale the histogram.
-						data_hist                                        = log(data_hist+1);
-						data_hist                                        = log(data_hist+1);
-
-						% smooth the histogram.
-						smoothed_data_hist                               = smooth_gaussian(data_hist,2,10);
-
-						% make a smoothed version of just the endpoints used to ensure histogram bounds.
-						histAll2{segment}(1)                             = 0;
-						histAll2{segment}(2)                             = histogram_end;
-						endPoint_hist                                    = hist(histAll2{segment},histogram_end*20);
-						smoothed_endPoint_hist                           = smooth_gaussian(endPoint_hist,2,10);
-
-						% subtract the smoothed endpoints from the histogram to remove the influence of the added endpoints.
-						smoothed_data_hist                               = (smoothed_data_hist - smoothed_endPoint_hist);
-
-						% scale the smoothed histogram so the max=1.
-						smoothed_data_hist                               = smoothed_data_hist/max(smoothed_data_hist);
-
-						% draw lines to mark whole copy number changes.
-						plot([0;300], [0;       0      ],'color',[0.00 0.00 0.00]);
-						hold on;
-						for i = 1:15
-							plot([0;300],[20*i;  20*i],'color',[0.75 0.75 0.75]);
-						end;
-
-						% draw histogram.
-						area(smoothed_data_hist,1:300,'FaceColor',[0 0 0]);
-
-						% Draw red ticks between histplot segments
-						if (displayBREAKS) && (show_annotations)
-							if (segment > 1)
-								plot([0 0], [-maxY*20/10*1.5 0],  'Color',[1 0 0],'LineWidth',2);
-							end;
-						end;
-
-						% ensure subplot axes are consistent with main chrom plots.
-						hold off;
-						axis off;
-						set(gca,'YTick',[]);
-						set(gca,'XTick',[]);
-						xlim([0,1]);
-						if (show_annotations)
-							ylim([-maxY*20/10*1.5,maxY_highTop*20]);
-						else
-							ylim([0,maxY_highTop*20]);
-						end;
-					end;
-				end;
-				% standard : end of HistPlot.
+				%% =========================================================================================
+				% Draw histplots to right of main chromosome cartoons.
+				%-------------------------------------------------------------------------------------------
+				hist_plot_subfigures_highTop;
 			end;
 
 %%%%%%%%%%%%%%%% Linear figure draw section
@@ -617,7 +538,7 @@ if (Make_figure == true)
 					end;
 					for label_val = label_step : label_step : max_label
 						y_pos = maxY * (label_val / (ploidyBase * 2));
-						text(axisLabelPosition_vert, y_pos, num2str(label_val), 'HorizontalAlignment', 'right', 'Fontsize', stacked_axis_font_size / 2);
+						text(axisLabelPosition_vert, y_pos, num2str(label_val), 'HorizontalAlignment', 'right', 'Fontsize', linear_axis_font_size);
 					end;
 				end;
 				set(gca,'FontSize',linear_gca_font_size);
@@ -654,10 +575,11 @@ if (Make_figure == true)
 	end;
 
 	if (Standard_display == true)
-		% Save primary genome figure. multiplying height to match height change
-		% here
+		% Save primary genome figure. multiplying height to match height change here
 		% commented out since fig.CNV-map.highTop.1 is not displayed to the user,
 		% leaving code for debug options
+		% set(Standard_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height*3]);
+		fprintf('\n###\n### Saving stacked highTop figure.\n###\n');
 		set(Standard_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
 		saveas(Standard_fig, [projectDir 'fig.CNV-map.highTop.1.' figVer 'eps'], 'epsc');
 		saveas(Standard_fig, [projectDir 'fig.CNV-map.highTop.1.' figVer 'png'], 'png');
@@ -669,9 +591,9 @@ if (Make_figure == true)
 	end;
 
 	if (Linear_display == true)
-		% Save horizontal aligned genome figure, multiplying height since this is
-		% an higher figure
-		set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height*2]);
+		% Save horizontal aligned genome figure, multiplying height since this is a taller figure than default.
+		fprintf('\n###\n### Saving linear highTop figure.\n###\n');
+		set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height*3]);
 		saveas(Linear_fig, [projectDir 'fig.CNV-map.highTop.2.' figVer 'eps'], 'epsc');
 		saveas(Linear_fig, [projectDir 'fig.CNV-map.highTop.2.' figVer 'png'], 'png');
 		delete(Linear_fig);

@@ -169,11 +169,11 @@ if (Make_figure == true)
 		Linear_genome_size	= sum(chrom_size);
 		Linear_TickSize		= -0.01;		% negative for outside, percentage of longest chrom figure.
 		maxY			= ploidyBase*2;		% maximum y-axis of chromosome cartoons.
-		maxY_highTop		= ploidyBase*2*3;	% maximum y-axis of region above chromosome cartoons.
 		Linear_left		= Linear_left_start;	% used to track left end of current chromosome.
 		axisLabelPosition_horiz	= 0.01125;
 	end;
-	axisLabelPosition_vert = 0.01125;
+	axisLabelPosition_vert		= 0.01125;
+	maxY_highTop			= ploidyBase*2*3;
 
 
 	%% =========================================================================================
@@ -232,9 +232,9 @@ if (Make_figure == true)
 				left          = chrom_posX(chrom);
 				bottom        = chrom_posY(chrom);
 				width         = chrom_width(chrom);
-				height        = chrom_height(chrom);
-				subPlotHandle = subplot('Position',[left bottom width height]);
-				fprintf(['\tfigposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
+				height        = chrom_height(chrom)*1.7;
+				subplot('Position',[left bottom width height]);
+				fprintf(['chrom' num2str(chrom) ': figposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
 				hold on;
 
 				%% standard : draw colorbars.
@@ -324,6 +324,8 @@ if (Make_figure == true)
 
 				% standard : axes labels etc.
 				hold off;
+
+				% standard : limit x-axis to range of chromosome.
 				xlim([0,chrom_size(chrom)/bases_per_bin]);
 
 				% standard : modify y axis limits to show annotation locations if any are provided.
@@ -411,7 +413,7 @@ if (Make_figure == true)
 				%% =========================================================================================
 				% Draw histplots to right of main chromosome cartoons.
 				%-------------------------------------------------------------------------------------------
-				hist_plot_subfigures;
+				hist_plot_subfigures_highTop;
 
 				% standard : places chrom copy number to the right of the main chrom cartoons.
 				if (chromNum)
@@ -436,7 +438,7 @@ if (Make_figure == true)
 								chrom_string = [chrom_string ',' num2str(chromCopyNum{chrom}(i))];
 							end;
 						end;
-						text(0.1,0.5, chrom_string,'horizontalalignment', 'left', 'verticalalignment', 'middle', 'fontsize', stacked_copy_font_size);
+						text(0.1,0.5, chrom_string,'horizontalalignment', 'left', 'verticalalignment', 'middle', 'fontsize', linear_axis_font_size);
 					end;
 				end;
 				% standard : end of chrom copy number at right of the main chrom cartons.
@@ -578,12 +580,13 @@ if (Make_figure == true)
 
 				% linear : Final formatting stuff.
 				xlim([0,chrom_size(chrom)/bases_per_bin]);
-				% modify y axis limits to show annotation locations if any are provided.
+
+				%% linear : modify y axis limits to show annotation locations if any are provided.
 				if (length(annotations) > 0)
-					ylim([-maxY/10*1.5,maxY]);
+					ylim([-maxY/10*1.5,maxY_highTop]);
 				else
-					ylim([0,maxY]);
-				end;
+					ylim([0,maxY_highTop]);
+				end
 				%set(gca,'TickLength',[(Linear_TickSize*chrom_size(largestchrom)/chrom_size(chrom)) 0]); %ensures same tick size on all subfigs.
 				set(gca,'TickLength',[Linear_TickSize 0]);
 				set(gca,'YTick',[]);
@@ -622,10 +625,10 @@ if (Make_figure == true)
 					end;
 				else
 					if (chrom_figReversed(chrom) == 0)
-						text((chrom_size(chrom)/bases_per_bin)/2,maxY+0.25,chrom_label{chrom},'interpreter', 'none', 'fontsize', linear_chrom_font_size, 'rotation', rotate);
+						text((chrom_size(chrom)/bases_per_bin)/2,maxY_highTop+0.5,chrom_label{chrom},'Interpreter','none','FontSize',linear_chrom_font_size,'Rotation',rotate);
 					else
 						%% [chrom_label{chrom} '\fontsize{' int2str(round(linear_chrom_font_size/2)) '}' char(10) '(reversed)']
-						text((chrom_size(chrom)/bases_per_bin)/2,maxY+0.25,[chrom_label{chrom} char(10) '(reversed)'], 'interpreter', 'tex', 'fontsize', round(linear_chrom_font_size/2), 'rotation', rotate);
+						text((chrom_size(chrom)/bases_per_bin)/2,maxY_highTop+0.5,[chrom_label{chrom} char(10) '(reversed)'],'Interpreter','tex','FontSize',round(linear_chrom_font_size/2),'Rotation',rotate);
 					end;
 				end;
 			end;
@@ -642,7 +645,11 @@ if (Make_figure == true)
 	end;
 
 	if (Standard_display)
-		fprintf('\n###\n### Saving main figure.\n###\n');
+		% Save primary genome figure. multiplying height to match height change here
+                % commented out since fig.CNV-map.highTop.1 is not displayed to the user,
+                % leaving code for debug options
+                % set(Standard_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height*3]);
+		fprintf('\n###\n### Saving stacked highTop figure.\n###\n');
 		set(   Standard_fig, 'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
 		saveas(Standard_fig, [projectDir 'fig.CNV-SNP-map.highTop.1.' figVer 'eps'], 'epsc');
 		saveas(Standard_fig, [projectDir 'fig.CNV-SNP-map.highTop.1.' figVer 'png'], 'png' );
@@ -654,8 +661,9 @@ if (Make_figure == true)
 	end;
 
 	if (Linear_display)
-		fprintf('\n###\n### Saving linear figure.\n###\n');
-		set(   Linear_fig, 'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
+		% Save horizontal aligned genome figure, multiplying height since this is a taller figure than default.
+		fprintf('\n###\n### Saving linear highTop figure.\n###\n');
+		set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height*3]);
 		saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.highTop.2.' figVer 'eps'], 'epsc');
 		saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.highTop.2.' figVer 'png'], 'png' );
 		delete(Linear_fig);
