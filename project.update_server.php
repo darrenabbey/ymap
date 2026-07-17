@@ -353,7 +353,7 @@
 		} else {
 			$fileName = $project_dir."/genome.txt";
 			$file     = fopen($fileName, 'w');
-			fwrite($file, $genome_old."\n");
+			fwrite($file, $genome."\n");
 			if ($hapmap_old != "none" ) {
 				fwrite($file, $hapmap);
 			}
