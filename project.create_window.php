@@ -60,7 +60,7 @@
 					foreach($objects as $name => $object){
 						if (is_dir($name)) {
 							$name_ = str_replace($projectsDir,"",$name);
-							if (str_contains($name_,"..") or str_contains($name_,".")) {
+							if ($name_ === "." || $name_ === ".." || str_ends_with($name_,"/.") || str_ends_with($name_,"/..")) {
 							} else {
 								$projectFolders[] = $name_;
 							}

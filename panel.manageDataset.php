@@ -138,7 +138,7 @@
 		foreach($objects as $name => $object){
 			if (is_dir($name)) {
 				$name_ = str_replace($projectsDir,"",$name);
-				if (str_contains($name_,"..") or str_contains($name_,".")) {
+				if ($name_ === "." || $name_ === ".." || str_ends_with($name_,"/.") || str_ends_with($name_,"/..")) {
 				} else {
 					$projectFolders[] = $name_;
 				}
@@ -230,7 +230,7 @@
 			// add working bulk projects to user interface.
 			if (!str_contains($project,"/")) {
 				$key_real = array_search($project,$projectFolders);
-				printProjectInfo("5", $key_real, "000000", "CCCCCC", $user, $project,$key_offset,$prefix);
+				printProjectInfo("5", $key_real, "000000", "FFCCCC", $user, $project,$key_offset,$prefix);
 				$key_offset += 1;
 			}
 		}
@@ -238,7 +238,7 @@
 			// add working bulk projects to user interface.
 			if (!str_contains($project,"/")) {
 				$key_real = array_search($project,$projectFolders);
-				printProjectInfo("5", $key_real, "000000", "CCCCCC", $user, $project,$key_offset,$prefix);
+				printProjectInfo("5", $key_real, "000000", "FFCCCC", $user, $project,$key_offset,$prefix);
 				$key_offset += 1;
 			}
 		}
@@ -287,7 +287,7 @@
 				if (str_starts_with($project, $subdir . "/")) {
 					// add working bulk projects to user interface.
 					$key_real = array_search($project,$projectFolders);
-					printProjectInfo("5", $key_real, "000000", "CCCCCC", $user, $project,$key_offset,$prefix);
+					printProjectInfo("5", $key_real, "000000", "FFCCCC", $user, $project,$key_offset,$prefix);
 					$key_offset += 1;
 				}
 			}
@@ -295,7 +295,7 @@
 				if (str_starts_with($project, $subdir . "/")) {
 					// add working bulk projects to user interface.
 					$key_real = array_search($project,$projectFolders);
-					printProjectInfo("5", $key_real, "000000", "CCCCCC", $user, $project,$key_offset,$prefix);
+					printProjectInfo("5", $key_real, "000000", "FFCCCC", $user, $project,$key_offset,$prefix);
 					$key_offset += 1;
 				}
 			}
@@ -320,8 +320,6 @@
 				}
 			}
 		}
-
-
 
 		echo "\n";
 ?>
