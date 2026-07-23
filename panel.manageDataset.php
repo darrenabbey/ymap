@@ -226,22 +226,22 @@
 				$key_offset += 1;
 			}
 		}
-		foreach($projectFolders_bulk_working as $key_=>$project) {
-			// add working bulk projects to user interface.
-			if (!str_contains($project,"/")) {
-				$key_real = array_search($project,$projectFolders);
-				printProjectInfo("2", $key_real, "000000", "FFCCCC", $user, $project,$key_offset,$prefix);
-				$key_offset += 1;
-			}
-		}
-		foreach($projectFolders_bulk as $key_=>$project) {
-			// add working bulk projects to user interface.
-			if (!str_contains($project,"/")) {
-				$key_real = array_search($project,$projectFolders);
-				printProjectInfo("5", $key_real, "000000", "FFCCCC", $user, $project,$key_offset,$prefix);
-				$key_offset += 1;
-			}
-		}
+		//foreach($projectFolders_bulk_working as $key_=>$project) {
+		//	// add working bulk projects to user interface.
+		//	if (!str_contains($project,"/")) {
+		//		$key_real = array_search($project,$projectFolders);
+		//		printProjectInfo("2", $key_real, "000000", "FFCCCC", $user, $project,$key_offset,$prefix);
+		//		$key_offset += 1;
+		//	}
+		//}
+		//foreach($projectFolders_bulk as $key_=>$project) {
+		//	// add working bulk projects to user interface.
+		//	if (!str_contains($project,"/")) {
+		//		$key_real = array_search($project,$projectFolders);
+		//		printProjectInfo("5", $key_real, "000000", "FFCCCC", $user, $project,$key_offset,$prefix);
+		//		$key_offset += 1;
+		//	}
+		//}
 		foreach($projectFolders_working as $key_=>$project) {
 			// add other working projects to user interface.
 			if (!str_contains($project,"/")) {
