@@ -83,19 +83,19 @@
 
 		$prefix = "";
 		$displayed_entries = [];
-		//==========================================
-		// Add bulk projects being worked on to user interface.
-		$key_display = 0;
-		foreach($projectFolders_working as $key_=>$project) {
-			if (!str_contains($project,"/")) {
-				$key_real = array_search($project,$projectFolders);
-				addBulkProjectsBeingWorkedOnToUserInterface($key_real,$user,$project,$prefix,$key_display);
-				if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
-					$displayed_entries[] = $project;
-					$key_display += 1;
-				}
-			}
-		}
+	//	//==========================================
+	//	// Add bulk projects being worked on to user interface.
+	//	$key_display = 0;
+	//	foreach($projectFolders_working as $key_=>$project) {
+	//		if (!str_contains($project,"/")) {
+	//			$key_real = array_search($project,$projectFolders);
+	//			addBulkProjectsBeingWorkedOnToUserInterface($key_real,$user,$project,$prefix,$key_display);
+	//			if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+	//				$displayed_entries[] = $project;
+	//				$key_display += 1;
+	//			}
+	//		}
+	//	}
 
 		//==========================================
 		// Add projects not yet started to user interface.
@@ -108,18 +108,18 @@
 			}
 		}
 
-		//==========================================
-		// Add other projects being worked on to user interface.
-		foreach($projectFolders_working as $key_=>$project) {
-			if (!str_contains($project,"/")) {
-				$key_real = array_search($project,$projectFolders);
-				addOtherProjectsBeingWorkedOnToUserInterface($key_real,$user,$project,$prefix,$key_display);
-				if (!file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
-					$displayed_entries[] = $project;
-					$key_display += 1;
-				}
-			}
-		}
+	//	//==========================================
+	//	// Add other projects being worked on to user interface.
+	//	foreach($projectFolders_working as $key_=>$project) {
+	//		if (!str_contains($project,"/")) {
+	//			$key_real = array_search($project,$projectFolders);
+	//			addOtherProjectsBeingWorkedOnToUserInterface($key_real,$user,$project,$prefix,$key_display);
+	//			if (!file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+	//				$displayed_entries[] = $project;
+	//				$key_display += 1;
+	//			}
+	//		}
+	//	}
 
 		//==========================================
 		// Add completed projects to user interface.
@@ -136,17 +136,17 @@
 			echo "<input id='show_".$subdir."_User' type='checkbox' onclick=\"open_".$subdir."_UserProjects(); window.top.hide_combined_fig_menu();\"></font> <font size='2'><b>".$subdir."</b></font><br>\n";
 
 			$prefix = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-			//==========================================
-			// Add bulk projects being worked on to user interface.
-			foreach($projectFolders_working as $key_=>$project) {
-				if (str_starts_with($project, $subdir . "/")) {
-					$key_real = array_search($project,$projectFolders);
-					addBulkProjectsBeingWorkedOnToUserInterface($key_real,$user,$project,$prefix,$key_display);
-					if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
-						$key_display += 1;
-					}
-				}
-			}
+		//	//==========================================
+		//	// Add bulk projects being worked on to user interface.
+		//	foreach($projectFolders_working as $key_=>$project) {
+		//		if (str_starts_with($project, $subdir . "/")) {
+		//			$key_real = array_search($project,$projectFolders);
+		//			addBulkProjectsBeingWorkedOnToUserInterface($key_real,$user,$project,$prefix,$key_display);
+		//			if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+		//				$key_display += 1;
+		//			}
+		//		}
+		//	}
 
 			//==========================================
 			// Add projects not yet started to user interface.
@@ -158,17 +158,17 @@
 				}
 			}
 
-			//==========================================
-			// Add other projects being worked on to user interface.
-			foreach($projectFolders_working as $key_=>$project) {
-				if (str_starts_with($project, $subdir . "/")) {
-					$key_real = array_search($project,$projectFolders);
-					addOtherProjectsBeingWorkedOnToUserInterface($key_real,$user,$project,$prefix,$key_display);
-					if (!file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
-						$key_display += 1;
-					}
-				}
-			}
+		//	//==========================================
+		//	// Add other projects being worked on to user interface.
+		//	foreach($projectFolders_working as $key_=>$project) {
+		//		if (str_starts_with($project, $subdir . "/")) {
+		//			$key_real = array_search($project,$projectFolders);
+		//			addOtherProjectsBeingWorkedOnToUserInterface($key_real,$user,$project,$prefix,$key_display);
+		//			if (!file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+		//				$key_display += 1;
+		//			}
+		//		}
+		//	}
 
 			//==========================================
 			// Add completed projects to user interface.
@@ -393,11 +393,11 @@
 			fclose($handle);
 
 			$key = $key_;
-			if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+			//if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
 				echo $prefix."<span id='p_label_".$key."' style='color:#000000; background-color:#FFCCCC;'>\n\t\t";
-			} else {
-				echo $prefix."<span id='p_label_".$key."' style='color:#CC0000;'>\n\t\t";
-			}
+			//} else {
+			//	echo $prefix."<span id='p_label_".$key."' style='color:#CC0000;'>\n\t\t";
+			//}
 			echo "<font size='2'>".($key_display+1).".";
 			echo "<input id='show_p".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','');\" style=\"visibility:hidden;\">";
 			if ($project_ == $projectNameString) {
@@ -422,7 +422,7 @@
 		$key += 1;
 	}
 	function addOtherProjectsBeingWorkedOnToUserInterface($key_,$user,$project,$prefix,$key_display) {
-		if (!file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+		//if (!file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
 			// Load colors for project.
 			[$colorString1, $colorString2] = getColors($user,$project);
 
@@ -494,7 +494,7 @@
 				echo "<div id='frameContainer.p2_".$key."'></div>";
 			}
 			$key += 1;
-		}
+		//}
 	}
 	function addCompletedProjectsToUserInterface($key_,$user,$project,$prefix,$key_display) {
 		// Load colors for project.
@@ -568,11 +568,11 @@
 			fclose($handle);
 
 			$key = $key_;
-			if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+			//if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
 				echo $prefix."<span id='project_label_".$key."' style='color:#000000; background-color:#CCFFCC'>\n\t\t";
-			} else {
-				echo $prefix."<span id='project_label_".$key."' style='color:#00CC00;'>\n\t\t";
-			}
+			//} else {
+			//	echo $prefix."<span id='project_label_".$key."' style='color:#00CC00;'>\n\t\t";
+			//}
 			echo "<font size='2'>".($key_display+1).".";
 			echo "<input id='show_p".$key."' type='checkbox' onclick=\"parent.openProject('$user','$project','$key','$projectNameString','$colorString1','$colorString2','$parentString','$figVer','$warning_string'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
 			if ($project_ == $projectNameString) {
