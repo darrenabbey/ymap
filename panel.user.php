@@ -95,7 +95,7 @@ if (isset($_SESSION['logged_on'])) {
 2026-07-16<ul>
 	<li>CNV/SNP/LOH "high top" linear figure format added.</li>
 	<li>"high top" linar figures scale adjusted to match other linear figures better.</li>
-
+</ul>
 
 2026-07-06<ul>
 	<li><b>Lodderomyces elongisporus NRLL YB-4239 (GCA_030384665.1) reference genome installed.</b></li>
