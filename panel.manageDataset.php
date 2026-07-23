@@ -163,12 +163,12 @@
 		foreach($projectFolders as $key=>$project) {
 			if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
 				array_push($projectFolders_complete,$project);
-			} else if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
-				if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
-					array_push($projectFolders_bulk_working, $project);
-				} else {
-					array_push($projectFolders_bulk, $project);
-				}
+			//} else if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+			//	if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
+			//		array_push($projectFolders_bulk_working, $project);
+			//	} else {
+			//		array_push($projectFolders_bulk, $project);
+			//	}
 			} else if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
 				array_push($projectFolders_working, $project);
 			} else if (file_exists("users/".$user."/projects/".$project."/name.txt")) {
@@ -311,11 +311,11 @@
 				if (str_starts_with($project, $subdir . "/")) {
 					// add complete bulk/other projects to user interface.
 					$key_real = array_search($project,$projectFolders);
-					if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+					//if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
 						printProjectInfo("1", $key_real, "000000", "CCFFCC", $user, $project,$key_offset,$prefix);
-					} else {
-						printProjectInfo("1", $key_real, "00CC00", "FFFFFF", $user, $project,$key_offset,$prefix);
-					}
+					//} else {
+					//	printProjectInfo("1", $key_real, "00CC00", "FFFFFF", $user, $project,$key_offset,$prefix);
+					//}
 					$key_offset  += 1	;
 				}
 			}
