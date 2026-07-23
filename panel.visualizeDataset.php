@@ -83,19 +83,19 @@
 
 		$prefix = "";
 		$displayed_entries = [];
-	//	//==========================================
-	//	// Add bulk projects being worked on to user interface.
-	//	$key_display = 0;
-	//	foreach($projectFolders_working as $key_=>$project) {
-	//		if (!str_contains($project,"/")) {
-	//			$key_real = array_search($project,$projectFolders);
-	//			addBulkProjectsBeingWorkedOnToUserInterface($key_real,$user,$project,$prefix,$key_display);
-	//			if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
-	//				$displayed_entries[] = $project;
-	//				$key_display += 1;
-	//			}
-	//		}
-	//	}
+		//==========================================
+		// Add bulk projects being worked on to user interface.
+		$key_display = 0;
+		foreach($projectFolders_working as $key_=>$project) {
+			if (!str_contains($project,"/")) {
+				$key_real = array_search($project,$projectFolders);
+				addBulkProjectsBeingWorkedOnToUserInterface($key_real,$user,$project,$prefix,$key_display);
+				if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+					$displayed_entries[] = $project;
+					$key_display += 1;
+				}
+			}
+		}
 
 		//==========================================
 		// Add projects not yet started to user interface.
@@ -136,17 +136,17 @@
 			echo "<input id='show_".$subdir."_User' type='checkbox' onclick=\"open_".$subdir."_UserProjects(); window.top.hide_combined_fig_menu();\"></font> <font size='2'><b>".$subdir."</b></font><br>\n";
 
 			$prefix = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-		//	//==========================================
-		//	// Add bulk projects being worked on to user interface.
-		//	foreach($projectFolders_working as $key_=>$project) {
-		//		if (str_starts_with($project, $subdir . "/")) {
-		//			$key_real = array_search($project,$projectFolders);
-		//			addBulkProjectsBeingWorkedOnToUserInterface($key_real,$user,$project,$prefix,$key_display);
-		//			if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
-		//				$key_display += 1;
-		//			}
-		//		}
-		//	}
+			//==========================================
+			// Add bulk projects being worked on to user interface.
+			foreach($projectFolders_working as $key_=>$project) {
+				if (str_starts_with($project, $subdir . "/")) {
+					$key_real = array_search($project,$projectFolders);
+					addBulkProjectsBeingWorkedOnToUserInterface($key_real,$user,$project,$prefix,$key_display);
+					if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+						$key_display += 1;
+					}
+				}
+			}
 
 			//==========================================
 			// Add projects not yet started to user interface.
