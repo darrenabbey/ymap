@@ -230,7 +230,7 @@
 			// add working bulk projects to user interface.
 			if (!str_contains($project,"/")) {
 				$key_real = array_search($project,$projectFolders);
-				printProjectInfo("5 ", $key_real, "000000", "FFCCCC", $user, $project,$key_offset,$prefix);
+				printProjectInfo("5 ", $key_real, "000000", "FFFFCC", $user, $project,$key_offset,$prefix);
 				$key_offset += 1;
 			}
 		}
