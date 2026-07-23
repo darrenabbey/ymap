@@ -163,12 +163,12 @@
 		foreach($projectFolders as $key=>$project) {
 			if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
 				array_push($projectFolders_complete,$project);
-			} else if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
-				if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
-					array_push($projectFolders_bulk_working, $project);
-				} else {
-					array_push($projectFolders_bulk, $project);
-				}
+			//} else if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+			//	if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
+			//		array_push($projectFolders_bulk_working, $project);
+			//	} else {
+			//		array_push($projectFolders_bulk, $project);
+			//	}
 			} else if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
 				array_push($projectFolders_working, $project);
 			} else if (file_exists("users/".$user."/projects/".$project."/name.txt")) {
@@ -214,8 +214,14 @@
 		// 5: project in bulk-processing-queue.
 		$key_offset = 0;
 		$prefix="";
+		// UI display order:
+		//	pending upload
+		//	working
+		//	in queue
+		//	complete
+
+		// Add initiated (pending upload) projects to UI.
 		foreach($projectFolders_initiated as $key_=>$project) {
-			// add initiated bulk/other projects to user interface.
 			if (!str_contains($project,"/")) {
 				$key_real = array_search($project,$projectFolders);
 				if (!$exceededSpace) {
@@ -226,8 +232,9 @@
 				$key_offset += 1;
 			}
 		}
+
+		// Add working projects to UI.
 		foreach($projectFolders_bulk_working as $key_=>$project) {
-			// add working bulk projects to user interface.
 			if (!str_contains($project,"/")) {
 				$key_real = array_search($project,$projectFolders);
 				printProjectInfo("5", $key_real, "000000", "FFFFCC", $user, $project,$key_offset,$prefix);
@@ -250,6 +257,8 @@
 				$key_offset += 1;
 			}
 		}
+
+		// Add complete projects to UI.
 		foreach($projectFolders_complete as $key_=>$project) {
 			// add complete bulk/other projects to user interface.
 			if (!str_contains($project,"/")) {
