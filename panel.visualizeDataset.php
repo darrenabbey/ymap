@@ -108,18 +108,18 @@
 			}
 		}
 
-	//	//==========================================
-	//	// Add other projects being worked on to user interface.
-	//	foreach($projectFolders_working as $key_=>$project) {
+		//==========================================
+		// Add other projects being worked on to user interface.
+		foreach($projectFolders_working as $key_=>$project) {
 	//		if (!str_contains($project,"/")) {
-	//			$key_real = array_search($project,$projectFolders);
-	//			addOtherProjectsBeingWorkedOnToUserInterface($key_real,$user,$project,$prefix,$key_display);
-	//			if (!file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
-	//				$displayed_entries[] = $project;
-	//				$key_display += 1;
-	//			}
+				$key_real = array_search($project,$projectFolders);
+				addOtherProjectsBeingWorkedOnToUserInterface($key_real,$user,$project,$prefix,$key_display);
+				if (!file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+					$displayed_entries[] = $project;
+					$key_display += 1;
+				}
 	//		}
-	//	}
+		}
 
 		//==========================================
 		// Add completed projects to user interface.
