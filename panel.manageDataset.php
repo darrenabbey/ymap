@@ -236,10 +236,10 @@
 		}
 
 		// Add working projects to UI.
-		foreach($projectFolders_bulk_working as $key_=>$project) {
+		foreach($projectFolders_working as $key_=>$project) {
 			if (!str_contains($project,"/")) {
 				$key_real = array_search($project,$projectFolders);
-				printProjectInfo("5", $key_real, "000000", "FFFFCC", $user, $project,$key_offset,$prefix);
+				printProjectInfo("2", $key_real, "000000", "FFFFCC", $user, $project,$key_offset,$prefix);
 				$key_offset += 1;
 			}
 		}
@@ -251,14 +251,14 @@
 				$key_offset += 1;
 			}
 		}
-		foreach($projectFolders_working as $key_=>$project) {
-			// add other working projects to user interface.
-			if (!str_contains($project,"/")) {
-				$key_real = array_search($project,$projectFolders);
-				printProjectInfo("2", $key_real, "000000", "FFFFCC", $user, $project,$key_offset,$prefix);
-				$key_offset += 1;
-			}
-		}
+	//	foreach($projectFolders_working as $key_=>$project) {
+	//		// add other working projects to user interface.
+	//		if (!str_contains($project,"/")) {
+	//			$key_real = array_search($project,$projectFolders);
+	//			printProjectInfo("2", $key_real, "000000", "FFFFCC", $user, $project,$key_offset,$prefix);
+	//			$key_offset += 1;
+	//		}
+	//	}
 
 		// Add complete projects to UI.
 		foreach($projectFolders_complete as $key_=>$project) {
