@@ -35,7 +35,7 @@
 		<li><?php
 			// Show queue status.
 			require 'queue_status.php';
-                	$queue_count = (int)$queue_status_init + (int)$queue_status_start;
+			$queue_count = (int)$queue_status_init + (int)$queue_status_start;
 			if ($queue_count > 0) {
 				if ($MAX_QUEUE_PARALLEL > 1) {
 					echo "<b>There are currently ".$queue_count." datasets in the queue, which is running up to ".$MAX_QUEUE_PARALLEL." datasets at a time.</b> Each takes ~".$QUEUE_TIME_ESTIMATE." minutes to complete. Data uploaded now will start processing in ~".number_format(($queue_count*$QUEUE_TIME_ESTIMATE/60/$MAX_QUEUE_PARALLEL),1)." hours.";
@@ -163,12 +163,12 @@
 		foreach($projectFolders as $key=>$project) {
 			if (file_exists("users/".$user."/projects/".$project."/complete.txt")) {
 				array_push($projectFolders_complete,$project);
-			//} else if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
-			//	if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
-			//		array_push($projectFolders_bulk_working, $project);
-			//	} else {
-			//		array_push($projectFolders_bulk, $project);
-			//	}
+			} else if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+				if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
+					array_push($projectFolders_bulk_working, $project);
+				} else {
+					array_push($projectFolders_bulk, $project);
+				}
 			} else if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
 				array_push($projectFolders_working, $project);
 			} else if (file_exists("users/".$user."/projects/".$project."/name.txt")) {
@@ -226,22 +226,22 @@
 				$key_offset += 1;
 			}
 		}
-		//foreach($projectFolders_bulk_working as $key_=>$project) {
-		//	// add working bulk projects to user interface.
-		//	if (!str_contains($project,"/")) {
-		//		$key_real = array_search($project,$projectFolders);
-		//		printProjectInfo("2", $key_real, "000000", "FFCCCC", $user, $project,$key_offset,$prefix);
-		//		$key_offset += 1;
-		//	}
-		//}
-		//foreach($projectFolders_bulk as $key_=>$project) {
-		//	// add working bulk projects to user interface.
-		//	if (!str_contains($project,"/")) {
-		//		$key_real = array_search($project,$projectFolders);
-		//		printProjectInfo("5", $key_real, "000000", "FFCCCC", $user, $project,$key_offset,$prefix);
-		//		$key_offset += 1;
-		//	}
-		//}
+		foreach($projectFolders_bulk_working as $key_=>$project) {
+			// add working bulk projects to user interface.
+			if (!str_contains($project,"/")) {
+				$key_real = array_search($project,$projectFolders);
+				printProjectInfo("5 ", $key_real, "000000", "FFCCCC", $user, $project,$key_offset,$prefix);
+				$key_offset += 1;
+			}
+		}
+		foreach($projectFolders_bulk as $key_=>$project) {
+			// add working bulk projects to user interface.
+			if (!str_contains($project,"/")) {
+				$key_real = array_search($project,$projectFolders);
+				printProjectInfo("5", $key_real, "000000", "FFCCCC", $user, $project,$key_offset,$prefix);
+				$key_offset += 1;
+			}
+		}
 		foreach($projectFolders_working as $key_=>$project) {
 			// add other working projects to user interface.
 			if (!str_contains($project,"/")) {
@@ -283,22 +283,22 @@
 					$key_offset += 1;
 				}
 			}
-		//	foreach($projectFolders_bulk_working as $key_=>$project) {
-		//		if (str_starts_with($project, $subdir . "/")) {
-		//			// add working bulk projects to user interface.
-		//			$key_real = array_search($project,$projectFolders);
-		//			printProjectInfo("5", $key_real, "000000", "FFCCCC", $user, $project,$key_offset,$prefix);
-		//			$key_offset += 1;
-		//		}
-		//	}
-		//	foreach($projectFolders_bulk as $key_=>$project) {
-		//		if (str_starts_with($project, $subdir . "/")) {
-		//			// add working bulk projects to user interface.
-		//			$key_real = array_search($project,$projectFolders);
-		//			printProjectInfo("5", $key_real, "000000", "FFCCCC", $user, $project,$key_offset,$prefix);
-		//			$key_offset += 1;
-		//		}
-		//	}
+			foreach($projectFolders_bulk_working as $key_=>$project) {
+				if (str_starts_with($project, $subdir . "/")) {
+					// add working bulk projects to user interface.
+					$key_real = array_search($project,$projectFolders);
+					printProjectInfo("5", $key_real, "000000", "FFCCCC", $user, $project,$key_offset,$prefix);
+					$key_offset += 1;
+				}
+			}
+			foreach($projectFolders_bulk as $key_=>$project) {
+				if (str_starts_with($project, $subdir . "/")) {
+					// add working bulk projects to user interface.
+					$key_real = array_search($project,$projectFolders);
+					printProjectInfo("5", $key_real, "000000", "FFCCCC", $user, $project,$key_offset,$prefix);
+					$key_offset += 1;
+				}
+			}
 			foreach($projectFolders_working as $key_=>$project) {
 				if (str_starts_with($project, $subdir . "/")) {
 					// add other working projects to user interface.
@@ -526,7 +526,7 @@ if (isset($_SESSION['logged_on'])) {
 			echo "p_js.dataFormat        = 'FASTA';\n";
 		}
 	}
-	foreach($projectFolders_bulk_working as $key_=>$project) {      // frameContainer.p5_[$key] : in bulk-processing queue.
+	foreach($projectFolders_bulk_working as $key_=>$project) {
 		$key_real = array_search($project,$projectFolders);
 		$project  = $projectFolders[$key_real];
 		echo "\n// javascript for project #".$key_real.", '".$project."'\n";
@@ -547,7 +547,7 @@ if (isset($_SESSION['logged_on'])) {
 		echo "p_js.project        = \"".$project."\";\n";
 		echo "p_js.key            = \"p_".$key_real."\";\n";
 	}
-	foreach($projectFolders_bulk as $key_=>$project) {      // frameContainer.p5_[$key] : in bulk-processing queue.
+	foreach($projectFolders_bulk as $key_=>$project) {
 		$key_real = array_search($project,$projectFolders);
 		$project  = $projectFolders[$key_real];
 		echo "\n// javascript for project #".$key_real.", '".$project."'\n";
@@ -568,7 +568,7 @@ if (isset($_SESSION['logged_on'])) {
 		echo "p_js.project        = \"".$project."\";\n";
 		echo "p_js.key            = \"p_".$key_real."\";\n";
 	}
-	foreach($projectFolders_working as $key_=>$project) {   // frameContainer.p2_[$key] : working.
+	foreach($projectFolders_working as $key_=>$project) {
 		$key_real = array_search($project,$projectFolders);
 		$project  = $projectFolders[$key_real];
 		echo "\n// javascript for project #".$key_real.", '".$project."'\n";
