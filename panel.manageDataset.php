@@ -171,6 +171,8 @@
 			//	}
 			} else if (file_exists("users/".$user."/projects/".$project."/working.txt")) {
 				array_push($projectFolders_working, $project);
+			} else if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
+				array_push($projectFolders_bulk, $project);
 			} else if (file_exists("users/".$user."/projects/".$project."/name.txt")) {
 				array_push($projectFolders_initiated,$project);
 			} else {
