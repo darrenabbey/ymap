@@ -344,6 +344,7 @@
 	}
 
 	function printProjectInfo($frameContainerIx, $key, $labelRgbColor, $labelRgbBackgroundColor, $user, $project,$key_display,$prefix) {
+		$frameContainerIx = trim($frameContainerIx);
 		// $frameContainerIx values:
 		//	1: project complete.
 		//	2: project working.
