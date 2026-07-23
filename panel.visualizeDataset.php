@@ -329,7 +329,7 @@
 			fclose($handle);
 
 			$key = $key_;
-			echo $prefix."<span id='project_label_".$key."' style='color:#".$labelRgbColor."; background-color:#".$labelRgbBackgroundColor."'>\n\t\t";
+			echo $prefix."<span id='p_label_".$key."' style='color:#".$labelRgbColor."; background-color:#".$labelRgbBackgroundColor."'>\n\t\t";
 			echo "<font size='2'>".($key_display+1).".";
 			if ($frameContainerIx == "2") {
 				echo "<input id='show_p".$key."' type='checkbox' onclick=\"parent.openProject('$user','$project','$key','$projectNameString','$colorString1','$colorString2','$parentString','$figVer','$warning_string'); window.top.hide_combined_fig_menu();\" data-file-list='$json_file_list' >";
