@@ -471,7 +471,7 @@
 				$parentString         = trim(fgets($handle));
 				fclose($handle);
 				$key = $key_;
-				echo $prefix."<span id='p_label_".$key."' style='color:#BB9900;'>\n\t\t";
+				echo $prefix."<span id='p_label_".$key."' style='color:#000000; background-color:#FFFFCC;'>\n\t\t";
 				echo "<font size='2'>".($key_display+1).".";
 				echo "<input id='show_p".$key."' type='checkbox' onclick=\"parent.openProject('".$user."','".$project."','".$key."','".$projectNameString."','".$colorString1."','".$colorString2."','".$parentString."','".$figVer."','');\" style=\"visibility:hidden;\">";
 				if ($project_ == $projectNameString) {
