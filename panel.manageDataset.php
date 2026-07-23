@@ -255,9 +255,9 @@
 			if (!str_contains($project,"/")) {
 				$key_real = array_search($project,$projectFolders);
 				//if (file_exists("users/".$user."/projects/".$project."/bulk.txt")) {
-				//	printProjectInfo("1", $key_real, "000000", "CCFFCC", $user, $project,$key_offset,$prefix);
+					printProjectInfo("1", $key_real, "000000", "CCFFCC", $user, $project,$key_offset,$prefix);
 				//} else {
-					printProjectInfo("1", $key_real, "00CC00", "FFFFFF", $user, $project,$key_offset,$prefix);
+				//	printProjectInfo("1", $key_real, "00CC00", "FFFFFF", $user, $project,$key_offset,$prefix);
 				//}
 				$key_offset += 1;
 			}
