@@ -243,8 +243,9 @@
 				$key_offset += 1;
 			}
 		}
+
+		// Add in queue projects to UI.
 		foreach($projectFolders_bulk as $key_=>$project) {
-			// add working bulk projects to user interface.
 			if (!str_contains($project,"/")) {
 				$key_real = array_search($project,$projectFolders);
 				printProjectInfo("5", $key_real, "000000", "FFCCCC", $user, $project,$key_offset,$prefix);
@@ -530,7 +531,7 @@ if (isset($_SESSION['logged_on'])) {
 			echo "p_js.dataFormat        = 'FASTA';\n";
 		}
 	}
-	foreach($projectFolders_bulk_working as $key_=>$project) {
+	foreach($projectFolders_working as $key_=>$project) {
 		$key_real = array_search($project,$projectFolders);
 		$project  = $projectFolders[$key_real];
 		echo "\n// javascript for project #".$key_real.", '".$project."'\n";
@@ -572,19 +573,19 @@ if (isset($_SESSION['logged_on'])) {
 		echo "p_js.project        = \"".$project."\";\n";
 		echo "p_js.key            = \"p_".$key_real."\";\n";
 	}
-	foreach($projectFolders_working as $key_=>$project) {
-		$key_real = array_search($project,$projectFolders);
-		$project  = $projectFolders[$key_real];
-		echo "\n// javascript for project #".$key_real.", '".$project."'\n";
-		echo "var el_p2           = document.getElementById('frameContainer.p2_".$key_real."');\n";
-		echo "el_p2.innerHTML     = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<iframe id=\"p_".$key_real."\" name=\"p_".$key_real."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
-		echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"90%\" frameborder=\"0\"></iframe>';\n";
-		echo "var p_iframe        = document.getElementById('p_".$key_real."');\n";
-		echo "var p_js            = p_iframe.contentWindow;\n";
-		echo "p_js.user           = \"".$user."\";\n";
-		echo "p_js.project        = \"".$project."\";\n";
-		echo "p_js.key            = \"p_".$key_real."\";\n";
-	}
+//	foreach($projectFolders_working as $key_=>$project) {
+//		$key_real = array_search($project,$projectFolders);
+//		$project  = $projectFolders[$key_real];
+//		echo "\n// javascript for project #".$key_real.", '".$project."'\n";
+//		echo "var el_p2           = document.getElementById('frameContainer.p2_".$key_real."');\n";
+//		echo "el_p2.innerHTML     = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<iframe id=\"p_".$key_real."\" name=\"p_".$key_real."\" class=\"upload\" style=\"height:38px; border:0px;\" ";
+//		echo     "src=\"project.working.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"90%\" frameborder=\"0\"></iframe>';\n";
+//		echo "var p_iframe        = document.getElementById('p_".$key_real."');\n";
+//		echo "var p_js            = p_iframe.contentWindow;\n";
+//		echo "p_js.user           = \"".$user."\";\n";
+//		echo "p_js.project        = \"".$project."\";\n";
+//		echo "p_js.key            = \"p_".$key_real."\";\n";
+//	}
 }
 ?>
 </script>
