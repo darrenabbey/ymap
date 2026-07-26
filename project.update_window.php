@@ -544,7 +544,7 @@
 				const singleOption = parentEL.options[0];
 				if (!singleOption) return;
 
-				// 1. Compile the lookup table from PHP
+				// Compile the lookup table from PHP.
 				const groupLookup = <?php
 					$lookup = [];
 					foreach ($projectFolders_subdir as $key => $groupName) {
@@ -553,7 +553,7 @@
 					echo json_encode($lookup);
 				?>;
 
-				// 2. Extract the ORIGINAL project prefix on the server side at load time
+				// Extract the ORIGINAL project prefix on the server side at load time.
 				const originalProjectPrefix = "<?php
 					$origProject = trim($project);
 					$origPrefix = "";
@@ -564,18 +564,18 @@
 					echo $origPrefix;
 				?>";
 
-				// 3. Extract the pristine, un-prefixed parent strain name on the server side
+				// Extract the pristine, un-prefixed parent strain name on the server side.
 				const staticStrainName = "<?php
 					$baseParentText = trim($parent);
 					if (str_contains($baseParentText, '/')) {
 						$parts = explode('/', $baseParentText);
-						// Extracts everything AFTER the first slash to preserve the whole strain name
+						// Extracts everything AFTER the first slash to preserve the whole strain name.
 						$baseParentText = implode('/', array_slice($parts, 1));
 					}
 					echo addslashes($baseParentText);
 				?>";
 
-				// 4. Extract the INITIAL parent prefix exactly as it arrived from the server
+				// Extract the INITIAL parent prefix exactly as it arrived from the server.
 				const initialParentPrefix = "<?php
 					$baseParentText = trim($parent);
 					$initParentPrefix = "";
@@ -587,30 +587,25 @@
 				?>";
 
 
-				// 5. Extract the CURRENT prefix assigned to the parent element right now
+				// Extract the CURRENT prefix assigned to the parent element right now.
 				let currentParentPrefix = "";
 				if (singleOption.textContent.includes('/')) {
 					const parentParts = singleOption.textContent.split('/');
 					currentParentPrefix = parentParts[0];
 				}
 
-				// 6. Determine what the target prefix string SHOULD be based on current dropdown selection
+				// Determine what the target prefix string SHOULD be based on current dropdown selection.
 				let expectedPrefix = "";
 				if (groupKeyEL.value !== "0" && groupKeyEL.value !== "") {
 					expectedPrefix = groupLookup[groupKeyEL.value] || groupKeyEL.value;
 				}
 
-				// FIXED CRITICAL GUARD:
-				// Only enforce the lockdown if the parent element is STILL using its original loaded state.
-				// If the current parent prefix matches its original server value, we verify it matches the project baseline.
-				// If the user already changed it, we allow infinite updates across your lookup array.
 				if (currentParentPrefix === initialParentPrefix && initialParentPrefix !== originalProjectPrefix) {
 					// If initialParentPrefix !== originalProjectPrefix, the original parent was a different dataset than self.
 					return; // Aborts immediately if the original loaded states were disjointed
 				}
 
-
-				// 7. Rebuild cleanly using the immutable server-compiled staticStrainName
+				// Rebuild cleanly using the immutable server-compiled staticStrainName.
 				let parent_new;
 				let display_text;
 				if ((groupKeyEL.value === "0") || (groupKeyEL.value === "")){

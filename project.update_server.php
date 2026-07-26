@@ -33,7 +33,7 @@
 			header('Location: .');
 		}
 		$name            = whitelistHTML_POST("name");
-		$groupKey        = sanitizeIntChar_POST("groupKey");
+		$groupKey        = sanitizeInt_POST("groupKey");
 		$ploidy          = sanitizeFloat_POST("ploidy");
 		$ploidyBase      = sanitizeFloat_POST("ploidyBase");
 		$showAnnotations = sanitizeIntChar_POST("showAnnotations");
@@ -276,10 +276,11 @@
 			$source = "users/".$user."/projects/".$project;
 			$destination = "users/".$user."/projects/".$group."/".$projectTrimmed;
 
+			// Move project location here.
 			if (rename($source, $destination)) {
 				fwrite($logOutput, "\tProject moved to another group.\n");
 			} else {
-				fwrite($logOutput, "\t.Project was not moved to another group.\n");
+				fwrite($logOutput, "\tProject was not moved to another group.\n");
 			}
 			$project     = $group."/".$projectTrimmed;
 			$project_dir = "users/".$user."/projects/".$project;
