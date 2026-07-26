@@ -147,7 +147,7 @@
 
 			// Add projects in queue to user interface.
 			foreach($projectFolders_queue as $key_=>$project) {
-				if (str_contains($project,"/")) {
+				if (str_starts_with($project, $subdir . "/")) {
 					$key_real = array_search($project,$projectFolders);
 					printProjectInfo("1", $key_real, "000000", "FFCCCC", $user, $project,$key_offset,$prefix);
 					$key_offset += 1;
