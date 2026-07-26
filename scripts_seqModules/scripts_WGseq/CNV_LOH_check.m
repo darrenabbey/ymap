@@ -333,7 +333,7 @@ while (chromCopyNum_changed == true)
 				if (dataLine(1) ~= '#')
 					% process the loaded line into data channels.
 					lineVariables               = textscan(dataLine, '%f %f %f %s %s %s %s %s %s');
-					chrom_num                     = lineVariables{1};
+					chrom_num                   = lineVariables{1};
 					fragment_start              = lineVariables{2};
 					fragment_end                = lineVariables{3};
 					phased_ratio_data_string    = lineVariables{4}{1};

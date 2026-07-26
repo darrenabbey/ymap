@@ -163,14 +163,14 @@ cen_tel_Yindent  = maxY/4;
 
 %% Load CNV and SNP figure resolutions.
 if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
-	bases_per_bin           = max(chrom_size)/700;
+	bases_per_bin           = round(max(chrom_size)/700);
 else
-	bases_per_bin           = max(chrom_size)/str2num(fileread([genomeDir 'resolution.CNV.txt']));
+	bases_per_bin           = round(max(chrom_size)/str2num(fileread([genomeDir 'resolution.CNV.txt'])));
 end;
 if (exist([genomeDir 'resolution.SNPs.txt'],'file') == 0)
-	bases_per_bin_SNP       = max(chrom_size)/700;
+	bases_per_bin_SNP       = round(max(chrom_size)/700);
 else
-	bases_per_bin_SNP       = max(chrom_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt']));
+	bases_per_bin_SNP       = round(max(chrom_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt'])));
 end;
 
 fprintf(['\nGenerating CNV figure from ''' project ''' sequence data.\n']);
@@ -189,26 +189,31 @@ end;
 %-------------------------------------------------------------------------------------------------
 if (exist([projectDir 'CNV_' CNV_verString '.mat'],'file') == 0)
 	fprintf('\nMAT file not found, regenerating.\n');
-	datafile = [projectDir 'preprocessed_CNVs.txt'];
-	data     = fopen(datafile, 'r');
-	lines_analyzed = 0;
-	while not (feof(data))
-		dataLine = fgetl(data);
-		if (length(dataLine) > 0)
-			if (dataLine(1) ~= '#')
-				lines_analyzed             = lines_analyzed+1;
-				chrom                        = str2num(sscanf(dataLine, '%s',1));
-				fragment_start             = sscanf(dataLine, '%s',2);  for i = 1:size(sscanf(dataLine,'%s',1),2);      fragment_start(1) = []; end;    fragment_start = str2num(fragment_start);
-				fragment_end               = sscanf(dataLine, '%s',3);  for i = 1:size(sscanf(dataLine,'%s',2),2);      fragment_end(1)   = []; end;    fragment_end   = str2num(fragment_end);
-				readAverage                = sscanf(dataLine, '%s',4);  for i = 1:size(sscanf(dataLine,'%s',3),2);      readAverage(1)    = []; end;    readAverage    = str2num(readAverage);
-				position                   = ceil(fragment_start/bases_per_bin);
 
-				% defining position with fragment_end results in much fuzzier data.
-				chrom_CNVdata{chrom}(position) = readAverage;
-			end;
-		end;
-	endwhile;
-	fclose(data);
+	datafile = [projectDir 'preprocessed_CNVs.txt'];
+
+	% Read the entire file while skipping '#' comments.
+	fid = fopen(datafile, 'r');
+	if fid == -1, error('Cannot open file: %s', datafile); end
+	raw_data = textscan(fid, '%f %f %f %f', 'CommentStyle', '#');
+	fclose(fid);
+
+	% Extract columns and calculate lines analyzed.
+	chroms          = raw_data{1};
+	fragment_starts = raw_data{2};
+	readAverages    = raw_data{4};
+	lines_analyzed  = length(chroms);
+
+	% Vectorized calculation for all positions at once.
+	positions = ceil(fragment_starts/bases_per_bin);
+
+	% Populate cell array.
+	unique_chroms = unique(chroms);
+	for c = unique_chroms'
+		idx = (chroms == c);
+		% Dynamically resize cell array matrix if needed and assign values
+		chrom_CNVdata{c}(positions(idx)) = readAverages(idx);
+	end
 
 	save([projectDir 'CNV_' CNV_verString '.mat'],'chrom_CNVdata');
 
@@ -218,6 +223,30 @@ else
 	fprintf('\nMAT file found, loading.\n');
 	load([projectDir 'CNV_' CNV_verString '.mat']);
 end;
+
+
+%% ====================================================================
+% Log the first several values of a chromosome for testing.
+%----------------------------------------------------------------------
+target_chrom = 6;
+fprintf('\n----------------------------------------------------------------------\n');
+if target_chrom <= length(chrom_CNVdata) && ~isempty(chrom_CNVdata{target_chrom})
+	current_chrom_data = chrom_CNVdata{target_chrom};
+	valid_indices = find(current_chrom_data, 10);
+	if ~isempty(valid_indices)
+		fprintf('\tFirst %d values for Chromosome %d (right after loading preprocessed_CNVs.txt file)\n', length(valid_indices), target_chrom);
+
+		for idx = valid_indices
+			val = current_chrom_data(idx);
+			fprintf('\t\tChr: %d | Position Index: %d | CNV Value: %.4f\n', target_chrom, idx, val);
+		end
+	else
+		fprintf('\tChromosome %d exists but contains no data (all zeros).\n', target_chrom);
+	end;
+else
+	fprintf('\tChromosome %d data was not found.\n', target_chrom);
+end;
+fprintf('\n----------------------------------------------------------------------\n');
 
 
 %% ====================================================================
