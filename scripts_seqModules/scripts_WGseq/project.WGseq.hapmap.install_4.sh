@@ -315,6 +315,21 @@ echo -e "finished all processing, moving to Cleaning up intermediate WGseq files
 
 
 ##==============================================================================
+## Update *.gff annotation file to include gene annotations if available.
+##------------------------------------------------------------------------------
+projectName="${project##*/}";  # Extracts everything after the / in a project name, if found.
+projectCNVannotation="$projectDirectory/cnv.ID5273.CNVs.gff3";
+if [[ -f "$genomeDirectory/genome_annotations.gff" ]]
+then
+	echo -e "\t\tGenome annotation file (*.gff) file installed in used genome, updating project CNV output file (*.gff) to include overlapping annotations." >> $logName;
+	python3 findOverlappingAnnotations.py "$projectDirectory/cnv.$projectName.CNVs.gff3" "$genomeDirectory/genome_annotations.gff" > "$projectDirectory/cnv.$projectName.CNVs.gff3.temp";
+	mv "$projectDirectory/cnv.$projectName.CNVs.gff3.temp" "$projectDirectory/cnv.$projectName.CNVs.gff3";
+else
+	echo -e "\t\tGenome annotation file (*.gff) file not installed in used genome." >> $logName;
+fi
+
+
+##==============================================================================
 ## Cleanup intermediate processing files.
 ##------------------------------------------------------------------------------
 echo -e "running: " "scripts_seqModules/scripts_WGseq/cleaning_WGseq.sh" "$user" "$project" "$main_dir" >> $logName;
