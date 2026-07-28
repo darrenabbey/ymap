@@ -178,7 +178,7 @@ fprintf(['\nGenerating CNV figure from ''' project ''' sequence data.\n']);
 % Initializes vectors used to hold copy number data.
 for chrom = 1:length(chrom_in_use)
 	if (chrom_in_use(chrom) == 1)
-		% 1 category tracked : average read counts per bin.
+		% Category tracked : average read counts per bin.
 		chrom_CNVdata{chrom}= zeros(1,ceil(chrom_size(chrom)/bases_per_bin));
 	end;
 end;
