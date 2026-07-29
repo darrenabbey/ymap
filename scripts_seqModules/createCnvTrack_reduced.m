@@ -14,7 +14,7 @@ if (isempty(strfind(project,'/')))
 else
 	idx = strfind(project,'/');
 	project_ = substr(project,idx+1);
-end
+end;
 fprintf(['[***]\tproject_  = ' project_ '\n']);
 
 fprintf(['[***]\toutputFile   = ' projectDir 'cnv.' project_ '.CNVs.gff3\n']);
@@ -36,10 +36,10 @@ else
 				fprintf(cnvTrackFid, '%s\tYmap\tregion\t%d\t%d\t.\t.\t.\t.\n', ...
 					chrom_name{chrom}, binStart, binEnd);
 			elseif isna(localCopyEstimate)
-				fprintf(cnvTrackFid, '%s\tYmap\tCNV\t%d\t%d\t.\t.\t.\t.\n', ...
+				fprintf(cnvTrackFid, '%s\tYmap\tregion\t%d\t%d\t.\t.\t.\t.\n', ...
 					chrom_name{chrom}, binStart, binEnd);
 			else
-				fprintf(cnvTrackFid, '%s\tYmap\tCNV\t%d\t%d\t%.1f\t.\t.\tNote=%s:%d-%d:%.1f\n', ...
+				fprintf(cnvTrackFid, '%s\tYmap\tregion\t%d\t%d\t%.1f\t.\t.\tNote=%s:%d-%d:%.1f\n', ...
 					chrom_name{chrom}, binStart, binEnd, localCopyEstimate, chrom_label{chrom}, binStart, binEnd, localCopyEstimate);
 			end;
 		end
