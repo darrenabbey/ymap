@@ -1386,31 +1386,47 @@ else
 
 				## Projects not started: missing "complete.txt" and "working.txt" files.
 				echo -e "#\tProjects initialized:";
-				find * -type d "!" -exec sh -c 'ls -A "{}" | grep --quiet -e "working.txt" -e "complete.txt"' \; -print | xargs -n 7 | column -t | sed 's/^/#\t\t/' | cat;
+				find * -mindepth 1 -type d \
+				    ! -exec test -e "{}/working.txt" \; \
+				    ! -exec test -e "{}/complete.txt" \; \
+				    -print0 |
+				    xargs -0 -n 7 |
+				    column -t |
+				    sed 's/^/#\t\t/';
 				echo -e "#";
 
 				## Projects running: with "working.txt" and no "complete.txt" file.
-				echo -e "#\tProjects processing:";
-				for dir in */; do
-					if [ -e $dir"working.txt" ]; then
-						if [ ! -e $dir"complete.txt" ]; then
-							line=$( tail -n 1 $dir"condensed_log.txt" )
-							if [[ "$line" != "Cleaning and archiving." ]]; then
-								echo -e "#\t\t"$dir"\t= \e[33m'"$line"'\e[0m";
-								if [ -e $dir"error.txt" ]; then
-									error=$( cat $dir"error.txt"; )
-									echo -e "#\t\t\t\e[41mError: $error\e[0m";
-								fi;
-							fi;
-						fi;
-					fi;
-				done;
+				find * -type d \
+				    -exec test -e "{}/working.txt" \; \
+				    ! -exec test -e "{}/complete.txt" \; \
+				    -exec sh -c '
+				        for dir; do
+				            if [ -f "${dir}/condensed_log.txt" ]; then
+				                line=$(tail -n 1 "$log")
+				                if [ "$line" != "Cleaning and archiving." ]; then
+				                    printf "%s\t= \e[33m%s\e[0m\n" "$dir" "$line"
+
+				                    # Print error block if error.txt exists
+				                    if [ -f "${dir}/error.txt" ]; then
+				                        error=$(cat "${dir}/error.txt")
+				                        printf "\t\t\e[41mError: %s\e[0m\n" "$error"
+				                    fi
+				                fi
+				            fi
+				        done
+				    ' sh {} + 2>/dev/null | \
+				    sed 's/^/#\t\t/';
 				echo -e "#";
 
 				## Projects done: include "complete.txt" file.
 				echo -e "#\tProjects completed:";
-				find * -type d -exec sh -c 'ls -A "{}" | grep --quiet "complete.txt"' \; -print | xargs -n 7 | column -t | sed 's/^/#\t\t/' | cat;
-
+				#find * -type d -exec sh -c 'ls -A "{}" | grep --quiet "complete.txt"' \; -print | xargs -n 7 | column -t | sed 's/^/#\t\t/' | cat;
+				find * -type d \
+				    -exec test -e "{}/complete.txt" \; \
+				    -print0 2>/dev/null |
+				    xargs -0 -n 7 |
+				    column -t |
+				    sed 's/^/#\t\t/';
 				cd $main_dir;
 			else
 				echo -e "#\t\t\e[41mError: User not registered!\e[0m";
