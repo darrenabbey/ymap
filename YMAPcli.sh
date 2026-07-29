@@ -50,8 +50,8 @@ if [ -z $1 ]; then
 	echo -e "#	quota		: Show per account disk quota.";
 	echo -e "#	info		: Show user account information.";
 	echo -e "#	users_info	: Show all users account information.";
-	echo -e "#	status		: Show status of user projects/genomes.";
-	echo -e "#	queue           : Show status of data processing queue.";
+	echo -e "#	status		: Show status of projects/genomes owned by this user."
+	echo -e "#	queue           : Show status of all projects/genomes in the processing queue.";
 	echo -e "#	queue_pause	: Pauses the processing queue for admin activity.";
 	echo -e "#	queue_unpause   : Unpauses the processing queue when admin activity is done.";
 	echo -e "#	queue_restart   : Restarts the queue daemon. Needed after changes to config files.";
