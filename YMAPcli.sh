@@ -1376,7 +1376,7 @@ else
 				fi;
 				installedProjectCount=$(ls "$bulkDirectory" | wc -l);
 				if [[ "$installedProjectCount" = "0" ]]; then
-					echo -e "#\tNo datasets have been installed and not yet initialized/run into queue.";
+					echo -e "#\tNo datasets have been installed and not yet initialized into queue or run for this user.";
 				else
 					echo -e "#\t$installedCount data files have been installed and not yet initialized/run into queue.";
 				fi;
@@ -2090,7 +2090,7 @@ else
 			mkdir -p $bulkdirectory;
 		fi;
 		if [[ $(ls "$bulkDirectory" | wc -l) = "0" ]]; then
-			echo -e "#\t\e[41mNo datasets have been installed and not yet run for this user.\e[0m";
+			echo -e "#\t\e[41mNo datasets have been installed and not yet initialized into queue or run for this user.\e[0m";
 			fail=1;
 		fi;
 
