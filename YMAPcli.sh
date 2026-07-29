@@ -33,12 +33,12 @@ if [ -z $1 ]; then
 	echo -e "# ";
 	echo -e "#   Commands:";
 	if [[ ! -e "/etc/init.d/ymap_daemon" ]]; then
-		echo -e "#       \e[42minstall_YMAP  : Install the ymap_daemon into '/etc/init.d/' then start it up.\e[0m";
-		echo -e "#                         \e[42mMake localized copies of template files.\e[0m";
-		echo -e "#                         \e[42mThis command will prompt for admin credentials.\e[0m";
-		echo -e "#                         \e[42mThis command option will go away after it is used.\e[0m";
-		echo -e "#                         \e[41mExamine code starting with '\"install_YMAP\")' to see what\e[0m";
-		echo -e "#                         \e[41madmin credentials are used for.\e[0m";
+		echo -e "#	\e[42minstall_YMAP  : Install the ymap_daemon into '/etc/init.d/' then start it up.\e[0m";
+		echo -e "#				\e[42mMake localized copies of template files.\e[0m";
+		echo -e "#				\e[42mThis command will prompt for admin credentials.\e[0m";
+		echo -e "#				\e[42mThis command option will go away after it is used.\e[0m";
+		echo -e "#				\e[41mExamine code starting with '\"install_YMAP\")' to see what\e[0m";
+		echo -e "#				\e[41madmin credentials are used for.\e[0m";
 	fi
 	echo -e "#	log_in		: Log the admin interface to a specific user account.";
 	echo -e "#	log_out		: Log the admin interface out of a user account.";
@@ -54,6 +54,8 @@ if [ -z $1 ]; then
 	echo -e "#	queue           : Show status of data processing queue.";
 	echo -e "#	queue_pause	: Pauses the processing queue for admin activity.";
 	echo -e "#	queue_unpause   : Unpauses the processing queue when admin activity is done.";
+	echo -e "#	queue_restart   : Restarts the queue daemon. Needed after changes to config files.";
+	echo -e "#				\e[41mAdmin credentials are needed for this.\e[0m";
 	echo -e "#	genomes		: List installed genomes.";
 	echo -e "#	hapmaps		: List installed hapmaps.";
 	echo -e "#	complete	: List file paths & names of images for completed projects.";
@@ -72,7 +74,6 @@ if [ -z $1 ]; then
 	echo -e "#   Commands not implemented:"
 	echo -e "#	combine_figures	: ";
 	echo -e "#	build_hapmap	: complicated user interface required, may not be possible in commandline.";
-	echo -e "#	minimize	: ";
 	echo -e "#";
 	echo -e "#   How to cite:";
 	echo -e "#	Abbey DA, Funt J, Lurie-Weinberger MN, Thompson DA, Regev A, Myers CL, Berman J.";
@@ -1433,6 +1434,11 @@ else
 		echo -e "# YMAP2 commandline : Processing queue unpaused after admin activity.";
 		echo -e "#";
 		rm $main_dir"/queue/error.txt";
+	    ;;
+	    "queue_restart")
+		echo -e "# YMAP2 commandline : Queue service restarted.";
+		echo -e "#";
+		sudo systemctl restart ymap_daemon.service;
 	    ;;
 	    "status_queue")
 		bash YMAPcli.sh status;
