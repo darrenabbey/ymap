@@ -1368,14 +1368,12 @@ else
 			echo -e "#";
 			projectDirectory=$main_dir"/users/"$user"/projects/";
 			if [ -d $projectDirectory ]; then
+				## Project files installed, but not run: count files in bulkdata directory.
 				cd $projectDirectory;
-
 				bulkDirectory=$main_dir"/users/"$user"/bulkdata/";
 				if [[ ! -d $bulkDirectory ]]; then
 					mkdir -p $bulkdirectory;
 				fi;
-
-				## Project files installed, but not run: count files in bulkdata directory.
 				installedProjectCount=$(ls "$bulkDirectory" | wc -l);
 				if [[ "$installedProjectCount" = "0" ]]; then
 					echo -e "#\tNo datasets have been installed and not yet initialized/run into queue.";
@@ -1394,31 +1392,13 @@ else
 				    column -t |
 				    sed 's/^/#\t\t/';
 				echo -e "#";
+				cd $main_dir;
 
-				## Projects running: with "working.txt" and no "complete.txt" file.
-				find * -type d \
-				    -exec test -e "{}/working.txt" \; \
-				    ! -exec test -e "{}/complete.txt" \; \
-				    -exec sh -c '
-				        for dir; do
-				            if [ -f "${dir}/condensed_log.txt" ]; then
-				                line=$(tail -n 1 "$log")
-				                if [ "$line" != "Cleaning and archiving." ]; then
-				                    printf "%s\t= \e[33m%s\e[0m\n" "$dir" "$line"
-
-				                    # Print error block if error.txt exists
-				                    if [ -f "${dir}/error.txt" ]; then
-				                        error=$(cat "${dir}/error.txt")
-				                        printf "\t\t\e[41mError: %s\e[0m\n" "$error"
-				                    fi
-				                fi
-				            fi
-				        done
-				    ' sh {} + 2>/dev/null | \
-				    sed 's/^/#\t\t/';
-				echo -e "#";
+				## Projects running: pulled from queue processor.
+				php user_status.php $user;
 
 				## Projects done: include "complete.txt" file.
+				cd $projectDirectory;
 				echo -e "#\tProjects completed:";
 				#find * -type d -exec sh -c 'ls -A "{}" | grep --quiet "complete.txt"' \; -print | xargs -n 7 | column -t | sed 's/^/#\t\t/' | cat;
 				find * -type d \
