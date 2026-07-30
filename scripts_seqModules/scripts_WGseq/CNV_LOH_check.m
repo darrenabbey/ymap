@@ -277,18 +277,9 @@ chromCopyNum_changed = true;
 chromFitValues       = chromCopyNum; % use to hold best fit R^2 values for later processing.
 countIters         = 0;
 while (chromCopyNum_changed == true)
+	fprintf('======== Loop started ========\n');
 	countIters += 1;
 	chromCopyNum_changed = false;
-
-%	if (countIters == 1)
-%		%%================================================================================================
-%		% Load CNV estimates per standard bin..
-%		%-------------------------------------------------------------------------------------------------
-%		fprintf('\n### Loading "Common_CNV" data file, to be used in copy number estimation.\n');
-%		load([projectDir 'Common_CNV.mat']);   % 'CNVplot2', 'genome_CNV'
-%		[chrom_breaks, chromCopyNum, ploidyAdjust, chromCopyRsquared] = FindChromSizes_4(workingDir, segmental_aneuploidy,CNVplot2,ploidy,num_chroms,chrom_in_use, false);
-%		CNVfit_Rsquared = chromCopyRsquared;
-%	endif;
 
 	for chrom = 1:length(chrom_in_use)
 		if (chrom_in_use(chrom) == 1)
@@ -525,6 +516,7 @@ while (chromCopyNum_changed == true)
 	system(['chmod 774 ' projectDir 'fig.Rsquared.' figVer num2str(countIters) '.png']);
 
 
+
 	%%================================================================================================
 	%% Check for better CNV/SNP-ratio fittings with different copy number estimates for bad initial fittings.
 	%%------------------------------------------------------------------------------------------------
@@ -634,7 +626,7 @@ while (chromCopyNum_changed == true)
 				fprintf(['\tchrom' num2str(chrom) '.' num2str(segment) ': ' num2str(chromCopyNum_new{chrom}(segment)) '\n']);
 
 				%%% If CNV estimate changed, update boolean and log it.
-				if (chromCopyNum_new{chrom}(segment) != chromCopyNum{chrom}(segment))
+				if (chromCopyNum_new{chrom}(segment) != round(chromCopyNum{chrom}(segment)))
 					chromCopyNum_changed = true;
 					fprintf('chromCopyNum_changed = true\n');
 					fprintf(['\tchromCopyNum_new{' num2str(chrom) '}(' num2str(segment) ') = ' num2str(chromCopyNum_new{chrom}(segment)) '\n']);
@@ -644,94 +636,113 @@ while (chromCopyNum_changed == true)
 		end;
 	end;
 	chromCopyNum = chromCopyNum_new;
+	if (chromCopyNum_changed == true)
+		fprintf('\n-------- Loop reset in block 1: testing for better CNV fits with different CNV estimates --------\n\n');
+	end;
+
 
 	%%% Re-review to deal with poor best-fits (likely due to limited data on a segment).
 	fprintf(['\n### Dealing with bad best-fit segments.\n']);
 	for chrom = 1:length(chrom_in_use)
 		if (chrom_in_use(chrom) == 1)
-			for segment = (length(chromCopyNum{chrom})):1
-				%%%
-				%%% Calculate initial Rsquared distance from ideal (1,1).
-				%%%
-				CNVfit_testRsquared = CNVfit_Rsquared{chrom}(segment);
-				SNPfit_testRsquared = cell2mat(SNPfit_Rsquared{chrom}(segment));
-				Rsquared_distance   = sqrt((1-CNVfit_testRsquared)^2 + (1-SNPfit_testRsquared)^2);
+			%%
+			%% Only meaningful to examine this if there is more than one segment on this chromosome.
+			%%
+			if (length(chromCopyNum{chrom}) > 1)
+				for segment = (length(chromCopyNum{chrom})):1
+					%%%
+					%%% Calculate initial Rsquared distance from ideal (1,1).
+					%%%
+					CNVfit_testRsquared = CNVfit_Rsquared{chrom}(segment);
+					SNPfit_testRsquared = cell2mat(SNPfit_Rsquared{chrom}(segment));
+					Rsquared_distance   = sqrt((1-CNVfit_testRsquared)^2 + (1-SNPfit_testRsquared)^2);
 
-				if (Rsquared_distance > 0.5)
-					if (chromFitValues{chrom}(segment) > 1)
-						% Bad fit, need to fix by using best neighboring fit.
-						if (segment == 1)
-							prevFitVal  = chromFitValues{chrom}(segment);
-							prevCopyNum = chromCopyNum{chrom}(segment);
-						else
-							prevFitVal  = chromFitValues{chrom}(segment-1);
-							prevCopyNum = chromCopyNum{chrom}(segment-1);
-						endif;
-						if (segment == length(chromCopyNum{chrom}))
-							nextFitVal  = chromFitValues{chrom}(segment);
-							nextCopyNum = chromCopyNum{chrom}(segment);
-						else
-							nextFitVal  = chromFitValues{chrom}(segment+1);
-							nextCopyNum = chromCopyNum{chrom}(segment+1);
-						endif;
-						if (prevFitVal < nextFitVal)
-							chromFitValues{chrom}(segment)   = prevFitVal;
-							chromCopyNum_new{chrom}(segment) = prevCopyNum;
-						else
-							chromFitValues{chrom}(segment)   = nextFitVal;
-							chromCopyNum_new{chrom}(segment) = nextCopyNum;
+					if (Rsquared_distance > 0.5)
+						if (chromFitValues{chrom}(segment) > 1)
+							% Bad fit, need to fix by using best neighboring fit.
+							if (segment == 1)
+								prevFitVal  = chromFitValues{chrom}(segment);
+								prevCopyNum = chromCopyNum{chrom}(segment);
+							else
+								prevFitVal  = chromFitValues{chrom}(segment-1);
+								prevCopyNum = chromCopyNum{chrom}(segment-1);
+							endif;
+
+							if (segment == length(chromCopyNum{chrom}))
+								nextFitVal  = chromFitValues{chrom}(segment);
+								nextCopyNum = chromCopyNum{chrom}(segment);
+							else
+								nextFitVal  = chromFitValues{chrom}(segment+1);
+								nextCopyNum = chromCopyNum{chrom}(segment+1);
+							endif;
+
+							if (prevFitVal < nextFitVal)
+								chromFitValues{chrom}(segment)   = prevFitVal;
+								chromCopyNum_new{chrom}(segment) = prevCopyNum;
+							else
+								chromFitValues{chrom}(segment)   = nextFitVal;
+								chromCopyNum_new{chrom}(segment) = nextCopyNum;
+							endif;
 						endif;
 					endif;
-				endif;
-			endfor;
-			chromCopyNum_new2{chrom} = chromCopyNum_new{chrom};
+				endfor;
 
-			%% Repeat in reverse order to ensure best fits are used for all segments.
-			for segment = 1:(length(chromCopyNum{chrom}))
-				%%%
-				%%% Calculate initial Rsquared distance from ideal (1,1).
-				%%%
-				CNVfit_testRsquared = CNVfit_Rsquared{chrom}(segment);
-				SNPfit_testRsquared = cell2mat(SNPfit_Rsquared{chrom}(segment));
-				Rsquared_distance   = sqrt((1-CNVfit_testRsquared)^2 + (1-SNPfit_testRsquared)^2);
+				%% Repeat in reverse order to ensure best fits are used for all segments.
+				for segment = 1:(length(chromCopyNum{chrom}))
+					%%%
+					%%% Calculate initial Rsquared distance from ideal (1,1).
+					%%%
+					CNVfit_testRsquared = CNVfit_Rsquared{chrom}(segment);
+					SNPfit_testRsquared = cell2mat(SNPfit_Rsquared{chrom}(segment));
+					Rsquared_distance   = sqrt((1-CNVfit_testRsquared)^2 + (1-SNPfit_testRsquared)^2);
 
-				if (Rsquared_distance > 0.5)
-					if (chromFitValues{chrom}(segment) > 1)
-						% Bad fit, need to fix by using best neighboring fit.
-						if (segment == 1)
-							prevFitVal  = chromFitValues{chrom}(segment);
-							prevCopyNum = chromCopyNum_new{chrom}(segment);
-						else
-							prevFitVal  = chromFitValues{chrom}(segment-1);
-							prevCopyNum = chromCopyNum_new{chrom}(segment-1);
+					if (Rsquared_distance > 0.5)
+						if (chromFitValues{chrom}(segment) > 1)
+							% Bad fit, need to fix by using best neighboring fit.
+							if (segment == 1)
+								prevFitVal  = chromFitValues{chrom}(segment);
+								prevCopyNum = chromCopyNum{chrom}(segment);
+							else
+								prevFitVal  = chromFitValues{chrom}(segment-1);
+								prevCopyNum = chromCopyNum{chrom}(segment-1);
+							end;
+
+							if (segment == length(chromCopyNum{chrom}))
+								nextFitVal  = chromFitValues{chrom}(segment);
+								nextCopyNum = chromCopyNum{chrom}(segment);
+							else
+								nextFitVal  = chromFitValues{chrom}(segment+1);
+								nextCopyNum = chromCopyNum{chrom}(segment+1);
+							end;
+
+							if (prevFitVal < nextFitVal)
+								chromFitValues{chrom}(segment)      = prevFitVal;
+								chromCopyNum_new2{chrom}(segment)   = prevCopyNum;
+							else
+								chromFitValues{chrom}(segment)      = nextFitVal;
+								chromCopyNum_new2{chrom}(segment)   = nextCopyNum;
+							end;
 						end;
-						if (segment == length(chromCopyNum{chrom}))
-							nextFitVal  = chromFitValues{chrom}(segment);
-							nextCopyNum = chromCopyNum_new{chrom}(segment);
-						else
-							nextFitVal  = chromFitValues{chrom}(segment+1);
-							nextCopyNum = chromCopyNum_new{chrom}(segment+1);
-						end;
-						if (prevFitVal < nextFitVal)
-							chromFitValues{chrom}(segment) = prevFitVal;
-							chromCopyNum{chrom}(segment)   = prevCopyNum;
-						else
-							chromFitValues{chrom}(segment) = nextFitVal;
-							chromCopyNum_new2{chrom}(segment)   = nextCopyNum;
-						end;
+					end;
+				endfor;
+
+				%% Check to see if any changes make sense.
+				for segment = 1:(length(chromCopyNum{chrom}))
+					fprintf(['\tchrom' num2str(chrom) '.' num2str(segment) ': ' num2str(chromCopyNum{chrom}(segment)) ' => ' num2str(chromCopyNum_new2{chrom}(segment)) '\n']);
+
+					%%% If CNV estimate changed, update boolean.
+					if ((chromCopyNum_new{chrom}(segment) != chromCopyNum{chrom}(segment)) || (chromCopyNum_new2{chrom}(segment) != chromCopyNum{chrom}(segment)))
 						chromCopyNum_changed = true;
 					end;
 				end;
-				fprintf(['\tchrom' num2str(chrom) '.' num2str(segment) ': ' num2str(chromCopyNum{chrom}(segment)) ' => ' num2str(chromCopyNum_new2{chrom}(segment)) '\n']);
-
-				%%% If CNV estimate changed, update boolean.
-				if (chromCopyNum_new2{chrom}(segment) != chromCopyNum{chrom}(segment))
-					chromCopyNum_changed = true;
-				end;
-			end;
+			endif;
 		end;
 	end;
 	chromCopyNum = chromCopyNum_new2;
+	if (chromCopyNum_changed == true)
+		fprintf('\n-------- Loop reset in block 2: testing for poor R^2 values --------\n\n');
+	end;
+
 
 	%%% Merge any adjacent segments that now have the same best estimate of copy number.
 	fprintf(['\n### Merging adjacent segments.\n']);
