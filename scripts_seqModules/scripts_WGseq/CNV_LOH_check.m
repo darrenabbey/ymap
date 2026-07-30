@@ -627,7 +627,7 @@ while (chromCopyNum_changed == true)
 				fprintf(['\tchrom' num2str(chrom) '.' num2str(segment) ': ' num2str(chromCopyNum_new{chrom}(segment)) '\n']);
 
 				%%% If CNV estimate changed, update boolean and log it.
-				if (chromCopyNum_new{chrom}(segment) != round(chromCopyNum{chrom}(segment)))
+				if (round(chromCopyNum_new{chrom}(segment)) != round(chromCopyNum{chrom}(segment)))
 					chromCopyNum_changed = true;
 					fprintf('chromCopyNum_changed = true\n');
 					fprintf(['\tchromCopyNum_new{' num2str(chrom) '}(' num2str(segment) ') = ' num2str(chromCopyNum_new{chrom}(segment)) '\n']);
