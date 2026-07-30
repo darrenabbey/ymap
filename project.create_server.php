@@ -29,7 +29,7 @@
 		// Validate input strings.
 		$project         = sanitize_POST("project");
 		$displayName     = whitelistHTML_POST("displayName");
-		$groupKey        = sanitizeIntChar_POST("groupKey");
+		$groupKey        = sanitizeInt_POST("groupKey");
 		$ploidy          = sanitizeFloat_POST("ploidy");
 		$ploidyBase      = sanitizeFloat_POST("ploidyBase");
 		$dataFormat      = sanitizeIntChar_POST("dataFormat");
