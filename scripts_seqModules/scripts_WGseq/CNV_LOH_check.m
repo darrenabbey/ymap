@@ -525,6 +525,7 @@ while (chromCopyNum_changed == true)
 	%%	chromCopyNum{chrom}(segment) contains CNV estimates for each chromosome segment.
 	chrom_breaks_new     = chrom_breaks;
 	chromCopyNum_new     = chromCopyNum;
+	chromCopyNum_new2    = chromCopyNum;
 	fprintf(['\n### Looking at chrom segment Rsquared values to assess quality of CNV estimates.\n']);
 	for chrom = 1:length(chrom_in_use)
 		if (chrom_in_use(chrom) == 1)
