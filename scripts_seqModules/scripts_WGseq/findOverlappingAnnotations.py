@@ -6,10 +6,10 @@
 #
 #============================================================================================================
 
-import string, sys, re;
+import sys, re;
 
 # Helper function to extract a clean label name from the attributes string.
-def extract_label(attributes_str):
+def extract_label(attributes_str, index=None):
 	locusTag_match	= re.search(r'locus_tag=([^;\n"\']+)', attributes_str);
 	name_match	= re.search(r'Name=([^;\n"\']+)', attributes_str);
 	note_match	= re.search(r'Note=([^;\n"\']+)', attributes_str);
@@ -18,14 +18,61 @@ def extract_label(attributes_str):
 	name_val	= name_match.group(1).strip() if name_match else None;
 	note_val	= note_match.group(1).strip() if note_match else None;
 
-	# Return a formatted string combining all three identifiers
-	return f"locus_tag={locusTag_val}|Name={name_val}|Note={note_val}"
+	# Determine the key suffix based on whether an index is provided.
+	suffix = f"_{index}" if index is not None else "";
 
+	# Collect only the tags that were successfully found.
+	parts = []
+	if locusTag_val is not None:
+		parts.append(f"locus_tag{suffix}={locusTag_val}");
+	if name_val is not None:
+		parts.append(f"Name{suffix}={name_val}");
+	if note_val is not None:
+		parts.append(f"Note{suffix}={note_val}");
+
+	# Join them with semicolons and add a trailing semicolon if any tags exist.
+	return ";".join(parts) + ";" if parts else ".";
 
 # Pre-load gene annotations into memory for fast lookup.
 genes_by_chrom = {};
+cds_notes_by_coord = {};
 
-# Read and parse the gene file first
+
+# ==============================================================================
+# --- PASS 1: Pre-scan the GFF for CDS lines with Notes ---
+# ==============================================================================
+with open(sys.argv[2], 'r') as gene_fh:
+	for g_line in gene_fh:
+		g_cleaned = g_line.strip();
+		if not g_cleaned or g_cleaned.startswith("#"):
+			continue;
+
+		g_fields = g_cleaned.split("\t");
+		if len(g_fields) < 9:
+			continue;
+
+		g_type  = g_fields[2];
+
+		# Check cross-reference targeting 'gene' type.
+		if g_type == "CDS":
+			g_chrom = g_fields[0];
+			g_start = int(g_fields[3]);
+			g_end   = int(g_fields[4]);
+			g_attr  = g_fields[8];
+
+			note_match = re.search(r'Note=([^;\n"\']+)', g_attr);
+			if note_match:
+				note_val = note_match.group(1).strip();
+				coord_key = (g_chrom, g_start, g_end);
+
+				if coord_key not in cds_notes_by_coord:
+					cds_notes_by_coord[coord_key] = [];
+				cds_notes_by_coord[coord_key].append(note_val);
+
+
+# ==============================================================================
+# --- PASS 2: Load Gene lines and match notes by coordinate keys ---
+# ==============================================================================
 with open(sys.argv[2], 'r') as gene_fh:
 	for g_line in gene_fh:
 		g_cleaned = g_line.strip();
@@ -39,27 +86,32 @@ with open(sys.argv[2], 'r') as gene_fh:
 		g_chrom = g_fields[0];
 		g_type  = g_fields[2];
 
-		# Check cross-reference targeting 'gene' type.
 		if g_type == "gene":
 			g_start = int(g_fields[3]);
 			g_end   = int(g_fields[4]);
 			g_attr  = g_fields[8];
 
-			# Extract just the clean label name (e.g., "BRCA1") instead of full text.
-			g_label = extract_label(g_attr);
+			# Match CDS notes sharing the exact same genomic coordinate key.
+			gene_coord_key = (g_chrom, g_start, g_end);
+			found_notes = [];
+			if gene_coord_key in cds_notes_by_coord:
+				found_notes = cds_notes_by_coord[gene_coord_key];
 
 			if g_chrom not in genes_by_chrom:
 				genes_by_chrom[g_chrom] = [];
 
-			# Store coordinates and the short label name.
+			# Store range alongside raw features and paired CDS notes.
 			genes_by_chrom[g_chrom].append({
 				'start': g_start,
 				'end': g_end,
-				'label': g_label
+				'raw_attr': g_attr,
+				'cds_notes': found_notes
 			});
 
-#------------------------------------------------------------------------------------------------------------
-# Process the CNV file streaming line by line.
+
+# ==============================================================================
+# --- PASS 3: Process the CNV file streaming line by line ---
+# ==============================================================================
 with open(sys.argv[1], 'r') as cnv_fh:
 	for i in cnv_fh:      # process CNV file, line by line.
 		cleaned_line = i.strip();
@@ -93,21 +145,44 @@ with open(sys.argv[1], 'r') as cnv_fh:
 		cnv_end   = int(end);
 
 		# Find matching overlapping gene annotations.
-		overlapping_labels = [];
+		overlapping_targets = [];
 
 		if seqid in genes_by_chrom:
 			for gene in genes_by_chrom[seqid]:
 				# Check if the CNV window overlaps with the Gene window.
 				if cnv_start <= gene['end'] and cnv_end >= gene['start']:
-					overlapping_labels.append(gene['label']);
+					overlapping_targets.append(gene)
 
 		# Process overlap results.
-		if overlapping_labels:
-			# De-duplicate names if multiple features (e.g., gene + mRNA) share the same name.
-			unique_labels = sorted(list(set(overlapping_labels)));
-			matched_genes = "; ".join(unique_labels);
+		if overlapping_targets:
+			# Create a list of combined attribute strings to filter duplicates safely.
+			unique_combined_attrs = [];
+			for gene in overlapping_targets:
+				combined_attr = gene['raw_attr'];
+				if gene['cds_notes']:
+					unique_notes = "|".join(sorted(list(set(gene['cds_notes']))));
+					combined_attr += f";Note={unique_notes}";
+				unique_combined_attrs.append(combined_attr);
 
-			# Append just the clean gene names directly to column 9 attributes.
+
+			# De-duplicate entries if multi-feature artifacts overlap the same position
+			unique_combined_attrs = sorted(list(set(unique_combined_attrs)));
+
+			# Append a counter to each label item based on loop execution index.
+			numbered_labels = [];
+			for index, attr_str in enumerate(unique_combined_attrs, start=1):
+				# Pass the raw structural string to the extractor function with the loop index
+				label = extract_label(attr_str, index=index);
+
+				# If tags exist, append them. If it returned a period, append with index: ._1
+				if label == ".":
+					numbered_labels.append(f"._{index}");
+				else:
+					numbered_labels.append(label);
+
+			matched_genes = " ".join(numbered_labels);
+
+			# Print out the updated lines to standard output
 			print(f"{seqid}\t{source}\t{type}\t{start}\t{end}\t{score}\t{strand}\t{phase}\t{matched_genes}");
 		else:
 			# If no overlap is found, output the line unmodified to stdout.
