@@ -322,7 +322,9 @@ projectCNVannotation="$projectDirectory/cnv.ID5273.CNVs.gff3";
 if [[ -f "$genomeDirectory/genome_annotations.gff" ]]
 then
 	echo -e "\t\tGenome annotation file (genome_annotations.gff) file installed in used genome, updating project CNV output file (*.gff) to include overlapping annotations." >> $logName;
+	cd $main_dir"/scripts_seqModules/scripts_WGseq/";
 	python3 findOverlappingAnnotations.py "$projectDirectory/cnv.$projectName.CNVs.gff3" "$genomeDirectory/genome_annotations.gff" > "$projectDirectory/cnv.$projectName.CNVs.gff3.temp" 2>> $logName;
+	cd $main_dir;
 	mv "$projectDirectory/cnv.$projectName.CNVs.gff3.temp" "$projectDirectory/cnv.$projectName.CNVs.gff3";
 else
 	echo -e "\t\tGenome annotation file (genome_annotations.gff) file not installed in used genome." >> $logName;
