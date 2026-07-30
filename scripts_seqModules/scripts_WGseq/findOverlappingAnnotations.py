@@ -105,10 +105,10 @@ with open(sys.argv[1], 'r') as cnv_fh:
 		if overlapping_labels:
 			# De-duplicate names if multiple features (e.g., gene + mRNA) share the same name.
 			unique_labels = sorted(list(set(overlapping_labels)));
-			matched_genes = ", ".join(unique_labels);
+			matched_genes = "; ".join(unique_labels);
 
 			# Append just the clean gene names directly to column 9 attributes.
-			print(f"{seqid}\t{source}\t{type}\t{start}\t{end}\t{score}\t{strand}\t{phase}\tLocusTags = {matched_genes}");
+			print(f"{seqid}\t{source}\t{type}\t{start}\t{end}\t{score}\t{strand}\t{phase}\t{matched_genes}");
 		else:
 			# If no overlap is found, output the line unmodified to stdout.
 			sys.stdout.write(i);
