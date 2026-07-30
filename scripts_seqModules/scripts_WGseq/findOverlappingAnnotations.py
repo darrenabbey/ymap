@@ -10,34 +10,16 @@ import string, sys, re;
 
 # Helper function to extract a clean label name from the attributes string.
 def extract_label(attributes_str):
-#	# 1. Search for Name first (allows internal spaces).
-#	name_match = re.search(r'Name=([^;\n"\']+)', attributes_str);
-#	if name_match:
-#		return name_match.group(1).strip();
-#
-#	# 2. Fallback to ID or gene_id if Name doesn't exist.
-#	fallback_match = re.search(r'(?:ID=|gene_id\s*["\']?)([^;\n"\']+)', attributes_str);
-#	if fallback_match:
-#		return fallback_match.group(1).strip();
-#
-#	return "Unknown_Gene";
+	locusTag_match	= re.search(r'locus_tag=([^;\n"\']+)', attributes_str);
+	name_match	= re.search(r'Name=([^;\n"\']+)', attributes_str);
+	note_match	= re.search(r'Note=([^;\n"\']+)', attributes_str);
 
-	# 1. Search for Name and ID independently.
-	name_match = re.search(r'Name=([^;\n"\']+)', attributes_str);
-	id_match   = re.search(r'(?:ID=|gene_id\s*["\']?)([^;\n"\']+)', attributes_str);
+	locusTag_val	= locusTag_match.group(1).strip() if locusTag_match else None;
+	name_val	= name_match.group(1).strip() if name_match else None;
+	note_val	= note_match.group(1).strip() if note_match else None;
 
-	name_val = name_match.group(1).strip() if name_match else None;
-	id_val   = id_match.group(1).strip() if id_match else None;
-
-	# 2. Apply formatting priority rules.
-	if name_val and id_val:
-		return f"{name_val} ({id_val})";
-	elif name_val:
-		return name_val;
-	elif id_val:
-		return id_val;
-
-	return "Unknown_Gene";
+	# Return a formatted string combining all three identifiers
+	return f"locus_tag={locusTag_val}|Name={name_val}|Note={note_val}"
 
 
 # Pre-load gene annotations into memory for fast lookup.
@@ -123,10 +105,10 @@ with open(sys.argv[1], 'r') as cnv_fh:
 		if overlapping_labels:
 			# De-duplicate names if multiple features (e.g., gene + mRNA) share the same name.
 			unique_labels = sorted(list(set(overlapping_labels)));
-			matched_genes = ",".join(unique_labels);
+			matched_genes = ", ".join(unique_labels);
 
 			# Append just the clean gene names directly to column 9 attributes.
-			print(f"{seqid}\t{source}\t{type}\t{start}\t{end}\t{score}\t{strand}\t{phase}\tOverlapping_Genes={matched_genes}");
+			print(f"{seqid}\t{source}\t{type}\t{start}\t{end}\t{score}\t{strand}\t{phase}\tLocusTags = {matched_genes}");
 		else:
 			# If no overlap is found, output the line unmodified to stdout.
 			sys.stdout.write(i);
