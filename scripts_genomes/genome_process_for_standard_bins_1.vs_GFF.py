@@ -38,7 +38,7 @@ with open(reference_file, 'r') as refFile:
 	refFASTA = refFile.read().strip();
 
 # Generate the name of the reformatted FASTA file: "test.fasta" => "test.2.fasta"
-refFASTA       = refFASTA.replace(".fasta",".2.fasta");
+refFASTA       = os.path.join(workingDir,refFASTA.replace(".fasta",".2.fasta"));
 with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\tFASTA reformatted to single-line entries : " + refFASTA);
 
@@ -157,7 +157,10 @@ else:
 chr_num = 0;
 old_chr_name = '';
 
-with open(FASTA_file, 'r') as FASTA_data:
+# Initialize t1 right before the loop to fix the NameError
+t1 = time.process_time();
+
+with open(refFASTA, 'r') as FASTA_data:
 	while True:
 		line1 = FASTA_data.readline();
 		line2 = FASTA_data.readline();

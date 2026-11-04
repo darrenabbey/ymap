@@ -63,7 +63,9 @@
 		fwrite($logOutput, "Variables passed :\n");
 		fwrite($logOutput, "\tuser      = '".$user."'\n");
 		fwrite($logOutput, "\tfileName  = '".$fileName."'\n");
-		fwrite($logOutput, "\tfileName2 = '".$fileName2."'\n");
+		if ($fileName2 != "") {
+			fwrite($logOutput, "\tfileName2 = '".$fileName2."'\n");
+		}
 		fwrite($logOutput, "\tgenome    = '".$genome."'\n");
 		fwrite($logOutput, "\tkey       = '".$key."'\n");
 		fwrite($logOutput, "#----------------------------------------------------------------------- 1\n");
@@ -140,10 +142,12 @@
 		fwrite($logOutput, "\tTest point 1.\n");
 
 		// Rename 2nd uploaded file to lower-case.
-		$name_  = str_replace("\\", ",", $fileName2);
-                $name_1 = str_replace(".","-",pathinfo($name_, PATHINFO_FILENAME)).".".pathinfo($name_, PATHINFO_EXTENSION);
-                $name_2 = strtolower($name_1);
-                rename(getcwd()."/".$genomePath.$name_1, getcwd()."/".$genomePath.$name_2);
+		if ($fileName2 != "") {
+			$name_  = str_replace("\\", ",", $fileName2);
+	                $name_1 = str_replace(".","-",pathinfo($name_, PATHINFO_FILENAME)).".".pathinfo($name_, PATHINFO_EXTENSION);
+	                $name_2 = strtolower($name_1);
+	                rename(getcwd()."/".$genomePath.$name_1, getcwd()."/".$genomePath.$name_2);
+		}
 
 		fwrite($logOutput, "\tTest point 2.\n");
 
@@ -155,20 +159,24 @@
 
 		// Process uploaded file(s).
 		$name        = $name2;
-		$name_       = $name_2;
 		$ext         = strtolower(pathinfo($name,  PATHINFO_EXTENSION));
-		$ext_        = strtolower(pathinfo($name_, PATHINFO_EXTENSION));
 		$filename    = strtolower(pathinfo($name,  PATHINFO_FILENAME));
-		$filename_   = strtolower(pathinfo($name_, PATHINFO_FILENAME));
+		if ($fileName2 != "") {
+			$name_       = $name_2;
+			$ext_        = strtolower(pathinfo($name_, PATHINFO_EXTENSION));
+			$filename_   = strtolower(pathinfo($name_, PATHINFO_FILENAME));
+		}
 		fwrite($logOutput, "\tKey         : ".$key."\n");
 		fwrite($logOutput, "\tFASTA file:\n");
 		fwrite($logOutput, "\t    Datafile    : '".$name."'.\n");
 		fwrite($logOutput, "\t    Filename    : '".$filename."'.\n");
 		fwrite($logOutput, "\t    Extension   : '".$ext."'.\n");
-		fwrite($logOutput, "\tGFF file:\n");
-		fwrite($logOutput, "\t    Datafile    : '".$name_."'.\n");
-		fwrite($logOutput, "\t    Filename    : '".$filename_."'.\n");
-		fwrite($logOutput, "\t    Extension   : '".$ext_."'.\n");
+		if ($fileName2 != "") {
+			fwrite($logOutput, "\tGFF file:\n");
+			fwrite($logOutput, "\t    Datafile    : '".$name_."'.\n");
+			fwrite($logOutput, "\t    Filename    : '".$filename_."'.\n");
+			fwrite($logOutput, "\t    Extension   : '".$ext_."'.\n");
+		}
 		fwrite($logOutput, "\tScript_path : '".getcwd()."'.\n");
 		fwrite($logOutput, "\tPath        : '".$genomePath."'.\n");
 
@@ -181,10 +189,12 @@
 		fwrite($logOutput, "\t    ext            : ".$ext."\n");
 		fwrite($logOutput, "\t    name           : ".$name."\n");
 		fwrite($logOutput, "\t    output_name    : ".$output_name."\n");
-		fwrite($logOutput, "\tGFF file:\n");
-		fwrite($logOutput, "\t    ext            : ".$ext_."\n");
-		fwrite($logOutput, "\t    name           : ".$name_."\n");
-		fwrite($logOutput, "\t    output_name    : ".$output_name_."\n");
+		if ($fileName2 != "") {
+			fwrite($logOutput, "\tGFF file:\n");
+			fwrite($logOutput, "\t    ext            : ".$ext_."\n");
+			fwrite($logOutput, "\t    name           : ".$name_."\n");
+			fwrite($logOutput, "\t    output_name    : ".$output_name_."\n");
+		}
 		fwrite($logOutput, "\tgenomePath         : ".$genomePath."\n");
 		fwrite($logOutput, "\tkey                : ".$key."\n");
 		fwrite($logOutput, "\tuser               : ".$user."\n");
@@ -195,9 +205,12 @@
 		$fileName  = process_input_files_genome($ext,$name,$genomePath,'g_0',$user,$genome,$output, $condensedLogOutput,$logOutput, $output_name);
 		$file_path = "../users/".$user."/genomes/".$genome."/".$fileName;
 		fwrite($logOutput, "\tFASTA file name & path: ".$file_path."\n");
-		$fileName_  = process_input_files_genome($ext_,$name_,$genomePath,'g_0',$user,$genome,$output, $condensedLogOutput,$logOutput, $output_name_);
-                $file_path_ = "../users/".$user."/genomes/".$genome."/".$fileName_;
-                fwrite($logOutput, "\tGFF file name & path: ".$file_path_."\n");
+		if ($fileName2 != "") {
+			$fileName_  = process_input_files_genome($ext_,$name_,$genomePath,'g_0',$user,$genome,$output, $condensedLogOutput,$logOutput, $output_name_);
+	                $file_path_ = "../users/".$user."/genomes/".$genome."/".$fileName_;
+	                fwrite($logOutput, "\tGFF file name & path: ".$file_path_."\n");
+		}
+
 		fclose($condensedLogOutput);
 
 		// Process FASTA file for chromosome count, names, and lengths.
