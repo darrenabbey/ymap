@@ -49,7 +49,7 @@ with open(reference_file, 'r') as refFile:
 	refFASTA = refFile.read().strip();
 
 # Open restriction-fragmented genome FASTA file
-restrictionBins_FASTA_file = os.path.join(workingDir, refFASTA.replace('.fasta', '.MfeI_MboI.fasta'));
+fragments_FASTA_file = os.path.join(workingDir, refFASTA.replace('.fasta', '.MfeI_MboI.fasta'));
 
 fragments = []
 usable_labels = {'[*]'}
@@ -103,6 +103,8 @@ with open(fragments_FASTA_file, 'r') as fragments_FASTA_data:
 
 				# Reset header tracker to prepare for the next record
 				current_header = None;
+
+numFragments = len(fragments);
 #------------------------------------------------------------------------------------------------------------
 # End of code section to parse fragments from genome.
 #============================================================================================================

@@ -50,10 +50,10 @@ with open(reference_file, 'r') as refFile:
 	refFASTA = refFile.read().strip();
 
 # Open standard-fragmented genome FASTQ file.
-standardBins_FASTA_file = os.path.join(workingDir, refFASTA.replace('.fasta', '.standard_bins.fasta'));
+fragments_FASTA_file = os.path.join(workingDir, refFASTA.replace('.fasta', '.standard_bins.fasta'));
 
 fragments = [];
-usable_labels = {'[gene]', '[intergenic]'};
+usable_labels = {'[*]', '[gene]', '[intergenic]'};
 
 current_header = None;  # Tracks the active valid header line.
 
@@ -103,6 +103,8 @@ with open(fragments_FASTA_file, 'r') as fragments_FASTA_data:
 					fragments.append([chr_num, bp_start, bp_end, GC_ratio])
 			# Reset header tracker to prepare for the next record
 			current_header = None;
+
+numFragments = len(fragments);
 #------------------------------------------------------------------------------------------------------------
 # End of code section to parse fragments from genome.
 #============================================================================================================
