@@ -10,9 +10,11 @@
         if(!isset($_SESSION['logged_on'])) {
 		session_destroy();
 		header('Location: .');
+		exit;
 	} else if ($_SESSION['logged_on'] == 0) {
 		session_destroy();
 		header('Location: .');
+		exit;
 	}
 
 	// Ensure admin user is logged in.
@@ -27,6 +29,7 @@
 	if ($user == "") {
 		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
+		exit;
 	} else {
 		$super_user_flag_file = "users/".$user."/super.txt";
 		log_stuff($user,"","","","","TESTING1: ");
@@ -36,6 +39,7 @@
 			session_destroy();
 			log_stuff($user,"","","","","CREDENTIAL fail: user attempted to use admin function to copy project to default!");
 			header('Location: .');
+			exit;
 		} else {
 			$super_logged_in = "true";
 

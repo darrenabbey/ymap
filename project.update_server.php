@@ -10,9 +10,11 @@
 	if (!isset($_SESSION['logged_on'])) {
 		session_destroy();
 		header('Location: .');
+		exit;
 	} else if ($_SESSION['logged_on'] == 0) {
 		session_destroy();
 		header('Location: .');
+		exit;
 	}
 
 	// Load user string from session.
@@ -25,12 +27,14 @@
 	if ($user == "") {
 		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
+		exit;
 	} else {
 		// Validate input strings.
 		$project         = sanitize_POST("project");
 		if (!file_exists("users/".$user."/projects/".$project)) {
 			log_stuff($user,$project,"","","","project:UPDATE failure, no such project for this user.");
 			header('Location: .');
+			exit;
 		}
 		$name            = whitelistHTML_POST("name");
 		$groupKey        = sanitizeInt_POST("groupKey");

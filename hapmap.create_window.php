@@ -33,6 +33,7 @@
 	if ($user == "") {
 		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
+		exit;
 	}
 ?>
 <html lang="en">

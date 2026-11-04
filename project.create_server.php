@@ -10,9 +10,11 @@
 	if (!isset($_SESSION['logged_on'])) {
 		session_destroy();
 		header('Location: .');
+		exit;
 	} else if ($_SESSION['logged_on'] == 0) {
 		session_destroy();
 		header('Location: .');
+		exit;
 	}
 
 	// Load user string from session.
@@ -25,6 +27,7 @@
 	if ($user == "") {
 		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
+		exit;
 	} else {
 		// Validate input strings.
 		$project         = sanitize_POST("project");
@@ -101,6 +104,7 @@
 				// Genome doesn't exist, should never happen: Force logout.
 				session_destroy();
 				header('Location: .');
+				exit;
 			}
 
 			$hapmap              = sanitize_POST("selectHapmap");
@@ -114,6 +118,7 @@
 					// Hapmap doesn't exist, should never happen: Force logout.
 					session_destroy();
 					header('Location: .');
+					exit;
 				}
 			}
 
@@ -130,6 +135,7 @@
 					// Parent project doesn't exist, should never happen: Force logout.
 					session_destroy();
 					header('Location: .');
+					exit;
 				}
 			}
 		}

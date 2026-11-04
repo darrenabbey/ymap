@@ -36,8 +36,9 @@
 	<body>
 		<div id="genomeCreationInformation"><p>
 			<form action="genome.create_server.php" method="post">
-				<label for="newGenomeName">Genome Name: </label><input type="text" name="newGenomeName" id="newGenomeName" size="100"><br>
-				<br>
+				<label for="newGenomeName">Genome Name: </label><input type="text" name="newGenomeName" id="newGenomeName" size="100"><br><br>
+				<input type="checkbox" id="GFF_used" name="GFF_used" value="true">
+				<label for="GFF_used"> I have a GFF/GFF3 annotation file for genome.</label><br><br>
 				<?php
 				if (!$exceededSpace) {
 					echo "<input type='submit' value='Create New Genome'>";
@@ -45,8 +46,8 @@
 				?>
 			</form>
 		</p></div>
-		Once data file has been selected, this window will close.<br>
-		Reload the main page, then select "Finalize" button to setup the genome.<br>
+		Once "Create New Genome" has been selected, this window will close.<br>
+		Reload the main page if there are no active downloads, then select "Finalize" button to setup the genome.<br>
 		The finalize window will allow you to define which parts of the FASTA file are used in YMAP.<br><br>
 		Once you submit your selections, YMAP will then process the genome in the background.<br>
 		You can reload the page and use other functions, but the new genome will not be available until processing has completed.

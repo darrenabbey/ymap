@@ -213,6 +213,10 @@ if (strcmp($ext,"zip") == 0) {
 	fwrite($logOutput, "\trename      = '".$rename_target."'\n");
 
 	$name_new = $rename_target;
+} else if (($ext == "gff") || ($ext == "gff3")) {
+	// alternate extensions for gff file, rename to gff.
+	$ext_new   = "gff";
+	$name_new  = "genome_annotations.gff";
 } else {
 	// Not a compressed archive, hand off to next section.
 	$ext_new  = $ext;
@@ -266,6 +270,8 @@ if ($ext_new == "fasta") {
 		fwrite($logOutput, "FASTA file format did not validate!\n");
 		$ext_new = "none2";
 	}
+} else if ($ext_new == "gff") {
+	// validation code here.
 }
 
 

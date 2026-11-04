@@ -10,9 +10,11 @@
 	if(!isset($_SESSION['logged_on'])){
 		session_destroy();
 		header('Location: .');
+		exit;
 	} else if ($_SESSION['logged_on'] == 0) {
 		session_destroy();
 		header('Location: .');
+		exit;
 	}
 
 	if(isset($_SESSION['user'])) {
@@ -24,6 +26,7 @@
 	if ($user == "") {
 		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
+		exit;
 	} else {
 		// mini page loaded into frame when one file is to be uploaded.
 ?>

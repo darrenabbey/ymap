@@ -238,14 +238,23 @@ if (isset($_SESSION['logged_on'])) {
 	foreach($genomeFolders_starting as $key_=>$genome) {
 		$key      = $key_;
 		$genome   = $genomeFolders[$key];
+
 		echo "\n\t// javascript for genome #".$key.", '".$genome."'\n\t";
 		echo "var el_g               = document.getElementById('frameContainer.g3_".$key."');\n\t";
-		echo "el_g.innerHTML         = '<iframe id=\"g_".$key."\" name=\"g_".$key."\" class=\"upload\" style=\"height:38px\" ";
-		echo     "src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n\t";
+		if (file_exists("users/".$user."/genomes/".$genome."/GFF_used.txt")) {
+			echo "el_g.innerHTML         = '<iframe id=\"g_".$key."\" name=\"g_".$key."\" class=\"upload\" style=\"height:76px\" ";
+			echo     "src=\"uploader.2.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n\t";
+		} else {
+			echo "el_g.innerHTML         = '<iframe id=\"g_".$key."\" name=\"g_".$key."\" class=\"upload\" style=\"height:38px\" ";
+			echo     "src=\"uploader.1.php\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" width=\"100%\" frameborder=\"0\"></iframe>';\n\t";
+		}
 		echo "var g_iframe           = document.getElementById('g_".$key."');\n\t";
 		echo "var g_js               = g_iframe.contentWindow;\n\t";
 		echo "g_js.display_string    = new Array();\n\t";
 		echo "g_js.display_string[0] = \"Add : Genome reference FASTA file...\";\n\t";
+		if (file_exists("users/".$user."/genomes/".$genome."/GFF_used.txt")) {
+			echo "g_js.display_string[1] = \"Add : Genome annotation GFF/GFF3 file...\";\n\t";
+		}
 		echo "g_js.user              = \"".$user."\";\n\t";
 		echo "g_js.genome            = \"".$genome."\";\n\t";
 		echo "g_js.key               = \"g_".$key."\";\n";

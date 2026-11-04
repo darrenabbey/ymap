@@ -22,6 +22,8 @@
 		$genome   = $_SESSION['genome'];
 		$key      = $_SESSION['key'];
 
+		log_stuff("","","","","","genome:INSTALL test point. ".$user."|".$filename."|".$genome."|".$key);
+
 		// If the user is not logged on, redirect to login page.
 		if (!isset($_SESSION['logged_on'])) {
 			session_destroy();
@@ -37,7 +39,7 @@
 	}
 
 	if ($user == "") {
-		log_stuff("","","","","","user:VALIDATION failure, session expired.");
+		log_stuff("","","","","","user:VALIDATION failure, session expired. ".$user." ".$filename." ".$genome." ".$key);
 		header('Location: .');
 	} else {
 		// Initialize log files.

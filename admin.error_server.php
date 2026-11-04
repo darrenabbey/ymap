@@ -10,9 +10,11 @@
         if(!isset($_SESSION['logged_on'])) {
 		session_destroy();
 		header('Location: .');
+		exit;
 	} else if ($_SESSION['logged_on'] == 0) {
 		session_destroy();
 		header('Location: .');
+		exit;
 	}
 
 	// Ensure admin user is logged in.
@@ -25,6 +27,7 @@
 		session_destroy();
 		log_stuff($user,"","","","","CREDENTIAL fail: user attempted to use admin function to add error to project!");
 		header('Location: .');
+		exit;
 	}
 
 	// Load user string from session.
@@ -41,6 +44,7 @@
 		session_destroy();
 		log_stuff($user,"","","","","CREDENTIAL fail: admin attempted to add error to project belonging to a user that doesn't exist! [".$admin_as_user."]");
 		header('Location: .');
+		exit;
 	}
 
 	// Determine user account project associated with key.
@@ -82,6 +86,7 @@
 		session_destroy();
 		log_stuff($user,"","","","","CREDENTIAL fail: admin attempted to use erroneous key to find user project! [user=".$admin_as_user."][key=".$key_."]");
 		header('Location: .');
+		exit;
 	}
 
 	// Confirm if requested user project exists.

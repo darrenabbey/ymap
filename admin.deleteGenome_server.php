@@ -10,9 +10,11 @@
         if(!isset($_SESSION['logged_on'])) {
 		session_destroy();
 		header('Location: .');
+		exit;
 	} else if ($_SESSION['logged_on'] == 0) {
 		session_destroy();
 		header('Location: .');
+		exit;
 	}
 
 	// Ensure admin user is logged in.
@@ -25,6 +27,7 @@
 	if ($user == "") {
 		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
+		exit;
 	} else {
 		$admin_user_flag_file = "users/".$user."/admin.txt";
 		if (!(file_exists($admin_user_flag_file))) {  // admin-user privilidges not found.
@@ -33,6 +36,7 @@
 			session_destroy();
 			log_stuff($user,"","","","","CREDENTIAL fail: user attempted to use admin function to delete genome!");
 			header('Location: .');
+			exit;
 		} else {
 			$admin_logged_in = "true";
 

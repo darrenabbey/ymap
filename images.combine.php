@@ -11,9 +11,11 @@
 	        if(!isset($_SESSION['logged_on'])) {
 			session_destroy();
 	                header('Location: .');
+			exit;
 		} else if ($_SESSION['logged_on'] == 0) {
 			session_destroy();
 			header('Location: .');
+			exit;
 	        } else {
 			// Load user string from session.
 			if(isset($_SESSION['user'])) {
@@ -22,11 +24,13 @@
 				$user = "";
 				log_stuff("","","","","","user:VALIDATION failure, session expired.");
 				header('Location: .');
+				exit;
 			}
 		}
 		if ($user == "") {
 			log_stuff("","","","","","user:VALIDATION failure, session expired.");
 			header('Location: .');
+			exit;
 		}
 
 		// Sanitize input strings.

@@ -18,6 +18,7 @@
 			$user = "";
 			log_stuff("","","","","","user:VALIDATION failure, invalid user string from commandline interface.");
 			header('Location: .');
+			exit;
 		}
 		$commandLineInterface = true;
 	} else {
@@ -30,9 +31,11 @@
 		if (!isset($_SESSION['logged_on'])) {
 			session_destroy();
 			header('Location: .');
+			exit;
 		} else if ($_SESSION['logged_on'] == 0) {
 			session_destroy();
 			header('Location: .');
+			exit;
 		}
 
 		// Load user string from session.
@@ -48,6 +51,7 @@
 	if ($user == "") {
 		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
+		exit;
 	} else {
 		$admin_user_flag_file = "users/".$user."/admin.txt";
 		if (file_exists($admin_user_flag_file)) {
@@ -117,6 +121,7 @@
 					session_destroy();
 				}
 				header('Location: .');
+				exit;
 			}
 
 			if (($hapmap == "none") || ($hapmap == "")) {
@@ -131,6 +136,7 @@
 						session_destroy();
 					}
 					header('Location: .');
+					exit;
 				}
 			}
 

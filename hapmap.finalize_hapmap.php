@@ -10,9 +10,11 @@
 	if(!isset($_SESSION['logged_on'])){
 		session_destroy();
 		header('Location: .');
+		exit;
 	} else if ($_SESSION['logged_on'] == 0) {
 		session_destroy();
 		header('Location: .');
+		exit;
 	}
 
 	// Load user string from session.
@@ -25,6 +27,7 @@
 	if ($user == "") {
 		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
+		exit;
 	} else {
 		// Sanitize input strings.
 		$hapmap = sanitize_POST("hapmap");
@@ -38,6 +41,7 @@
 			// Hapmap doesn't exist, should never happen: Force logout.
 			session_destroy();
 			header('Location: .');
+			exit;
 	        }
 
 		// Re-initialize 'process_log.txt' file.

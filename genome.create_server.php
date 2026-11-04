@@ -10,9 +10,11 @@
 	if (!isset($_SESSION['logged_on'])) {
 		session_destroy();
 		header('Location: .');
+		exit;
 	} else if ($_SESSION['logged_on'] == 0) {
 		session_destroy();
 		header('Location: .');
+		exit;
 	}
 
 	// Load user string from session.
@@ -25,14 +27,16 @@
 	if ($user == "") {
 		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
+		exit;
 	} else {
 		// Sanitize input string.
-		$genome = sanitize_POST("newGenomeName");
+		$genome   = sanitize_POST("newGenomeName");
+		$GFF_used = sanitizeBoolean_POST("GFF_used");
 
 		// construct directory locations.
-		$dir1   = "users/".$user."/genomes";
-		$dir2   = "users/".$user."/genomes/".$genome;
-		$dir3   = "users/default/genomes/".$genome;
+		$dir1     = "users/".$user."/genomes";
+		$dir2     = "users/".$user."/genomes/".$genome;
+		$dir3     = "users/default/genomes/".$genome;
 
 		// Deals with accidental deletion of user/genomes dir.
 		if (!file_exists($dir1)){
@@ -68,6 +72,17 @@
 			fwrite($output, $genome);
 			fclose($output);
 			chmod($outputName,0777);
+
+			// Create GFF_used status file.
+			if ($GFF_used == true) {
+				$outputName   = "users/".$user."/genomes/".$genome."/GFF_used.txt";
+				$output       = fopen($outputName, 'w');
+				fwrite($output, "true");
+				fclose($output);
+				chmod($outputName,0777);
+			} else {
+				// do nothing.
+			}
 
 			$_SESSION['pending_install_genome_count'] += 1;
 			log_stuff($user,"","",$genome,"","genome:CREATE success");

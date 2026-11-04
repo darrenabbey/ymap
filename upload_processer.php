@@ -13,9 +13,11 @@
 	if(!isset($_SESSION['logged_on'])){
 		session_destroy();
 		header('Location: .');
+		exit;
 	} else if ($_SESSION['logged_on'] == 0) {
 		session_destroy();
 		header('Location: .');
+		exit;
 	}
 
 	if(isset($_SESSION['user'])) {
@@ -30,6 +32,7 @@
 	if ($user == "") {
 		log_stuff("","","","","","user:VALIDATION failure, session expired.");
 		header('Location: .');
+		exit;
 	} else {
 		// validate POST strings.
 		$genome     = sanitize_POST("genome");
@@ -51,6 +54,7 @@
 				// Should never happen: Force logout.
 				session_destroy();
 				header('Location: .');
+				exit;
 			}
 
 			// Confirm if requested file exists in project.
@@ -66,20 +70,22 @@
 				// rebuilt corrected filename string.
 				$fileName       = $fileName1.",".$fileName2;
 				if (!file_exists($project_dir."/".$fileName1) or !file_exists($project_dir."/".$fileName2)) {
-					log_stuff($user,$project,"","",$project_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file[2]!");
+					log_stuff($user,$project,"","",$project_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file! [1]");
 					log_stuff($user,$project,"","","","1: ".$fileName1);
 					log_stuff($user,$project,"","","","2: ".$fileName2);
 					// Should never happen: Force logout.
 					session_destroy();
 					header('Location: .');
+					exit;
 				}
 			} else {
 				// One filename.
 				if (!file_exists($project_dir."/".$fileName)) {
-					log_stuff($user,$project,"","",$project_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file!");
+					log_stuff($user,$project,"","",$project_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file! [2]");
 					// Should never happen: Force logout.
 					session_destroy();
 					header('Location: .');
+					exit;
 				}
 			}
 		} else if ($genome != "") {
@@ -90,20 +96,50 @@
 				// Should never happen: Force logout.
 				session_destroy();
 				header('Location: .');
+				exit;
 			}
 
 			// Confirm if requested file exists in genome.
-			if (!file_exists($genome_dir."/".$fileName)) {
-				log_stuff($user,"","",$genome,$genome_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file!");
-				// Should never happen: Force logout.
-				session_destroy();
-				header('Location: .');
+			if (str_contains($fileName,",")) {
+				// Two filenames, separated by a comma.
+				// first filename has "." in front of extension converted to "-" by uploader as part of filename safety processing.
+				$fileNames      = explode(",",$fileName);
+				$fileName1      = $fileNames[0];
+				$fileName2      = $fileNames[1];
+
+				// --- Process fileName1 (Hyphen demarcated: e.g., "image-jpg") ---
+				$lastHyphenPos1 = strrpos($fileName1, '-');
+				if ($lastHyphenPos1 !== false) {
+					$fileName1 = substr_replace($fileName1, '.', $lastHyphenPos1, 1);
+				}
+
+				// rebuilt corrected filename string.
+				$fileName       = $fileName1.",".$fileName2;
+				if (!file_exists($project_dir."/".$fileName1) || !file_exists($project_dir."/".$fileName2)) {
+					log_stuff($user,$project,"","",$project_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file! [3]");
+					log_stuff($user,$project,"","","","1: ".$fileName1);
+					log_stuff($user,$project,"","","","2: ".$fileName2);
+					// Should never happen: Force logout.
+					session_destroy();
+					header('Location: .');
+					exit;
+				}
+			} else {
+				// One filename.
+				if (!file_exists($project_dir."/".$fileName)) {
+					log_stuff($user,$project,"","",$project_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file! [4]");
+					// Should never happen: Force logout.
+					session_destroy();
+					header('Location: .');
+					exit;
+				}
 			}
 		} else {
 			log_stuff($user,"","","","","UPLOAD fail: null genome & project strings!");
 			// No genome or project, should never happen: Force logout.
 			session_destroy();
 			header('Location: .');
+			exit;
 		}
 
 		if ($project != "") {
@@ -173,6 +209,8 @@
 
 		// Move to user directory
 		chdir("users/".$user);
+
+		log_stuff("","","","","","genome:UPLOAD test point 4. ".$user."|".$filename."|".$genome."|".$key);
 
 		// Open processing script.
 		if ($conclusion_script <> "") {
