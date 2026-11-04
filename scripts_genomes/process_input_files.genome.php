@@ -77,8 +77,11 @@ if (strcmp($ext,"zip") == 0) {
 
 	// rename decompressed file.
 	if (($ext_first == "fna") || ($ext_first == "ffn") || ($ext_first == "faa") || ($ext_first == "frn") || ($ext_first == "fa")) {
-		// if alternate extension for fasta is found, rename to fasta.
+		// if alternate extension for FASTA is found, rename to fasta.
 		$rename_target = "datafile_".$key.".fasta";
+	} elseif (($ext_first == "gff") || ($ext_first == "gff3")) {
+		// if alternate extension for GFF is found, rename to gff.
+		$rename_target = "genome_annotations.gff";
 	} else {
 		$rename_target = "datafile_".$key.".".$ext_first;
 	}
@@ -97,10 +100,12 @@ if (strcmp($ext,"zip") == 0) {
 	// Is decompressed file a FASTA?
 	if ($ext_new == "fasta") {
 		// FASTA file was found.
+	} elseif ($ext_new == "gff") {
+		// GFF file was found.
 	} else {
-		// FASTA file was not found.
+		// FASTA or GFF file was not found.
 		unlink($genomePath.$name_first);
-		fwrite($logOutput, "\tFASTA file not found in ZIP!!!\n");
+		fwrite($logOutput, "\tFASTA or GFF file not found in ZIP!!!\n");
 		$ext_new  = "none1";
 		$name_new = "";
 	}
@@ -179,8 +184,11 @@ if (strcmp($ext,"zip") == 0) {
 
 	// rename decompressed file.
 	if (($name_ext == "fna") || ($name_ext == "ffn") || ($name_ext == "faa") || ($name_ext == "frn") || ($name_ext == "fa")) {
-		// if alternate extension for fasta is found, rename to fasta.
+		// if alternate extension for FASTA is found, rename to fasta.
 		$rename_target = "datafile_".$key.".fasta";
+	} elseif (($ext_first == "gff") || ($ext_first == "gff3")) {
+		// if alternate extension for GFF is found, rename to gff.
+		$rename_target = "genome_annotations.gff";
 	} else {
 		$rename_target = "datafile_".$key.".".$name_ext;
 	}
@@ -196,10 +204,12 @@ if (strcmp($ext,"zip") == 0) {
 	// Is decompressed file a FASTA?
 	if ($ext_new == "fasta") {
 		// FASTA file was found.
+	} elseif ($ext_new == "gff") {
+		// GFF file was found.
 	} else {
-		// FASTA file was not found.
+		// FASTA or GFF file was not found.
 		unlink($genomePath.$name_first);
-		fwrite($logOutput, "\tFASTA file not found in GZ!!!\n");
+		fwrite($logOutput, "\tFASTA or GFF file not found in GZ!!!\n");
 		$ext_new  = "none1";
 		$name_new = "";
 	}
@@ -214,10 +224,17 @@ if (strcmp($ext,"zip") == 0) {
 	fwrite($logOutput, "\trename      = '".$rename_target."'\n");
 
 	$name_new = $rename_target;
-} else if (($ext == "gff") || ($ext == "gff3")) {
+} elseif (($ext == "gff") || ($ext == "gff3")) {
 	// alternate extensions for gff file, rename to gff.
 	$ext_new   = "gff";
-	$name_new  = "genome_annotations.gff";
+
+	// rename file.
+	$rename_target = "genome_annotations.".$ext_new;
+	rename($genomePath.$name,$genomePath.$rename_target);
+	fwrite($logOutput, "\toldName     = '".$name."'\n");
+	fwrite($logOutput, "\trename      = '".$rename_target."'\n");
+
+	$name_new = $rename_target;
 } else {
 	// Not a compressed archive, hand off to next section.
 	$ext_new  = $ext;
@@ -271,7 +288,7 @@ if ($ext_new == "fasta") {
 		fwrite($logOutput, "FASTA file format did not validate!\n");
 		$ext_new = "none2";
 	}
-} else if ($ext_new == "gff") {
+} elseif ($ext_new == "gff") {
 	fwrite($logOutput, "Validating GFF file format.\n");
 
 	$gff_valid   = true;
@@ -318,7 +335,7 @@ if ($ext_new == "fasta") {
 	} else {
 		unlink($genomePath.$name_first);
 		fwrite($logOutput, "GFF file format did not validate!\n");
-		$ext_new = "none2";
+		$ext_new = "none3";
 	}
 }
 
@@ -329,13 +346,16 @@ if ($ext_new == "fasta") {
 if ($ext_new == "fasta") {
 	fwrite($logOutput, "\tThis is a FASTA file, no further pre-processing is needed.\n");
 	log_stuff($user,"","",$genome,$genomePath.$name_new.".".$ext_new,"UPLOAD success: FASTA passed validation.");
+} elseif ($ext_new == "gff") {
+	fwrite($logOutput, "\tThis is a GFF file, no further pre-processing is needed.\n");
+	log_stuff($user,"","",$genome,$genomePath.$name_new.".".$ext_new,"UPLOAD success: GFF passed validation.");
 } elseif ($ext_new == "none1") {
-	fwrite($logOutput, "\tThis archive did not contain a FASTA.\n");
+	fwrite($logOutput, "\tThis archive did not contain a FASTA or GFF file.\n");
 	$errorFile = fopen("users/".$user."/genomes/".$genome."/error.txt", 'w');
-	fwrite($errorFile, "Error : Archive did not contain FASTA file.");
+	fwrite($errorFile, "Error : Archive did not contain FASTA or GFF file.");
 	fclose($errorFile);
 	chmod($errorFileName,0774);
-	log_stuff($user,"","",$genome,$genomePath.$name_new.".".$ext_new,"UPLOAD fail: No fasta present.");
+	log_stuff($user,"","",$genome,$genomePath.$name_new.".".$ext_new,"UPLOAD fail: No FASTA or GFF resent in archive.");
 	exit;
 } elseif ($ext_new == "none2") {
 	fwrite($logOutput, "\tThe FASTA file was not formated properly.\n");
@@ -344,6 +364,14 @@ if ($ext_new == "fasta") {
 	fclose($errorFile);
 	chmod($errorFileName,0774);
 	log_stuff($user,"","",$genome,$genomePath.$name_new.".".$ext_new,"UPLOAD fail: FASTA with wrong formatting.");
+	exit;
+} elseif ($ext_new == "none3") {
+	fwrite($logOutput, "\tThe GFF file was not formated properly.\n");
+	$errorFile = fopen("users/".$user."/genomes/".$genome."/error.txt", 'w');
+	fwrite($errorFile, "Error : GFF file formatting improperly.");
+	fclose($errorFile);
+	chmod($errorFileName,0774);
+	log_stuff($user,"","",$genome,$genomePath.$name_new.".".$ext_new,"UPLOAD fail: GFF with wrong formatting.");
 	exit;
 } else {
 	fwrite($logOutput, "\tThis is an unknown file type.\n");

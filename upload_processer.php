@@ -115,10 +115,10 @@
 
 				// rebuilt corrected filename string.
 				$fileName       = $fileName1.",".$fileName2;
-				if (!file_exists($project_dir."/".$fileName1) || !file_exists($project_dir."/".$fileName2)) {
-					log_stuff($user,$project,"","",$project_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file! [3]");
-					log_stuff($user,$project,"","","","1: ".$fileName1);
-					log_stuff($user,$project,"","","","2: ".$fileName2);
+				if (!file_exists($genome_dir."/".$fileName1) || !file_exists($genome_dir."/".$fileName2)) {
+					log_stuff($user,"",$genome,"",$genome_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file! [3]");
+					log_stuff($user,"",$genome,"","","1: ".$fileName1);
+					log_stuff($user,"",$genome,"","","2: ".$fileName2);
 					// Should never happen: Force logout.
 					session_destroy();
 					header('Location: .');
@@ -126,8 +126,8 @@
 				}
 			} else {
 				// One filename.
-				if (!file_exists($project_dir."/".$fileName)) {
-					log_stuff($user,$project,"","",$project_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file! [4]");
+				if (!file_exists($genome_dir."/".$fileName)) {
+					log_stuff($user,"",$genome,"",$genome_dir."/".$fileName,"UPLOAD fail: user attempted to process a non-existent file! [4]");
 					// Should never happen: Force logout.
 					session_destroy();
 					header('Location: .');
@@ -209,8 +209,6 @@
 
 		// Move to user directory
 		chdir("users/".$user);
-
-		log_stuff("","","","","","genome:UPLOAD test point 4. ".$user."|".$filename."|".$genome."|".$key);
 
 		// Open processing script.
 		if ($conclusion_script <> "") {
