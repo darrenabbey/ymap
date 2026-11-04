@@ -3,7 +3,7 @@
 #     3)  workingDir  : [String]: Directory where links in system are stored.    (ex. '/home/bermanj/shared/links/) [*]
 #
 # Process input files:
-#	1) Restriction-digested genome file.
+#	1) fragmented genome file.
 #		*) Load usable fragment definitions into array : fragments[i][chr#,bpStart,bpEnd, data_count,data_max,data_ave]
 #                                                                            [0   ,1      ,2    , 3         ,4       ,5       ]
 #	2) Read counts for strain of interest dataset.
@@ -20,143 +20,121 @@
 #	4) Comment lines in output begin with '###'.
 #
 
-import string, sys, re, time
+import sys, os, time;
 userName    = sys.argv[1];
 genomeName  = sys.argv[2];
 main_dir    = sys.argv[3];
 logName     = sys.argv[4];
 
-t0 = time.process_time()
+t0 = time.process_time();
 with open(logName, "a") as myfile:
-	myfile.write("\t\t*================================================================*\n")
-	myfile.write("\t\t| Log of 'genome_process_for_standard_bins.GC_bias_1.py'         |\n")
-	myfile.write("\t\t*----------------------------------------------------------------*\n")
+	myfile.write("\t\t*================================================================*\n");
+	myfile.write("\t\t| Log of 'genome_process_for_standard_bins.GC_bias_1.py'         |\n");
+	myfile.write("\t\t*----------------------------------------------------------------*\n");
 
 
 #============================================================================================================
-# Process restriction-digested genome file.
+# Process fragmented genome file.
 #------------------------------------------------------------------------------------------------------------
 # Example FASTQ header line.
 #     >Ca_a.chr1 (9638..10115) (478bp) [*]
-# FASTA entries with header lines ending in '[*]' are usable.
+# FASTA entries with header lines ending in '[gene]' or '[intergenic]' are usable.
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\tProcessing standard bin fragmented genome file.")
+	myfile.write("\n\t\tProcessing standard bin fragmented genome file.");
 
 # Find name of genome FASTA file for species being examined.
 #     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/reference.txt"
-workingDir     = main_dir + 'users/' + userName + '/genomes/' + genomeName + '/';
-reference_file = workingDir + '/reference.txt'
-refFile        = open(reference_file,'r')
-refFASTA       = refFile.read().strip()
-refFile.close()
+workingDir     = os.path.join(main_dir, 'users', userName, 'genomes', genomeName, '');
+reference_file = os.path.join(workingDir, 'reference.txt');
+with open(reference_file, 'r') as refFile:
+	refFASTA = refFile.read().strip();
 
 # Open standard-fragmented genome FASTQ file.
-standardBins_FASTA_file = workingDir + refFASTA.replace('.fasta','.standard_bins.fasta');
+standardBins_FASTA_file = os.path.join(workingDir, refFASTA.replace('.fasta', '.standard_bins.fasta'));
 
-standardBins_FASTA_data = open(standardBins_FASTA_file,'r')
+fragments = [];
+usable_labels = {'[gene]', '[intergenic]'};
 
-#............................................................................................................
+with open(standardBins_FASTA_file, 'r') as standardBins_FASTA_data:
+	while True:
+		line1 = standardBins_FASTA_data.readline();
+		line2 = standardBins_FASTA_data.readline();
+		if not line2:
+			break;  # EOF
 
-# Setup array and counter for tracking fragment definition data.
-fragments        = []
-fragment_counter = 0
+		if line1.startswith(">"):
+			line_parts = line1.strip().split();
 
-## Process digested FASTQ genome file, line by line.
-while True:
-	# Line pairs have the following structure.
-	#    >Ca_a.chr1 (9638..10115) (478bp) [*]
-	#    ATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGC
-	line1 = standardBins_FASTA_data.readline()
-	line2 = standardBins_FASTA_data.readline()
-	if not line2:
-		break  # EOF
-	first_char = line1[:1];
-	if first_char == ">":
-		# Line is header to FASTQ entry.
-		line_parts             = line1.strip().split();
-		chrGenomeAndNum_string = line_parts[0]
-		bp_coordinate_string   = line_parts[1]
-		fragment_size_string   = line_parts[2]
+			if len(line_parts) > 3:
+				chrGenomeAndNum_string = line_parts[0];
+				bp_coordinate_string   = line_parts[1];
+				fragment_usable_string = line_parts[3];
 
-		# >Candida_auris_LOM_clade3_GCA_005234155.1_ASM523415v1.chr1
-		# (1..6139)
-		# (6139bp)
-		# [*]
+				# Check if the descriptor label matches [gene] or [intergenic].
+				if fragment_usable_string in usable_labels:
+					# Parse chromosome number from string like: ">Ca_a.chr1" or lengthy names.
+					string_fragments = chrGenomeAndNum_string.split(".");
+					chrNum_string    = string_fragments[-1];
+					chr_num          = int(chrNum_string.replace("chr", ""));
 
-		if len(line_parts) > 3:
-			fragment_usable_string = line_parts[3]
-			if fragment_usable_string[1] == "*":
-				# Fragment is usable, so the details should be placed into fragments structure.
-				#   chr number.
-				#   fragment start bp.
-				#   fragment end bp.
+					# Parse coordinates from string like: "(9638..10115)".
+					coordinates = bp_coordinate_string.replace('(', '').replace(')', '').replace('..', ' ').split();
+					bp_start    = int(coordinates[0]);
+					bp_end      = int(coordinates[1]);
 
-				# split the chr string by '.' character, then trim off the first three characters ('chr') from the final substring.
-				#	string has format of : ">Ca_a.chr1"
-				string_fragments = chrGenomeAndNum_string.split(".")
-				chrNum_string    = string_fragments[len(string_fragments)-1]
-				chr_num          = int(float(chrNum_string.replace("chr","")))
+					# Calculate precise GC ratio on case-normalized clean sequence string
+					clean_seq = line2.strip().upper();
 
-				#	string has format of : "(9638..10115)"
-				coordinates = bp_coordinate_string.replace('(','').replace(')','').replace('..',' ').split()
-				bp_start    = int(float(coordinates[0]))
-				bp_end      = int(float(coordinates[1]))
-				GC_ratio    = 0   # placeholder value.
+					g_count = clean_seq.count('G');
+					c_count = clean_seq.count('C');
+					t_count = clean_seq.count('T');
+					a_count = clean_seq.count('A');
 
-				sequence = line2;
-				G_count = sequence.count('G') + sequence.count('g')
-				C_count = sequence.count('C') + sequence.count('c')
-				T_count = sequence.count('T') + sequence.count('t')
-				A_count = sequence.count('A') + sequence.count('a')
-				if (float(G_count+C_count+T_count+A_count) == 0):
-					GC_ratio = 0
-				else:
-					GC_ratio = (G_count+C_count)/float(G_count+C_count+T_count+A_count)
+					total_bases = g_count + c_count + t_count + a_count;
 
-				fragments.append([chr_num,bp_start,bp_end,GC_ratio])
-				fragment_counter += 1
-standardBins_FASTA_data.close()
+					if total_bases == 0:
+						GC_ratio = 0.0;
+					else:
+						GC_ratio = (g_count + c_count) / float(total_bases);
 
-# Put fragment counter into a general use variable.
-numFragments = fragment_counter
+					fragments.append([chr_num, bp_start, bp_end, GC_ratio]);
+numFragments = len(fragments);
+
 #------------------------------------------------------------------------------------------------------------
-# End of code section to parse restriction fragments from genome.
+# End of code section to parse fragments from genome.
 #============================================================================================================
 
-print("### ", time.process_time() - t0, "seconds to parse restriction fragments from digested genome.")
-t1 = time.process_time()
 
-print('### numFragments = ' + str(numFragments));
-print('### Data from each fragment: [chrNum, bpStart, bpEnd, GC_ratio]')
+print(f"### {time.process_time() - t0:.4f} seconds to parse fragments from genome.");
+t1 = time.process_time();
+
+print(f"### numFragments = {numFragments}");
+print("### Data from each fragment: [chrNum, bpStart, bpEnd, GC_ratio]");
+
 
 #============================================================================================================
-# Code section to output information about genome restriction fragments.
+# Code section to output information about genome fragments.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\tOutputting GC-ratios of standard-bin fragmented genome.")
-for fragment in range(1,numFragments):
-	# Output a line for each fragment.
-	#     fragments[fragment-1] = [chr_num,bp_start,bp_end, GC_ratio]
-	#     0) chr_num
-	#     1) bp_start
-	#     2) bp_end
-	#     3) GC_ratio
+	myfile.write("\n\t\tOutputting GC-ratios of standard-bin fragmented genome.");
 
-	chr_num         = fragments[fragment-1][0]
-	bp_start        = fragments[fragment-1][1]
-	bp_end          = fragments[fragment-1][2]
-	GC_ratio        = fragments[fragment-1][3]
+# Loop cleanly through every parsed list element to prevent off-by-one missing end rows
+for fragment in fragments:
+	chr_num  = fragment[0];
+	bp_start = fragment[1];
+	bp_end   = fragment[2];
+	GC_ratio = fragment[3];
 
-	print(str(chr_num) + '\t' + str(bp_start) + '\t' + str(bp_end) + '\t' + str(GC_ratio))
+	print(f"{chr_num}\t{bp_start}\t{bp_end}\t{GC_ratio:.6f}");
 
 #------------------------------------------------------------------------------------------------------------
-# End of code section to output information about fragments. 
+# End of code section to output information about fragments.
 #============================================================================================================
 
-print("### ", time.process_time() - t1, "seconds to output basic stats of each restriction fragment.")
-print("### ", time.process_time() - t0, "seconds to complete processing of fragment definitions.")
+print(f"### {time.process_time() - t1:.4f} seconds to output basic stats of each fragment.");
+print(f"### {time.process_time() - t0:.4f} total script process runtime execution time.");
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\tTime to process = " + str(time.process_time()-t0) )
-	myfile.write("\n\t\t* 'py/genome_process_for_standard_bins.GC_bias_1.py' completed. *")
+	myfile.write("\n\t\tTime to process = " + str(time.process_time()-t0) );
+	myfile.write("\n\t\t* 'py/genome_process_for_standard_bins.GC_bias_1.py' completed. *");
