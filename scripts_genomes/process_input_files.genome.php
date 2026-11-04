@@ -15,6 +15,7 @@ require_once '../sharedFunctions.php';
 //$fasta_name         		= datafile_g_0.fasta
 
 
+fwrite($logOutput, "\n");
 fwrite($logOutput, "*========================================================================*\n");
 fwrite($logOutput, "| 'scripts_genomes/process_input_files.genome.php' has initiated.        |\n");
 fwrite($logOutput, "*------------------------------------------------------------------------*\n");
@@ -230,7 +231,7 @@ fwrite($logOutput, "\tgenomePath  = ".$genomePath."\n");
 
 
 //=======================================
-// Validate FASTA files.
+// Validate input files.
 //---------------------------------------
 if ($ext_new == "fasta") {
 	fwrite($logOutput, "Validating FASTA file format.\n");
@@ -271,7 +272,54 @@ if ($ext_new == "fasta") {
 		$ext_new = "none2";
 	}
 } else if ($ext_new == "gff") {
-	// validation code here.
+	fwrite($logOutput, "Validating GFF file format.\n");
+
+	$gff_valid   = true;
+	$file_name   = $genomePath.$name_new;
+	fwrite($logOutput, "\tFile name: ".$file_name."\n");
+
+	$file_handle = fopen($file_name, 'r');
+	if ($file_handle) {
+		while (($line = fgets($file_handle)) !== false) {
+			$trimmed = trim($line);
+
+			// Skip empty lines or header/comment lines (starting with #)
+			if ($trimmed === '' || $trimmed[0] === '#') {
+				continue;
+			}
+
+			// GFF files MUST be tab-delimited and contain exactly 9 columns
+			$columns = explode("\t", $trimmed);
+			if (count($columns) !== 9) {
+				$gff_valid = false;
+				fwrite($logOutput, "\terror: Line does not have 9 columns: ".$trimmed."\n");
+				break;
+			}
+
+			// Structural column checks (Columns 4 and 5 must be numerical Start/End coordinates)
+			if (!is_numeric($columns[3]) || !is_numeric($columns[4])) {
+				$gff_valid = false;
+				fwrite($logOutput, "\terror: Non-numerical coordinates in columns 4 or 5: ".$trimmed."\n");
+			}
+
+			// Strand check (Column 7 / Index 6: must be '+', '-', '.', or '?')
+			$strand = $columns[6];
+			if ($strand !== '+' && $strand !== '-' && $strand !== '.' && $strand !== '?') {
+				$gff_valid = false;
+				fwrite($logOutput, "\terror: Invalid strand character ('".$strand."') in column 7: ".$trimmed."\n");
+			}
+		}
+		fclose($file_handle);
+	}
+
+	// Is this a valid GFF file?
+	if ($gff_valid == true) {
+		fwrite($logOutput, "GFF file format validated.\n");
+	} else {
+		unlink($genomePath.$name_first);
+		fwrite($logOutput, "GFF file format did not validate!\n");
+		$ext_new = "none2";
+	}
 }
 
 
@@ -310,7 +358,7 @@ if ($ext_new == "fasta") {
 fwrite($logOutput, "*------------------------------------------------------------------------*\n");
 fwrite($logOutput, "| 'scripts_genomes/process_input_files.genome.php' has completed.        |\n");
 fwrite($logOutput, "*========================================================================*\n");
-fwrite($logOutput, $name_new."\n");
+fwrite($logOutput, "\n");
 return $name_new;
 }
 ?>
