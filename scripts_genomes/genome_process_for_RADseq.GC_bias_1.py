@@ -52,7 +52,7 @@ with open(reference_file, 'r') as refFile:
 restrictionBins_FASTA_file = os.path.join(workingDir, refFASTA.replace('.fasta', '.MfeI_MboI.fasta'));
 
 fragments = [];
-usable_labels = {'[gene]', '[intergenic]'};
+usable_labels = {'[*]'};
 
 with open(restrictionBins_FASTA_file, 'r') as restrictionBins_FASTA_data:
 	while True:
@@ -136,5 +136,5 @@ print(f"### {time.process_time() - t1:.4f} seconds to output basic stats of each
 print(f"### {time.process_time() - t0:.4f} total script process runtime execution time.");
 
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\tTime to process = " + str(time.process_time()-t0) )
-	myfile.write("\n\t\t* 'py/genome_process_for_RADseq.GC_bias_1.py' completed. *")
+	myfile.write("\n\t\t\tTime to process = " + str(time.process_time()-t0) );
+	myfile.write("\n\t\t* 'py/genome_process_for_RADseq.GC_bias_1.py' completed. *");
