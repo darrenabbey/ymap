@@ -28,6 +28,7 @@
 		if (!isset($_SESSION['logged_on'])) {
 			session_destroy();
 			header('Location: .');
+			exit;
 		}
 
 		// Load user string from session.
@@ -41,6 +42,7 @@
 	if ($user == "") {
 		log_stuff("","","","","","user:VALIDATION failure, session expired. ".$user." ".$filename." ".$genome." ".$key);
 		header('Location: .');
+		exit;
 	} else {
 		// Initialize log files.
 		$logOutputName           = "../users/".$user."/genomes/".$genome."/process_log.txt";
