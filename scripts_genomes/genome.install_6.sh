@@ -29,7 +29,8 @@ skew_kmerLength=25001; # needs to be an odd number.					# https://berthub.eu/art
 skew_kmerStep=100;
 	# 50 is way too small kmer length.
 	# 50000 seems right for yeast genomes.
-genomeRepetWIG=$genomeDirectory"datafile_g_0.2.wig";	# File containing repetitiveness data for genome.
+genomeRepetWIG=$genomeDirectory"datafile_g_0.2.wig";					# File containing repetitiveness data for genome.
+GFF_annotations=$genomeDirectory"genome_annotations.gff";				# Name of GFF file for the reference.
 standard_bin_FASTA=$genomeDirectory$FASTAname".standard_bins.fasta";			# Name of reference genome broken up into standard bins.
 standard_bin_SNPs_FASTA=$genomeDirectory$FASTAname".standard_bins.SNPs.fasta";		# Name of reference genome broken up into standard bins for SNPs.
 ddRADseq_FASTA=$genomeDirectory$FASTAname".MfeI_MboI.fasta";				# Name of digested reference for ddRADseq analysis.
@@ -277,11 +278,21 @@ if [ -e $standard_bin_FASTA ]
 then
 	echo -e "\tGenome already fragmented into standard bins." >> $logName;
 else
-	echo -e "Performing standard-bin fragmentation of genome." >> $condensedLog;
-	echo -e "\tGenome being fragmentated into standard bins." >> $logName;
+	if [ -e $GFF_annotations ]
+	then
+		echo -e "Performing standard-bin fragmentation of genome vs GFF annotation file." >> $condensedLog;
+                echo -e "\tGenome being fragmentated into standard bins vs GFF annotation file." >> $logName;
 
-	## Perform reference genome fragmentation.
-	$python_exec $main_dir"scripts_genomes/genome_process_for_standard_bins_1.py" $user $genome $main_dir $logName >> $standard_bin_FASTA 2>> $logName;
+		## Perform reference genome fragmentation vs GFF annotation file.
+		$python_exec $main_dir"scripts_genomes/genome_process_for_standard_bins_1.vs_GFF.py" $user $genome $main_dir $GFF_annotations $logName >> $standard_bin_FASTA 2>> $logName;
+		cp $standard_bin_FASTA $standard_bin_SNPs_FASTA;
+	else
+		echo -e "Performing standard-bin fragmentation of genome." >> $condensedLog;
+		echo -e "\tGenome being fragmentated into standard bins." >> $logName;
+
+		## Perform reference genome fragmentation.
+		$python_exec $main_dir"scripts_genomes/genome_process_for_standard_bins_1.py" $user $genome $main_dir $logName >> $standard_bin_FASTA 2>> $logName;
+	fi
 fi
 
 echo -e "\n\t----------------------------------------------------------------------------------------------" >> $logName;
@@ -290,11 +301,21 @@ if [ -e $standard_bin_SNPs_FASTA ]
 then
 	echo -e "\tGenome already fragmented into standard bins for SNPs." >> $logName;
 else
-	echo -e "Performing standard-bin fragmentation of genome for SNPs." >> $condensedLog;
-	echo -e "\tGenome being fragmentated into standard bins for SNPs." >> $logName;
+	if [ -e $GFF_annotations ]
+	then
+		echo -e "Performing standard-bin fragmentation of genome for SNPs vs GFF annotation file." >> $condensedLog;
+		echo -e "\tGenome being fragmentated into standard bins for SNPs vs GFF annotation file." >> $logName;
 
-	## Perform reference genome fragmentation.
-	$python_exec $main_dir"scripts_genomes/genome_process_for_standard_bins_1.SNPs.py" $user $genome $main_dir $logName >> $standard_bin_SNPs_FASTA 2>> $logName;
+		## Perform reference genome fragmentation vs GFF annotation file.
+		$python_exec $main_dir"scripts_genomes/genome_process_for_standard_bins_1.vs_GFF.py" $user $genome $main_dir $GFF_annotations $logName >> $standard_bin_SNPs_FASTA 2>> $logName;
+		cp $standard_bin_SNPs_FASTA $standard_bin_FASTA;
+	else
+		echo -e "Performing standard-bin fragmentation of genome for SNPs." >> $condensedLog;
+		echo -e "\tGenome being fragmentated into standard bins for SNPs." >> $logName;
+
+		## Perform reference genome fragmentation.
+		$python_exec $main_dir"scripts_genomes/genome_process_for_standard_bins_1.SNPs.py" $user $genome $main_dir $logName >> $standard_bin_SNPs_FASTA 2>> $logName;
+	fi
 fi
 
 echo -e "\n\t----------------------------------------------------------------------------------------------" >> $logName;

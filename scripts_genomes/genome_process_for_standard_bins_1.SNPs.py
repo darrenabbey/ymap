@@ -1,8 +1,8 @@
 # Input arguments:
-#	1) user     : Name of user account installing the genome file.
-#	2) genome   : Name of installed genome.
-#	3) main_dir : Root directory.
-#	4) logfile  : Path and file name of log file.
+#	1) user            : Name of user account installing the genome file.
+#	2) genome          : Name of installed genome.
+#	3) main_dir        : Root directory.
+#	4) logfile         : Path and file name of log file.
 #
 # Processing:
 #	1) Load genome FASTA.
@@ -10,10 +10,10 @@
 #
 import string, sys, re, time, os;
 from pathlib import Path;
-userName    = sys.argv[1];
-genomeName  = sys.argv[2];
-main_dir    = sys.argv[3];
-logName     = sys.argv[4];
+userName        = sys.argv[1];
+genomeName      = sys.argv[2];
+main_dir        = sys.argv[3];
+logName         = sys.argv[4];
 
 
 # Initialize time counter and log file section.
@@ -29,11 +29,11 @@ with open(logName, "a") as myfile:
 #------------------------------------------------------------------------------------------------------------
 # Find name of genome FASTA file for species being examined.
 #     Read in and parse : "Ymap_root/users/[userName]/genomes/[genomeName]/[genome]/reference.txt"
-workingDir     = main_dir + 'users/' + userName + '/genomes/' + genomeName + '/';
-reference_file = workingDir + 'reference.txt';
-refFile        = open(reference_file,'r');
-refFASTA       = refFile.read().strip();
-refFile.close();
+workingDir     = os.path.join(main_dir, 'users', userName, 'genomes', genomeName, '');
+reference_file = os.path.join(workingDir, 'reference.txt');
+
+with open(reference_file, 'r') as refFile:
+	refFASTA = refFile.read().strip();
 
 # Generate the name of the reformatted FASTA file: "test.fasta" => "test.2.fasta"
 refFASTA       = refFASTA.replace(".fasta",".2.fasta");
@@ -47,8 +47,9 @@ with open(logName, "a") as myfile:
 # Look up chromosome name strings for genome in use.
 #     Read in and parse : "Ymap_root/users/[userName]/genomes/[genomeName]/figure_definitions.txt"
 figureDefinition_file  = workingDir + '/figure_definitions.txt';
-figureDefinitionFile   = open(figureDefinition_file,'r');
-figureDefinitionData   = figureDefinitionFile.readlines();
+with open(figureDefinition_file, 'r') as figureDefinitionFile:
+	figureDefinitionData = figureDefinitionFile.readlines();
+
 #       Example lines in figureDefinition_file:
 #               Chr  Use   Label   Name                         posX   posY   width   height
 #               1    1     Chr1    Ca21chr1_C_albicans_SC5314   0.15   0.8    0.8     0.0625
@@ -58,95 +59,81 @@ figureDefinitionData   = figureDefinitionFile.readlines();
 with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\t\tDetermining number of chromosomes of interest in genome.");
 
-# Determine the number of chromosomes of interest in genome.
+# Process lines in a single pass to map chromosome data
+valid_chromosomes = {};
 chrName_maxcount = 0;
+
 for line in figureDefinitionData:
-	if (len(line) > 0):
-		if (line[0] != "#"):
-			line_parts = line.strip().split();
-			chr_num    = line_parts[0];
-			if chr_num.isdigit():
-				chr_num    = int(float(line_parts[0]));
-				chr_use    = int(float(line_parts[1]));
-				chr_label  = line_parts[2];
-				chr_name   = line_parts[3];
-				if chr_num > chrName_maxcount:
-					chrName_maxcount = chr_num;
-figureDefinitionFile.close();
+	trimmed = line.strip();
+	if trimmed and not trimmed.startswith("#"):
+		line_parts = trimmed.split();
+		chr_num_str = line_parts[0];
 
-# Pre-allocate chrName_array
-chrName = [];
-for x in range(0, chrName_maxcount):
-	chrName.append([]);
+		if chr_num_str.isdigit():
+			chr_num   = int(chr_num_str);
+			chr_use   = int(float(line_parts[1]));
+			chr_label = line_parts[2];
+			chr_name  = line_parts[3];
 
+			if chr_num > chrName_maxcount:
+				chrName_maxcount = chr_num;
+
+			if chr_num != 0:
+				valid_chromosomes[chr_num] = chr_name;
+
+
+# Pre-allocate and populate the chrName list in order
+chrName = [""] * chrName_maxcount;
 with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\t\tGathering name strings for chromosomes.");
+	for chr_num in sorted(valid_chromosomes.keys()):
+		chr_name = valid_chromosomes[chr_num];
+		chrName[chr_num - 1] = chr_name;
+		myfile.write(f"\n\t\t\t\t\tChr{chr_num} = {chr_name}");
 
-# Gather name strings for chromosomes, in order.
-figureDefinitionFile  = open(figureDefinition_file,'r');
-for line in figureDefinitionData:
-	line_parts = line.strip().split();
-	chr_num    = line_parts[0];
-	if chr_num.isdigit():
-		chr_num    = int(float(line_parts[0]));
-		chr_use    = int(float(line_parts[1]));
-		chr_label  = line_parts[2];
-		chr_name   = line_parts[3];
-		if chr_num != 0:
-			chrName[int(float(chr_num))-1] = chr_name;
-			with open(logName, "a") as myfile:
-				myfile.write("\n\t\t\t\t\tChr" + str(chr_num) + " = " + chr_name);
-figureDefinitionFile.close();
-
-# Put the chromosome count into a smaller name for later use.
 chrCount = chrName_maxcount;
 
 
 #============================================================================================================
 # Determine chromosome sizes and standard bin size.
 #------------------------------------------------------------------------------------------------------------
-# Open reformatted FASTA file.
-FASTA_file = workingDir + refFASTA;
-FASTA_data = open(FASTA_file,'r');
+FASTA_file = os.path.join(workingDir, refFASTA);
 
 with open(logName, "a") as myfile:
 	myfile.write("\n\t\t\t#### Determine chromosome lengths.");
 
-# Process reformatted FASTA file, entry by entry, to determine maximum chromosome length.
 chr_lengths = [];
-while True:
-	# FASTA entries are pairs of lines with the following structure.
-	#    >Ca_a.chr1 (9638..10115) (478bp) [*]
-	#    ATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGC
-	line1 = FASTA_data.readline();
-	line2 = FASTA_data.readline();
-	if not line2:
-		break  # EOF
-	first_char = line1[:1];
-	old_chr_name = '';
-	if first_char == ">":
-		# First line is header to FASTA entry, so file contents are formatted properly.
-		# Determine chromosome/contig name by isolating the first space-delimited string, then removing the header character ">".
-		line_parts = line1.strip().split();
-		chr_name   = line_parts[0];
-		chr_name   = chr_name.replace(">","");
-		# If the current chromosome is one of those in use...
-		if chr_name in chrName:
-			chr_lengths.append(len(line2));
-FASTA_data.close();
-with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\t####     max_chr_length         = " + str(max(chr_lengths)) + " bp");
+with open(FASTA_file, 'r') as FASTA_data:
+	while True:
+		line1 = FASTA_data.readline();
+		line2 = FASTA_data.readline();
+		if not line2:
+			break;  # EOF
 
-# Calculate standard bin size.
-if os.path.isfile(workingDir+"/resolution.SNPs.txt"):
-	txt = Path(workingDir+"/resolution.SNPs.txt").read_text();
-	bases_per_bin_SNP = int(round(max(chr_lengths)/int(txt)));
+		if line1.startswith(">"):
+			# Isolating the first space-delimited string, removing the header character ">"
+			chr_name = line1.strip().split()[0].replace(">", "");
+
+			# If the current chromosome is one of those in use...
+			if chr_name in chrName:
+				# .strip() handles the trailing newline so length calculations are perfectly precise
+				chr_lengths.append(len(line2.strip()));
+
+with open(logName, "a") as myfile:
+	myfile.write(f"\n\t\t\t####     max_chr_length         = {max(chr_lengths)} bp");
+
+# Calculate standard bin size
+resolution_file = os.path.join(workingDir, "resolution.SNPs.txt");
+if os.path.isfile(resolution_file):
+	txt = Path(resolution_file).read_text().strip();
+	bases_per_bin = int(round(max(chr_lengths) / int(txt)));
 else:
-	bases_per_bin_SNP = int(round(max(chr_lengths)/700));
-with open(logName, "a") as myfile:
-	myfile.write("\n\t\t\t####     bases_per_standard_bin = " + str(bases_per_bin_SNP) + " bp");
+	bases_per_bin = int(round(max(chr_lengths) / 700));
 
-# Reset timer.
+with open(logName, "a") as myfile:
+	myfile.write(f"\n\t\t\t####     bases_per_standard_bin = {bases_per_bin} bp");
+
+# Reset timer
 t0a = time.process_time();
 t1  = t0a;
 with open(logName, "a") as myfile:
@@ -156,49 +143,59 @@ with open(logName, "a") as myfile:
 #============================================================================================================
 # Digest chromosome sequences and output new FASTA file entries.
 #------------------------------------------------------------------------------------------------------------
-# Open reformatted FASTA file.
-FASTA_data = open(FASTA_file,'r');
-# Process reformatted FASTA file, entry by entry, to digest into fragments.
 chr_num = 0;
-while True:
-	# FASTA entries are pairs of lines with the following structure.
-	#    >Ca_a.chr1 (9638..10115) (478bp) [*]
-	#    ATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGC
-	line1 = FASTA_data.readline();
-	line2 = FASTA_data.readline();
-	if not line2:
-		break  # EOF
-	first_char = line1[:1];
-	old_chr_name = '';
-	if first_char == ">":
-		# Increment chromosome number counter.
-		chr_num += 1;
+old_chr_name = '';
 
-		# First line is header to FASTA entry, so file contents are formatted properly.
-		# Determine chromosome/contig name by isolating the first space-delimited string, then removing the header character ">".
-		line_parts = line1.strip().split();
-		chr_name   = line_parts[0];
-		chr_name   = chr_name.replace(">","");
+# Process reformatted FASTA file, entry by entry, to digest into fragments.
+with open(FASTA_file, 'r') as FASTA_data:
+	while True:
+		line1 = FASTA_data.readline()
+		line2 = FASTA_data.readline()
+		if not line2:
+			break  # EOF
 
-		# If the current chromosome is different than the last one, output log entry.
-		if (chr_name != old_chr_name):
-			with open(logName, "a") as myfile:
-				myfile.write("\t\t\t####\t" + str(time.process_time() - t1) + " seconds for this chr.\n");
-				t1 = time.process_time();
-				if chr_name in chrName:
-					myfile.write("\t\t\t#### Fragmenting: " + chr_name + "\n");
-				else:
-					myfile.write("\t\t\t#### Not fragmenting: " + chr_name + "\n");
+		if line1.startswith(">"):
+			chr_num += 1
 
-		# If the current chromosome is one of those in use...
-		if chr_name in chrName:
-			fragment_start = 1;
-			fragment_end   = bases_per_bin_SNP;
-			while fragment_start < len(line2):
-				fragment_string = line2[(fragment_start-1):(min(fragment_end,len(line2))-1)];
-				fragment_length = min(fragment_end,len(line2)) - fragment_start + 1;
-				print(">" + genomeName + ".chr" + str(chr_num) + " (" + str(fragment_start) + ".." + str(min(fragment_end,len(line2))) + ") (" + str(fragment_length) + "bp) [*]");
-				print(fragment_string);
-				fragment_start += bases_per_bin_SNP;
-				fragment_end   += bases_per_bin_SNP;
-FASTA_data.close();
+			# Determine chromosome name by isolating the first space-delimited string, removing ">"
+			chr_name = line1.strip().split()[0].replace(">", "")
+
+			# Log boundaries if the current chromosome is different than the last one seen
+			if chr_name != old_chr_name:
+				elapsed_time = time.process_time() - t1
+				with open(logName, "a") as myfile:
+					myfile.write(f"\t\t\t####\t{elapsed_time:.4f} seconds for this chr.\n")
+					if chr_name in chrName:
+						myfile.write(f"\t\t\t#### Fragmenting: {chr_name}\n")
+					else:
+						myfile.write(f"\t\t\t#### Not fragmenting: {chr_name}\n")
+				t1 = time.process_time()
+				old_chr_name = chr_name  # Update marker tracker
+
+			# If the current chromosome is one of those in use...
+			if chr_name in chrName:
+				# Strip trailing newline characters to ensure base-count math accuracy
+				clean_sequence = line2.strip()
+				seq_len = len(clean_sequence)
+
+				fragment_start = 1
+				fragment_end = bases_per_bin
+
+				while fragment_start <= seq_len:
+					# Resolve safe bounding range limit
+					current_end = min(fragment_end, seq_len)
+
+					# Convert to standard 0-indexed Python string slicing
+					start_idx = fragment_start - 1
+					end_idx = current_end
+
+					fragment_string = clean_sequence[start_idx:end_idx]
+					fragment_length = current_end - fragment_start + 1
+
+					# Print the newly generated bin partition details
+					print(f">{genomeName}.chr{chr_num} ({fragment_start}..{current_end}) ({fragment_length}bp) [*]")
+					print(fragment_string)
+
+					fragment_start += bases_per_bin
+					fragment_end += bases_per_bin
+
