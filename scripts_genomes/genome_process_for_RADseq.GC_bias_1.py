@@ -51,55 +51,58 @@ with open(reference_file, 'r') as refFile:
 # Open restriction-fragmented genome FASTA file
 restrictionBins_FASTA_file = os.path.join(workingDir, refFASTA.replace('.fasta', '.MfeI_MboI.fasta'));
 
-fragments = [];
-usable_labels = {'[*]'};
+fragments = []
+usable_labels = {'[*]'}
 
-with open(restrictionBins_FASTA_file, 'r') as restrictionBins_FASTA_data:
-	while True:
-		line1 = restrictionBins_FASTA_data.readline();
-		line2 = restrictionBins_FASTA_data.readline();
-		if not line2:
-			break;  # EOF
+current_header = None  # Tracks the active valid header line
 
-		if line1.startswith(">"):
-			line_parts = line1.strip().split();
+with open(fragments_FASTA_file, 'r') as fragments_FASTA_data:
+	for line in fragments_FASTA_data:
+		trimmed_line = line.strip();
+
+		# Safely skip any single blank line instantly.
+		if not trimmed_line:
+			continue;
+
+		# If the line is a header, store it and move to the next line.
+		if trimmed_line.startswith(">"):
+			current_header = trimmed_line;
+			continue;
+
+		# If we reach here, it's a sequence line. Process it using the stored header.
+		if current_header:
+			line_parts = current_header.split();
 
 			if len(line_parts) > 3:
 				chrGenomeAndNum_string = line_parts[0];
 				bp_coordinate_string   = line_parts[1];
 				fragment_usable_string = line_parts[3];
 
-				# Check if the descriptor label matches [gene] or [intergenic].
 				if fragment_usable_string in usable_labels:
-					# Parse chromosome number from string like: ">Ca_a.chr1" or lengthy names.
+					# Parse chromosome number.
 					string_fragments = chrGenomeAndNum_string.split(".");
 					chrNum_string    = string_fragments[-1];
 					chr_num          = int(chrNum_string.replace("chr", ""));
 
-					# Parse coordinates from string like: "(9638..10115)".
+					# Parse coordinates.
 					coordinates = bp_coordinate_string.replace('(', '').replace(')', '').replace('..', ' ').split();
 					bp_start    = int(coordinates[0]);
 					bp_end      = int(coordinates[1]);
 
-					# Calculate precise GC ratio on case-normalized clean sequence string.
-					clean_seq = line2.strip().upper();
-
+					# Calculate precise GC ratio.
+					clean_seq = trimmed_line.upper();
 					g_count = clean_seq.count('G');
 					c_count = clean_seq.count('C');
 					t_count = clean_seq.count('T');
 					a_count = clean_seq.count('A');
 
 					total_bases = g_count + c_count + t_count + a_count;
-
-					if total_bases == 0:
-						GC_ratio = 0.0;
-					else:
-						GC_ratio = (g_count + c_count) / float(total_bases);
+					GC_ratio = (g_count + c_count) / float(total_bases) if total_bases > 0 else 0.0;
 
 					fragments.append([chr_num, bp_start, bp_end, GC_ratio]);
 
-numFragments = len(fragments);
-
+				# Reset header tracker to prepare for the next record
+				current_header = None;
 #------------------------------------------------------------------------------------------------------------
 # End of code section to parse fragments from genome.
 #============================================================================================================
