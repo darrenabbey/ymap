@@ -22,7 +22,7 @@
 #		Comment lines in output begin with '#'.
 #
 
-import string, sys, re, time;
+import string, sys, re, time, os;
 user       = sys.argv[1]
 project    = sys.argv[2]
 genome     = sys.argv[3]
@@ -51,75 +51,93 @@ with open(logName, "a") as myfile:
 # Load FastaName from 'reference.txt' for genome in use.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tIdentifying name of reference FASTA file.\n")
-reference_file = genomeDirectory + 'reference.txt'
-refFile        = open(reference_file,'r')
-FastaName      = refFile.read().strip()
-refFile.close()
-FastaName      = FastaName.replace(".fasta", "")
+	myfile.write("\t\t|\tIdentifying name of reference FASTA file.\n");
+reference_file = genomeDirectory + 'reference.txt';
+refFile        = open(reference_file,'r');
+FastaName      = refFile.read().strip();
+refFile.close();
+FastaName      = FastaName.replace(".fasta", "");
+with open(logName, "a") as myfile:
+	myfile.write("\t\t|\t\t'"+FastaName+"'\n");
 
 #============================================================================================================
 # Process standard-bin fragmented reference genome file.
 #------------------------------------------------------------------------------------------------------------
-# Example fragmented FASTA header line.
+# Example FASTQ header line.
 #     >Ca_a.chr1 (9638..10115) (478bp) [*]
+# FASTA entries with header lines ending in '[gene]' or '[intergenic]' are usable.
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tLoading standard bin fragmented genome FASTA file.\n")
+	myfile.write("\n\t\tProcessing standard bin fragmented genome file.");
 
-# Open restriction-digested genome FASTA file.
-standardBins_FASTA_file = genomeDirectory + FastaName + ".standard_bins.fasta"
-standardBins_FASTA_data = open(standardBins_FASTA_file,'r')
+# Find name of genome FASTA file for species being examined.
+#     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/reference.txt"
+workingDir     = os.path.join(main_dir, 'users', genomeUser, 'genomes', genome, '');
+reference_file = os.path.join(workingDir, 'reference.txt');
+with open(reference_file, 'r') as refFile:
+	refFASTA = refFile.read().strip();
 
-# Setup array and counter for tracking fragment definition data.
-fragments        = []
-fragment_counter = 0
+# Open standard-fragmented genome FASTQ file.
+fragments_FASTA_file = os.path.join(workingDir, refFASTA.replace('.fasta', '.standard_bins.fasta'));
 
-## Process digested FASTA genome file, line by line.
-while True:
-	# Line pairs have the following structure.
-	#    >Ca_a.chr1 (9638..10115) (478bp) [*]
-	#    ATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGC
-	line1 = standardBins_FASTA_data.readline()
-	line2 = standardBins_FASTA_data.readline()
-	if not line2:
-		break  # EOF
-	first_char = line1[:1]
+fragments = [];
+usable_labels = {'[*]', '[gene]', '[intergenic]'};
 
-	if first_char == ">":
-		# Line is header to FASTA entry.
-		line_parts             = line1.strip().split()
-		chrGenomeAndNum_string = line_parts[0]
-		bp_coordinate_string   = line_parts[1]
-		fragment_size_string   = line_parts[2]
+current_header = None;  # Tracks the active valid header line.
 
-		if len(line_parts) > 3:
-			fragment_usable_string = line_parts[3]
-			if fragment_usable_string[1] == "*":
-				# Fragment is usable, so the details should be placed into fragments structure.
-				# split the chr string by '.' character, then trim off the first three characters ('chr') from the final substring.
-				#   string has format of : ">Ca_a.chr1"
-				line_parts         = chrGenomeAndNum_string.split(".");
-				chrNum_string      = line_parts[len(line_parts)-1];
-				chr_num            = int(float(chrNum_string.replace("chr","")));
+with open(fragments_FASTA_file, 'r') as fragments_FASTA_data:
+	for line in fragments_FASTA_data:
+		trimmed_line = line.strip();
 
-				#   string has format of : "(9638..10115)"
-				coordinates = bp_coordinate_string.replace('(','').replace(')','').replace('..',' ').split()
-				bp_start    = int(float(coordinates[0]))
-				bp_end      = int(float(coordinates[1]))
-				reads_count = 0   # placeholder value.
-				reads_max   = 0   # placeholder value.
-				reads_ave   = 0   # placeholder value.
+		# Safely skip any single blank line instantly.
+		if not trimmed_line:
+			continue;
 
-				fragments.append([chr_num,bp_start,bp_end,reads_count,reads_max,reads_ave])
-				fragment_counter += 1
-standardBins_FASTA_data.close()
+		# If the line is a header, store it and move to the next line.
+		if trimmed_line.startswith(">"):
+			current_header = trimmed_line;
+			continue;
+
+		# If we reach here, it's a sequence line. Process it using the stored header.
+		if current_header:
+			line_parts = current_header.split();
+
+			if len(line_parts) > 3:
+				chrGenomeAndNum_string = line_parts[0];
+				bp_coordinate_string   = line_parts[1];
+				fragment_size_string   = line_parts[2];
+				fragment_usable_string = line_parts[3];
+
+				if fragment_usable_string in usable_labels:
+					# Parse chromosome number.
+					string_fragments = chrGenomeAndNum_string.split(".");
+					chrNum_string    = string_fragments[-1];
+					chr_num          = int(chrNum_string.replace("chr", ""));
+
+					# Parse coordinates.
+					coordinates = bp_coordinate_string.replace('(', '').replace(')', '').replace('..', ' ').split();
+					bp_start    = int(coordinates[0]);
+					bp_end      = int(coordinates[1]);
+
+					# Core initialization placeholders for downstream CNV data additions
+					reads_count = 0;  # placeholder value.
+					reads_max   = 0;  # placeholder value.
+					reads_ave   = 0;  # placeholder value.
+
+					fragments.append([
+						chr_num, bp_start, bp_end, 
+						reads_count, reads_max, reads_ave
+					]);
+
+			# Reset header tracker to prepare for the next record
+			current_header = None;
+
+fragment_counter = len(fragments);
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tThe standard bin fragmented genome FASTA file has been loaded.\n\t\t|")
+	myfile.write("\t\t|\tThe standard bin fragmented genome FASTA file has been loaded.\n");
 
 # Put fragment counter into a general use variable.
-# numFragments = number of bins to be displayed across entire genome.
-numFragments = fragment_counter
+numFragments = len(fragments);
 #------------------------------------------------------------------------------------------------------------
 # End of code section to parse restriction fragments from genome.
 #============================================================================================================

@@ -27,49 +27,49 @@
 #
 
 import string, sys, re, time, os
-genome           = sys.argv[1]
-genomeUser       = sys.argv[2]
-hapmap           = sys.argv[3]	# 'hapmap' or 'parent project'...            both will contain a 'SNPdata_parent.txt' format file.
-hapmapUser       = sys.argv[4]	# 'hapmap user' or 'parent project user'...
-project          = sys.argv[5]	# 'child project'.
-projectUser      = sys.argv[6]	# 'child project user'.
-main_dir         = sys.argv[7]
-logName          = sys.argv[8]
-runMode          = sys.argv[9]  # 'hapmap' or 'LOH' modes.
+genome           = sys.argv[1];
+genomeUser       = sys.argv[2];
+hapmap           = sys.argv[3];	# 'hapmap' or 'parent project'...            both will contain a 'SNPdata_parent.txt' format file.
+hapmapUser       = sys.argv[4];	# 'hapmap user' or 'parent project user'...
+project          = sys.argv[5];	# 'child project'.
+projectUser      = sys.argv[6];	# 'child project user'.
+main_dir         = sys.argv[7];
+logName          = sys.argv[8];
+runMode          = sys.argv[9];  # 'hapmap' or 'LOH' modes.
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t*=======================================================================================*\n")
-	myfile.write("\t\t| Log of 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'   |\n")
-	myfile.write("\t\t*---------------------------------------------------------------------------------------*\n")
+	myfile.write("\t\t*=======================================================================================*\n");
+	myfile.write("\t\t| Log of 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'   |\n");
+	myfile.write("\t\t*---------------------------------------------------------------------------------------*\n");
 	myfile.write("\t\t| Input arguments:\n");
-	myfile.write("\t\t|     genome      = "+genome+"\n")
-	myfile.write("\t\t|     genomeUser  = "+genomeUser+"\n")
+	myfile.write("\t\t|     genome      = "+genome+"\n");
+	myfile.write("\t\t|     genomeUser  = "+genomeUser+"\n");
 	if (runMode == 'hapmap'):
-		myfile.write("\t\t|     hapmap      = "+hapmap+"\n")
-		myfile.write("\t\t|     hapmapUser  = "+hapmapUser+"\n")
+		myfile.write("\t\t|     hapmap      = "+hapmap+"\n");
+		myfile.write("\t\t|     hapmapUser  = "+hapmapUser+"\n");
 	else:
-		myfile.write("\t\t|     parent      = "+hapmap+"\n")
-		myfile.write("\t\t|     parentUser  = "+hapmapUser+"\n")
-	myfile.write("\t\t|     project     = "+project+"\n")
-	myfile.write("\t\t|     projectUser = "+projectUser+"\n")
-	myfile.write("\t\t|     main_dir    = "+main_dir+"\n")
-	myfile.write("\t\t|     logName     = "+logName+"\n")
-	myfile.write("\t\t|     runMode     = "+runMode+"\n")
+		myfile.write("\t\t|     parent      = "+hapmap+"\n");
+		myfile.write("\t\t|     parentUser  = "+hapmapUser+"\n");
+	myfile.write("\t\t|     project     = "+project+"\n");
+	myfile.write("\t\t|     projectUser = "+projectUser+"\n");
+	myfile.write("\t\t|     main_dir    = "+main_dir+"\n");
+	myfile.write("\t\t|     logName     = "+logName+"\n");
+	myfile.write("\t\t|     runMode     = "+runMode+"\n");
 	myfile.write("\t\t*---------------------------------------------------------------------------------------*\n")
 
 # Figure out if input name 'hapmap' corresponds to a project or an actual hapmap.
 if (runMode == 'hapmap'):
-	parentDatafile  = main_dir+"/users/"+hapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent.txt"
+	parentDatafile  = main_dir+"/users/"+hapmapUser+"/hapmaps/"+hapmap+"/SNPdata_parent.txt";
 	with open(logName, "a") as myfile:
-		myfile.write("\t\t|\trunMode = 'hapmap'\n")
-		myfile.write("\t\t|\t    Comparing project '"+project+"' to hapmap '"+hapmap+"'.\n")
+		myfile.write("\t\t|\trunMode = 'hapmap'\n");
+		myfile.write("\t\t|\t    Comparing project '"+project+"' to hapmap '"+hapmap+"'.\n");
 elif (runMode == 'LOH'):
-	parentDatafile = main_dir+"/users/"+projectUser+"/projects/"+project+"/SNPdata_parent.txt"
+	parentDatafile = main_dir+"/users/"+projectUser+"/projects/"+project+"/SNPdata_parent.txt";
 	with open(logName, "a") as myfile:
-		myfile.write("\t\t|\trunMode = 'LOH'\n")
-		myfile.write("\t\t|\t    Comparing project '"+project+"' to parent project '"+hapmap+"'.\n")
+		myfile.write("\t\t|\trunMode = 'LOH'\n");
+		myfile.write("\t\t|\t    Comparing project '"+project+"' to parent project '"+hapmap+"'.\n");
 
-childDatafile = main_dir+"/users/"+projectUser+"/projects/"+project+"/SNP_CNV_v1.txt"
+childDatafile = main_dir+"/users/"+projectUser+"/projects/"+project+"/SNP_CNV_v1.txt";
 
 t0 = time.process_time();
 
@@ -77,88 +77,115 @@ t0 = time.process_time();
 #============================================================================================================
 # Find location of genome being used.
 #------------------------------------------------------------------------------------------------------------
-genomeDirectory = main_dir+"/users/"+genomeUser+"/genomes/"+genome+"/"
+genomeDirectory = main_dir+"/users/"+genomeUser+"/genomes/"+genome+"/";
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tProcessing standard bin fragmented genome file.\n")
+	myfile.write("\t\t|\tProcessing standard bin fragmented genome file.\n");
 
 
 #============================================================================================================
 # Load FastaName from 'reference.txt' for genome in use.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tIdentifying name of reference FASTA file.\n")
-reference_file = genomeDirectory + '/reference.txt'
-refFile        = open(reference_file,'r')
-FastaName      = refFile.read().strip()
-refFile.close()
-FastaName      = FastaName.replace(".fasta", "")
+	myfile.write("\t\t|\tIdentifying name of reference FASTA file.\n");
+reference_file = genomeDirectory + '/reference.txt';
+refFile        = open(reference_file,'r');
+FastaName      = refFile.read().strip();
+refFile.close();
+FastaName      = FastaName.replace(".fasta", "");
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\t\t'"+FastaName+"'\n")
+	myfile.write("\t\t|\t\t'"+FastaName+"'\n");
 
 
 #============================================================================================================
 # Process standard-bin fragmented reference genome file.
 #------------------------------------------------------------------------------------------------------------
-# Example fragmented FASTA header line.
+# Example FASTQ header line.
 #     >Ca_a.chr1 (9638..10115) (478bp) [*]
+# FASTA entries with header lines ending in '[gene]' or '[intergenic]' are usable.
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tLoading standard bin fragmented genome FASTA file.\n")
-# Open restriction-digested genome FASTA file.
-standardBins_FASTA_file = genomeDirectory + FastaName + ".standard_bins.SNPs.fasta"
-standardBins_FASTA_data = open(standardBins_FASTA_file,'r')
-# Setup array and counter for tracking fragment definition data.
-fragments        = []
-fragment_counter = 0
-## Process digested FASTA genome file, line by line.
-while True:
-	# Line pairs have the following structure.
-	#    >Ca_a.chr1 (9638..10115) (478bp) [*]
-	#    ATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGCATGC
-	line1 = standardBins_FASTA_data.readline()
-	line2 = standardBins_FASTA_data.readline()
-	if not line2:
-		break  # EOF
-	first_char = line1[:1];
-	if first_char == ">":
-		# Line is header to FASTA entry.
-		line_parts             = line1.strip().split()
-		chrGenomeAndNum_string = line_parts[0]
-		bp_coordinate_string   = line_parts[1]
-		fragment_size_string   = line_parts[2]
-		if len(line_parts) > 3:
-			fragment_usable_string = line_parts[3]
-			if fragment_usable_string[1] == "*":
-				# Fragment is usable, so the details should be placed into fragments structure.
-				# split the chr string by '.' character, then trim off the first three characters ('chr') from the final substring.
-				#   string has format of : ">Ca_a.chr1"
-				split_chr_string   = chrGenomeAndNum_string.split(".");
-				chrNum_string      = split_chr_string[-1];
-				chr_num            = int(float(chrNum_string.replace("chr","")));
-				#   string has format of : "(9638..10115)"
-				coordinates        = bp_coordinate_string.replace('(','').replace(')','').replace('..',' ').split()
-				bp_start           = int(coordinates[0])
-				bp_end             = int(coordinates[1])
-				phasedData         = '(' # start of string for phased data.
-				unphasedData       = '(' # start of string for unphased data.
-				phasedCoordinate   = '(' # start of string for phased data coordinates.
-				unphasedCoordinate = '(' # start of string for unphased data coordinaes.
-				phasedAllele       = '(' # start of string for phased alelles.
-				unphasedAllele     = '(' # start of string for unphased alleles.
-				fragments.append([chr_num,bp_start,bp_end,phasedData,unphasedData,phasedCoordinate,unphasedCoordinate,phasedAllele,unphasedAllele])
-				#print('###\tfragment[' + str(fragment_counter) + '] = [' + str(chr_num) + ', ' + str(bp_start) + ', ' + str(bp_end) + ', ' + ']')
-				fragment_counter += 1
-standardBins_FASTA_data.close()
+	myfile.write("\n\t\tProcessing standard bin fragmented genome file.");
+
+# Find name of genome FASTA file for species being examined.
+#     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/reference.txt"
+workingDir     = os.path.join(main_dir, 'users', genomeUser, 'genomes', genome, '');
+reference_file = os.path.join(workingDir, 'reference.txt');
+with open(reference_file, 'r') as refFile:
+	refFASTA = refFile.read().strip();
+
+# Open standard-fragmented genome FASTQ file.
+fragments_FASTA_file = os.path.join(workingDir, refFASTA.replace('.fasta', '.standard_bins.fasta'));
+
+fragments = [];
+usable_labels = {'[*]', '[gene]', '[intergenic]'};
+
+current_header = None;  # Tracks the active valid header line.
+
+with open(fragments_FASTA_file, 'r') as fragments_FASTA_data:
+	for line in fragments_FASTA_data:
+		trimmed_line = line.strip();
+
+		# Safely skip any single blank line instantly.
+		if not trimmed_line:
+			continue;
+
+		# If the line is a header, store it and move to the next line.
+		if trimmed_line.startswith(">"):
+			current_header = trimmed_line;
+			continue;
+
+		# If we reach here, it's a sequence line. Process it using the stored header.
+		if current_header:
+			line_parts = current_header.split();
+
+			if len(line_parts) > 3:
+				chrGenomeAndNum_string = line_parts[0];
+				bp_coordinate_string   = line_parts[1];
+				fragment_size_string   = line_parts[2];
+				fragment_usable_string = line_parts[3];
+
+				if fragment_usable_string in usable_labels:
+					# Parse chromosome number.
+					string_fragments = chrGenomeAndNum_string.split(".");
+					chrNum_string    = string_fragments[-1];
+					chr_num          = int(chrNum_string.replace("chr", ""));
+
+					# Parse coordinates.
+					coordinates = bp_coordinate_string.replace('(', '').replace(')', '').replace('..', ' ').split();
+					bp_start    = int(coordinates[0]);
+					bp_end      = int(coordinates[1]);
+
+					# Core initialization placeholders for downstream SNP string additions
+					phasedData         = '(';
+					unphasedData       = '(';
+					phasedCoordinate   = '(';
+					unphasedCoordinate = '(';
+					phasedAllele       = '(';
+					unphasedAllele     = '(';
+
+					fragments.append([
+						chr_num, bp_start, bp_end, 
+						phasedData, unphasedData, 
+						phasedCoordinate, unphasedCoordinate, 
+						phasedAllele, unphasedAllele
+					]);
+
+			# Reset header tracker to prepare for the next record
+			current_header = None;
+
+fragment_counter = len(fragments);
+
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tThe standard bin fragmented genome FASTA file has been loaded.\n")
+	myfile.write("\t\t|\tThe standard bin fragmented genome FASTA file has been loaded.\n");
+
 # Put fragment counter into a general use variable.
-numFragments = fragment_counter
+numFragments = len(fragments);
 #------------------------------------------------------------------------------------------------------------
 # End of code section to parse standard-bin fragments file.
 #============================================================================================================
 
 
-print("### " + str(time.process_time()-t0) + "seconds to parse restriction fragments from digested genome.")
+print("### " + str(time.process_time()-t0) + "seconds to parse fragments from genome.")
 t1 = time.process_time()
 print("### Starting read count data processing.")
 
@@ -167,12 +194,15 @@ print("### Starting read count data processing.")
 # Process hapmap 'SNPdata_parent.txt' file to determine initial SNP loci.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tProcessing 'SNPdata_parent.txt' file -> het loci.\n")
+	myfile.write("\t\t|\tProcessing 'SNPdata_parent.txt' file -> het loci.\n");
+
 # Look up chromosome name strings for genome in use.
 #     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/figure_definitions.txt"
-figureDefinition_file  = genomeDirectory + 'figure_definitions.txt'
-figureDefinitionFile   = open(figureDefinition_file,'r')
-figureDefinitionData   = figureDefinitionFile.readlines()
+# Read in and parse chromosome layout information
+figureDefinition_file = os.path.join(genomeDirectory, 'figure_definitions.txt');
+with open(figureDefinition_file, 'r') as f:
+	figureDefinitionData = f.readlines();
+
 # Example lines in figureDefinition_file:
 #     Chr  Use   Label   Name                         posX   posY   width   height
 #     1    1     Chr1    Ca21chr1_C_albicans_SC5314   0.15   0.8    0.8     0.0625
@@ -180,366 +210,290 @@ figureDefinitionData   = figureDefinitionFile.readlines()
 #     0    0     Mito    Ca19-mtDNA                   0.0    0.0    0.0     0.0
 # Determine the number of chromosomes of interest in genome.
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tDetermining number of chromosomes of interest in genome.\n")
+	myfile.write("\t\t|\tDetermining number of chromosomes of interest in genome.\n");
 
-chrName_maxcount = 0
+chrName_maxcount = 0;
 for line in figureDefinitionData:
-	if (len(line) > 0):
-		if (line[0] != "#"):
-			line_parts = line.strip().split();
-			if (len(line_parts) > 0):
-				chr_num = line_parts[0]
-				if chr_num.isdigit():
-					chr_num    = int(float(line_parts[0]))
-					chr_use    = int(float(line_parts[1]))
-					chr_label  = line_parts[2]
-					chr_name   = line_parts[3]
-					if chr_num > chrName_maxcount:
-						chrName_maxcount = chr_num
-figureDefinitionFile.close()
+	trimmed = line.strip();
+	if trimmed and not trimmed.startswith("#"):
+		line_parts = trimmed.split();
+		if line_parts:
+			chr_num_str = line_parts[0];
+			if chr_num_str.isdigit():
+				chr_num = int(chr_num_str);
+				chr_use = int(float(line_parts[1]));
+				chr_label = line_parts[2];
+				chr_name = line_parts[3];
+				if chr_num > chrName_maxcount:
+					chrName_maxcount = chr_num;
 
-# Pre-allocate chrName_array
-chrName = []
+chrName = [];
+chrNums = [];
+chrNames = [];
+chrLabels = [];
+chrShorts = [];
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tGathering name strings for chromosomes.\n")
+	myfile.write("\t\t|\tGathering name strings for chromosomes.\n");
+	for line in figureDefinitionData:
+		trimmed = line.strip();
+		if trimmed and not trimmed.startswith("#"):
+			line_parts = trimmed.split();
+			# Check if line_parts has elements and if the FIRST element is a valid number string
+			if line_parts and line_parts[0].isdigit():
+				chr_num   = int(line_parts[0]);
+				chr_use   = int(float(line_parts[1]));
+				chr_label = line_parts[2];
+				chr_name  = line_parts[3];
 
-# Gather name strings for chromosomes, in order.
-figureDefinitionFile  = open(figureDefinition_file,'r')
-chrCounter = 0;
-chrNums    = [];
-chrNames   = [];
-chrLabels  = [];
-chrShorts  = [];
+				chrNums.append(chr_num);
+				chrLabels.append(chr_label);
+				chrNames.append(chr_name);
+				chrShorts.append(chr_label);
+				chrName.append(chr_name);
 
-for line in figureDefinitionData:
-	if (len(line) > 0):
-		if (line[0] != "#"):
-			line_parts = line.strip().split();
-			if (len(line_parts) > 0):
-				chr_num = line_parts[0]
-				if chr_num.isdigit():
-					chr_num                        = int(float(line_parts[0]))
-					chrNums.append(chr_num);
-					chr_use                        = int(float(line_parts[1]))
-					chr_label                      = line_parts[2]
-					chrLabels.append(chr_label);
-					chr_name                       = line_parts[3]
-					chrNames.append(chr_name);
-					chr_nameShort                  = chr_label
-					chrShorts.append(chr_nameShort);
-					chrName.append(chr_name)
-					with open(logName, "a") as myfile:
-						myfile.write("\t\t|\t\t" + str(chr_num) + " : " + chr_name + " = " + chr_nameShort + "\n")
-					chrCounter += 1
-figureDefinitionFile.close()
+				myfile.write(f"\t\t|\t\t{chr_num} : {chr_name} = {chr_label}\n");
 
-# Put the chromosome count into a smaller name for later use.
-chrCount = chrName_maxcount
+chrCount = chrName_maxcount;
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\t\tMax chr string : "+str(chrCount)+"\n")
-	myfile.write("\t\t|\tProcessing datasetParent 'SNPdata_parent.txt' file => het loci.\n")
-count            = 0
-old_chr          = 0
-fragment_found   = 0
-last_fragment    = 0
-current_fragment = 0
-log_count        = 0
-log_offset       = 0
+	myfile.write(f"\t\t|\t\tMax chr string : {chrCount}\n");
+	myfile.write("\t\t|\tProcessing datasetParent 'SNPdata_parent.txt' file => het loci.\n");
 
-print('### Number of Chromosomes = ' + str(chrCount))
-for x in range(0,chrCount):
-	if (chrNums[x] != 0):
-		print('### \t' + str(x+1) + ' : ' + str(chrNames[x]))
-print("###" + str(numFragments))
+# High-speed map translation lookup to completely optimize away inner-loop iteration overhead
+chr_name_to_num = {name: i + 1 for i, name in enumerate(chrName) if chrNums[i] != 0};
+
+count            = 0;
+old_chr          = 0;
+fragment_found   = 0;
+current_fragment = 0;
+log_count        = 0;
+log_offset       = 0;
+
+print(f"### Number of Chromosomes = {chrCount}");
+for x in range(chrCount):
+	if chrNums[x] != 0:
+		print(f"### \t{x+1} : {chrNames[x]}");
+print(f"###{numFragments}");
+
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tGathering read coverage data for each fragment.\n")
-	myfile.write("\t\t|\tparent data file = '"+parentDatafile+"'\n")
-	myfile.write("\t\t|\tchild data file  = '"+childDatafile+"'")
-# Open hapmap 'SNPdata_parent.txt' file, which only contains lines for heterozygous SNP loci in the parent dataset.
-print('### parentDatafile = ' + parentDatafile)
-data         = open(parentDatafile,'r')
-searchTarget = open(childDatafile,'r')
-childLine    = ''
+	myfile.write("\t\t|\tGathering read coverage data for each fragment.\n");
+	myfile.write(f"\t\t|\tparent data file = '{parentDatafile}'\n");
+	myfile.write(f"\t\t|\tchild data file  = '{childDatafile}'");
+
+print(f"### parentDatafile = {parentDatafile}");
+
+
+# Open matching read dataset streams
+searchTarget     = open(childDatafile, 'r');
+childLine        = '';
 empty_line_count = 0;
 
-# Process hapmap 'SNPdata_parent.txt' file, line by line.
-for line in data:
-	#===============================================================================================================
-	# Process the line from the parent 'SNPdata_parent.txt' line, describing one heterozgyous locus.
-	#---------------------------------------------------------------------------------------------------------------
-	# example lines from file:
-	# if (runMode == 'LOH'):
-	#	chromosome                   coord   allele1   allele2
-	#	Ca21chr1_C_albicans_SC5314   3706    T         C
-	# if (runMode == 'hapmap'):
-	#       chromosome                   coord   allele1   allele2   phasingData  [phasingData]
-	#       Ca21chr1_C_albicans_SC5314   3706    T         C         1            [11]
-	if line[0] != "#":
-		count += 1
-		parentLine    = line.strip().split('\t')
-		P_chr_name    = parentLine[0]        # chr name of bp.                  : Ca21chrR_C_albicans_SC5314
-		P_position    = int(parentLine[1])   # chr position of bp.              : 2286371
-		P_allele1     = parentLine[2]        # allele 1.                        : T
-		P_allele2     = parentLine[3]        # allele 2.                        : A
-		phasingData_1 = parentLine[4:]       # list of phasing data points.   remove any non-useful data points (10,11,12).   resulting in, 0s and 1s...  sum phase info = round(sum(list)/len(list))
-		phasingData   = [int(x) for x in phasingData_1 if int(x) not in (10, 11, 12)]
-		# remove no phase condition '10' = het coordinate not found in dataset.
-		# remove no phase condition '11' = het coordinate not associated with LOH fragment definition.
-		# remove no phase condition '12' = het coordinate allele not in hapmap.
+with open(parentDatafile, 'r') as data:
+	for line in data:
+		#===============================================================================================================
+		# Process the line from the parent 'SNPdata_parent.txt' line, describing one heterozgyous locus.
+		#---------------------------------------------------------------------------------------------------------------
+		# example lines from file:
+		# if (runMode == 'LOH'):
+		#       chromosome                   coord   allele1   allele2
+		#       Ca21chr1_C_albicans_SC5314   3706    T         C
+		# if (runMode == 'hapmap'):
+		#       chromosome                   coord   allele1   allele2   phasingData  [phasingData]
+		#       Ca21chr1_C_albicans_SC5314   3706    T         C         1            [11]
 
-		# Determine summary phase call for locus, used to apply counts to proper output columns.
+		if line.startswith("#") or not line.strip():
+			continue;
+
+		count += 1;
+		parentLine = line.strip().split('\t');
+		P_chr_name = parentLine[0];
+		P_position = int(parentLine[1]);
+		P_allele1 = parentLine[2];
+		P_allele2 = parentLine[3];
+
+		# Strip out non-useful phase labels (10, 11, 12).
+		phasingData_1 = parentLine[4:];
+		phasingData = [int(x) for x in phasingData_1 if int(x) not in (10, 11, 12)];
+
 		if len(phasingData) == 0:
-			# no phasing data available, or runMode == 'LOH'
-			phaseCall = 10 # homolog undefined.
+			phaseCall = 10;
 		else:
-			# at least one phasing data point.
-			dataLength  = len(phasingData)
-			dataSum     = sum(phasingData)
-			dataAve     = round(dataSum/float(dataLength))
-			phaseCall   = int(dataAve) #  [0,1] for homologs 'a' and 'b'.
-		# Identify which chromosome this data point corresponds to.
-		P_chr = 0
-		for x in range(0,chrCount):
-			if (chrNums[x] != 0):
-				if chrName[x] == P_chr_name:
-					P_chr = x+1
+			phaseCall = int(round(sum(phasingData) / float(len(phasingData))));
 
-		################################################################################
-		# All hapmap dataset coordinates are heterozygous in the parent by definition. #
-		################################################################################
+		# Retrieve integer chromosome ID instantly.
+		P_chr = chr_name_to_num.get(P_chr_name, 0);
+
 		# Find standard bin containing parent SNP locus.
 		if P_chr != 0:
-			# Reset for each new chromosome examined.
 			if old_chr != P_chr:
 				if log_offset != 0:
-					log_offset_string = " "*((log_offset)%100)
+					log_offset_string = " " * (log_offset % 100);
 					with open(logName, "a") as myfile:
-						myfile.write("\n\t\t|\t\t" + log_offset_string)
-				count            = 1
-				fragment_found   = 0
-				current_fragment = 0
-			# If (fragment_found == 0), look to see if current coordinate matches any defined fragments.
+						myfile.write(f"\n\t\t|\t\t{log_offset_string}");
+				count = 1;
+				fragment_found = 0;
+				current_fragment = 0;
+
 			if fragment_found == 0:
-				for frag in range(current_fragment,numFragments):
-					# Check if current coordinate is consistent with this fragment :
-					# fragments[frag-1] = [chr_num,bp_start,bp_end, phasedData,unphasedData,phasedCoordinate,unphasedCoordinate,phasedAllele,unphasedAllele]
-					if P_chr == fragments[frag-1][0] and P_position >= fragments[frag-1][1] and P_position <= fragments[frag-1][2]:
-						fragment_found   = 1
-						current_fragment = frag
-						break
-			#print(str(numFragments)+":"+str(current_fragment))
-			# If (fragment_found == 1), add current bp coordinate data to fragment data.
+				for frag in range(current_fragment, numFragments):
+					# Standardized 0-indexed fragment structural checks.
+					if P_chr == fragments[frag] and P_position >= fragments[frag] and P_position <= fragments[frag]:
+						fragment_found = 1;
+						current_fragment = frag;
+						break;
+
 			if fragment_found == 1:
-				# display status updates to log file.
-				if (count%50000 == 0):
-					log_count  += 1
-					log_offset += 1
-					if (log_count%100) == 0:
-						if (log_count-1) == 0:
-							with open(logName, "a") as myfile:
-								myfile.write("\n\t\t|\t")
-						else:
-							with open(logName, "a") as myfile:
-								myfile.write(" " + str(log_count-1))
+				if count % 50000 == 0:
+					log_count += 1;
+					log_offset += 1;
 					with open(logName, "a") as myfile:
-						myfile.write(".")
-				# If current coordinate is at/after end of a fragment, update fragment_found to 0.
-				if P_position >= fragments[current_fragment-1][2]:
-					fragment_found = 0
+						if log_count % 100 == 0:
+							if log_count - 1 == 0:
+								myfile.write("\n\t\t|\t");
+							else:
+								myfile.write(f" {log_count - 1}\n\t\t|\t");
+						myfile.write(".");
+
+				if P_position >= fragments[current_fragment]:
+					fragment_found = 0;
 
 			#===============================================================================================================
 			# Find line in child dataset corresponding to SNP from hapmap dataset 'SNPdata_parent.txt' file.
 			#---------------------------------------------------------------------------------------------------------------
-			searchString = P_chr_name+"\t"+str(P_position)
-			result = ""
-			# Fast line search, relies upon presorted search target file.
-			# childLine is initialized as ''; this loads the first line from 'SNP_CNV_v1.txt' if needed.
-			# DRAGON
-			old_childLine = childLine;
-			if len(childLine) == 0:  # Triggered at first and last line of input file processing. Last use is error condition.
-				# print('$$$1 '+ childLine);
-				childLine = searchTarget.readline()
-				empty_line_count += 1;
-			# If line read from 'SNP_CNV_v1.txt' is longer than zero bytes, process the line.
-			# print('|'+childLine)  # outputs to 'preprocessed_SNPs.txt'.
+			if not childLine:
+				childLine = searchTarget.readline();
+				if not childLine:
+					empty_line_count += 1;
 
-			if (empty_line_count < 2):   # Prevents line processing code from running when blank line at end of file is processed.
-				childLine_parts = childLine.split('\t')
-				#if len(childLine_parts) == 1:
-				#print('$$$ '+ childLine);
+			if empty_line_count < 2:
+				childLine_parts = childLine.strip().split('\t');
+				C_chr_name = childLine_parts[0];
+				C_position = int(childLine_parts[1]);
+				C_chr = chr_name_to_num.get(C_chr_name, 0);
 
-				C_chr_name      = childLine_parts[0]
-				C_position      = int(childLine_parts[1])
-				# This script outputs "preprocessed_SNPs.txt" file, which tallys up number of SNP loci within each genome block.
-				#	C_chr_name			C_position	sum	allele	#A	#T	#G	#C
-				#	Ca21chrR_C_albicans_SC5314	1971663		10	A	10	0	0	0
-				# Simulated illumina reads have no SNPs at all.
-				# searchTarget  = 'SNP_CNV_v1.txt'
-				C_chr           = 0
-				for x in range(0,chrCount):
-					if (chrNums[x] != 0):
-						if chrName[x] == C_chr_name:
-							C_chr = x+1
+				# Skip mismatched child chromosomes ahead
+				while P_chr > C_chr:
+					childLine = searchTarget.readline();
+					if not childLine:
+						C_chr = P_chr;
+						break;
+					childLine_parts = childLine.strip().split('\t');
+					C_chr_name = childLine_parts[0];
+					C_position = int(childLine_parts[1]);
+					C_chr = chr_name_to_num.get(C_chr_name, 0);
 
-				#print("1|P:C "+str(P_chr)+":"+str(C_chr)+" "+str(P_position)+":"+str(C_position)+"|")
-				while P_chr > C_chr:    # WORKING: this section jumps through the child lines of chromosomes with no parent lines.
-					childLine = searchTarget.readline()
-					if len(childLine) > 0:
-						childLine       = childLine.strip()
-						childLine_parts = childLine.split('\t')
-						C_chr_name      = childLine_parts[0]
-						C_position      = int(childLine_parts[1])
-						for x in range(0,chrCount):
-							if (chrNums[x] != 0):
-								if chrName[x] == C_chr_name:
-									C_chr = x+1
-					else:
-						C_chr = P_chr
+				# Advance through the child rows until matching position coordinate is met
+				while P_chr == C_chr and P_position > C_position:
+					childLine = searchTarget.readline();
+					if not childLine:
+						break;
+					childLine_parts = childLine.strip().split('\t');
+					C_chr_name = childLine_parts[0];
+					C_position = int(childLine_parts[1]);
+					C_chr = chr_name_to_num.get(C_chr_name, 0);
 
-				#print("2|P:C "+str(P_chr)+":"+str(C_chr)+" "+str(P_position)+":"+str(C_position)+"|")
-				while P_chr == C_chr and P_position > C_position:   # WORKING: this section jumps through the child lines until the correct chromosome and coordinate is reached.
-					childLine = searchTarget.readline()
-					if len(childLine) > 0:
-						childLine       = childLine.strip()
-						childLine_parts = childLine.split('\t')
-						C_chr_name      = childLine_parts[0]
-						C_position      = int(childLine_parts[1])
-						for x in range(0,chrCount):
-							if (chrNums[x] != 0):
-								if chrName[x] == C_chr_name:
-									C_chr = x+1
-					else:
-						C_position = P_position
-
-				#print("3|P:C "+str(P_chr)+":"+str(C_chr)+" "+str(P_position)+":"+str(C_position)+"|")
-				if P_chr > C_chr:
-					result = ""
-				elif P_chr == C_chr and P_position > C_position:
-					result = ""
-				elif P_chr == C_chr and P_position < C_position:
-					result = ""
+				if P_chr > C_chr or (P_chr == C_chr and P_position > C_position) or (P_chr == C_chr and P_position < C_position):
+					result = "";
 				elif P_chr == C_chr and P_position == C_position:
-					result = childLine
-				#print("4|"+childLine+"|")
-				C_ratio        = 0.0
+					result = childLine;
+
+				C_ratio = 0.0;
 				if result == "":
-					# locus is not found in dataset, no contribution to SNP interpretations.
-					# print('# locus not found in dataset.')
-					C_ratio        = 0.0
-					C_valid        = 0
+					C_ratio = 0.0;
+					C_valid = 0;
 				else:
-					C_chr_name     = childLine_parts[0]   # chr_name_string
-					C_position     = childLine_parts[1]   # bp_coordinate
-					C_countTot     = childLine_parts[2]   # total_reads
-					C_refBase      = childLine_parts[3]   # reference_base
-					C_countA       = childLine_parts[4]   # A reads
-					C_countT       = childLine_parts[5]   # T reads
-					C_countG       = childLine_parts[6]   # G reads
-					C_countC       = childLine_parts[7]   # C reads
-					C_counts       = [int(float(C_countA)), int(float(C_countT)), int(float(C_countG)), int(float(C_countC))]
-					# Generate read count data structure.
-					alleleData     = [(int(float(C_countA)), 'A'), (int(float(C_countT)), 'T'), (int(float(C_countG)), 'G'), (int(float(C_countC)), 'C')];
-					# Sort alleles by read count, largest last.
-					sortedAlleles  = sorted(alleleData, key=lambda alleleDatum: alleleDatum[0]);
-					C_maxCount     = sortedAlleles[3][0];
-					C_maxAllele    = sortedAlleles[3][1];
-					if sum(C_counts) == 0:
-						C_ratio                 = 0.0;
-						C_valid                 = 0;
+					C_chr_name = childLine_parts[0];
+					C_position = childLine_parts[1];
+					C_countTot = childLine_parts[2];
+					C_refBase  = childLine_parts[3];
+
+					C_countA   = int(float(childLine_parts[4]));
+					C_countT   = int(float(childLine_parts[5]));
+					C_countG   = int(float(childLine_parts[6]));
+					C_countC   = int(float(childLine_parts[7]));
+
+					C_counts   = [C_countA, C_countT, C_countG, C_countC];
+					total_sum  = sum(C_counts);
+
+					alleleData    = [(C_countA, 'A'), (C_countT, 'T'), (C_countG, 'G'), (C_countC, 'C')];
+					sortedAlleles = sorted(alleleData, key=lambda x: x);
+					C_maxCount    = sortedAlleles[3][0];
+					C_maxAllele   = sortedAlleles[3][1];
+
+					if total_sum == 0:
+						C_ratio = 0.0;
+						C_valid = 0;
 					else:
-						C_ratio                 = float(C_maxCount)/float(sum(C_counts));
+						C_ratio = float(C_maxCount) / float(total_sum);
+
 						if phaseCall == 1:
-							temp            = P_allele1;
-							P_allele1       = P_allele2;
-							P_allele2       = temp;
+							P_allele1, P_allele2 = P_allele2, P_allele1;
 							if C_maxAllele == P_allele1:
-								C_ratio = 1-C_ratio;
+								C_ratio = 1.0 - C_ratio;
 						elif phaseCall == 0:
 							if C_maxAllele == P_allele1:
-								C_ratio = 1-C_ratio;
+								C_ratio = 1.0 - C_ratio;
 						else:
 							C_maxAllele = 'Z';
-						C_valid                 = 1;
-					allele_string                   = C_maxAllele + ':' + P_allele1 + '/' + P_allele2;
-				C_chr = 0;
-				for x in range(0,chrCount):
-					if (chrNums[x] != 0):
-						if chrName[x] == P_chr_name:
-							C_chr = x+1;
+
+						C_valid = 1;
+						allele_string = f"{C_maxAllele}:{P_allele1}/{P_allele2}";
+
+				C_chr = chr_name_to_num.get(P_chr_name, 0)
 
 				#===============================================================================================================
 				# Add allelic ratio data to standard-bin fragment data
 				#---------------------------------------------------------------------------------------------------------------
-				if fragment_found == 1:
-					if  C_valid == 1:
-						# standard-bin fragments structure:   'current_fragment-1'
-						#   fragments    = [chr_num,bp_start,bp_end,phasedData,unphasedData,phasedCoordinate,unphasedCoordinate]
-						if phaseCall == 0 or phaseCall == 1:
-							# correctly phased data, or incorrectly phased data.
-							#    the corrected C_ratio is calculated in the above section.
-							fragments[current_fragment-1][3] = fragments[current_fragment-1][3] + str(C_ratio)    + ','
-							fragments[current_fragment-1][5] = fragments[current_fragment-1][5] + str(C_position) + ','
-							fragments[current_fragment-1][7] = fragments[current_fragment-1][7] + allele_string   + ','
-						else:
-							# unphased data.
-							fragments[current_fragment-1][4] = fragments[current_fragment-1][4] + str(C_ratio)    + ','
-							fragments[current_fragment-1][6] = fragments[current_fragment-1][6] + str(C_position) + ','
-							fragments[current_fragment-1][8] = fragments[current_fragment-1][8] + allele_string   + ','
-				#print("|"+str(current_fragment)+" "+str(C_ratio))
+				if fragment_found == 1 and C_valid == 1:
+					if phaseCall in (0, 1):
+						fragments[current_fragment] += f"{C_ratio},";
+						fragments[current_fragment] += f"{C_position},";
+						fragments[current_fragment] += f"{allele_string},";
+					else:
+						fragments[current_fragment][4] += f"{C_ratio},";
+						fragments[current_fragment][6] += f"{C_position},";
+						fragments[current_fragment][8] += f"{allele_string},";
 
 				#===============================================================================================================
-				# Output log file status updates.
+				# Output log file status updates and save coordinate anchors
 				#---------------------------------------------------------------------------------------------------------------
 				if old_chr != P_chr:
-					print('### chr change : ' + str(old_chr) + ' -> ' + str(P_chr))
+					print(f"### chr change : {old_chr} -> {P_chr}")
 					with open(logName, "a") as myfile:
-						myfile.write("\n\t\t|\t    " + str(old_chr) + " -> " + str(P_chr) + " = " + P_chr_name + "\n")
-						myfile.write(  "\t\t|\t1........01........01........01........01........01........01........01........01........01........0")
-				# Reset for each new chromosome examined.
-				if old_chr != P_chr:
+						myfile.write(f"\n\t\t|\t    {old_chr} -> {P_chr} = {P_chr_name}\n")
+						myfile.write("\t\t|\t1........01........01........01........01........01........01........01........01........01........0")
+
 					if log_offset != 0:
-						log_offset_string = " "*(log_offset%100)
+						log_offset_string = " " * (log_offset % 100)
 						with open(logName, "a") as myfile:
-							myfile.write("\n\t\t|\t" + log_offset_string)
-				# If (fragment_found == 1), add current bp coordinate data to fragment data.
-				if fragment_found == 1:
-					# display status updates to log file.
-					if last_fragment != current_fragment:
-						log_count  += 1
-						log_offset += 1
-						if ((log_count-1)%100) == 0:
-							if (log_count-1) == 0:
-								with open(logName, "a") as myfile:
-									myfile.write("\n\t\t|\t")
-							else:
-								with open(logName, "a") as myfile:
-									myfile.write(" " + str(log_count-1) + "\n\t\t|\t")
-						with open(logName, "a") as myfile:
-							myfile.write(".")
+							myfile.write(f"\n\t\t|\t{log_offset_string}")
 
-		#===============================================================================================================
-		# Update tracking variables to current coordinates before moving to next line in 'SNPdata_parent.txt' file.
-		#---------------------------------------------------------------------------------------------------------------
-		old_chr       = P_chr
-		last_fragment = current_fragment
-		# If current coordinate is at end of a fragment, update fragment_found to 0.
-		if P_position == fragments[current_fragment-1][2]:
-			fragment_found = 0
+				old_chr = P_chr
+				last_fragment = current_fragment
 
-print("### " + str(time.process_time()-t1) + "seconds to parse project SNP data.")
+				# Check boundaries safely using column index 2 (bp_end) 
+				if P_position == fragments[current_fragment][2]:
+					fragment_found = 0
+
+searchTarget.close()
+
+print(f"### {time.process_time() - t1:.4f} seconds to parse project SNP data.")
 t2 = time.process_time()
-print('### Number of fragments = ' + str(numFragments))
-print('### Data from each fragment: [chrNum, bpStart, bpEnd, Max, Ave, Length]')
+print(f"### Number of fragments = {numFragments}")
+print("### Data from each fragment: [chrNum, bpStart, bpEnd, Max, Ave, Length]")
 
 
 #============================================================================================================
 # Code section to output data per standard-bin fragment.
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\t|\tOutputting LOH status counts of standard-bin fragmented genome.\n")
-print('### chr_num\tbp_start\tbp_end\tHOM_count\tHET_count\toddHET_count')
-for fragment in range(1,numFragments):
+	myfile.write("\n\t\t|\tOutputting LOH status counts of standard-bin fragmented genome.\n");
+
+# Print the dynamic tab-delimited file headers
+print('# chr_num\tbp_start\tbp_end\tphasedData\tunphasedData\tphasedCoordinate\tunphasedCoordinate\tphasedAllele\tunphasedAllele')
+
+# Clean iteration through every element row in your matrix to avoid off-by-one missing end rows
+for frag in fragments:
 	# Output a line for each fragment.
 	#     fragments[fragment-1] = [chr_num,bp_start,bp_end,phasedData,unphasedData]
 	#     0) chr_num
@@ -547,48 +501,38 @@ for fragment in range(1,numFragments):
 	#     2) bp_end
 	#     3) phasedData list
 	#     4) unphasedData list
-	chrNum_string           =  str(fragments[fragment-1][0])
-	bpStart_string          =  str(fragments[fragment-1][1])
-	bpEnd_string            =  str(fragments[fragment-1][2])
 
-	phasedData_string       =  fragments[fragment-1][3]
-	if len(phasedData_string) > 1:
-		phasedData_string   =  phasedData_string[:-1]
-	phasedData_string       += ")"
-	unphasedData_string     =  fragments[fragment-1][4]
-	if len(unphasedData_string) > 1:
-		unphasedData_string =  unphasedData_string[:-1]
-	unphasedData_string     += ")"
+	# 0) chr_num, 1) bp_start, 2) bp_end
+	chrNum_string  = str(frag[0]);
+	bpStart_string = str(frag[1]);
+	bpEnd_string   = str(frag[2]);
 
-	phasedCoordinate_string       =  fragments[fragment-1][5]
-	if len(phasedCoordinate_string) > 1:
-		phasedCoordinate_string   =  phasedCoordinate_string[:-1]
-	phasedCoordinate_string       += ")"
-	unphasedCoordinate_string     =  fragments[fragment-1][6]
-	if len(unphasedCoordinate_string) > 1:
-		unphasedCoordinate_string =  unphasedCoordinate_string[:-1]
-	unphasedCoordinate_string     += ")"
+	# Strip trailing commas safely and append closing parenthesis
+	phasedData_string   = frag[3].rstrip(',') + ")";
+	unphasedData_string = frag[4].rstrip(',') + ")";
 
-	phasedAllele_string       =  fragments[fragment-1][7]
-	if len(phasedAllele_string) > 1:
-		phasedAllele_string   =  phasedAllele_string[:-1]
-	phasedAllele_string       += ")"
-	unphasedAllele_string     =  fragments[fragment-1][8]
-	if len(unphasedAllele_string) > 1:
-		unphasedAllele_string =  unphasedAllele_string[:-1]
-	unphasedAllele_string     += ")"
+	phasedCoordinate_string   = frag[5].rstrip(',') + ")";
+	unphasedCoordinate_string = frag[6].rstrip(',') + ")";
 
-	print(chrNum_string+'\t'+bpStart_string+'\t'+bpEnd_string+'\t'+phasedData_string+'\t'+unphasedData_string+'\t'+phasedCoordinate_string+'\t'+unphasedCoordinate_string+'\t'+phasedAllele_string+'\t'+unphasedAllele_string)
+	phasedAllele_string   = frag[7].rstrip(',') + ")";
+	unphasedAllele_string = frag[8].rstrip(',') + ")";
 
+	# Print the finalized tab-delimited record row string
+	print(
+		f"{chrNum_string}\t{bpStart_string}\t{bpEnd_string}\t"
+		f"{phasedData_string}\t{unphasedData_string}\t"
+		f"{phasedCoordinate_string}\t{unphasedCoordinate_string}\t"
+		f"{phasedAllele_string}\t{unphasedAllele_string}"
+	);
 #------------------------------------------------------------------------------------------------------------
-# End of code section to output information about fragments. 
+# End of code section to output information about fragments.
 #============================================================================================================
 
-print("### ", time.process_time() - t1, "seconds to output basic stats of each restriction fragment.")
-print("### ", time.process_time() - t0, "seconds to complete processing of fragment definitions.")
+print("### ", time.process_time() - t1, "seconds to output basic stats of each fragment.");
+print("### ", time.process_time() - t0, "seconds to complete processing of fragment definitions.");
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tTime to process = " + str(time.process_time()-t0) +"\n")
-	myfile.write("\t\t*-----------------------------------------------------------------------------------------*\n")
-	myfile.write("\t\t| 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py' completed. |\n")
-	myfile.write("\t\t*=========================================================================================*\n")
+	myfile.write("\t\t|\tTime to process = " + str(time.process_time()-t0) +"\n");
+	myfile.write("\t\t*-----------------------------------------------------------------------------------------*\n");
+	myfile.write("\t\t| 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py' completed. |\n");
+	myfile.write("\t\t*=========================================================================================*\n");
