@@ -5,16 +5,16 @@ addpath('../');
 set(0,'DefaultFigureVisible','off');
 
 
-%% =========================================================================================
+%% ===============================================================================================
 % Analyze CNV information for copy number changes.   Code based on algorithms
 % described in:
-% 	Accurate detection of aneuploidies in array CGH and gene expression microarray data 
+% 	Accurate detection of aneuploidies in array CGH and gene expression microarray data
 %	Chad L. Myers, Maitreya J. Dunham, S.Y. Kung, Olga G. Troyanskaya (2004)
-%===========================================================================================
+%=================================================================================================
 
-%%=========================================================================
+%%================================================================================================
 % Load project figure version.
-%--------------------------------------------------------------------------
+%-------------------------------------------------------------------------------------------------
 workingDir = [main_dir '/users/' user '/projects/' project '/'];
 versionFile = [workingDir 'figVer.txt'];
 if exist(versionFile, 'file') == 2
@@ -38,17 +38,17 @@ projectDir = [main_dir '/users/' user '/projects/' project '/'];
 genomeDir  = [main_dir '/users/' genomeUser '/genomes/' genome '/'];
 
 
-%%=========================================================================
+%%================================================================================================
 % Load common_CNV file for project : 'CNVplot2', 'genome_CNV'.
-%--------------------------------------------------------------------------
+%-------------------------------------------------------------------------------------------------
 dataFile = [projectDir 'Common_CNV.mat'];
 fprintf(['Loading "common_CNV.mat" file.\n']);
 load(dataFile);
 
 
-%%=========================================================================
+%%================================================================================================
 % Check for a 'segmental_aneuploidy.txt' file from previous ChARM analysis.
-%--------------------------------------------------------------------------
+%-------------------------------------------------------------------------------------------------
 txt_filename = [projectDir 'segmental_aneuploidy.txt'];
 mat_filename = [projectDir 'Common_ChARM.mat'];
 data_loaded = false;
@@ -99,10 +99,10 @@ if (exist(txt_filename, 'file') == 2)
 	end;
 
 	if (data_loaded)
-		%===========================================================================================
+		%=================================================================================
 		% Save 'Common_ChARM.mat' file; used by later analyses.
 		%	Produced from data loaded from pre-existing 'segmental_aneuploidy.txt' file.
-		%-------------------------------------------------------------------------------------------
+		%---------------------------------------------------------------------------------
 		fprintf(['Saving output of ChARM algorithm as "Common_ChARM.mat" file.\n']);
 		dataFile = [projectDir 'Common_ChARM.mat'];
 		save(dataFile, 'segmental_aneuploidy');
@@ -117,9 +117,9 @@ end;
 
 if (~data_loaded)
 	fprintf(['===========================================================================\n']);
-	%%=========================================================================
+	%%========================================================================================
 	% Control variables.
-	%--------------------------------------------------------------------------
+	%-----------------------------------------------------------------------------------------
 	% Defines chrom sizes in bp. (diploid total=28,567,7888)
 	% Defines centromere locations in bp.
 	% Defines annotation locations in bp.
@@ -171,25 +171,55 @@ if (~data_loaded)
 		end;
 	end;
 
+
+	%%========================================================================================
+	% Load CNV data from 'preprocessed_CNVs.txt' file.
+	%-----------------------------------------------------------------------------------------
+	cnv_data_file = fullfile(projectDir, 'preprocessed_CNVs.txt');
+	if exist(cnv_data_file, 'file')
+		% Open file and parse text, automatically ignoring lines starting with '#'
+		fid = fopen(cnv_data_file, 'r');
+		raw_data = textscan(fid, '%d %d %d %f', 'CommentStyle', '#');
+		fclose(fid);
+
+		% The first column contains the chromosome numbers (chrNum)
+		chroms          = raw_data{1};
+		fragment_starts = raw_data{2};
+		fragment_ends   = raw_data{3};
+		readAverages    = raw_data{4};
+		lines_analyzed  = length(chroms);
+
+		preprocessed_CNVs = true;
+	else
+		preprocessed_CNVs = false;
+	end;
+
+
+	%%========================================================================================
+	% Determine bases_per_bin sizes to be used as a fallback.
+	%-----------------------------------------------------------------------------------------
 	%% Load CNV and SNP figure resolutions.
+	res_cnv_file = fullfile(genomeDir, 'resolution.CNV.txt');
 	if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
 		bases_per_bin           = max(chrom_size)/700;
 	else
-		bases_per_bin           = max(chrom_size)/str2num(fileread([genomeDir 'resolution.CNV.txt']));
+		res_val = sscanf(fileread(res_cnv_file), '%f');
+		bases_per_bin = max(chrom_size) / res_val(1);
 	end;
+	res_snp_file = fullfile(genomeDir, 'resolution.SNPs.txt');
 	if (exist([genomeDir 'resolution.SNPs.txt'],'file') == 0)
 		bases_per_bin_SNP       = max(chrom_size)/700;
 	else
-		bases_per_bin_SNP       = max(chrom_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt']));
+		res_val_snp = sscanf(fileread(res_snp_file), '%f');
+		bases_per_bin_SNP = max(chrom_size) / res_val_snp(1);
 	end;
-
 	chrom_length_scale_multiplier	= 1/bases_per_bin;
 
 
-	%% ###################################################################################################
-	%===================================================================================================== 
+	%% #######################################################################################
+	%=========================================================================================
 	% Implementation of ChARM algorithms.
-	%-----------------------------------------------------------------------------------------------------
+	%-----------------------------------------------------------------------------------------
 	% default values from ChARMRunner.java.   Values in brackets represent values chosen for Seq data.
 	median_window_width   = 9;		% Median filter window size.        [9]
 	smooth_window_width   = 9;		% Smoothing filter window size.     [9]
@@ -212,14 +242,14 @@ if (~data_loaded)
 	SNR_threshold         = 4;		% Signal to Noise threshold for identifying side windows as the same.
 
 
-	%% ###################################################################################################
-	%=====================================================================================================
-	% Implementation of ChARM algorithm #1, "an edge detection filter that identifies points on chromosomes
-	%	where potential aneuploidies start or end".
-	%-----------------------------------------------------------------------------------------------------
-	%% ===================================================================================================
+	%% #######################################################################################
+	%=========================================================================================
+	% Implementation of ChARM algorithm #1, "an edge detection filter that identifies points
+	%	on chromosomes where potential aneuploidies start or end".
+	%-----------------------------------------------------------------------------------------
+	%% =======================================================================================
 	% [sliding-box] median filter.
-	%-----------------------------------------------------------------------------------------------------
+	%-----------------------------------------------------------------------------------------
 	window_width = median_window_width;
 	window_halfwidth = (window_width-1)/2;
 
@@ -256,11 +286,11 @@ if (~data_loaded)
 	end;
 
 
-	%%====================================================================================================
+	%%========================================================================================
 	% [gaussian] smoothing filter
-	%     Original ChARM implementation used a sliding-box smoothing filter, but the use of a gaussian
-	%     smoothing filter reduces sharp-edge artifacts.
-	%-----------------------------------------------------------------------------------------------------
+	%     Original ChARM implementation used a sliding-box smoothing filter, but the use of a
+	%	gaussian smoothing filter reduces sharp-edge artifacts.
+	%-----------------------------------------------------------------------------------------
 	fprintf('\nSmoothing Filter after median');
 	window_width = smooth_window_width;
 	window_halfwidth = (window_width-1)/2;
@@ -272,9 +302,9 @@ if (~data_loaded)
 	end;
 
 
-	%% =================================================================================================== 
+	%% =======================================================================================
 	% differentiation filter
-	%-----------------------------------------------------------------------------------------------------
+	%-----------------------------------------------------------------------------------------
 	fprintf('\nDifferentiation Filter');
 	for chrom = 1:length(chrom_in_use)
 		if (chrom_in_use(chrom) == 1)
@@ -304,12 +334,15 @@ if (~data_loaded)
 	end;
 
 
-	%%====================================================================================================
+	%%========================================================================================
 	% [gaussian] smoothing filter
-	%     Original ChARM implementation did not smooth the differentiated signal before peak finding, but
-	%     doing so reduces the number of spurious peaks found by local peak-finder algorithms.
-	%     Update: this block is not used since when running glabrata datasets with hapmap it fails to recognize the right segments and part of this stems from the second diffrentation
-	%-----------------------------------------------------------------------------------------------------
+	%	Original ChARM implementation did not smooth the differentiated signal before peak
+	%	inding, but doing so reduces the number of spurious peaks found by local
+	%	peak-finder algorithms.
+	% Update; this block is not used since when running glabrata datasets with hapmap it fails
+	%	to recognize the right segments and part of this stems from the second
+	%	differentation.
+	%-----------------------------------------------------------------------------------------
 	fprintf('\nSmoothing Filter 2');
 	window_width = smooth_window_width;
 	window_halfwidth = (window_width-1)/2;
@@ -322,9 +355,9 @@ if (~data_loaded)
 	end;
 
 
-	%% ===================================================================================================
+	%% =======================================================================================
 	% Find local maxima/minima.
-	%-----------------------------------------------------------------------------------------------------
+	%-----------------------------------------------------------------------------------------
 	fprintf('\nFinding local maxima & minima\n');
 	for chrom = 1:length(chrom_in_use)
 		if (chrom_in_use(chrom) == 1)
@@ -332,215 +365,256 @@ if (~data_loaded)
 			[pks2{chrom},locs2{chrom}] = findpeaks(-CNV_differentiated_smoothed{chrom});
 			locs{chrom} = sort([locs1{chrom} locs2{chrom}]);
 
-			fprintf(['    Peak positions on chrom : "' num2str(chrom) '"\n']);
-			fprintf('\t[');
-			for edge = 1:(length(locs{chrom})-1)
-				fprintf([num2str(locs{chrom}(edge)) ', ']);
-				if (mod(edge,30) == 0);   fprintf('\n\t');   end;
+			fprintf('    Peak positions on chrom : "%d"\n', chrom);
+			if isempty(locs{chrom})
+				% Safely handle the 0 edge case without crashing
+				fprintf('\t[] (0 edges)\n');
+			else
+				fprintf('\t[');
+				for edge = 1:(length(locs{chrom}) - 1)
+					fprintf('%d, ', locs{chrom}(edge));
+					if (mod(edge, 30) == 0)
+						fprintf('\n\t');
+					end;
+				end;
+				% Safely prints the final element and total count
+				fprintf('%d] (%d edges)\n', locs{chrom}(end), length(locs{chrom}));
 			end;
+
 			if (length(locs{chrom}) == 0)
 				right_edge = 1;
 			else
 				right_edge = length(locs{chrom});
 			end;
-			fprintf([num2str(locs{chrom}) '] (' num2str(length(locs{chrom})) ' edges)\n']);
 		end;
 	end;
 
 
-	%=====================================================================================================
+	%=========================================================================================
 	% Generate figures representing stages of algorithm.
-	%-----------------------------------------------------------------------------------------------------
+	%-----------------------------------------------------------------------------------------
 	fprintf('\nGenerate figures for different stages of the ChARM algorithm.\n');
 	if (temp_figures == true)
 		%% Assigning raw and filtered data to convenient names for later use.
 		data1 = CNVplot2;
+		% Pre-allocate cell arrays based on the total number of bins for better performance
+		num_chroms = length(chrom_in_use);
+		data2 = cell(1, num_chroms);
+		data3 = cell(1, num_chroms);
+		data4 = cell(1, num_chroms);
 		for chrom = 1:length(chrom_in_use)
 			if (chrom_in_use(chrom) == 1)
 				data2{chrom} = CNV_median{chrom};
 				data3{chrom} = CNV_median_smoothed{chrom};
 				data4{chrom} = CNV_differentiated_smoothed{chrom};
+			else
+				% Explicitly mark skipped entries as empty matrices
+				data2{chrom} = [];
+				data3{chrom} = [];
+				data4{chrom} = [];
 			end;
 		end;
 		maxY = 2;
 
 		fprintf('\nFigure test.1\n');
-		fig = figure(1);    dataShow = data1;
-		set(gcf, 'Position', [0 70 1024 600]);
-		for chrom = 1:length(chrom_in_use)
-			if (chrom_in_use(chrom) == 1)
-				left   = chrom_posX(chrom);    bottom = chrom_posY(chrom);
-				width  = chrom_width(chrom);   height = chrom_height(chrom);
-				subplot('Position',[left bottom width height]);
-				hold on;
-				c_ = [0 0 0];
-				fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
-				for i = 1:length(dataShow{chrom});
-					x_ = [i i i-1 i-1];
-					CNVhistValue = dataShow{chrom}(i);
-					startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
-					set(f,'linestyle','none');
-				end;
-				x2 = chrom_size(chrom)*chrom_length_scale_multiplier;
-				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-				hold off;
-				xlim([0,chrom_size(chrom)*chrom_length_scale_multiplier]);
-				ylim([0,maxY]);
-				set(gca,'YTick',[0 maxY/2 maxY]);
-				set(gca,'YTickLabel',{'','',''});
-			end;
-		end;
+		fig = figure(1);
+		dataShow = data1;
+		draw_Charm_plot.1;
+
+%		fprintf('\nFigure test.1\n');
+%		fig = figure(1);    dataShow = data1;
+%		set(gcf, 'Position', [0 70 1024 600]);
+%		for chrom = 1:length(chrom_in_use)
+%			if (chrom_in_use(chrom) == 1)
+%				left   = chrom_posX(chrom);
+%				bottom = chrom_posY(chrom);
+%				width  = chrom_width(chrom);
+%				height = chrom_height(chrom);
+%				subplot('Position',[left bottom width height]);
+%				hold on;
+%				c_ = [0 0 0];
+%				fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
+%				for i = 1:length(dataShow{chrom});
+%					x_ = [i i i-1 i-1];
+%					CNVhistValue = dataShow{chrom}(i);
+%					startY = maxY/2;
+%					endY = CNVhistValue;
+%					y_ = [startY endY endY startY];
+%					f = fill(x_,y_,c_);
+%					set(f,'linestyle','none');
+%				end;
+%				x2 = chrom_size(chrom)*chrom_length_scale_multiplier;
+%				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
+%				hold off;
+%				xlim([0,chrom_size(chrom)*chrom_length_scale_multiplier]);
+%				ylim([0,maxY]);
+%				set(gca,'YTick',[0 maxY/2 maxY]);
+%				set(gca,'YTickLabel',{'','',''});
+%			end;
+%		end;
 		saveas(fig,[projectDir 'fig.ChARM_test.1.' figVer 'eps'], 'epsc');
 		saveas(fig,[projectDir 'fig.ChARM_test.1.' figVer 'png'], 'png');
-
 		%% change permissions of file.
 		system(['chmod 774 ' projectDir 'fig.ChARM_test.1.' figVer 'eps']);
 		system(['chmod 774 ' projectDir 'fig.ChARM_test.1.' figVer 'png']);
-
 		delete(fig);
+
 		fprintf('\nFigure test.2\n');
-		fig = figure(2);    dataShow = data2;
-		set(gcf, 'Position', [0 70 1024 600]);
-		for chrom = 1:length(chrom_in_use)
-			if (chrom_in_use(chrom) == 1)
-				left   = chrom_posX(chrom);
-				bottom = chrom_posY(chrom);
-				width  = chrom_width(chrom);
-				height = chrom_height(chrom);
-				subplot('Position',[left bottom width height]);
-				hold on;
-				c_ = [0 0 0];
-				fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
-				for i = 1:length(dataShow{chrom});
-					x_ = [i i i-1 i-1];
-					%if (dataShow{chrom}(i) == 0)
-					%	CNVhistValue = 0;
-					%else
-					%	CNVhistValue = dataShow{chrom}(i);
-					%end;
-					CNVhistValue = dataShow{chrom}(i);
-					startY = maxY/2;
-					endY = CNVhistValue;
-					y_ = [startY endY endY startY];
-					f = fill(x_,y_,c_);
-					set(f,'linestyle','none');
-				end;
-				x2 = chrom_size(chrom)*chrom_length_scale_multiplier;
-				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-				hold off;
-				xlim([0,chrom_size(chrom)*chrom_length_scale_multiplier]);
-				ylim([0,maxY]);
-				set(gca,'YTick',[0 maxY/2 maxY]);
-				set(gca,'YTickLabel',{'','',''});
-			end;
-		end;
+		fig = figure(2);
+		dataShow = data2;
+		draw_Charm_plot.1;
+
+%		fprintf('\nFigure test.2\n');
+%		fig = figure(2);    dataShow = data2;
+%		set(gcf, 'Position', [0 70 1024 600]);
+%		for chrom = 1:length(chrom_in_use)
+%			if (chrom_in_use(chrom) == 1)
+%				left   = chrom_posX(chrom);
+%				bottom = chrom_posY(chrom);
+%				width  = chrom_width(chrom);
+%				height = chrom_height(chrom);
+%				subplot('Position',[left bottom width height]);
+%				hold on;
+%				c_ = [0 0 0];
+%				fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
+%				for i = 1:length(dataShow{chrom});
+%					x_ = [i i i-1 i-1];
+%					%if (dataShow{chrom}(i) == 0)
+%					%	CNVhistValue = 0;
+%					%else
+%					%	CNVhistValue = dataShow{chrom}(i);
+%					%end;
+%					CNVhistValue = dataShow{chrom}(i);
+%					startY = maxY/2;
+%					endY = CNVhistValue;
+%					y_ = [startY endY endY startY];
+%					f = fill(x_,y_,c_);
+%					set(f,'linestyle','none');
+%				end;
+%				x2 = chrom_size(chrom)*chrom_length_scale_multiplier;
+%				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
+%				hold off;
+%				xlim([0,chrom_size(chrom)*chrom_length_scale_multiplier]);
+%				ylim([0,maxY]);
+%				set(gca,'YTick',[0 maxY/2 maxY]);
+%				set(gca,'YTickLabel',{'','',''});
+%			end;
+%		end;
 		saveas(fig,[projectDir 'fig.ChARM_test.2.' figVer 'eps'], 'epsc');
 		saveas(fig,[projectDir 'fig.ChARM_test.2.' figVer 'png'], 'png');
-
 		%% change permissions.
 		system(['chmod 774 ' projectDir 'fig.ChARM_test.2.' figVer 'eps']);
 		system(['chmod 774 ' projectDir 'fig.ChARM_test.2.' figVer 'png']);
+		delete(fig);
+
 
 		%%
 		%% data3 is losing data at the right end of each chromosome for some reason.
 		%%
 
-		delete(fig);
 		fprintf('\nFigure test.3\n');
-		fig = figure(3);    dataShow = data3;
-		set(gcf, 'Position', [0 70 1024 600]);
-		for chrom = 1:length(chrom_in_use)
-			if (chrom_in_use(chrom) == 1)
-				left   = chrom_posX(chrom);
-				bottom = chrom_posY(chrom);
-				width  = chrom_width(chrom);
-				height = chrom_height(chrom);
-				subplot('Position',[left bottom width height]);
-				hold on;
-				c_ = [0 0 0];
-				fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
-				for i = 1:length(dataShow{chrom});
-					x_ = [i i i-1 i-1];
-					%if (dataShow{chrom}(i) == 0)
-					%	CNVhistValue = 1;
-					%else
-					%	CNVhistValue = dataShow{chrom}(i);
-					%end;
-					CNVhistValue = dataShow{chrom}(i);
-					startY = maxY/2;
-					endY = CNVhistValue;
-					y_ = [startY endY endY startY];
-					f = fill(x_,y_,c_);
-					set(f,'linestyle','none');
-				end;
-				x2 = chrom_size(chrom)*chrom_length_scale_multiplier;
-				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-				hold off;
-				xlim([0,chrom_size(chrom)*chrom_length_scale_multiplier]);
-				ylim([0,maxY]);
-				set(gca,'YTick',[0 maxY/2 maxY]);
-				set(gca,'YTickLabel',{'','',''});
-			end;
-		end;
+		fig = figure(3);
+		dataShow = data3;
+		draw_Charm_plot.1;
+
+%		fprintf('\nFigure test.3\n');
+%		fig = figure(3);    dataShow = data3;
+%		set(gcf, 'Position', [0 70 1024 600]);
+%		for chrom = 1:length(chrom_in_use)
+%			if (chrom_in_use(chrom) == 1)
+%				left   = chrom_posX(chrom);
+%				bottom = chrom_posY(chrom);
+%				width  = chrom_width(chrom);
+%				height = chrom_height(chrom);
+%				subplot('Position',[left bottom width height]);
+%				hold on;
+%				c_ = [0 0 0];
+%				fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
+%				for i = 1:length(dataShow{chrom});
+%					x_ = [i i i-1 i-1];
+%					%if (dataShow{chrom}(i) == 0)
+%					%	CNVhistValue = 1;
+%					%else
+%					%	CNVhistValue = dataShow{chrom}(i);
+%					%end;
+%					CNVhistValue = dataShow{chrom}(i);
+%					startY = maxY/2;
+%					endY = CNVhistValue;
+%					y_ = [startY endY endY startY];
+%					f = fill(x_,y_,c_);
+%					set(f,'linestyle','none');
+%				end;
+%				x2 = chrom_size(chrom)*chrom_length_scale_multiplier;
+%				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
+%				hold off;
+%				xlim([0,chrom_size(chrom)*chrom_length_scale_multiplier]);
+%				ylim([0,maxY]);
+%				set(gca,'YTick',[0 maxY/2 maxY]);
+%				set(gca,'YTickLabel',{'','',''});
+%			end;
+%		end;
 		saveas(fig,[projectDir 'fig.ChARM_test.3.' figVer 'eps'], 'epsc');
 		saveas(fig,[projectDir 'fig.ChARM_test.3.' figVer 'png'], 'png');
-
 		%% change permissions.
 		system(['chmod 774 ' projectDir 'fig.ChARM_test.3.' figVer 'eps']);
 		system(['chmod 774 ' projectDir 'fig.ChARM_test.3.' figVer 'png']);
-
 		delete(fig);
+
 		fprintf('\nFigure test.4\n');
 		fig = figure(4);
 		dataShow = data4;
-		set(gcf, 'Position', [0 70 1024 600]);
-		for chrom = 1:length(chrom_in_use)
-			if (chrom_in_use(chrom) == 1)
-				left   = chrom_posX(chrom);
-				bottom = chrom_posY(chrom);
-				width  = chrom_width(chrom);
-				height = chrom_height(chrom);
-				subplot('Position',[left bottom width height]);
-				hold on;
-				c_ = [0 0 0];
-				for i = 1:length(dataShow{chrom});
-					x_ = [i i i-1 i-1];
-					CNVhistValue = dataShow{chrom}(i);
-					startY = 0;
-					endY   = CNVhistValue*8;
-					y_ = [startY endY endY startY];
-					f = fill(x_,y_,c_);
-					set(f,'linestyle','none');
-				end;
-				x2 = chrom_size(chrom)*chrom_length_scale_multiplier;
-				plot([0; x2], [0; 0],'color',[0 0 0]);  % 2n line.
-				for edge = 1:length(locs1{chrom})
-					plot([locs1{chrom}(edge) locs1{chrom}(edge)], [-1 1],'color',[0 0 1]);
-				end;
-				for edge = 1:length(locs2{chrom})
-					plot([locs2{chrom}(edge) locs2{chrom}(edge)], [-1 1],'color',[1 0 0]);
-				end;
-				hold off;
-				xlim([0,chrom_size(chrom)*chrom_length_scale_multiplier]);
-				ylim([-1 1]);
-				set(gca,'YTick',[-1 0 1]);
-				set(gca,'YTickLabel',{'','',''});
-			end;
-		end;
+		draw_Charm_plot.2;
+
+%		fprintf('\nFigure test.4\n');
+%		fig = figure(4);
+%		dataShow = data4;
+%		set(gcf, 'Position', [0 70 1024 600]);
+%		for chrom = 1:length(chrom_in_use)
+%			if (chrom_in_use(chrom) == 1)
+%				left   = chrom_posX(chrom);
+%				bottom = chrom_posY(chrom);
+%				width  = chrom_width(chrom);
+%				height = chrom_height(chrom);
+%				subplot('Position',[left bottom width height]);
+%				hold on;
+%				c_ = [0 0 0];
+%				for i = 1:length(dataShow{chrom});
+%					x_ = [i i i-1 i-1];
+%					CNVhistValue = dataShow{chrom}(i);
+%					startY = 0;
+%					endY   = CNVhistValue*8;
+%					y_ = [startY endY endY startY];
+%					f = fill(x_,y_,c_);
+%					set(f,'linestyle','none');
+%				end;
+%				x2 = chrom_size(chrom)*chrom_length_scale_multiplier;
+%				plot([0; x2], [0; 0],'color',[0 0 0]);  % 2n line.
+%				for edge = 1:length(locs1{chrom})
+%					plot([locs1{chrom}(edge) locs1{chrom}(edge)], [-1 1],'color',[0 0 1]);
+%				end;
+%				for edge = 1:length(locs2{chrom})
+%					plot([locs2{chrom}(edge) locs2{chrom}(edge)], [-1 1],'color',[1 0 0]);
+%				end;
+%				hold off;
+%				xlim([0,chrom_size(chrom)*chrom_length_scale_multiplier]);
+%				ylim([-1 1]);
+%				set(gca,'YTick',[-1 0 1]);
+%				set(gca,'YTickLabel',{'','',''});
+%			end;
+%		end;
 		saveas(fig,[projectDir 'fig.ChARM_test.4.' figVer 'eps'], 'epsc');
 		saveas(fig,[projectDir 'fig.ChARM_test.4.' figVer 'png'], 'png');
-		delete(fig);
-
 		%% change permissions.
 		system(['chmod 774 ' projectDir 'fig.ChARM_test.4.' figVer 'eps']);
 		system(['chmod 774 ' projectDir 'fig.ChARM_test.4.' figVer 'png']);
+		delete(fig);
 	end;
 
 
-	%% ###################################################################################################
-	%=====================================================================================================
+	%% #######################################################################################
+	%=========================================================================================
 	% Expectation-Maximization Edge-Placement Algorithm
-	%-----------------------------------------------------------------------------------------------------
+	%-----------------------------------------------------------------------------------------
 	fprintf('\nExpectation-Maximization Edge-Placement Algorithm\n');
 	fprintf(  '-------------------------------------------------\n');
 	%% Initialize initial (t=0) posterior probabilities that a data point is in the left vs. right distributions adjacent to each edge.
@@ -583,10 +657,10 @@ if (~data_loaded)
 
 	%% This iterated section of the ChARM algoritm adjusts the local positions of the edges.
 	for t = 1:1; % num_permutations
-		%% ###################################################################################################
-		%=====================================================================================================
+		%% ###############################################################################
+		%=================================================================================
 		% Update membership (E-step).
-		%-----------------------------------------------------------------------------------------------------
+		%---------------------------------------------------------------------------------
 		%% Calculate Conditional probabilities that a data point is in the left vs. right distributions adjacent to each edge.
 		fprintf('\nUpdate Membership (E-step)\n');
 		fprintf(  '--------------------------\n');
@@ -705,10 +779,10 @@ if (~data_loaded)
 		end;
 
 
-		%% ###################################################################################################
-		%=====================================================================================================
+		%% ###############################################################################
+		%=================================================================================
 		% Mean and variance computation (M-step 1).
-		%-----------------------------------------------------------------------------------------------------
+		%---------------------------------------------------------------------------------
 		fprintf('\nMean and Variance computation (M-step 1)\n');
 		fprintf(  '----------------------------------------\n');
 		for chrom = 1:length(chrom_in_use)
@@ -739,10 +813,10 @@ if (~data_loaded)
 		end;
 
 
-		%% ###################################################################################################
-		%=====================================================================================================
+		%% ###############################################################################
+		%=================================================================================
 		% Edge adjustment (M-step 2).
-		%-----------------------------------------------------------------------------------------------------
+		%---------------------------------------------------------------------------------
 		fprintf('\nEdge adjustment (M-step 2)\n');
 		fprintf(  '--------------------------\n');
 		pos_change   = [];
@@ -821,15 +895,16 @@ if (~data_loaded)
 	end;
 
 
-	%% ###################################################################################################
-	%=====================================================================================================
+	%% #######################################################################################
+	%=========================================================================================
 	% Window similarity test.
 	%    Delete edges when side window distrubutions are too similar.
-	%        ChARM used median of data in each side window, but I've found performing a Gaussian fit to
-	%        the data in each side window and using the derived median is more useful.
+	%	ChARM used median of data in each side window, but I've found performing a
+	%	Gaussian fit to the data in each side window and using the derived median is more
+	%	useful.
 	%    Convert pairs of edges that are too close into single edges.
 	%    Force left and right edges to left and right of datasets.
-	%-----------------------------------------------------------------------------------------------------
+	%-----------------------------------------------------------------------------------------
 	fprintf('\n\nWindow Similarity test\n');
 	fprintf(    '----------------------\n');
 	for chrom = 1:length(chrom_in_use)
@@ -845,12 +920,12 @@ if (~data_loaded)
 					num_edges    = length(position);
 					data         = CNVplot2{chrom};
 
-					%----------------------------------------------------------------------
+					%---------------------------------------------------------
 					% Converts edge pairs that are too close into single edges.
 					%    This was not described in the ChARM paper, but is needed.   If two
 					%    edges are in adjacent (or identical) positions, the SNR calculation
 					%    produces excessively high values.
-					%----------------------------------------------------------------------
+					%---------------------------------------------------------
 					remove_edges = zeros(1,num_edges);
 					if (num_edges > 1)
 						if (position(1) == position(2)) || (position(2) == position(1)+1)
@@ -865,9 +940,9 @@ if (~data_loaded)
 						num_edges                   = length(position);
 					end;
 
-					%----------------------------------------------------------------------
+					%---------------------------------------------------------
 					% Calculate SNRs and medians of left and right data windows.
-					%----------------------------------------------------------------------
+					%---------------------------------------------------------
 					SNR          = [];
 					med_delta    = [];
 					fprintf(['\t&&&& chrom=' num2str(chrom) '; t=' num2str(t) '; num_edges=' num2str(num_edges) '.\n']);
@@ -920,17 +995,17 @@ if (~data_loaded)
 						fprintf(['\t&&&& med_delta = [' num2str(med_delta) ']\n\n']);
 					end;
 
-					%----------------------------------------------------------------------
+					%---------------------------------------------------------
 					% Sort edges by difference of side window medians.
-					%----------------------------------------------------------------------
+					%---------------------------------------------------------
 					[med_delta_sorted,med_delta_index] = sort(med_delta(2:(num_edges-1)));
 					fixed_index                        = [1 (med_delta_index+1) num_edges];
 					[position_sorted]                  = position(fixed_index);
 					[SNR_sorted]                       = SNR(fixed_index);
 
-					%----------------------------------------------------------------------
+					%---------------------------------------------------------
 					% Examine the first edge and delete it if it is bound by windows which are too similar.
-					%----------------------------------------------------------------------
+					%---------------------------------------------------------
 					SNR_threshold   = 3;
 					delta_threshold = 0.25;
 					if (num_edges > test_edge)
@@ -949,9 +1024,9 @@ if (~data_loaded)
 						% chromosome only has two edges (lenft and right ends), so none need to be examined or removed.
 					end;
 
-					%----------------------------------------------------------------------
+					%---------------------------------------------------------
 					% Resort and save edge positions.
-					%----------------------------------------------------------------------
+					%---------------------------------------------------------
 					locs{chrom} = sort(position_sorted);
 				end;
 			end;
@@ -959,9 +1034,9 @@ if (~data_loaded)
 	end;
 
 
-	%=====================================================================================================
+	%=========================================================================================
 	% Generate figures representing intermediate and final output of algorithm.
-	%-----------------------------------------------------------------------------------------------------
+	%-----------------------------------------------------------------------------------------
 	fprintf('\n\nGenerate figure of final output of ChARM algorithm\n');
 	fprintf(    '--------------------------------------------------\n');
 	fprintf(['length(chrom_size) = ' num2str(length(chrom_size)) '\n']);
@@ -1006,10 +1081,10 @@ if (~data_loaded)
 	end;
 	fprintf(['---------------------------------------------------------------------------\n']);
 
-	%===========================================================================================
+	%=========================================================================================
 	% Save 'Common_ChARM.mat' file; used by later analyses.
 	%	Produced by ChARM algorithm block above.
-	%-------------------------------------------------------------------------------------------
+	%-----------------------------------------------------------------------------------------
 	fprintf(['Saving output of ChARM algorithm as "Common_ChARM.mat" file.\n']);
 	dataFile = [projectDir 'Common_ChARM.mat'];
 	idx = 0;
@@ -1039,10 +1114,10 @@ if (~data_loaded)
 end;
 
 
-%===================================================================================
+%=================================================================================================
 % Save 'segmental_aneuploidy.txt' file.
 %	Overwrites previous version, cleaning up any manual edit errors.
-%-----------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------------------------
 fprintf(['Saving output of ChARM algorithm as "segmental_aneuploidy.txt" file.\n']);
 filename = [projectDir 'segmental_aneuploidy.txt'];
 file_id = fopen(filename, "w");
