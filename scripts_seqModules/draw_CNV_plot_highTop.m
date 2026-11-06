@@ -1,25 +1,65 @@
-num_bins = ceil(chrom_size(chrom)/bases_per_bin);
-fprintf(['linear-plot : chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
-% Pre-allocate coordinate matrices (4 points + 1 NaN separator per bin)
-X_matrix = zeros(5, num_bins);
-Y_matrix = zeros(5, num_bins);
-startY = maxY / 2;
-% Vectorized calculation of scaling factors
-CNVhistValues = CNVplot2{chrom}(1:num_bins);
-if (Low_quality_ploidy_estimate)
-	scaleFactor = ploidy * ploidyAdjust;
+%==========================================================================
+% draw_CNV_plot_highTop.m - Variable-Width Binned Copy Number Profile Painter
+%==========================================================================
+% Use the ACTUAL number of bins from your loaded file data to prevent crashes.
+if preprocessed_CNVs
+        actual_num_bins = sum(chroms == chrom);
 else
-	scaleFactor = ploidy;
+        actual_num_bins = ceil(chrom_size(chrom) / bases_per_bin);
 end;
-% Handle missing values and scale data
+
+fprintf(['linear-plot : chrom' num2str(chrom) ':' num2str(actual_num_bins) '\n']);
+
+% Extract matching physical coordinate vectors for THIS chromosome's rows.
+% (Assuming 'chroms', 'fragment_starts', and 'fragment_ends' are available from Step 7)
+idx_c = (chroms == chrom);
+chrom_starts = double(fragment_starts(idx_c))';
+chrom_ends   = double(fragment_ends(idx_c))';
+
+% Pre-allocate coordinate matrices for precise physical bounding boxes.
+% Each bin needs 4 corners to draw a rectangle + 1 NaN separator
+X_matrix = zeros(5, actual_num_bins);
+Y_matrix = zeros(5, actual_num_bins);
+
+% Calculate scaling factors.
+CNVhistValues = CNVplot2{chrom};
+if (Low_quality_ploidy_estimate)
+        scaleFactor = ploidy * ploidyAdjust;
+else
+        scaleFactor = ploidy;
+end;
+
+% Handle missing values and scale data.
 endY_values = CNVhistValues * scaleFactor;
 endY_values(isnan(CNVhistValues)) = scaleFactor;
-%endY_values = min(maxY, endY_values);
+%endY_values = min(maxY, endY_values); %% Intentionally disabled for highplot figure version.
 endY_values = max(0, endY_values);
-% 3. Calculate heights relative to the midpoint baseline
 startY = maxY / 2;
-% 4. Build a continuous horizontal axis centered on bins
-bin_centers = (1:num_bins) - 0.5;
-% 5. Draw all blocks instantly using 'bar'
-f_cnv = bar(bin_centers, endY_values, 1.0, 'stacked', 'basevalue', startY);
-set(f_cnv, 'FaceColor', [0 0 0], 'EdgeColor', [0 0 0], 'LineStyle', '-');
+
+% Vectorized generation of true physical rectangle coordinates.
+% Map physical base pairs directly to the display axis using bases_per_bin!
+X_matrix(1, :) = chrom_starts / bases_per_bin;   % Bottom Left.
+X_matrix(2, :) = chrom_starts / bases_per_bin;   % Top Left.
+X_matrix(3, :) = chrom_ends   / bases_per_bin;   % Top Right.
+X_matrix(4, :) = chrom_ends   / bases_per_bin;   % Bottom Right.
+X_matrix(5, :) = NaN;                            % Disconnect pen for next bar.
+
+Y_matrix(1, :) = startY;
+Y_matrix(2, :) = endY_values;
+Y_matrix(3, :) = endY_values;
+Y_matrix(4, :) = startY;
+Y_matrix(5, :) = NaN;
+
+% Draw all variable-width blocks instantly using a single 'patch' call.
+f_cnv = patch(X_matrix(:), Y_matrix(:), [0 0 0], 'FaceColor', [0 0 0], 'EdgeColor', [0 0 0], 'LineStyle', '-');
+
+
+%%================================================================================================
+% Old draw code.
+%-------------------------------------------------------------------------------------------------
+% % 4. Build a continuous horizontal axis centered on bins
+% bin_centers = (1:num_bins) - 0.5;
+%
+% % 5. Draw all blocks instantly using 'bar'
+% f_cnv = bar(bin_centers, endY_values, 1.0, 'stacked', 'basevalue', startY);
+% set(f_cnv, 'FaceColor', [0 0 0], 'EdgeColor', [0 0 0], 'LineStyle', '-');

@@ -4,6 +4,10 @@ addpath('../');
 % hide figures during construction.
 set(0,'DefaultFigureVisible','off');
 
+
+%%==========================================================================================
+% Check if figure is needed.
+%-------------------------------------------------------------------------------------------
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir '/users/' user '/projects/' project '/figure_options.txt'], 'file')
 	figure_options = importdata([main_dir '/users/' user '/projects/' project '/figure_options.txt'],'\t',1);
@@ -18,10 +22,11 @@ else
         Make_figure = true;
 end;
 
+
 if (Make_figure == true)
-	%%=========================================================================
+	%%========================================================================================
 	% Load project figure version.
-	%--------------------------------------------------------------------------
+	%-----------------------------------------------------------------------------------------
 	workingDir = [main_dir '/users/' user '/projects/' project '/'];
 	versionFile = [workingDir 'figVer.txt'];
 	if exist(versionFile, 'file') == 2
@@ -31,7 +36,9 @@ if (Make_figure == true)
 	end;
 
 
-	%% ========================================================================
+	%%========================================================================================
+	% Some configuration variables.
+	%-----------------------------------------------------------------------------------------
 	Centromere_format_default	= 3;
 	Yscale_nearest_even_ploidy	= true;
 	HistPlot			= false;
@@ -43,17 +50,17 @@ if (Make_figure == true)
 	Low_quality_ploidy_estimate	= true;
 
 
-	%%=========================================================================
+	%%========================================================================================
 	% Load FASTA file name from 'reference.txt' file for project.
-	%--------------------------------------------------------------------------
+	%-----------------------------------------------------------------------------------------
 	Reference	= [main_dir '/users/' genomeUser '/genomes/' genome '/reference.txt'];
 	FASTA_string = strtrim(fileread(Reference));
 	[FastaPath,FastaName,FastaExt] = fileparts(FASTA_string);
 
 
-	%%=========================================================================
+	%%========================================================================================
 	% Control variables.
-	%--------------------------------------------------------------------------
+	%-----------------------------------------------------------------------------------------
 	projectDir = [main_dir '/users/' user '/projects/' project '/'];
 	genomeDir  = [main_dir '/users/' genomeUser '/genomes/' genome '/'];
 
@@ -80,13 +87,13 @@ if (Make_figure == true)
 	if (length(annotations) > 0)
 		fprintf(['\nAnnotations for ' genome '.\n']);
 		for i = 1:length(annotations)
-			annotation_chrom(i)	   = annotations(i).chrom;
-			annotation_type{i}	  = annotations(i).type;
-			annotation_start(i)	 = annotations(i).start;
-			annotation_end(i)	   = annotations(i).end;
+			annotation_chrom(i)     = annotations(i).chrom;
+			annotation_type{i}      = annotations(i).type;
+			annotation_start(i)     = annotations(i).start;
+			annotation_end(i)       = annotations(i).end;
 			annotation_fillcolor{i} = annotations(i).fillcolor;
 			annotation_edgecolor{i} = annotations(i).edgecolor;
-			annotation_size(i)	  = annotations(i).size;
+			annotation_size(i)      = annotations(i).size;
 			fprintf(['\t[' num2str(annotations(i).chrom) ':' annotations(i).type ':' num2str(annotations(i).start) ':' num2str(annotations(i).end) ':' annotations(i).fillcolor ':' ...
 				annotations(i).edgecolor ':' num2str(annotations(i).size) ']\n']);
 		end;
@@ -100,7 +107,7 @@ if (Make_figure == true)
 				key_height = figure_details(i).height;
 			end;
 		else
-			chrom_id	       (figure_details(i).chrom) = figure_details(i).chrom;
+			chrom_id         (figure_details(i).chrom) = figure_details(i).chrom;
 			chrom_label      {figure_details(i).chrom} = figure_details(i).label;
 			chrom_name       {figure_details(i).chrom} = figure_details(i).name;
 			chrom_posX       (figure_details(i).chrom) = figure_details(i).posX;
@@ -114,11 +121,9 @@ if (Make_figure == true)
 	end;
 
 
-	%%=========================================================================
-	%%= No further control variables below. ===================================
-	%%=========================================================================
-
-
+	%%========================================================================================
+	% Some basic setup.
+	%-----------------------------------------------------------------------------------------
 	% Sanitize user input of euploid state base for species.
 	ploidyBase = round(str2num(ploidyBaseString));
 	if (ploidyBase > 4);   ploidyBase = 4;   end;
@@ -131,6 +136,23 @@ if (Make_figure == true)
 	cen_tel_Xindent		= 5;
 	cen_tel_Yindent		= maxY/4;
 
+	fprintf(['\nGenerating horizontal CNV highTop figure from ''' project ''' sequence data.\n']);
+
+
+	%%========================================================================================
+	% Load CNV data from 'preprocessed_CNVs.txt' file.
+	%-----------------------------------------------------------------------------------------
+	cnv_data_file = fullfile(projectDir, 'preprocessed_CNVs.txt');
+	if exist(cnv_data_file, 'file')
+		preprocessed_CNVs = true;
+	else
+		preprocessed_CNVs = false;
+	end;
+
+
+	%%========================================================================================
+	% Determine bases_per_bin sizes to be used as a fallback.
+	%-----------------------------------------------------------------------------------------
 	%% Load CNV and SNP figure resolutions.
 	if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
 		bases_per_bin           = max(chrom_size)/700;
@@ -143,26 +165,26 @@ if (Make_figure == true)
 		bases_per_bin_SNP       = max(chrom_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt']));
 	end;
 
-	fprintf(['\nGenerating horizontal CNV highTop figure from ''' project ''' sequence data.\n']);
 
-
-	%%================================================================================================
+	%%========================================================================================
 	% Load corrected CNV data for display.
-	%-------------------------------------------------------------------------------------------------
+	%-----------------------------------------------------------------------------------------
 	fprintf('\nCommon_CNV data file found, loading.\n');
-	load([projectDir 'Common_CNV.mat']);   %% 'CNVplot2','genome_CNV'.
+	load([projectDir 'CNV_' CNV_verString '.mat']);   % chrom_CNVdata, chroms, fragment_starts, fragment_ends
+	load([projectDir 'Common_CNV.mat']);   \           % CNVplot2, genome_CNV, chrom_in_use
 
 
-	%% -----------------------------------------------------------------------------------------
-	% Calculate chromosome copy number from ploidy estimatre.
-	%-------------------------------------------------------------------------------------------
+	%%========================================================================================
+	% Calculate chromosome copy number from ploidy estimates.
+	%-----------------------------------------------------------------------------------------
 	ploidy = str2num(ploidyEstimateString);
 	[chrom_breaks, chromCopyNum, ploidyAdjust, chromCopyRsquared] = FindChromSizes_4(workingDir, Aneuploidy,CNVplot2,ploidy,num_chroms,chrom_in_use, false);
 	fprintf('\n');
 
-	%% -----------------------------------------------------------------------------------------
+
+	%%========================================================================================
 	% Setup for main figure generation.
-	%------------------------------------------------------------------------------------------
+	%-----------------------------------------------------------------------------------------
 	% load size definitions
 	[linear_fig_height,linear_fig_width,Linear_left_start,Linear_chrom_gap,Linear_chrom_max_width,Linear_height...
 		,Linear_base,rotate,linear_chrom_font_size,linear_axis_font_size,linear_gca_font_size,stacked_fig_height,...
@@ -179,9 +201,9 @@ if (Make_figure == true)
 	largestchrom = largestchrom(1);
 
 
-	%% -----------------------------------------------------------------------------------------
+	%%========================================================================================
 	% Setup for linear-view figure generation.
-	%-------------------------------------------------------------------------------------------
+	%-----------------------------------------------------------------------------------------
 	if (Linear_display == true)
 		Linear_fig		= figure(2);
 		Linear_genome_size	= sum(chrom_size);
@@ -197,9 +219,9 @@ if (Make_figure == true)
 	stringchromCNVs = '';
 
 
-	%% -----------------------------------------------------------------------------------------
+	%%========================================================================================
 	% Median normalize CNV data before figure generation.
-	%-------------------------------------------------------------------------------------------
+	%-----------------------------------------------------------------------------------------
 	% Gather CNV data for LOWESS fitting.
 	CNVdata_all = [];
 	for chrom = 1:length(chrom_in_use)
@@ -218,9 +240,9 @@ if (Make_figure == true)
 	end;
 
 
-	%% -----------------------------------------------------------------------------------------
+	%%========================================================================================
 	% Make figures
-	%-------------------------------------------------------------------------------------------
+	%-----------------------------------------------------------------------------------------
 	first_chrom = true;
 
 	% Determine order to draw chromosome cartoons in.
@@ -271,33 +293,6 @@ if (Make_figure == true)
 
 				%% standard : CNV plot section.
 				draw_CNV_plot_highTop;
-
-			%	c_ = [0 0 0];
-			%	fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
-			%	for i = 1:length(CNVplot2{chrom});
-			%		x_ = [i i i-1 i-1];
-			%		CNVhistValue = CNVplot2{chrom}(i);
-			%
-			%		% The CNV-histogram values were normalized to a median value of 1.
-			%		% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the
-			%		% median line.
-			%		startY = maxY/2;
-			%		if (Low_quality_ploidy_estimate == true)
-			%			endY = CNVhistValue*ploidy*ploidyAdjust;
-			%			if isna(CNVhistValue)
-			%				endY = ploidy*ploidyAdjust;
-			%			end;
-			%		else
-			%			endY = CNVhistValue*ploidy;
-			%			if isna(CNVhistValue)
-			%				endY = ploidy;
-			%			end;
-			%		end;
-			%		y_ = [startY endY endY startY];
-			%		% makes a blackbar for each bin.
-			%		f = fill(x_,y_,c_);
-			%		set(f,'linestyle','none');
-			%	end;
 				% standard : end of : CNV plot section.
 
 
@@ -399,9 +394,9 @@ if (Make_figure == true)
 				end;
 				% standard : end show annotation locations.
 
-				%% =========================================================================================
+				%%================================================================
 				% Draw histplots to right of main chromosome cartoons.
-				%-------------------------------------------------------------------------------------------
+				%-----------------------------------------------------------------
 				hist_plot_subfigures_highTop;
 			end;
 
@@ -434,33 +429,7 @@ if (Make_figure == true)
 
 				%% linear : CNV plot section.
 				draw_CNV_plot_highTop;
-
-			%	c_ = [0 0 0];
-			%	fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
-			%	for i = 1:length(CNVplot2{chrom});
-			%		x_ = [i i i-1 i-1];
-			%		CNVhistValue = CNVplot2{chrom}(i);
-			%
-			%		% The CNV-histogram values were normalized to a median value of 1.
-			%		% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
-			%		startY = maxY/2;
-			%		if (Low_quality_ploidy_estimate == true)
-			%			endY = CNVhistValue*ploidy*ploidyAdjust;
-			%			if isna(CNVhistValue)
-			%				endY = ploidy*ploidyAdjust;
-			%			end;
-			%		else
-			%			endY = CNVhistValue*ploidy;
-			%			if isna(CNVhistValue)
-			%				endY = ploidy;
-			%			end;
-			%		end;
-			%		y_ = [startY endY endY startY];
-			%		% makes a blackbar for each bin.
-			%		f = fill(x_,y_,c_);
-			%		set(f,'linestyle','none');
-			%	end;
-			%	% linear : end CNV plot section.
+				% linear : end CNV plot section.
 
 				%% linear : draw ploidy lines across plots for easier interpretation of CNV regions.
 				% Inside chrom bounds grey lines.

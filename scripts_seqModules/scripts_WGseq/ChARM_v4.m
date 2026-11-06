@@ -419,39 +419,7 @@ if (~data_loaded)
 		fprintf('\nFigure test.1\n');
 		fig = figure(1);
 		dataShow = data1;
-		draw_Charm_plot.1;
-
-%		fprintf('\nFigure test.1\n');
-%		fig = figure(1);    dataShow = data1;
-%		set(gcf, 'Position', [0 70 1024 600]);
-%		for chrom = 1:length(chrom_in_use)
-%			if (chrom_in_use(chrom) == 1)
-%				left   = chrom_posX(chrom);
-%				bottom = chrom_posY(chrom);
-%				width  = chrom_width(chrom);
-%				height = chrom_height(chrom);
-%				subplot('Position',[left bottom width height]);
-%				hold on;
-%				c_ = [0 0 0];
-%				fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
-%				for i = 1:length(dataShow{chrom});
-%					x_ = [i i i-1 i-1];
-%					CNVhistValue = dataShow{chrom}(i);
-%					startY = maxY/2;
-%					endY = CNVhistValue;
-%					y_ = [startY endY endY startY];
-%					f = fill(x_,y_,c_);
-%					set(f,'linestyle','none');
-%				end;
-%				x2 = chrom_size(chrom)*chrom_length_scale_multiplier;
-%				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-%				hold off;
-%				xlim([0,chrom_size(chrom)*chrom_length_scale_multiplier]);
-%				ylim([0,maxY]);
-%				set(gca,'YTick',[0 maxY/2 maxY]);
-%				set(gca,'YTickLabel',{'','',''});
-%			end;
-%		end;
+		draw_Charm_plot_1;
 		saveas(fig,[projectDir 'fig.ChARM_test.1.' figVer 'eps'], 'epsc');
 		saveas(fig,[projectDir 'fig.ChARM_test.1.' figVer 'png'], 'png');
 		%% change permissions of file.
@@ -462,44 +430,7 @@ if (~data_loaded)
 		fprintf('\nFigure test.2\n');
 		fig = figure(2);
 		dataShow = data2;
-		draw_Charm_plot.1;
-
-%		fprintf('\nFigure test.2\n');
-%		fig = figure(2);    dataShow = data2;
-%		set(gcf, 'Position', [0 70 1024 600]);
-%		for chrom = 1:length(chrom_in_use)
-%			if (chrom_in_use(chrom) == 1)
-%				left   = chrom_posX(chrom);
-%				bottom = chrom_posY(chrom);
-%				width  = chrom_width(chrom);
-%				height = chrom_height(chrom);
-%				subplot('Position',[left bottom width height]);
-%				hold on;
-%				c_ = [0 0 0];
-%				fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
-%				for i = 1:length(dataShow{chrom});
-%					x_ = [i i i-1 i-1];
-%					%if (dataShow{chrom}(i) == 0)
-%					%	CNVhistValue = 0;
-%					%else
-%					%	CNVhistValue = dataShow{chrom}(i);
-%					%end;
-%					CNVhistValue = dataShow{chrom}(i);
-%					startY = maxY/2;
-%					endY = CNVhistValue;
-%					y_ = [startY endY endY startY];
-%					f = fill(x_,y_,c_);
-%					set(f,'linestyle','none');
-%				end;
-%				x2 = chrom_size(chrom)*chrom_length_scale_multiplier;
-%				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-%				hold off;
-%				xlim([0,chrom_size(chrom)*chrom_length_scale_multiplier]);
-%				ylim([0,maxY]);
-%				set(gca,'YTick',[0 maxY/2 maxY]);
-%				set(gca,'YTickLabel',{'','',''});
-%			end;
-%		end;
+		draw_Charm_plot_1;
 		saveas(fig,[projectDir 'fig.ChARM_test.2.' figVer 'eps'], 'epsc');
 		saveas(fig,[projectDir 'fig.ChARM_test.2.' figVer 'png'], 'png');
 		%% change permissions.
@@ -507,52 +438,10 @@ if (~data_loaded)
 		system(['chmod 774 ' projectDir 'fig.ChARM_test.2.' figVer 'png']);
 		delete(fig);
 
-
-		%%
-		%% data3 is losing data at the right end of each chromosome for some reason.
-		%%
-
 		fprintf('\nFigure test.3\n');
 		fig = figure(3);
 		dataShow = data3;
-		draw_Charm_plot.1;
-
-%		fprintf('\nFigure test.3\n');
-%		fig = figure(3);    dataShow = data3;
-%		set(gcf, 'Position', [0 70 1024 600]);
-%		for chrom = 1:length(chrom_in_use)
-%			if (chrom_in_use(chrom) == 1)
-%				left   = chrom_posX(chrom);
-%				bottom = chrom_posY(chrom);
-%				width  = chrom_width(chrom);
-%				height = chrom_height(chrom);
-%				subplot('Position',[left bottom width height]);
-%				hold on;
-%				c_ = [0 0 0];
-%				fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
-%				for i = 1:length(dataShow{chrom});
-%					x_ = [i i i-1 i-1];
-%					%if (dataShow{chrom}(i) == 0)
-%					%	CNVhistValue = 1;
-%					%else
-%					%	CNVhistValue = dataShow{chrom}(i);
-%					%end;
-%					CNVhistValue = dataShow{chrom}(i);
-%					startY = maxY/2;
-%					endY = CNVhistValue;
-%					y_ = [startY endY endY startY];
-%					f = fill(x_,y_,c_);
-%					set(f,'linestyle','none');
-%				end;
-%				x2 = chrom_size(chrom)*chrom_length_scale_multiplier;
-%				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-%				hold off;
-%				xlim([0,chrom_size(chrom)*chrom_length_scale_multiplier]);
-%				ylim([0,maxY]);
-%				set(gca,'YTick',[0 maxY/2 maxY]);
-%				set(gca,'YTickLabel',{'','',''});
-%			end;
-%		end;
+		draw_Charm_plot_1;
 		saveas(fig,[projectDir 'fig.ChARM_test.3.' figVer 'eps'], 'epsc');
 		saveas(fig,[projectDir 'fig.ChARM_test.3.' figVer 'png'], 'png');
 		%% change permissions.
@@ -563,45 +452,7 @@ if (~data_loaded)
 		fprintf('\nFigure test.4\n');
 		fig = figure(4);
 		dataShow = data4;
-		draw_Charm_plot.2;
-
-%		fprintf('\nFigure test.4\n');
-%		fig = figure(4);
-%		dataShow = data4;
-%		set(gcf, 'Position', [0 70 1024 600]);
-%		for chrom = 1:length(chrom_in_use)
-%			if (chrom_in_use(chrom) == 1)
-%				left   = chrom_posX(chrom);
-%				bottom = chrom_posY(chrom);
-%				width  = chrom_width(chrom);
-%				height = chrom_height(chrom);
-%				subplot('Position',[left bottom width height]);
-%				hold on;
-%				c_ = [0 0 0];
-%				for i = 1:length(dataShow{chrom});
-%					x_ = [i i i-1 i-1];
-%					CNVhistValue = dataShow{chrom}(i);
-%					startY = 0;
-%					endY   = CNVhistValue*8;
-%					y_ = [startY endY endY startY];
-%					f = fill(x_,y_,c_);
-%					set(f,'linestyle','none');
-%				end;
-%				x2 = chrom_size(chrom)*chrom_length_scale_multiplier;
-%				plot([0; x2], [0; 0],'color',[0 0 0]);  % 2n line.
-%				for edge = 1:length(locs1{chrom})
-%					plot([locs1{chrom}(edge) locs1{chrom}(edge)], [-1 1],'color',[0 0 1]);
-%				end;
-%				for edge = 1:length(locs2{chrom})
-%					plot([locs2{chrom}(edge) locs2{chrom}(edge)], [-1 1],'color',[1 0 0]);
-%				end;
-%				hold off;
-%				xlim([0,chrom_size(chrom)*chrom_length_scale_multiplier]);
-%				ylim([-1 1]);
-%				set(gca,'YTick',[-1 0 1]);
-%				set(gca,'YTickLabel',{'','',''});
-%			end;
-%		end;
+		draw_Charm_plot_2;
 		saveas(fig,[projectDir 'fig.ChARM_test.4.' figVer 'eps'], 'epsc');
 		saveas(fig,[projectDir 'fig.ChARM_test.4.' figVer 'png'], 'png');
 		%% change permissions.
@@ -1041,45 +892,21 @@ if (~data_loaded)
 	fprintf(    '--------------------------------------------------\n');
 	fprintf(['length(chrom_size) = ' num2str(length(chrom_size)) '\n']);
 	if (temp_figures == true)
+
 		fprintf('\nFigure test.5\n');
 		fig = figure(1);    dataShow = data1;
 		set(gcf, 'Position', [0 70 1024 600]*2);
-		for chrom = 1:length(chrom_in_use)
-			if (chrom_in_use(chrom) == 1)
-				left   = chrom_posX(chrom);    bottom = chrom_posY(chrom);
-				width  = chrom_width(chrom);   height = chrom_height(chrom);
-				subplot('Position',[left bottom width height]);
-				hold on;
-				c_ = [0 0 0];
-				fprintf(['chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) ' :: ']);
-				for i = 1:length(dataShow{chrom});
-					x_ = [i i i-1 i-1];
-					CNVhistValue = dataShow{chrom}(i);
-					startY = maxY/2;    endY = CNVhistValue;    y_ = [startY endY endY startY];    f = fill(x_,y_,c_);
-					set(f,'linestyle','none');
-				end;
-				fprintf([num2str(chrom_size) '\n']);
-				x2 = chrom_size(chrom)*chrom_length_scale_multiplier;
-				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);  % 2n line.
-				for edge = 1:length(locs{chrom})
-					plot([locs{chrom}(edge) locs{chrom}(edge)], [0 maxY],'color',[0 0 1]);
-				end;
-				hold off;
-				xlim([0,chrom_size(chrom)*chrom_length_scale_multiplier]);
-				ylim([0,maxY]);
-				set(gca,'YTick',[0 maxY/2 maxY]);
-				set(gca,'YTickLabel',[]);
-			end;
-		end;
+		draw_Charm_plot_2;
 		saveas(fig,[projectDir 'fig.ChARM_test.5.' figVer 'eps'], 'epsc');
 		saveas(fig,[projectDir 'fig.ChARM_test.5.' figVer 'png'], 'png');
-		delete(fig);
-
 		%% change permissions.
 		system(['chmod 774 ' projectDir 'fig.ChARM_test.5.' figVer 'eps']);
 		system(['chmod 774 ' projectDir 'fig.ChARM_test.5.' figVer 'png']);
+		delete(fig);
+
 	end;
 	fprintf(['---------------------------------------------------------------------------\n']);
+
 
 	%=========================================================================================
 	% Save 'Common_ChARM.mat' file; used by later analyses.

@@ -1,5 +1,5 @@
 %==========================================================================
-% draw_Charm_plot.1.m - Variable-Width Binned Copy Number Profile Painter
+% draw_Charm_plot_1.m - Variable-Width Binned Copy Number Profile Painter
 %==========================================================================
 
 set(gcf, 'Position', [0 70 1024 600]);
