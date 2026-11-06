@@ -86,44 +86,51 @@ function SYSTEM_force_minimize($userName,$projectName,$main_dir) {
 function minimizeProject($dir) {
 	$dir = $dir."/";
 
-	// Compress files.
-	if (is_file($dir."/putative_SNPs_v4.txt")) {
-		$txtFile = $dir."/putative_SNPs_v4.txt";
-		$zipFile = $dir."/putative_SNPs_v4.zip";
+	// Compress SNP file.
+	$txtFile = $dir . "/putative_SNPs_v4.txt";
+	$zipFile = $dir . "/putative_SNPs_v4.zip";
+	if (is_file($txtFile)) {
 		$zip = new ZipArchive();
+
 		if ($zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
-			if (file_exists($txtFile)) {
-				// Add the file (source path, name inside the zip)
-				$zip->addFile($txtFile, basename($txtFile));
-				$zip->close();
+			// Add the file (source path, name inside the zip).
+			$zip->addFile($txtFile, basename($txtFile));
+
+			// Only delete the text file if the ZIP actually writes successfully.
+			if ($zip->close()) {
 				unlink($txtFile);
-				file_put_contents($logFile, "Success: '".$txtFile."' compressed into $zipFile.", FILE_APPEND | LOCK_EX);
+				file_put_contents($logFile, "Success: '" . $txtFile . "' compressed into $zipFile.\n", FILE_APPEND | LOCK_EX);
 			} else {
-				$zip->close();
-				file_put_contents($logFile, "Error: '".$txtFile."' not found.", FILE_APPEND | LOCK_EX);
+				file_put_contents($logFile, "Error: Failed to write ZIP archive to disk.\n", FILE_APPEND | LOCK_EX);
 			}
 		} else {
-			file_put_contents($logFile, "Error: Could not create the ZIP archive.", FILE_APPEND | LOCK_EX);
+			file_put_contents($logFile, "Error: Could not open ZIP archive stream.\n", FILE_APPEND | LOCK_EX);
 		}
+	} else {
+		file_put_contents($logFile, "Error: '" . $txtFile . "' not found.\n", FILE_APPEND | LOCK_EX);
 	}
-	if (is_file($dir."/SNP_CNV_v1.txt")) {
-		$txtFile = $dir."/SNP_CNV_v1.txt";
-		$zipFile = $dir."/SNP_CNV_v1.zip";
+
+	// Compress SNP_CNV file.
+	$txtFile = $dir . "/SNP_CNV_v1.txt";
+	$zipFile = $dir . "/SNP_CNV_v1.zip";
+	if (is_file($txtFile)) {
 		$zip = new ZipArchive();
+
 		if ($zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
-			if (file_exists($txtFile)) {
-				// Add the file (source path, name inside the zip)
-				$zip->addFile($txtFile, basename($txtFile));
-				$zip->close();
+			$zip->addFile($txtFile, basename($txtFile));
+
+			// Only delete the original text file if the ZIP saved successfully
+			if ($zip->close()) {
 				unlink($txtFile);
-				file_put_contents($logFile, "Success: '".$txtFile."' compressed into $zipFile.", FILE_APPEND | LOCK_EX);
+				file_put_contents($logFile, "Success: '" . $txtFile . "' compressed into $zipFile.\n", FILE_APPEND | LOCK_EX);
 			} else {
-				$zip->close();
-				file_put_contents($logFile, "Error: '".$txtFile."' not found.", FILE_APPEND | LOCK_EX);
+				file_put_contents($logFile, "Error: Failed to write ZIP archive to disk.\n", FILE_APPEND | LOCK_EX);
 			}
 		} else {
-			file_put_contents($logFile, "Error: Could not create the ZIP archive.", FILE_APPEND | LOCK_EX);
+			file_put_contents($logFile, "Error: Could not create the ZIP archive stream.\n", FILE_APPEND | LOCK_EX);
 		}
+	} else {
+		file_put_contents($logFile, "Error: '" . $txtFile . "' not found.\n", FILE_APPEND | LOCK_EX);
 	}
 
 	// Make a temp directory.
