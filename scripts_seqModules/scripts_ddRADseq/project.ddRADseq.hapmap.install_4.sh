@@ -26,7 +26,7 @@ condensedLog=$projectDirectory"condensed_log.txt";
 
 
 ## Error handling in case something crashes.
-trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.ddRADseq.hapmap.install_4.sh:$LINENO"; echo -e "Something went wrong. project.ddRADseq.hapmap.install_4.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+trap 'bash queue_end.sh $user $project $main_dir $logName "Something went wrong. project.ddRADseq.hapmap.install_4.sh:$LINENO"; echo -e "Something went wrong. project.ddRADseq.hapmap.install_4.sh:$LINENO" >> $projectDirectory"error.txt"; exit 1;' ERR;
 
 
 # Get parent name used from project's "parent.txt" file.

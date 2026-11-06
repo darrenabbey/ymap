@@ -14,7 +14,7 @@ scriptDirectory=$PWD;
 logName="$projectDirectory/process_log.txt";
 
 ## Error handling in case something crashes.
-trap 'cd $main_dir"/scripts_seqModules/scripts_WGseq/"; bash queue_end.sh "$user" "$project" "$main_dir" "$logName" "Something went wrong. cleaning_WGseq.sh:$LINENO"; install /dev/null "$projectDirectory/error.txt"; echo -e "Something went wrong. cleaning_WGseq.sh:$LINENO" > "$projectDirectory/error.txt"; cd $main_dir; exit 1;' ERR;
+trap 'cd $main_dir"/scripts_seqModules/scripts_WGseq/"; bash queue_end.sh "$user" "$project" "$main_dir" "$logName" "Something went wrong. cleaning_WGseq.sh:$LINENO"; install /dev/null "$projectDirectory/error.txt"; echo -e "Something went wrong. cleaning_WGseq.sh:$LINENO" >> "$projectDirectory/error.txt"; cd $main_dir; exit 1;' ERR;
 
 condensedLog="$projectDirectory/condensed_log.txt";
 

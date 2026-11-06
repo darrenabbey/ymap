@@ -34,7 +34,7 @@ condensedLog=$hapmapDirectory"condensed_log.txt";
 
 
 ## Error handling in case something crashes.
-trap 'bash queue_end.sh $user $hapmap $main_dir $logName "Something went wrong. hapmap.update_4.sh:$LINENO"; echo -e "Something went wrong. hapmap.update_4.sh:$LINENO" > $projectDirectory"error.txt"; exit 1;' ERR;
+trap 'bash queue_end.sh $user $hapmap $main_dir $logName "Something went wrong. hapmap.update_4.sh:$LINENO"; echo -e "Something went wrong. hapmap.update_4.sh:$LINENO" >> $projectDirectory"error.txt"; exit 1;' ERR;
 
 
 echo -e "" >> $logName;
