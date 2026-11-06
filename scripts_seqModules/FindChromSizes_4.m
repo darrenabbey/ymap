@@ -7,7 +7,7 @@ function [chrom_breaks, chromCopyNum, ploidyAdjust, chromCopyRsquared] = FindChr
 %%%
 %%%------------------------------------------------------------------------------------------------
 
-maxY                   = 10;
+maxY                     = 10;
 chrom_breaks             = [];
 chromCopyNum             = [];
 chromCopyRsquared        = [];
