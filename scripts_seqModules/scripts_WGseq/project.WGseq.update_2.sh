@@ -1,3 +1,4 @@
+
 #!/bin/bash
 #
 # project.WGseq.update_2.sh
@@ -266,7 +267,7 @@ function [] = processing1()
 	try
 		analyze_CNVs_1('$main_dir','$user','$genomeUser','$project','$genome','$ploidyEstimate','$ploidyBase');
 	catch err
-		fileID = fopen('$projectDirectory/error.txt', 'w');
+		fileID = fopen('$projectDirectory/error.txt', 'c');
 		if fileID ~= -1
 			fprintf(fileID, 'Something went wrong. %s.m:%d|%s\\n', err.stack(1).name, err.stack(1).line, err.message);
 			fclose(fileID);
@@ -305,7 +306,7 @@ function [] = processing2()
 	try
 		ChARM_v4('$project','$user','$genome','$genomeUser','$main_dir');
 	catch err
-		fileID = fopen('$projectDirectory/error.txt', 'w');
+		fileID = fopen('$projectDirectory/error.txt', 'c');
 		if fileID ~= -1
 			fprintf(fileID, 'Something went wrong. %s.m:%d|%s\\n', err.stack(1).name, err.stack(1).line, err.message);
 			fclose(fileID);
@@ -351,7 +352,7 @@ function [] = processing3()
 	try
 		analyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');
 	catch err
-		fileID = fopen('$projectDirectory/error.txt', 'w');
+		fileID = fopen('$projectDirectory/error.txt', 'c');
 		if fileID ~= -1
 			fprintf(fileID, 'Something went wrong. %s.m:%d|%s\\n', err.stack(1).name, err.stack(1).line, err.message);
 			fclose(fileID);
@@ -394,7 +395,7 @@ function [] = processing4()
 	try
 		analyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$projectParent','$genome','$ploidyEstimate','$ploidyBase');
 	catch err
-		fileID = fopen('$projectDirectory/error.txt', 'w');
+		fileID = fopen('$projectDirectory/error.txt', 'c');
 		if fileID ~= -1
 			fprintf(fileID, 'Something went wrong. %s.m:%d|%s\\n', err.stack(1).name, err.stack(1).line, err.message);
 			fclose(fileID);
@@ -438,7 +439,7 @@ function [] = processing3()
 	try
 		analyze_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');
 	catch err
-		fileID = fopen('$projectDirectory/error.txt', 'w');
+		fileID = fopen('$projectDirectory/error.txt', 'c');
 		if fileID ~= -1
 			fprintf(fileID, 'Something went wrong. %s.m:%d|%s\\n', err.stack(1).name, err.stack(1).line, err.message);
 			fclose(fileID);
@@ -477,7 +478,7 @@ function [] = processing4()
 	try
 		analyze_CNV_SNPs_hapmap('$main_dir','$user','$genomeUser','$project','$hapmap','$genome','$ploidyEstimate','$ploidyBase');
 	catch err
-		fileID = fopen('$projectDirectory/error.txt', 'w');
+		fileID = fopen('$projectDirectory/error.txt', 'c');
 		if fileID ~= -1
 			fprintf(fileID, 'Something went wrong. %s.m:%d|%s\\n', err.stack(1).name, err.stack(1).line, err.message);
 			fclose(fileID);
