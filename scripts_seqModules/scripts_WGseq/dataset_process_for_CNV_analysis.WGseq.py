@@ -45,7 +45,6 @@ genomeDirectory = main_dir+"/users/"+genomeUser+"/genomes/"+genome+"/"
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\n")
-	myfile.write("\t\t|\tProcessing standard bin fragmented genome file.\n")
 
 #============================================================================================================
 # Load FastaName from 'reference.txt' for genome in use.
@@ -67,7 +66,7 @@ with open(logName, "a") as myfile:
 #     >Ca_a.chr1 (9638..10115) (478bp) [*]
 # FASTA entries with header lines ending in '[gene]' or '[intergenic]' are usable.
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\tProcessing standard bin fragmented genome file.");
+	myfile.write("\t\t|\tProcessing fragmented genome file for analysis bins.\n");
 
 # Find name of genome FASTA file for species being examined.
 #     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/reference.txt"
@@ -134,7 +133,7 @@ with open(fragments_FASTA_file, 'r') as fragments_FASTA_data:
 fragment_counter = len(fragments);
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tThe standard bin fragmented genome FASTA file has been loaded.\n");
+	myfile.write("\t\t|\tThe fragmented genome FASTA file has been loaded.\n");
 
 # Put fragment counter into a general use variable.
 numFragments = len(fragments);
@@ -189,7 +188,8 @@ for x in range(0, chrName_maxcount):
 	chrName.append([])
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tGathering name strings for chromosomes.\n")
+	myfile.write("\t\t|\n");
+	myfile.write("\t\t|\t\tGathering name strings for chromosomes.\n");
 
 # Gather name strings for chromosomes, in order.
 figureDefinitionFile  = open(figureDefinition_file,'r')
@@ -218,17 +218,14 @@ for line in figureDefinitionData:
 					if chr_num != 0:
 						chrName[int(float(chr_num))-1] = chr_name
 						with open(logName, "a") as myfile:
-							myfile.write("\t\t|\t" + str(chr_num) + " : " + chr_name + " = " + chr_nameShort + "\n")
+							myfile.write("\t\t|\t\t" + str(chr_num) + " : " + chr_name + " = " + chr_nameShort + "\n")
 figureDefinitionFile.close()
 
 # Put the chromosome count into a smaller name for later use.
 chrCount = chrName_maxcount
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tMax chr string : "+str(chrCount)+"\n")
+	myfile.write("\t\t|\t\tMax chr string : "+str(chrCount)+"\n")
 #............................................................................................................
-
-with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tOpen dataset 'SNP_CNV_v1.txt' file.\n")
 
 # Open dataset 'SNP_CNV_v1.txt' file.
 print('### InputFile = ' + inputFile)
@@ -252,7 +249,8 @@ for x in range(0,chrCount):
 print("### Number of bins across figure: " + str(numFragments))
 
 with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tGathering read coverage data for each fragment.\n\t\t|")
+	myfile.write("\t\t|\n");
+	myfile.write("\t\t|\tGathering read coverage data for each fragment.");
 
 # Process 'SNP_CNV_v1.txt' file, line by line.
 for line in data:
