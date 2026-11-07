@@ -195,16 +195,85 @@ for chrom = 1:length(chrom_in_use)
 	end;
 end;
 
-%% Load CNV and SNP figure resolutions.
-if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
-	bases_per_bin		= max(chrom_size)/700;
+
+%%==========================================================================================
+% Load CNV data from 'preprocessed_CNVs.txt' file.
+%-------------------------------------------------------------------------------------------
+cnv_data_file = fullfile(projectDir, 'preprocessed_CNVs.txt');
+if exist(cnv_data_file, 'file')
+        % Open file and parse text, automatically ignoring lines starting with '#'
+        fid = fopen(cnv_data_file, 'r');
+        raw_data = textscan(fid, '%d %d %d %f', 'CommentStyle', '#');
+        fclose(fid);
+
+        % The first column contains the chromosome numbers (chrNum)
+        chroms          = raw_data{1};
+        fragment_starts = raw_data{2};
+        fragment_ends   = raw_data{3};
+        readAverages    = raw_data{4};
+        lines_analyzed  = length(chroms);
+
+        preprocessed_CNVs = true;
 else
-	bases_per_bin		= max(chrom_size)/str2num(fileread([genomeDir 'resolution.CNV.txt']));
+        preprocessed_CNVs = false;
 end;
-if (exist([genomeDir 'resolution.SNPs.txt'],'file') == 0)
-	bases_per_bin_SNP	= max(chrom_size)/700;
+
+
+%%==========================================================================================
+% Load SNP data from 'preprocessed_SNPs.txt' file.
+%-------------------------------------------------------------------------------------------
+snp_data_file = fullfile(projectDir, 'preprocessed_SNPs.txt');
+if exist(snp_data_file, 'file')
+	% Example data file line.
+	% # chr_num     bp_start        bp_end  phasedData      unphasedData    phasedCoordinate        unphasedCoordinate      phasedAllele    unphasedAllele
+	%   1           1               1941    ()              ()              ()                      ()                      ()              ()
+	%   1           1942            3267    ()              ()              ()                      ()                      ()              ()
+
+	% Open file and parse text, automatically ignoring lines starting with '#'
+	fid = fopen(snp_data_file, 'r');
+	raw_data = textscan(fid, '%f %f %f %s %s %s %s %s %s', 'CommentStyle', '#');
+	fclose(fid);
+
+	% The first column contains the chromosome numbers (chrNum)
+	chroms                      = raw_data{1};
+	fragment_starts             = raw_data{2};
+	fragment_ends               = raw_data{3};
+	phased_ratio_data_string    = raw_data{4};
+	unphased_ratio_data_string  = raw_data{5};
+	phased_coordinates_string   = raw_data{6};
+	unphased_coordinates_string = raw_data{7};
+	phased_alleles_string       = raw_data{8};
+	unphased_alleles_string     = raw_data{9};
+	lines_analyzed              = length(chroms);
+
+	preprocessed_SNPs = true;
 else
-	bases_per_bin_SNP	= max(chrom_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt']));
+	preprocessed_SNPs = false;
+end;
+
+
+%%==========================================================================================
+% Determine bases_per_bin sizes to be used as a fallback.
+%-------------------------------------------------------------------------------------------
+max_chr_sz = max(chrom_size); % Cache the max size math calculation to save CPU cycles.
+
+%% Load CNV figure resolution.
+res_cnv_file = fullfile(genomeDir, 'resolution.CNV.txt');
+if exist(res_cnv_file, 'file')
+	% OPTIMIZATION: sscanf is faster than str2num and immune to trailing newlines/spaces
+	res_val = sscanf(fileread(res_cnv_file), '%f');
+	bases_per_bin = max_chr_sz / res_val(1);
+else
+	bases_per_bin = max_chr_sz / 700;
+end;
+
+%% Load SNP figure resolution.
+res_snp_file = fullfile(genomeDir, 'resolution.SNPs.txt');
+if exist(res_snp_file, 'file')
+	res_val_snp = sscanf(fileread(res_snp_file), '%f');
+	bases_per_bin_SNP = max_chr_sz / res_val_snp(1);
+else
+	bases_per_bin_SNP = max_chr_sz / 700;
 end;
 
 
@@ -307,154 +376,154 @@ while (chromCopyNum_changed == true)
 	end;
 
 
-	%%================================================================================================
+	%%========================================================================================
 	% Load SNP/LOH data.
-	%.................................................................................................
+	%.........................................................................................
 	fprintf(['\n### Load SNP/LOH data.\n']);
-	if (exist([projectDir 'SNP_' SNP_verString '.mat'],'file') == 0)
-		fprintf(['\t|\t\tMAT file "SNP_' SNP_verString '.mat" not found, regenerating.']);
-		datafile       = [projectDir 'preprocessed_SNPs.txt'];
-		data           = fopen(datafile, 'r');
-		count          = 0;
-		old_chrom        = 0;
-		gap_string     = '';
-		while not (feof(data))
-			dataLine = fgetl(data);
-			if (length(dataLine) > 0)
-				if (dataLine(1) ~= '#')
-					% process the loaded line into data channels.
-					lineVariables               = textscan(dataLine, '%f %f %f %s %s %s %s %s %s');
-					chrom_num                   = lineVariables{1};
-					fragment_start              = lineVariables{2};
-					fragment_end                = lineVariables{3};
-					phased_ratio_data_string    = lineVariables{4}{1};
-					unphased_ratio_data_string  = lineVariables{5}{1};
-					phased_coordinates_string   = lineVariables{6}{1};
-					unphased_coordinates_string = lineVariables{7}{1};
-					phased_alleles_string       = lineVariables{8}{1};
-					unphased_alleles_string     = lineVariables{9}{1};
+	mat_file_path = [projectDir 'SNP_' SNP_verString '.mat'];
 
-					if (chrom_in_use(chrom_num) == 1)
-						% format = simple, one number per column.
-						chrom_length                  = ceil(chrom_size(chrom_num)/bases_per_bin_SNP);
-						chrom_bin_SNP                 = ceil(fragment_start/bases_per_bin_SNP);
+	if (exist(mat_file_path, 'file') == 0)
+		fprintf('\t|\tMAT file not found, regenerating from memory structures.\n');
+		count      = 0;
+		old_chrom  = 0;
+		gap_string = '';
 
-						% Log file output to indicate progression of this section of code.
-						count = count+1;
-						if (old_chrom ~= chrom_num)
-							fprintf(['\n\t|\t\t' chrom_name{chrom_num} '\n\t|\t' gap_string]);
-						end;
-						if (mod(count,10) == 0)
-							fprintf('.');
-							gap_string = [gap_string ' '];
-						end;
-						if (count == 800)
-							fprintf('\n\t|\t\t');
-							count = 0;
-							gap_string = '';
-						end;
-						old_chrom = chrom_num;
+		% Loop directly over the row elements already loaded by textscan
+		for idx = 1:lines_analyzed
+			chrom_num      = chroms(idx);
+			fragment_start = fragment_starts(idx);
 
-						% format = '(number1,number2,...,numberN)'
-						phased_ratio_data_string(1)              = [];
-						phased_ratio_data_string(end)            = [];
-						if (length(phased_ratio_data_string)    == 0)
-							phased_ratio_data                = [];
-						else
-							commaCount                       = length(find(phased_ratio_data_string==','));
-							if (commaCount == 0)
-								phased_ratio_data        = str2num(phased_ratio_data_string);
-							else
-								phased_ratio_data        = strsplit(phased_ratio_data_string,',');   % function converts number lists from strings to numbers.
-							end;
-						end;
+			% Check if this chromosome is actively displayed
+			if chrom_in_use(chrom_num) == 1
 
-						% format = '(number1,number2,...,numberN)'
-						phased_coordinates_string(1)             = [];
-						phased_coordinates_string(end)           = [];
-						if (length(phased_coordinates_string)   == 0)
-							phased_coordinates               = [];
-						else
-							commaCount                       = length(find(phased_coordinates_string==','));
-							if (commaCount == 0)
-								phased_coordinates       = str2num(phased_coordinates_string);
-							else
-								phased_coordinates       = strsplit(phased_coordinates_string,',');   % function converts number lists from strings to numbers.
-							end;
-						end;
+				% Symmetrically determine active display bins.
+				if preprocessed_SNPs
+					chrom_bin_SNP = idx;
+				else
+					chrom_bin_SNP = ceil(fragment_start/bases_per_bin_SNP);
+				end;
 
-						% format = '(number1,number2,...,numberN)'
-						unphased_ratio_data_string(1)            = [];
-						unphased_ratio_data_string(end)          = [];
-						if (length(unphased_ratio_data_string)  == 0)
-							unphased_ratio_data              = [];
-						else
-							commaCount                       = length(find(unphased_ratio_data_string==','));
-							if (commaCount == 0)
-								unphased_ratio_data      = str2num(unphased_ratio_data_string);
-							else
-								unphased_ratio_data      = strsplit(unphased_ratio_data_string,',');  % function converts number lists from strings to numbers.
-							end;
-						end;
 
-						% format = '(number1,number2,...,numberN)'
-						unphased_coordinates_string(1)           = [];
-						unphased_coordinates_string(end)         = [];
-						if (length(unphased_coordinates_string) == 0)
-							unphased_coordinates             = [];
-						else
-							commaCount                       = length(find(unphased_coordinates_string==','));
-							if (commaCount == 0)
-								unphased_coordinates     = str2num(unphased_coordinates_string);
-							else
-								unphased_coordinates     = strsplit(unphased_coordinates_string,',');   % function converts number lists from strings to numbers.
-							end;
-						end;
-
-						% format = '(A:A/T,C:G/C,...,T:A/T)'
-						phased_alleles_string(1)                 = [];
-						phased_alleles_string(end)               = [];
-						if (length(phased_alleles_string)       == 0)
-							phased_alleles                   = [];
-						else
-							commaCount                       = length(find(phased_alleles_string==','));
-							if (commaCount == 0)
-								phased_alleles           = phased_alleles_string;
-							else
-								phased_alleles           = strsplit(phased_alleles_string,',');   % function converts number lists from strings to numbers.
-							end;
-						end;
-
-						% format = '(A:A/T,C:G/C,...,T:A/T)'
-						unphased_alleles_string(1)               = [];
-						unphased_alleles_string(end)             = [];
-						if (length(unphased_alleles_string)     == 0)
-							unphased_alleles                 = [];
-						else
-							commaCount                       = length(find(unphased_alleles_string==','));
-							if (commaCount == 0)
-								unphased_alleles         = unphased_alleles_string;
-							else
-								unphased_alleles         = strsplit(unphased_alleles_string,',');   % function converts number lists from strings to numbers.
-							end;
-						end;
-
-						% add phased and unphased data to storage arrays.
-						chrom_SNPdata{chrom_num,1}{chrom_bin_SNP}          = phased_ratio_data;
-						chrom_SNPdata{chrom_num,2}{chrom_bin_SNP}          = unphased_ratio_data;
-
-						% add phased and unphased data coordinates to storage arrays.
-						chrom_SNPdata{chrom_num,3}{chrom_bin_SNP}          = phased_coordinates;
-						chrom_SNPdata{chrom_num,4}{chrom_bin_SNP}          = unphased_coordinates;
-
-						% add phased and unphased data allele strings to storage arrays.
-						chrom_SNPdata{chrom_num,5}{chrom_bin_SNP}          = phased_alleles;
-						chrom_SNPdata{chrom_num,6}{chrom_bin_SNP}          = unphased_alleles;
+				%%================================================================
+				% Log progress loading data per chromosome.
+				%-----------------------------------------------------------------
+				if (old_chrom ~= chrom_num)
+					% Instantly generate spaces with repmat instead of dynamic concatenation
+					gap_string = repmat(' ', 1, floor(count / 10));
+					fprintf('\n\t|\t%s\n\t|\t%s', chrom_name{chrom_num}, gap_string);
+					old_chrom = chrom_num;
+				end;
+				count = count + 1;
+				if (mod(count, 10) == 0)
+					fprintf('.');
+					if (count >= 800) % Combined loop check to save CPU cycles
+						fprintf('\n\t|\t');
+						count = 0;
 					end;
 				end;
+
+
+				%%================================================================
+				% Parse Phased Ratio Data Strings; '(val1,val2,...,valN)' -> [val1,val2,...,valN]
+				%-----------------------------------------------------------------
+				p_ratio_str = phased_ratio_data_string{idx};
+				if length(p_ratio_str) > 2
+					p_ratio_str(1)   = []; % Remove opening '('
+					p_ratio_str(end) = []; % Remove closing ')'
+					phased_ratio_data = str2num(p_ratio_str); % Automatically parses commas to numbers
+				else
+					phased_ratio_data = [];
+				end;
+
+
+				%%================================================================
+				% Parse Phased Coordinates Strings; '(val1,val2,...,valN)' -> [val1,val2,...,valN]
+				%-----------------------------------------------------------------
+				p_coord_str = phased_coordinates_string{idx};
+				if length(p_coord_str) > 2
+					p_coord_str(1)   = [];
+					p_coord_str(end) = [];
+					phased_coordinates = str2num(p_coord_str);
+				else
+					phased_coordinates = [];
+				end;
+
+
+				%%================================================================
+				% Parse Unphased Ratio Data Strings; '(val1,val2,...,valN)' -> [val1,val2,...,valN]
+				%-----------------------------------------------------------------
+				up_ratio_str = unphased_ratio_data_string{idx};
+				if length(up_ratio_str) > 2
+					up_ratio_str(1)   = [];
+					up_ratio_str(end) = [];
+					unphased_ratio_data = str2num(up_ratio_str);
+				else
+					unphased_ratio_data = [];
+				end;
+
+
+				%%================================================================
+				% Parse Unphased Coordinate Strings; '(val1,val2,...,valN)' -> [val1,val2,...,valN]
+				%-----------------------------------------------------------------
+				up_coords_str = unphased_coordinates_string{idx};
+				if length(up_coords_str) > 2
+					up_coords_str(1)   = [];
+					up_coords_str(end) = [];
+					unphased_coordinates = str2num(up_coords_str);
+				else
+					unphased_coordinates  = [];
+				end;
+
+
+				%%================================================================
+				% Parse Phased Alleles; '(A:A/T,C:G/C)' -> {'A:A/T', 'C:G/C'}
+				%-----------------------------------------------------------------
+				p_alleles_str = phased_alleles_string{idx};
+				if length(p_alleles_str) > 2
+					p_alleles_str(1)   = [];
+					p_alleles_str(end) = [];
+					commaCount         = length(find(p_alleles_str==','));
+					if (commaCount == 0)
+						phased_alleles = {p_alleles_str};
+					else
+						phased_alleles = strsplit(p_alleles_str,',');
+					end;
+				else
+					phased_alleles = [];
+				end;
+
+
+				%%================================================================
+				% Parse Unphased Alleles; '(A:A/T,C:G/C)' -> {'A:A/T', 'C:G/C'}
+				%-----------------------------------------------------------------
+				up_alleles_str = unphased_alleles_string{idx};
+				if length(up_alleles_str) > 2
+					up_alleles_str(1)   = [];
+					up_alleles_str(end) = [];
+					commaCount          = length(find(up_alleles_str==','));
+					if (commaCount == 0)
+						unphased_alleles = {up_alleles_str};
+					else
+						unphased_alleles = strsplit(up_alleles_str,',');
+					end;
+				else
+					unphased_alleles = [];
+				end;
+
+
+				% add phased and unphased data to storage arrays.
+				chrom_SNPdata{chrom_num,1}{chrom_bin_SNP}          = phased_ratio_data;
+				chrom_SNPdata{chrom_num,2}{chrom_bin_SNP}          = unphased_ratio_data;
+
+				% add phased and unphased data coordinates to storage arrays.
+				chrom_SNPdata{chrom_num,3}{chrom_bin_SNP}          = phased_coordinates;
+				chrom_SNPdata{chrom_num,4}{chrom_bin_SNP}          = unphased_coordinates;
+
+				% add phased and unphased data allele strings to storage arrays.
+				chrom_SNPdata{chrom_num,5}{chrom_bin_SNP}          = phased_alleles;
+				chrom_SNPdata{chrom_num,6}{chrom_bin_SNP}          = unphased_alleles;
 			end;
-		endwhile;
-		fclose(data);
+		end;
 
 		save([projectDir 'SNP_' SNP_verString '.mat'],'chrom_SNPdata');
 
@@ -465,7 +534,8 @@ while (chromCopyNum_changed == true)
 		load([projectDir 'SNP_' SNP_verString '.mat']);
 	end;
 
-	%%================================================================================================
+
+	%%========================================================================================
 	fprintf('\n\n### Calculate allelic ratio cutoffs using Gaussian fitting.\n');
 	temp_holding    = chrom_SNPdata;
 	makeFitFigures  = false;
@@ -474,9 +544,9 @@ while (chromCopyNum_changed == true)
 	SNPfit_Rsquared = chromSegment_Rsquared;
 
 
-	%%================================================================================================
-	%% Make figure of R^2 values for CNV vs SNP ratio fittings.
-	%%------------------------------------------------------------------------------------------------
+	%%========================================================================================
+	% Make figure of R^2 values for CNV vs SNP ratio fittings.
+	%-----------------------------------------------------------------------------------------
 	fprintf('### Draw initial R^2 comparison figure.\n');
 
 	%%% Collapse Rsquared structures into vectors for logging output.
@@ -517,12 +587,14 @@ while (chromCopyNum_changed == true)
 
 
 
-	%%================================================================================================
-	%% Check for better CNV/SNP-ratio fittings with different copy number estimates for bad initial fittings.
-	%%------------------------------------------------------------------------------------------------
-	%%	CNVplot / CNVplot2 contains the full CNV data across chromosome regions, at the resolution limit for YMAP.
-	%%	chrom_breaks{chrom}(segment) contains CNV start and end coordinates for each chromosome segment.
-	%%	chromCopyNum{chrom}(segment) contains CNV estimates for each chromosome segment.
+	%%========================================================================================
+	% Check for better CNV/SNP-ratio fittings with different copy number estimates for bad
+	% initial fittings.
+	%-----------------------------------------------------------------------------------------
+	%	CNVplot / CNVplot2 contains the full CNV data across chromosome regions, at the resolution limit for YMAP.
+	%	chrom_breaks{chrom}(segment) contains CNV start and end coordinates for each chromosome segment.
+	%	chromCopyNum{chrom}(segment) contains CNV estimates for each chromosome segment.
+	%-----------------------------------------------------------------------------------------
 	chrom_breaks_new     = chrom_breaks;
 	chromCopyNum_new     = chromCopyNum;
 	chromCopyNum_new2    = chromCopyNum;
@@ -558,22 +630,22 @@ while (chromCopyNum_changed == true)
 						Rsquared_SNP            = Rsquared;
 						if isnan(Rsquared_SNP)
 							Rsquared_SNP = -1;
-						endif;
+						end;
 						Rsquared_SNPtest_vector = [Rsquared_SNPtest_vector Rsquared_SNP];
-					endfor;
+					end;
 
 					%% Logging output of CNV test values.
 					%fprintf('\tmax(Rsquared_CNVtest_vector) = ');
 					%for i = 1:length(Rsquared_CNVtest_vector)
 					%	if (max(Rsquared_CNVtest_vector) == Rsquared_CNVtest_vector(i))
 					%		fprintf('[');
-					%	endif;
+					%	end;
 					%	fprintf([num2str(Rsquared_CNVtest_vector(i))]);
 					%	if (max(Rsquared_CNVtest_vector) == Rsquared_CNVtest_vector(i))
 					%		fprintf(']');
-					%	endif;
+					%	end;
 					%	fprintf(' ');
-					%endfor;
+					%end;
 					%fprintf('\n');
 
 					%% Logging output of SNP test values..
@@ -581,13 +653,13 @@ while (chromCopyNum_changed == true)
 					%for i = 1:length(Rsquared_SNPtest_vector)
 					%	if (max(Rsquared_SNPtest_vector) == Rsquared_SNPtest_vector(i))
 					%		fprintf('[');
-					%	endif;
+					%	end;
 					%	fprintf([num2str(Rsquared_SNPtest_vector(i))]);
 					%	if (max(Rsquared_SNPtest_vector) == Rsquared_SNPtest_vector(i))
 					%		fprintf(']');
-					%	endif;
+					%	end;
 					%	fprintf(' ');
-					%endfor;
+					%end;
 					%fprintf('\n');
 
 					Rsquared_distance_vector = sqrt((1-Rsquared_CNVtest_vector).^2 + (1-Rsquared_SNPtest_vector).^2);
@@ -597,13 +669,13 @@ while (chromCopyNum_changed == true)
 					%for i = 1:length(Rsquared_distance_vector)
 					%	if (min(Rsquared_distance_vector) == Rsquared_distance_vector(i))
 					%		fprintf('[');
-					%	endif;
+					%	end;
 					%	fprintf([num2str(Rsquared_distance_vector(i))]);
 					%	if (min(Rsquared_distance_vector) == Rsquared_distance_vector(i))
 					%		fprintf(']');
-					%	endif;
+					%	end;
 					%	fprintf(' ');
-					%endfor;
+					%end;
 					%fprintf('\n')
 
 					%%% Find best fit CNV estimate by looking at (the more reliable?) SNP ratios.
@@ -616,14 +688,14 @@ while (chromCopyNum_changed == true)
 						if (Rsquared_SNPtest_vector_min == Rsquared_SNPtest_vector(i))
 							chromFitValues{chrom}(segment)   = Rsquared_distance_vector_min;
 							chromCopyNum_new{chrom}(segment) = i;
-						endif;
-					endfor;
+						end;
+					end;
 				else
 					fprintf(['\nchrom ' num2str(chrom) '.' num2str(segment) ' initial CNV/SNP fit success.\n']);
 					chromFitValues{chrom}(segment)   = Rsquared_distance;
 					fprintf(['\tRsquared_distance = ' num2str(Rsquared_distance) '\n']);
 					chromCopyNum_new{chrom}(segment) = round(chromCopyNum_new{chrom}(segment));
-				endif;
+				end;
 				fprintf(['\tchrom' num2str(chrom) '.' num2str(segment) ': ' num2str(chromCopyNum_new{chrom}(segment)) '\n']);
 
 				%%% If CNV estimate changed, update boolean and log it.
@@ -642,18 +714,20 @@ while (chromCopyNum_changed == true)
 	end;
 
 
-	%%% Re-review to deal with poor best-fits (likely due to limited data on a segment).
+	%%========================================================================================
+	% Re-review to deal with poor best-fits (likely due to limited data on a segment).
+	%-----------------------------------------------------------------------------------------
 	fprintf(['\n### Dealing with bad best-fit segments.\n']);
 	for chrom = 1:length(chrom_in_use)
 		if (chrom_in_use(chrom) == 1)
-			%%
-			%% Only meaningful to examine this if there is more than one segment on this chromosome.
-			%%
+			%%========================================================================
+			% Only meaningful to examine this if there is more than one segment on this chromosome.
+			%-------------------------------------------------------------------------
 			if (length(chromCopyNum{chrom}) > 1)
 				for segment = (length(chromCopyNum{chrom})):1
-					%%%
-					%%% Calculate initial Rsquared distance from ideal (1,1).
-					%%%
+					%%========================================================
+					% Calculate initial Rsquared distance from ideal (1,1).
+					%---------------------------------------------------------
 					CNVfit_testRsquared = CNVfit_Rsquared{chrom}(segment);
 					SNPfit_testRsquared = cell2mat(SNPfit_Rsquared{chrom}(segment));
 					Rsquared_distance   = sqrt((1-CNVfit_testRsquared)^2 + (1-SNPfit_testRsquared)^2);
@@ -667,7 +741,7 @@ while (chromCopyNum_changed == true)
 							else
 								prevFitVal  = chromFitValues{chrom}(segment-1);
 								prevCopyNum = chromCopyNum{chrom}(segment-1);
-							endif;
+							end;
 
 							if (segment == length(chromCopyNum{chrom}))
 								nextFitVal  = chromFitValues{chrom}(segment);
@@ -675,7 +749,7 @@ while (chromCopyNum_changed == true)
 							else
 								nextFitVal  = chromFitValues{chrom}(segment+1);
 								nextCopyNum = chromCopyNum{chrom}(segment+1);
-							endif;
+							end;
 
 							if (prevFitVal < nextFitVal)
 								chromFitValues{chrom}(segment)   = prevFitVal;
@@ -683,12 +757,14 @@ while (chromCopyNum_changed == true)
 							else
 								chromFitValues{chrom}(segment)   = nextFitVal;
 								chromCopyNum_new{chrom}(segment) = nextCopyNum;
-							endif;
-						endif;
-					endif;
-				endfor;
+							end;
+						end;
+					end;
+				end;
 
-				%% Repeat in reverse order to ensure best fits are used for all segments.
+				%%================================================================
+				% Repeat in reverse order to ensure best fits are used for all segments.
+				%-----------------------------------------------------------------
 				for segment = 1:(length(chromCopyNum{chrom}))
 					%%%
 					%%% Calculate initial Rsquared distance from ideal (1,1).
@@ -725,7 +801,7 @@ while (chromCopyNum_changed == true)
 							end;
 						end;
 					end;
-				endfor;
+				end;
 
 				%% Check to see if any changes make sense.
 				for segment = 1:(length(chromCopyNum{chrom}))
@@ -736,7 +812,7 @@ while (chromCopyNum_changed == true)
 						chromCopyNum_changed = true;
 					end;
 				end;
-			endif;
+			end;
 		end;
 	end;
 	chromCopyNum = chromCopyNum_new2;
@@ -745,7 +821,9 @@ while (chromCopyNum_changed == true)
 	end;
 
 
-	%%% Merge any adjacent segments that now have the same best estimate of copy number.
+	%%========================================================================================
+	% Merge any adjacent segments that now have the same best estimate of copy number.
+	%-----------------------------------------------------------------------------------------
 	fprintf(['\n### Merging adjacent segments.\n']);
 	for chrom = 1:length(chrom_in_use)
 		if (chrom_in_use(chrom) == 1)
@@ -781,9 +859,9 @@ while (chromCopyNum_changed == true)
 	end;
 
 
-	%%================================================================================================
+	%%========================================================================================
 	%% Convert chrom segment breakpoints to ChARM output file, replacing original for later use.
-	%%------------------------------------------------------------------------------------------------
+	%%----------------------------------------------------------------------------------------
 	dataFile = [projectDir 'Common_ChARM.mat'];
 	fprintf(['\n### Updating saved common_ChARM file for "' project '" : ' dataFile '$$$$\n']);
 	i = 0;
@@ -809,20 +887,28 @@ while (chromCopyNum_changed == true)
 	end;
 	save(dataFile, 'segmental_aneuploidy');
 
-	%%================================================================================================
+
+	%%========================================================================================
 	% Redo CNV_v6_6.m to update calculation of CNV estimates per standard genome bin
-	%-------------------------------------------------------------------------------------------------
-	CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,'not-used',displayBREAKS,'not-used',false);
-
-	if (countIters == 10)
+	%-----------------------------------------------------------------------------------------
+	if (countIters == 5)
 		chromCopyNum_changed = false;
-	endif;
-endwhile;
+	end;
+	if chromCopyNum_changed
+		CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,'not-used',displayBREAKS,'not-used',false);
+	end;
+end;
 
+
+%%================================================================================================
 % Redraw CNV figures after analysis completes.
+%-------------------------------------------------------------------------------------------------
 CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,'not-used',displayBREAKS,'not-used',true);
 
 
+%%================================================================================================
+% Logging stuff.
+%-------------------------------------------------------------------------------------------------
 fprintf('\n');
 for chrom = 1:length(chrom_in_use)
 	if (chrom_in_use(chrom) == 1)
@@ -834,9 +920,10 @@ for chrom = 1:length(chrom_in_use)
 	end;
 end;
 
-%%==========================================================================
-%% end stuff
-%%==========================================================================
+
+%%================================================================================================
+% end stuff
+%-------------------------------------------------------------------------------------------------
 fprintf('\n### End of CNV_LOH_check.m processing.\n');
 
 end
