@@ -19,16 +19,58 @@ displayBREAKS          = true;
 referenceChrom         = 1;
 
 % Generate fittings Rsquared scatter plot figure.
-CNV_LOH_check(main_dir,user,genomeUser,project,parent_or_hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+try
+	CNV_LOH_check(main_dir,user,genomeUser,project,parent_or_hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+catch err
+	err_file = fullfile(main_dir, 'users', user, 'projects', project, 'error.txt');
+	fileID = fopen(err_file, 'a');
+	if fileID ~= -1
+		if ~isempty(err.stack)
+			fprintf(fileID, 'Something went wrong. %s.m:%d|%s\n', err.stack(1).name, err.stack(1).line, err.message);
+		else
+			fprintf(fileID, 'Something went wrong. [No Stack]|%s\n', err.message);
+		end;
+		fclose(fileID);
+	end;
+	rethrow(err);
+end;
 
 % Generate main SNP/LOH figure.
-LOH_hapmap_v4(main_dir,user,genomeUser,project,parent_or_hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+try
+	LOH_hapmap_v4(main_dir,user,genomeUser,project,parent_or_hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+catch err
+	err_file = fullfile(main_dir, 'users', user, 'projects', project, 'error.txt');
+	fileID = fopen(err_file, 'a');
+	if fileID ~= -1
+		if ~isempty(err.stack)
+			fprintf(fileID, 'Something went wrong. %s.m:%d|%s\n', err.stack(1).name, err.stack(1).line, err.message);
+		else
+			fprintf(fileID, 'Something went wrong. [No Stack]|%s\n', err.message);
+		end;
+		fclose(fileID);
+	end;
+	rethrow(err);
+end;
 
 parent = parent_or_hapmap;
 hapmap = parent_or_hapmap;
 
 % Generate fireplot.
-allelic_ratios_WGseq(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+try
+	allelic_ratios_WGseq(main_dir,user,genomeUser,project,parent,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+catch err
+	err_file = fullfile(main_dir, 'users', user, 'projects', project, 'error.txt');
+	fileID = fopen(err_file, 'a');
+	if fileID ~= -1
+		if ~isempty(err.stack)
+			fprintf(fileID, 'Something went wrong. %s.m:%d|%s\n', err.stack(1).name, err.stack(1).line, err.message);
+		else
+			fprintf(fileID, 'Something went wrong. [No Stack]|%s\n', err.message);
+		end;
+		fclose(fileID);
+	end;
+	rethrow(err);
+end;
 
 
 fprintf('*--- End of ''analyze_SNPs.m'' was reached. ---*\n');

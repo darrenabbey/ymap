@@ -22,15 +22,69 @@ fprintf(['    project : ' project '\n']);
 fprintf(['    Ploidy  : ' ploidyEstimateString '\n']);
 fprintf('\n');
 
+try
+	CNV_SNP_hapmap_v4(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+catch err
+	err_file = fullfile(main_dir, 'users', user, 'projects', project, 'error.txt');
+	fileID = fopen(err_file, 'a');
+	if fileID ~= -1
+		if ~isempty(err.stack)
+			fprintf(fileID, 'Something went wrong. %s.m:%d|%s\n', err.stack(1).name, err.stack(1).line, err.message);
+		else
+			fprintf(fileID, 'Something went wrong. [No Stack]|%s\n', err.message);
+		end;
+		fclose(fileID);
+	end;
+	rethrow(err);
+end;
 
-CNV_SNP_hapmap_v4(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+try
+	CNV_SNP_hapmap_v4_highTop(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+catch err
+	err_file = fullfile(main_dir, 'users', user, 'projects', project, 'error.txt');
+	fileID = fopen(err_file, 'a');
+	if fileID ~= -1
+		if ~isempty(err.stack)
+			fprintf(fileID, 'Something went wrong. %s.m:%d|%s\n', err.stack(1).name, err.stack(1).line, err.message);
+		else
+			fprintf(fileID, 'Something went wrong. [No Stack]|%s\n', err.message);
+		end;
+		fclose(fileID);
+	end;
+	rethrow(err);
+end;
 
-CNV_SNP_hapmap_v4_highTop(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+%try
+%	CNV_SNP_hapmap_v4_RedGreen(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+%catch err
+%	err_file = fullfile(main_dir, 'users', user, 'projects', project, 'error.txt');
+%	fileID = fopen(err_file, 'a');
+%	if fileID ~= -1
+%		if ~isempty(err.stack)
+%			fprintf(fileID, 'Something went wrong. %s.m:%d|%s\n', err.stack(1).name, err.stack(1).line, err.message);
+%		else
+%			fprintf(fileID, 'Something went wrong. [No Stack]|%s\n', err.message);
+%		end;
+%		fclose(fileID);
+%	end;
+%	rethrow(err);
+%end;
 
-%CNV_SNP_hapmap_v4_RedGreen(main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
-
-%CNV_manualLOH_v1( main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
-
+%try
+%	CNV_manualLOH_v1( main_dir,user,genomeUser,project,hapmap,genome,ploidyEstimateString,ploidyBaseString,SNP_verString,LOH_verString,CNV_verString,displayBREAKS);
+%catch err
+%	err_file = fullfile(main_dir, 'users', user, 'projects', project, 'error.txt');
+%	fileID = fopen(err_file, 'a');
+%	if fileID ~= -1
+%		if ~isempty(err.stack)
+%			fprintf(fileID, 'Something went wrong. %s.m:%d|%s\n', err.stack(1).name, err.stack(1).line, err.message);
+%		else
+%			fprintf(fileID, 'Something went wrong. [No Stack]|%s\n', err.message);
+%		end;
+%		fclose(fileID);
+%	end;
+%	rethrow(err);
+%end;
 
 fprintf('*--- End of ''analyze_CNV_SNPs_hapmap.m'' was reached ---*\n');
 % log file end, for in-process analysis

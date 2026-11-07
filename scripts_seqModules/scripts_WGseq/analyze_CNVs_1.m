@@ -21,11 +21,37 @@ rDNA_verString         = 'v1';
 displayBREAKS          = true;
 referenceChrom         = 1;
 
+try
+	CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,rDNA_verString,displayBREAKS, referenceChrom, false);
+catch err
+	err_file = fullfile(main_dir, 'users', user, 'projects', project, 'error.txt');
+	fileID = fopen(err_file, 'a');
+	if fileID ~= -1
+		if ~isempty(err.stack)
+			fprintf(fileID, 'Something went wrong. %s.m:%d|%s\n', err.stack(1).name, err.stack(1).line, err.message);
+		else
+			fprintf(fileID, 'Something went wrong. [No Stack]|%s\n', err.message);
+		end;
+		fclose(fileID);
+	end;
+	rethrow(err);
+end;
 
-CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,rDNA_verString,displayBREAKS, referenceChrom, false);
-
-CNV_v6_6_highTop(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,rDNA_verString,displayBREAKS, referenceChrom);
-
+try
+	CNV_v6_6_highTop(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,rDNA_verString,displayBREAKS, referenceChrom);
+catch err
+	err_file = fullfile(main_dir, 'users', user, 'projects', project, 'error.txt');
+	fileID = fopen(err_file, 'a');
+	if fileID ~= -1
+		if ~isempty(err.stack)
+			fprintf(fileID, 'Something went wrong. %s.m:%d|%s\n', err.stack(1).name, err.stack(1).line, err.message);
+		else
+			fprintf(fileID, 'Something went wrong. [No Stack]|%s\n', err.message);
+		end;
+		fclose(fileID);
+	end;
+	rethrow(err);
+end;
 
 fprintf('*--- End of ''analyze_CNVs_1.m'' was reached ---*\n');
 end
