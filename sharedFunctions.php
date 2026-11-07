@@ -85,6 +85,7 @@ function SYSTEM_force_minimize($userName,$projectName,$main_dir) {
 }
 function minimizeProject($dir) {
 	$dir = $dir."/";
+	$logFile = $dir."/process_log.txt";
 
 	// Compress SNP file.
 	$txtFile = $dir . "/putative_SNPs_v4.txt";
