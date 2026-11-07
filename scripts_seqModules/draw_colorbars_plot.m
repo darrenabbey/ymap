@@ -2,11 +2,16 @@
 % draw_colorbars_plot.m - Variable-Width SNP/LOH Color Bar Painter
 %-------------------------------------------------------------------------------------------------
 
-% 1. Determine the TRUE number of variable rows to prevent dimension crashes
-actual_num_bins = length(chrom_SNPdata_colorsC{chrom, 1});
+% 1. Determine the TRUE number of variable rows.
+if preprocessed_CNVs
+	actual_num_bins = sum(chroms == chrom);
+else
+	actual_num_bins = ceil(chrom_size(chrom) / bases_per_bin_SNP);
+end;
+
 fprintf(['colorbar-plot : chrom' num2str(chrom) ':' num2str(actual_num_bins) '\n']);
 
-% 2. Extract and align the current chromosome's actual raw colors safely
+% 2. Extract and align the current chromosome's actual raw colors.
 c_current = colors(1:actual_num_bins, 1:3);
 
 % Construct previous and next arrays for neighboring-bin window smoothing
@@ -25,27 +30,27 @@ end
 final_colors(final_colors > 1) = 1;
 final_colors(final_colors < 0) = 0;
 
-% 3. Extract literal physical coordinate segments matching this chromosome's rows
+% 3. Extract literal physical coordinate segments matching this chromosome's rows.
 idx_c        = (chroms == chrom);
 chrom_starts = double(fragment_starts(idx_c))';
 chrom_ends   = double(fragment_ends(idx_c))';
 
-% 4. Pre-allocate 2D patch coordinate matrices (4 points per column element)
+% 4. Pre-allocate 2D patch coordinate matrices (4 points per column element).
 X_matrix_cb = zeros(4, actual_num_bins);
 Y_matrix_cb = zeros(4, actual_num_bins);
 
-% Divide physical nucleotide coordinates directly by the master bases_per_bin factor!
-X_matrix_cb(1, :) = chrom_ends   / bases_per_bin;   % Bottom Right
-X_matrix_cb(2, :) = chrom_ends   / bases_per_bin;   % Top Right
-X_matrix_cb(3, :) = chrom_starts / bases_per_bin;   % Top Left
-X_matrix_cb(4, :) = chrom_starts / bases_per_bin;   % Bottom Left
+% 5. Divide physical nucleotide coordinates by the master bases_per_bin_SNP to determine figure coordinates.
+X_matrix_cb(1, :) = chrom_ends   / bases_per_bin_SNP;   % Bottom Right
+X_matrix_cb(2, :) = chrom_ends   / bases_per_bin_SNP;   % Top Right
+X_matrix_cb(3, :) = chrom_starts / bases_per_bin_SNP;   % Top Left
+X_matrix_cb(4, :) = chrom_starts / bases_per_bin_SNP;   % Bottom Left
 
 Y_matrix_cb(1, :) = 0;
 Y_matrix_cb(2, :) = maxY;
 Y_matrix_cb(3, :) = maxY;
 Y_matrix_cb(4, :) = 0;
 
-% 5. Render the entire physical color bar instantly using a single component call
+% 6. Render the entire physical color bar instantly using a single call.
 f_cb = patch(X_matrix_cb, Y_matrix_cb, 'k');
 
 % Apply color matrix directly to the patch handle, 1 color per face via FaceColor 'flat'
