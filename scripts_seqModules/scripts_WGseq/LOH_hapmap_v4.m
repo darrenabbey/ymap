@@ -11,9 +11,9 @@ tic;
 set(0,'DefaultFigureVisible','off');
 
 
-%%=========================================================================
+%%================================================================================================
 % Load project figure version.
-%--------------------------------------------------------------------------
+%-------------------------------------------------------------------------------------------------
 versionFile = [workingDir 'figVer.txt'];
 if exist(versionFile, 'file') == 2
 	figVer = ['v' fileread(versionFile) '.'];
@@ -21,6 +21,10 @@ else
 	figVer = '';
 end;
 
+
+%%================================================================================================
+% Check if figures are needed.
+%-------------------------------------------------------------------------------------------------
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir '/users/' user '/projects/' project '/figure_options.txt'], 'file')
 	figure_options = importdata([main_dir '/users/' user '/projects/' project '/figure_options.txt'],'\t',1);
@@ -44,12 +48,15 @@ else
 end;
 
 
-%% ========================================================================
+%%================================================================================================
+% Configuration variables.
+%-------------------------------------------------------------------------------------------------
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
 %    bases_per_bin                Controls bin sizes for CNV fraction of plot.
 %    scale_type                 : 'Ratio' or 'Log2Ratio' y-axis scaling of copy number.
 %                                 'Log2Ratio' does not properly scale CNV data by ploidy.
 %    chrom_max_width              : max width of chroms as fraction of figure width.
+%-------------------------------------------------------------------------------------------------
 fprintf('\t|\tSetup for processing.\n');
 Centromere_format_default      = 3;
 chrom_max_width                  = 0.8;
@@ -65,10 +72,9 @@ FillColors                     = true;   %     Fill histogram using colors.
 show_uncalibrated              = false;  %     Fill with single color instead of ratio call colors.
 
 
-
-%%=========================================================================
+%%================================================================================================
 % Load FASTA file name from 'reference.txt' file for project.
-%--------------------------------------------------------------------------
+%-------------------------------------------------------------------------------------------------
 fprintf('\t|\tLoad FASTA file name for the genome in use.\n');
 userReference                  = [main_dir '/users/' user '/genomes/' genome '/reference.txt'];
 defaultReference               = [main_dir '/users/default/genomes/' genome '/reference.txt'];
@@ -80,13 +86,16 @@ end;
 [FastaPath,FastaName,FastaExt] = fileparts(FASTA_string);
 
 
-%%=========================================================================
+%%================================================================================================
 % Control variables for Candida albicans SC5314.
-%--------------------------------------------------------------------------
+%-------------------------------------------------------------------------------------------------
 projectDir = [main_dir '/users/' user '/projects/' project '/'];
 genomeDir  = [main_dir '/users/' genomeUser '/genomes/' genome '/'];
 
 
+%%================================================================================================
+% Control logic about hapmap use or not.
+%-------------------------------------------------------------------------------------------------
 fprintf('\t|\tDetermine if hapmap is in use.\n');
 if (exist([main_dir '/users/default/hapmaps/' parent_or_hapmap '/'], 'dir') == 7)
 	useHapmap  = true;
@@ -106,6 +115,9 @@ else
 end;
 
 
+%%================================================================================================
+% Control logic about parent project use or not.
+%-------------------------------------------------------------------------------------------------
 fprintf('\t|\tDetermine if parent project is in use.\n');
 % The 'parent' will == the 'project' when no 'parent' is selected in setup.
 if (strcmp(project,parent_or_hapmap) == 0)   % different
@@ -126,7 +138,10 @@ else
 end;
 
 
-fprintf('\t|\tLoad deteilas of genome in use.\n');
+%%================================================================================================
+% Load configuration details.
+%-------------------------------------------------------------------------------------------------
+fprintf('\t|\tLoad details of genome in use.\n');
 [centromeres, chrom_sizes, figure_details, annotations, ploidy_default] = Load_genome_information(genomeDir);
 [Aneuploidy]                                                          = Load_dataset_information(projectDir);
 num_chroms                          = length(chrom_sizes);
@@ -176,6 +191,7 @@ for i = 1:length(figure_details)
 end;
 
 
+
 %% This block is normally calculated in FindChromSizes during CNV analysis.
 for chrom = 1:length(chrom_in_use)
 	if (chrom_in_use(chrom) == 1)
@@ -195,28 +211,10 @@ for chrom = 1:length(chrom_in_use)
 	end;
 end;
 
-%% Load CNV and SNP figure resolutions.
-if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
-	bases_per_bin		= max(chrom_size)/700;
-else
-	bases_per_bin		= max(chrom_size)/str2num(fileread([genomeDir 'resolution.CNV.txt']));
-end;
-if (exist([genomeDir 'resolution.SNPs.txt'],'file') == 0)
-	bases_per_bin_SNP	= max(chrom_size)/700;
-else
-	bases_per_bin_SNP	= max(chrom_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt']));
-end;
 
-
-%% =========================================================================================
-%% =========================================================================================
-%% =========================================================================================
-%% -----------------------------------------------------------------------------------------
-%% =========================================================================================
-%% =========================================================================================
-%% =========================================================================================
-
-
+%%================================================================================================
+% Some figure setup.
+%-------------------------------------------------------------------------------------------------
 fprintf('\t|\tProcess input ploidy.\n');
 % Process input ploidy.
 ploidy = str2num(ploidyEstimateString);
@@ -227,39 +225,93 @@ if (ploidyBase < 1);   ploidyBase = 1;   end;
 fprintf(['\nEuploid base = "' num2str(ploidyBase) '"\n']);
 
 
-%% =========================================================================================
+%% ===============================================================================================
 % Define colors for figure generation.
-%-------------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------------------------
 fprintf('\t|\tLoad color definitions.\n');
 source('../phased_and_unphased_color_definitions.m');
+
+
+%%==========================================================================================
+% Load SNP data from 'preprocessed_SNPs.txt' file.
+%-------------------------------------------------------------------------------------------
+snp_data_file = fullfile(projectDir, 'preprocessed_SNPs.txt');
+if exist(snp_data_file, 'file')
+
+	% Example data file line.
+	% # chr_num	bp_start	bp_end	phasedData	unphasedData	phasedCoordinate	unphasedCoordinate	phasedAllele	unphasedAllele
+	%   1		1		1941	()		()		()			()			()		()
+	%   1		1942		3267	()		()		()			()			()		()
+
+	% Open file and parse text, automatically ignoring lines starting with '#'
+	fid = fopen(snp_data_file, 'r');
+	raw_data = textscan(fid, '%f %f %f %s %s %s %s %s %s', 'CommentStyle', '#');
+	fclose(fid);
+
+	% The first column contains the chromosome numbers (chrNum)
+	chroms                      = raw_data{1};
+	fragment_starts             = raw_data{2};
+	fragment_ends               = raw_data{3};
+	phased_ratio_data_string    = raw_data{4};
+	unphased_ratio_data_string  = raw_data{5};
+	phased_coordinates_string   = raw_data{6};
+	unphased_coordinates_string = raw_data{7};
+	phased_alleles_string       = raw_data{8};
+	unphased_alleles_string     = raw_data{9};
+	lines_analyzed              = length(chroms);
+
+	preprocessed_SNPs = true;
+else
+	preprocessed_SNPs = false;
+end;
+
+
+%%==========================================================================================
+% Determine bases_per_bin sizes to be used as a fallback.
+%-------------------------------------------------------------------------------------------
+%% Load CNV and SNP figure resolutions.
+if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
+	bases_per_bin           = max(chrom_size)/700;
+else
+	bases_per_bin           = max(chrom_size)/str2num(fileread([genomeDir 'resolution.CNV.txt']));
+end;
+if (exist([genomeDir 'resolution.SNPs.txt'],'file') == 0)
+	bases_per_bin_SNP       = max(chrom_size)/700;
+else
+	bases_per_bin_SNP       = max(chrom_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt']));
+end;
 
 
 %%================================================================================================
 % Setup for SNP/LOH data calculations.
 %-------------------------------------------------------------------------------------------------
-fprintf('\t|\tInitialize data vectors for tracking data presentation.\n');
+fprintf('\t|\tInitialize data vectors for tracking SNP data presentation.\n');
 % Initializes vectors used to hold allelic ratios for each chromosome segment.
 for chrom = 1:length(chrom_sizes)
-	% Build data structure for SNP information:  chrom_SNPdata{chrom,j}{chrom_bin_SNP} = [];
-	%       1 : phased SNP ratio data.
-	%       2 : unphased SNP ratio data.
-	%       3 : phased SNP position data.
-	%       4 : unphased SNP position data.
-	%       5 : phased SNP allele strings.   (baseCall:alleleA/alleleB)
-	%       6 : unphased SNP allele strings.
-	chrom_length = ceil(chrom_size(chrom)/bases_per_bin_SNP);
-	for j = 1:6
-		chrom_SNPdata{chrom,j} = cell(1,chrom_length);
+	if chrom_in_use(chrom) == 1
+		% Safe check: use file tracking data if it exists, otherwise use math fallback.
+		if preprocessed_SNPs
+			num_bins = sum(chroms == chrom);
+		else
+			num_bins = ceil(chrom_size(chrom)/bases_per_bin_SNP);
+		end;
+
+		fprintf('\t|\t    num_bins for chromosome %d data file = %d\n', chrom, num_bins);
+
+		% Setup to track SNP data.
+		for j = 1:6
+			chrom_SNPdata{chrom,j} = cell(1,num_bins);
+		end;
+
+		% Setup to track RGB values used to present SNP/LOH data for each chromosome bin.
+		for j = 1:3
+			% Track the RGB value sum per standard bin, then divide by the count to reach the average color per standard genome bin.
+			chrom_SNPdata_colorsC{chrom,j}           = zeros(num_bins,1);
+		end;
+
+		% Track the number of SNP colors per standard bin.
+		chrom_SNPdata_countC{chrom} = zeros(num_bins,1);
 	end;
-	% Setup to track RGB values used to present SNP/LOH data for each chromosome bin.
-	for j = 1:3
-		% Track the RGB value sum per standard bin, then divide by the count to reach the average color per standard genome bin.
-		chrom_SNPdata_colorsC{chrom,j}           = zeros(chrom_length,1);
-		chrom_SNPdata_colorsP{chrom,j}           = zeros(chrom_length,1);
-	end;
-	% Track the number of SNP colors per standard bin.
-	chrom_SNPdata_countC{chrom} = zeros(chrom_length,1);
-	chrom_SNPdata_countP{chrom} = zeros(chrom_length,1);
 end;
 
 
@@ -327,150 +379,152 @@ end;
 %		phased_alleles_string       = '()';
 %		unphased_alleles_string     = '(Z:G/C,Z:A/C)';
 %	end;
-
+%-------------------------------------------------------------------------------------------------
 fprintf(['\n### Load SNP/LOH data.\n']);
-if (exist([projectDir 'SNP_' SNP_verString '.mat'],'file') == 0)
-	fprintf(['\t|\t\tMAT file "SNP_' SNP_verString '.mat" not found, regenerating.']);
-	datafile       = [projectDir 'preprocessed_SNPs.txt'];
-	data           = fopen(datafile, 'r');
-	count          = 0;
-	old_chrom        = 0;
-	gap_string     = '';
-	while not (feof(data))
-		dataLine = fgetl(data);
-		if (length(dataLine) > 0)
-			if (dataLine(1) ~= '#')
-				% process the loaded line into data channels.
-				lineVariables               = textscan(dataLine, '%f %f %f %s %s %s %s %s %s');
-				chrom_num                     = lineVariables{1};
-				fragment_start              = lineVariables{2};
-				fragment_end                = lineVariables{3};
-				phased_ratio_data_string    = lineVariables{4}{1};
-				unphased_ratio_data_string  = lineVariables{5}{1};
-				phased_coordinates_string   = lineVariables{6}{1};
-				unphased_coordinates_string = lineVariables{7}{1};
-				phased_alleles_string       = lineVariables{8}{1};
-				unphased_alleles_string     = lineVariables{9}{1};
+mat_file_path = [projectDir 'SNP_' SNP_verString '.mat'];
 
-				% format = simple, one number per column. dragon
-				chrom_length                  = ceil(chrom_size(chrom_num)/bases_per_bin_SNP);
-				chrom_bin_SNP                 = ceil(fragment_start/bases_per_bin_SNP);
+if (exist(mat_file_path, 'file') == 0)
+	fprintf('\t|\tMAT file not found, regenerating from memory structures.\n');
+	count      = 0;
+	old_chrom  = 0;
+	gap_string = '';
 
-				% Log file output to indicate progression of this section of code.
-				count = count+1;
-				if (old_chrom ~= chrom_num)
-					fprintf(['\n\t|\t\t' chrom_name{chrom_num} '\n\t|\t' gap_string]);
-				end;
-				if (mod(count,10) == 0)
-					fprintf('.');
-					gap_string = [gap_string ' '];
-				end;
-				if (count == 800)
-					fprintf('\n\t|\t\t');
-					count = 0;
-					gap_string = '';
-				end;
-				old_chrom = chrom_num;
+	% Loop directly over the row elements already loaded by textscan
+	for idx = 1:lines_analyzed
+		chrom_num      = chroms(idx);
+		fragment_start = fragment_starts(idx);
 
-				% format = '(number1,number2,...,numberN)'
-				phased_ratio_data_string(1)              = [];
-				phased_ratio_data_string(end)            = [];
-				if (length(phased_ratio_data_string)    == 0)
-					phased_ratio_data                = [];
-				else
-					commaCount                       = length(find(phased_ratio_data_string==','));
-					if (commaCount == 0)
-						phased_ratio_data        = str2num(phased_ratio_data_string);
-					else
-						phased_ratio_data        = strsplit(phased_ratio_data_string,',');   % function converts number lists from strings to numbers.
-					end;
-				end;
+		% Check if this chromosome is actively displayed
+		if chrom_in_use(chrom_num) == 1
 
-				% format = '(number1,number2,...,numberN)'
-				phased_coordinates_string(1)             = [];
-				phased_coordinates_string(end)           = [];
-				if (length(phased_coordinates_string)   == 0)
-					phased_coordinates               = [];
-				else
-					commaCount                       = length(find(phased_coordinates_string==','));
-					if (commaCount == 0)
-						phased_coordinates       = str2num(phased_coordinates_string);
-					else
-						phased_coordinates       = strsplit(phased_coordinates_string,',');   % function converts number lists from strings to numbers.
-					end;
-				end;
-
-				% format = '(number1,number2,...,numberN)'
-				unphased_ratio_data_string(1)            = [];
-				unphased_ratio_data_string(end)          = [];
-				if (length(unphased_ratio_data_string)  == 0)
-					unphased_ratio_data              = [];
-				else
-					commaCount                       = length(find(unphased_ratio_data_string==','));
-					if (commaCount == 0)
-						unphased_ratio_data      = str2num(unphased_ratio_data_string);
-					else
-						unphased_ratio_data      = strsplit(unphased_ratio_data_string,',');  % function converts number lists from strings to numbers.
-					end;
-				end;
-
-				% format = '(number1,number2,...,numberN)'
-				unphased_coordinates_string(1)           = [];
-				unphased_coordinates_string(end)         = [];
-				if (length(unphased_coordinates_string) == 0)
-					unphased_coordinates             = [];
-				else
-					commaCount                       = length(find(unphased_coordinates_string==','));
-					if (commaCount == 0)
-						unphased_coordinates     = str2num(unphased_coordinates_string);
-					else
-						unphased_coordinates     = strsplit(unphased_coordinates_string,',');   % function converts number lists from strings to numbers.
-					end;
-				end;
-
-				% format = '(A:A/T,C:G/C,...,T:A/T)'
-				phased_alleles_string(1)                 = [];
-				phased_alleles_string(end)               = [];
-				if (length(phased_alleles_string)       == 0)
-					phased_alleles                   = [];
-				else
-					commaCount                       = length(find(phased_alleles_string==','));
-					if (commaCount == 0)
-						phased_alleles           = phased_alleles_string;
-					else
-						phased_alleles           = strsplit(phased_alleles_string,',');   % function converts number lists from strings to numbers.
-					end;
-				end;
-
-				% format = '(A:A/T,C:G/C,...,T:A/T)'
-				unphased_alleles_string(1)               = [];
-				unphased_alleles_string(end)             = [];
-				if (length(unphased_alleles_string)     == 0)
-					unphased_alleles                 = [];
-				else
-					commaCount                       = length(find(unphased_alleles_string==','));
-					if (commaCount == 0)
-						unphased_alleles         = unphased_alleles_string;
-					else
-						unphased_alleles         = strsplit(unphased_alleles_string,',');   % function converts number lists from strings to numbers.
-					end;
-				end;
-
-				% add phased and unphased data to storage arrays.
-				chrom_SNPdata{chrom_num,1}{chrom_bin_SNP}          = phased_ratio_data;
-				chrom_SNPdata{chrom_num,2}{chrom_bin_SNP}          = unphased_ratio_data;
-
-				% add phased and unphased data coordinates to storage arrays.
-				chrom_SNPdata{chrom_num,3}{chrom_bin_SNP}          = phased_coordinates;
-				chrom_SNPdata{chrom_num,4}{chrom_bin_SNP}          = unphased_coordinates;
-
-				% add phased and unphased data allele strings to storage arrays.
-				chrom_SNPdata{chrom_num,5}{chrom_bin_SNP}          = phased_alleles;
-				chrom_SNPdata{chrom_num,6}{chrom_bin_SNP}          = unphased_alleles;
+			% Symmetrically determine active display bins.
+			if preprocessed_SNPs
+				chrom_bin_SNP = idx;
+			else
+				chrom_bin_SNP = ceil(fragment_start/bases_per_bin_SNP);
 			end;
+
+
+			%%========================================================================
+			% Log progress loading data per chromosome.
+			%-------------------------------------------------------------------------
+			if (old_chrom ~= chrom_num)
+				% Instantly generate spaces with repmat instead of dynamic concatenation
+				gap_string = repmat(' ', 1, floor(count / 10));
+				fprintf('\n\t|\t%s\n\t|\t%s', chrom_name{chrom_num}, gap_string);
+				old_chrom = chrom_num;
+			end;
+			count = count + 1;
+			if (mod(count, 10) == 0)
+				fprintf('.');
+				if (count >= 800) % Combined loop check to save CPU cycles
+					fprintf('\n\t|\t');
+					count = 0;
+				end;
+			end;
+
+
+			%%========================================================================
+			% Parse Phased Ratio Data Strings; '(val1,val2,...,valN)' -> [val1,val2,...,valN]
+			%-------------------------------------------------------------------------
+			p_ratio_str = phased_ratio_data_string{idx};
+			if length(p_ratio_str) > 2
+				p_ratio_str(1)   = []; % Remove opening '('
+				p_ratio_str(end) = []; % Remove closing ')'
+				phased_ratio_data = str2num(p_ratio_str); % Automatically parses commas to numbers
+			else
+				phased_ratio_data = [];
+			end;
+
+
+			%%========================================================================
+			% Parse Phased Coordinates Strings; '(val1,val2,...,valN)' -> [val1,val2,...,valN]
+			%-------------------------------------------------------------------------
+			p_coord_str = phased_coordinates_string{idx};
+			if length(p_coord_str) > 2
+				p_coord_str(1)   = [];
+				p_coord_str(end) = [];
+				phased_coordinates = str2num(p_coord_str);
+			else
+				phased_coordinates = [];
+			end;
+
+
+			%%========================================================================
+			% Parse Unphased Ratio Data Strings; '(val1,val2,...,valN)' -> [val1,val2,...,valN]
+			%-------------------------------------------------------------------------
+			up_ratio_str = unphased_ratio_data_string{idx};
+			if length(up_ratio_str) > 2
+				up_ratio_str(1)   = [];
+				up_ratio_str(end) = [];
+				unphased_ratio_data = str2num(up_ratio_str);
+			else
+				unphased_ratio_data = [];
+			end;
+
+
+			%%========================================================================
+			% Parse Unphased Coordinate Strings; '(val1,val2,...,valN)' -> [val1,val2,...,valN]
+			%-------------------------------------------------------------------------
+			up_coords_str = unphased_coordinates_string{idx};
+			if length(up_coords_str) > 2
+				up_coords_str(1)   = [];
+				up_coords_str(end) = [];
+				unphased_coordinates = str2num(up_coords_str);
+			else
+				unphased_coordinates  = [];
+			end;
+
+
+			%%========================================================================
+			% Parse Phased Alleles; '(A:A/T,C:G/C)' -> {'A:A/T', 'C:G/C'}
+			%-------------------------------------------------------------------------
+			p_alleles_str = phased_alleles_string{idx};
+			if length(p_alleles_str) > 2
+				p_alleles_str(1)   = [];
+				p_alleles_str(end) = [];
+				commaCount         = length(find(p_alleles_str==','));
+				if (commaCount == 0)
+					phased_alleles = {p_alleles_str};
+				else
+					phased_alleles = strsplit(p_alleles_str,',');
+				end;
+			else
+				phased_alleles = [];
+			end;
+
+
+			%%========================================================================
+			% Parse Unphased Alleles; '(A:A/T,C:G/C)' -> {'A:A/T', 'C:G/C'}
+			%-------------------------------------------------------------------------
+			up_alleles_str = unphased_alleles_string{idx};
+			if length(up_alleles_str) > 2
+				up_alleles_str(1)   = [];
+				up_alleles_str(end) = [];
+				commaCount          = length(find(up_alleles_str==','));
+				if (commaCount == 0)
+					unphased_alleles = {up_alleles_str};
+				else
+					unphased_alleles = strsplit(up_alleles_str,',');
+				end;
+			else
+				unphased_alleles = [];
+			end;
+
+
+			% Add phased and unphased data to storage arrays.
+			chrom_SNPdata{chrom_num,1}{chrom_bin_SNP}          = phased_ratio_data;
+			chrom_SNPdata{chrom_num,2}{chrom_bin_SNP}          = unphased_ratio_data;
+
+			% Add phased and unphased data coordinates to storage arrays.
+			chrom_SNPdata{chrom_num,3}{chrom_bin_SNP}          = phased_coordinates;
+			chrom_SNPdata{chrom_num,4}{chrom_bin_SNP}          = unphased_coordinates;
+
+			% Add phased and unphased data allele strings to storage arrays.
+			chrom_SNPdata{chrom_num,5}{chrom_bin_SNP}          = phased_alleles;
+			chrom_SNPdata{chrom_num,6}{chrom_bin_SNP}          = unphased_alleles;
 		end;
-	endwhile;
-	fclose(data);
+	end;
 
 	save([projectDir 'SNP_' SNP_verString '.mat'],'chrom_SNPdata');
 
@@ -493,7 +547,7 @@ end;
 %        chrom_SNPdata{chrom,4}{chrom_bin_SNP} = unphased SNP position data.
 %        chrom_SNPdata{chrom,5}{chrom_bin_SNP} = phased SNP allele strings.   (baseCall : alleleA/alleleB)
 %        chrom_SNPdata{chrom,6}{chrom_bin_SNP} = unphased SNP allele strings.
-%-------------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------------------------
 fprintf('\n\n### Calculate allelic ratio cutoffs using Gaussian fitting.\n');
 temp_holding = chrom_SNPdata;
 makeFitFigures = false;
@@ -501,13 +555,18 @@ calculate_allelic_ratio_cutoffs;
 chrom_SNPdata = temp_holding;
 
 
-%% =========================================================================================
+%% ===============================================================================================
 % Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
-%-------------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------------------------
 fprintf('\t|\tDetermine display color for each SNP.\n');
 for chrom = 1:length(chrom_in_use)
 	if (chrom_in_use(chrom) == 1)
-		for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
+
+		% DYNAMIC FIX; Lock the loop limit exactly to the number of bins
+		% initialized in your data cell arrays to prevent out-of-bounds crashes.
+		num_bins_allocated = length(chrom_SNPdata{chrom,1});
+
+		for chrom_bin_SNP = 1:num_bins_allocated
 			%
 			% Determining colors for each SNP coordinate from calculated cutoffs.
 			%
@@ -527,85 +586,107 @@ for chrom = 1:length(chrom_in_use)
 			%fprintf(['\t|\t\ttest4 = type:' typeinfo(chrom_SNPdata{chrom,6}{chrom_bin_SNP}) '\n']);
 			%fprintf(['\t|\t\ttest4 = ' num2str(sizeof(chrom_SNPdata{chrom,6}{chrom_bin_SNP})) '\n']);
 
-			allelic_ratios						= [chrom_SNPdata{chrom,1}{chrom_bin_SNP} chrom_SNPdata{chrom,2}{chrom_bin_SNP}];
-			coordinates						= [chrom_SNPdata{chrom,3}{chrom_bin_SNP} chrom_SNPdata{chrom,4}{chrom_bin_SNP}];
-			if (sizeof(chrom_SNPdata{chrom,5}{chrom_bin_SNP}) == 0)
-				phased_alleles					= '';
+
+			% Concatenate phased (row 1/3) and unphased (row 2/4) vectors cleanly
+			allelic_ratios = [chrom_SNPdata{chrom,1}{chrom_bin_SNP} chrom_SNPdata{chrom,2}{chrom_bin_SNP}];
+			coordinates    = [chrom_SNPdata{chrom,3}{chrom_bin_SNP} chrom_SNPdata{chrom,4}{chrom_bin_SNP}];
+
+			if isempty(chrom_SNPdata{chrom,5}{chrom_bin_SNP})
+				phased_alleles = '';
 			else
-				phased_alleles					= chrom_SNPdata{chrom,5}{chrom_bin_SNP};
+				phased_alleles = chrom_SNPdata{chrom,5}{chrom_bin_SNP};
 			end;
-			if (sizeof(chrom_SNPdata{chrom,6}{chrom_bin_SNP}) == 0)
-				unphased_alleles				= '';
+			if isempty(chrom_SNPdata{chrom,6}{chrom_bin_SNP})
+				unphased_alleles = '';
 			else
-				unphased_alleles				= chrom_SNPdata{chrom,6}{chrom_bin_SNP};
+				unphased_alleles = chrom_SNPdata{chrom,6}{chrom_bin_SNP};
 			end;
-			allele_strings						= [phased_alleles unphased_alleles];
+
+			% Combine allele character cells horizontally
+			if iscell(phased_alleles) && iscell(unphased_alleles)
+				allele_strings = [phased_alleles, unphased_alleles];
+			elseif iscell(phased_alleles)
+				allele_strings = phased_alleles;
+			else
+				allele_strings = unphased_alleles;
+			end;
+
 
 			if (length(allelic_ratios) > 0)
 				for SNP = 1:length(allelic_ratios)
-					% Load phased SNP data from earlier defined structure.
-					if (isa(allelic_ratios(SNP),'cell') == 1)
-						if (isscalar(allelic_ratios(SNP){1}) == 1)
-							allelic_ratio		= allelic_ratios(SNP){1};
+					% Load phased/unphased SNP data checking matrix forms safely.
+					if iscell(allelic_ratios)
+						if isscalar(allelic_ratios{SNP})
+							allelic_ratio = allelic_ratios{SNP};
 						else
-							allelic_ratio		= str2num(cell2mat(allelic_ratios(SNP)));
+							allelic_ratio = allelic_ratios(SNP);
 						end;
 					else
-						allelic_ratio			= allelic_ratios(SNP);
+						allelic_ratio = allelic_ratios(SNP);
 					end;
 
-					if (isa(coordinates(SNP),'cell') == 1)
-						if (isscalar(coordinates(SNP){1}) == 1)
-							coordinate		= coordinates(SNP){1};
+					if iscell(coordinates)
+						if isscalar(coordinates{SNP})
+							coordinate = coordinates{SNP};
 						else
-							coordinate		= str2num(cell2mat(coordinates(SNP)));
+							coordinate = coordinates(SNP);
 						end;
 					else
-						coordinate			= coordinates(SNP);
+						coordinate = coordinates(SNP);
 					end;
 
-					if (isa(allele_strings,'cell') == 1)
-						if (length(allelic_ratios) > 1)
-							allele_string           = allele_strings{SNP};
+					if iscell(allele_strings)
+						if length(allelic_ratios) > 1 && SNP <= length(allele_strings)
+							allele_string = allele_strings{SNP};
 						else
-							allele_string           = allele_strings;
+							allele_string = allele_strings{1};
 						end;
 					else
-						allele_string                   = allele_strings;
+						allele_string = allele_strings;
 					end;
 
-					baseCall				= allele_string(1);
-					homologA				= allele_string(3);
-					homologB				= allele_string(5);
+					% Unpack the base-call and homologous descriptors.
+					baseCall = allele_string(1);
+					homologA = allele_string(3);
+					homologB = allele_string(5);
 
-					% identify the segment containing the SNP.
-					segmentID                             = 0;
-					for segment = 1:(length(chromCopyNum{chrom}))
-						segment_start			= chrom_breaks{chrom}(segment  )*chrom_size(chrom);
-						segment_end			= chrom_breaks{chrom}(segment+1)*chrom_size(chrom);
 
-						%fprintf(['#### class(coordinate)      = ' class(coordinate)	'\n' ]);
-						%fprintf(['####   class(segment_start) = ' class(segment_start)	'\n' ]);
-						%fprintf(['####   class(segment_end)   = ' class(segment_end)	'\n' ]);
+					%%========================================================
+					% Identify the physical segment containing the SNP
+					%---------------------------------------------------------
+					segmentID = 1; % Default to the first segment.
+					num_segments = length(chromCopyNum{chrom});
+
+					% Build true absolute boundary points in physical base pairs.
+					% chrom_breaks starts with 0 and ends with 1; with one more element than num_segements.
+					seg_boundaries = [double(chrom_breaks{chrom}) * chrom_size(chrom)];
+					for segment = 1:num_segments
+						segment_start = seg_boundaries(segment);
+						segment_end   = seg_boundaries(segment+1);
+
 						if (coordinate > segment_start) && (coordinate <= segment_end)
-							segmentID             = segment;
+							segmentID = segment;
+							break; % Break early once the matching physical block is isolated.
 						end;
 					end;
 
+
+					%%========================================================
 					% Load cutoffs between Gaussian fits performed earlier.
-					segment_copyNum				= round(chromCopyNum{              chrom}(segmentID));
-					actual_cutoffs				= chromSegment_actual_cutoffs{     chrom}{segmentID};
-					mostLikelyGaussians			= chromSegment_mostLikelyGaussians{chrom}{segmentID};
+					%---------------------------------------------------------
+					segment_copyNum     = round(chromCopyNum{chrom}(segmentID));
+					actual_cutoffs      = chromSegment_actual_cutoffs{chrom}{segmentID};
+					mostLikelyGaussians = chromSegment_mostLikelyGaussians{chrom}{segmentID};
 
 					% Calculate allelic ratio on range of [1..200].
-					SNPratio_int                          = (allelic_ratio)*199+1;
+					SNPratio_int        = (allelic_ratio)*199+1;
 
 					% Identify the allelic ratio region containing the SNP.
-					cutoffs					= [1 actual_cutoffs 200];
-					ratioRegionID				= 0;
+					cutoffs             = [1 actual_cutoffs 200];
+					ratioRegionID       = 0;
 					for GaussianRegionID = 1:length(mostLikelyGaussians)
-						cutoff_start			= cutoffs(GaussianRegionID  );
-						cutoff_end			= cutoffs(GaussianRegionID+1);
+						cutoff_start = cutoffs(GaussianRegionID  );
+						cutoff_end   = cutoffs(GaussianRegionID+1);
 						if (GaussianRegionID == 1)
 							if (SNPratio_int >= cutoff_start) && (SNPratio_int <= cutoff_end)
 								ratioRegionID	= mostLikelyGaussians(GaussianRegionID);
@@ -617,6 +698,10 @@ for chrom = 1:length(chrom_in_use)
 						end;
 					end;
 
+
+					%%========================================================
+					% Collect data in categories depending on CNV estimate for region.
+					%---------------------------------------------------------
 					if (segment_copyNum <= 0);
 						colorList = colorNoData;
 					elseif (segment_copyNum == 1)
@@ -631,7 +716,7 @@ for chrom = 1:length(chrom_in_use)
 							end;
 						end;
 					elseif (segment_copyNum == 2)
-						%   allelic fraction cutoffs: [0.25000 0.75000] => [AA AB BB]
+						% allelic fraction cutoffs: [0.25000 0.75000] => [AA AB BB]
 						if ((baseCall == homologA) || (baseCall == homologB))
 							if (ratioRegionID == 3);            colorList = colorBB;
 							elseif (ratioRegionID == 2);        colorList = colorAB;
@@ -803,11 +888,21 @@ for chrom = 1:length(chrom_in_use)
 			end;
 		end;
 
-		%
+		%%================================================================================
 		% Average colors of SNPs found in bin.
-		%
+		%---------------------------------------------------------------------------------
 		fprintf('\t|\tDetermine average color for SNPs in chromosome bin.\n');
-		for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
+
+		% DYNAMIC FIX; Determine true allocation count to prevent out-of-bounds crashes.
+		% num_allocated_bins = length(chrom_SNPdata_countC{chrom});
+		num_allocated_bins = length(chrom_SNPdata{chrom});
+
+		fprintf('\t|\t    length of chrom_SNPdata_countC for chromosome %d data file = %d\n', chrom, length(chrom_SNPdata_countC{chrom}) );
+		fprintf('\t|\t    length of chrom_SNPdata        for chromosome %d data file = %d\n', chrom, length(chrom_SNPdata{chrom})        );
+
+
+%%DRAGON
+		for chrom_bin_SNP = 1:num_allocated_bins
 			allelic_ratios = [chrom_SNPdata{chrom,1}{chrom_bin_SNP} chrom_SNPdata{chrom,2}{chrom_bin_SNP}];
 			if (length(allelic_ratios) > 0)
 				if (chrom_SNPdata_countC{chrom}(chrom_bin_SNP) > 0)
@@ -834,6 +929,7 @@ end;
 %-------------------------------------------------------------------------------------------------
 % threshold for full color saturation in SNP/LOH figure.
 % synced to bases_per_bin as below, or defaulted to 50.
+%-------------------------------------------------------------------------------------------------
 fprintf('\t|\tCalculate color intensity for each chromosome bin.\n');
 largestchrom          = find(chrom_width == max(chrom_width));
 largestchrom          = largestchrom(1);
@@ -851,7 +947,10 @@ end;
 
 for chrom = 1:length(chrom_in_use)
 	if (chrom_in_use(chrom) == 1)
-		for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
+		% Determine true allocation count from the data structures to permanently eliminate out-of-bounds array crashes.
+                num_allocated_bins = length(chrom_SNPdata{chrom,1});
+
+		for chrom_bin_SNP = 1:num_allocated_bins
 			% the number of heterozygous data points in this bin.
 			SNPs_count{chrom}(chrom_bin_SNP)                                 = length(chrom_SNPdata{chrom,1}{chrom_bin_SNP}) + length(chrom_SNPdata{chrom,2}{chrom_bin_SNP});
 
@@ -873,34 +972,67 @@ for chrom = 1:length(chrom_in_use)
 end;
 fprintf('\n');
 
-
-%% Make figure showing histogram of SNPs_count across genome; dragon4
+%%================================================================================================
+% Make figure showing histogram of SNPs_count across genome; dragon4
+%-------------------------------------------------------------------------------------------------
 fprintf('Make histogram of SNP count per bin across genome.\n');
-SNP_count_all = [];
-count = 1;
-for chrom = 1:length(chrom_in_use)
-	if (chrom_in_use(chrom) == 1)
-		for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
-			SNP_count_all(count) = SNPs_count{chrom}(chrom_bin_SNP);
-			count = count+1;
-		end;
-	end;
+
+% Vectorized collection: faster and cleaner than element-by-element growth
+active_chroms = find(chrom_in_use == 1);
+SNP_cells = cell(1, length(active_chroms));
+for idx = 1:length(active_chroms)
+	chrom = active_chroms(idx);
+	num_allocated_bins = length(chrom_SNPdata{chrom, 1});
+	SNP_cells{idx} = SNPs_count{chrom}(1:num_allocated_bins);
 end;
-max_SNP_count = max(SNP_count_all);
-SNP_histogram_fig = figure(3);
-figure(SNP_histogram_fig);
-hist(SNP_count_all, max_SNP_count, "facecolor", "g");
-saveas(SNP_histogram_fig,[projectDir 'fig.SNP-histogram.' figVer 'eps'], 'epsc');
-saveas(SNP_histogram_fig,[projectDir 'fig.SNP-histogram.' figVer 'png'], 'png');
-delete(SNP_histogram_fig);
+SNP_count_all = [SNP_cells{:}];
+
+if isempty(SNP_count_all)
+	fprintf('\tWarning: No SNP bins found; skipping SNP histogram.\n');
+else
+	% CRITICAL FIX: Ensure NBINS is at least 1 even if max_SNP_count is 0
+	max_SNP_count = max(SNP_count_all);
+	num_hist_bins = max(1, round(max_SNP_count));
+
+	SNP_histogram_fig = figure(3);
+	hist(SNP_count_all, num_hist_bins, 'facecolor', 'g');
+
+	saveas(SNP_histogram_fig, fullfile(projectDir, ['fig.SNP-histogram.' figVer 'eps']), 'epsc');
+	saveas(SNP_histogram_fig, fullfile(projectDir, ['fig.SNP-histogram.' figVer 'png']), 'png');
+	delete(SNP_histogram_fig);
+end;
 fprintf('\n');
 
+%	fprintf('Make histogram of SNP count per bin across genome.\n');
+%	SNP_count_all = [];
+%	count = 1;
+%	for chrom = 1:length(chrom_in_use)
+%		if (chrom_in_use(chrom) == 1)
+%			num_allocated_bins = length(chrom_SNPdata{chrom,1});
+%			for chrom_bin_SNP = 1:num_allocated_bins
+%				SNP_count_all(count) = SNPs_count{chrom}(chrom_bin_SNP);
+%				count = count+1;
+%			end;
+%		end;
+%	end;
+%	max_SNP_count = max(SNP_count_all);
+%	SNP_histogram_fig = figure(3);
+%	figure(SNP_histogram_fig);
+%	hist(SNP_count_all, max_SNP_count, "facecolor", "g");
+%	saveas(SNP_histogram_fig,[projectDir 'fig.SNP-histogram.' figVer 'eps'], 'epsc');
+%	saveas(SNP_histogram_fig,[projectDir 'fig.SNP-histogram.' figVer 'png'], 'png');
+%	delete(SNP_histogram_fig);
+%	fprintf('\n');
 
-%% load size definitions
+
+%%================================================================================================
+% Load size definitions
+%-------------------------------------------------------------------------------------------------
 [linear_fig_height,linear_fig_width,Linear_left_start,Linear_chrom_gap,Linear_chrom_max_width,Linear_height...
     ,Linear_base,rotate,linear_chrom_font_size,linear_axis_font_size,linear_gca_font_size,stacked_fig_height,...
     stacked_fig_width,stacked_chrom_font_size,stacked_title_size,stacked_axis_font_size,...
     gca_stacked_font_size,stacked_copy_font_size,max_chrom_label_size] = Load_size_info(chrom_in_use,num_chroms,chrom_label,chrom_size);
+
 
 %%================================================================================================
 % Setup for main-view figure generation.
@@ -933,7 +1065,7 @@ axisLabelPosition_vert = 0.01125;
 
 
 %%================================================================================================
-% Make figures
+% Make figures.
 %-------------------------------------------------------------------------------------------------
 fprintf('\t|\tDraw figures.\n');
 first_chrom = true;
@@ -968,7 +1100,8 @@ for chrom_to_draw  = 1:length(chrom_order)
 		colors = [];
 
 		%% determine color of each bin
-		for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
+		num_allocated_bins = length(chrom_SNPdata{chrom,1});
+		for chrom_bin_SNP = 1:num_allocated_bins
 			if (SNPs_to_fullData_ratio{chrom}(chrom_bin_SNP) == 0)
 				c_post = colorNoData;
 				fprintf('.');
@@ -995,27 +1128,6 @@ for chrom_to_draw  = 1:length(chrom_order)
 		if (Standard_display == true)
 			%% standard : draw colorbars.
 			draw_colorbars_plot;
-
-		%	for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
-		%		x_ = [chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin];
-		%		y_ = [0 maxY maxY 0];
-		%		c_post(1) = colors(chrom_bin_SNP,1);
-		%		c_post(2) = colors(chrom_bin_SNP,2);
-		%		c_post(3) = colors(chrom_bin_SNP,3);
-		%		% makes a colorBar for each bin, using local smoothing
-		%		if (c_(1) > 1); c_(1) = 1; end;
-		%		if (c_(2) > 1); c_(2) = 1; end;
-		%		if (c_(3) > 1); c_(3) = 1; end;
-		%		if (blendColorBars == false)
-		%			f = fill(x_,y_,c_);
-		%		else
-		%			f = fill(x_,y_,c_/2+c_prev/4+c_post/4);
-		%		end;
-		%		c_prev = c_;
-		%		c_     = c_post;
-		%		set(f,'linestyle','none');
-		%	end;
-
 			% standard : axes labels etc.
 			hold off;
 			xlim([0,chrom_size(chrom)/bases_per_bin]);
@@ -1051,9 +1163,9 @@ for chrom_to_draw  = 1:length(chrom_order)
 
 			% standard : show segmental anueploidy breakpoints.
 	                if (displayBREAKS == true) && (show_annotations == true)
-	                        chrom_length = ceil(chrom_size(chrom)/bases_per_bin);
+				num_allocated_bins = length(chrom_SNPdata{chrom,1});
 	                        for segment = 2:length(chrom_breaks{chrom})-1
-	                                bP = chrom_breaks{chrom}(segment)*chrom_length;
+	                                bP = chrom_breaks{chrom}(segment)*num_allocated_bins;
 	                                plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
 	                        end;
 	                end;
@@ -1101,9 +1213,9 @@ for chrom_to_draw  = 1:length(chrom_order)
 			%end show annotation locations.
 
 
-			%% =========================================================================================
+			%% =======================================================================
 			% Draw angleplots to left of main chromosome cartoons.
-			%-------------------------------------------------------------------------------------------
+			%-------------------------------------------------------------------------
 			apply_phasing = true;
 			angle_plot_subfigures;
 		end;
@@ -1122,33 +1234,13 @@ for chrom_to_draw  = 1:length(chrom_order)
 
 			%% linear : draw colorbars.
 			draw_colorbars_plot;
-
-		%	for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
-		%		x_ = [chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin];
-		%		y_ = [0 maxY maxY 0];
-		%		c_post(1) = colors(chrom_bin_SNP,1);
-		%		c_post(2) = colors(chrom_bin_SNP,2);
-		%		c_post(3) = colors(chrom_bin_SNP,3);
-		%		% makes a colorBar for each bin, using local smoothing
-		%		if (c_(1) > 1); c_(1) = 1; end;
-		%		if (c_(2) > 1); c_(2) = 1; end;
-		%		if (c_(3) > 1); c_(3) = 1; end;
-		%		if (blendColorBars == false)
-		%			f = fill(x_,y_,c_);
-		%		else
-		%			f = fill(x_,y_,c_/2+c_prev/4+c_post/4);
-		%		end;
-		%		c_prev = c_;
-		%		c_     = c_post;
-		%		set(f,'linestyle','none');
-		%	end;
 			% linear : end draw colorbars.
 
 			%% linear : show segmental anueploidy breakpoints.
 			if (Linear_displayBREAKS == true) && (show_annotations == true)
-				chrom_length = ceil(chrom_size(chrom)/bases_per_bin);
+				num_allocated_bins = length(chrom_SNPdata{chrom,1});
 				for segment = 2:length(chrom_breaks{chrom})-1
-					bP = chrom_breaks{chrom}(segment)*chrom_length;
+					bP = chrom_breaks{chrom}(segment)*num_allocated_bins;
 					plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
 				end;
 			end;
@@ -1241,6 +1333,10 @@ for chrom_to_draw  = 1:length(chrom_order)
 	end;
 end;
 
+
+%%================================================================================================
+% Save figures.
+%-------------------------------------------------------------------------------------------------
 if (Standard_display == true)
 	%% Save figures.
 	set(fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
@@ -1263,9 +1359,5 @@ if (Linear_display == true)
 	system(['chmod 774 ' projectDir 'fig.SNP-map.2.' figVer 'eps']);
 	system(['chmod 774 ' projectDir 'fig.SNP-map.2.' figVer 'png']);
 end;
-
-%% ========================================================================
-% end stuff
-%==========================================================================
 
 end
