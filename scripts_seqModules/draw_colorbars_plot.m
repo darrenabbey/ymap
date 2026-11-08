@@ -3,7 +3,7 @@
 %-------------------------------------------------------------------------------------------------
 
 % 1. Determine the TRUE number of variable rows.
-if preprocessed_CNVs
+if preprocessed_SNPs
 	actual_num_bins = sum(chroms == chrom);
 else
 	actual_num_bins = ceil(chrom_size(chrom) / bases_per_bin_SNP);

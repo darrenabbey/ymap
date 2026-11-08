@@ -2,7 +2,7 @@
 % draw_CNV_plot.m - Variable-Width Binned Copy Number Profile Painter
 %==========================================================================
 
-% Use the ACTUAL number of bins from your loaded file data to prevent crashes.
+% 1. Determine the TRUE number of variable rows.
 if preprocessed_CNVs
 	actual_num_bins = sum(chroms == chrom);
 else
@@ -11,14 +11,12 @@ end;
 
 fprintf(['linear-plot : chrom' num2str(chrom) ':' num2str(actual_num_bins) '\n']);
 
-% Extract matching physical coordinate vectors for THIS chromosome's rows.
-% (Assuming 'chroms', 'fragment_starts', and 'fragment_ends' are available from Step 7)
+% 3. Extract literal physical coordinate segments matching this chromosome's rows.
 idx_c = (chroms == chrom);
 chrom_starts = double(fragment_starts(idx_c))';
 chrom_ends   = double(fragment_ends(idx_c))';
 
-% Pre-allocate coordinate matrices for precise physical bounding boxes.
-% Each bin needs 4 corners to draw a rectangle + 1 NaN separator
+% 4. Pre-allocate 2D patch coordinate matrices (4 points per column element).
 X_matrix = zeros(5, actual_num_bins);
 Y_matrix = zeros(5, actual_num_bins);
 
@@ -37,8 +35,7 @@ endY_values = min(maxY, endY_values);
 endY_values = max(0, endY_values);
 startY = maxY / 2;
 
-% Vectorized generation of true physical rectangle coordinates.
-% Map physical base pairs directly to the display axis using bases_per_bin!
+% 5. Divide physical nucleotide coordinates by the master bases_per_bin to determine figure coordinates.
 X_matrix(1, :) = chrom_starts / bases_per_bin;   % Bottom Left.
 X_matrix(2, :) = chrom_starts / bases_per_bin;   % Top Left.
 X_matrix(3, :) = chrom_ends   / bases_per_bin;   % Top Right.
@@ -51,5 +48,5 @@ Y_matrix(3, :) = endY_values;
 Y_matrix(4, :) = startY;
 Y_matrix(5, :) = NaN;
 
-% Draw all variable-width blocks instantly using a single 'patch' call.
+% 6. Render the entire physical color bar instantly using a single call.
 f_cnv = patch(X_matrix(:), Y_matrix(:), [0 0 0], 'FaceColor', [0 0 0], 'EdgeColor', [0 0 0], 'LineStyle', '-');
