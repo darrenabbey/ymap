@@ -1,5 +1,11 @@
 <?php
 function SYSTEM_cleanup($userName,$projectName,$main_dir) {
+	// Capture calling script and line number (e.g., sharedFunctions.php:78).
+	$trace        = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+	$callerScript = isset($trace[0]['file']) ? basename($trace[0]['file']) : 'unknown';
+	$callerLine   = isset($trace[0]['line']) ? $trace[0]['line'] : 0;
+	$callerTag    = "[$callerScript:$callerLine]";
+
 	if ($userName == "") {
 		log_stuff("","","","","","SYSTEM_CLEANER: project:ERROR_CLEANUP failure, user name error.");
 	} else {
@@ -29,10 +35,10 @@ function SYSTEM_cleanup($userName,$projectName,$main_dir) {
 								file_put_contents($logFile, "Success: '".$txtFile."' compressed into $zipFile.", FILE_APPEND | LOCK_EX);
 							} else {
 								$zip->close();
-								file_put_contents($logFile, "Error: '".$txtFile."' not found.", FILE_APPEND | LOCK_EX);
+								file_put_contents($logFile, "Error $callerTag: '".$txtFile."' not found.", FILE_APPEND | LOCK_EX);
 							}
 						} else {
-							file_put_contents($logFile, "Error: Could not create the ZIP archive.", FILE_APPEND | LOCK_EX);
+							file_put_contents($logFile, "Error $callerTag: Could not create the ZIP archive.", FILE_APPEND | LOCK_EX);
 						}
 					}
 					if (is_file($dir."/SNP_CNV_v1.txt")) {
@@ -48,10 +54,10 @@ function SYSTEM_cleanup($userName,$projectName,$main_dir) {
 								file_put_contents($logFile, "Success: '".$txtFile."' compressed into $zipFile.", FILE_APPEND | LOCK_EX);
 							} else {
 								$zip->close();
-								file_put_contents($logFile, "Error: '".$txtFile."' not found.", FILE_APPEND | LOCK_EX);
+								file_put_contents($logFile, "Error $callerTag: '".$txtFile."' not found.", FILE_APPEND | LOCK_EX);
 							}
 						} else {
-							file_put_contents($logFile, "Error: Could not create the ZIP archive.", FILE_APPEND | LOCK_EX);
+							file_put_contents($logFile, "Error $callerTag: Could not create the ZIP archive.", FILE_APPEND | LOCK_EX);
 						}
 					}
 
@@ -84,6 +90,13 @@ function SYSTEM_force_minimize($userName,$projectName,$main_dir) {
 	}
 }
 function minimizeProject($dir) {
+	// Capture calling script and line number (e.g., sharedFunctions.php:78).
+	$trace        = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+	$callerScript = isset($trace[0]['file']) ? basename($trace[0]['file']) : 'unknown';
+	$callerLine   = isset($trace[0]['line']) ? $trace[0]['line'] : 0;
+	$callerTag    = "[$callerScript:$callerLine]";
+
+	// Normalize directory path to avoid double slashes ('//').
 	$dir = $dir."/";
 	$logFile = $dir."/process_log.txt";
 
@@ -102,13 +115,13 @@ function minimizeProject($dir) {
 				unlink($txtFile);
 				file_put_contents($logFile, "Success: '" . $txtFile . "' compressed into $zipFile.\n", FILE_APPEND | LOCK_EX);
 			} else {
-				file_put_contents($logFile, "Error: Failed to write ZIP archive to disk.\n", FILE_APPEND | LOCK_EX);
+				file_put_contents($logFile, "Error $callerTag: Failed to write ZIP archive to disk.\n", FILE_APPEND | LOCK_EX);
 			}
 		} else {
-			file_put_contents($logFile, "Error: Could not open ZIP archive stream.\n", FILE_APPEND | LOCK_EX);
+			file_put_contents($logFile, "Error $callerTag: Could not open ZIP archive stream.\n", FILE_APPEND | LOCK_EX);
 		}
 	} else {
-		file_put_contents($logFile, "Error: '" . $txtFile . "' not found.\n", FILE_APPEND | LOCK_EX);
+		file_put_contents($logFile, "Error $callerTag: '" . $txtFile . "' not found.\n", FILE_APPEND | LOCK_EX);
 	}
 
 	// Compress SNP_CNV file.
@@ -125,13 +138,13 @@ function minimizeProject($dir) {
 				unlink($txtFile);
 				file_put_contents($logFile, "Success: '" . $txtFile . "' compressed into $zipFile.\n", FILE_APPEND | LOCK_EX);
 			} else {
-				file_put_contents($logFile, "Error: Failed to write ZIP archive to disk.\n", FILE_APPEND | LOCK_EX);
+				file_put_contents($logFile, "Error $callerTag: Failed to write ZIP archive to disk.\n", FILE_APPEND | LOCK_EX);
 			}
 		} else {
-			file_put_contents($logFile, "Error: Could not create the ZIP archive stream.\n", FILE_APPEND | LOCK_EX);
+			file_put_contents($logFile, "Error $callerTag: Could not create the ZIP archive stream.\n", FILE_APPEND | LOCK_EX);
 		}
 	} else {
-		file_put_contents($logFile, "Error: '" . $txtFile . "' not found.\n", FILE_APPEND | LOCK_EX);
+		file_put_contents($logFile, "Error $callerTag: '" . $txtFile . "' not found.\n", FILE_APPEND | LOCK_EX);
 	}
 
 	// Make a temp directory.

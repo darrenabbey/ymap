@@ -56,19 +56,28 @@ check_octave_crash() {
 }
 
 log_compiled_script() {
-	local source_script="$1";
-	local destination_log="$2";
+	local source_script="${1:-}";
+	local destination_log="${2:-}";
+	local caller_script="${BASH_SOURCE[1]:-unknown}"
+	local caller_line="${BASH_LINENO[0]:-0}"
 
-	if [[ -f "$source_script" ]]; then
-		# Process the entire file in one go using sed:
-		# 's/\\/\\\\/g' -> Doubles up backslashes
-		# 's/^/\t|\t/'  -> Prepends your custom log alignment prefix to every line
-		sed -e 's/\\/\\\\/g' -e 's/^/\t|\t/' "$source_script" >> "$destination_log";
-	else
-		echo "Error: Source script $source_script not found to log." >&2;
+	if [[ -z "$source_script" || -z "$destination_log" ]]; then
+		echo "Error [${caller_script}:${caller_line}]: Usage: log_compiled_script <source_script> <destination_log>" >&2
+		return 1;
 	fi;
-}
 
+	if [[ ! -f "$source_script" ]]; then
+		echo "Error [${caller_script}:${caller_line}]: Source script '$source_script' not found to log." >&2
+		return 1;
+	fi;
+
+	# Log a header showing which script/line triggered this dump, then log the file contents
+	printf "\t|\t=== Compiled script: %s (called from %s:%s) ===\n" \
+		"$source_script" "$caller_script" "$caller_line" >> "$destination_log"
+
+		# Double backslashes and prepend the '\t|\t' log prefix in a single pass.
+	sed -e 's/\\/\\\\/g' -e "s/^/$'\t'|$'\t'/" "$source_script" >> "$destination_log";
+}
 
 ##==============================================================================
 ## Define locations and names to be used later.
