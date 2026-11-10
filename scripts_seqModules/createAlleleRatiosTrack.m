@@ -9,8 +9,8 @@ else
 	project_ = substr(project,idx+1);
 end
 fprintf(['[***]\tproject_  = ' project_ '\n']);
-fprintf(['[***]']);
-fprintf(['[***]\t Score is calculated as allelic ratio (0.0 ... 1.0) scaled to standard BED score range (0 .. 1000).
+fprintf('[***]');
+fprintf('[***]\t Score is calculated as allelic ratio (0.0 ... 1.0) scaled to standard BED score range (0 .. 1000).');
 
 alleleRatiosFid = fopen(fullfile(projectDir, ['allele_ratios.' project_  '.bed']), 'w');
 if (alleleRatiosFid == -1)
