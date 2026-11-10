@@ -9,6 +9,8 @@ else
 	project_ = substr(project,idx+1);
 end
 fprintf(['[***]\tproject_  = ' project_ '\n']);
+fprintf(['[***]']);
+fprintf(['[***]\t Score is calculated as allelic ratio (0.0 ... 1.0) scaled to standard BED score range (0 .. 1000).
 
 alleleRatiosFid = fopen(fullfile(projectDir, ['allele_ratios.' project_  '.bed']), 'w');
 if (alleleRatiosFid == -1)
@@ -19,11 +21,11 @@ else
 		if (chrom_in_use(chrom) == 1)
 			chromName = chrom_name{chrom};
 			for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
-				%
+				%%================================================================
 				% Determining colors for each SNP coordinate from calculated cutoffs.
-				%
-				allelic_ratios                                          = [chrom_SNPdata{chrom,1}{chrom_bin_SNP} chrom_SNPdata{chrom,2}{chrom_bin_SNP}];
-				coordinates                                             = [chrom_SNPdata{chrom,3}{chrom_bin_SNP} chrom_SNPdata{chrom,4}{chrom_bin_SNP}];
+				%-----------------------------------------------------------------
+				allelic_ratios = [chrom_SNPdata{chrom,1}{chrom_bin_SNP} chrom_SNPdata{chrom,2}{chrom_bin_SNP}];
+				coordinates    = [chrom_SNPdata{chrom,3}{chrom_bin_SNP} chrom_SNPdata{chrom,4}{chrom_bin_SNP}];
 
 				if (sizeof(chrom_SNPdata{chrom,5}{chrom_bin_SNP}) == 0)
 					phased_alleles = '';
@@ -35,7 +37,7 @@ else
 				else
 					unphased_alleles = chrom_SNPdata{chrom,6}{chrom_bin_SNP};
 				end;
-				allele_strings                                          = [phased_alleles unphased_alleles];
+				allele_strings = [phased_alleles unphased_alleles];
 
 				if (length(allelic_ratios) > 0)
 					for SNP = 1:length(allelic_ratios)
@@ -377,15 +379,16 @@ else
 						chrom_SNPdata_countC{ chrom  }(chrom_bin_SNP) = chrom_SNPdata_countC{ chrom  }(chrom_bin_SNP) + 1;
 
 						if (~all(colorList == colorNoData))
-							writeAlleleRatioLine(alleleRatiosFid, chromName, coordinate, homologA, homologB, colorList);
+							writeAlleleRatioLine(alleleRatiosFid, chromName, coordinate, homologA, homologB, colorList, allelic_ratio);
 						end
 					end;
 				end;
 			end;
 
-			%
+
+			%%========================================================================
 			% Average colors of SNPs found in bin.
-			%
+			%-------------------------------------------------------------------------
 			fprintf('\t|\tDetermine average color for SNPs in chromosome bin.\n');
 			for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
 				allelic_ratios = [chrom_SNPdata{chrom,1}{chrom_bin_SNP} chrom_SNPdata{chrom,2}{chrom_bin_SNP}];
