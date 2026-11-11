@@ -1,5 +1,5 @@
 %==========================================================================
-% createCnvTrack.m - Variable-Width Bins, notes only on non-baseline CNVs.
+% createCnvTrack_reduced.m - Variable-Width Bins, notes only on non-baseline CNVs.
 %==========================================================================
 
 fprintf(['[***] createCnvTrack.m\n']);
@@ -63,6 +63,7 @@ else
 
 		% Identify baseline/missing bins vs. deviating bins.
 		isBaseline = (round(localCopyEstimates) == ploidyBase) | isnan(localCopyEstimates);
+
 
 		% Default all comments (column 9) to a period.
 		noteCol = repmat({'.'}, 1, num_bins);
