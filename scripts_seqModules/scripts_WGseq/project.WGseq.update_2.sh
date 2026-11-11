@@ -3,7 +3,7 @@
 #
 # project.WGseq.update_2.sh
 #
-set -e
+set -eE
 
 ## All created files will have permission 760
 umask 007;
@@ -14,8 +14,26 @@ main_dir=$(pwd)"/../..";
 projectDirectory="$main_dir/users/$user/projects/$project";
 logName="$projectDirectory/process_log.txt";
 
+
 ## Error handling in case something crashes.
-trap 'cd $main_dir"/scripts_seqModules/scripts_WGseq/"; bash queue_end.sh "$user" "$project" "$main_dir" "$logName" "Something went wrong. project.WGseq.update_2.sh:$LINENO"; install /dev/null "$projectDirectory/error.txt"; echo -e "Something went wrong. project.WGseq.update_2.sh:$LINENO" >> "$projectDirectory/error.txt"; cd $main_dir; exit 1;' ERR;
+handle_error() {
+    local err_line="$1"
+    local err_msg="Something went wrong. project.WGseq.update_2.sh:${err_line}"
+
+    # Write error.txt safely (creates or overwrites cleanly).
+    printf '%s\n' "$err_msg" >> "${projectDirectory}/error.txt"
+
+    # Run queue_end.sh inside a subshell so directory changes don't affect the main shell.
+    (
+        cd "${main_dir}/scripts_seqModules/scripts_WGseq/" || exit 1
+        bash queue_end.sh "$user" "$project" "$main_dir" "$logName" "$err_msg"
+    )
+
+    cd "$main_dir" || true
+    exit 1
+}
+trap 'handle_error "$LINENO"' ERR
+
 
 ### define script file locations.
 local_dir=$(pwd);
