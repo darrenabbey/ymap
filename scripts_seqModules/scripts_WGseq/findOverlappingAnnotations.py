@@ -136,7 +136,7 @@ with open(sys.argv[1], 'r') as cnv_fh:
 		phase           = line[7];
 		attributes      = line[8];
 
-		if score == '.':
+		if attributes == '.':
 			sys.stdout.write(i);
 			continue;
 
