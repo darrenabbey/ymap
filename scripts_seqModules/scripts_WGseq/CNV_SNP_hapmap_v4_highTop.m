@@ -60,7 +60,7 @@ if (Make_figure == true)
 	%-------------------------------------------------------------------------------------------
 	fprintf('\t|\tLoad SNP data.\n');
 	load([projectDir 'SNP_' SNP_verString '.mat']);
-	%    'chrom_SNPdata{chrom,i}(chrom_bin_SNP)'
+	%    'chrom_SNPdata{chrom,i}(idx)'
 	%        i = 1 : phased ratio data.
 	%        i = 2 : unphased ratio data.
 	%        i = 3 : phased coordinate data.
@@ -76,12 +76,12 @@ if (Make_figure == true)
 	%% =========================================================================================
 	% Calculate allelic fraction cutoffs for each segment and populate data structure containing
 	% SNP phasing information.
-	%       chrom_SNPdata{chrom,1}{chrom_bin_SNP} = phased SNP ratio data.
-	%       chrom_SNPdata{chrom,2}{chrom_bin_SNP} = unphased SNP ratio data.
-	%       chrom_SNPdata{chrom,3}{chrom_bin_SNP} = phased SNP position data.
-	%       chrom_SNPdata{chrom,4}{chrom_bin_SNP} = unphased SNP position data.
-	%       chrom_SNPdata{chrom,5}{chrom_bin_SNP} = phased SNP allele strings.   (baseCall:alleleA/alleleB)
-	%       chrom_SNPdata{chrom,6}{chrom_bin_SNP} = unphased SNP allele strings.
+	%       chrom_SNPdata{chrom,1}{idx} = phased SNP ratio data.
+	%       chrom_SNPdata{chrom,2}{idx} = unphased SNP ratio data.
+	%       chrom_SNPdata{chrom,3}{idx} = phased SNP position data.
+	%       chrom_SNPdata{chrom,4}{idx} = unphased SNP position data.
+	%       chrom_SNPdata{chrom,5}{idx} = phased SNP allele strings.   (baseCall:alleleA/alleleB)
+	%       chrom_SNPdata{chrom,6}{idx} = unphased SNP allele strings.
 	%-------------------------------------------------------------------------------------------
 	fprintf('\n\n### Calculate allelic ratio cutoffs using Gaussian fitting.\n');
 	temp_holding = chrom_SNPdata;
@@ -125,22 +125,27 @@ if (Make_figure == true)
 
 	for chrom = 1:length(chrom_in_use)
 		if (chrom_in_use(chrom) == 1)
-			for chrom_bin_SNP = 1:length(chrom_SNPdata{chrom,1})
+			SNPbin_mask = (chroms = chrom);
+			num_bins = sum(SNPbin_mask);
+			SNPbin_indices = find(SNPbin_mask);
+
+			for line_idx = SNPbin_indices(:)'
+				idx = per_chrom_SNPindex(line_idx);
 				% the number of heterozygous data points in this bin.
-				SNPs_count{chrom}(chrom_bin_SNP)                                 = length(chrom_SNPdata{chrom,1}{chrom_bin_SNP}) + length(chrom_SNPdata{chrom,2}{chrom_bin_SNP});
+				SNPs_count{chrom}(idx)                                 = length(chrom_SNPdata{chrom,1}{idx}) + length(chrom_SNPdata{chrom,2}{idx});
 
 				% divide by the threshold for full color saturation in SNP/LOH figure.
-				SNPs_to_fullData_ratio{chrom}(chrom_bin_SNP)                     = SNPs_count{chrom}(chrom_bin_SNP)/full_data_threshold;
+				SNPs_to_fullData_ratio{chrom}(idx)                     = SNPs_count{chrom}(idx)/full_data_threshold;
 
 				% any bins with more data than the threshold for full color saturation are limited to full saturation.
 				SNPs_to_fullData_ratio{chrom}(SNPs_to_fullData_ratio{chrom} > 1) = 1;
 
-				phased_plot{chrom}(chrom_bin_SNP)                                = length(chrom_SNPdata{chrom,1}{chrom_bin_SNP});             % phased data.
-				phased_plot2{chrom}(chrom_bin_SNP)                               = phased_plot{chrom}(chrom_bin_SNP)/full_data_threshold;   %
+				phased_plot{chrom}(idx)                                = length(chrom_SNPdata{chrom,1}{idx});             % phased data.
+				phased_plot2{chrom}(idx)                               = phased_plot{chrom}(idx)/full_data_threshold;   %
 				phased_plot2{chrom}(phased_plot2{chrom} > 1)                     = 1;                                                   %
 
-				unphased_plot{chrom}(chrom_bin_SNP)                              = length(chrom_SNPdata{chrom,2}{chrom_bin_SNP});             % unphased data.
-				unphased_plot2{chrom}(chrom_bin_SNP)                             = unphased_plot{chrom}(chrom_bin_SNP)/full_data_threshold; %
+				unphased_plot{chrom}(idx)                              = length(chrom_SNPdata{chrom,2}{idx});             % unphased data.
+				unphased_plot2{chrom}(idx)                             = unphased_plot{chrom}(idx)/full_data_threshold; %
 				unphased_plot2{chrom}(unphased_plot2{chrom} > 1)                 = 1;                                                   %
 			end;
 		end;
@@ -233,28 +238,6 @@ if (Make_figure == true)
 			%% end determine color of each bin.
 
 
-%			%% determine color of each bin.
-%			for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
-%				c_tot_post = SNPs_to_fullData_ratio{chrom}(chrom_bin_SNP)+SNPs_to_fullData_ratio{chrom}(chrom_bin_SNP);
-%				if (c_tot_post == 0)
-%					c_post = colorNoData;
-%					fprintf('.');
-%					if (mod(chrom_bin_SNP,100) == 0);   fprintf('\n');   end;
-%				else
-%					% Average of SNP position colors defined earlier.
-%					colorMix = [chrom_SNPdata_colorsC{chrom,1}(chrom_bin_SNP) chrom_SNPdata_colorsC{chrom,2}(chrom_bin_SNP) chrom_SNPdata_colorsC{chrom,3}(chrom_bin_SNP)];
-%
-%					% Determine color to draw bin, accounting for limited data and data saturation.
-%					c_post =   colorMix   *   min(1,SNPs_to_fullData_ratio{chrom}(chrom_bin_SNP)) + ...
-%					           colorNoData*(1-min(1,SNPs_to_fullData_ratio{chrom}(chrom_bin_SNP)));
-%				end;
-%				colors(chrom_bin_SNP,1) = c_post(1);
-%				colors(chrom_bin_SNP,2) = c_post(2);
-%				colors(chrom_bin_SNP,3) = c_post(3);
-%			end;
-%			% standard : end determine color of each bin.
-
-
 			% reverse order of color and CNV bins if chromosome is indicated as reversed in figure_definitions.txt file.
 			if (chrom_figReversed(chrom) == 1)
 				colors        = flipud(colors);
@@ -273,9 +256,11 @@ if (Make_figure == true)
 				fprintf(['chrom' num2str(chrom) ': figposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
 				hold on;
 
+
 				%% standard : draw colorbars.
 				draw_colorbars_plot;
 				%% standard : end draw colorbars.
+
 
 				%% standard : show centromere outlines/outline.
 				Centromere_format = Centromere_format_default;
@@ -294,9 +279,11 @@ if (Make_figure == true)
 				end;
 				%% standard : end show centromere/outline.
 
+
 				%% standard : CNV plot section.
 				draw_CNV_plot_highTop;
 				% standard : end CNV plot section.
+
 
 				% standard : draw ploidy lines across plots for easier interpretation of CNV regions.
 				% Inside chrom bounds grey lines.
@@ -453,9 +440,11 @@ if (Make_figure == true)
 				Linear_left = Linear_left + Linear_width + Linear_chrom_gap;
 				hold on;
 
+
 				%% linear : draw colorbars.
 				draw_colorbars_plot;
 				% linear : end draw colorbars.
+
 
 				%% linear : show centromere/outline.
 				Centromere_format = Centromere_format_default;
@@ -474,9 +463,11 @@ if (Make_figure == true)
 				end;
 				% linear : end show centromere/outline.
 
+
 				%% linear : CNV plot section.
 				draw_CNV_plot_highTop;
-				% linear : end CNV plot section.
+				%% linear : end CNV plot section.
+
 
 				%% linear : draw ploidy lines across plots for easier interpretation of CNV regions.
 				% Inside chrom bounds grey lines.

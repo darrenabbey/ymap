@@ -255,11 +255,18 @@ if exist(cnv_data_file, 'file')
 	fclose(fid);
 
 	% The first column contains the chromosome numbers (chrNum)
-	chroms          = raw_data{1};
-	fragment_starts = raw_data{2};
-	fragment_ends   = raw_data{3};
-	readAverages    = raw_data{4};
-	lines_analyzed  = length(chroms);
+	chroms            = raw_data{1};
+	fragment_starts   = raw_data{2};
+	fragment_ends     = raw_data{3};
+	readAverages      = raw_data{4};
+	CNVlines_analyzed = length(chroms);
+
+	% Compute the 1-based index within each chromosome for every data row
+	per_chrom_CNVindex = zeros(CNVlines_analyzed, 1);
+	for c = unique(chroms(:))'
+		mask = (chroms == c);
+		per_chrom_CNVindex(mask) = 1:sum(mask);
+	end;
 
 	preprocessed_CNVs = true;
 else
@@ -292,7 +299,14 @@ if exist(snp_data_file, 'file')
 	unphased_coordinates_string = raw_data{7};
 	phased_alleles_string       = raw_data{8};
 	unphased_alleles_string     = raw_data{9};
-	lines_analyzed              = length(chroms);
+	SNPlines_analyzed           = length(chroms);
+
+	% Compute the 1-based index within each chromosome for every data row
+	per_chrom_SNPindex = zeros(SNPlines_analyzed, 1);
+	for c = unique(chroms(:))'
+		mask = (chroms == c);
+		per_chrom_SNPindex(mask) = 1:sum(mask);
+	end;
 
 	preprocessed_SNPs = true;
 else
@@ -378,7 +392,7 @@ system(['chmod 774 ' projectDir 'CNV_SNP_hapmap_v4.workspace_variables.mat']);
 %-------------------------------------------------------------------------------------------
 fprintf('\t|\tLoad SNP data.\n');
 load([projectDir 'SNP_' SNP_verString '.mat']);
-%    'chrom_SNPdata{chrom,i}(chrom_bin_SNP)'
+%    'chrom_SNPdata{chrom,i}(idx)'
 %        i = 1 : phased ratio data.
 %        i = 2 : unphased ratio data.
 %        i = 3 : phased coordinate data.
@@ -394,12 +408,12 @@ fprintf('\t|\tDetermine colors per SNP using hapmap.\n');
 %% =========================================================================================
 % Calculate allelic fraction cutoffs for each segment and populate data structure containing
 % SNP phasing information.
-%       chrom_SNPdata{chrom,1}{chrom_bin_SNP} = phased SNP ratio data.
-%       chrom_SNPdata{chrom,2}{chrom_bin_SNP} = unphased SNP ratio data.
-%       chrom_SNPdata{chrom,3}{chrom_bin_SNP} = phased SNP position data.
-%       chrom_SNPdata{chrom,4}{chrom_bin_SNP} = unphased SNP position data.
-%       chrom_SNPdata{chrom,5}{chrom_bin_SNP} = phased SNP allele strings.   (baseCall:alleleA/alleleB)
-%       chrom_SNPdata{chrom,6}{chrom_bin_SNP} = unphased SNP allele strings.
+%       chrom_SNPdata{chrom,1}{idx} = phased SNP ratio data.
+%       chrom_SNPdata{chrom,2}{idx} = unphased SNP ratio data.
+%       chrom_SNPdata{chrom,3}{idx} = phased SNP position data.
+%       chrom_SNPdata{chrom,4}{idx} = unphased SNP position data.
+%       chrom_SNPdata{chrom,5}{idx} = phased SNP allele strings.   (baseCall:alleleA/alleleB)
+%       chrom_SNPdata{chrom,6}{idx} = unphased SNP allele strings.
 %-------------------------------------------------------------------------------------------
 fprintf('\n\n### Calculate allelic ratio cutoffs using Gaussian fitting.\n');
 temp_holding = chrom_SNPdata;
@@ -444,22 +458,28 @@ fig = figure(1);
 
 for chrom = 1:length(chrom_in_use)
 	if (chrom_in_use(chrom) == 1)
-		for chrom_bin_SNP = 1:length(chrom_SNPdata{chrom,1})
+		SNPbin_mask = (chroms = chrom);
+		num_bins = sum(SNPbin_mask);
+		SNPbin_indices = find(SNPbin_mask);
+
+		for line_idx = SNPbin_indices(:)'
+			idx = per_chrom_SNPindex(line_idx);
+
 			% the number of heterozygous data points in this bin.
-			SNPs_count{chrom}(chrom_bin_SNP)                                 = length(chrom_SNPdata{chrom,1}{chrom_bin_SNP}) + length(chrom_SNPdata{chrom,2}{chrom_bin_SNP});
+			SNPs_count{chrom}(idx)                                 = length(chrom_SNPdata{chrom,1}{idx}) + length(chrom_SNPdata{chrom,2}{idx});
 
 			% divide by the threshold for full color saturation in SNP/LOH figure.
-			SNPs_to_fullData_ratio{chrom}(chrom_bin_SNP)                     = SNPs_count{chrom}(chrom_bin_SNP)/full_data_threshold;
+			SNPs_to_fullData_ratio{chrom}(idx)                     = SNPs_count{chrom}(idx)/full_data_threshold;
 
 			% any bins with more data than the threshold for full color saturation are limited to full saturation.
 			SNPs_to_fullData_ratio{chrom}(SNPs_to_fullData_ratio{chrom} > 1) = 1;
 
-			phased_plot{chrom}(chrom_bin_SNP)                                = length(chrom_SNPdata{chrom,1}{chrom_bin_SNP});             % phased data.
-			phased_plot2{chrom}(chrom_bin_SNP)                               = phased_plot{chrom}(chrom_bin_SNP)/full_data_threshold;   %
+			phased_plot{chrom}(idx)                                = length(chrom_SNPdata{chrom,1}{idx});             % phased data.
+			phased_plot2{chrom}(idx)                               = phased_plot{chrom}(idx)/full_data_threshold;   %
 			phased_plot2{chrom}(phased_plot2{chrom} > 1)                     = 1;                                                   %
 
-			unphased_plot{chrom}(chrom_bin_SNP)                              = length(chrom_SNPdata{chrom,2}{chrom_bin_SNP});             % unphased data.
-			unphased_plot2{chrom}(chrom_bin_SNP)                             = unphased_plot{chrom}(chrom_bin_SNP)/full_data_threshold; %
+			unphased_plot{chrom}(idx)                              = length(chrom_SNPdata{chrom,2}{idx});             % unphased data.
+			unphased_plot2{chrom}(idx)                             = unphased_plot{chrom}(idx)/full_data_threshold; %
 			unphased_plot2{chrom}(unphased_plot2{chrom} > 1)                 = 1;                                                   %
 		end;
 	end;
@@ -574,9 +594,11 @@ for chrom_to_draw  = 1:length(chrom_order)
 			fprintf(['\tfigposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
 			hold on;
 
+
 			%% standard : draw colorbars.
 			draw_colorbars_plot;
 			%% standard : end draw colorbars.
+
 
 			%% standard : show centromere outlines/outline.
 			Centromere_format = Centromere_format_default;
@@ -595,8 +617,12 @@ for chrom_to_draw  = 1:length(chrom_order)
 			end;
 			%% standard : end show centromere/outline.
 
+
 			%% standard : CNV plot section.
 			draw_CNV_plot;
+			%% standard : end CNV plot section.
+
+
 			% standard : draw lines across plots for easier interpretation of CNV regions.
 			x2 = chrom_size(chrom)/bases_per_bin;
 			for lineNum = 1:(ploidyBase*2-1)
@@ -766,9 +792,11 @@ for chrom_to_draw  = 1:length(chrom_order)
 			Linear_left = Linear_left + Linear_width + Linear_chrom_gap;
 			hold on;
 
+
 			%% linear : draw colorbars.
 			draw_colorbars_plot;
-			% linear : end draw colorbars.
+			%% linear : end draw colorbars.
+
 
 			%% linear : show centromere/outline.
 			Centromere_format = Centromere_format_default;
@@ -787,9 +815,11 @@ for chrom_to_draw  = 1:length(chrom_order)
 			end;
 			% linear : end show centromere/outline.
 
+
 			%% linear : CNV plot section.
 			draw_CNV_plot
-			% linear : end CNV plot section.
+			%% linear : end CNV plot section.
+
 
 			%% linear : draw lines across plots for easier interpretation of CNV regions.
 			x2 = chrom_size(chrom)/bases_per_bin;
