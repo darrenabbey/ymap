@@ -341,7 +341,7 @@ with open(parentDatafile, 'r') as data:
 		if old_chr != P_chr:
 			print(f"### chr change : {old_chr} -> {P_chr}");
 			with open(logName, "a") as myfile:
-				myfile.write(f"\n\t\t|\t    {old_chr} -> {P_chr} = {P_chr_name}\n");
+				myfile.write(f"\n\t\t|\n\t\t|\t{old_chr} -> {P_chr} = {P_chr_name}\n");
 				myfile.write("\t\t|\t1........01........01........01........01........01........01........01........01........01........0");
 				log_offset_string = " " * (log_offset % 100);
 				myfile.write(f"\n\t\t|\t{log_offset_string}");
@@ -372,13 +372,13 @@ with open(parentDatafile, 'r') as data:
 
 		# Progress logging.
 		if fragment_found == 1:
-			if count % 100 == 0:
+			if count % 10 == 0:
 				log_count += 1;
 				log_offset += 1;
 				with open(logName, "a") as myfile:
+					myfile.write(".");
 					if log_count % 100 == 0:
 						myfile.write(f"\n\t\t|\t");
-					myfile.write(".");
 			# Reset flag once we reach or pass the current bin's end coordinate (index 2).
 			if P_position >= fragments[current_fragment][2]:
 				fragment_found = 0;
