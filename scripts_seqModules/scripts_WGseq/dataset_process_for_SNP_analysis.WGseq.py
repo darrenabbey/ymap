@@ -6,7 +6,7 @@
 #	5) project	: name of the current project.
 #	6) project user	: user who created the current project.
 #	7) main_dir	: '/home/darren/public_html/Ymap/'
-#	8) log Name	: 
+#	8) log Name	:
 #	9) run mode	: "hapmap" or "LOH" modes.
 #
 # Process input files:
@@ -82,9 +82,6 @@ t0 = time.process_time();
 #------------------------------------------------------------------------------------------------------------
 genomeDirectory = main_dir+"/users/"+genomeUser+"/genomes/"+genome+"/";
 
-with open(logName, "a") as myfile:
-	myfile.write("\t\t|\tProcessing standard bin fragmented genome file.\n");
-
 
 #============================================================================================================
 # Load FastaName from 'reference.txt' for genome in use.
@@ -107,7 +104,7 @@ with open(logName, "a") as myfile:
 #     >Ca_a.chr1 (9638..10115) (478bp) [*]
 # FASTA entries with header lines ending in '[gene]' or '[intergenic]' are usable.
 with open(logName, "a") as myfile:
-	myfile.write("\n\t\tProcessing standard bin fragmented genome file.");
+	myfile.write("\t\t|\tProcessing standard bin fragmented genome file.\n");
 
 # Find name of genome FASTA file for species being examined.
 #     Read in and parse : "links_dir/main_script_dir/genome_specific/[genome]/reference.txt"
@@ -346,9 +343,9 @@ with open(parentDatafile, 'r') as data:
 			with open(logName, "a") as myfile:
 				myfile.write(f"\n\t\t|\t    {old_chr} -> {P_chr} = {P_chr_name}\n");
 				myfile.write("\t\t|\t1........01........01........01........01........01........01........01........01........01........0");
-				if log_offset != 0:
-					log_offset_string = " " * (log_offset % 100);
-					myfile.write(f"\n\t\t|\t\t{log_offset_string}");
+				#if log_offset != 0:
+				log_offset_string = " " * (log_offset % 100);
+				myfile.write(f"\n\t\t|\t{log_offset_string}");
 			old_chr          = P_chr;
 			count            = 1;
 			fragment_found   = 0;
@@ -374,15 +371,14 @@ with open(parentDatafile, 'r') as data:
 					current_fragment = frag;
 					break;
 
-
 		# Progress logging.
 		if fragment_found == 1:
-			if count % 50000 == 0:
+			if count % 100 == 0:
 				log_count += 1;
 				log_offset += 1;
 				with open(logName, "a") as myfile:
 					if log_count % 100 == 0:
-						myfile.write(f" {log_count - 1}\n\t\t|\t");
+						myfile.write(f"\n\t\t|\t");
 					myfile.write(".");
 			# Reset flag once we reach or pass the current bin's end coordinate (index 2).
 			if P_position >= fragments[current_fragment][2]:
