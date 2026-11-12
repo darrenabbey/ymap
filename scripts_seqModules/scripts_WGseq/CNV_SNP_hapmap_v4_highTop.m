@@ -198,26 +198,62 @@ if (Make_figure == true)
 			infill = zeros(1,length(unphased_plot2{chrom}));
 			colors = [];
 
-			%% determine color of each bin.
-			for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
-				c_tot_post = SNPs_to_fullData_ratio{chrom}(chrom_bin_SNP)+SNPs_to_fullData_ratio{chrom}(chrom_bin_SNP);
-				if (c_tot_post == 0)
-					c_post = colorNoData;
-					fprintf('.');
-					if (mod(chrom_bin_SNP,100) == 0);   fprintf('\n');   end;
-				else
-					% Average of SNP position colors defined earlier.
-					colorMix = [chrom_SNPdata_colorsC{chrom,1}(chrom_bin_SNP) chrom_SNPdata_colorsC{chrom,2}(chrom_bin_SNP) chrom_SNPdata_colorsC{chrom,3}(chrom_bin_SNP)];
 
-					% Determine color to draw bin, accounting for limited data and data saturation.
-					c_post =   colorMix   *   min(1,SNPs_to_fullData_ratio{chrom}(chrom_bin_SNP)) + ...
-					           colorNoData*(1-min(1,SNPs_to_fullData_ratio{chrom}(chrom_bin_SNP)));
-				end;
-				colors(chrom_bin_SNP,1) = c_post(1);
-				colors(chrom_bin_SNP,2) = c_post(2);
-				colors(chrom_bin_SNP,3) = c_post(3);
+			%%================================================================================
+			%% determine color of each bin (Vectorized).
+			%---------------------------------------------------------------------------------
+			num_allocated_bins = length(chrom_SNPdata{chrom,1});
+
+			% Extract and cap the data ratios for all bins at 1 (Force 862 x 1 column).
+			ratios = min(1, SNPs_to_fullData_ratio{chrom}(1:num_allocated_bins));
+			ratios = reshape(ratios, [], 1);
+
+			% Extract the RGB mix components as strict column vectors (862 x 3 matrix).
+			c1 = reshape(chrom_SNPdata_colorsC{chrom,1}(1:num_allocated_bins), [], 1);
+			c2 = reshape(chrom_SNPdata_colorsC{chrom,2}(1:num_allocated_bins), [], 1);
+			c3 = reshape(chrom_SNPdata_colorsC{chrom,3}(1:num_allocated_bins), [], 1);
+			colorMix = [c1, c2, c3];
+
+			% Calculate the weighted color blend for all bins at once.
+			colorNoData = reshape(colorNoData, 1, 3); % Force 1 x 3 row vector
+			colors = colorMix .* ratios + colorNoData .* (1 - ratios);
+
+			% Find where there is no data and force them to colorNoData.
+			noDataMask = (ratios == 0);
+			if any(noDataMask)
+				colors(noDataMask, :) = repmat(colorNoData, sum(noDataMask), 1);
 			end;
-			% standard : end determine color of each bin.
+
+			% Print the console progress dots all at once (preserving 100-dot wrapping).
+			num_no_data = sum(noDataMask);
+			if num_no_data > 0
+				dots = repmat('.', 1, num_no_data);
+				fprintf('%s\n', regexprep(dots, '(.{100})', '$1\n'));
+			end;
+			%% end determine color of each bin.
+
+
+%			%% determine color of each bin.
+%			for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
+%				c_tot_post = SNPs_to_fullData_ratio{chrom}(chrom_bin_SNP)+SNPs_to_fullData_ratio{chrom}(chrom_bin_SNP);
+%				if (c_tot_post == 0)
+%					c_post = colorNoData;
+%					fprintf('.');
+%					if (mod(chrom_bin_SNP,100) == 0);   fprintf('\n');   end;
+%				else
+%					% Average of SNP position colors defined earlier.
+%					colorMix = [chrom_SNPdata_colorsC{chrom,1}(chrom_bin_SNP) chrom_SNPdata_colorsC{chrom,2}(chrom_bin_SNP) chrom_SNPdata_colorsC{chrom,3}(chrom_bin_SNP)];
+%
+%					% Determine color to draw bin, accounting for limited data and data saturation.
+%					c_post =   colorMix   *   min(1,SNPs_to_fullData_ratio{chrom}(chrom_bin_SNP)) + ...
+%					           colorNoData*(1-min(1,SNPs_to_fullData_ratio{chrom}(chrom_bin_SNP)));
+%				end;
+%				colors(chrom_bin_SNP,1) = c_post(1);
+%				colors(chrom_bin_SNP,2) = c_post(2);
+%				colors(chrom_bin_SNP,3) = c_post(3);
+%			end;
+%			% standard : end determine color of each bin.
+
 
 			% reverse order of color and CNV bins if chromosome is indicated as reversed in figure_definitions.txt file.
 			if (chrom_figReversed(chrom) == 1)
@@ -239,26 +275,6 @@ if (Make_figure == true)
 
 				%% standard : draw colorbars.
 				draw_colorbars_plot;
-
-			%	for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
-			%		x_ = [chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin];
-			%		y_ = [0 maxY maxY 0];
-			%		c_post(1) = colors(chrom_bin_SNP,1);
-			%		c_post(2) = colors(chrom_bin_SNP,2);
-			%		c_post(3) = colors(chrom_bin_SNP,3);
-			%		% makes a colorBar for each bin, using local smoothing
-			%		if (c_(1) > 1); c_(1) = 1; end;
-			%		if (c_(2) > 1); c_(2) = 1; end;
-			%		if (c_(3) > 1); c_(3) = 1; end;
-			%		if (blendColorBars == false)
-			%			f = fill(x_,y_,c_);
-			%		else
-			%			f = fill(x_,y_,c_/2+c_prev/4+c_post/4);
-			%		end;
-			%		c_prev = c_;
-			%		c_     = c_post;
-			%		set(f,'linestyle','none');
-			%	end;
 				%% standard : end draw colorbars.
 
 				%% standard : show centromere outlines/outline.
@@ -280,35 +296,6 @@ if (Make_figure == true)
 
 				%% standard : CNV plot section.
 				draw_CNV_plot_highTop;
-
-			%	c_ = [0 0 0];
-			%	fprintf(['\nmain-plot : chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
-			%	fprintf(['ploidy     = ' num2str(ploidy)     '\n']);
-			%	fprintf(['ploidyBase = ' num2str(ploidyBase) '\n']);
-			%	for chrom_bin = 1:length(CNVplot2{chrom});   % ceil(chrom_size(chrom)/bases_per_bin)
-			%		x_ = [chrom_bin chrom_bin chrom_bin-1 chrom_bin-1];
-			%		CNVhistValue = CNVplot2{chrom}(chrom_bin);
-			%
-			%		% The CNV-histogram values were normalized to a median value of 1.
-			%		% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
-			%		startY = maxY/2;
-			%		if (Low_quality_ploidy_estimate)
-			%			endY = CNVhistValue*ploidy*ploidyAdjust;
-			%			if isna(CNVhistValue)
-			%				endY = ploidy*ploidyAdjust;
-			%			end;
-			%		else
-			%			endY = maxY,CNVhistValue*ploidy;
-			%			if isna(CNVhistValue)
-			%				endY = ploidy;
-			%			end;
-			%		end;
-			%		y_ = [startY endY endY startY];
-			%
-			%		% makes a blackbar for each bin.
-			%		f = fill(x_,y_,c_);
-			%		set(f,'linestyle','none');
-			%	end;
 				% standard : end CNV plot section.
 
 				% standard : draw ploidy lines across plots for easier interpretation of CNV regions.
@@ -382,9 +369,9 @@ if (Make_figure == true)
 				% standard : end axes labels etc.
 
 				if (displayBREAKS) && (show_annotations)
-					chrom_length = ceil(chrom_size(chrom)/bases_per_bin);
+					num_allocated_bins = length(chrom_SNPdata{chrom,1});
 					for segment = 2:length(chrom_breaks{chrom})-1
-						bP = chrom_breaks{chrom}(segment)*chrom_length;
+						bP = chrom_breaks{chrom}(segment)*num_allocated_bins;
 						plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
 					end;
 				end;
@@ -468,26 +455,6 @@ if (Make_figure == true)
 
 				%% linear : draw colorbars.
 				draw_colorbars_plot;
-
-			%	for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
-			%		x_ = [chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin];
-			%		y_ = [0 maxY maxY 0];
-			%		c_post(1) = colors(chrom_bin_SNP,1);
-			%		c_post(2) = colors(chrom_bin_SNP,2);
-			%		c_post(3) = colors(chrom_bin_SNP,3);
-			%		% makes a colorBar for each bin, using local smoothing
-			%		if (c_(1) > 1); c_(1) = 1; end;
-			%		if (c_(2) > 1); c_(2) = 1; end;
-			%		if (c_(3) > 1); c_(3) = 1; end;
-			%		if (blendColorBars == false)
-			%			f = fill(x_,y_,c_);
-			%		else
-			%			f = fill(x_,y_,c_/2+c_prev/4+c_post/4);
-			%		end;
-			%		c_prev = c_;
-			%		c_     = c_post;
-			%		set(f,'linestyle','none');
-			%	end;
 				% linear : end draw colorbars.
 
 				%% linear : show centromere/outline.
@@ -509,30 +476,6 @@ if (Make_figure == true)
 
 				%% linear : CNV plot section.
 				draw_CNV_plot_highTop;
-
-			%	fprintf(['linear-plot : chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
-			%	for chrom_bin = 1:ceil(chrom_size(chrom)/bases_per_bin)
-			%		x_ = [chrom_bin chrom_bin (chrom_bin-1) (chrom_bin-1)];
-			%		CNVhistValue = CNVplot2{chrom}(chrom_bin);
-			%		% The CNV-histogram values were normalized to a median value of 1.
-			%		% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
-			%		startY = maxY/2;
-			%		if (Low_quality_ploidy_estimate)
-			%			endY = CNVhistValue*ploidy*ploidyAdjust;
-			%			if isna(CNVhistValue)
-			%				endY = ploidy*ploidyAdjust;
-			%			end;
-			%		else
-			%			endY = maxY,CNVhistValue*ploidy;
-			%			if isna(CNVhistValue)
-			%				endY = ploidy;
-			%			end;
-			%		end;
-			%		y_ = [startY endY endY startY];
-			%		% makes a blackbar for each bin.
-			%		f = fill(x_,y_,c_);
-			%		set(f,'linestyle','none');
-			%	end;
 				% linear : end CNV plot section.
 
 				%% linear : draw ploidy lines across plots for easier interpretation of CNV regions.
@@ -552,10 +495,10 @@ if (Make_figure == true)
 				%% linear : end CNV plot ploidy lines section.
 
 				%% linear : show segmental anueploidy breakpoints.
-				if (Linear_displayBREAKS) && (show_annotations)
-					chrom_length = ceil(chrom_size(chrom)/bases_per_bin);
+				if (Linear_displayBREAKS == true) && (show_annotations == true)
+					num_allocated_bins = length(chrom_SNPdata{chrom,1});
 					for segment = 2:length(chrom_breaks{chrom})-1
-						bP = chrom_breaks{chrom}(segment)*chrom_length;
+						bP = chrom_breaks{chrom}(segment)*num_allocated_bins;
 						plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
 					end;
 				end;

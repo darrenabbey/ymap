@@ -629,33 +629,33 @@ if (performEndbiasCorrection)
                 end;
         end;
 
-        % Clean up data by:
-        %    deleting GC ratio data near zero.
-        %    deleting CNV data beyond 6* the median value.  (rDNA, etc.)
+	% Clean up data by:
+	%    deleting GC ratio data near zero.
+	%    deleting CNV data beyond 6* the median value.  (rDNA, etc.)
 
-        % 1. Create a logical mask for the UNEXTENDED core datasets
-        invalid_mask = (GCratioData_all < 0.01) | (CNVdata_all_n1 > 6) | (CNVdata_all_n1 == 0);
-        keep_mask = ~invalid_mask;
+	% Create a logical mask for the UNEXTENDED core datasets.
+	invalid_mask = (GCratioData_all < 0.01) | (CNVdata_all_n1 > 6) | (CNVdata_all_n1 == 0);
+	keep_mask = ~invalid_mask;
 
-        % 2. FIX: Create a separate logical mask for the EXTENDED arrays to prevent length mismatch crashes
-        % Since GC ratio data isn't extended, we check the extended CNV profiles directly
-        invalid_mask_extended = (chrom_CNVdata_extended_all > 6) | (chrom_CNVdata_extended_all == 0);
-        keep_mask_extended = ~invalid_mask_extended;
+	% FIX; Create a separate logical mask for the EXTENDED arrays to prevent length mismatch crashes.
+	% Since GC ratio data isn't extended, we check the extended CNV profiles directly
+	invalid_mask_extended = (chrom_CNVdata_extended_all > 6) | (chrom_CNVdata_extended_all == 0);
+	keep_mask_extended = ~invalid_mask_extended;
 
-        % 3. Extract the clean arrays using their respective matching length masks
-        CNVdata_clean                                        = CNVdata_all_n1(keep_mask);
-        GCratioData_clean                                    = GCratioData_all(keep_mask);
-        chrom_EndDistanceData_clean                          = chrom_EndDistanceData_all(keep_mask);
+	% Extract the clean arrays using their respective matching length masks.
+	CNVdata_clean                                        = CNVdata_all_n1(keep_mask);
+	GCratioData_clean                                    = GCratioData_all(keep_mask);
+	chrom_EndDistanceData_clean                          = chrom_EndDistanceData_all(keep_mask);
 
-        % Clean the extended variables using the extended mask
-        chrom_CNVdata_extended_clean                         = chrom_CNVdata_extended_all(keep_mask_extended);
-        chrom_CNVdata_extended_clean_                        = chrom_CNVdata_extended_all_(keep_mask_extended);
-        chrom_EndDistanceData_extended_clean                 = chrom_EndDistanceData_extended_all(keep_mask_extended);
+	% Clean the extended variables using the extended mask.
+	chrom_CNVdata_extended_clean                         = chrom_CNVdata_extended_all(keep_mask_extended);
+	chrom_CNVdata_extended_clean_                        = chrom_CNVdata_extended_all_(keep_mask_extended);
+	chrom_EndDistanceData_extended_clean                 = chrom_EndDistanceData_extended_all(keep_mask_extended);
 
-        %% Perform LOWESS fitting : end bias.
-        rawData_X1     = chrom_EndDistanceData_extended_clean;
-        rawData_Y1     = chrom_CNVdata_extended_clean;
-        rawData_Y1_    = chrom_CNVdata_extended_clean_;
+	%% Perform LOWESS fitting : end bias.
+	rawData_X1     = chrom_EndDistanceData_extended_clean;
+	rawData_Y1     = chrom_CNVdata_extended_clean;
+	rawData_Y1_    = chrom_CNVdata_extended_clean_;
 
 	% Perform correction only if the data has more than two values since otherwise interp1() will crash.
         if (size(rawData_X1,2) > 2 && size(rawData_Y1,2) > 2)
@@ -1227,6 +1227,7 @@ for chrom_to_draw  = 1:length(chrom_order)
 			%% standard : end show centromere.
 
 			%% CNV plot section.
+			fprintf(['standard-plot : chrom' num2str(chrom) ':' num2str(sum(chroms == chrom)) '\n']);
 			draw_CNV_plot;
 
 			%% draw lines across plots for easier interpretation of CNV regions.
@@ -1471,11 +1472,11 @@ for chrom_to_draw  = 1:length(chrom_order)
 			%% linear : end show centromere/outline.
 
 			%% CNV plot section.
+			fprintf(['linear-plot : chrom' num2str(chrom) ':' num2str(sum(chroms == chrom)) '\n']);
 			draw_CNV_plot;
 
-			x2 = chrom_size(chrom)/bases_per_bin;
-
 			% draw lines across plots for easier interpretation of CNV regions.
+			x2 = chrom_size(chrom)/bases_per_bin;
 			for lineNum = 1:(ploidyBase*2-1)
 				line([0 x2], [maxY/(ploidyBase*2)*lineNum  maxY/(ploidyBase*2)*lineNum ],'Color',[0.85 0.85 0.85]);
 			end;

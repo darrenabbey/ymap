@@ -116,7 +116,10 @@ if ((useHapmap) || (useParent))
 		%-------------------------------------------------------------------------------------------
 		for chrom = 1:length(chrom_in_use)
 			if (chrom_in_use(chrom) == 1)
-				for chrom_bin = 1:ceil(chrom_size(chrom)/bases_per_bin);
+				% DYNAMIC FIX; Lock the loop limit exactly to the number of bins
+				% initialized in your data cell arrays to prevent out-of-bounds crashes.
+				num_bins_allocated = length(chrom_SNPdata{chrom,1});
+				for chrom_bin = 1:num_bins_allocated
 					%
 					% Determining colors for each SNP coordinate from calculated cutoffs.
 					%
@@ -134,15 +137,6 @@ if ((useHapmap) || (useParent))
 						unphased_alleles = chrom_SNPdata{chrom,6}{chrom_bin_SNP};
 					end;
 					allele_strings                                          = [phased_alleles unphased_alleles];
-
-%					if (length(chrom_SNPdata{chrom,1}{chrom_bin}) == 1) && (length(chrom_SNPdata{chrom,2}{chrom_bin}) == 1)
-%						allele_strings					= {chrom_SNPdata{chrom,5}{chrom_bin} chrom_SNPdata{chrom,6}{chrom_bin}};
-%					else
-%						allele_strings					= [chrom_SNPdata{chrom,5}{chrom_bin} chrom_SNPdata{chrom,6}{chrom_bin}];
-%						%% dragon : troubleshooting warning of implicit numerical conversion.
-%						%fprintf('^^^ Troubleshooting warning of implicit numerical to char conversion.\n');
-%						%printf(['^^^ ' allele_strings '\n']);
-%					end;
 
 					if (length(allelic_ratios) > 0)
 						for SNP = 1:length(allelic_ratios)
@@ -309,7 +303,10 @@ if ((useHapmap) || (useParent))
 				% Average colors of SNPs found in bin.
 				%
 				fprintf('\t|\tDetermine average color for SNPs in chromosome bin.\n');
-				for chrom_bin = 1:ceil(chrom_size(chrom)/bases_per_bin)
+				% DYNAMIC FIX; Lock the loop limit exactly to the number of bins
+				% initialized in your data cell arrays to prevent out-of-bounds crashes.
+				num_bins_allocated = length(chrom_SNPdata{chrom,1});
+                                for chrom_bin = 1:num_bins_allocated
 					allelic_ratios                                      = [chrom_SNPdata{chrom,1}{chrom_bin} chrom_SNPdata{chrom,2}{chrom_bin}];
 					if (length(allelic_ratios) > 0)
 						if (chrom_SNPdata_countC{chrom}(chrom_bin) > 0)
@@ -349,7 +346,10 @@ if ((useHapmap) || (useParent))
 		for chrom = 1:length(chrom_in_use)
 			if (chrom_in_use(chrom) == 1)
 				if (data_mode == 1)
-					for chrom_bin = 1:ceil(chrom_size(chrom)/bases_per_bin)
+					% DYNAMIC FIX; Lock the loop limit exactly to the number of bins
+					% initialized in your data cell arrays to prevent out-of-bounds crashes.
+					num_bins_allocated = length(chrom_SNPdata{chrom,1});
+					for chrom_bin = 1:num_bins_allocated
 						% Regenerate chrom plot data if the save file does not exist.
 
 						% the number of heterozygous data points in this bin.
@@ -420,26 +420,67 @@ if ((useHapmap) || (useParent))
 				infill = zeros(1,length(unphased_plot2{chrom}));
 				colors = [];
 
-				%% determine color of each bin.
-				for chrom_bin = 1:ceil(chrom_size(chrom)/bases_per_bin)
-					c_tot_post = SNPs_to_fullData_ratio{chrom}(chrom_bin)+SNPs_to_fullData_ratio{chrom}(chrom_bin);
-					if (c_tot_post == 0)
-						c_post = colorNoData;
-						fprintf('.');
-						if (mod(chrom_bin,100) == 0);   fprintf('\n');   end;
-					else
-						% Average of SNP position colors defined earlier.
-						colorMix = [chrom_SNPdata_colorsC{chrom,1}(chrom_bin) chrom_SNPdata_colorsC{chrom,2}(chrom_bin) chrom_SNPdata_colorsC{chrom,3}(chrom_bin)];
 
-						% Determine color to draw bin, accounting for limited data and data saturation.
-						c_post =   colorMix   *   min(1,SNPs_to_fullData_ratio{chrom}(chrom_bin)) + ...
-						           colorNoData*(1-min(1,SNPs_to_fullData_ratio{chrom}(chrom_bin)));
-					end;
-					colors(chrom_bin,1) = c_post(1);
-					colors(chrom_bin,2) = c_post(2);
-					colors(chrom_bin,3) = c_post(3);
+				%%================================================================
+				%% determine color of each bin (Vectorized).
+				%-----------------------------------------------------------------
+				num_allocated_bins = length(chrom_SNPdata{chrom,1});
+
+				% Extract and cap the data ratios for all bins at 1 (Force 862 x 1 column).
+				ratios = min(1, SNPs_to_fullData_ratio{chrom}(1:num_allocated_bins));
+				ratios = reshape(ratios, [], 1);
+
+				% Extract the RGB mix components as strict column vectors (862 x 3 matrix).
+				c1 = reshape(chrom_SNPdata_colorsC{chrom,1}(1:num_allocated_bins), [], 1);
+				c2 = reshape(chrom_SNPdata_colorsC{chrom,2}(1:num_allocated_bins), [], 1);
+				c3 = reshape(chrom_SNPdata_colorsC{chrom,3}(1:num_allocated_bins), [], 1);
+				colorMix = [c1, c2, c3];
+
+				% Calculate the weighted color blend for all bins at once.
+				colorNoData = reshape(colorNoData, 1, 3); % Force 1 x 3 row vector
+				colors = colorMix .* ratios + colorNoData .* (1 - ratios);
+
+				% Find where there is no data and force them to colorNoData.
+				noDataMask = (ratios == 0);
+				if any(noDataMask)
+					colors(noDataMask, :) = repmat(colorNoData, sum(noDataMask), 1);
 				end;
-				% End determine color of each bin.
+
+				% Print the console progress dots all at once (preserving 100-dot wrapping).
+				num_no_data = sum(noDataMask);
+				if num_no_data > 0
+					dots = repmat('.', 1, num_no_data);
+					fprintf('%s\n', regexprep(dots, '(.{100})', '$1\n'));
+				end;
+				%% end determine color of each bin.
+
+
+%				%%================================================================
+%				%% determine color of each bin.
+%				%-----------------------------------------------------------------
+%				% DYNAMIC FIX; Lock the loop limit exactly to the number of bins
+%				% initialized in your data cell arrays to prevent out-of-bounds crashes.
+%				num_bins_allocated = length(chrom_SNPdata{chrom,1});
+%				for chrom_bin = 1:num_bins_allocated
+%					c_tot_post = SNPs_to_fullData_ratio{chrom}(chrom_bin)+SNPs_to_fullData_ratio{chrom}(chrom_bin);
+%					if (c_tot_post == 0)
+%						c_post = colorNoData;
+%						fprintf('.');
+%						if (mod(chrom_bin,100) == 0);   fprintf('\n');   end;
+%					else
+%						% Average of SNP position colors defined earlier.
+%						colorMix = [chrom_SNPdata_colorsC{chrom,1}(chrom_bin) chrom_SNPdata_colorsC{chrom,2}(chrom_bin) chrom_SNPdata_colorsC{chrom,3}(chrom_bin)];
+%
+%						% Determine color to draw bin, accounting for limited data and data saturation.
+%						c_post =   colorMix   *   min(1,SNPs_to_fullData_ratio{chrom}(chrom_bin)) + ...
+%						           colorNoData*(1-min(1,SNPs_to_fullData_ratio{chrom}(chrom_bin)));
+%					end;
+%					colors(chrom_bin,1) = c_post(1);
+%					colors(chrom_bin,2) = c_post(2);
+%					colors(chrom_bin,3) = c_post(3);
+%				end;
+%				% End determine color of each bin.
+
 
 				% reverse order of color and CNV bins if chromosome is indicated as reversed in figure_definitions.txt file.
 				if (chrom_figReversed(chrom) == 1)

@@ -205,6 +205,12 @@ if (ploidyBase > 4);   ploidyBase = 4;   end;
 if (ploidyBase < 1);   ploidyBase = 1;   end;
 fprintf(['\nEuploid base = "' num2str(ploidyBase) '"\n']);
 
+% basic plot parameters not defined per genome.
+TickSize                = -0.005;  %negative for outside, percentage of longest chrom figure.
+maxY                    = ploidyBase*2;
+cen_tel_Xindent         = 5;
+cen_tel_Yindent         = maxY/4;
+
 
 %% =========================================================================================
 % Define colors for figure generation.
@@ -213,53 +219,121 @@ fprintf('\t|\tDefine colors used in figure generation.\n');
 source('../phased_and_unphased_color_definitions.m');
 
 
-% basic plot parameters not defined per genome.
-TickSize		= -0.005;  %negative for outside, percentage of longest chrom figure.
-maxY			= ploidyBase*2;
-cen_tel_Xindent		= 5;
-cen_tel_Yindent		= maxY/4;
+%%==========================================================================================
+% Determine bases_per_bin sizes to be used as a fallback.
+%-------------------------------------------------------------------------------------------
+max_chr_sz = max(chrom_size); % Cache the max size math calculation to save CPU cycles.
 
-%% Load CNV and SNP figure resolutions.
-if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
-	bases_per_bin           = max(chrom_size)/700;
+%% Load CNV figure resolution.
+res_cnv_file = fullfile(genomeDir, 'resolution.CNV.txt');
+if exist(res_cnv_file, 'file')
+	% OPTIMIZATION: sscanf is faster than str2num and immune to trailing newlines/spaces
+	res_val = sscanf(fileread(res_cnv_file), '%f');
+	bases_per_bin = max_chr_sz / res_val(1);
 else
-	bases_per_bin           = max(chrom_size)/str2num(fileread([genomeDir 'resolution.CNV.txt']));
+	bases_per_bin = max_chr_sz / 700;
 end;
-if (exist([genomeDir 'resolution.SNPs.txt'],'file') == 0)
-	bases_per_bin_SNP       = max(chrom_size)/700;
+
+%% Load SNP figure resolution.
+res_snp_file = fullfile(genomeDir, 'resolution.SNPs.txt');
+if exist(res_snp_file, 'file')
+	res_val_snp = sscanf(fileread(res_snp_file), '%f');
+	bases_per_bin_SNP = max_chr_sz / res_val_snp(1);
 else
-	bases_per_bin_SNP       = max(chrom_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt']));
+	bases_per_bin_SNP = max_chr_sz / 700;
+end;
+
+
+%%==========================================================================================
+% Load CNV data from 'preprocessed_CNVs.txt' file.
+%-------------------------------------------------------------------------------------------
+cnv_data_file = fullfile(projectDir, 'preprocessed_CNVs.txt');
+if exist(cnv_data_file, 'file')
+	% Open file and parse text, automatically ignoring lines starting with '#'
+	fid = fopen(cnv_data_file, 'r');
+	raw_data = textscan(fid, '%d %d %d %f', 'CommentStyle', '#');
+	fclose(fid);
+
+	% The first column contains the chromosome numbers (chrNum)
+	chroms          = raw_data{1};
+	fragment_starts = raw_data{2};
+	fragment_ends   = raw_data{3};
+	readAverages    = raw_data{4};
+	lines_analyzed  = length(chroms);
+
+	preprocessed_CNVs = true;
+else
+	preprocessed_CNVs = false;
+end;
+
+
+%%==========================================================================================
+% Load SNP data from 'preprocessed_SNPs.txt' file.
+%-------------------------------------------------------------------------------------------
+snp_data_file = fullfile(projectDir, 'preprocessed_SNPs.txt');
+if exist(snp_data_file, 'file')
+	% Example data file line.
+	% # chr_num     bp_start        bp_end  phasedData      unphasedData    phasedCoordinate        unphasedCoordinate      phasedAllele    unphasedAllele
+	%   1           1               1941    ()              ()              ()                      ()                      ()              ()
+	%   1           1942            3267    ()              ()              ()                      ()                      ()              ()
+
+	% Open file and parse text, automatically ignoring lines starting with '#'
+	fid = fopen(snp_data_file, 'r');
+	raw_data = textscan(fid, '%f %f %f %s %s %s %s %s %s', 'CommentStyle', '#');
+	fclose(fid);
+
+	% The first column contains the chromosome numbers (chrNum)
+	chroms                      = raw_data{1};
+	fragment_starts             = raw_data{2};
+	fragment_ends               = raw_data{3};
+	phased_ratio_data_string    = raw_data{4};
+	unphased_ratio_data_string  = raw_data{5};
+	phased_coordinates_string   = raw_data{6};
+	unphased_coordinates_string = raw_data{7};
+	phased_alleles_string       = raw_data{8};
+	unphased_alleles_string     = raw_data{9};
+	lines_analyzed              = length(chroms);
+
+	preprocessed_SNPs = true;
+else
+	preprocessed_SNPs = false;
 end;
 
 
 %%================================================================================================
 % Setup for SNP/LOH data calculations.
 %-------------------------------------------------------------------------------------------------
-fprintf('\t|\tInitialize color tracking vectors.\n');
-% Initializes vectors used to hold allelic ratios for each chromosome segment.
+fprintf('\t|\tInitialize data vectors for tracking SNP data presentation.\n');
+
+% Pre-allocate the top-level cell arrays to hold data for all chromosomes
+chrom_SNPdata         = cell(length(chrom_sizes), 6);
+chrom_SNPdata_colorsC = cell(length(chrom_sizes), 3);
+chrom_SNPdata_countC  = cell(length(chrom_sizes), 1);
+
 for chrom = 1:length(chrom_sizes)
-	% Build data structure for SNP information:  chrom_SNPdata{chrom,j}{chrom_bin_SNP} = [];
-	%       1 : phased SNP ratio data.
-	%       2 : unphased SNP ratio data.
-	%       3 : phased SNP position data.
-	%       4 : unphased SNP position data.
-	%       5 : phased SNP allele strings.   (baseCall:alleleA/alleleB)
-	%       6 : unphased SNP allele strings.
-	chrom_length = ceil(chrom_size(chrom)/bases_per_bin);
+	if chrom_in_use(chrom) == 1
+		% Safe check; use file defined bin data if it exists, otherwise use math fallback.
+		if preprocessed_SNPs
+			num_bins = sum(chroms == chrom);
+		else
+			num_bins = ceil(chrom_size(chrom)/bases_per_bin_SNP);
+		end;
 
-	% Vectors to track RGB values for displaying SNPs.
-	for j = 1:3
-		chrom_SNPdata_colorsC{chrom,j}           = zeros(chrom_length,1);
-		chrom_SNPdata_colorsP{chrom,j}           = zeros(chrom_length,1);
+		fprintf('\t|\t    num_bins for chromosome %d data file = %d\n', chrom, num_bins);
+
+		% Assign cell arrays to columns 1 to 6 instantly using standard cell assignment.
+		chrom_SNPdata(chrom, 1:6) = {cell(1, num_bins)};
+
+		% Assign a num_bins x 1 column vector of zeros to columns 1 to 3 instantly.
+		chrom_SNPdata_colorsC(chrom, 1:3) = {zeros(num_bins, 1)};
+
+		% Track the number of SNP colors per standard bin.
+		chrom_SNPdata_countC{chrom} = zeros(num_bins, 1);
 	end;
-
-	% Track the number of SNP colors per standard bin.
-	chrom_SNPdata_countC{chrom} = zeros(chrom_length,1);
-	chrom_SNPdata_countP{chrom} = zeros(chrom_length,1);
 end;
 
 
-%% =========================================================================================
+%%==========================================================================================
 % Load corrected CNV data.
 %-------------------------------------------------------------------------------------------
 fprintf('\t|\tLoad CNV data.\n');
@@ -443,26 +517,40 @@ for chrom_to_draw  = 1:length(chrom_order)
 		infill = zeros(1,length(unphased_plot2{chrom}));
 		colors = [];
 
-		%% determine color of each bin.
-		for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
-			c_tot_post = SNPs_to_fullData_ratio{chrom}(chrom_bin_SNP)+SNPs_to_fullData_ratio{chrom}(chrom_bin_SNP);
-			if (c_tot_post == 0)
-				c_post = colorNoData;
-				fprintf('.');
-				if (mod(chrom_bin_SNP,100) == 0);   fprintf('\n');   end;
-			else
-				% Average of SNP position colors defined earlier.
-				colorMix = [chrom_SNPdata_colorsC{chrom,1}(chrom_bin_SNP) chrom_SNPdata_colorsC{chrom,2}(chrom_bin_SNP) chrom_SNPdata_colorsC{chrom,3}(chrom_bin_SNP)];
 
-				% Determine color to draw bin, accounting for limited data and data saturation.
-				c_post =   colorMix   *   min(1,SNPs_to_fullData_ratio{chrom}(chrom_bin_SNP)) + ...
-				           colorNoData*(1-min(1,SNPs_to_fullData_ratio{chrom}(chrom_bin_SNP)));
-			end;
-			colors(chrom_bin_SNP,1) = c_post(1);
-			colors(chrom_bin_SNP,2) = c_post(2);
-			colors(chrom_bin_SNP,3) = c_post(3);
+		%%================================================================================
+		%% determine color of each bin (Vectorized).
+		%---------------------------------------------------------------------------------
+		num_allocated_bins = length(chrom_SNPdata{chrom,1});
+
+		% Extract and cap the data ratios for all bins at 1 (Force 862 x 1 column).
+		ratios = min(1, SNPs_to_fullData_ratio{chrom}(1:num_allocated_bins));
+		ratios = reshape(ratios, [], 1);
+
+		% Extract the RGB mix components as strict column vectors (862 x 3 matrix).
+		c1 = reshape(chrom_SNPdata_colorsC{chrom,1}(1:num_allocated_bins), [], 1);
+		c2 = reshape(chrom_SNPdata_colorsC{chrom,2}(1:num_allocated_bins), [], 1);
+		c3 = reshape(chrom_SNPdata_colorsC{chrom,3}(1:num_allocated_bins), [], 1);
+		colorMix = [c1, c2, c3];
+
+		% Calculate the weighted color blend for all bins at once.
+		colorNoData = reshape(colorNoData, 1, 3); % Force 1 x 3 row vector
+		colors = colorMix .* ratios + colorNoData .* (1 - ratios);
+
+		% Find where there is no data and force them to colorNoData.
+		noDataMask = (ratios == 0);
+		if any(noDataMask)
+			colors(noDataMask, :) = repmat(colorNoData, sum(noDataMask), 1);
 		end;
-		% standard : end determine color of each bin.
+
+		% Print the console progress dots all at once (preserving 100-dot wrapping).
+		num_no_data = sum(noDataMask);
+		if num_no_data > 0
+			dots = repmat('.', 1, num_no_data);
+			fprintf('%s\n', regexprep(dots, '(.{100})', '$1\n'));
+		end;
+		%% end determine color of each bin.
+
 
 		% reverse order of color and CNV bins if chromosome is indicated as reversed in figure_definitions.txt file.
 		if (chrom_figReversed(chrom) == 1)
@@ -470,6 +558,10 @@ for chrom_to_draw  = 1:length(chrom_order)
 			CNVplot2{chrom} = fliplr(CNVplot2{chrom});
 		end;
 
+
+%%%%%%%%%%%%%%%%==================================================================================
+%%%%%%%%%%%%%%%% Standard figure draw section
+%%%%%%%%%%%%%%%%----------------------------------------------------------------------------------
 		if (Standard_display)
 			figure(fig);
 
@@ -484,26 +576,6 @@ for chrom_to_draw  = 1:length(chrom_order)
 
 			%% standard : draw colorbars.
 			draw_colorbars_plot;
-
-		%	for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
-		%		x_ = [chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin];
-		%		y_ = [0 maxY maxY 0];
-		%		c_post(1) = colors(chrom_bin_SNP,1);
-		%		c_post(2) = colors(chrom_bin_SNP,2);
-		%		c_post(3) = colors(chrom_bin_SNP,3);
-		%		% makes a colorBar for each bin, using local smoothing
-		%		if (c_(1) > 1); c_(1) = 1; end;
-		%		if (c_(2) > 1); c_(2) = 1; end;
-		%		if (c_(3) > 1); c_(3) = 1; end;
-		%		if (blendColorBars == false)
-		%			f = fill(x_,y_,c_);
-		%		else
-		%			f = fill(x_,y_,c_/2+c_prev/4+c_post/4);
-		%		end;
-		%		c_prev = c_;
-		%		c_     = c_post;
-		%		set(f,'linestyle','none');
-		%	end;
 			%% standard : end draw colorbars.
 
 			%% standard : show centromere outlines/outline.
@@ -525,35 +597,6 @@ for chrom_to_draw  = 1:length(chrom_order)
 
 			%% standard : CNV plot section.
 			draw_CNV_plot;
-
-		%	c_ = [0 0 0];
-		%	fprintf(['\nmain-plot : chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
-		%	fprintf(['ploidy     = ' num2str(ploidy)     '\n']);
-		%	fprintf(['ploidyBase = ' num2str(ploidyBase) '\n']);
-		%	for chrom_bin = 1:length(CNVplot2{chrom});   % ceil(chrom_size(chrom)/bases_per_bin)
-		%		x_ = [chrom_bin chrom_bin chrom_bin-1 chrom_bin-1];
-		%		CNVhistValue = CNVplot2{chrom}(chrom_bin);
-		%
-		%		% The CNV-histogram values were normalized to a median value of 1.
-		%		% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
-		%		startY = maxY/2;
-		%		if (Low_quality_ploidy_estimate)
-		%			endY = min(maxY,CNVhistValue*ploidy*ploidyAdjust);
-		%			if isna(CNVhistValue)
-		%				endY = ploidy*ploidyAdjust;
-		%			end;
-		%		else
-		%			endY = min(maxY,CNVhistValue*ploidy);
-		%			if isna(CNVhistValue)
-		%				endY = ploidy;
-		%			end;
-		%		end;
-		%		y_ = [startY endY endY startY];
-		%		% makes a blackbar for each bin.
-		%		f = fill(x_,y_,c_);
-		%		set(f,'linestyle','none');
-		%	end;
-
 			% standard : draw lines across plots for easier interpretation of CNV regions.
 			x2 = chrom_size(chrom)/bases_per_bin;
 			for lineNum = 1:(ploidyBase*2-1)
@@ -635,9 +678,9 @@ for chrom_to_draw  = 1:length(chrom_order)
 			% standard : end axes labels etc.
 
 			if (displayBREAKS) && (show_annotations)
-				chrom_length = ceil(chrom_size(chrom)/bases_per_bin);
+				num_allocated_bins = length(chrom_SNPdata{chrom,1});
 				for segment = 2:length(chrom_breaks{chrom})-1
-					bP = chrom_breaks{chrom}(segment)*chrom_length;
+					bP = chrom_breaks{chrom}(segment)*num_allocated_bins;
 					plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
 				end;
 			end;
@@ -667,9 +710,10 @@ for chrom_to_draw  = 1:length(chrom_order)
 			end;
 			% standard : end show annotation locations.
 
-			%% =========================================================================================
+
+			%% =======================================================================
 			% Draw histplots to right of main chromosome cartoons.
-			%-------------------------------------------------------------------------------------------
+			%-------------------------------------------------------------------------
 			hist_plot_subfigures;
 
 			% standard : places chrom copy number to the right of the main chrom cartoons.
@@ -701,15 +745,17 @@ for chrom_to_draw  = 1:length(chrom_order)
 			% standard : end of chrom copy number at right of the main chrom cartons.
 
 
-			%% =========================================================================================
+			%% =======================================================================
 			% Draw angleplots to left of main chromosome cartoons.
-			%-------------------------------------------------------------------------------------------
+			%-------------------------------------------------------------------------
 			apply_phasing = true;
 			angle_plot_subfigures;
 		end;
 
-%%%%%%%%%%%%%%%% Linear figure draw section
 
+%%%%%%%%%%%%%%%%==================================================================================
+%%%%%%%%%%%%%%%% Linear figure draw section
+%%%%%%%%%%%%%%%%----------------------------------------------------------------------------------
 		%% Linear figure draw section
 		if (Linear_display)
 			figure(Linear_fig);
@@ -722,26 +768,6 @@ for chrom_to_draw  = 1:length(chrom_order)
 
 			%% linear : draw colorbars.
 			draw_colorbars_plot;
-
-		%	for chrom_bin_SNP = 1:ceil(chrom_size(chrom)/bases_per_bin_SNP)
-		%		x_ = [chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin chrom_bin_SNP*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin (chrom_bin_SNP-1)*bases_per_bin_SNP/bases_per_bin];
-		%		y_ = [0 maxY maxY 0];
-		%		c_post(1) = colors(chrom_bin_SNP,1);
-		%		c_post(2) = colors(chrom_bin_SNP,2);
-		%		c_post(3) = colors(chrom_bin_SNP,3);
-		%		% makes a colorBar for each bin, using local smoothing
-		%		if (c_(1) > 1); c_(1) = 1; end;
-		%		if (c_(2) > 1); c_(2) = 1; end;
-		%		if (c_(3) > 1); c_(3) = 1; end;
-		%		if (blendColorBars == false)
-		%			f = fill(x_,y_,c_);
-		%		else
-		%			f = fill(x_,y_,c_/2+c_prev/4+c_post/4);
-		%		end;
-		%		c_prev = c_;
-		%		c_     = c_post;
-		%		set(f,'linestyle','none');
-		%	end;
 			% linear : end draw colorbars.
 
 			%% linear : show centromere/outline.
@@ -763,31 +789,6 @@ for chrom_to_draw  = 1:length(chrom_order)
 
 			%% linear : CNV plot section.
 			draw_CNV_plot
-
-		%	c_ = [0 0 0];
-		%	fprintf(['linear-plot : chrom' num2str(chrom) ':' num2str(length(CNVplot2{chrom})) '\n']);
-		%	for chrom_bin = 1:ceil(chrom_size(chrom)/bases_per_bin)
-		%		x_ = [chrom_bin chrom_bin (chrom_bin-1) (chrom_bin-1)];
-		%		CNVhistValue = CNVplot2{chrom}(chrom_bin);
-		%		% The CNV-histogram values were normalized to a median value of 1.
-		%		% The ratio of 'ploidy' to 'ploidyBase' determines where the data is displayed relative to the median line.
-		%		startY = maxY/2;
-		%		if (Low_quality_ploidy_estimate)
-		%			endY = min(maxY,CNVhistValue*ploidy*ploidyAdjust);
-		%			if isna(CNVhistValue)
-		%				endY = ploidy*ploidyAdjust;
-		%			end;
-		%		else
-		%			endY = min(maxY,CNVhistValue*ploidy);
-		%			if isna(CNVhistValue)
-		%				endY = ploidy;
-		%			end;
-		%		end;
-		%		y_ = [startY endY endY startY];
-		%		% makes a blackbar for each bin.
-		%		f = fill(x_,y_,c_);
-		%		set(f,'linestyle','none');
-		%	end;
 			% linear : end CNV plot section.
 
 			%% linear : draw lines across plots for easier interpretation of CNV regions.
@@ -799,10 +800,10 @@ for chrom_to_draw  = 1:length(chrom_order)
 			% linear : end CNV plot section.
 
 			%% linear : show segmental anueploidy breakpoints.
-			if (Linear_displayBREAKS) && (show_annotations)
-				chrom_length = ceil(chrom_size(chrom)/bases_per_bin);
+			if (Linear_displayBREAKS == true) && (show_annotations == true)
+				num_allocated_bins = length(chrom_SNPdata{chrom,1});
 				for segment = 2:length(chrom_breaks{chrom})-1
-					bP = chrom_breaks{chrom}(segment)*chrom_length;
+					bP = chrom_breaks{chrom}(segment)*num_allocated_bins;
 					plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
 				end;
 			end;
@@ -921,22 +922,19 @@ for chrom_to_draw  = 1:length(chrom_order)
 end;
 
 
-%% ========================================================================
-% end stuff
-%==========================================================================
-
+%%================================================================================================
+% Save figures.
+%-------------------------------------------------------------------------------------------------
 if (Standard_display)
 	fprintf('\n###\n### Saving main figure.\n###\n');
 	set(   fig,        'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
 	saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.' figVer 'eps'], 'epsc');
 	saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.' figVer 'png'], 'png' );
 	delete(fig);
-
 	%% change permissions of figures.
 	system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.1.' figVer 'eps']);
 	system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.1.' figVer 'png']);
 end;
-
 if (Linear_display)
 	fprintf('\n###\n### Saving linear figure.\n###\n');
 	set(   Linear_fig, 'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
@@ -948,5 +946,6 @@ if (Linear_display)
 	system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.2.' figVer 'eps']);
 	system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.2.' figVer 'png']);
 end;
+
 
 end
