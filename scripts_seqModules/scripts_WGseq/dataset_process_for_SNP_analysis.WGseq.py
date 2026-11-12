@@ -343,7 +343,6 @@ with open(parentDatafile, 'r') as data:
 			with open(logName, "a") as myfile:
 				myfile.write(f"\n\t\t|\t    {old_chr} -> {P_chr} = {P_chr_name}\n");
 				myfile.write("\t\t|\t1........01........01........01........01........01........01........01........01........01........0");
-				#if log_offset != 0:
 				log_offset_string = " " * (log_offset % 100);
 				myfile.write(f"\n\t\t|\t{log_offset_string}");
 			old_chr          = P_chr;
