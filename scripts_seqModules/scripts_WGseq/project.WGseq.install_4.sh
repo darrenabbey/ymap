@@ -237,6 +237,7 @@ if [[ -e "$projectDirectory/preprocessed_SNPs.txt" ]]
 then
 	echo -e "\tSNP data already preprocessed with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 else
+
 	install /dev/null "$projectDirectory/preprocessed_SNPs.txt";
 	echo -e "\tPreprocessing SNP data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 	if [[ -e "$projectParentDirectory/putative_SNPs_v4.txt" ]]; then
@@ -250,10 +251,15 @@ else
 	# preprocess parent (or self if no parent) for comparison.
 	install /dev/null "$projectDirectory/SNPdata_parent.temp.txt";
 	$python_exec "$main_dir/scripts_seqModules/scripts_hapmaps/hapmap.preprocess_parent.py" "$genome" "$genomeUser" "$project" "$user" "$projectParent" "$projectParentUser" "$main_dir" LOH > "$projectDirectory/SNPdata_parent.temp.txt" 2>> $logName;
-
-	rm "$projectDirectory/SNPdata_parent.txt";
 	mv "$projectDirectory/SNPdata_parent.temp.txt" "$projectDirectory/SNPdata_parent.txt";
 
+	#=========================================================================================
+	# preprocess SNP data.
+	#-----------------------------------------------------------------------------------------
+	# Loads "SNPdata_parent.txt" from parent directory; "hapmap" file.
+	# Loads "SNP_CNV_v1.txt" from project directory; raw putative SNP data from pileup.
+	# Outputs "preprocessed_SNPs.txt" in project directory.
+	#-----------------------------------------------------------------------------------------
 	$python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" "$genome" "$genomeUser" "$projectParent" "$projectParentUser" "$project" "$user" "$main_dir" "$logName" LOH > "$projectDirectory/preprocessed_SNPs.txt" 2>> $logName;
 	echo -e "\tpre-processing complete." >> $logName;
 fi

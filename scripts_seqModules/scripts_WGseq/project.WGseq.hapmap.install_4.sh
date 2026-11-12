@@ -238,14 +238,26 @@ else
 	echo -e "\tGrabbing hapmap data from: $hapmapDirectory/" >> $logName;
 	cp "$hapmapDirectory/SNPdata_parent.txt" "$projectDirectory/SNPdata_parent.txt";
 
-	# prefilter SNP data vs hapmap. (output not yet used.)
-	echo -e "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
-	$python_exec "$main_dir/scripts_seqModules/putative_SNPs_from_hapmap_in_child.py" "$genome" "$genomeUser" "$project" "$user" "$hapmap" "$hapmapUser" "$main_dir" > "$projectDirectory/SNPdata_child.temp.txt" 2>> $logName;
-	sort -k1,1 -k2,2n "$projectDirectory/SNPdata_child.temp.txt" > "$projectDirectory/SNPdata_child.txt";
-	rm "$projectDirectory/SNPdata_child.temp.txt";
-	chmod 774 "$projectDirectory/SNPdata_child.txt"; # formerly 'trimmed_SNPs_v5.txt'
+	#=========================================================================================
+	# prefilter SNP data vs hapmap. (output not yet used).
+	#-----------------------------------------------------------------------------------------
+	# Loads "SNPdata_parent.txt" from hapmap directory; hapmap file.
+	# Loads "SNP_CNV_v1.txt" from project directory; raw putative SNP data from pileup.
+	# Outputs "SNPdata_child.txt" in project directory; putative SNP data trimmed to hapmap loci.
+	#-----------------------------------------------------------------------------------------
+	#	echo -e "\tPython : Simplify child putative_SNP list to contain only those loci found in the haplotype map." >> $logName;
+	#	$python_exec "$main_dir/scripts_seqModules/putative_SNPs_from_hapmap_in_child.py" "$genome" "$genomeUser" "$project" "$user" "$hapmap" "$hapmapUser" "$main_dir" > "$projectDirectory/SNPdata_child.temp.txt" 2>> $logName;
+	#	sort -k1,1 -k2,2n "$projectDirectory/SNPdata_child.temp.txt" > "$projectDirectory/SNPdata_child.txt";
+	#	rm "$projectDirectory/SNPdata_child.temp.txt";
+	#	chmod 774 "$projectDirectory/SNPdata_child.txt";
 
+	#=========================================================================================
 	# preprocess SNP data.
+	#-----------------------------------------------------------------------------------------
+	# Loads "SNPdata_parent.txt" from hapmap directory; hapmap file.
+	# Loads "SNP_CNV_v1.txt" from project directory; raw putative SNP data from pileup.
+	# Outputs "preprocessed_SNPs.txt" in project directory.
+	#-----------------------------------------------------------------------------------------
 	echo -e "\t\tPreprocessing SNP data with python script : 'scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py'" >> $logName;
 	$python_exec "$main_dir/scripts_seqModules/scripts_WGseq/dataset_process_for_SNP_analysis.WGseq.py" "$genome" "$genomeUser" "$hapmap" "$hapmapUser" "$project" "$user" "$main_dir" "$logName" hapmap > "$projectDirectory/preprocessed_SNPs.txt" 2>> $logName;
 	echo -e "\t\tpre-processing complete." >> $logName;
