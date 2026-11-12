@@ -207,11 +207,11 @@ if exist(cnv_data_file, 'file')
         fclose(fid);
 
         % The first column contains the chromosome numbers (chrNum)
-        chroms          = raw_data{1};
-        fragment_starts = raw_data{2};
-        fragment_ends   = raw_data{3};
-        readAverages    = raw_data{4};
-        lines_analyzed  = length(chroms);
+        chroms            = raw_data{1};
+        fragment_starts   = raw_data{2};
+        fragment_ends     = raw_data{3};
+        readAverages      = raw_data{4};
+	CNVlines_analyzed = length(chroms);
 
         preprocessed_CNVs = true;
 else
@@ -244,7 +244,14 @@ if exist(snp_data_file, 'file')
 	unphased_coordinates_string = raw_data{7};
 	phased_alleles_string       = raw_data{8};
 	unphased_alleles_string     = raw_data{9};
-	lines_analyzed              = length(chroms);
+	SNPlines_analyzed           = length(chroms);
+
+	% Compute the 1-based index within each chromosome for every data row
+	per_chrom_SNPindex = zeros(SNPlines_analyzed, 1);
+	for c = unique(chroms(:))'
+		mask = (chroms == c);
+		per_chrom_SNPindex(mask) = 1:sum(mask);
+	end;
 
 	preprocessed_SNPs = true;
 else
@@ -305,29 +312,40 @@ source('../phased_and_unphased_color_definitions.m');
 %%================================================================================================
 % Setup for SNP/LOH data calculations.
 %-------------------------------------------------------------------------------------------------
-fprintf('\n### Initialize data vectors for tracking data presentation.\n');
+fprintf('\t|\tInitialize data vectors for tracking SNP data presentation.\n');
 % Initializes vectors used to hold allelic ratios for each chromosome segment.
-for chrom = 1:num_chroms
-	% Build data structure for SNP information:  chrom_SNPdata{chrom,j}{chrom_bin_SNP} = [];
-	%       1 : phased SNP ratio data.
-	%       2 : unphased SNP ratio data.
-	%       3 : phased SNP position data.
-	%       4 : unphased SNP position data.
-	%       5 : phased SNP allele strings.   (baseCall:alleleA/alleleB)
-	%       6 : unphased SNP allele strings.
-	chrom_length = ceil(chrom_size(chrom)/bases_per_bin_SNP);
-	for j = 1:6
-		chrom_SNPdata{chrom,j} = cell(1,chrom_length);
+% 	Build data structure for SNP information:  chrom_SNPdata{chrom,j}{idx} = [];
+%		1 : phased SNP ratio data.
+%		2 : unphased SNP ratio data.
+%		3 : phased SNP position data.
+%		4 : unphased SNP position data.
+%		5 : phased SNP allele strings.   (baseCall:alleleA/alleleB)
+%		6 : unphased SNP allele strings.
+for chrom = 1:length(chrom_sizes)
+	if chrom_in_use(chrom) == 1
+		% Safe check: use file tracking data if it exists, otherwise use math fallback.
+		if preprocessed_SNPs
+			num_bins = sum(chroms == chrom);
+		else
+			num_bins = ceil(chrom_size(chrom)/bases_per_bin_SNP);
+		end;
+
+		fprintf('\t|\t    num_bins for chromosome %d data file = %d\n', chrom, num_bins);
+
+		% Setup to track SNP data.
+		for j = 1:6
+			chrom_SNPdata{chrom,j} = cell(1,num_bins);
+		end;
+
+		% Setup to track RGB values used to present SNP/LOH data for each chromosome bin.
+		for j = 1:3
+			% Track the RGB value sum per standard bin, then divide by the count to reach the average color per standard genome bin.
+			chrom_SNPdata_colorsC{chrom,j}           = zeros(num_bins,1);
+		end;
+
+		% Track the number of SNP colors per standard bin.
+		chrom_SNPdata_countC{chrom} = zeros(num_bins,1);
 	end;
-	% Setup to track RGB values used to present SNP/LOH data for each chromosome bin.
-	for j = 1:3
-		% Track the RGB value sum per standard bin, then divide by the count to reach the average color per standard genome bin.
-		chrom_SNPdata_colorsC{chrom,j}           = zeros(chrom_length,1);
-		chrom_SNPdata_colorsP{chrom,j}           = zeros(chrom_length,1);
-	end;
-	% Track the number of SNP colors per standard bin.
-	chrom_SNPdata_countC{chrom} = zeros(chrom_length,1);
-	chrom_SNPdata_countP{chrom} = zeros(chrom_length,1);
 end;
 
 
@@ -388,30 +406,23 @@ while (chromCopyNum_changed == true)
 		old_chrom  = 0;
 		gap_string = '';
 
-		% Loop directly over the row elements already loaded by textscan
-		for idx = 1:lines_analyzed
-			chrom_num      = chroms(idx);
-			fragment_start = fragment_starts(idx);
-
-			% Check if this chromosome is actively displayed
-			if chrom_in_use(chrom_num) == 1
-
-				% Symmetrically determine active display bins.
-				if preprocessed_SNPs
-					chrom_bin_SNP = idx;
-				else
-					chrom_bin_SNP = ceil(fragment_start/bases_per_bin_SNP);
-				end;
+		% Loop directly over the list of all SNP bins previously loaded.
+		for line_idx = 1:SNPlines_analyzed
+			chrom          = chroms(line_idx);
+			% Check if this chromosome is actively displayed.
+			if chrom_in_use(chrom) == 1
+				fragment_start = fragment_starts(line_idx);
+				idx            = per_chrom_SNPindex(line_idx);
 
 
 				%%================================================================
 				% Log progress loading data per chromosome.
 				%-----------------------------------------------------------------
-				if (old_chrom ~= chrom_num)
+				if (old_chrom ~= chrom)
 					% Instantly generate spaces with repmat instead of dynamic concatenation
 					gap_string = repmat(' ', 1, floor(count / 10));
-					fprintf('\n\t|\t%s\n\t|\t%s', chrom_name{chrom_num}, gap_string);
-					old_chrom = chrom_num;
+					fprintf('\n\t|\t%s\n\t|\t%s', chrom_name{chrom}, gap_string);
+					old_chrom = chrom;
 				end;
 				count = count + 1;
 				if (mod(count, 10) == 0)
@@ -512,16 +523,16 @@ while (chromCopyNum_changed == true)
 
 
 				% add phased and unphased data to storage arrays.
-				chrom_SNPdata{chrom_num,1}{chrom_bin_SNP}          = phased_ratio_data;
-				chrom_SNPdata{chrom_num,2}{chrom_bin_SNP}          = unphased_ratio_data;
+				chrom_SNPdata{chrom,1}{idx}          = phased_ratio_data;
+				chrom_SNPdata{chrom,2}{idx}          = unphased_ratio_data;
 
 				% add phased and unphased data coordinates to storage arrays.
-				chrom_SNPdata{chrom_num,3}{chrom_bin_SNP}          = phased_coordinates;
-				chrom_SNPdata{chrom_num,4}{chrom_bin_SNP}          = unphased_coordinates;
+				chrom_SNPdata{chrom,3}{idx}          = phased_coordinates;
+				chrom_SNPdata{chrom,4}{idx}          = unphased_coordinates;
 
 				% add phased and unphased data allele strings to storage arrays.
-				chrom_SNPdata{chrom_num,5}{chrom_bin_SNP}          = phased_alleles;
-				chrom_SNPdata{chrom_num,6}{chrom_bin_SNP}          = unphased_alleles;
+				chrom_SNPdata{chrom,5}{idx}          = phased_alleles;
+				chrom_SNPdata{chrom,6}{idx}          = unphased_alleles;
 			end;
 		end;
 

@@ -293,6 +293,13 @@ end;
 %-------------------------------------------------------------------------------------------------
 fprintf('\t|\tInitialize data vectors for tracking SNP data presentation.\n');
 % Initializes vectors used to hold allelic ratios for each chromosome segment.
+%       Build data structure for SNP information:  chrom_SNPdata{chrom,j}{idx} = [];
+%               1 : phased SNP ratio data.
+%               2 : unphased SNP ratio data.
+%               3 : phased SNP position data.
+%               4 : unphased SNP position data.
+%               5 : phased SNP allele strings.   (baseCall:alleleA/alleleB)
+%               6 : unphased SNP allele strings.
 for chrom = 1:length(chrom_sizes)
 	if chrom_in_use(chrom) == 1
 		% Safe check: use file tracking data if it exists, otherwise use math fallback.
