@@ -1,16 +1,19 @@
 # Input Arguments
-#	1) user     : 'darren'
-#	2) project  : 'test_Ca'
-#	3) genome   : 'Candida_albicans_SC5314_etc'
-#	4) main_dir : '/home/darren/public_html/Ymap/'
-#	5) logName  :
+#	1) genome	: name of the genome being used.
+#	2) genome user	: user who installed the genome, usually "default".
+#	3) hapmap	: name of the hapmap or parent project dataset (both contain a "SNPdata_parent.txt" file).
+#	4) hapmap user	: user who created the hapmap, usually "default".
+#	5) project	: name of the current project.
+#	6) project user	: user who created the current project.
+#	7) main_dir	: '/home/darren/public_html/Ymap/'
+#	8) log Name	: 
+#	9) run mode	: "hapmap" or "LOH" modes.
 #
 # Process input files:
-#	1) Raw SNP data                 : $main_dir"/users/"$user"/projects/"$project"/SNP_CNV_v1.txt".
-#	2) FASTA file name              : $main_dir"/users/default/genomes/default/reference.txt",
-#	                               or $main_dir"/users/"$user"/genomes/default/reference.txt" as $FastaName.
-#	3) Coordinates of standard bins : $main_dir"/users/default/genomes/"$genome"/"$FastaName".standard_bins.fasta",
-#	                               or $main_dir"/users/"$user"/genomes/"$genome"/"$FastaName".standard_bins.fasta".
+#	1) Raw SNP data         	        : $main_dir"/users/"$user"/projects/"$project"/SNP_CNV_v1.txt".
+#	2) Hapmap file				: $main_dir"/users/"$hapmapUser"/hapmaps/"$hapmap"/SNPdata_parent.txt"
+#	2) file containing name of genome	: $main_dir"/users/default/genomes/default/reference.txt" or $main_dir"/users/"$user"/genomes/default/reference.txt"
+#	3) FASTA file with bin coordinates	: $main_dir"/users/default/genomes/"$genome"/"$FastaName".standard_bins.fasta" or $main_dir"/users/"$user"/genomes/"$genome"/"$FastaName".standard_bins.fasta"
 
 # Generate output file:
 #	1) a simplified pileup file containing number of parental het loci that are [HOM, HET, oddHET] in dataset per standard bin.
@@ -301,181 +304,204 @@ with open(parentDatafile, 'r') as data:
 		#       chromosome                   coord   allele1   allele2   phasingData  [phasingData]
 		#       Ca21chr1_C_albicans_SC5314   3706    T         C         1            [11]
 
+		# Skip comments and blank lines.
 		if line.startswith("#") or not line.strip():
 			continue;
 
 		count += 1;
-		parentLine = line.strip().split('\t');
-		P_chr_name = parentLine[0];
-		P_position = int(parentLine[1]);
-		P_allele1 = parentLine[2];
-		P_allele2 = parentLine[3];
+		parentLine	= line.strip().split('\t');
+		P_chr_name	= parentLine[0];
+		P_position	= int(parentLine[1]);
+		P_allele1	= parentLine[2];
+		P_allele2	= parentLine[3];
+		phasingData	= parentLine[4:];
 
-		# Strip out non-useful phase labels (10, 11, 12).
-		phasingData_1 = parentLine[4:];
-		phasingData = [int(x) for x in phasingData_1 if int(x) not in (10, 11, 12)];
+		# Convert string elements in parentLine[4:] to integers
+		phasingData = [int(x) for x in parentLine[4:] if x.strip()];
 
 		if len(phasingData) == 0:
 			phaseCall = 10;
 		else:
-			phaseCall = int(round(sum(phasingData) / float(len(phasingData))));
+			phaseAvg = sum(phasingData) / float(len(phasingData));
+			if phaseAvg == 0.5:
+				phaseCall = 10;
+			else:
+				phaseCall = int(round(phaseAvg));
+
+		# Filter out error states (10, 11, 12) after phaseCall
+		if phaseCall in (10, 11, 12):
+			continue;
 
 		# Retrieve integer chromosome ID instantly.
-		P_chr = chr_name_to_num.get(P_chr_name, 0);
+		P_chr	= chr_name_to_num.get(P_chr_name, 0);
 
-		# Find standard bin containing parent SNP locus.
-		if P_chr != 0:
-			if old_chr != P_chr:
+		# skip line if chromosome not found.
+		if P_chr == 0:
+			continue;
+
+
+                # Reset tracking pointers and log progress when switching to a new chromosome.
+		if old_chr != P_chr:
+			print(f"### chr change : {old_chr} -> {P_chr}");
+			with open(logName, "a") as myfile:
+				myfile.write(f"\n\t\t|\t    {old_chr} -> {P_chr} = {P_chr_name}\n");
+				myfile.write("\t\t|\t1........01........01........01........01........01........01........01........01........01........0");
 				if log_offset != 0:
 					log_offset_string = " " * (log_offset % 100);
-					with open(logName, "a") as myfile:
-						myfile.write(f"\n\t\t|\t\t{log_offset_string}");
-				count = 1;
+					myfile.write(f"\n\t\t|\t\t{log_offset_string}");
+			old_chr          = P_chr;
+			count            = 1;
+			fragment_found   = 0;
+			current_fragment = 0;
+
+		# If a bin is currently active, verify the new SNP still falls inside it.
+		if fragment_found == 1:
+			if P_chr != fragments[current_fragment][0] or P_position > fragments[current_fragment][2]:
 				fragment_found = 0;
-				current_fragment = 0;
 
-			if fragment_found == 0:
-				for frag in range(current_fragment, numFragments):
-					# Standardized 0-indexed fragment structural checks.
-					if P_chr == fragments[frag] and P_position >= fragments[frag] and P_position <= fragments[frag]:
-						fragment_found = 1;
-						current_fragment = frag;
-						break;
+		# Scan forward from current_fragment to find the matching standard bin.
+		if fragment_found == 0:
+			for frag in range(current_fragment, numFragments):
+				frag_chr, frag_start, frag_end = fragments[frag][:3];
 
-			if fragment_found == 1:
-				if count % 50000 == 0:
-					log_count += 1;
-					log_offset += 1;
-					with open(logName, "a") as myfile:
-						if log_count % 100 == 0:
-							if log_count - 1 == 0:
-								myfile.write("\n\t\t|\t");
-							else:
-								myfile.write(f" {log_count - 1}\n\t\t|\t");
-						myfile.write(".");
+				# Stop early if we've passed the SNP's chromosome or position (gap/excluded region).
+				if frag_chr > P_chr or (frag_chr == P_chr and frag_start > P_position):
+					current_fragment = frag;
+					break;
 
-				if P_position >= fragments[current_fragment]:
-					fragment_found = 0;
+				if frag_chr == P_chr and frag_start <= P_position <= frag_end:
+					fragment_found = 1;
+					current_fragment = frag;
+					break;
 
-			#===============================================================================================================
-			# Find line in child dataset corresponding to SNP from hapmap dataset 'SNPdata_parent.txt' file.
-			#---------------------------------------------------------------------------------------------------------------
+
+		# Progress logging.
+		if fragment_found == 1:
+			if count % 50000 == 0:
+				log_count += 1;
+				log_offset += 1;
+				with open(logName, "a") as myfile:
+					if log_count % 100 == 0:
+						myfile.write(f" {log_count - 1}\n\t\t|\t");
+					myfile.write(".");
+			# Reset flag once we reach or pass the current bin's end coordinate (index 2).
+			if P_position >= fragments[current_fragment][2]:
+				fragment_found = 0;
+
+
+		#===============================================================================================================
+		# Find line in child dataset corresponding to SNP from hapmap dataset 'SNPdata_parent.txt' file.
+		#---------------------------------------------------------------------------------------------------------------
+		# Helper to read the next non-empty, non-comment line from searchTarget.
+		def next_valid_child_line(fh):
+			while True:
+				raw = fh.readline();
+				if not raw:
+					return "";
+				cleaned = raw.strip();
+				if cleaned and not cleaned.startswith("#"):
+					return cleaned;
+
+		if not childLine:
+			childLine = next_valid_child_line(searchTarget);
 			if not childLine:
-				childLine = searchTarget.readline();
+				empty_line_count += 1;
+
+		if childLine and empty_line_count < 2:
+			childLine_parts = childLine.split('\t');
+			C_chr_name      = childLine_parts[0];
+			C_position      = int(childLine_parts[1]);
+			C_chr           = chr_name_to_num.get(C_chr_name, 0);
+
+			# Skip unmapped child chromosomes (C_chr == 0) or chromosomes behind P_chr.
+			while childLine and (C_chr == 0 or P_chr > C_chr):
+				childLine = next_valid_child_line(searchTarget);
 				if not childLine:
 					empty_line_count += 1;
-
-			if empty_line_count < 2:
-				childLine_parts = childLine.strip().split('\t');
+					break;
+				childLine_parts = childLine.split('\t');
 				C_chr_name = childLine_parts[0];
 				C_position = int(childLine_parts[1]);
-				C_chr = chr_name_to_num.get(C_chr_name, 0);
+				C_chr      = chr_name_to_num.get(C_chr_name, 0);
 
-				# Skip mismatched child chromosomes ahead
-				while P_chr > C_chr:
-					childLine = searchTarget.readline();
-					if not childLine:
-						C_chr = P_chr;
-						break;
-					childLine_parts = childLine.strip().split('\t');
-					C_chr_name = childLine_parts[0];
-					C_position = int(childLine_parts[1]);
-					C_chr = chr_name_to_num.get(C_chr_name, 0);
+			# Advance through child rows until matching position coordinate is reached.
+			while childLine and P_chr == C_chr and P_position > C_position:
+				childLine = next_valid_child_line(searchTarget);
+				if not childLine:
+					empty_line_count += 1;
+					break;
+				childLine_parts = childLine.split('\t');
+				C_chr_name = childLine_parts[0];
+				C_position = int(childLine_parts[1]);
+				C_chr      = chr_name_to_num.get(C_chr_name, 0);
 
-				# Advance through the child rows until matching position coordinate is met
-				while P_chr == C_chr and P_position > C_position:
-					childLine = searchTarget.readline();
-					if not childLine:
-						break;
-					childLine_parts = childLine.strip().split('\t');
-					C_chr_name = childLine_parts[0];
-					C_position = int(childLine_parts[1]);
-					C_chr = chr_name_to_num.get(C_chr_name, 0);
+			# Always reset result before evaluating coordinate match.
+			result = "";
+			if childLine and P_chr == C_chr and P_position == C_position:
+				result    = childLine;
+				childLine = "";  # Consume matched line so next iteration reads fresh.
 
-				if P_chr > C_chr or (P_chr == C_chr and P_position > C_position) or (P_chr == C_chr and P_position < C_position):
-					result = "";
-				elif P_chr == C_chr and P_position == C_position:
-					result = childLine;
+			C_ratio = 0.0;
+			C_valid = 0;
+			if result != "":
+				C_countA = int(float(childLine_parts[4]));
+				C_countT = int(float(childLine_parts[5]));
+				C_countG = int(float(childLine_parts[6]));
+				C_countC = int(float(childLine_parts[7]));
 
-				C_ratio = 0.0;
-				if result == "":
-					C_ratio = 0.0;
-					C_valid = 0;
-				else:
-					C_chr_name = childLine_parts[0];
-					C_position = childLine_parts[1];
-					C_countTot = childLine_parts[2];
-					C_refBase  = childLine_parts[3];
+				C_counts  = [C_countA, C_countT, C_countG, C_countC];
+				total_sum = sum(C_counts);
 
-					C_countA   = int(float(childLine_parts[4]));
-					C_countT   = int(float(childLine_parts[5]));
-					C_countG   = int(float(childLine_parts[6]));
-					C_countC   = int(float(childLine_parts[7]));
-
-					C_counts   = [C_countA, C_countT, C_countG, C_countC];
-					total_sum  = sum(C_counts);
-
+				if total_sum > 0:
 					alleleData    = [(C_countA, 'A'), (C_countT, 'T'), (C_countG, 'G'), (C_countC, 'C')];
-					sortedAlleles = sorted(alleleData, key=lambda x: x);
+					sortedAlleles = sorted(alleleData, key=lambda x: x[0]);
 					C_maxCount    = sortedAlleles[3][0];
 					C_maxAllele   = sortedAlleles[3][1];
 
-					if total_sum == 0:
-						C_ratio = 0.0;
-						C_valid = 0;
+					C_ratio = float(C_maxCount) / float(total_sum);
+
+					# Orient ratio to Homolog B fraction:
+					# phaseCall == 0: P_allele1 is Homolog A (correct orientation).
+					# phaseCall == 1: P_allele1/P_allele2 are flipped -> swap first.
+					if phaseCall == 1:
+						P_allele1, P_allele2 = P_allele2, P_allele1;
+						if C_maxAllele == P_allele1:
+							C_ratio = 1.0 - C_ratio;
+					elif phaseCall == 0:
+						if C_maxAllele == P_allele1:
+							C_ratio = 1.0 - C_ratio;
 					else:
-						C_ratio = float(C_maxCount) / float(total_sum);
+						C_maxAllele = 'Z';
 
-						if phaseCall == 1:
-							P_allele1, P_allele2 = P_allele2, P_allele1;
-							if C_maxAllele == P_allele1:
-								C_ratio = 1.0 - C_ratio;
-						elif phaseCall == 0:
-							if C_maxAllele == P_allele1:
-								C_ratio = 1.0 - C_ratio;
-						else:
-							C_maxAllele = 'Z';
+					C_valid       = 1;
+					allele_string = f"{C_maxAllele}:{P_allele1}/{P_allele2}";
 
-						C_valid = 1;
-						allele_string = f"{C_maxAllele}:{P_allele1}/{P_allele2}";
+			#===============================================================================================================
+			# Add allelic ratio data to standard-bin fragment data.
+			#---------------------------------------------------------------------------------------------------------------
+			if fragment_found == 1 and C_valid == 1:
+				if phaseCall in (0, 1):
+					fragments[current_fragment][3] += f"{C_ratio},";
+					fragments[current_fragment][5] += f"{C_position},";
+					fragments[current_fragment][7] += f"{allele_string},";
+				else:
+					fragments[current_fragment][4] += f"{C_ratio},";
+					fragments[current_fragment][6] += f"{C_position},";
+					fragments[current_fragment][8] += f"{allele_string},";
 
-				C_chr = chr_name_to_num.get(P_chr_name, 0)
 
-				#===============================================================================================================
-				# Add allelic ratio data to standard-bin fragment data
-				#---------------------------------------------------------------------------------------------------------------
-				if fragment_found == 1 and C_valid == 1:
-					if phaseCall in (0, 1):
-						fragments[current_fragment] += f"{C_ratio},";
-						fragments[current_fragment] += f"{C_position},";
-						fragments[current_fragment] += f"{allele_string},";
-					else:
-						fragments[current_fragment][4] += f"{C_ratio},";
-						fragments[current_fragment][6] += f"{C_position},";
-						fragments[current_fragment][8] += f"{allele_string},";
+			#===============================================================================================================
+			# Save coordinate anchors and check bin boundary reset.
+			#---------------------------------------------------------------------------------------------------------------
+			last_fragment = current_fragment;
 
-				#===============================================================================================================
-				# Output log file status updates and save coordinate anchors
-				#---------------------------------------------------------------------------------------------------------------
-				if old_chr != P_chr:
-					print(f"### chr change : {old_chr} -> {P_chr}")
-					with open(logName, "a") as myfile:
-						myfile.write(f"\n\t\t|\t    {old_chr} -> {P_chr} = {P_chr_name}\n")
-						myfile.write("\t\t|\t1........01........01........01........01........01........01........01........01........01........0")
+			# Reset fragment_found once P_position reaches or exceeds the current bin's bp_end (index 2).
+			if P_position >= fragments[current_fragment][2]:
+				fragment_found = 0;
 
-					if log_offset != 0:
-						log_offset_string = " " * (log_offset % 100)
-						with open(logName, "a") as myfile:
-							myfile.write(f"\n\t\t|\t{log_offset_string}")
+searchTarget.close();
 
-				old_chr = P_chr
-				last_fragment = current_fragment
 
-				# Check boundaries safely using column index 2 (bp_end) 
-				if P_position == fragments[current_fragment][2]:
-					fragment_found = 0
-
-searchTarget.close()
 
 print(f"### {time.process_time() - t1:.4f} seconds to parse project SNP data.")
 t2 = time.process_time()
