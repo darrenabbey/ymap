@@ -270,7 +270,7 @@ for d_chr = unique(chroms(:))'
         first_row = chr_rows(1);
         last_row  = chr_rows(end);
 
-        fprintf('[DEBUG-TEXTSCAN] chr_num = %d | row count = %d | rows %d..%d\n', ...
+        fprintf('[DEBUG-1] chr_num = %d | row count = %d | rows %d..%d\n', ...
                 d_chr, length(chr_rows), first_row, last_row);
 
         % Print the first 10 rows for this chromosome to check column alignment & per-chrom index
@@ -592,7 +592,7 @@ while (chromCopyNum_changed == true)
 fprintf('\n[CNV_LOH_check.m : DEBUG-2] === Logging First 10 SNP Bins Per Chromosome ===\n');
 for d_chrom = 1:length(chrom_in_use)
         if (chrom_in_use(d_chrom) == 1)
-                fprintf('[DEBUG] Chromosome %d (%s) - total allocated bins: %d\n', ...
+                fprintf('[DEBUG-2] Chromosome %d (%s) - total allocated bins: %d\n', ...
                         d_chrom, chrom_name{d_chrom}, length(chrom_SNPdata{d_chrom, 1}));
 
                 max_check = min(10, length(chrom_SNPdata{d_chrom, 1}));
