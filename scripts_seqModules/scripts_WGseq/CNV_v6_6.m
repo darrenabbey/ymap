@@ -1,6 +1,12 @@
 function [] = CNV_v6_6(main_dir,user,genomeUser,project,genome,ploidyEstimateString,ploidyBaseString,CNV_verString,rDNA_verString,displayBREAKS, referencechrom, drawFigures); %% rDNA_verString & referencechrom are not used.
 addpath('../');
 
+workingDir = [main_dir '/users/' user '/projects/' project '/'];
+fprintf('\n\n\t*===============================================================*\n');
+fprintf(    '\t| Generate CNV only plot in script "CNV_v6_6.m".                |\n');
+fprintf(    '\t*---------------------------------------------------------------*\n');
+tic;
+
 % hide figures during construction.
 set(0,'DefaultFigureVisible','off');
 
@@ -8,7 +14,6 @@ set(0,'DefaultFigureVisible','off');
 %%==========================================================================================
 % Load project figure version.
 %-------------------------------------------------------------------------------------------
-workingDir = [main_dir '/users/' user '/projects/' project '/'];
 versionFile = [workingDir 'figVer.txt'];
 if exist(versionFile, 'file') == 2
 	figVer = ['v' fileread(versionFile) '.'];
@@ -90,9 +95,9 @@ FASTA_string = strtrim(fileread(Reference));
 [FastaPath,FastaName,FastaExt] = fileparts(FASTA_string);
 
 
-%%==========================================================================================
-% Control variables.
-%-------------------------------------------------------------------------------------------
+%%================================================================================================
+% Load configuration details.
+%-------------------------------------------------------------------------------------------------
 projectDir = [main_dir '/users/' user '/projects/' project '/'];
 genomeDir  = [main_dir '/users/' genomeUser '/genomes/' genome '/'];
 
@@ -159,13 +164,11 @@ ploidyBase = round(str2num(ploidyBaseString));
 if (ploidyBase > 4);   ploidyBase = 4;   end;
 if (ploidyBase < 1);   ploidyBase = 1;   end;
 fprintf(['\nEuploid base = "' num2str(ploidyBase) '"\n']);
-
 % basic plot parameters not defined per genome.
 TickSize         = -0.005;  %negative for outside, percentage of longest chrom figure.
 maxY             = ploidyBase*2;
 cen_tel_Xindent  = 5;
 cen_tel_Yindent  = maxY/4;
-
 fprintf(['\nGenerating CNV figure from ''' project ''' sequence data.\n']);
 
 
@@ -1196,21 +1199,28 @@ for chrom_to_draw  = 1:length(chrom_order)
 	chrom = chrom_order(chrom_to_draw);
 	if (chrom_in_use(chrom) == 1)
 
-		% reverse order of color bins if chromosome is indicated as reversed in figure_definitions.txt file.
-		if (chrom_figReversed(chrom) == 1)
-			CNVplot2{chrom} = fliplr(CNVplot2{chrom});
-		end;
 
-		if (Standard_display)
-			%% make standard chrom cartoons.
-			figure(Standard_fig);
-			left   = chrom_posX(chrom);
-			bottom = chrom_posY(chrom);
-			width  = chrom_width(chrom);
-			height = chrom_height(chrom);
+		%%================================================================================
+                % Reverse order of CNV bins if chromosome is indicated as reversed in figure_definitions.txt file.
+                %---------------------------------------------------------------------------------
+                if (chrom_figReversed(chrom) == 1)
+                        CNVplot2{chrom} = fliplr(CNVplot2{chrom});
+                end;
+
+
+                %%================================================================================
+                % Draw standard/stacked chromosomes figure.
+                %---------------------------------------------------------------------------------
+		if (Standard_display == true)
+                        figure(Standard_fig);
+                        % make standard chrom cartoons.
+                        left          = chrom_posX(chrom);
+                        bottom        = chrom_posY(chrom);
+                        width         = chrom_width(chrom);
+                        height        = chrom_height(chrom);
+                        subPlotHandle = subplot('Position',[left bottom width height]);
 			fprintf(['chrom' num2str(chrom) ': figposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\t']);
-			subplot('Position',[left bottom width height]);
-			hold on;
+                        hold on;
 
 			%% Hide axis lines.
 			box off;
@@ -1611,32 +1621,32 @@ if (Standard_display)
 	saveas(Standard_fig, [projectDir 'fig.CNV-map.1.' figVer 'eps'], 'epsc');
 	saveas(Standard_fig, [projectDir 'fig.CNV-map.1.' figVer 'png'], 'png');
 	delete(Standard_fig);
-
 	%% change permissions of figures.
 	system(['chmod 774 ' projectDir 'fig.CNV-map.1.' figVer 'eps']);
 	system(['chmod 774 ' projectDir 'fig.CNV-map.1.' figVer 'png']);
 end;
-
 if (Linear_display)
 	% Save horizontal aligned genome figure.
 	set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
 	saveas(Linear_fig,   [projectDir 'fig.CNV-map.2.' figVer 'eps'], 'epsc');
 	saveas(Linear_fig,   [projectDir 'fig.CNV-map.2.' figVer 'png'], 'png');
 	delete(Linear_fig);
-
 	%% change permissions of figures.
 	system(['chmod 774 ' projectDir 'fig.CNV-map.2.' figVer 'eps']);
 	system(['chmod 774 ' projectDir 'fig.CNV-map.2.' figVer 'png']);
 end;
 
-% Output chromosome copy number estimates.
+
+%%================================================================================================
+% Save chromosome copy number estimates.
+%-------------------------------------------------------------------------------------------------
 textFileName = [projectDir 'txt.CNV-map.3.txt'];
 fprintf(['Text output of CNVs : "' textFileName '"\n']);
 textFileID = fopen(textFileName,'w');
 fprintf(textFileID,stringchromCNVs);
 fclose(textFileID);
-
 %% change permissions of figures.
 system(['chmod 774 ' projectDir 'txt.CNV-map.3.txt']);
+
 
 end

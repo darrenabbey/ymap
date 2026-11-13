@@ -272,42 +272,6 @@ else
 end;
 
 
-%%========================================================================
-% DIAGNOSTIC; Verify raw_data parsed from preprocessed_SNPs.txt
-%-------------------------------------------------------------------------
-fprintf('\n[LOH_hapmap_v4.m : DEBUG-1] preprocessed_SNPs = %d | SNPlines_analyzed = %d\n', ...
-        preprocessed_SNPs, SNPlines_analyzed);
-
-for d_chr = unique(chroms(:))'
-        chr_rows  = find(chroms == d_chr);
-        first_row = chr_rows(1);
-        last_row  = chr_rows(end);
-
-        fprintf('[DEBUG-1] chr_num = %d | row count = %d | rows %d..%d\n', ...
-                d_chr, length(chr_rows), first_row, last_row);
-
-        % Print the first 10 rows for this chromosome to check column alignment & per-chrom index
-        max_rows = min(10, length(chr_rows));
-        for local_idx = 1:max_rows
-                r = chr_rows(local_idx);
-
-                p_preview = phased_ratio_data_string{r};
-                if length(p_preview) > 35
-                        p_preview = [p_preview(1:35) '...'];
-                end;
-                c_preview = phased_coordinates_string{r};
-                if length(c_preview) > 35
-                        c_preview = [c_preview(1:35) '...'];
-                end;
-
-                fprintf('\tGlobalRow %4d | LocalBin %3d | per_chrom_SNPindex=%3d | bp=%d..%d | phasedData=%s | phasedCoords=%s\n', ...
-                        r, local_idx, per_chrom_SNPindex(r), fragment_starts(r), fragment_ends(r), p_preview, c_preview);
-        end;
-end;
-fprintf('[LOH_hapmap_v4.m : DEBUG-1] ====================================================\n\n');
-
-
-
 %%==========================================================================================
 % Determine bases_per_bin sizes to be used as a fallback.
 %-------------------------------------------------------------------------------------------
@@ -586,55 +550,6 @@ else
 	fprintf('\t|\t\tMAT file found, loading.\n');
 	load([projectDir 'SNP_' SNP_verString '.mat']);
 end;
-
-
-
-%%========================================================================
-% DIAGNOSTIC: Log first 10 SNP bins for each active chromosome.
-%-------------------------------------------------------------------------
-fprintf('\n[LOH_hapmap_v4.m : DEBUG-2] === Logging First 10 SNP Bins Per Chromosome ===\n');
-for d_chrom = 1:length(chrom_in_use)
-        if (chrom_in_use(d_chrom) == 1)
-                fprintf('[DEBUG-2] Chromosome %d (%s) - total allocated bins: %d\n', ...
-                        d_chrom, chrom_name{d_chrom}, length(chrom_SNPdata{d_chrom, 1}));
-
-                max_check = min(10, length(chrom_SNPdata{d_chrom, 1}));
-                for d_bin = 1:max_check
-                        p_ratios = chrom_SNPdata{d_chrom, 1}{d_bin};
-                        u_ratios = chrom_SNPdata{d_chrom, 2}{d_bin};
-                        p_coords = chrom_SNPdata{d_chrom, 3}{d_bin};
-
-                        % Format coordinates & ratios safely whether empty or non-empty
-                        if isempty(p_coords)
-                                coord_str = 'none';
-                        else
-                                coord_str = num2str(p_coords(1:min(3, end)));
-                        end;
-
-                        if isempty(p_ratios)
-                                ratio_str = 'none';
-                        else
-                                ratio_str = num2str(p_ratios(1:min(3, end)), '%.3f ');
-                        end;
-
-                        % Also log averaged RGB colors if chrom_SNPdata_colorsC is already populated
-                        if exist('chrom_SNPdata_colorsC', 'var') && length(chrom_SNPdata_colorsC{d_chrom, 1}) >= d_bin
-                                rgb_str = sprintf('[%.2f, %.2f, %.2f]', ...
-                                        chrom_SNPdata_colorsC{d_chrom, 1}(d_bin), ...
-                                        chrom_SNPdata_colorsC{d_chrom, 2}(d_bin), ...
-                                        chrom_SNPdata_colorsC{d_chrom, 3}(d_bin));
-                        else
-                                rgb_str = 'N/A';
-                        end;
-
-                        fprintf('\tBin %2d | phasedCount=%2d | unphasedCount=%2d | firstCoords=[%s] | firstRatios=[%s] | RGB=%s\n', ...
-                                d_bin, length(p_ratios), length(u_ratios), coord_str, ratio_str, rgb_str);
-                end;
-        end;
-end;
-fprintf('[LOH_hapmap_v4.m : DEBUG-2] ====================================================\n\n');
-
-
 
 
 %%================================================================================================
@@ -1122,7 +1037,7 @@ fprintf('\n');
 %-------------------------------------------------------------------------------------------------
 if (Standard_display == true)
 	fprintf('\t|\tIntitial setup of main figure.\n');
-	fig = figure(1);
+	Standard_fig = figure(1);
 end;
 
 % basic plot parameters not defined per genome.
@@ -1164,28 +1079,17 @@ end;
 for chrom_to_draw  = 1:length(chrom_order)
 	chrom = chrom_order(chrom_to_draw);
 	if (chrom_in_use(chrom) == 1)
-		if (Standard_display == true)
-			figure(fig);
-			% make standard chrom cartoons.
-			left          = chrom_posX(chrom);
-			bottom        = chrom_posY(chrom);
-			width         = chrom_width(chrom);
-			height        = chrom_height(chrom);
-			subPlotHandle = subplot('Position',[left bottom width height]);
-			fprintf(['\tfigposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
-			hold on;
-		end;
 
+
+		%%================================================================================
+                %% Determine color of each bin (Vectorized).
+                %---------------------------------------------------------------------------------
 		c_prev = colorInit;
 		c_post = colorInit;
 		c_     = c_prev;
 		infill = zeros(1,length(phased_plot2{chrom}));
 		colors = [];
 
-
-		%%================================================================================
-		%% Determine color of each bin (Vectorized).
-		%---------------------------------------------------------------------------------
 		SNPbin_mask = (chroms == chrom);
                 num_bins = sum(SNPbin_mask);
 		if num_bins == 0
@@ -1230,9 +1134,18 @@ for chrom_to_draw  = 1:length(chrom_order)
 
 
 		%%================================================================================
-		% Draw standard/stacked chromosomes figure.
-		%---------------------------------------------------------------------------------
-		if (Standard_display == true)
+                % Draw standard/stacked chromosomes figure.
+                %---------------------------------------------------------------------------------
+                if (Standard_display == true)
+                        figure(Standard_fig);
+                        % make standard chrom cartoons.
+                        left          = chrom_posX(chrom);
+                        bottom        = chrom_posY(chrom);
+                        width         = chrom_width(chrom);
+                        height        = chrom_height(chrom);
+                        subPlotHandle = subplot('Position',[left bottom width height]);
+                        fprintf(['chrom' num2str(chrom) ': figposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\t']);
+                        hold on;
 
 
 			%% standard : draw colorbars.
@@ -1436,15 +1349,6 @@ for chrom_to_draw  = 1:length(chrom_order)
 			end;
 		end;
 
-
-		%%================================================================================
-		% Prepare for next loop through set of chromosomes.
-		%---------------------------------------------------------------------------------
-		if (Standard_display == true)
-			% shift back to main figure generation.
-			figure(fig);
-			hold on;
-		end;
 		first_chrom = false;
 	end;
 end;
@@ -1455,25 +1359,23 @@ end;
 %-------------------------------------------------------------------------------------------------
 if (Standard_display == true)
 	%% Save figures.
-	set(fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
-	saveas(fig,        [projectDir 'fig.SNP-map.1.' figVer 'eps'], 'epsc');
-	saveas(fig,        [projectDir 'fig.SNP-map.1.' figVer 'png'], 'png');
-	delete(fig);
-
+	set(Standard_fig,    'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
+	saveas(Standard_fig, [projectDir 'fig.SNP-map.1.' figVer 'eps'], 'epsc');
+	saveas(Standard_fig, [projectDir 'fig.SNP-map.1.' figVer 'png'], 'png');
+	delete(Standard_fig);
 	%% change permissions of figures.
 	system(['chmod 774 ' projectDir 'fig.SNP-map.1.' figVer 'eps']);
 	system(['chmod 774 ' projectDir 'fig.SNP-map.1.' figVer 'png']);
 end;
-
 if (Linear_display == true)
 	set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
 	saveas(Linear_fig, [projectDir 'fig.SNP-map.2.' figVer 'eps'], 'epsc');
 	saveas(Linear_fig, [projectDir 'fig.SNP-map.2.' figVer 'png'], 'png');
 	delete(Linear_fig);
-
 	%% change permissions of figures.
 	system(['chmod 774 ' projectDir 'fig.SNP-map.2.' figVer 'eps']);
 	system(['chmod 774 ' projectDir 'fig.SNP-map.2.' figVer 'png']);
 end;
+
 
 end

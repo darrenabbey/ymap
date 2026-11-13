@@ -8,7 +8,7 @@ fprintf(    '\t*---------------------------------------------------------------*
 tic;
 
 % hide figures during construction.
-set(groot,'DefaultFigureVisible','off');
+set(0,'DefaultFigureVisible','off');
 
 
 %%=========================================================================
@@ -21,6 +21,10 @@ else
 	figVer = '';
 end;
 
+
+%%================================================================================================
+% Check if figures are needed.
+%-------------------------------------------------------------------------------------------------
 fprintf('\t|\tCheck figure_options.txt to see if this figure is needed.\n');
 if exist([main_dir '/users/' user '/projects/' project '/figure_options.txt'], 'file')
 	figure_options = importdata([main_dir '/users/' user '/projects/' project '/figure_options.txt'],'\t',1);
@@ -44,12 +48,15 @@ else
 end;
 
 
-%% ========================================================================
+%%================================================================================================
+% Configuration variables.
+%-------------------------------------------------------------------------------------------------
 %    Centromere_format          : Controls how centromeres are depicted.   [0..2]   '2' is pinched cartoon default.
 %    bases_per_bin              : Controls bin sizes for CNV fractions of plot.
 %    scale_type                 : 'Ratio' or 'Log2Ratio' y-axis scaling of copy number.
 %                                 'Log2Ratio' does not properly scale CNV data by ploidy.
 %    chrom_max_width              : max width of chroms as fraction of figure width.
+%-------------------------------------------------------------------------------------------------
 Centromere_format_default   = 3;
 chrom_max_width             = 0.8;
 colorBars                   = true;
@@ -80,9 +87,9 @@ end;
 [FastaPath,FastaName,FastaExt] = fileparts(FASTA_string);
 
 
-%% =========================================================================================
-% Control variables.
-%-------------------------------------------------------------------------------------------
+%%================================================================================================
+% Load configuration details.
+%-------------------------------------------------------------------------------------------------
 projectDir = [main_dir '/users/' user '/projects/' project '/'];
 genomeDir  = [main_dir '/users/' genomeUser '/genomes/' genome '/'];
 if (strcmp(hapmap,'') == 1)
@@ -191,19 +198,16 @@ for chrom = 1:length(chrom_in_use)
 end;
 
 
-%% =========================================================================================
-% Some control variables.
-%-------------------------------------------------------------------------------------------
-
+%%================================================================================================
+% Some figure setup.
+%-------------------------------------------------------------------------------------------------
 % Process input ploidy.
 ploidy = str2num(ploidyEstimateString);
-
 % Sanitize user input of euploid state.
 ploidyBase = round(str2num(ploidyBaseString));
 if (ploidyBase > 4);   ploidyBase = 4;   end;
 if (ploidyBase < 1);   ploidyBase = 1;   end;
 fprintf(['\nEuploid base = "' num2str(ploidyBase) '"\n']);
-
 % basic plot parameters not defined per genome.
 TickSize                = -0.005;  %negative for outside, percentage of longest chrom figure.
 maxY                    = ploidyBase*2;
@@ -211,66 +215,41 @@ cen_tel_Xindent         = 5;
 cen_tel_Yindent         = maxY/4;
 
 
-%% =========================================================================================
-% Define colors for figure generation.
-%-------------------------------------------------------------------------------------------
-fprintf('\t|\tDefine colors used in figure generation.\n');
-source('../phased_and_unphased_color_definitions.m');
-
-
-%%==========================================================================================
-% Determine bases_per_bin sizes to be used as a fallback.
-%-------------------------------------------------------------------------------------------
-max_chr_sz = max(chrom_size); % Cache the max size math calculation to save CPU cycles.
-
-%% Load CNV figure resolution.
-res_cnv_file = fullfile(genomeDir, 'resolution.CNV.txt');
-if exist(res_cnv_file, 'file')
-	% OPTIMIZATION: sscanf is faster than str2num and immune to trailing newlines/spaces
-	res_val = sscanf(fileread(res_cnv_file), '%f');
-	bases_per_bin = max_chr_sz / res_val(1);
-else
-	bases_per_bin = max_chr_sz / 700;
-end;
-
-%% Load SNP figure resolution.
-res_snp_file = fullfile(genomeDir, 'resolution.SNPs.txt');
-if exist(res_snp_file, 'file')
-	res_val_snp = sscanf(fileread(res_snp_file), '%f');
-	bases_per_bin_SNP = max_chr_sz / res_val_snp(1);
-else
-	bases_per_bin_SNP = max_chr_sz / 700;
-end;
-
-
 %%==========================================================================================
 % Load CNV data from 'preprocessed_CNVs.txt' file.
 %-------------------------------------------------------------------------------------------
 cnv_data_file = fullfile(projectDir, 'preprocessed_CNVs.txt');
 if exist(cnv_data_file, 'file')
-	% Open file and parse text, automatically ignoring lines starting with '#'
-	fid = fopen(cnv_data_file, 'r');
-	raw_data = textscan(fid, '%d %d %d %f', 'CommentStyle', '#');
-	fclose(fid);
+        % Open file and parse text, automatically ignoring lines starting with '#'
+        fid = fopen(cnv_data_file, 'r');
+        raw_data = textscan(fid, '%d %d %d %f', 'CommentStyle', '#');
+        fclose(fid);
 
-	% The first column contains the chromosome numbers (chrNum)
-	chroms            = raw_data{1};
-	fragment_starts   = raw_data{2};
-	fragment_ends     = raw_data{3};
-	readAverages      = raw_data{4};
-	CNVlines_analyzed = length(chroms);
+        % The first column contains the chromosome numbers (chrNum)
+        chroms            = raw_data{1};
+        fragment_starts   = raw_data{2};
+        fragment_ends     = raw_data{3};
+        readAverages      = raw_data{4};
+        CNVlines_analyzed = length(chroms);
 
-	% Compute the 1-based index within each chromosome for every data row
-	per_chrom_CNVindex = zeros(CNVlines_analyzed, 1);
-	for c = unique(chroms(:))'
-		mask = (chroms == c);
-		per_chrom_CNVindex(mask) = 1:sum(mask);
-	end;
+        % Compute the 1-based index within each chromosome for every data row
+        per_chrom_CNVindex = zeros(CNVlines_analyzed, 1);
+        for c = unique(chroms(:))'
+                mask = (chroms == c);
+                per_chrom_CNVindex(mask) = 1:sum(mask);
+        end;
 
-	preprocessed_CNVs = true;
+        preprocessed_CNVs = true;
 else
-	preprocessed_CNVs = false;
+        preprocessed_CNVs = false;
 end;
+
+
+%% =========================================================================================
+% Define colors for figure generation.
+%-------------------------------------------------------------------------------------------
+fprintf('\t|\tDefine colors used in figure generation.\n');
+source('../phased_and_unphased_color_definitions.m');
 
 
 %%==========================================================================================
@@ -313,6 +292,31 @@ else
 end;
 
 
+%%==========================================================================================
+% Determine bases_per_bin sizes to be used as a fallback.
+%-------------------------------------------------------------------------------------------
+max_chr_sz = max(chrom_size); % Cache the max size math calculation to save CPU cycles.
+
+%% Load CNV figure resolution.
+res_cnv_file = fullfile(genomeDir, 'resolution.CNV.txt');
+if exist(res_cnv_file, 'file')
+        % OPTIMIZATION: sscanf is faster than str2num and immune to trailing newlines/spaces
+        res_val = sscanf(fileread(res_cnv_file), '%f');
+        bases_per_bin = max_chr_sz / res_val(1);
+else
+        bases_per_bin = max_chr_sz / 700;
+end;
+
+%% Load SNP figure resolution.
+res_snp_file = fullfile(genomeDir, 'resolution.SNPs.txt');
+if exist(res_snp_file, 'file')
+        res_val_snp = sscanf(fileread(res_snp_file), '%f');
+        bases_per_bin_SNP = max_chr_sz / res_val_snp(1);
+else
+        bases_per_bin_SNP = max_chr_sz / 700;
+end;
+
+
 %%================================================================================================
 % Setup for SNP/LOH data calculations.
 %-------------------------------------------------------------------------------------------------
@@ -347,7 +351,7 @@ end;
 
 
 %%==========================================================================================
-% Load corrected CNV data.
+% Load 'Common_CNV.mat' file containing CNV estimates per standard genome bin.
 %-------------------------------------------------------------------------------------------
 fprintf('\t|\tLoad CNV data.\n');
 load([projectDir 'Common_CNV.mat']);       % 'CNVplot2','genome_CNV'
@@ -435,7 +439,6 @@ chrom_SNPdata = temp_holding;
 
 
 %% =========================================================================================
-% Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
 % Generate allele ratio track file.
 %-------------------------------------------------------------------------------------------
 source('../createAlleleRatiosTrack.m');
@@ -466,8 +469,6 @@ else
 end;
 
 
-fig = figure(1);
-
 for chrom = 1:length(chrom_in_use)
 	if (chrom_in_use(chrom) == 1)
 		SNPbin_mask = (chroms = chrom);
@@ -488,11 +489,11 @@ for chrom = 1:length(chrom_in_use)
 
 			phased_plot{chrom}(idx)                                = length(chrom_SNPdata{chrom,1}{idx});             % phased data.
 			phased_plot2{chrom}(idx)                               = phased_plot{chrom}(idx)/full_data_threshold;   %
-			phased_plot2{chrom}(phased_plot2{chrom} > 1)                     = 1;                                                   %
+			phased_plot2{chrom}(phased_plot2{chrom} > 1)           = 1;                                                   %
 
 			unphased_plot{chrom}(idx)                              = length(chrom_SNPdata{chrom,2}{idx});             % unphased data.
 			unphased_plot2{chrom}(idx)                             = unphased_plot{chrom}(idx)/full_data_threshold; %
-			unphased_plot2{chrom}(unphased_plot2{chrom} > 1)                 = 1;                                                   %
+			unphased_plot2{chrom}(unphased_plot2{chrom} > 1)       = 1;                                                   %
 		end;
 	end;
 end;
@@ -508,7 +509,7 @@ largestchrom = largestchrom(1);
 %-------------------------------------------------------------------------------------------
 if (Standard_display)
 	fprintf('\t|\tSetup for main figure generation.\n');
-	fig = figure(1);
+	Standard_fig = figure(1);
 end;
 
 
@@ -543,16 +544,17 @@ end;
 for chrom_to_draw  = 1:length(chrom_order)
 	chrom = chrom_order(chrom_to_draw);
 	if (chrom_in_use(chrom) == 1)
-		c_prev = colorInit;
-		c_post = colorInit;
-		c_     = c_prev;
-		infill = zeros(1,length(unphased_plot2{chrom}));
-		colors = [];
 
 
 		%%================================================================================
 		%% determine color of each bin (Vectorized).
 		%---------------------------------------------------------------------------------
+		c_prev = colorInit;
+                c_post = colorInit;
+                c_     = c_prev;
+                infill = zeros(1,length(unphased_plot2{chrom}));
+                colors = [];
+
 		SNPbin_mask = (chroms == chrom);
                 num_bins = sum(SNPbin_mask);
                 if num_bins == 0
@@ -588,27 +590,28 @@ for chrom_to_draw  = 1:length(chrom_order)
                 %% end determine color of each bin.
 
 
-		% reverse order of color and CNV bins if chromosome is indicated as reversed in figure_definitions.txt file.
+		%%================================================================================
+                % Reverse order of color and CNV bins if chromosome is indicated as reversed in figure_definitions.txt file.
+                %---------------------------------------------------------------------------------
 		if (chrom_figReversed(chrom) == 1)
 			colors        = flipud(colors);
 			CNVplot2{chrom} = fliplr(CNVplot2{chrom});
 		end;
 
 
-%%%%%%%%%%%%%%%%==================================================================================
-%%%%%%%%%%%%%%%% Standard figure draw section
-%%%%%%%%%%%%%%%%----------------------------------------------------------------------------------
-		if (Standard_display)
-			figure(fig);
-
-			% make standard chrom cartoons.
-			left          = chrom_posX(chrom);
-			bottom        = chrom_posY(chrom);
-			width         = chrom_width(chrom);
-			height        = chrom_height(chrom);
-			subPlotHandle = subplot('Position',[left bottom width height]);
-			fprintf(['\tfigposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\n']);
-			hold on;
+		%%================================================================================
+                % Draw standard/stacked chromosomes figure.
+                %---------------------------------------------------------------------------------
+		if (Standard_display == true)
+                        figure(Standard_fig);
+                        % make standard chrom cartoons.
+                        left          = chrom_posX(chrom);
+                        bottom        = chrom_posY(chrom);
+                        width         = chrom_width(chrom);
+                        height        = chrom_height(chrom);
+                        subPlotHandle = subplot('Position',[left bottom width height]);
+                        fprintf(['chrom' num2str(chrom) ': figposition = [' num2str(left) ' | ' num2str(bottom) ' | ' num2str(width) ' | ' num2str(height) ']\t']);
+                        hold on;
 
 
 			%% standard : draw colorbars.
@@ -795,15 +798,13 @@ for chrom_to_draw  = 1:length(chrom_order)
 		end;
 
 
-%%%%%%%%%%%%%%%%==================================================================================
-%%%%%%%%%%%%%%%% Linear figure draw section
-%%%%%%%%%%%%%%%%----------------------------------------------------------------------------------
+		%%================================================================================
+                % Draw horizontal chromosomes figure.
+                %---------------------------------------------------------------------------------
 		%% Linear figure draw section
 		if (Linear_display)
 			figure(Linear_fig);
-
 			Linear_width = Linear_chrom_max_width*chrom_size(chrom)/Linear_genome_size;
-
 			subplot('Position',[Linear_left Linear_base Linear_width Linear_height]);
 			Linear_left = Linear_left + Linear_width + Linear_chrom_gap;
 			hold on;
@@ -956,13 +957,6 @@ for chrom_to_draw  = 1:length(chrom_order)
 			end;
 		end;
 
-		if (Standard_display)
-			% shift back to main figure generation.
-			figure(fig);
-
-			hold on;
-		end;
-
 		first_chrom = false;
 	end;
 end;
@@ -973,10 +967,10 @@ end;
 %-------------------------------------------------------------------------------------------------
 if (Standard_display)
 	fprintf('\n###\n### Saving main figure.\n###\n');
-	set(   fig,        'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
-	saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.' figVer 'eps'], 'epsc');
-	saveas(fig,        [projectDir 'fig.CNV-SNP-map.1.' figVer 'png'], 'png' );
-	delete(fig);
+	set(   Standard_fig, 'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
+	saveas(Standard_fig, [projectDir 'fig.CNV-SNP-map.1.' figVer 'eps'], 'epsc');
+	saveas(Standard_fig, [projectDir 'fig.CNV-SNP-map.1.' figVer 'png'], 'png' );
+	delete(Standard_fig);
 	%% change permissions of figures.
 	system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.1.' figVer 'eps']);
 	system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.1.' figVer 'png']);
@@ -987,7 +981,6 @@ if (Linear_display)
 	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.' figVer 'eps'], 'epsc');
 	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.' figVer 'png'], 'png' );
 	delete(Linear_fig);
-
 	%% change permissions of figures.
 	system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.2.' figVer 'eps']);
 	system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.2.' figVer 'png']);
