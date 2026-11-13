@@ -19,8 +19,6 @@ else
 	fprintf(alleleRatiosFid, ['track name=' project_ 'AlleleRatios description="' project_ ' allele ratios" useScore=0 itemRGB=On\n']);
 	for chrom = 1:length(chrom_in_use)
 		if (chrom_in_use(chrom) == 1)
-			% DYNAMIC FIX; Lock the loop limit exactly to the number of bins
-			% initialized in your data cell arrays to prevent out-of-bounds crashes.
 			num_bins_allocated = length(chrom_SNPdata{chrom,1});
 
 			for chrom_bin_SNP = 1:num_bins_allocated
@@ -382,7 +380,7 @@ else
 						chrom_SNPdata_countC{ chrom  }(chrom_bin_SNP) = chrom_SNPdata_countC{ chrom  }(chrom_bin_SNP) + 1;
 
 						if (~all(colorList == colorNoData))
-							writeAlleleRatioLine(alleleRatiosFid, chromName, coordinate, homologA, homologB, colorList, allelic_ratio);
+							writeAlleleRatioLine(alleleRatiosFid, chrom_name{chrom}, coordinate, homologA, homologB, colorList, allelic_ratio);
 						end
 					end;
 				end;
