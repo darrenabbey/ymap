@@ -125,53 +125,43 @@ with open(fragments_FASTA_file, 'r') as fragments_FASTA_data:
 	for line in fragments_FASTA_data:
 		trimmed_line = line.strip();
 
-		# Safely skip any single blank line instantly.
-		if not trimmed_line:
+		# Only process header lines; skip blank lines and sequence lines.
+		if not trimmed_line.startswith(">"):
 			continue;
 
-		# If the line is a header, store it and move to the next line.
-		if trimmed_line.startswith(">"):
-			current_header = trimmed_line;
-			continue;
+		line_parts = trimmed_line.split();
 
-		# If we reach here, it's a sequence line. Process it using the stored header.
-		if current_header:
-			line_parts = current_header.split();
+		if len(line_parts) > 3:
+			chrGenomeAndNum_string = line_parts[0];
+			bp_coordinate_string   = line_parts[1];
+			fragment_size_string   = line_parts[2];
+			fragment_usable_string = line_parts[3];
 
-			if len(line_parts) > 3:
-				chrGenomeAndNum_string = line_parts[0];
-				bp_coordinate_string   = line_parts[1];
-				fragment_size_string   = line_parts[2];
-				fragment_usable_string = line_parts[3];
+			if fragment_usable_string in usable_labels:
+				# Parse chromosome number.
+				string_fragments = chrGenomeAndNum_string.split(".");
+				chrNum_string    = string_fragments[-1];
+				chr_num          = int(chrNum_string.replace("chr", ""));
 
-				if fragment_usable_string in usable_labels:
-					# Parse chromosome number.
-					string_fragments = chrGenomeAndNum_string.split(".");
-					chrNum_string    = string_fragments[-1];
-					chr_num          = int(chrNum_string.replace("chr", ""));
+				# Parse coordinates.
+				coordinates = bp_coordinate_string.replace('(', '').replace(')', '').replace('..', ' ').split();
+				bp_start    = int(coordinates[0]);
+				bp_end      = int(coordinates[1]);
 
-					# Parse coordinates.
-					coordinates = bp_coordinate_string.replace('(', '').replace(')', '').replace('..', ' ').split();
-					bp_start    = int(coordinates[0]);
-					bp_end      = int(coordinates[1]);
+				# Core initialization placeholders for downstream SNP string additions
+				phasedData         = '(';
+				unphasedData       = '(';
+				phasedCoordinate   = '(';
+				unphasedCoordinate = '(';
+				phasedAllele       = '(';
+				unphasedAllele     = '(';
 
-					# Core initialization placeholders for downstream SNP string additions
-					phasedData         = '(';
-					unphasedData       = '(';
-					phasedCoordinate   = '(';
-					unphasedCoordinate = '(';
-					phasedAllele       = '(';
-					unphasedAllele     = '(';
-
-					fragments.append([
-						chr_num, bp_start, bp_end, 
-						phasedData, unphasedData, 
-						phasedCoordinate, unphasedCoordinate, 
-						phasedAllele, unphasedAllele
-					]);
-
-			# Reset header tracker to prepare for the next record
-			current_header = None;
+				fragments.append([
+					chr_num, bp_start, bp_end,
+					phasedData, unphasedData,
+					phasedCoordinate, unphasedCoordinate,
+					phasedAllele, unphasedAllele
+				]);
 
 fragment_counter = len(fragments);
 
@@ -516,7 +506,7 @@ print('# chr_num\tbp_start\tbp_end\tphasedData\tunphasedData\tphasedCoordinate\t
 # Clean iteration through every element row in your matrix to avoid off-by-one missing end rows
 for frag in fragments:
 	# Output a line for each fragment.
-	#     fragments[fragment-1] = [chr_num,bp_start,bp_end,phasedData,unphasedData]
+	#     fragments[fragment] = [chr_num,bp_start,bp_end,phasedData,unphasedData]
 	#     0) chr_num
 	#     1) bp_start
 	#     2) bp_end
