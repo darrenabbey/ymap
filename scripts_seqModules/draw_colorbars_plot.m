@@ -11,8 +11,13 @@ end;
 
 fprintf(['colorbar-plot : chrom' num2str(chrom) ':' num2str(actual_num_bins) '\n']);
 
+% Extract literal physical coordinate segments matching this chromosome's SNP bins.
+idx_c        = (chroms == chrom);
+chrom_starts = double(fragment_starts(idx_c))';
+chrom_ends   = double(fragment_ends(idx_c))';
+
 % Extract and align the current chromosome's actual raw colors.
-c_current = colors(1:actual_num_bins, 1:3);
+c_current = colors(idx_c, 1:3);
 
 % Construct previous and next arrays for neighboring-bin window smoothing
 initial_c = [1.0 1.0 1.0]; % Default to baseline white background padding
