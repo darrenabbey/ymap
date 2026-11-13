@@ -132,14 +132,14 @@ for i = 1:num_chroms
 	cen_end(i)   = 0;
 end;
 for i = 1:length(chrom_sizes)
-	chrom_size(chrom_sizes(i).chrom)    = chrom_sizes(i).size;
-	cen_start(centromeres(i).chrom) = centromeres(i).start;
-	cen_end(centromeres(i).chrom)   = centromeres(i).end;
+	chrom_size(chrom_sizes(i).chrom) = chrom_sizes(i).size;
+	cen_start(centromeres(i).chrom)  = centromeres(i).start;
+	cen_end(centromeres(i).chrom)    = centromeres(i).end;
 end;
 if (length(annotations) > 0)
 	fprintf(['\nAnnotations for ' genome '.\n']);
 	for i = 1:length(annotations)
-		annotation_chrom(i)       = annotations(i).chrom;
+		annotation_chrom(i)     = annotations(i).chrom;
 		annotation_type{i}      = annotations(i).type;
 		annotation_start(i)     = annotations(i).start;
 		annotation_end(i)       = annotations(i).end;
@@ -368,6 +368,19 @@ end;
 
 largestchrom = find(chrom_width == max(chrom_width));
 largestchrom = largestchrom(1);
+
+
+%%================================================================================================
+% Setup for CNV data calculations.
+%-------------------------------------------------------------------------------------------------
+fprintf('\t|\tInitialize data vectors for tracking CNV data presentation.\n');
+
+for chrom = 1:length(chrom_sizes)
+	if chrom_in_use(chrom) == 1
+		num_bins = length(CNVplot2{chrom});
+		fprintf('\t|\t    num_bins for chromosome %d data file = %d\n', chrom, num_bins);
+	end;
+end;
 
 
 %% =========================================================================================
