@@ -184,7 +184,14 @@ if exist(cnv_data_file, 'file')
 	fragment_starts = raw_data{2};
 	fragment_ends   = raw_data{3};
 	readAverages    = raw_data{4};
-	lines_analyzed  = length(chroms);
+	CNVlines_analyzed  = length(chroms);
+
+	% Compute the 1-based index within each chromosome for every data row
+	per_chrom_CNVindex = zeros(CNVlines_analyzed, 1);
+	for c = unique(chroms(:))'
+		mask = (chroms == c);
+		per_chrom_CNVindex(mask) = 1:sum(mask);
+	end;
 
 	preprocessed_CNVs = true;
 else
@@ -431,7 +438,6 @@ if (performGCbiasCorrection)
         gc_starts      = raw_gc_data{2};
         gc_ends        = raw_gc_data{3};
         gc_ratios      = raw_gc_data{4};
-        lines_analyzed = length(gc_chroms);
 
 	%% Populate cell array cleanly
         if preprocessed_CNVs
