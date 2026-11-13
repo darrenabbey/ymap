@@ -28,13 +28,14 @@ else
 				allelic_ratios = [chrom_SNPdata{chrom,1}{chrom_bin_SNP} chrom_SNPdata{chrom,2}{chrom_bin_SNP}];
 				coordinates    = [chrom_SNPdata{chrom,3}{chrom_bin_SNP} chrom_SNPdata{chrom,4}{chrom_bin_SNP}];
 
-				if (sizeof(chrom_SNPdata{chrom,5}{chrom_bin_SNP}) == 0)
-					phased_alleles = '';
+				% Right above the SNP loop: use {} instead of '' so cell concatenation never breaks
+				if (isempty(chrom_SNPdata{chrom,5}{chrom_bin_SNP}))
+					phased_alleles = {};
 				else
 					phased_alleles = chrom_SNPdata{chrom,5}{chrom_bin_SNP};
 				end;
-				if (sizeof(chrom_SNPdata{chrom,6}{chrom_bin_SNP}) == 0)
-					unphased_alleles = '';
+				if (isempty(chrom_SNPdata{chrom,6}{chrom_bin_SNP}))
+					unphased_alleles = {};
 				else
 					unphased_alleles = chrom_SNPdata{chrom,6}{chrom_bin_SNP};
 				end;
@@ -42,35 +43,35 @@ else
 
 				if (length(allelic_ratios) > 0)
 					for SNP = 1:length(allelic_ratios)
-						% Load phased SNP data from earlier defined structure.
-						if (isa(allelic_ratios(SNP),'cell') == 1)
-							if (isscalar(allelic_ratios(SNP){1}) == 1)
-								allelic_ratio           = allelic_ratios(SNP){1};
-							else
-								allelic_ratio           = str2num(cell2mat(allelic_ratios(SNP)));
-							end;
+						% 1. Unwrap allelic_ratio safely
+						if (iscell(allelic_ratios))
+							val = allelic_ratios{SNP};
 						else
-							allelic_ratio                   = allelic_ratios(SNP);
+							val = allelic_ratios(SNP);
+						end;
+						if (ischar(val))
+							allelic_ratio = str2double(val);
+						else
+							allelic_ratio = val;
 						end;
 
-						if (isa(coordinates(SNP),'cell') == 1)
-							if (isscalar(coordinates(SNP){1}) == 1)
-								coordinate              = coordinates(SNP){1};
-							else
-								coordinate              = str2num(cell2mat(coordinates(SNP)));
-							end;
+						% 2. Unwrap coordinate safely
+						if (iscell(coordinates))
+							val = coordinates{SNP};
 						else
-							coordinate                      = coordinates(SNP);
+							val = coordinates(SNP);
+						end;
+						if (ischar(val))
+							coordinate = str2double(val);
+						else
+							coordinate = val;
 						end;
 
-						if (isa(allele_strings,'cell') == 1)
-							if (length(allelic_ratios) > 1)
-								allele_string           = allele_strings{SNP};
-							else
-								allele_string           = allele_strings;
-							end;
+						% 3. Unwrap allele_string safely (works for 1 SNP or many SNPs)
+						if (iscell(allele_strings))
+							allele_string = allele_strings{SNP};
 						else
-							allele_string                   = allele_strings;
+							allele_string = allele_strings;
 						end;
 
 						baseCall                                = allele_string(1);
