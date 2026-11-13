@@ -207,35 +207,39 @@ if (Make_figure == true)
 			%%================================================================================
 			%% determine color of each bin (Vectorized).
 			%---------------------------------------------------------------------------------
-			num_allocated_bins = length(chrom_SNPdata{chrom,1});
+			SNPbin_mask = (chroms == chrom);
+	                num_bins = sum(SNPbin_mask);
+	                if num_bins == 0
+	                        continue;
+	                end;
 
-			% Extract and cap the data ratios for all bins at 1 (Force 862 x 1 column).
-			ratios = min(1, SNPs_to_fullData_ratio{chrom}(1:num_allocated_bins));
-			ratios = reshape(ratios, [], 1);
+	                % Extract and cap the data ratios for all bins at 1 (Force n x 1 column).
+	                ratios = min(1, SNPs_to_fullData_ratio{chrom}(1:num_bins));
+	                ratios = reshape(ratios, [], 1);
 
-			% Extract the RGB mix components as strict column vectors (862 x 3 matrix).
-			c1 = reshape(chrom_SNPdata_colorsC{chrom,1}(1:num_allocated_bins), [], 1);
-			c2 = reshape(chrom_SNPdata_colorsC{chrom,2}(1:num_allocated_bins), [], 1);
-			c3 = reshape(chrom_SNPdata_colorsC{chrom,3}(1:num_allocated_bins), [], 1);
-			colorMix = [c1, c2, c3];
+	                % Extract the RGB mix components as strict column vectors (n x 3).
+	                c1 = reshape(chrom_SNPdata_colorsC{chrom,1}(1:num_bins), [], 1);
+	                c2 = reshape(chrom_SNPdata_colorsC{chrom,2}(1:num_bins), [], 1);
+	                c3 = reshape(chrom_SNPdata_colorsC{chrom,3}(1:num_bins), [], 1);
+	                colorMix = [c1, c2, c3];
 
-			% Calculate the weighted color blend for all bins at once.
-			colorNoData = reshape(colorNoData, 1, 3); % Force 1 x 3 row vector
-			colors = colorMix .* ratios + colorNoData .* (1 - ratios);
+	                % Calculate the weighted color blend for all bins at once.
+	                colorNoData = reshape(colorNoData, 1, 3); % Force 1 x 3 row vector
+	                colors = colorMix .* ratios + colorNoData .* (1 - ratios);
 
-			% Find where there is no data and force them to colorNoData.
-			noDataMask = (ratios == 0);
-			if any(noDataMask)
-				colors(noDataMask, :) = repmat(colorNoData, sum(noDataMask), 1);
-			end;
+        	        % Find where there is no data and force them to colorNoData.
+	                noDataMask = (ratios == 0);
+	                if any(noDataMask)
+	                        colors(noDataMask, :) = repmat(colorNoData, sum(noDataMask), 1);
+        	        end;
 
-			% Print the console progress dots all at once (preserving 100-dot wrapping).
-			num_no_data = sum(noDataMask);
-			if num_no_data > 0
-				dots = repmat('.', 1, num_no_data);
-				fprintf('%s\n', regexprep(dots, '(.{100})', '$1\n'));
-			end;
-			%% end determine color of each bin.
+	                % Print the console progress dots all at once (preserving 100-dot wrapping).
+	                num_no_data = sum(noDataMask);
+	                if num_no_data > 0
+	                        dots = repmat('.', 1, num_no_data);
+	                        fprintf('%s\n', regexprep(dots, '(.{100})', '$1\n'));
+	                end;
+	                %% end determine color of each bin.
 
 
 			% reverse order of color and CNV bins if chromosome is indicated as reversed in figure_definitions.txt file.
