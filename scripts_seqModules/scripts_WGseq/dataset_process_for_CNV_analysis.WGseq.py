@@ -87,48 +87,38 @@ with open(fragments_FASTA_file, 'r') as fragments_FASTA_data:
 	for line in fragments_FASTA_data:
 		trimmed_line = line.strip();
 
-		# Safely skip any single blank line instantly.
-		if not trimmed_line:
+		# Only process header lines; skip blank lines and sequence lines.
+		if not trimmed_line.startswith(">"):
 			continue;
 
-		# If the line is a header, store it and move to the next line.
-		if trimmed_line.startswith(">"):
-			current_header = trimmed_line;
-			continue;
+		line_parts = trimmed_line.split();
 
-		# If we reach here, it's a sequence line. Process it using the stored header.
-		if current_header:
-			line_parts = current_header.split();
+		if len(line_parts) > 3:
+			chrGenomeAndNum_string = line_parts[0];
+			bp_coordinate_string   = line_parts[1];
+			fragment_size_string   = line_parts[2];
+			fragment_usable_string = line_parts[3];
 
-			if len(line_parts) > 3:
-				chrGenomeAndNum_string = line_parts[0];
-				bp_coordinate_string   = line_parts[1];
-				fragment_size_string   = line_parts[2];
-				fragment_usable_string = line_parts[3];
+			if fragment_usable_string in usable_labels:
+				# Parse chromosome number.
+				string_fragments = chrGenomeAndNum_string.split(".");
+				chrNum_string    = string_fragments[-1];
+				chr_num          = int(chrNum_string.replace("chr", ""));
 
-				if fragment_usable_string in usable_labels:
-					# Parse chromosome number.
-					string_fragments = chrGenomeAndNum_string.split(".");
-					chrNum_string    = string_fragments[-1];
-					chr_num          = int(chrNum_string.replace("chr", ""));
+				# Parse coordinates.
+				coordinates = bp_coordinate_string.replace('(', '').replace(')', '').replace('..', ' ').split();
+				bp_start    = int(coordinates[0]);
+				bp_end      = int(coordinates[1]);
 
-					# Parse coordinates.
-					coordinates = bp_coordinate_string.replace('(', '').replace(')', '').replace('..', ' ').split();
-					bp_start    = int(coordinates[0]);
-					bp_end      = int(coordinates[1]);
+				# Core initialization placeholders for downstream CNV data additions
+				reads_count = 0;  # placeholder value.
+				reads_max   = 0;  # placeholder value.
+				reads_ave   = 0;  # placeholder value.
 
-					# Core initialization placeholders for downstream CNV data additions
-					reads_count = 0;  # placeholder value.
-					reads_max   = 0;  # placeholder value.
-					reads_ave   = 0;  # placeholder value.
-
-					fragments.append([
-						chr_num, bp_start, bp_end, 
-						reads_count, reads_max, reads_ave
-					]);
-
-			# Reset header tracker to prepare for the next record
-			current_header = None;
+				fragments.append([
+					chr_num, bp_start, bp_end,
+					reads_count, reads_max, reads_ave
+				]);
 
 fragment_counter = len(fragments);
 
@@ -302,9 +292,9 @@ for line in data:
 		# If (fragment_found == 0), look to see if current coordinate matches any defined fragments.
 		if fragment_found == 0:
 			for frag in range(current_fragment,numFragments):
-				# Check if current coordinate is consistent with this fragment : fragments[frag-1] = [chr_num,bp_start,bp_end,readSum,readMax,readAve]
-				# print(str(chr)+": "+str(pos_point)+"; "+str(fragments[frag-1][0])+":"+str(fragments[frag-1][1])+"..."+str(fragments[frag-1][2]))
-				if chr == fragments[frag-1][0] and pos_point >= fragments[frag-1][1] and pos_point <= fragments[frag-1][2]:
+				# Check if current coordinate is consistent with this fragment : fragments[frag] = [chr_num,bp_start,bp_end,readSum,readMax,readAve]
+				# print(str(chr)+": "+str(pos_point)+"; "+str(fragments[frag][0])+":"+str(fragments[frag][1])+"..."+str(fragments[frag][2]))
+				if chr == fragments[frag][0] and pos_point >= fragments[frag][1] and pos_point <= fragments[frag][2]:
 					fragment_found   = 1
 					current_fragment = frag
 					break
@@ -314,7 +304,7 @@ for line in data:
 			if last_fragment != current_fragment:
 				log_count  += 1
 				log_offset += 1
-				if ((log_count-1)%100) == 0:
+				if ((log_count-1) % 100) == 0:
 					if (log_count-1) == 0:
 						with open(logName, "a") as myfile:
 							myfile.write("\t\t|\t")
@@ -324,15 +314,15 @@ for line in data:
 				with open(logName, "a") as myfile:
 					myfile.write(".")
 
-			# Adds current coordinate read count to fragment total count : fragments[frag-1] = [chr_num,bp_start,bp_end,readSum,readMax,readAve]
-			fragments[current_fragment-1][3] += data_point
+			# Adds current coordinate read count to fragment total count : fragments[frag] = [chr_num,bp_start,bp_end,readSum,readMax,readAve]
+			fragments[current_fragment][3] += data_point
 
-			# If current coordinate read count is highest so far for fragment, update max : fragments[frag-1] = [chr_num,bp_start,bp_end,readSum,readMax,readAve]
-			if data_point > fragments[current_fragment-1][4]:
-				fragments[current_fragment-1][4] = data_point
+			# If current coordinate read count is highest so far for fragment, update max : fragments[frag] = [chr_num,bp_start,bp_end,readSum,readMax,readAve]
+			if data_point > fragments[current_fragment][4]:
+				fragments[current_fragment][4] = data_point
 
-			# If current coordinate is at (or after) the end of a fragment, update fragment_found to 0 : fragments[frag-1] = [chr_num,bp_start,bp_end,readSum,readMax,readAve]
-			if pos_point >= fragments[current_fragment-1][2]:
+			# If current coordinate is at (or after) the end of a fragment, update fragment_found to 0 : fragments[frag] = [chr_num,bp_start,bp_end,readSum,readMax,readAve]
+			if pos_point >= fragments[current_fragment][2]:
 				fragment_found = 0
 
 	# Reset old_chr to current coordinate chromosome before moving to next line in pileup. 
@@ -343,10 +333,10 @@ with open(logName, "a") as myfile:
 	myfile.write("\n\t\t|\tCalculating average read coverage per fragment.\n")
 
 # Calculate average read coverage per each fragment.
-for fragment in range(1,numFragments):
+for fragment in range(numFragments):
 	# Calculate average read coverage for this fragment.
-	#       fragments[fragment-1] = [chr_num,bp_start,bp_end, readSum,readMax,readAve]
-	fragments[fragment-1][5] = fragments[fragment-1][3]/float(fragments[fragment-1][2]-fragments[fragment-1][1]+1)
+	#       fragments[fragment] = [chr_num,bp_start,bp_end, readSum,readMax,readAve]
+	fragments[fragment][5] = fragments[fragment][3]/float(fragments[fragment][2]-fragments[fragment][1]+1)
 #------------------------------------------------------------------------------------------------------------
 # End of code section to parse read count max/average data.
 #============================================================================================================
@@ -362,20 +352,20 @@ print('### Data from each fragment: [chrNum, bpStart, bpEnd, aveDepth]')
 #------------------------------------------------------------------------------------------------------------
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tOutput condensed CNV per fragment information.\n")
-for fragment in range(1,numFragments):
+for fragment in range(numFragments):
 	# Output a line for each fragment.
-	#     fragments[fragment-1] = [chr_num,bp_start,bp_end, aveDepth]
+	#     fragments[fragment] = [chr_num,bp_start,bp_end, aveDepth]
 	#     0) chr_num
 	#     1) bp_start
 	#     2) bp_end
 	#     3) average reads
-	chr_num         = fragments[fragment-1][0]
-	bp_start        = fragments[fragment-1][1]
-	bp_end          = fragments[fragment-1][2]
-	read_average    = fragments[fragment-1][5]
+	chr_num         = fragments[fragment][0]
+	bp_start        = fragments[fragment][1]
+	bp_end          = fragments[fragment][2]
+	read_average    = fragments[fragment][5]
 	print(str(chr_num) + '\t' + str(bp_start) + '\t' + str(bp_end) + '\t' + str(read_average))
 #------------------------------------------------------------------------------------------------------------
-# End of code section to output information about fragments. 
+# End of code section to output information about fragments.
 #============================================================================================================
 
 
