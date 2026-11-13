@@ -2,22 +2,23 @@
 % draw_colorbars_plot.m - Variable-Width SNP/LOH Color Bar Painter
 %-------------------------------------------------------------------------------------------------
 
-% Determine the TRUE number of variable rows.
-if preprocessed_SNPs
-	actual_num_bins = sum(chroms == chrom);
-else
-	actual_num_bins = ceil(chrom_size(chrom) / bases_per_bin_SNP);
-end;
+% Determine the number of variable rows.
+actual_num_bins = size(colors, 1);
 
 fprintf(['colorbar-plot : chrom' num2str(chrom) ':' num2str(actual_num_bins) '\n']);
 
-% Extract literal physical coordinate segments matching this chromosome's SNP bins.
-idx_c        = (chroms == chrom);
-chrom_starts = double(fragment_starts(idx_c))';
-chrom_ends   = double(fragment_ends(idx_c))';
+
+%% Extract literal physical coordinate segments matching this chromosome's SNP bins.
+%idx_c        = (chroms == chrom);
+%chrom_starts = double(fragment_starts(idx_c))';
+%chrom_ends   = double(fragment_ends(idx_c))';
+%
+%% Extract and align the current chromosome's actual raw colors.
+%c_current = colors(idx_c, 1:3);
+
 
 % Extract and align the current chromosome's actual raw colors.
-c_current = colors(idx_c, 1:3);
+c_current = colors(1:actual_num_bins, 1:3);
 
 % Construct previous and next arrays for neighboring-bin window smoothing
 initial_c = [1.0 1.0 1.0]; % Default to baseline white background padding
