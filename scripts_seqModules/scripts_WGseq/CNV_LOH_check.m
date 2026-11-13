@@ -3,7 +3,7 @@ addpath('../');
 
 workingDir = [main_dir '/users/' user '/projects/' project '/'];
 fprintf('\n\n### *===============================================================*\n');
-fprintf(    '### | Generate SNP/LOH only plot in script "LOH_hapmap_v4.m".       |\n');
+fprintf(    '### | Comparing CNV and SNP/LOH fits in script "CNV_LOH_check.m".       |\n');
 fprintf(    '### *---------------------------------------------------------------*\n');
 tic;
 
@@ -250,13 +250,49 @@ if exist(snp_data_file, 'file')
 	per_chrom_SNPindex = zeros(SNPlines_analyzed, 1);
 	for c = unique(chroms(:))'
 		mask = (chroms == c);
-		per_chrom_SNPindex(mask) = 1:sum(mask);
+		per_chrom_SNPindex(mask) = (1:sum(mask))';
 	end;
 
 	preprocessed_SNPs = true;
 else
 	preprocessed_SNPs = false;
 end;
+
+
+%%========================================================================
+% DIAGNOSTIC; Verify raw_data parsed from preprocessed_SNPs.txt
+%-------------------------------------------------------------------------
+fprintf('\n[CNV_LOH_check.m : DEBUG-1] preprocessed_SNPs = %d | SNPlines_analyzed = %d\n', ...
+        preprocessed_SNPs, SNPlines_analyzed);
+
+for d_chr = unique(chroms(:))'
+        chr_rows  = find(chroms == d_chr);
+        first_row = chr_rows(1);
+        last_row  = chr_rows(end);
+
+        fprintf('[DEBUG-TEXTSCAN] chr_num = %d | row count = %d | rows %d..%d\n', ...
+                d_chr, length(chr_rows), first_row, last_row);
+
+        % Print the first 10 rows for this chromosome to check column alignment & per-chrom index
+        max_rows = min(10, length(chr_rows));
+        for local_idx = 1:max_rows
+                r = chr_rows(local_idx);
+
+                p_preview = phased_ratio_data_string{r};
+                if length(p_preview) > 35
+                        p_preview = [p_preview(1:35) '...'];
+                end;
+                c_preview = phased_coordinates_string{r};
+                if length(c_preview) > 35
+                        c_preview = [c_preview(1:35) '...'];
+                end;
+
+                fprintf('\tGlobalRow %4d | LocalBin %3d | per_chrom_SNPindex=%3d | bp=%d..%d | phasedData=%s | phasedCoords=%s\n', ...
+                        r, local_idx, per_chrom_SNPindex(r), fragment_starts(r), fragment_ends(r), p_preview, c_preview);
+        end;
+end;
+fprintf('[CNV_LOH_check.m : DEBUG-1] ====================================================\n\n');
+
 
 
 %%==========================================================================================
@@ -285,13 +321,8 @@ end;
 
 
 %% =========================================================================================
-%% =========================================================================================
-%% =========================================================================================
-%% -----------------------------------------------------------------------------------------
-%% =========================================================================================
-%% =========================================================================================
-%% =========================================================================================
-
+% Some setup variables.
+%-------------------------------------------------------------------------------------------
 fprintf('\n### Process input ploidy.\n');
 % Process input ploidy.
 ploidy = str2num(ploidyEstimateString);
@@ -399,20 +430,30 @@ while (chromCopyNum_changed == true)
 	%.........................................................................................
 	fprintf(['\n### Load SNP/LOH data.\n']);
 	mat_file_path = [projectDir 'SNP_' SNP_verString '.mat'];
-
 	if (exist(mat_file_path, 'file') == 0)
-		fprintf('\t|\tMAT file not found, regenerating from memory structures.\n');
-		count      = 0;
-		old_chrom  = 0;
-		gap_string = '';
+	        fprintf('\t|\tMAT file not found, regenerating from memory structures.\n');
+	        count      = 0;
+	        old_chrom  = 0;
+	        gap_string = '';
 
-		% Loop directly over the list of all SNP bins previously loaded.
-		for line_idx = 1:SNPlines_analyzed
-			chrom          = chroms(line_idx);
-			% Check if this chromosome is actively displayed.
-			if chrom_in_use(chrom) == 1
-				fragment_start = fragment_starts(line_idx);
-				idx            = per_chrom_SNPindex(line_idx);
+		% Reset chrom_SNPdata cleanly so every chromosome has independent bin storage
+		chrom_SNPdata = cell(length(chrom_in_use), 6);
+		for c_init = 1:length(chrom_in_use)
+		        if chrom_in_use(c_init) == 1
+		                n_bins_init = sum(chroms == c_init);
+		                for col_init = 1:6
+		                        chrom_SNPdata{c_init, col_init} = cell(1, n_bins_init);
+		                end;
+		        end;
+		end;
+
+	        % Loop directly over the list of all SNP bins previously loaded.
+	        for line_idx = 1:SNPlines_analyzed
+	                chrom = chroms(line_idx);
+	                % Check if this chromosome is actively displayed.
+	                if chrom_in_use(chrom) == 1
+	                        fragment_start = fragment_starts(line_idx);
+	                        idx            = per_chrom_SNPindex(line_idx);
 
 
 				%%================================================================
@@ -437,7 +478,7 @@ while (chromCopyNum_changed == true)
 				%%================================================================
 				% Parse Phased Ratio Data Strings; '(val1,val2,...,valN)' -> [val1,val2,...,valN]
 				%-----------------------------------------------------------------
-				p_ratio_str = phased_ratio_data_string{idx};
+				p_ratio_str = phased_ratio_data_string{line_idx};
 				if length(p_ratio_str) > 2
 					p_ratio_str(1)   = []; % Remove opening '('
 					p_ratio_str(end) = []; % Remove closing ')'
@@ -450,7 +491,7 @@ while (chromCopyNum_changed == true)
 				%%================================================================
 				% Parse Phased Coordinates Strings; '(val1,val2,...,valN)' -> [val1,val2,...,valN]
 				%-----------------------------------------------------------------
-				p_coord_str = phased_coordinates_string{idx};
+				p_coord_str = phased_coordinates_string{line_idx};
 				if length(p_coord_str) > 2
 					p_coord_str(1)   = [];
 					p_coord_str(end) = [];
@@ -463,7 +504,7 @@ while (chromCopyNum_changed == true)
 				%%================================================================
 				% Parse Unphased Ratio Data Strings; '(val1,val2,...,valN)' -> [val1,val2,...,valN]
 				%-----------------------------------------------------------------
-				up_ratio_str = unphased_ratio_data_string{idx};
+				up_ratio_str = unphased_ratio_data_string{line_idx};
 				if length(up_ratio_str) > 2
 					up_ratio_str(1)   = [];
 					up_ratio_str(end) = [];
@@ -476,7 +517,7 @@ while (chromCopyNum_changed == true)
 				%%================================================================
 				% Parse Unphased Coordinate Strings; '(val1,val2,...,valN)' -> [val1,val2,...,valN]
 				%-----------------------------------------------------------------
-				up_coords_str = unphased_coordinates_string{idx};
+				up_coords_str = unphased_coordinates_string{line_idx};
 				if length(up_coords_str) > 2
 					up_coords_str(1)   = [];
 					up_coords_str(end) = [];
@@ -489,7 +530,7 @@ while (chromCopyNum_changed == true)
 				%%================================================================
 				% Parse Phased Alleles; '(A:A/T,C:G/C)' -> {'A:A/T', 'C:G/C'}
 				%-----------------------------------------------------------------
-				p_alleles_str = phased_alleles_string{idx};
+				p_alleles_str = phased_alleles_string{line_idx};
 				if length(p_alleles_str) > 2
 					p_alleles_str(1)   = [];
 					p_alleles_str(end) = [];
@@ -507,7 +548,7 @@ while (chromCopyNum_changed == true)
 				%%================================================================
 				% Parse Unphased Alleles; '(A:A/T,C:G/C)' -> {'A:A/T', 'C:G/C'}
 				%-----------------------------------------------------------------
-				up_alleles_str = unphased_alleles_string{idx};
+				up_alleles_str = unphased_alleles_string{line_idx};
 				if length(up_alleles_str) > 2
 					up_alleles_str(1)   = [];
 					up_alleles_str(end) = [];
@@ -523,16 +564,16 @@ while (chromCopyNum_changed == true)
 
 
 				% add phased and unphased data to storage arrays.
-				chrom_SNPdata{chrom,1}{idx}          = phased_ratio_data;
-				chrom_SNPdata{chrom,2}{idx}          = unphased_ratio_data;
+				chrom_SNPdata{chrom,1}{idx} = phased_ratio_data;
+				chrom_SNPdata{chrom,2}{idx} = unphased_ratio_data;
 
 				% add phased and unphased data coordinates to storage arrays.
-				chrom_SNPdata{chrom,3}{idx}          = phased_coordinates;
-				chrom_SNPdata{chrom,4}{idx}          = unphased_coordinates;
+				chrom_SNPdata{chrom,3}{idx} = phased_coordinates;
+				chrom_SNPdata{chrom,4}{idx} = unphased_coordinates;
 
 				% add phased and unphased data allele strings to storage arrays.
-				chrom_SNPdata{chrom,5}{idx}          = phased_alleles;
-				chrom_SNPdata{chrom,6}{idx}          = unphased_alleles;
+				chrom_SNPdata{chrom,5}{idx} = phased_alleles;
+				chrom_SNPdata{chrom,6}{idx} = unphased_alleles;
 			end;
 		end;
 
@@ -545,6 +586,50 @@ while (chromCopyNum_changed == true)
 		load([projectDir 'SNP_' SNP_verString '.mat']);
 	end;
 
+%%========================================================================
+% DIAGNOSTIC: Log first 10 SNP bins for each active chromosome.
+%-------------------------------------------------------------------------
+fprintf('\n[CNV_LOH_check.m : DEBUG-2] === Logging First 10 SNP Bins Per Chromosome ===\n');
+for d_chrom = 1:length(chrom_in_use)
+        if (chrom_in_use(d_chrom) == 1)
+                fprintf('[DEBUG] Chromosome %d (%s) - total allocated bins: %d\n', ...
+                        d_chrom, chrom_name{d_chrom}, length(chrom_SNPdata{d_chrom, 1}));
+
+                max_check = min(10, length(chrom_SNPdata{d_chrom, 1}));
+                for d_bin = 1:max_check
+                        p_ratios = chrom_SNPdata{d_chrom, 1}{d_bin};
+                        u_ratios = chrom_SNPdata{d_chrom, 2}{d_bin};
+                        p_coords = chrom_SNPdata{d_chrom, 3}{d_bin};
+
+                        % Format coordinates & ratios safely whether empty or non-empty
+                        if isempty(p_coords)
+                                coord_str = 'none';
+                        else
+                                coord_str = num2str(p_coords(1:min(3, end)));
+                        end;
+
+                        if isempty(p_ratios)
+                                ratio_str = 'none';
+                        else
+                                ratio_str = num2str(p_ratios(1:min(3, end)), '%.3f ');
+                        end;
+
+                        % Also log averaged RGB colors if chrom_SNPdata_colorsC is already populated
+                        if exist('chrom_SNPdata_colorsC', 'var') && length(chrom_SNPdata_colorsC{d_chrom, 1}) >= d_bin
+                                rgb_str = sprintf('[%.2f, %.2f, %.2f]', ...
+                                        chrom_SNPdata_colorsC{d_chrom, 1}(d_bin), ...
+                                        chrom_SNPdata_colorsC{d_chrom, 2}(d_bin), ...
+                                        chrom_SNPdata_colorsC{d_chrom, 3}(d_bin));
+                        else
+                                rgb_str = 'N/A';
+                        end;
+
+                        fprintf('\tBin %2d | phasedCount=%2d | unphasedCount=%2d | firstCoords=[%s] | firstRatios=[%s] | RGB=%s\n', ...
+                                d_bin, length(p_ratios), length(u_ratios), coord_str, ratio_str, rgb_str);
+                end;
+        end;
+end;
+fprintf('[CNV_LOH_check.m : DEBUG-2] ====================================================\n\n');
 
 	%%========================================================================================
 	fprintf('\n\n### Calculate allelic ratio cutoffs using Gaussian fitting.\n');

@@ -263,7 +263,7 @@ if exist(snp_data_file, 'file')
 	per_chrom_SNPindex = zeros(SNPlines_analyzed, 1);
 	for c = unique(chroms(:))'
 		mask = (chroms == c);
-		per_chrom_SNPindex(mask) = 1:sum(mask);
+		per_chrom_SNPindex(mask) = (1:sum(mask))';
 	end;
 
 	preprocessed_SNPs = true;
@@ -272,19 +272,55 @@ else
 end;
 
 
+%%========================================================================
+% DIAGNOSTIC; Verify raw_data parsed from preprocessed_SNPs.txt
+%-------------------------------------------------------------------------
+fprintf('\n[LOH_hapmap_v4.m : DEBUG-1] preprocessed_SNPs = %d | SNPlines_analyzed = %d\n', ...
+        preprocessed_SNPs, SNPlines_analyzed);
+
+for d_chr = unique(chroms(:))'
+        chr_rows  = find(chroms == d_chr);
+        first_row = chr_rows(1);
+        last_row  = chr_rows(end);
+
+        fprintf('[DEBUG-TEXTSCAN] chr_num = %d | row count = %d | rows %d..%d\n', ...
+                d_chr, length(chr_rows), first_row, last_row);
+
+        % Print the first 10 rows for this chromosome to check column alignment & per-chrom index
+        max_rows = min(10, length(chr_rows));
+        for local_idx = 1:max_rows
+                r = chr_rows(local_idx);
+
+                p_preview = phased_ratio_data_string{r};
+                if length(p_preview) > 35
+                        p_preview = [p_preview(1:35) '...'];
+                end;
+                c_preview = phased_coordinates_string{r};
+                if length(c_preview) > 35
+                        c_preview = [c_preview(1:35) '...'];
+                end;
+
+                fprintf('\tGlobalRow %4d | LocalBin %3d | per_chrom_SNPindex=%3d | bp=%d..%d | phasedData=%s | phasedCoords=%s\n', ...
+                        r, local_idx, per_chrom_SNPindex(r), fragment_starts(r), fragment_ends(r), p_preview, c_preview);
+        end;
+end;
+fprintf('[LOH_hapmap_v4.m : DEBUG-1] ====================================================\n\n');
+
+
+
 %%==========================================================================================
 % Determine bases_per_bin sizes to be used as a fallback.
 %-------------------------------------------------------------------------------------------
 %% Load CNV and SNP figure resolutions.
 if (exist([genomeDir 'resolution.CNV.txt'],'file') == 0)
-	bases_per_bin           = max(chrom_size)/700;
+	bases_per_bin           = round(max(chrom_size)/700);
 else
-	bases_per_bin           = max(chrom_size)/str2num(fileread([genomeDir 'resolution.CNV.txt']));
+	bases_per_bin           = round(max(chrom_size)/str2num(fileread([genomeDir 'resolution.CNV.txt'])));
 end;
 if (exist([genomeDir 'resolution.SNPs.txt'],'file') == 0)
-	bases_per_bin_SNP       = max(chrom_size)/700;
+	bases_per_bin_SNP       = round(max(chrom_size)/700);
 else
-	bases_per_bin_SNP       = max(chrom_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt']));
+	bases_per_bin_SNP       = round(max(chrom_size)/str2num(fileread([genomeDir 'resolution.SNPs.txt'])));
 end;
 
 
@@ -401,9 +437,20 @@ if (exist(mat_file_path, 'file') == 0)
 	old_chrom  = 0;
 	gap_string = '';
 
+	% Reset chrom_SNPdata cleanly so every chromosome has independent bin storage
+	chrom_SNPdata = cell(length(chrom_in_use), 6);
+	for c_init = 1:length(chrom_in_use)
+	        if chrom_in_use(c_init) == 1
+	                n_bins_init = sum(chroms == c_init);
+	                for col_init = 1:6
+	                        chrom_SNPdata{c_init, col_init} = cell(1, n_bins_init);
+	                end;
+	        end;
+	end;
+
 	% Loop directly over the list of all SNP bins previously loaded.
 	for line_idx = 1:SNPlines_analyzed
-		chrom          = chroms(line_idx);
+		chrom = chroms(line_idx);
 		% Check if this chromosome is actively displayed.
 		if chrom_in_use(chrom) == 1
 			fragment_start = fragment_starts(line_idx);
@@ -541,6 +588,55 @@ else
 end;
 
 
+
+%%========================================================================
+% DIAGNOSTIC: Log first 10 SNP bins for each active chromosome.
+%-------------------------------------------------------------------------
+fprintf('\n[LOH_hapmap_v4.m : DEBUG-2] === Logging First 10 SNP Bins Per Chromosome ===\n');
+for d_chrom = 1:length(chrom_in_use)
+        if (chrom_in_use(d_chrom) == 1)
+                fprintf('[DEBUG] Chromosome %d (%s) - total allocated bins: %d\n', ...
+                        d_chrom, chrom_name{d_chrom}, length(chrom_SNPdata{d_chrom, 1}));
+
+                max_check = min(10, length(chrom_SNPdata{d_chrom, 1}));
+                for d_bin = 1:max_check
+                        p_ratios = chrom_SNPdata{d_chrom, 1}{d_bin};
+                        u_ratios = chrom_SNPdata{d_chrom, 2}{d_bin};
+                        p_coords = chrom_SNPdata{d_chrom, 3}{d_bin};
+
+                        % Format coordinates & ratios safely whether empty or non-empty
+                        if isempty(p_coords)
+                                coord_str = 'none';
+                        else
+                                coord_str = num2str(p_coords(1:min(3, end)));
+                        end;
+
+                        if isempty(p_ratios)
+                                ratio_str = 'none';
+                        else
+                                ratio_str = num2str(p_ratios(1:min(3, end)), '%.3f ');
+                        end;
+
+                        % Also log averaged RGB colors if chrom_SNPdata_colorsC is already populated
+                        if exist('chrom_SNPdata_colorsC', 'var') && length(chrom_SNPdata_colorsC{d_chrom, 1}) >= d_bin
+                                rgb_str = sprintf('[%.2f, %.2f, %.2f]', ...
+                                        chrom_SNPdata_colorsC{d_chrom, 1}(d_bin), ...
+                                        chrom_SNPdata_colorsC{d_chrom, 2}(d_bin), ...
+                                        chrom_SNPdata_colorsC{d_chrom, 3}(d_bin));
+                        else
+                                rgb_str = 'N/A';
+                        end;
+
+                        fprintf('\tBin %2d | phasedCount=%2d | unphasedCount=%2d | firstCoords=[%s] | firstRatios=[%s] | RGB=%s\n', ...
+                                d_bin, length(p_ratios), length(u_ratios), coord_str, ratio_str, rgb_str);
+                end;
+        end;
+end;
+fprintf('[LOH_hapmap_v4.m : DEBUG-2] ====================================================\n\n');
+
+
+
+
 %%================================================================================================
 % Process SNP/hapmap data to determine colors to be presented for each SNP locus.
 %-------------------------------------------------------------------------------------------------
@@ -563,10 +659,10 @@ chrom_SNPdata = temp_holding;
 %%================================================================================================
 % Define new colors for SNPs, using Gaussian fitting crossover points as ratio cutoffs.
 %-------------------------------------------------------------------------------------------------
-fprintf('\t|\tDetermine display color for each SNP.\n');
+fprintf('\t|\tDetermine display color for each SNP bin.\n');
 for chrom = 1:length(chrom_in_use)
 	if (chrom_in_use(chrom) == 1)
-		SNPbin_mask = (chroms = chrom);
+		SNPbin_mask = (chroms == chrom);
 		num_bins = sum(SNPbin_mask);
 		SNPbin_indices = find(SNPbin_mask);
 
@@ -619,6 +715,9 @@ for chrom = 1:length(chrom_in_use)
 			end;
 
 
+			%%========================================================================
+			% Look at each SNP found in this bin.
+			%-------------------------------------------------------------------------
 			if (length(allelic_ratios) > 0)
 				for SNP = 1:length(allelic_ratios)
 					% Load phased/unphased SNP data checking matrix forms safely.
@@ -659,7 +758,7 @@ for chrom = 1:length(chrom_in_use)
 
 
 					%%========================================================
-					% Identify the physical segment containing the SNP
+					% Identify the CNV segment containing the SNP bin.
 					%---------------------------------------------------------
 					segmentID = 1; % Default to the first segment.
 					num_segments = length(chromCopyNum{chrom});
@@ -895,15 +994,11 @@ for chrom = 1:length(chrom_in_use)
 			end;
 		end;
 
+
 		%%================================================================================
 		% Average colors of SNPs found in bin.
 		%---------------------------------------------------------------------------------
 		fprintf('\t|\tDetermine average color for SNPs in chromosome bin.\n');
-
-		% DYNAMIC FIX; Determine true allocation count to prevent out-of-bounds crashes.
-		% num_allocated_bins = length(chrom_SNPdata_countC{chrom});
-		num_allocated_bins = length(chrom_SNPdata{chrom});
-
 		fprintf('\t|\t    length of chrom_SNPdata_countC for chromosome %d data file = %d\n', chrom, length(chrom_SNPdata_countC{chrom}) );
 		fprintf('\t|\t    length of chrom_SNPdata        for chromosome %d data file = %d\n', chrom, length(chrom_SNPdata{chrom})        );
 
@@ -922,9 +1017,9 @@ for chrom = 1:length(chrom_in_use)
 					chrom_SNPdata_colorsC{chrom,3}(idx) = 1.0;
 				end;
 			else
-				chrom_SNPdata_colorsC{chrom,1}(idx)         = 1.0;
-				chrom_SNPdata_colorsC{chrom,2}(idx)         = 1.0;
-				chrom_SNPdata_colorsC{chrom,3}(idx)         = 1.0;
+				chrom_SNPdata_colorsC{chrom,1}(idx) = 1.0;
+				chrom_SNPdata_colorsC{chrom,2}(idx) = 1.0;
+				chrom_SNPdata_colorsC{chrom,3}(idx) = 1.0;
 			end;
 		end;
 	end;
@@ -954,8 +1049,8 @@ end;
 
 for chrom = 1:length(chrom_in_use)
 	if (chrom_in_use(chrom) == 1)
-		SNPbin_mask = (chroms = chrom);
-		num_bins = sum(SNPbin_mask);
+		SNPbin_mask    = (chroms == chrom);
+		num_bins       = sum(SNPbin_mask);
 		SNPbin_indices = find(SNPbin_mask);
 
 		for line_idx = SNPbin_indices(:)'
@@ -970,74 +1065,47 @@ for chrom = 1:length(chrom_in_use)
 			% any bins with more data than the threshold for full color saturation are limited to full saturation.
 			SNPs_to_fullData_ratio{chrom}(SNPs_to_fullData_ratio{chrom} > 1) = 1;
 
-			phased_plot{ chrom}(idx)                               = length(chrom_SNPdata{chrom,1}{idx});             % phased data.
+			phased_plot{ chrom}(idx)                               = length(chrom_SNPdata{chrom,1}{idx});           % phased data.
 			phased_plot2{chrom}(idx)                               = phased_plot{chrom}(idx)/full_data_threshold;   %
-			phased_plot2{chrom}(phased_plot2{chrom} > 1)                     = 1;                                                   %
+			phased_plot2{chrom}(phased_plot2{chrom} > 1)           = 1;                                             %
 
-			unphased_plot{ chrom}(idx)                             = length(chrom_SNPdata{chrom,2}{idx});             % unphased data.
+			unphased_plot{ chrom}(idx)                             = length(chrom_SNPdata{chrom,2}{idx});           % unphased data.
 			unphased_plot2{chrom}(idx)                             = unphased_plot{chrom}(idx)/full_data_threshold; %
-			unphased_plot2{chrom}(unphased_plot2{chrom} > 1)                 = 1;                                                   %
+			unphased_plot2{chrom}(unphased_plot2{chrom} > 1)       = 1;                                             %
 		end;
 	end;
 end;
 fprintf('\n');
 
 %%================================================================================================
-% Make figure showing histogram of SNPs_count across genome; dragon4
+% Make figure showing histogram of SNPs_count across genome.
 %-------------------------------------------------------------------------------------------------
 fprintf('Make histogram of SNP count per bin across genome.\n');
-
-% Vectorized collection: faster and cleaner than element-by-element growth
-active_chroms = find(chrom_in_use == 1);
-SNP_cells = cell(1, length(active_chroms));
-for idx = 1:length(active_chroms)
-	chrom = active_chroms(idx);
-	num_allocated_bins = length(chrom_SNPdata{chrom, 1});
-	SNP_cells{idx} = SNPs_count{chrom}(1:num_allocated_bins);
+SNP_count_all = [];
+count = 1;
+for chrom = 1:length(chrom_in_use)
+	if (chrom_in_use(chrom) == 1)
+		SNPbin_mask = (chroms == chrom);
+		SNPbin_indices = find(SNPbin_mask);
+		if ~isempty(SNPbin_indices)
+			idx_vec = per_chrom_SNPindex(SNPbin_indices);
+			vals    = SNPs_count{chrom}(idx_vec);
+			n_vals  = length(vals);
+			SNP_count_all(count : count + n_vals - 1) = vals;
+			count = count + n_vals;
+		end;
+	end;
 end;
-SNP_count_all = [SNP_cells{:}];
-
-if isempty(SNP_count_all)
-	fprintf('\tWarning: No SNP bins found; skipping SNP histogram.\n');
-else
-	% Ensure NBINS is at least 1 even if max_SNP_count is 0
-	max_SNP_count = max(SNP_count_all);
-	num_hist_bins = max(1, round(max_SNP_count));
-
+if ~isempty(SNP_count_all)
+	max_SNP_count     = max(1, round(max(SNP_count_all)));
 	SNP_histogram_fig = figure(3);
-	hist(SNP_count_all, num_hist_bins, 'facecolor', 'g');
-
-	saveas(SNP_histogram_fig, fullfile(projectDir, ['fig.SNP-histogram.' figVer 'eps']), 'epsc');
-	saveas(SNP_histogram_fig, fullfile(projectDir, ['fig.SNP-histogram.' figVer 'png']), 'png');
+	figure(SNP_histogram_fig);
+	hist(SNP_count_all, max_SNP_count, "facecolor", "g");
+	saveas(SNP_histogram_fig, [projectDir 'fig.SNP-histogram.' figVer 'eps'], 'epsc');
+	saveas(SNP_histogram_fig, [projectDir 'fig.SNP-histogram.' figVer 'png'], 'png');
 	delete(SNP_histogram_fig);
-end;
+end
 fprintf('\n');
-
-%	fprintf('Make histogram of SNP count per bin across genome.\n');
-%	SNP_count_all = [];
-%	count = 1;
-%	for chrom = 1:length(chrom_in_use)
-%		if (chrom_in_use(chrom) == 1)
-%			SNPbin_mask = (chroms = chrom);
-%	                num_bins = sum(SNPbin_mask);
-%	                SNPbin_indices = find(SNPbin_mask);
-%
-%	                for line_idx = SNPbin_indices(:)'
-%	                        idx = per_chrom_SNPindex(line_idx);
-%
-%				SNP_count_all(count) = SNPs_count{chrom}(idx);
-%				count = count+1;
-%			end;
-%		end;
-%	end;
-%	max_SNP_count = max(SNP_count_all);
-%	SNP_histogram_fig = figure(3);
-%	figure(SNP_histogram_fig);
-%	hist(SNP_count_all, max_SNP_count, "facecolor", "g");
-%	saveas(SNP_histogram_fig,[projectDir 'fig.SNP-histogram.' figVer 'eps'], 'epsc');
-%	saveas(SNP_histogram_fig,[projectDir 'fig.SNP-histogram.' figVer 'png'], 'png');
-%	delete(SNP_histogram_fig);
-%	fprintf('\n');
 
 
 %%================================================================================================
@@ -1116,18 +1184,22 @@ for chrom_to_draw  = 1:length(chrom_order)
 
 
 		%%================================================================================
-		%% determine color of each bin (Vectorized).
+		%% Determine color of each bin (Vectorized).
 		%---------------------------------------------------------------------------------
-		num_allocated_bins = length(chrom_SNPdata{chrom,1});
+		SNPbin_mask = (chroms == chrom);
+                num_bins = sum(SNPbin_mask);
+		if num_bins == 0
+			continue;
+		end;
 
-		% Extract and cap the data ratios for all bins at 1 (Force 862 x 1 column).
-		ratios = min(1, SNPs_to_fullData_ratio{chrom}(1:num_allocated_bins));
+		% Extract and cap the data ratios for all bins at 1 (Force n x 1 column).
+		ratios = min(1, SNPs_to_fullData_ratio{chrom}(1:num_bins));
 		ratios = reshape(ratios, [], 1);
 
-		% Extract the RGB mix components as strict column vectors (862 x 3 matrix).
-		c1 = reshape(chrom_SNPdata_colorsC{chrom,1}(1:num_allocated_bins), [], 1);
-		c2 = reshape(chrom_SNPdata_colorsC{chrom,2}(1:num_allocated_bins), [], 1);
-		c3 = reshape(chrom_SNPdata_colorsC{chrom,3}(1:num_allocated_bins), [], 1);
+		% Extract the RGB mix components as strict column vectors (n x 3).
+		c1 = reshape(chrom_SNPdata_colorsC{chrom,1}(1:num_bins), [], 1);
+		c2 = reshape(chrom_SNPdata_colorsC{chrom,2}(1:num_bins), [], 1);
+		c3 = reshape(chrom_SNPdata_colorsC{chrom,3}(1:num_bins), [], 1);
 		colorMix = [c1, c2, c3];
 
 		% Calculate the weighted color blend for all bins at once.
@@ -1149,15 +1221,25 @@ for chrom_to_draw  = 1:length(chrom_order)
 		%% end determine color of each bin.
 
 
-		% reverse order of color bins if chromosome is indicated as reversed in figure_definitions.txt file.
+		%%================================================================================
+		% Reverse order of color bins if chromosome is indicated as reversed in figure_definitions.txt file.
+		%---------------------------------------------------------------------------------
 		if (chrom_figReversed(chrom) == 1)
 			colors        = flipud(colors);
 		end;
 
+
+		%%================================================================================
+		% Draw standard/stacked chromosomes figure.
+		%---------------------------------------------------------------------------------
 		if (Standard_display == true)
+
+
 			%% standard : draw colorbars.
 			draw_colorbars_plot;
 			% standard : axes labels etc.
+
+
 			hold off;
 			xlim([0,chrom_size(chrom)/bases_per_bin]);
 
@@ -1250,9 +1332,9 @@ for chrom_to_draw  = 1:length(chrom_order)
 		end;
 
 
-%%%%%%%%%%%%%%%% Linear figure draw section
-
-
+		%%================================================================================
+		% Draw horizontal chromosomes figure.
+		%---------------------------------------------------------------------------------
 		%% Linear figure draw section
 		if (Linear_display == true)
 			figure(Linear_fig);
@@ -1261,9 +1343,11 @@ for chrom_to_draw  = 1:length(chrom_order)
 			Linear_left = Linear_left + Linear_width + Linear_chrom_gap;
 			hold on;
 
+
 			%% linear : draw colorbars.
 			draw_colorbars_plot;
 			% linear : end draw colorbars.
+
 
 			%% linear : show segmental anueploidy breakpoints.
 			if (Linear_displayBREAKS == true) && (show_annotations == true)
@@ -1352,12 +1436,15 @@ for chrom_to_draw  = 1:length(chrom_order)
 			end;
 		end;
 
+
+		%%================================================================================
+		% Prepare for next loop through set of chromosomes.
+		%---------------------------------------------------------------------------------
 		if (Standard_display == true)
 			% shift back to main figure generation.
 			figure(fig);
 			hold on;
 		end;
-
 		first_chrom = false;
 	end;
 end;
