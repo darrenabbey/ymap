@@ -39,6 +39,9 @@
 				<label for="newGenomeName">Genome Name: </label><input type="text" name="newGenomeName" id="newGenomeName" size="100"><br><br>
 				<input type="checkbox" id="GFF_used" name="GFF_used" value="true">
 				<label for="GFF_used"> I have a GFF/GFF3 annotation file for genome.</label><br><br>
+				YMAP will use annotations to define genome bin sizes to perform CNV/SNP analysis in.<br>
+				If no annotations are available, YMAP will default to bins sized to 1/700 of the largest chromosome.
+				<br><br>
 				<?php
 				if (!$exceededSpace) {
 					echo "<input type='submit' value='Create New Genome'>";
