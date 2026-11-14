@@ -151,11 +151,15 @@ fi
 ##------------------------------------------------------------------------------
 cd "$projectDirectory";
 
-# Compress octave log files.
+# Compress log files.
 if [[ -f octave_logs.zip ]]; then
         rm octave_logs.zip;
 fi
-zip -j -9 octave_logs.zip octave.*.log;
+if [[ -f log_files.zip ]]; then
+        rm log_files.zip;
+fi
+zip -j -9 log_files.zip octave.*.log process_log.txt;
+echo -e "\toctave.*.log and process_log.txt => log_files.zip" >> $logName;
 
 # Compress 'putative_SNPs_v1.txt' and 'SNP_CNVs_v1.txt'.
 if [[ -f putative_SNPs_v4.zip ]]; then
@@ -192,7 +196,21 @@ echo -e "\t[CNV_Gauss*.png; SNP_Gauss*.png] => fitting_figures.zip" >> $logName;
 cd "$scriptDirectory";
 
 
+##==============================================================================
+## Further cleanup.
+##------------------------------------------------------------------------------
+if [[ -f "$projectDirectory/cnv.$project.gff3" ]]; then
+        rm "$projectDirectory/cnv.$project.gff3";
+        echo -e "\t'cnv.$project.gff3' removed." >> $logName;
+
+if [[ -f "$projectDirectory/cnv.$project.CNVs.gff3" ]]; then
+        rm "$projectDirectory/cnv.$project.CNVs.gff3";
+        echo -e "\t'cnv.$project.CNVs.gff3' removed." >> $logName;
+
+
+##==============================================================================
 ## Generate "complete.txt" to indicate processing has completed normally.
+##------------------------------------------------------------------------------
 timestamp=$(date +%T);
 completeFile="$projectDirectory/complete.txt";
 echo -e "complete" > $completeFile;
