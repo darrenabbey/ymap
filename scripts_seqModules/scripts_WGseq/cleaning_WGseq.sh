@@ -55,37 +55,30 @@ if [[ -f "$projectDirectory/update_log.txt" ]]; then
 	mv "$projectDirectory/update_log.txt.temp" "$projectDirectory/update_log.txt";
 	echo -e "\t'update_log.txt' trimmed." >> $logName;
 fi
-
 if [[ -f "$projectDirectory/zipTemp.txt" ]]; then
 	rm "$projectDirectory/zipTemp.txt";
 	echo -e "\t'zipTemp.txt' removed." >> $logName;
 fi
-
 if [[ -f "$projectDirectory/processing1.m" ]]; then
 	rm "$projectDirectory/processing1.m";
 	echo -e "\t'processing1.m' removed." >> $logName;
 fi
-
 if [[ -f "$projectDirectory/processing2.m" ]]; then
 	rm "$projectDirectory/processing2.m";
 	echo -e "\t'processing2.m' removed." >> $logName;
 fi
-
 if [[ -f "$projectDirectory/processing3.m" ]]; then
 	rm "$projectDirectory/processing3.m";
 	echo -e "\t'processing3.m' removed." >> $logName;
 fi
-
 if [[ -f "$projectDirectory/processing4.m" ]]; then
 	rm "$projectDirectory/processing4.m";
 	echo -e "\t'processing4.m' removed." >> $logName;
 fi
-
 if [[ -f "$projectDirectory/data_sorted.bam.bai" ]]; then
 	rm "$projectDirectory/data_sorted.bam.bai";
 	echo -e "\t'data_sorted.bam.bai' removed." >> $logName;
 fi
-
 if [[ -f "$projectDirectory/data_sorted.bam" ]]; then
 	rm "$projectDirectory/data_sorted.bam";
 	echo -e "\t'data_sorted.bam' removed." >> $logName;
@@ -106,7 +99,6 @@ if [[ -f "$projectDirectory/data_indelRealigned.bai" ]]; then
 	rm "$projectDirectory/data_indelRealigned.bai";
 	echo -e "\t'data_indelRealigned.bai' removed." >> $logName;
 fi
-
 if [[ -d "$projectDirectory/fastqc_temp/" ]]; then
 	rm -rf "$projectDirectory/fastqc_temp/";
 	echo -e "\t'fastqc_temp/' removed." >> $logName;
@@ -155,11 +147,20 @@ cd "$projectDirectory";
 if [[ -f octave_logs.zip ]]; then
         rm octave_logs.zip;
 fi
-if [[ -f log_files.zip ]]; then
-        rm log_files.zip;
+zip -j -9 octave_logs.zip octave.*.log;
+echo -e "\toctave.*.log => octave_logs.zip" >> $logName;
+if [[ -f octave.ChARM.log ]]; then
+	rm octave.ChARM.log;
 fi
-zip -j -9 log_files.zip octave.*.log process_log.txt;
-echo -e "\toctave.*.log and process_log.txt => log_files.zip" >> $logName;
+if [[ -f octave.CNV_and_GCbias.log ]]; then
+	rm octave.CNV_and_GCbias.log;
+fi
+if [[ -f octave.final_figs.log ]]; then
+	rm octave.final_figs.log;
+fi
+if [[ -f octave.SNP_analysis.log ]]; then
+	rm octave.SNP_analysis.log;
+fi
 
 # Compress 'putative_SNPs_v1.txt' and 'SNP_CNVs_v1.txt'.
 if [[ -f putative_SNPs_v4.zip ]]; then
@@ -202,11 +203,11 @@ cd "$scriptDirectory";
 if [[ -f "$projectDirectory/cnv.$project.gff3" ]]; then
         rm "$projectDirectory/cnv.$project.gff3";
         echo -e "\t'cnv.$project.gff3' removed." >> $logName;
-
+fi
 if [[ -f "$projectDirectory/cnv.$project.CNVs.gff3" ]]; then
         rm "$projectDirectory/cnv.$project.CNVs.gff3";
         echo -e "\t'cnv.$project.CNVs.gff3' removed." >> $logName;
-
+fi
 
 ##==============================================================================
 ## Generate "complete.txt" to indicate processing has completed normally.

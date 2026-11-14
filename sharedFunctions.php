@@ -120,8 +120,6 @@ function minimizeProject($dir) {
 		} else {
 			file_put_contents($logFile, "Error $callerTag: Could not open ZIP archive stream.\n", FILE_APPEND | LOCK_EX);
 		}
-	} else {
-		file_put_contents($logFile, "Error $callerTag: '" . $txtFile . "' not found.\n", FILE_APPEND | LOCK_EX);
 	}
 
 	// Compress SNP_CNV file.
