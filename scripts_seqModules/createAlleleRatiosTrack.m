@@ -32,8 +32,8 @@ else
 	fprintf(alleleRatiosFid, '#          visualization. This color is assigned by which Gaussian of a multi-Gaussian fit curve the SNP is identified as.\n');
 	fprintf(alleleRatiosFid, '#     Fields 10, 11, & 12 of the BED format are not used.\n');
 	fprintf(alleleRatiosFid, '#\n');
-	fprintf(alleleRatiosFid, '# Though the BED file format was not exactly designed for this purpose, this file should load normally as a BED file.\n);
-        fprintf(alleleRatiosFid, '#---------------------------------------------------------------------------------------------------------------------------------\n');
+	fprintf(alleleRatiosFid, '# Though the BED file format was not exactly designed for this purpose, this file should load normally as a BED file.\n');
+	fprintf(alleleRatiosFid, '#---------------------------------------------------------------------------------------------------------------------------------\n');
 	fprintf(alleleRatiosFid, ['track name=' project_ 'AlleleRatios description="' project_ ' allele ratios" useScore=0 itemRGB=On\n']);
 	for chrom = 1:length(chrom_in_use)
 		if (chrom_in_use(chrom) == 1)
