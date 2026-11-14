@@ -125,7 +125,7 @@ if (Make_figure == true)
 
 	for chrom = 1:length(chrom_in_use)
 		if (chrom_in_use(chrom) == 1)
-			SNPbin_mask = (chroms = chrom);
+			SNPbin_mask = (chroms == chrom);
 			num_bins = sum(SNPbin_mask);
 			SNPbin_indices = find(SNPbin_mask);
 

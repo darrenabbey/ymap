@@ -368,7 +368,6 @@ for chrom = 1:length(chromCopyNum)
 		fprintf(['*** chromCopyNum{' num2str(chrom) '}(' num2str(segment) ')  = ' num2str(chromCopyNum{chrom}(segment)) '\n']);
 	end;
 end;
-
 largestchrom = find(chrom_width == max(chrom_width));
 largestchrom = largestchrom(1);
 
@@ -453,13 +452,13 @@ source('../createAlleleRatiosTrack.m');
     stacked_fig_width,stacked_chrom_font_size,stacked_title_size,stacked_axis_font_size,...
     gca_stacked_font_size,stacked_copy_font_size,max_chrom_label_size] = Load_size_info(chrom_in_use,num_chroms,chrom_label,chrom_size);
 
-fprintf('\t|\tCount SNPs per chromosome bin.\n');
-% threshold for full color saturation in SNP/LOH figure.
-% synced to bases_per_bin as below, or defaulted to 50.
 
-%DRAGON Threshold set for good figures with Candida albicans. Other species with less SNPs may not be ideal.
-%full_data_threshold = 45;	%floor(bases_per_bin_SNP/100);	% C. albicans, highly heterozygous.
-%full_data_threshold = 4;	%floor(bases_per_bin_SNP/1000);	% C. parapsilosis, far less heterozygous.
+fprintf('\t|\tCount SNPs per chromosome bin.\n');
+% 	threshold for full color saturation in SNP/LOH figure.
+% 	synced to bases_per_bin as below, or defaulted to 50.
+%	DRAGON Threshold set for good figures with Candida albicans. Other species with less SNPs may not be ideal.
+%	full_data_threshold = 45;	%floor(bases_per_bin_SNP/100);	% C. albicans, highly heterozygous.
+%	full_data_threshold = 4;	%floor(bases_per_bin_SNP/1000);	% C. parapsilosis, far less heterozygous.
 
 if (exist([genomeDir 'threshold.SNPs.txt'],'file') == 0)
 	% default if no threshold.SNPs.txt file is found; works well for Candida albicans or genomes with large numbers of SNPs.
@@ -468,10 +467,9 @@ else
 	full_data_threshold = str2num(fileread([genomeDir 'threshold.SNPs.txt']));
 end;
 
-
 for chrom = 1:length(chrom_in_use)
 	if (chrom_in_use(chrom) == 1)
-		SNPbin_mask = (chroms = chrom);
+		SNPbin_mask = (chroms == chrom);
 		num_bins = sum(SNPbin_mask);
 		SNPbin_indices = find(SNPbin_mask);
 
@@ -497,7 +495,6 @@ for chrom = 1:length(chrom_in_use)
 		end;
 	end;
 end;
-
 
 fprintf('\n');
 largestchrom = find(chrom_width == max(chrom_width));
@@ -539,6 +536,7 @@ for test_chrom = 1:num_chroms
 	chrom_pos = find(chrom_figOrder==test_chrom);
 	chrom_order = [chrom_order chrom_pos];
 end;
+
 
 % Draw chromosomes in order defined in figure_definitions.txt file.
 for chrom_to_draw  = 1:length(chrom_order)
@@ -651,7 +649,6 @@ for chrom_to_draw  = 1:length(chrom_order)
 			% standard : end CNV plot section.
 
 			% standard : axes labels etc.
-			hold off;
 			xlim([0,chrom_size(chrom)/bases_per_bin]);
 
 			% standard : modify y axis limits to show annotation locations if any are provided.
@@ -719,7 +716,6 @@ for chrom_to_draw  = 1:length(chrom_order)
 					title([ project ' CNV & SNP/LOH vs. ' hapmap],'Interpreter','none','FontSize',stacked_title_size);
 				end;
 			end;
-			hold on;
 			% standard : end axes labels etc.
 
 			if (displayBREAKS) && (show_annotations)
@@ -732,7 +728,6 @@ for chrom_to_draw  = 1:length(chrom_order)
 
 			%% standard : show annotation locations
 			if (show_annotations) && (length(annotations) > 0)
-				hold on;
 				plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
 				annotation_location = (annotation_start+annotation_end)./2;
 				for i = 1:length(annotation_location)
@@ -751,9 +746,9 @@ for chrom_to_draw  = 1:length(chrom_order)
 						end;
 					end;
 				end;
-				hold off;
 			end;
 			% standard : end show annotation locations.
+			hold off;
 
 
 			%% =======================================================================
@@ -877,9 +872,9 @@ for chrom_to_draw  = 1:length(chrom_order)
 						end;
 					end;
 				end;
-				hold off;
 			end;
 			% linear : end show annotation locations.
+			hold off;
 
 			% linear : Final formatting stuff.
 			xlim([0,chrom_size(chrom)/bases_per_bin]);
