@@ -92,6 +92,12 @@ if (isset($_SESSION['logged_on'])) {
 ?>
 </td><td width="70%" style="border:1px solid black; border-radius:10px; padding:10px;" valign="top">
 <b>YMAP news!</b><br><br>
+2026-11-14<ul>
+	<li>You now have the option to install a GFF/GFF3 annotation file with a new genome.</li>
+	<li>Output file cnv.[project_name].CNVs.gff3 lists genome bins with copy number estimates diverging from genome average. If a GFF was installed for the genome, this file also includes a list of annotations overlapping each CNV bin.</li>
+	<li>Output file allele_ratios.[project_name].bed lists SNP coordinates, allele ratios, and colors used for YMAP visualization.</li>
+</ul>
+
 2026-07-16<ul>
 	<li>CNV/SNP/LOH "high top" linear figure format added.</li>
 	<li>"high top" linar figures scale adjusted to match other linear figures better.</li>
