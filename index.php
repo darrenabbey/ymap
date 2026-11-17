@@ -557,7 +557,7 @@ function blank_and_content_tab() {
 			var CNV_bias_SnpCghArray_end         = file_prefix + "fig_EndDistance_vs_CGH." + figVer_;
 
 			var CNV_bias_WGseq_GCcontent         = file_prefix + "fig.bias_GC_content." + figVer_;
-			var CNV_bias_WGseq_end               = file_prefix + "fig.bias_chr_end." + figVer_;
+			var CNV_bias_WGseq_end               = file_prefix + "fig.bias_chrom_end." + figVer_;
 
 			var CNV_bias_ddRADseq_1              = file_prefix + "fig.examine_bias.1." + figVer_;
 			var CNV_bias_ddRADseq_2              = file_prefix + "fig.examine_bias.2." + figVer_;
