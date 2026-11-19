@@ -597,25 +597,29 @@ if (Make_figure == true)
                 % set(Standard_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height*2.71962616822]);
 		fprintf('\n###\n### Saving stacked highTop figure.\n###\n');
 		set(   Standard_fig, 'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
-		saveas(Standard_fig, [projectDir 'fig.CNV-SNP-map.highTop.1.' figVer 'eps'], 'epsc');
-		saveas(Standard_fig, [projectDir 'fig.CNV-SNP-map.highTop.1.' figVer 'png'], 'png' );
+		saveas(Standard_fig, [projectDir 'fig.CNV-SNP-map.highTop.1.'         figVer 'eps'], 'epsc');
+		saveas(Standard_fig, [projectDir 'fig.CNV-SNP-map.highTop.1.'         figVer 'png'], 'png' );
+		print(Standard_fig,  [projectDir 'fig.CNV-SNP-map.highTop.1_highres.' figVer 'tif'], '-dtiffn', '-r1200');
 		delete(Standard_fig);
 
 		%% change permissions of figures.
-		system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.highTop.1.' figVer 'eps']);
-		system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.highTop.1.' figVer 'png']);
+		system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.highTop.1.'         figVer 'eps']);
+		system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.highTop.1.'         figVer 'png']);
+		system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.highTop.1_highres.' figVer 'tif']);
 	end;
 
 	if (Linear_display)
 		% Save horizontal aligned genome figure, multiplying height since this is a taller figure than default.
 		fprintf('\n###\n### Saving linear highTop figure.\n###\n');
 		set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height*2.71962616822]);
-		saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.highTop.2.' figVer 'eps'], 'epsc');
-		saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.highTop.2.' figVer 'png'], 'png' );
+		saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.highTop.2.'         figVer 'eps'], 'epsc');
+		saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.highTop.2.'         figVer 'png'], 'png' );
+		print(Linear_fig,  [projectDir 'fig.CNV-SNP-map.highTop.2_highres.' figVer 'tif'], '-dtiffn', '-r1200');
 		delete(Linear_fig);
 
 		%% change permissions of figures.
-		system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.highTop.2.' figVer 'eps']);
-		system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.highTop.2.' figVer 'png']);
+		system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.highTop.2.'         figVer 'eps']);
+		system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.highTop.2.'         figVer 'png']);
+		system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.highTop.2_highres.' figVer 'tif']);
 	end;
 end

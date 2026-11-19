@@ -1616,24 +1616,30 @@ end;
 % Save figures.
 %-------------------------------------------------------------------------------------------------
 if (Standard_display)
-	% Save primary genome figure.
+	% Save stacked chromosomes figure.
 	set(Standard_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
-	saveas(Standard_fig, [projectDir 'fig.CNV-map.1.' figVer 'eps'], 'epsc');
-	saveas(Standard_fig, [projectDir 'fig.CNV-map.1.' figVer 'png'], 'png');
+	saveas(Standard_fig, [projectDir 'fig.CNV-map.1.'         figVer 'eps'], 'epsc');
+	saveas(Standard_fig, [projectDir 'fig.CNV-map.1.'         figVer 'png'], 'png');
+	print(Standard_fig,  [projectDir 'fig.CNV-map.1_highres.' figVer 'tif'], '-dtiffn', '-r1200');
+
 	delete(Standard_fig);
 	%% change permissions of figures.
-	system(['chmod 774 ' projectDir 'fig.CNV-map.1.' figVer 'eps']);
-	system(['chmod 774 ' projectDir 'fig.CNV-map.1.' figVer 'png']);
+	system(['chmod 774 ' projectDir 'fig.CNV-map.1.'         figVer 'eps']);
+	system(['chmod 774 ' projectDir 'fig.CNV-map.1.'         figVer 'png']);
+	system(['chmod 774 ' projectDir 'fig.CNV-map.1_highres.' figVer 'tif']);
 end;
 if (Linear_display)
-	% Save horizontal aligned genome figure.
+	% Save horizontal chromosomes figure.
 	set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
-	saveas(Linear_fig,   [projectDir 'fig.CNV-map.2.' figVer 'eps'], 'epsc');
-	saveas(Linear_fig,   [projectDir 'fig.CNV-map.2.' figVer 'png'], 'png');
+	saveas(Linear_fig, [projectDir 'fig.CNV-map.2.'         figVer 'eps'], 'epsc');
+	saveas(Linear_fig, [projectDir 'fig.CNV-map.2.'         figVer 'png'], 'png');
+	print(Linear_fig,  [projectDir 'fig.CNV-map.2_highres.' figVer 'tif'], '-dtiffn', '-r1200');
+
 	delete(Linear_fig);
 	%% change permissions of figures.
-	system(['chmod 774 ' projectDir 'fig.CNV-map.2.' figVer 'eps']);
-	system(['chmod 774 ' projectDir 'fig.CNV-map.2.' figVer 'png']);
+	system(['chmod 774 ' projectDir 'fig.CNV-map.2.'         figVer 'eps']);
+	system(['chmod 774 ' projectDir 'fig.CNV-map.2.'         figVer 'png']);
+	system(['chmod 774 ' projectDir 'fig.CNV-map.2_highres.' figVer 'tif']);
 end;
 
 
