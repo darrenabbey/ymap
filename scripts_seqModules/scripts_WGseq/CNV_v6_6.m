@@ -995,13 +995,15 @@ if (Make_figure_bias_end)
 		%---------------------------------------------------------------------------------
 
 		set(bias_end_fig,'PaperPosition',[0 0 6 3]*2);
-		saveas(bias_end_fig, [projectDir 'fig.bias_chrom_end.' figVer 'eps'], 'epsc');
-		saveas(bias_end_fig, [projectDir 'fig.bias_chrom_end.' figVer 'png'], 'png');
+		saveas(bias_end_fig, [projectDir 'fig.bias_chrom_end.'         figVer 'eps'], 'epsc');
+		saveas(bias_end_fig, [projectDir 'fig.bias_chrom_end.'         figVer 'png'], 'png');
+		print(bias_end_fig,  [projectDir 'fig.bias_chrom_end.highres.' figVer 'tif'], '-dtiffn', '-r600', '-GraphicsAlphaBits=4');
 		delete(bias_end_fig);
 
 		%% change permissions of figures.
-		system(['chmod 774 ' projectDir 'fig.bias_chrom_end.' figVer 'eps']);
-		system(['chmod 774 ' projectDir 'fig.bias_chrom_end.' figVer 'png']);
+		system(['chmod 774 ' projectDir 'fig.bias_chrom_end.'         figVer 'eps']);
+		system(['chmod 774 ' projectDir 'fig.bias_chrom_end.'         figVer 'png']);
+		system(['chmod 774 ' projectDir 'fig.bias_chrom_end.highres.' figVer 'tif']);
 	end;
 end;
 
@@ -1082,13 +1084,15 @@ if (Make_figure_bias_GC)
 
 		% Save figure.
 		set(bias_GC_fig,'PaperPosition',[0 0 6 3]*2);
-		saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.' figVer 'eps'], 'epsc');
-		saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.' figVer 'png'], 'png');
+		saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.'         figVer 'eps'], 'epsc');
+		saveas(bias_GC_fig, [projectDir 'fig.bias_GC_content.'         figVer 'png'], 'png');
+		print(bias_GC_fig,  [projectDir 'fig.bias_GC_content.highres.' figVer 'tif'], '-dtiffn', '-r600', '-GraphicsAlphaBits=4');
 		delete(bias_GC_fig);
 
 		%% change permissions of figures.
-		system(['chmod 774 ' projectDir 'fig.bias_GC_content.' figVer 'eps']);
-		system(['chmod 774 ' projectDir 'fig.bias_GC_content.' figVer 'png']);
+		system(['chmod 774 ' projectDir 'fig.bias_GC_content.'         figVer 'eps']);
+		system(['chmod 774 ' projectDir 'fig.bias_GC_content.'         figVer 'png']);
+		system(['chmod 774 ' projectDir 'fig.bias_GC_content.highres.' figVer 'tif']);
 	end;
 end;
 
@@ -1620,7 +1624,7 @@ if (Standard_display)
 	set(Standard_fig,'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
 	saveas(Standard_fig, [projectDir 'fig.CNV-map.1.'         figVer 'eps'], 'epsc');
 	saveas(Standard_fig, [projectDir 'fig.CNV-map.1.'         figVer 'png'], 'png');
-	print(Standard_fig,  [projectDir 'fig.CNV-map.1_highres.' figVer 'tif'], '-dtiffn', '-r1200');
+	print(Standard_fig,  [projectDir 'fig.CNV-map.1_highres.' figVer 'tif'], '-dtiffn', '-r600', '-GraphicsAlphaBits=4');
 
 	delete(Standard_fig);
 	%% change permissions of figures.
@@ -1633,7 +1637,7 @@ if (Linear_display)
 	set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
 	saveas(Linear_fig, [projectDir 'fig.CNV-map.2.'         figVer 'eps'], 'epsc');
 	saveas(Linear_fig, [projectDir 'fig.CNV-map.2.'         figVer 'png'], 'png');
-	print(Linear_fig,  [projectDir 'fig.CNV-map.2_highres.' figVer 'tif'], '-dtiffn', '-r1200');
+	print(Linear_fig,  [projectDir 'fig.CNV-map.2_highres.' figVer 'tif'], '-dtiffn', '-r600', '-GraphicsAlphaBits=4');
 
 	delete(Linear_fig);
 	%% change permissions of figures.

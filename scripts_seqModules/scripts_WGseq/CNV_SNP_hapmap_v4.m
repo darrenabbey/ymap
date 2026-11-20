@@ -965,7 +965,7 @@ if (Standard_display)
 	set(   Standard_fig, 'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
 	saveas(Standard_fig, [projectDir 'fig.CNV-SNP-map.1.'         figVer 'eps'], 'epsc');
 	saveas(Standard_fig, [projectDir 'fig.CNV-SNP-map.1.'         figVer 'png'], 'png' );
-	print(Standard_fig,  [projectDir 'fig.CNV-SNP-map.1_highres.' figVer 'tif'], '-dtiffn', '-r1200');
+	print(Standard_fig,  [projectDir 'fig.CNV-SNP-map.1_highres.' figVer 'tif'], '-dtiffn', '-r600', '-GraphicsAlphaBits=4');
 
 	delete(Standard_fig);
 	%% change permissions of figures.
@@ -978,7 +978,7 @@ if (Linear_display)
 	set(   Linear_fig, 'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
 	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.'         figVer 'eps'], 'epsc');
 	saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.2.'         figVer 'png'], 'png' );
-	print(Linear_fig,  [projectDir 'fig.CNV-SNP-map.2_highres.' figVer 'tif'], '-dtiffn', '-r1200');
+	print(Linear_fig,  [projectDir 'fig.CNV-SNP-map.2_highres.' figVer 'tif'], '-dtiffn', '-r600', '-GraphicsAlphaBits=4');
 
 	delete(Linear_fig);
 	%% change permissions of figures.

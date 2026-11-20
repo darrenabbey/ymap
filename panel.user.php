@@ -92,6 +92,10 @@ if (isset($_SESSION['logged_on'])) {
 ?>
 </td><td width="70%" style="border:1px solid black; border-radius:10px; padding:10px;" valign="top">
 <b>YMAP news!</b><br><br>
+2026-11-20<ul>
+	<li>High resolution (600 dpi) TIF image versions are now generated in addition to the vector format EPS and web-display PNG files.</li>
+</ul>
+
 2026-11-14<ul>
 	<li>You now have the option to install a GFF/GFF3 annotation file with a new genome.</li>
 	<li>Output file cnv.[project_name].CNVs.gff3 lists genome bins with copy number estimates diverging from genome average. If a GFF was installed for the genome, this file also includes a list of annotations overlapping each CNV bin.</li>
