@@ -890,9 +890,9 @@ if ((useHapmap) || (useParent))
 	if (Standard_display == true)
 		fprintf('\n###\n### Saving main figure.\n###\n');
 		set(   fig,        'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
-		saveas(fig,        [projectDir 'fig.CNV-SNP-map.RedGreen.1.'         figVer 'eps'], 'epsc');
-		saveas(fig,        [projectDir 'fig.CNV-SNP-map.RedGreen.1.'         figVer 'png'], 'png' );
-		print(fig,         [projectDir 'fig.CNV-SNP-map.RedGreen.1_highres.' figVer 'tif'], '-dtiffn', '-r600', '-GraphicsAlphaBits=4');
+		print(fig, [projectDir 'fig.CNV-SNP-map.RedGreen.1.'         figVer 'eps'], '-depsc');
+		print(fig, [projectDir 'fig.CNV-SNP-map.RedGreen.1.'         figVer 'png'], '-dpng',   '-r150', '-GraphicsAlphaBits=4', '-tight');
+		print(fig, [projectDir 'fig.CNV-SNP-map.RedGreen.1_highres.' figVer 'tif'], '-dtiffn', '-r600', '-GraphicsAlphaBits=4', '-tight');
 		delete(fig);
 
 		%% change permissions of figures.
@@ -904,9 +904,9 @@ if ((useHapmap) || (useParent))
 	if (Linear_display == true)
 		fprintf('\n###\n### Saving linear figure.\n###\n');
 		set(   Linear_fig, 'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
-		saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.RedGreen.2.'         figVer 'eps'], 'epsc');
-		saveas(Linear_fig, [projectDir 'fig.CNV-SNP-map.RedGreen.2.'         figVer 'png'], 'png' );
-		print(Linear_fig,  [projectDir 'fig.CNV-SNP-map.RedGreen.2_highres.' figVer 'tif'], '-dtiffn', '-r600', '-GraphicsAlphaBits=4');
+		print(Linear_fig, [projectDir 'fig.CNV-SNP-map.RedGreen.2.'         figVer 'eps'], '-depsc');
+		print(Linear_fig, [projectDir 'fig.CNV-SNP-map.RedGreen.2.'         figVer 'png'], '-dpng',   '-r150', '-GraphicsAlphaBits=4', '-tight');
+		print(Linear_fig, [projectDir 'fig.CNV-SNP-map.RedGreen.2_highres.' figVer 'tif'], '-dtiffn', '-r600', '-GraphicsAlphaBits=4', '-tight');
 		delete(Linear_fig);
 
 		%% change permissions of figures.

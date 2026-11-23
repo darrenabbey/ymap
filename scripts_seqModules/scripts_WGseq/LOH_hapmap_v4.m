@@ -1016,8 +1016,8 @@ if ~isempty(SNP_count_all)
 	SNP_histogram_fig = figure(3);
 	figure(SNP_histogram_fig);
 	hist(SNP_count_all, max_SNP_count, "facecolor", "g");
-	saveas(SNP_histogram_fig, [projectDir 'fig.SNP-histogram.' figVer 'eps'], 'epsc');
-	saveas(SNP_histogram_fig, [projectDir 'fig.SNP-histogram.' figVer 'png'], 'png');
+	print(SNP_histogram_fig, [projectDir 'fig.SNP-histogram.' figVer 'eps'], '-depsc');
+	print(SNP_histogram_fig, [projectDir 'fig.SNP-histogram.' figVer 'png'], '-dpng', '-r150', '-GraphicsAlphaBits=4', '-tight');
 	delete(SNP_histogram_fig);
 end
 fprintf('\n');
@@ -1360,9 +1360,9 @@ end;
 if (Standard_display == true)
 	%% Save figures.
 	set(Standard_fig,    'PaperPosition',[0 0 stacked_fig_width stacked_fig_height]);
-	saveas(Standard_fig, [projectDir 'fig.SNP-map.1.'         figVer 'eps'], 'epsc');
-	saveas(Standard_fig, [projectDir 'fig.SNP-map.1.'         figVer 'png'], 'png');
-	print(Standard_fig,  [projectDir 'fig.SNP-map.1_highres.' figVer 'tif'], '-dtiffn', '-r600', '-GraphicsAlphaBits=4');
+	print(Standard_fig, [projectDir 'fig.SNP-map.1.'         figVer 'eps'], '-depsc');
+	print(Standard_fig, [projectDir 'fig.SNP-map.1.'         figVer 'png'], '-dpng',   '-r150', '-GraphicsAlphaBits=4', '-tight');
+	print(Standard_fig, [projectDir 'fig.SNP-map.1_highres.' figVer 'tif'], '-dtiffn', '-r600', '-GraphicsAlphaBits=4', '-tight');
 	delete(Standard_fig);
 
 	%% change permissions of figures.
@@ -1372,9 +1372,9 @@ if (Standard_display == true)
 end;
 if (Linear_display == true)
 	set(Linear_fig,'PaperPosition',[0 0 linear_fig_width linear_fig_height]);
-	saveas(Linear_fig, [projectDir 'fig.SNP-map.2.'         figVer 'eps'], 'epsc');
-	saveas(Linear_fig, [projectDir 'fig.SNP-map.2.'         figVer 'png'], 'png');
-	print(Linear_fig,  [projectDir 'fig.SNP-map.2_highres.' figVer 'tif'], '-dtiffn', '-r600', '-GraphicsAlphaBits=4');
+	print(Linear_fig, [projectDir 'fig.SNP-map.2.'         figVer 'eps'], '-depsc');
+	print(Linear_fig, [projectDir 'fig.SNP-map.2.'         figVer 'png'], '-dpng',   '-r150', '-GraphicsAlphaBits=4', '-tight');
+	print(Linear_fig, [projectDir 'fig.SNP-map.2_highres.' figVer 'tif'], '-dtiffn', '-r600', '-GraphicsAlphaBits=4', '-tight');
 	delete(Linear_fig);
 
 	%% change permissions of figures.
