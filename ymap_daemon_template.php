@@ -209,66 +209,66 @@ BASE_DIR_temp
 			$count_queue_working = sizeof($start_list);
 
 
-			//========================================================================
-			// 5. Drop init and start entries that have a salt file mismatch.
-			//------------------------------------------------------------------------
-			$count = sizeof($init_list);
-                        foreach (array_reverse($init_list) as $key1 => $entry) {
-				$userName  = $entry[1];
-				$entryType = $entry[5];
-				$entryName = $entry[2];
-				$entrySalt = $entry[3];
-				if ($entryType == "project") {
-					$Directory = $base_dir."/users/".$userName."/projects/".$entryName."/";
-					$foundSalt = trim(file_get_contents($Directroy'salt.txt'));
-					if ($entrySalt !== $foundSalt) {
-						array_splice($start_list, $count-$key1-1, 1);
-					}
-				} elseif ($entryType == "genome") {
-					$Directory = $base_dir."/users/".$userName."/genomes/".$entryName."/";
-					$foundSalt = trim(file_get_contents($Directroy'salt.txt'));
-					if ($entrySalt !== $foundSalt) {
-						array_splice($start_list, $count-$key1-1, 1);
-					}
-				} elseif ($entryType == "hapmap") {
-					$Directory = $base_dir."/users/".$userName."/hapmaps/".$entryName."/";
-					$foundSalt = trim(file_get_contents($Directroy'salt.txt'));
-					if ($entrySalt !== $foundSalt) {
-						array_splice($start_list, $count-$key1-1, 1);
-					}
-				} else {
-					// Something went wrong.
-				}
-			}
-			$count = sizeof($start_list);
-			foreach (array_reverse($start_list) as $key1 => $entry) {
-				$userName  = $entry[1];
-				$entryType = $entry[5];
-				$entryName = $entry[2];
-				$entrySalt = $entry[3];
-				if ($entryType == "project") {
-					$Directory = $base_dir."/users/".$userName."/projects/".$entryName."/";
-					$foundSalt = trim(file_get_contents($Directroy'salt.txt'));
-					if ($entrySalt !== $foundSalt) {
-						array_splice($start_list, $count-$key1-1, 1);
-					}
-				} elseif ($entryType == "genome") {
-					$Directory = $base_dir."/users/".$userName."/genomes/".$entryName."/";
-					$foundSalt = trim(file_get_contents($Directroy'salt.txt'));
-					if ($entrySalt !== $foundSalt) {
-						array_splice($start_list, $count-$key1-1, 1);
-					}
-				} elseif ($entryType == "hapmap") {
-					$Directory = $base_dir."/users/".$userName."/hapmaps/".$entryName."/";
-					$foundSalt = trim(file_get_contents($Directroy'salt.txt'));
-					if ($entrySalt !== $foundSalt) {
-						array_splice($start_list, $count-$key1-1, 1);
-					}
-				} else {
-					// Something went wrong.
-				}
-			}
-			$count_queue_working = sizeof($start_list);
+//			//========================================================================
+//			// 5. Drop init and start entries that have a salt file mismatch.
+//			//------------------------------------------------------------------------
+//			$count = sizeof($init_list);
+//			foreach (array_reverse($init_list) as $key1 => $entry) {
+//				$userName  = $entry[1];
+//				$entryType = $entry[5];
+//				$entryName = $entry[2];
+//				$entrySalt = $entry[3];
+//				if ($entryType == "project") {
+//					$Directory = $base_dir."/users/".$userName."/projects/".$entryName."/";
+//					$foundSalt = trim(file_get_contents($Directroy'salt.txt'));
+//					if ($entrySalt !== $foundSalt) {
+//						array_splice($start_list, $count-$key1-1, 1);
+//					}
+//				} elseif ($entryType == "genome") {
+//					$Directory = $base_dir."/users/".$userName."/genomes/".$entryName."/";
+//					$foundSalt = trim(file_get_contents($Directroy'salt.txt'));
+//					if ($entrySalt !== $foundSalt) {
+//						array_splice($start_list, $count-$key1-1, 1);
+//					}
+//				} elseif ($entryType == "hapmap") {
+//					$Directory = $base_dir."/users/".$userName."/hapmaps/".$entryName."/";
+//					$foundSalt = trim(file_get_contents($Directroy'salt.txt'));
+//					if ($entrySalt !== $foundSalt) {
+//						array_splice($start_list, $count-$key1-1, 1);
+//					}
+//				} else {
+//					// Something went wrong.
+//				}
+//			}
+//			$count = sizeof($start_list);
+//			foreach (array_reverse($start_list) as $key1 => $entry) {
+//				$userName  = $entry[1];
+//				$entryType = $entry[5];
+//				$entryName = $entry[2];
+//				$entrySalt = $entry[3];
+//				if ($entryType == "project") {
+//					$Directory = $base_dir."/users/".$userName."/projects/".$entryName."/";
+//					$foundSalt = trim(file_get_contents($Directroy'salt.txt'));
+//					if ($entrySalt !== $foundSalt) {
+//						array_splice($start_list, $count-$key1-1, 1);
+//					}
+//				} elseif ($entryType == "genome") {
+//					$Directory = $base_dir."/users/".$userName."/genomes/".$entryName."/";
+//					$foundSalt = trim(file_get_contents($Directroy'salt.txt'));
+//					if ($entrySalt !== $foundSalt) {
+//						array_splice($start_list, $count-$key1-1, 1);
+//					}
+//				} elseif ($entryType == "hapmap") {
+//					$Directory = $base_dir."/users/".$userName."/hapmaps/".$entryName."/";
+//					$foundSalt = trim(file_get_contents($Directroy'salt.txt'));
+//					if ($entrySalt !== $foundSalt) {
+//						array_splice($start_list, $count-$key1-1, 1);
+//					}
+//				} else {
+//					// Something went wrong.
+//				}
+//			}
+//			$count_queue_working = sizeof($start_list);
 
 
 			//========================================================================
