@@ -41,22 +41,23 @@ BASE_DIR_temp
 	// Main daemon loop
 	while ($running) {
 		try {
-			// --------------------------------------------------
-			// YOUR TASK HERE (e.g., process data, monitor files)
-			// --------------------------------------------------
-			// 0. Initialize projects list.
+			//========================================================================
+			// 0. Initialize queue entry lists.
+			//------------------------------------------------------------------------
 			$init_list  = [];
 			$start_list = [];
 			$end_list   = [];
-
-			// 0. Check if queue is pause (super user only) mode or not.
+			// Check if queue is paused (super user only) or not.
 			if (file_exists($base_dir."/queue/error.txt")) {
 				$SUPER_ONLY = True;
 			} else {
 				$SUPER_ONLY = False;
 			}
 
+
+			//========================================================================
 			// 1. Grab init/start/end project entries from queue logs.
+			//------------------------------------------------------------------------
 			$queue_dir   = $base_dir."/queue/";
 			$queue_files = array_slice(scandir($queue_dir), 2);
 			foreach ($queue_files as $key1 => $queue_file) {
@@ -117,7 +118,10 @@ BASE_DIR_temp
 			}
 			$count_queue_done = sizeof($end_list);
 
-			// 2. Drop start/end entries from init queue list.
+
+			//========================================================================
+			// 2. Drop init entries that match start or end list.
+			//------------------------------------------------------------------------
 			foreach ($start_list as $key1 => $start_entry) {
 				$count = sizeof($init_list);
 				foreach (array_reverse($init_list) as $key2 => $init_entry) {
@@ -151,9 +155,11 @@ BASE_DIR_temp
 				}
 			}
 			$count_queue_initialized = sizeof($init_list);
-			//print_r($start_list);
 
-			// 3. Drop end entries from start queue list.
+
+			//========================================================================
+			// 3. Drop start entries that match end list.
+			//------------------------------------------------------------------------
 			foreach ($end_list as $key1 => $end_entry) {
 				$count = sizeof($start_list);
 				foreach (array_reverse($start_list) as $key2 => $start_entry) {
@@ -172,7 +178,10 @@ BASE_DIR_temp
 			}
 			$count_queue_working = sizeof($start_list);
 
-			// 4. Drop active projects/genomes/hapmaps without a 'bulk.txt' file.
+
+			//========================================================================
+			// 4. Drop start entries without a 'bulk.txt' file.
+			//------------------------------------------------------------------------
 			$count = sizeof($start_list);
 			foreach (array_reverse($start_list) as $key1 => $entry) {
 				$userName  = $entry[1];
@@ -199,7 +208,72 @@ BASE_DIR_temp
 			}
 			$count_queue_working = sizeof($start_list);
 
-			// 5. Delete old log files that are done.
+
+			//========================================================================
+			// 5. Drop init and start entries that have a salt file mismatch.
+			//------------------------------------------------------------------------
+			$count = sizeof($init_list);
+                        foreach (array_reverse($init_list) as $key1 => $entry) {
+				$userName  = $entry[1];
+				$entryType = $entry[5];
+				$entryName = $entry[2];
+				$entrySalt = $entry[3];
+				if ($entryType == "project") {
+					$Directory = $base_dir."/users/".$userName."/projects/".$entryName."/";
+					$foundSalt = trim(file_get_contents($Directroy'salt.txt'));
+					if ($entrySalt !== $foundSalt) {
+						array_splice($start_list, $count-$key1-1, 1);
+					}
+				} elseif ($entryType == "genome") {
+					$Directory = $base_dir."/users/".$userName."/genomes/".$entryName."/";
+					$foundSalt = trim(file_get_contents($Directroy'salt.txt'));
+					if ($entrySalt !== $foundSalt) {
+						array_splice($start_list, $count-$key1-1, 1);
+					}
+				} elseif ($entryType == "hapmap") {
+					$Directory = $base_dir."/users/".$userName."/hapmaps/".$entryName."/";
+					$foundSalt = trim(file_get_contents($Directroy'salt.txt'));
+					if ($entrySalt !== $foundSalt) {
+						array_splice($start_list, $count-$key1-1, 1);
+					}
+				} else {
+					// Something went wrong.
+				}
+			}
+			$count = sizeof($start_list);
+			foreach (array_reverse($start_list) as $key1 => $entry) {
+				$userName  = $entry[1];
+				$entryType = $entry[5];
+				$entryName = $entry[2];
+				$entrySalt = $entry[3];
+				if ($entryType == "project") {
+					$Directory = $base_dir."/users/".$userName."/projects/".$entryName."/";
+					$foundSalt = trim(file_get_contents($Directroy'salt.txt'));
+					if ($entrySalt !== $foundSalt) {
+						array_splice($start_list, $count-$key1-1, 1);
+					}
+				} elseif ($entryType == "genome") {
+					$Directory = $base_dir."/users/".$userName."/genomes/".$entryName."/";
+					$foundSalt = trim(file_get_contents($Directroy'salt.txt'));
+					if ($entrySalt !== $foundSalt) {
+						array_splice($start_list, $count-$key1-1, 1);
+					}
+				} elseif ($entryType == "hapmap") {
+					$Directory = $base_dir."/users/".$userName."/hapmaps/".$entryName."/";
+					$foundSalt = trim(file_get_contents($Directroy'salt.txt'));
+					if ($entrySalt !== $foundSalt) {
+						array_splice($start_list, $count-$key1-1, 1);
+					}
+				} else {
+					// Something went wrong.
+				}
+			}
+			$count_queue_working = sizeof($start_list);
+
+
+			//========================================================================
+			// 6. Delete old log files that are done.
+			//------------------------------------------------------------------------
 			foreach ($queue_files as $key1 => $queue_file) {
 				if ((str_contains($queue_file,".log")) && ($queue_file <> date('Y-m-d')."_queue.log")) {
 					// Grap the init entries from this queue file.
@@ -270,7 +344,9 @@ BASE_DIR_temp
 			}
 
 
-			//===========================================================
+			//========================================================================
+			// 7. Commandline output of status.
+			//------------------------------------------------------------------------
 			if ($visualOutput == true) {
 				print_r("===================================================================\n");
 				print_r("YMAPs initialized: ".$count_queue_initialized."\n");
@@ -298,13 +374,12 @@ BASE_DIR_temp
 					print_r("\n");
 				}
 				print_r("YMAPs complete:    ".$count_queue_done."\n");
-				//print_r($start_list);
-				//print_r($end_list);
 			}
-			//===========================================================
 
 
-			// 5. Fire off YMAP processes.
+			//========================================================================
+			// 8. Fire off YMAP processes.
+			//------------------------------------------------------------------------
 			if (($count_queue_working < $MAX_QUEUE_PARALLEL) && ($count_queue_initialized >= 1)) {
 				//=============================
 				// Call YMAP processes.
@@ -364,6 +439,7 @@ BASE_DIR_temp
 				}
 			}
 
+
 			// Force garbage collection;
 			gc_collect_cycles();
 
@@ -421,9 +497,7 @@ BASE_DIR_temp
 		}
 	}
 	function genome_process($base_dir,$userName,$entryName,$Directory) {
-		//print_r("# testpoint1: ".$Directory."\n");
 		if ((!file_exists($Directory."working3.txt")) && (!file_exists($Directory."working_done.txt"))) {
-			//print_r("# testpoint2\n");
 			// Set session variables.
 			$_SESSION['user']       = $userName;
 			$_SESSION['genome']     = $entryName;
