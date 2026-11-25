@@ -184,8 +184,8 @@ fi
 if [[ -f output_figures.zip ]]; then
 	rm output_figures.zip;
 fi
-zip -j output_figures.zip fig.*.eps fig.*.png *.bed *.gff3 *.tif -x "fig.Rsquared*" "fig.Charm*" @;
-echo -e "\t[fig.*.eps; fig.*.png; *.bed; *.gff3; *.tif] => output_figures.zip" >> $logName;
+zip -j output_figures.zip fig.*.eps fig.*.png *.bed *.gff3 *.tif *.svg -x "fig.Rsquared*" "fig.Charm*" @;
+echo -e "\t[fig.*.eps; fig.*.png; *.bed; *.gff3; *.tif; *.svg] => output_figures.zip" >> $logName;
 
 # Compress fitting figures.
 if [[ -f fitting_figures.zip ]]; then

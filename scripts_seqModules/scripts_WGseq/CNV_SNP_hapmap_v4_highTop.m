@@ -53,6 +53,7 @@ if (Make_figure == true)
 	Linear_display			= true;
 	Linear_displayBREAKS		= false;
 	Low_quality_ploidy_estimate	= true;
+	Linear_single_chr_display       = true;
 
 
 	%% =========================================================================================
@@ -577,6 +578,26 @@ if (Make_figure == true)
 						text((chrom_size(chrom)/bases_per_bin)/2,maxY_highTop+0.5,[chrom_label{chrom} char(10) '(reversed)'],'Interpreter','tex','FontSize',round(linear_chrom_font_size/2),'Rotation',rotate);
 					end;
 				end;
+			end;
+
+%%%%%%%%%%%%%%%% Linear individual figure per chromosome section.
+
+			if (Linear_single_chr_display)
+				% --- EXPORT INDIVIDUAL CHROMOSOME TO SEPARATE EPS & SVG ---
+				chr_label = chrom_label{chrom};
+				Linear_single_fig = figure('Visible', 'off', 'PaperPositionMode', 'auto');
+
+				% Copy the current chromosome subplot axes into the standalone figure
+				new_ax = copyobj(gca, Linear_single_fig);
+				set(new_ax, 'Position', [0.10 0.15 0.85 0.75]); % Expand subplot to fill the standalone canvas
+
+				% Build output file paths in the project directory
+				svg_out = fullfile(projectDir, ['fig.CNV-SNP-map.chr_' chr_label '.svg']);
+
+				% Save native SVG (eliminates 90-degree rotation issues)
+				saveas(Linear_single_fig, svg_out, 'svg');
+
+				close(Linear_single_fig);
 			end;
 
 			if (Standard_display)
