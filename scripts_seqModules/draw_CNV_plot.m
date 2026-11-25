@@ -45,5 +45,5 @@ Y_matrix(3, :) = endY_values;
 Y_matrix(4, :) = startY;
 
 % Render each column as an independent filled black rectangle (no NaN row needed).
-f_cnv = patch(X_matrix, Y_matrix, [0 0 0], 'FaceColor', [0 0 0], 'EdgeColor', [0 0 0], 'LineStyle', '-');
-
+%f_cnv = patch(X_matrix, Y_matrix, [0 0 0], 'FaceColor', [0 0 0], 'EdgeColor', [0 0 0], 'LineStyle', '-');
+f_cnv = patch(X_matrix, Y_matrix, [0 0 0], 'FaceColor', [0 0 0], 'EdgeColor', [0 0 0], 'LineStyle', 'none');
