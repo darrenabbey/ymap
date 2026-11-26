@@ -306,18 +306,28 @@ with open(parentDatafile, 'r') as data:
 		# Convert string elements in parentLine[4:] to integers
 		phasingData = [int(x) for x in parentLine[4:] if x.strip()];
 
-		if len(phasingData) == 0:
+		# PhasingData states:
+		#       0  = properly phased hapmap entry.
+		#       1  = flipped phased hapmap entry.
+		#       10 = het coordinate not found in hapmap.
+		#       11 = het coordinate not associated with LOH fragment definition in hapmap.
+		#       12 = het coordinate allele not in hapmap.
+		if any(x in (11, 12) for x in phasingData):
+			continue;
+
+		if len(phasingData) == 0 or 10 in phasingData:
+			# no phasing data available, or runMode == 'LOH'
 			phaseCall = 10;
 		else:
-			phaseAvg = sum(phasingData) / float(len(phasingData));
-			if phaseAvg == 0.5:
-				phaseCall = 10;
+			# at least one phasing data point (only 0s and/or 1s).
+			phaseAvg = sum(phasingData) / len(phasingData);
+			if phaseAvg <= 0.25:
+				phaseCall = 0;
+			elif phaseAvg >= 0.75:
+				phaseCall = 1;
 			else:
-				phaseCall = int(round(phaseAvg));
-
-		# Filter out error states (10, 11, 12) after phaseCall
-		if phaseCall in (10, 11, 12):
-			continue;
+				# Ambiguous phasing consensus (closer to 0.5) -> treat as unphased.
+				phaseCall = 10;
 
 		# Retrieve integer chromosome ID instantly.
 		P_chr	= chr_name_to_num.get(P_chr_name, 0);
@@ -326,6 +336,9 @@ with open(parentDatafile, 'r') as data:
 		if P_chr == 0:
 			continue;
 
+		################################################################################
+		# All hapmap dataset coordinates are heterozygous in the parent by definition. #
+		################################################################################
 
                 # Reset tracking pointers and log progress when switching to a new chromosome.
 		if old_chr != P_chr:
@@ -369,9 +382,6 @@ with open(parentDatafile, 'r') as data:
 					myfile.write(".");
 					if log_count % 100 == 0:
 						myfile.write(f"\n\t\t|\t");
-			# Reset flag once we reach or pass the current bin's end coordinate (index 2).
-			if P_position >= fragments[current_fragment][2]:
-				fragment_found = 0;
 
 
 		#===============================================================================================================
