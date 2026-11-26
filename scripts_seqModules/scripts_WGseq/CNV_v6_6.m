@@ -1213,7 +1213,7 @@ for chrom_to_draw  = 1:length(chrom_order)
 
 
                 %%================================================================================
-                % Draw standard/stacked chromosomes figure.
+                % Draw standard/stacked all chromosomes figure.
                 %---------------------------------------------------------------------------------
 		if (Standard_display == true)
                         figure(Standard_fig);
@@ -1466,7 +1466,10 @@ for chrom_to_draw  = 1:length(chrom_order)
 			end;
 		end;
 
-		%% Linear figure draw section
+
+		%%================================================================================
+		% Draw linear all chromosomes figure.
+		%---------------------------------------------------------------------------------
 		if (Linear_display)
 			figure(Linear_fig);
 			Linear_width = Linear_chrom_max_width*chrom_size(chrom)/Linear_genome_size;
@@ -1617,7 +1620,7 @@ end;
 
 
 %%================================================================================================
-% Save figures.
+% Save standard and linear all chromosome figures.
 %-------------------------------------------------------------------------------------------------
 if (Standard_display)
 	% Save stacked chromosomes figure.
