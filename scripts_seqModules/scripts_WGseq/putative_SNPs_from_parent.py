@@ -3,6 +3,13 @@
 ###
 ### Uses genome definition files to only output data lines for chromosomes of interest.
 ###
+###	genome            = sys.argv[ 1]
+###	genomeUser        = sys.argv[ 2]
+###	projectChild      = sys.argv[ 3]
+###	projectChildUser  = sys.argv[ 4]
+###	projectParent     = sys.argv[ 5]
+###	projectParentUser = sys.argv[ 6]
+###	main_dir          = sys.argv[ 7]
 
 
 def process_ParentLine(entry_line):
@@ -16,7 +23,7 @@ def process_ParentLine(entry_line):
 	#       Ca21chr1_C_albicans_SC5314   13993   A     12   0     0   1
 	#       Ca21chr1_C_albicans_SC5314   14003   T     1    412   0   0
 	#       Ca21chr1_C_albicans_SC5314   14004   T     1    413   0   0
-	parent_line = string.strip(entry_line)
+	parent_line = entry_line.strip()
 	parent_line = parent_line.split('\t')
 	P_chr_name  = parent_line[0]   # chr name of bp.          : Ca21chrR_C_albicans_SC5314
 	P_position  = parent_line[1]   # chr position of bp.      : 2286371
@@ -166,10 +173,10 @@ current_fragment = 0
 log_count        = 0
 log_offset       = 0
 
-print '### Chromosomes of interest : '
+print('### Chromosomes of interest : ')
 for x in range(0,chrCount):
 	if (chrNums[x] != 0):
-		print '### \t' + str(x+1) + ' : ' + str(chrName[x])
+		print('### \t' + str(x+1) + ' : ' + str(chrName[x]))
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tGathering data from putative SNP loci in parent.\n")
@@ -177,7 +184,7 @@ with open(logName, "a") as myfile:
 # Open dataset 'putative_CNVs_v1.txt' file.
 data_P = open(inputFile_P,"r")
 
-print '### Data lines for each het locus in parent : [chromosome_name, bp_coordinate, countA, countT, countG, countC]'
+print('### Data lines for each het locus in parent : [chromosome_name, bp_coordinate, countA, countT, countG, countC]')
 
 # Process 'SNP_CNV_v1.txt' file for both parents, line by line... while checking for missing data.
 line_P = data_P.readline()
@@ -190,7 +197,7 @@ while (error_endOfFile == False):
 	else:
 		P_allelicRatio = max(P_list)/float(sum(P_list))
 	if ((P_allelicRatio < 0.75) and (P_allelicRatio > 0.25) and (sum(P_list) > 20)):
-		print P_chrName+"\t"+str(P_position)+"\t"+str(P_countA)+"\t"+str(P_countT)+"\t"+str(P_countG)+"\t"+str(P_countC)
+		print(P_chrName+"\t"+str(P_position)+"\t"+str(P_countA)+"\t"+str(P_countT)+"\t"+str(P_countG)+"\t"+str(P_countC))
 	error_endOfFile = False
 	line_P = data_P.readline()
 	if not line_P: # EOF 1
@@ -202,7 +209,7 @@ data_P.close()
 # End of main code block.
 #============================================================================================================
 
-print '### End of preprocessed parental SNP, child SNP data.'
+print('### End of preprocessed parental SNP, child SNP data.')
 
 with open(logName, "a") as myfile:
 	myfile.write("\t\t|\tTime to process = " + str(time.process_time()-t0) + "\n")
