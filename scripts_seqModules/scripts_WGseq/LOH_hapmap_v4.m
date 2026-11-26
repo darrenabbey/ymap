@@ -59,7 +59,7 @@ end;
 %-------------------------------------------------------------------------------------------------
 fprintf('\t|\tSetup for processing.\n');
 Centromere_format_default      = 3;
-chrom_max_width                  = 0.8;
+chrom_max_width                = 0.8;
 colorBars                      = true;
 blendColorBars                 = false;
 show_annotations               = true;
