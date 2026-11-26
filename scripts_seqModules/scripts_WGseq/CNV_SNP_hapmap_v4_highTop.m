@@ -243,12 +243,18 @@ if (Make_figure == true)
 	                %% end determine color of each bin.
 
 
-			% reverse order of color and CNV bins if chromosome is indicated as reversed in figure_definitions.txt file.
+			%%================================================================================
+			% Reverse order of color and CNV bins if chromosome is indicated as reversed in figure_definitions.txt file.
+			%---------------------------------------------------------------------------------
 			if (chrom_figReversed(chrom) == 1)
 				colors        = flipud(colors);
 				CNVplot2{chrom} = fliplr(CNVplot2{chrom});
 			end;
 
+
+			%%================================================================================
+			% Draw standard/stacked all chromosomes figure.
+			%---------------------------------------------------------------------------------
 			if (Standard_display)
 				figure(Standard_fig);
 
@@ -318,7 +324,6 @@ if (Make_figure == true)
 				else
 					ylim([0,maxY_highTop]);
 				end;
-				%set(gca,'TickLength',[(TickSize*chrom_size(largestchrom)/chrom_size(chrom)) 0]); %ensures same tick size on all subfigs.
 				set(gca,'TickLength',[TickSize 0]);
 				set(gca,'YTick',[]);
 				set(gca,'YTickLabel',[]);
@@ -435,9 +440,10 @@ if (Make_figure == true)
 				angle_plot_subfigures;
 			end;
 
-%%%%%%%%%%%%%%%% Linear figure draw section
 
-			%% Linear figure draw section
+			%%================================================================================
+			% Draw linear all chromosomes figure.
+			%---------------------------------------------------------------------------------
 			if (Linear_display)
 				figure(Linear_fig);
 				Linear_width = Linear_chrom_max_width*chrom_size(chrom)/Linear_genome_size;
@@ -534,7 +540,6 @@ if (Make_figure == true)
 				else
 					ylim([0,maxY_highTop]);
 				end;
-				%set(gca,'TickLength',[(Linear_TickSize*chrom_size(largestchrom)/chrom_size(chrom)) 0]); %ensures same tick size on all subfigs.
 				set(gca,'TickLength',[Linear_TickSize 0]);
 				set(gca,'YTick',[]);
 				set(gca,'YTickLabel',[]);
@@ -559,10 +564,7 @@ if (Make_figure == true)
 				set(gca,'FontSize',linear_gca_font_size);
 				%end final reformatting.
 
-				% adding title in the middle of the cartoon
-				% note : adding title is done in the end since if placed upper
-				% in the code somehow the plot function changes the title position
-				% location
+				% Adding title is done here at the end since if placed previously in the code somehow the plot function changes the title position location
 				if (rotate == 0 && chrom_size(chrom) ~= 0 )
 					if (chrom_figReversed(chrom) == 0)
 						title(chrom_label{chrom},'Interpreter','none','FontSize',linear_chrom_font_size,'Rotation',rotate);
@@ -580,24 +582,191 @@ if (Make_figure == true)
 				end;
 			end;
 
-%%%%%%%%%%%%%%%% Linear individual figure per chromosome section.
 
+			%%================================================================================
+			% Draw linear single chromosomes figures.
+			%---------------------------------------------------------------------------------
 			if (Linear_single_chr_display)
-				% --- EXPORT INDIVIDUAL CHROMOSOME TO SEPARATE EPS & SVG ---
+				fprintf(['Drawing linear single chromosome figure : ' num2str(chrom) '\n']);
+
+				Linear_single_fig = figure('Visible', 'off', 'Color', 'none', 'PaperPositionMode', 'auto');
+				figure(Linear_single_fig);
+				Linear_width = Linear_chrom_max_width*chrom_size(chrom)/Linear_genome_size;
+
+				sub_x = 0.08;
+				sub_y = Linear_base;
+				sub_w = Linear_width;
+				sub_h = Linear_height;
+				subplot('Position', [sub_x, sub_y, sub_w, sub_h]);
+
+				set(gca, 'Color', 'none');
+				hold on;
+
+
+				%% linear : draw colorbars.
+				draw_colorbars_plot;
+				% linear : end draw colorbars.
+
+
+				%% linear : show centromere/outline.
+				Centromere_format = Centromere_format_default;
+				x1       = cen_start(chrom)/bases_per_bin;
+				x2       = cen_end(chrom)/bases_per_bin;
+				leftEnd  = 0;						% 0.5*(5000/bases_per_bin);
+				rightEnd = chrom_size(chrom)/bases_per_bin;		% chrom_size(chrom)/bases_per_bin-0.5*(5000/bases_per_bin);
+				if (Centromere_format == 0)
+					source('cartoon_linear_0.m');
+				elseif (Centromere_format == 1)
+					source('cartoon_linear_1.m');
+				elseif (Centromere_format == 2) % sausage!
+					source('cartoon_linear_2.m');
+				elseif (Centromere_format == 3) % improved sausage! (standard plot)
+					source('cartoon_linear_3.m');
+				end;
+				% linear : end show centromere/outline.
+
+
+				%% linear : CNV plot section.
+				draw_CNV_plot_highTop;
+				%% linear : end CNV plot section.
+
+
+				%% linear : draw ploidy lines across plots for easier interpretation of CNV regions.
+				% Inside chrom bounds grey lines.
+				x2 = chrom_size(chrom)/bases_per_bin;
+				for lineNum = 1:(ploidyBase*2-1)
+					if lineNum ~= ploidyBase
+						line([0 x2], [maxY/(ploidyBase*2)*lineNum  maxY/(ploidyBase*2)*lineNum ],'Color',[0.85 0.85 0.85]);
+					end;
+				end;
+				% Above chrom bounds grey lines.
+				for lineNum = (ploidyBase*2+1):ploidyBase*6
+					line([0 x2], [maxY/(ploidyBase*2)*lineNum  maxY/(ploidyBase*2)*lineNum ],'Color',[0.85 0.85 0.85]);
+				end;
+				% Baseline ploidy black line.
+				plot([0; x2], [maxY/2; maxY/2],'color',[0 0 0]);
+				%% linear : end CNV plot ploidy lines section.
+
+				%% linear : show segmental anueploidy breakpoints.
+				if (Linear_displayBREAKS == true) && (show_annotations == true)
+					num_allocated_bins = length(chrom_SNPdata{chrom,1});
+					for segment = 2:length(chrom_breaks{chrom})-1
+						bP = chrom_breaks{chrom}(segment)*num_allocated_bins;
+						plot([bP bP], [(-maxY/10*2.5) 0],  'Color',[1 0 0],'LineWidth',2);
+					end;
+				end;
+				% linear : end segmental aneuploidy breakpoint section.
+
+				% linear : show annotation locations
+				if (show_annotations) && (length(annotations) > 0)
+					hold on;
+					plot([leftEnd rightEnd], [-maxY/10*1.5 -maxY/10*1.5],'color',[0 0 0]);
+					annotation_location = (annotation_start+annotation_end)./2;
+					for i = 1:length(annotation_location)
+						if (annotation_chrom(i) == chrom)
+							annotationloc   = annotation_location(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+							annotationStart = annotation_start(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+							annotationEnd   = annotation_end(i)/bases_per_bin-0.5*(5000/bases_per_bin);
+							if (strcmp(annotation_type{i},'dot') == 1)
+								plot(annotationloc,-maxY/10*1.5,'k:o','MarkerEdgeColor',annotation_edgecolor{i}, ...
+									'MarkerFaceColor',annotation_fillcolor{i}, ...
+									'MarkerSize',     annotation_size(i));
+							elseif (strcmp(annotation_type{i},'block') == 1)
+								fill([annotationStart annotationStart annotationEnd annotationEnd], ...
+									[-maxY/10*(1.5+0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5-0.75) -maxY/10*(1.5+0.75)], ...
+									annotation_fillcolor{i},'EdgeColor',annotation_edgecolor{i});
+							end;
+						end;
+					end;
+					hold off;
+				end;
+				% linear : end show annotation locations.
+
+				% linear : Final formatting stuff.
+				xlim([0,chrom_size(chrom)/bases_per_bin]);
+
+				%% linear : modify y axis limits to show annotation locations if any are provided.
+				if (length(annotations) > 0)
+					ylim([-maxY/10*1.5,maxY_highTop]);
+				else
+					ylim([0,maxY_highTop]);
+				end;
+				set(gca,'TickLength',[Linear_TickSize 0]);
+				set(gca,'YTick',[]);
+				set(gca,'YTickLabel',[]);
+				set(gca,'XTick',0:(40*(5000/bases_per_bin)):(650*(5000/bases_per_bin)));
+				set(gca,'XTickLabel',[]);
+
+				% standard : This section sets the Y-axis labelling, omitting crowded labels.
+				max_label = ploidyBase * 6;
+				if ploidyBase <= 2
+					label_step = 1; % Plenty of room: label every step (1, 2, 3...)
+				elseif mod(ploidyBase, 2) == 0
+					label_step = ploidyBase / 2; % Even larger ploidy (e.g., 4 steps by 2, 6 steps by 3...)
+				else
+					label_step = ploidyBase; % Odd larger ploidy (e.g., 3 steps by 3, 5 steps by 5...)
+				end;
+				for label_val = label_step : label_step : max_label
+					y_pos = maxY * (label_val / (ploidyBase * 2));
+					text(axisLabelPosition_vert, y_pos, num2str(label_val), 'HorizontalAlignment', 'right', 'Fontsize', linear_axis_font_size);
+				end;
+				set(gca,'FontSize',linear_gca_font_size);
+				%end final reformatting.
+
+
+				%%========================================================================
+				% Save linear single chromosome figure as SVG.
+				%-------------------------------------------------------------------------
 				chr_label = chrom_label{chrom};
-				Linear_single_fig = figure('Visible', 'off', 'PaperPositionMode', 'auto');
-
-				% Copy the current chromosome subplot axes into the standalone figure
-				new_ax = copyobj(gca, Linear_single_fig);
-				set(new_ax, 'Position', [0.10 0.15 0.85 0.75]); % Expand subplot to fill the standalone canvas
-
-				% Build output file paths in the project directory
 				svg_out = fullfile(projectDir, ['fig.CNV-SNP-map.chr_' chr_label '.svg']);
 
-				% Save native SVG (eliminates 90-degree rotation issues)
-				saveas(Linear_single_fig, svg_out, 'svg');
+				fig_w_in = linear_fig_width;
+				fig_h_in = linear_fig_height * 2.71962616822;
 
+				set(Linear_single_fig, 'PaperUnits', 'inches', ...
+				                       'PaperSize', [fig_w_in, fig_h_in], ...
+				                       'PaperPosition', [0, 0, fig_w_in, fig_h_in]);
+				print(Linear_single_fig, svg_out, '-dsvg');
 				close(Linear_single_fig);
+
+				% Convert normalized subplot bounds to SVG points (72 pt/inch; Y flipped from top).
+				svg_w = fig_w_in * 72;
+				svg_h = fig_h_in * 72;
+
+				pad_left   = 35; % Space in pt for left Y-axis ploidy text labels
+				pad_right  = 10;
+				pad_top    = 15;
+				pad_bottom = 25; % Space in pt for bottom annotation track / labels
+
+				crop_x = max(0, (sub_x * svg_w) - pad_left);
+				crop_y = max(0, ((1 - (sub_y + sub_h)) * svg_h) - pad_top);
+				crop_w = (sub_w * svg_w) + pad_left + pad_right;
+				crop_h = (sub_h * svg_h) + pad_top + pad_bottom;
+
+				% Read SVG and strip Octave's old 0,0 background box.
+				svg_txt = fileread(svg_out);
+				svg_txt = regexprep(svg_txt, '<polygon[^>]*points="0,0\s+[^"]*"\s*/>', '', 'once');
+				svg_txt = regexprep(svg_txt, '<rect[^>]*x="0"[^>]*y="0"[^>]*/>', '', 'once');
+
+				% Update viewBox, width, and height to the cropped subfigure bounds.
+				svg_txt = regexprep(svg_txt, 'viewBox="[^"]*"', ...
+					sprintf('viewBox="%.2f %.2f %.2f %.2f"', crop_x, crop_y, crop_w, crop_h), 'once');
+				svg_txt = regexprep(svg_txt, 'width="[0-9.]+(?:pt|px)?"', ...
+					sprintf('width="%.2fpt"', crop_w), 'once');
+				svg_txt = regexprep(svg_txt, 'height="[0-9.]+(?:pt|px)?"', ...
+					sprintf('height="%.2fpt"', crop_h), 'once');
+
+				% Inject a white background rect matched exactly to the cropped viewBox.
+				bg_rect = sprintf('<rect x="%.2f" y="%.2f" width="%.2f" height="%.2f" fill="#ffffff" />', ...
+					crop_x, crop_y, crop_w, crop_h);
+				svg_txt = regexprep(svg_txt, '(<g[^>]*>)', ['$1' bg_rect], 'once');
+
+				% Write the updated SVG back to disk.
+				fid = fopen(svg_out, 'w');
+				fwrite(fid, svg_txt);
+				fclose(fid);
+
+				system(['chmod 774 ' svg_out]);
 			end;
 
 			if (Standard_display)
@@ -611,6 +780,10 @@ if (Make_figure == true)
 		end;
 	end;
 
+
+	%%================================================================================================
+	% Save standard and linear all chromosome figures.
+	%-------------------------------------------------------------------------------------------------
 	if (Standard_display)
 		% Save primary genome figure. multiplying height to match height change here
                 % commented out since fig.CNV-map.highTop.1 is not displayed to the user,
@@ -628,7 +801,6 @@ if (Make_figure == true)
 		system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.highTop.1.'         figVer 'png']);
 		system(['chmod 774 ' projectDir 'fig.CNV-SNP-map.highTop.1_highres.' figVer 'tif']);
 	end;
-
 	if (Linear_display)
 		% Save horizontal aligned genome figure, multiplying height since this is a taller figure than default.
 		fprintf('\n###\n### Saving linear highTop figure.\n###\n');
